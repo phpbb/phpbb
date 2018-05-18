@@ -1,0 +1,119 @@
+##############################################################
+## MOD Title: Simple subforums mod addon
+## MOD Author: rxu < N/A > (n/a) http://phpbbguru.net
+## MOD Description: This addon colourizes nicknames in subforums for Simple subforums mod by pentapenquin.
+## MOD Version: 1.0.0
+## 
+## Installation Level: Easy
+## Installation Time: 5 minutes
+## Files To Edit: viewforum.php
+## Included Files: 
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+## Generator: Phpbb.ModTeam.Tools
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes: You have to install Colourized standart groups by rxu first.
+##############################################################
+## MOD History:
+## 
+## 2007-10-18 - Version 1.0.0
+##      -Initial release
+## 
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD 
+##############################################################
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewforum.php
+#
+#-----[ FIND ]------------------------------------------
+#
+// Begin Simple Subforums MOD
+#
+#-----[ FIND ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, u.user_id, u.username
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, u.user_id, u.username, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+		$subforum_moderators[$row['forum_id']][] = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['user_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, g.group_id, g.group_name
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, g.group_id, g.group_name, g.group_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+		$subforum_moderators[$row['forum_id']][] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . 	$row['group_name'] . '</a>';
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['group_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['group_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+				$last_post .= ( $subforum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($subforum_data[$j]['post_username'] != '' ) ? $subforum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $subforum_data[$j]['user_id']) . '">' . $subforum_data[$j]['username'] . '</a> ';
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$subforum_data[$j]['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $subforum_data[$j]['user_colour']
+#
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

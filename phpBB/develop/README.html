@@ -1,0 +1,194 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title>phpBB 2.0.x :: Contrib</title>
+<link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
+<style type="text/css">
+<!--
+p,ul,td {font-size:10pt;}
+h2 {font-size:15pt;font-weight:bold;}
+h3 {font-size:12pt;}
+//-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#006699">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB2 : Creating Communities" vspace="1" /></a></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.x Contrib</span></td>
+	</tr>
+</table>
+
+<p>This directory contains a couple extra <i>add-ons</i> for phpBB 2.0.x.</p>
+
+<p align="center"><u>Please note none of these are directly supported by phpBB Group</u></p>
+
+<p>You should contact the author/s (via our forums) if you want further information. A large number of additional mods are available introducing increased funtionality to the standard phpBB2 release. You can find many additional mods at our main site:</p>
+
+<p><a href="http://www.phpbb.com/mods/" target="_new">http://www.phpbb.com/mods/</a></p>
+
+<p><b>NOTE</b>: Once you have made use of files contained in this directory it should be deleted from your server. You should <b>NOT</b> leave this directory in place!</p>
+
+<h2><u>Template caching</u></h2>
+
+<p><b>Authors: Crimsonbane, psoTFX and nathan</b></p>
+
+<p align="center"><b>File Caching Updated</b></p>
+
+<p>During development of phpBB2 a recurring issue of server load has cropped up. phpBB 2.0.0 differs from many of its contemporaries by doing many more tasks at runtime. While this allows for simpler upgrade and modification paths it also leads to a greater strain being placed on the server. To help reduce this issue a caching template system was created based on work by Crimsonbane. This stores a compiled version of each template resulting in a generally significant reduction in server load and perhaps page generation time.</p>
+
+<p>Two versions of the caching system are contained in this directory, one uses flat files the other a MySQL database. Testing has shown that, in general, the average virtual host seems to show better performance with the flat file solution. However this may not be the case for your system, so please feel free to try both.</p>
+
+<p>In both cases you need to rename your existing template.php script (in includes/) and replace it with whichever template_*.php you want to try.</p>
+
+<h3>template_file_cache.php</h3>
+
+<p>To use the flat file system you need to create a directory called 'cache' in your phpBB root directory (it may already exist and contain some default files, do not delete these). This directory must be writeable by the web server, e.g. global write access. Under UNIX systems this is typically achieved by using <i>chmod a+w cache</i> or <i>chmod 777 cache</i>. Many FTP applications also allow you to change permission properties. See your applications manual for details on how to do this.</p>
+
+<p><b>Please note</b> that creating a world writeable directory is of course a potential security issue. Most of the time this is not a great issue, however on virtual hosting accounts there may be users who have nothing better to do than cause problems. Therefore you should monitor the status of this directory regularly and report any problems to your hosting provider (who will be in a position to take action against any offending user).</p>
+
+<p>NB: The directory required for this version of the file caching template system differs from previous releases. You can safely delete the old caching directories.</p>
+
+<h3>template_db_cache.php</h3>
+
+<p>To use the database system (note that this is <b>only</b> compatible with MySQL at present) you need to create the following table (replacing the phpbb_ prefix with your own if you used something different):</p>
+
+<pre>
+CREATE TABLE phpbb_template_cache (
+  template_name char(255) NOT NULL default '',
+  template_handle char(50) NOT NULL default '',
+  template_cached int(11) NOT NULL default '0',
+  template_echo tinyint(1) NOT NULL default '1',
+  template_compile text NOT NULL,
+  PRIMARY KEY  (template_name)
+)
+</pre>
+
+<p>These files should not be incorporated into any mod or other plug-in, etc. They have been tested quite thoroughly but we cannot guarantee their stability in all cases. The system is based on work by Crimsonbane and of course Nathan's original templating system.</p>
+
+<h2><u>Visual Confirmation System</u></h2>
+
+<p><b>Author: psoTFX</b></p>
+
+<p><b>The visual confirmation system is part of phpBB 2.0.x since version 2.0.11. For historical purposes, the instructions below are left untouched.</b></p>
+
+<p>Unfortunately there are people "out there" who have nothing better to do than cause other people trouble. Even worse are groups that write applications which cause problems. One very annoying (and pointless) way in which people can cause you trouble is by mass registering users. This Mod, back-ported from the forthcoming phpBB 2.2 helps eliminate or reduce this problem. It generates a random series of six alphanumeric characters as a png image. The user must then input these characters before they can register a new user. Should they fail three times in a row they will be locked out for the rest of that session </p>
+
+<p>To get the best from this Mod you should be running PHP4 and have the <b>zlib</b> module installed and loaded. It is quite common for zlib to be installed by default. If you are unsure whether it is please check with your hosting provider or review the output of phpinfo();. This Mod does <b>not</b> require GD, Imagemagick, NetPBM or any other module or utility. If you do not have zlib available the Mod will fall-back to a simpler output method. However this will still deter the majority of would be trouble makers.</p>
+
+<p>phpBB 2.0.6 is shipped with various bits of the visual confirmation system already installed. To complete installation you should unzip the contents of the visual_confirmation.zip archive into your phpBB root directory. Allow it to overwrite any existing files. <b>Please Note</b> that if you have any Mods installed which have altered; <U>profile.php</U>, <U>includes/usercp_register.php</U>, <U>admin/admin_board.php</U> or <U>templates/subSilver/admin/board_config_body.tpl</U> you <b>will lose</b> these changes. In this situation you are advised to manually diff the files and make the changes yourself.</p>
+
+<p>The default English language pack includes the necessary new strings for this mod. Other languages may be updated in time. However you can easily add the strings yourself, they are listed below. Please do not translate the %s present in one of these strings. This is a placeholder for additional text that will be inserted by phpBB.</p>
+
+<form>
+
+<p><b>lang_main.php</b></p>
+<textarea style="font-family: monospace;font-size: 10pt" rows="9" cols="80">
+$lang['Confirm_code_wrong'] = 'The confirmation code you entered was incorrect';
+$lang['Too_many_registers'] = 'You have exceeded the number of registration attempts for this session. Please try again later.';
+$lang['Confirm_code_impaired'] = 'If you are visually impaired or cannot otherwise read this code please contact the %sAdministrator%s for help.';
+$lang['Confirm_code'] = 'Confirmation code';
+$lang['Confirm_code_explain'] = 'Enter the code exactly as you see it. The code is case sensitive and zero has a diagonal line through it.';
+</textarea>
+
+<p><b>lang_admin.php</b></p>
+<textarea style="font-family: monospace;font-size: 10pt" rows="3" cols="80">
+$lang['Visual_confirm'] = 'Enable Visual Confirmation';
+$lang['Visual_confirm_explain'] = 'Requires users enter a code defined by an image when registering.';
+</textarea>
+
+<p>If you use a style other than subSilver you will need to make changes to two templates. The changes are quite straightforward, see below for details.</p>
+
+
+<p><b>profile_add_body.tpl</b></p>
+
+<p>Find similar:</p>
+
+<textarea style="font-family: monospace;font-size: 10pt" rows="9" cols="80">
+	&lt;tr&gt;
+	  &lt;td class="row1"&gt;&lt;span class="gen"&gt;{L_CONFIRM_PASSWORD}: * &lt;/span&gt;&lt;br /&gt;
+		&lt;span class="gensmall"&gt;{L_PASSWORD_CONFIRM_IF_CHANGED}&lt;/span&gt;&lt;/td&gt;
+	  &lt;td class="row2"&gt;
+		&lt;input type="password" class="post" style="width: 200px" name="password_confirm" size="25" maxlength="32" value="{PASSWORD_CONFIRM}" /&gt;
+	  &lt;/td&gt;
+	&lt;/tr&gt;
+</textarea>
+
+<p>Add after:</p>
+
+<textarea style="font-family: monospace;font-size: 10pt" rows="9" cols="80">
+	&lt;!-- BEGIN switch_confirm --&gt;
+	&lt;tr&gt;
+		&lt;td class="row1" colspan="2" align="center"&gt;&lt;span class="gensmall"&gt;{L_CONFIRM_CODE_IMPAIRED}&lt;/span&gt;<br /&gt;<br /&gt;{CONFIRM_IMG}<br /&gt;<br /&gt;</td&gt;
+	</tr&gt;
+	<tr&gt;
+	  &lt;td class="row1"&gt;<span class="gen">{L_CONFIRM_CODE}: * &lt;/span&gt;&lt;br /&gt;&lt;span class="gensmall"&gt;{L_CONFIRM_CODE_EXPLAIN}&lt;/span>&lt;/td&gt;
+	  &lt;td class="row2"&gt;&lt;input type="text" class="post" style="width: 200px" name="confirm_code" size="6" maxlength="6" value="" /&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;!-- END switch_confirm --&gt;
+</textarea>
+
+<p><b>admin/board_config_body.tpl</b></p>
+
+<p>Find similar:</p>
+
+<textarea style="font-family: monospace;font-size: 10pt" rows="9" cols="80">
+	&lt;tr&gt;
+		&lt;td class="row1"&gt;{L_ACCT_ACTIVATION}&lt;/td&gt;
+		&lt;td class="row2"&gt;vinput type="radio" name="require_activation" value="{ACTIVATION_NONE}" {ACTIVATION_NONE_CHECKED} /&gt;{L_NONE}&nbsp; &nbsp;&lt;input type="radio" name="require_activation" value="{ACTIVATION_USER}" {ACTIVATION_USER_CHECKED} /&gt;{L_USER}&nbsp; &nbsp;&lt;input type="radio" name="require_activation" value="{ACTIVATION_ADMIN}" {ACTIVATION_ADMIN_CHECKED} /&gt;{L_ADMIN}&lt;/td&gt;
+	&lt;/tr&gt;
+</textarea>
+
+<p>Add after:</p>
+
+<textarea style="font-family: monospace;font-size: 10pt" rows="9" cols="80">
+	&lt;tr&gt;
+		&lt;td class="row1"&gt;{L_VISUAL_CONFIRM}&lt;br /&gt;&lt;span class="gensmall"&gt;{L_VISUAL_CONFIRM_EXPLAIN}&lt;/span&gt;&lt;/td&gt;
+		&lt;td class="row2">&lt;input type="radio" name="enable_confirm" value="1" {CONFIRM_ENABLE} /&gt;{L_YES}&nbsp; &nbsp;&lt;input type="radio" name="enable_confirm" value="0" {CONFIRM_DISABLE} /&gt;{L_NO}&lt;/td&gt;
+	&lt;/tr&gt;
+</textarea>
+</form>
+
+<p>PLEASE NOTE: Templates can vary greatly and the above code should only be used as a guide. You may want to contact the template designer if you do not feel comfortable making the changes yourself.</p>
+
+<p>Once these tasks have been completed you should visit your Administration Control Panel. Under General -> Configuration you will find a new option "Enable Visual Confirmation", check the yes box to switch the system on. Because some of your visitors may be visually impaired a message is output along with the image noting the board email address as a point of contact should they be unable to read the code.</p>
+
+<p>While the Mod is designed to be relatively light in terms of load a very busy board with dozens of registrations a minute may see some affect from it. We would be interested in your experiences in this respect.</p>
+
+
+<h2><u>Database Informer</u></h2>
+
+<p><b>Authors: Blade, AL, Techie-Michael, Black Fluffy Lion</b></p>
+
+<h3>dbinformer.php</h3>
+
+<p><b>NOTE:</b> dbinformer.php now works with all of phpBB's supported DBMSes.</p>
+
+<p>Following a large number of people reporting <i>could not connect to database</i> errors with phpBB, especially on installations, this script has been compiled by the Support Team. To use it, enter your database server hostname / DSN, database name, database username, database password, and the table prefix you would like dbinformer.php to use (e.g. <i>phpbb_</i>) and select your database type in the space provided. Also specify whether you wish to generate a config.php file with the data entered and then press <u>Submit</u>.</p>
+
+<p>The script will then report whether connections to the database server and your database were established. If they were not, then it will display descriptive error messages. If the connection was successful then it will list the tables in your database; tables which start with your chosen prefix will appear in bold. If you choose to generate a new config file (useful if your file was accidently deleted, was not sent, etc) the code for that will appear at the bottom of the page. Simply copy that code over and save it as config.php or click on <u>Download</u> to download the file. Make sure it has only 19 lines in it and then upload it to your phpBB root directory.</p>
+
+<p>Please also note that this file (in common with the contrib directory as a whole) should be <b>deleted</b> after use. Do not leave this file in place if it is not needed.</p>
+
+<h2><u>Copyright and disclaimer</u></h2>
+
+<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the <u>docs/</u> directory for more details. The phpBB2 package, its contents and the template caching files are Copyright © 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved. Other packages are the copyright of their respective authors.</p>
+
+				</td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+</body>
+</html>

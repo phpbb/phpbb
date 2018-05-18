@@ -1,0 +1,124 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+	<fieldset>
+	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_prefs_personal_prepend -->
+	<dl>
+		<dt><label for="viewemail0">{L_SHOW_EMAIL}{L_COLON}</label></dt>
+		<dd>
+			<label for="viewemail1"><input type="radio" name="viewemail" id="viewemail1" value="1"<!-- IF S_VIEW_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label for="viewemail0"><input type="radio" name="viewemail" id="viewemail0" value="0"<!-- IF not S_VIEW_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label for="massemail1">{L_ADMIN_EMAIL}{L_COLON}</label></dt>
+		<dd>
+			<label for="massemail1"><input type="radio" name="massemail" id="massemail1" value="1"<!-- IF S_MASS_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label for="massemail0"><input type="radio" name="massemail" id="massemail0" value="0"<!-- IF not S_MASS_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label for="allowpm1">{L_ALLOW_PM}{L_COLON}</label><br /><span>{L_ALLOW_PM_EXPLAIN}</span></dt>
+		<dd>
+			<label for="allowpm1"><input type="radio" name="allowpm" id="allowpm1" value="1"<!-- IF S_ALLOW_PM --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label for="allowpm0"><input type="radio" name="allowpm" id="allowpm0" value="0"<!-- IF not S_ALLOW_PM --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+		</dd>
+	</dl>
+	<!-- IF S_CAN_HIDE_ONLINE -->
+		<dl>
+			<dt><label for="hideonline0">{L_HIDE_ONLINE}{L_COLON}</label><br /><span>{L_HIDE_ONLINE_EXPLAIN}</span></dt>
+			<dd>
+				<label for="hideonline1"><input type="radio" name="hideonline" id="hideonline1" value="1"<!-- IF S_HIDE_ONLINE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label for="hideonline0"><input type="radio" name="hideonline" id="hideonline0" value="0"<!-- IF not S_HIDE_ONLINE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_SELECT_NOTIFY -->
+		<dl>
+			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}{L_COLON}</label></dt>
+			<dd>
+				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label>
+				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label>
+				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_BOTH --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_BOTH}</label>
+			</dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_MORE_LANGUAGES -->
+		<dl>
+			<dt><label for="lang">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
+			<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->
+		<dl>
+			<dt><label for="user_style">{L_BOARD_STYLE}{L_COLON}</label></dt>
+			<dd><select name="user_style" id="user_style">{S_STYLE_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- INCLUDE timezone_option.html -->
+	<dl>
+		<dt><label for="dateformat">{L_BOARD_DATE_FORMAT}{L_COLON}</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
+		<dd>
+			<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){phpbb.toggleDisplay('custom_date',1);}else{phpbb.toggleDisplay('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }">
+				{S_DATEFORMAT_OPTIONS}
+			</select>
+		</dd>
+		<dd id="custom_date" style="display:none;"><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="64" class="inputbox narrow" style="margin-top: 3px;" /></dd>
+	</dl>
+	<!-- EVENT ucp_prefs_personal_append -->
+	</fieldset>
+
+	</div>
+</div>
+
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<script type="text/javascript">
+// <![CDATA[
+	var date_format = '{A_DATE_FORMAT}';
+	var default_dateformat = '{A_DEFAULT_DATEFORMAT}';
+
+	function customDates()
+	{
+		var e = document.getElementById('dateoptions');
+
+		e.selectedIndex = e.length - 1;
+
+		// Loop and match date_format in menu
+		for (var i = 0; i < e.length; i++)
+		{
+			if (e.options[i].value == date_format)
+			{
+				e.selectedIndex = i;
+				break;
+			}
+		}
+
+		// Show/hide custom field
+		if (e.selectedIndex == e.length - 1)
+		{
+			phpbb.toggleDisplay('custom_date',1);
+		}
+		else
+		{
+			phpbb.toggleDisplay('custom_date',-1);
+		}
+	}
+
+	window.onload = customDates;
+// ]]>
+</script>
+
+<!-- INCLUDE ucp_footer.html -->

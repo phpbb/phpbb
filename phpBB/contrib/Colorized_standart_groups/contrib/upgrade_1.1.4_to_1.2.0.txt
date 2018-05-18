@@ -1,0 +1,215 @@
+#
+#-----[ COPY ]------------------------------------------
+#
+copy root/templates/color.js to templates/
+#
+#-----[ OPEN ]------------------------------------------
+#
+includes/page_header.php
+#
+#-----[ FIND ]------------------------------------------
+#
+		$group_legend_color = 'style="color:' . $row['group_colour'] . '"';
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		$group_legend_color = ' style="color:' . $row['group_colour'] . '"';
+#
+#-----[ OPEN ]------------------------------------------
+#
+groupcp.php
+#
+#-----[ FIND ]------------------------------------------
+#
+	return;
+}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+function var_escape($var)
+{
+	$var = addslashes($var);
+	$var = str_replace("\'", "''", $var);
+	return $var;
+}
+#
+#-----[ FIND ]------------------------------------------
+#
+							SET user_colour = '" . $group_info['group_colour'] . "'
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+							SET user_colour = '" . var_escape($group_info['group_colour']) . "'
+#
+#-----[ FIND ]------------------------------------------
+#
+                  if ( $group_info['auth_mod'] )
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+                  if ( $group_info['auth_mod'] && !empty($members) )
+#
+#-----[ FIND ]------------------------------------------
+#
+							WHERE user_id IN ($sql_in) AND user_colour = '" . $group_info['group_colour'] . "'";
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+							WHERE user_id IN ($sql_in) AND user_colour = '" . var_escape($group_info['group_colour']) . "'";
+#
+#-----[ FIND ]------------------------------------------
+#
+								SET user_colour = '" . $group_info['group_colour'] . "' 
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+								SET user_colour = '" . var_escape($group_info['group_colour']) . "' 
+#
+#-----[ FIND ]------------------------------------------
+#
+				'CHECKED' => ( $group_members[$i]['user_colour'] == $group_info['group_colour'] ) ? 'checked="checked" disabled' : '',
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				'CHECKED' => ( !empty($group_info['group_colour']) && $group_members[$i]['user_colour'] == $group_info['group_colour'] ) ? 'checked="checked" disabled="disabled"' : '',
+#
+#-----[ OPEN ]------------------------------------------
+#
+admin/admin_groups.php
+#
+#-----[ FIND ]------------------------------------------
+#
+	$group_default_moderator = ( ($row['user_colour'] == $group_info['group_colour']) && $group_moderator ) ? ' checked="checked" disabled' : '';
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	$group_default_moderator = ( ($row['user_colour'] == $group_info['group_colour'] && !empty($group_info['group_colour']) ) && $group_moderator ) ? ' checked="checked" disabled="disabled"' : '';
+#
+#-----[ FIND ]------------------------------------------
+#
+			WHERE user_colour = '$group_colour'";
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+			WHERE user_colour = '" . var_escape($group_colour) . "'";
+#
+#-----[ FIND ]------------------------------------------
+#
+				AND group_colour = '" . $group_colour . "'";
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				AND group_colour = '" . str_replace("\'", "''", $group_colour) . "'";
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ( $check_colours['group_id'] != $group_id )
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				if ( $check_colours['group_id'] != $group_id && !empty($group_colour) )
+#
+#-----[ FIND ]------------------------------------------
+#
+							AND user_colour = " . $group_info['group_colour'];
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+							AND user_colour = " . var_escape($group_info['group_colour']);
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ($default_group_moderator)
+				{
+					$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . $group_info['group_colour'] . "' 
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				if ($default_group_moderator && !empty($group_colour) && !empty($group_info['group_colour']) )
+				{
+					$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . var_escape($group_info['group_colour']) . "' 
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_colour =  '" . str_replace("\'", "''", $group_colour) . "'
+				WHERE user_colour = '" . $group_info['group_colour'] . "'";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update user colour', '', __LINE__, __FILE__, $sql);
+			}
+			
+			if ($default_group_moderator)
+			{
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . $group_colour . "' 
+					WHERE user_id = " . $group_info['group_moderator'];
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update moderator color', '', __LINE__, __FILE__, $sql);
+				}
+			}
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+			if ( !empty($group_info['group_colour']) )
+			{
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_colour =  '" . $group_colour . "'
+					WHERE user_colour = '" . var_escape($group_info['group_colour']) . "'";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update user colour', '', __LINE__, __FILE__, $sql);
+				}
+			}
+			
+			if ($default_group_moderator && !empty($group_colour) && !empty($group_info['group_colour']) )
+			{
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . str_replace("\'", "''", $group_colour) . "' 
+					WHERE user_id = " . $group_info['group_moderator'];
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update moderator color', '', __LINE__, __FILE__, $sql);
+				}
+			}
+#
+#-----[ FIND ]------------------------------------------
+#
+				AND group_colour = '" . $group_colour . "'";
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				AND group_colour = '" . str_replace("\'", "''", $group_colour) . "'";
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ( $check_colours['group_id'] )
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				if ( $check_colours['group_id'] && !empty($group_colour) )
+#
+#-----[ FIND ]------------------------------------------
+#
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . $group_colour . "' 
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . str_replace("\'", "''", $group_colour) . "' 
+#
+#-----[ FIND ]------------------------------------------
+#
+?>
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+function var_escape($var)
+{
+	$var = addslashes($var);
+	$var = str_replace("\'", "''", $var);
+	return $var;
+}
+
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

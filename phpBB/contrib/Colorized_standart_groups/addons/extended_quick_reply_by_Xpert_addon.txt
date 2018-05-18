@@ -1,0 +1,55 @@
+##############################################################
+## MOD Title: Extended quick reply mod by Xpert addon
+## MOD Author: rxu < n/a > (n/a) n/a
+## MOD Description: This is addon for Extended quick reply form by Xpert <www.phpbbguru.net>
+## MOD Version: 1.0.0
+## 
+## Installation Level: Easy
+## Installation Time: 3 minutes
+## Files To Edit: viewtopic.php
+## Included Files: 
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+## Generator: Phpbb.ModTeam.Tools
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes: You have to install Colourized standart groups by rxu first.
+##############################################################
+## MOD History:
+## 
+## 2007-03-22 - Version 1.0.0
+##      -Initial release
+## 
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD 
+##############################################################
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewtopic.php
+#
+#-----[ FIND ]------------------------------------------
+#
+	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : '<span style="color:' . $postrow[$i]['user_colour'] . '">' . $postrow[$i]['username'] . '</span>';
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $postrow[$i]['username'];
+#
+#-----[ FIND ]------------------------------------------
+#
+		$poster = '<a href="javascript:putName(\'' . addslashes($poster) . '\')">' . $poster . '</a>';
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		$poster = '<a href="javascript:putName(\'' . addslashes($poster) . '\')" style="color:' . $postrow[$i]['user_colour'] . '">' . $poster . '</a>';
+#
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

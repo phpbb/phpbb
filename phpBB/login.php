@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: login.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -28,7 +28,7 @@ define("IN_LOGIN", true);
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 //
@@ -40,22 +40,26 @@ init_userprefs($userdata);
 // End session management
 //
 
+$redirect = $l_explain = $l_success = ''; 
+$admin = false;
+$s_display = false;
+
 // session id check
-if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+if (!empty($_POST['sid']) || !empty($_GET['sid']))
 {
-	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
 }
 else
 {
 	$sid = '';
 }
 
-if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
+if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout']) )
 {
-	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && (!$userdata['session_logged_in'] || isset($HTTP_POST_VARS['admin'])) )
+	if( ( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin'])) )
 	{
-		$username = isset($HTTP_POST_VARS['username']) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
-		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
+		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
+		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
 		$sql = "SELECT user_id, username, user_password, user_active, user_level, user_login_tries, user_last_login_try
 			FROM " . USERS_TABLE . "
@@ -89,9 +93,9 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 				if( md5($password) == $row['user_password'] && $row['user_active'] )
 				{
-					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
+					$autologin = ( isset($_POST['autologin']) ) ? TRUE : 0;
 
-					$admin = (isset($HTTP_POST_VARS['admin'])) ? 1 : 0;
+					$admin = (isset($_POST['admin'])) ? 1 : 0;
 					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					// Reset login tries
@@ -99,7 +103,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 					if( $session_id )
 					{
-						$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.$phpEx";
+						$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.$phpEx";
 						redirect(append_sid($url, true));
 					}
 					else
@@ -108,7 +112,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					}
 				}
 				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
-				elseif( $row['user_active'] )
+				elseif ($row['user_active'])
 				{
 					// Save login tries and last login
 					if ($row['user_id'] != ANONYMOUS)
@@ -120,7 +124,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 					}
 				}
 
-				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
+				$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
 				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
@@ -139,7 +143,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		}
 		else
 		{
-			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "";
+			$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
 			$redirect = str_replace("?", "&", $redirect);
 
 			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
@@ -156,7 +160,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
-	else if( ( isset($HTTP_GET_VARS['logout']) || isset($HTTP_POST_VARS['logout']) ) && $userdata['session_logged_in'] )
+	else if( ( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] )
 	{
 		// session id check
 		if ($sid == '' || $sid != $userdata['session_id'])
@@ -169,9 +173,9 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 
-		if (!empty($HTTP_POST_VARS['redirect']) || !empty($HTTP_GET_VARS['redirect']))
+		if (!empty($_POST['redirect']) || !empty($_GET['redirect']))
 		{
-			$url = (!empty($HTTP_POST_VARS['redirect'])) ? htmlspecialchars($HTTP_POST_VARS['redirect']) : htmlspecialchars($HTTP_GET_VARS['redirect']);
+			$url = (!empty($_POST['redirect'])) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
 			$url = str_replace('&amp;', '&', $url);
 			redirect(append_sid($url, true));
 		}
@@ -182,7 +186,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 	}
 	else
 	{
-		$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.$phpEx";
+		$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.$phpEx";
 		redirect(append_sid($url, true));
 	}
 }
@@ -192,7 +196,7 @@ else
 	// Do a full login page dohickey if
 	// user not already logged in
 	//
-	if( !$userdata['session_logged_in'] || (isset($HTTP_GET_VARS['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN))
+	if( !$userdata['session_logged_in'] || (isset($_GET['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN))
 	{
 		$page_title = $lang['Login'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -203,9 +207,9 @@ else
 
 		$forward_page = '';
 
-		if( isset($HTTP_POST_VARS['redirect']) || isset($HTTP_GET_VARS['redirect']) )
+		if( isset($_POST['redirect']) || isset($_GET['redirect']) )
 		{
-			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
+			$forward_to = $_SERVER['QUERY_STRING'];
 
 			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) )
 			{
@@ -216,7 +220,7 @@ else
 				{
 					for($i = 1; $i < count($forward_match); $i++)
 					{
-						if( !ereg("sid=", $forward_match[$i]) )
+						if(!preg_match('#sid=#', $forward_match[$i]))
 						{
 							if( $forward_page != '' )
 							{
@@ -235,21 +239,53 @@ else
 		}
 
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
+		
+		// Assign credential for username/password pair
+		$credential = ($admin) ? md5(unique_id()) : false;
+		
+		$auth_provider_data = '';
+		
+		if ($redirect)
+		{
+			$s_hidden_fields['redirect'] = $redirect;
+		}
+
+		if ($admin)
+		{
+			$s_hidden_fields['credential'] = $credential;
+		}		
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
-		$s_hidden_fields .= (isset($HTTP_GET_VARS['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
-
-		make_jumpbox('viewforum.'.$phpEx);
+		$s_hidden_fields .= (isset($_GET['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
+		
+		$s_hidden_fields = array('sid' => $user->session_id, $s_hidden_fields);		
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);		
+		
+		make_jumpbox('viewforum.'.$phpEx);				
 		$template->assign_vars(array(
-			'USERNAME' => $username,
+			'LOGIN_ERROR'		=> '',
+			'LOGIN_EXPLAIN'		=> $l_explain,
+			
+			'USERNAME'				=> ($admin) ? $username : '',
 
-			'L_ENTER_PASSWORD' => (isset($HTTP_GET_VARS['admin'])) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
-			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
+			'USERNAME_CREDENTIAL'	=> 'username',
+			'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
+			
+			'PROVIDER_TEMPLATE_FILE' => false,
+			
+			'U_SEND_PASSWORD' 		=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=sendpassword"),
+			'U_RESEND_ACTIVATION'	=> ($board_config['require_activation'] == USER_ACTIVATION_SELF) ? append_sid("{$phpbb_root_path}profile.$phpEx?mode=resend_act") : '',
+			'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),
+			'U_PRIVACY'				=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=privacy"),
 
-			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"),
-
-			'S_HIDDEN_FIELDS' => $s_hidden_fields)
-		);
+			'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
+			'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
+			'S_CONFIRM_CODE'		=> false,
+			'S_SIMPLE_MESSAGE'		=> '',
+			'S_ADMIN_AUTH'			=> $admin,
+						
+			'CAPTCHA_TEMPLATE'			=> '',			
+		));
 
 		$template->pparse('body');
 

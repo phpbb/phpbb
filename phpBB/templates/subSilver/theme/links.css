@@ -1,0 +1,199 @@
+/* Link Styles
+---------------------------------------- */
+
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+a {
+	direction: ltr;
+	unicode-bidi: embed;
+	text-decoration: none;
+	/* we use links inline more often then not so to address several bugs with
+	IE and some other browsers we render all links as inlineblock by default */
+	display: inline-block;
+
+}
+
+/* Coloured usernames */
+.username-coloured {
+	font-weight: bold;
+	display: inline !important;
+	padding: 0 !important;
+}
+
+/* Links on gradient backgrounds */
+.forumbg .header a, .forabg .header a, th a {
+	text-decoration: none;
+}
+
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	text-decoration: underline;
+}
+
+/* Notification mark read link */
+.dropdown-extended a.mark_read {
+	background-position: center center;
+	background-repeat: no-repeat;
+	border-radius: 3px 0 0 3px;
+	display: none;
+	margin-top: -20px;
+	position: absolute;
+	z-index: 2;
+	right: 0;
+	top: 50%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.dropdown-extended li:hover a.mark_read {
+	display: block;
+}
+
+.dropdown-extended a.mark_read:hover {
+	width: 50px;
+}
+
+.jumpbox-cat-link,
+.jumpbox-forum-link { font-weight: bold; }
+
+
+/* Links for forum/topic lists */
+a.forumtitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.forumtitle:hover {
+	text-decoration: underline;
+}
+
+a.topictitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: none;
+	display: inline;
+}
+
+a.topictitle:hover {
+	text-decoration: underline;
+}
+
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
+.row-item a:hover {
+	text-decoration: none
+}
+
+.row-item .topictitle:hover,
+.row-item .subforum:hover,
+.row-item .username:hover,
+.row-item .username-coloured:hover {
+	text-decoration: underline;
+}
+
+/* Post body links */
+.postlink {
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	padding-bottom: 0;
+}
+
+.postlink:hover {
+	text-decoration: none;
+}
+
+.signature a, .signature a:hover {
+	border: none;
+	text-decoration: underline;
+}
+
+/* Profile links */
+.postprofile a, .postprofile dt.author a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.postprofile a:hover, .postprofile dt.author a:hover {
+	text-decoration: underline;
+}
+
+/* Profile searchresults */
+.search .postprofile a {
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.search .postprofile a:hover {
+	text-decoration: underline;
+}
+
+.top {
+	font-size: 12px;
+	text-decoration: none;
+	margin-top: 10px;
+}
+
+/* Back to top of page */
+.back2top {
+	clear: both;
+}
+
+.back2top .top {
+	float: right;
+	margin-right: -10px;
+	margin-top: 0;
+}
+
+/* Arrow links  */
+
+.arrow-up {
+	padding-left: 10px;
+	text-decoration: none;
+	border-bottom-width: 0;
+}
+
+.arrow-up:hover {
+
+}
+
+.arrow-down {
+	padding-right: 10px;
+}
+
+.arrow-down:hover {
+
+}
+
+.arrow-left:hover {
+	text-decoration: none;
+}
+
+.arrow-right:hover {
+	text-decoration: none;
+}
+
+/* invisible skip link, used for accessibility  */
+.skiplink {
+	position: absolute;
+	left: -999px;
+	width: 990px;
+}
+
+/* Feed icon in forumlist_body.html */
+a.feed-icon-forum {
+	float: right;
+	margin: 3px;
+}
+
+a.anchor {
+	display: block;
+}

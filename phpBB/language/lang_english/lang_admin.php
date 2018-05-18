@@ -7,7 +7,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id$
+ *     $Id: lang_admin.php,v 1.1 2010/10/10 15:09:19 orynider Exp $
  *
  ****************************************************************************/
 
@@ -85,7 +85,7 @@ $lang['Gzip_compression'] ='Gzip compression';
 $lang['Not_available'] = 'Not available';
 
 $lang['ON'] = 'ON'; // This is for GZip compression
-$lang['OFF'] = 'OFF'; 
+$lang['OFF'] = 'OFF';
 
 
 //
@@ -124,12 +124,12 @@ $lang['Restore_Error_no_file'] = 'No file was uploaded';
 $lang['Select_a_User'] = 'Select a User';
 $lang['Select_a_Group'] = 'Select a Group';
 $lang['Select_a_Forum'] = 'Select a Forum';
-$lang['Auth_Control_User'] = 'User Permissions Control'; 
-$lang['Auth_Control_Group'] = 'Group Permissions Control'; 
-$lang['Auth_Control_Forum'] = 'Forum Permissions Control'; 
-$lang['Look_up_User'] = 'Look up User'; 
-$lang['Look_up_Group'] = 'Look up Group'; 
-$lang['Look_up_Forum'] = 'Look up Forum'; 
+$lang['Auth_Control_User'] = 'User Permissions Control';
+$lang['Auth_Control_Group'] = 'Group Permissions Control';
+$lang['Auth_Control_Forum'] = 'Forum Permissions Control';
+$lang['Look_up_User'] = 'Look up User';
+$lang['Look_up_Group'] = 'Look up Group';
+$lang['Look_up_Forum'] = 'Look up Forum';
 
 $lang['Group_auth_explain'] = 'Here you can alter the permissions and moderator status assigned to each user group. Do not forget when changing group permissions that individual user permissions may still allow the user entry to forums, etc. You will be warned if this is the case.';
 $lang['User_auth_explain'] = 'Here you can alter the permissions and moderator status assigned to each individual user. Do not forget when changing user permissions that group permissions may still allow the user entry to forums, etc. You will be warned if this is the case.';
@@ -172,14 +172,14 @@ $lang['Reply'] = 'Reply';
 $lang['Edit'] = 'Edit';
 $lang['Delete'] = 'Delete';
 $lang['Sticky'] = 'Sticky';
-$lang['Announce'] = 'Announce'; 
+$lang['Announce'] = 'Announce';
 $lang['Vote'] = 'Vote';
 $lang['Pollcreate'] = 'Poll create';
 
 $lang['Permissions'] = 'Permissions';
 $lang['Simple_Permission'] = 'Simple Permissions';
 
-$lang['User_Level'] = 'User Level'; 
+$lang['User_Level'] = 'User Level';
 $lang['Auth_User'] = 'User';
 $lang['Auth_Admin'] = 'Administrator';
 $lang['Group_memberships'] = 'Usergroup memberships';
@@ -216,7 +216,7 @@ $lang['Ban_IP_explain'] = 'To specify several different IP addresses or hostname
 $lang['Ban_email'] = 'Ban one or more email addresses';
 $lang['Ban_email_explain'] = 'To specify more than one email address, separate them with commas. To specify a wildcard username, use * like *@hotmail.com';
 
-$lang['Unban_username'] = 'Un-ban one or more specific users';
+$lang['Unban_username'] = 'Un-ban one more specific users';
 $lang['Unban_username_explain'] = 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['Unban_IP'] = 'Un-ban one or more IP addresses';
@@ -260,7 +260,7 @@ $lang['Acc_Admin'] = 'Admin';
 $lang['Abilities_settings'] = 'User and Forum Basic Settings';
 $lang['Max_poll_options'] = 'Max number of poll options';
 $lang['Flood_Interval'] = 'Flood Interval';
-$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posts'; 
+$lang['Flood_Interval_explain'] = 'Number of seconds a user must wait between posts';
 $lang['Board_email_form'] = 'User email via board';
 $lang['Board_email_form_explain'] = 'Users send email to each other via this board';
 $lang['Topics_per_page'] = 'Topics Per Page';
@@ -322,8 +322,9 @@ $lang['Inbox_limits'] = 'Max posts in Inbox';
 $lang['Sentbox_limits'] = 'Max posts in Sentbox';
 $lang['Savebox_limits'] = 'Max posts in Savebox';
 
-$lang['Cookie_settings'] = 'Cookie settings'; 
-$lang['Cookie_settings_explain'] = 'These details define how cookies are sent to your users\' browsers. In most cases the default values for the cookie settings should be sufficient, but if you need to change them do so with care -- incorrect settings can prevent users from logging in';
+$lang['Cookie_settings'] = 'Cookie/session settings';
+$lang['Cookie_settings_explain'] = 'These details define how cookies/sessions are sent to your users\' browsers. In most cases the default values for the cookie settings should be sufficient, but if you need to change them do so with care -- incorrect settings can prevent users from logging in.';
+$lang['Cookie_settings_explain_mxp'] = 'Note: If you are using a phpBB backend, these internal mode settings are disabled.';
 $lang['Cookie_domain'] = 'Cookie domain';
 $lang['Cookie_name'] = 'Cookie name';
 $lang['Cookie_path'] = 'Cookie path';
@@ -343,7 +344,7 @@ $lang['Autologin_time_explain'] = 'How long a autologin key is valid for in days
 
 // Search Flood Control - added 2.0.20
 $lang['Search_Flood_Interval'] = 'Search Flood Interval';
-$lang['Search_Flood_Interval_explain'] = 'Number of seconds a user must wait between search requests'; 
+$lang['Search_Flood_Interval_explain'] = 'Number of seconds a user must wait between search requests';
 
 //
 // Forum Management
@@ -432,63 +433,71 @@ $lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Smiley Administr
 $lang['Confirm_delete_smiley'] = 'Are you sure you want to delete this Smiley?';
 
 //
-// User Management
+// Group control panel
 //
-$lang['User_admin'] = 'User Administration';
-$lang['User_admin_explain'] = 'Here you can change your users\' information and certain options. To modify the users\' permissions, please use the user and group permissions system.';
+$lang['Group_Control_Panel'] = 'Group Control Panel';
+$lang['Group_member_details'] = 'Group Membership Details';
+$lang['Group_member_join'] = 'Join a Group';
 
-$lang['Look_up_user'] = 'Look up user';
+$lang['Group_Information'] = 'Group Information';
+$lang['Group_name'] = 'Group name';
+$lang['Group_description'] = 'Group description';
+$lang['Group_membership'] = 'Group membership';
+$lang['Group_Members'] = 'Group Members';
+$lang['Group_Moderator'] = 'Group Moderator';
+$lang['Pending_members'] = 'Pending Members';
 
-$lang['Admin_user_fail'] = 'Couldn\'t update the user\'s profile.';
-$lang['Admin_user_updated'] = 'The user\'s profile was successfully updated.';
-$lang['Click_return_useradmin'] = 'Click %sHere%s to return to User Administration';
+$lang['Group_type'] = 'Group type';
+$lang['Group_open'] = 'Open group';
+$lang['Group_closed'] = 'Closed group';
+$lang['Group_hidden'] = 'Hidden group';
 
-$lang['User_delete'] = 'Delete this user';
-$lang['User_delete_explain'] = 'Click here to delete this user; this cannot be undone.';
-$lang['User_deleted'] = 'User was successfully deleted.';
+$lang['Current_memberships'] = 'Current memberships';
+$lang['Non_member_groups'] = 'Non-member groups';
+$lang['Memberships_pending'] = 'Memberships pending';
 
-$lang['User_status'] = 'User is active';
-$lang['User_allowpm'] = 'Can send Private Messages';
-$lang['User_allowavatar'] = 'Can display avatar';
+$lang['No_groups_exist'] = 'No Groups Exist';
+$lang['Group_not_exist'] = 'That user group does not exist';
 
-$lang['Admin_avatar_explain'] = 'Here you can see and delete the user\'s current avatar.';
+$lang['Join_group'] = 'Join Group';
+$lang['No_group_members'] = 'This group has no members';
+$lang['Group_hidden_members'] = 'This group is hidden; you cannot view its membership';
+$lang['No_pending_group_members'] = 'This group has no pending members';
+$lang['Group_joined'] = 'You have successfully subscribed to this group.<br />You will be notified when your subscription is approved by the group moderator.';
+$lang['Group_request'] = 'A request to join your group has been made.';
+$lang['Group_approved'] = 'Your request has been approved.';
+$lang['Group_added'] = 'You have been added to this usergroup.';
+$lang['Already_member_group'] = 'You are already a member of this group';
+$lang['User_is_member_group'] = 'User is already a member of this group';
+$lang['Group_type_updated'] = 'Successfully updated group type.';
 
-$lang['User_special'] = 'Special admin-only fields';
-$lang['User_special_explain'] = 'These fields are not able to be modified by the users.  Here you can set their status and other options that are not given to users.';
+$lang['Could_not_add_user'] = 'The user you selected does not exist.';
+$lang['Could_not_anon_user'] = 'You cannot make Anonymous a group member.';
 
+$lang['Confirm_unsub'] = 'Are you sure you want to unsubscribe from this group?';
+$lang['Confirm_unsub_pending'] = 'Your subscription to this group has not yet been approved; are you sure you want to unsubscribe?';
 
-//
-// Group Management
-//
-$lang['Group_administration'] = 'Group Administration';
-$lang['Group_admin_explain'] = 'From this panel you can administer all your usergroups. You can delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description';
-$lang['Error_updating_groups'] = 'There was an error while updating the groups';
-$lang['Updated_group'] = 'The group was successfully updated';
-$lang['Added_new_group'] = 'The new group was successfully created';
-$lang['Deleted_group'] = 'The group was successfully deleted';
-$lang['New_group'] = 'Create new group';
-$lang['Edit_group'] = 'Edit group';
-$lang['group_name'] = 'Group name';
-$lang['group_description'] = 'Group description';
-$lang['group_moderator'] = 'Group moderator';
-$lang['group_status'] = 'Group status';
-$lang['group_open'] = 'Open group';
-$lang['group_closed'] = 'Closed group';
-$lang['group_hidden'] = 'Hidden group';
-$lang['group_delete'] = 'Delete group';
-$lang['group_delete_check'] = 'Delete this group';
-$lang['submit_group_changes'] = 'Submit Changes';
-$lang['reset_group_changes'] = 'Reset Changes';
-$lang['No_group_name'] = 'You must specify a name for this group';
-$lang['No_group_moderator'] = 'You must specify a moderator for this group';
-$lang['No_group_mode'] = 'You must specify a mode for this group, open or closed';
-$lang['No_group_action'] = 'No action was specified';
-$lang['delete_group_moderator'] = 'Delete the old group moderator?';
-$lang['delete_moderator_explain'] = 'If you\'re changing the group moderator, check this box to remove the old moderator from the group.  Otherwise, do not check it, and the user will become a regular member of the group.';
-$lang['Click_return_groupsadmin'] = 'Click %sHere%s to return to Group Administration.';
-$lang['Select_group'] = 'Select a group';
-$lang['Look_up_group'] = 'Look up group';
+$lang['Unsub_success'] = 'You have been un-subscribed from this group.';
 
+$lang['Approve_selected'] = 'Approve Selected';
+$lang['Deny_selected'] = 'Deny Selected';
+$lang['Not_logged_in'] = 'You must be logged in to join a group.';
+$lang['Remove_selected'] = 'Remove Selected';
+$lang['Add_member'] = 'Add Member';
+$lang['Not_group_moderator'] = 'You are not this group\'s moderator, therefore you cannot perform that action.';
+
+$lang['Login_to_join'] = 'Log in to join or manage group memberships';
+$lang['This_open_group'] = 'This is an open group: click to request membership';
+$lang['This_closed_group'] = 'This is a closed group: no more users accepted';
+$lang['This_hidden_group'] = 'This is a hidden group: automatic user addition is not allowed';
+$lang['Member_this_group'] = 'You are a member of this group';
+$lang['Pending_this_group'] = 'Your membership of this group is pending';
+$lang['Are_group_moderator'] = 'You are the group moderator';
+$lang['None'] = 'None';
+
+$lang['Subscribe'] = 'Subscribe';
+$lang['Unsubscribe'] = 'Unsubscribe';
+$lang['View_Information'] = 'View Information';
 
 //
 // Prune Administration
@@ -530,9 +539,9 @@ $lang['Confirm_delete_word'] = 'Are you sure you want to delete this word censor
 // Mass Email
 //
 $lang['Mass_email_explain'] = 'Here you can email a message to either all of your users or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time and you will be notified when the script has completed';
-$lang['Compose'] = 'Compose'; 
+$lang['Compose'] = 'Compose';
 
-$lang['Recipients'] = 'Recipients'; 
+$lang['Recipients'] = 'Recipients';
 $lang['All_users'] = 'All Users';
 
 $lang['Email_successfull'] = 'Your message has been sent';
@@ -574,7 +583,7 @@ $lang['Disallow_explain'] = 'Here you can control usernames which will not be al
 
 $lang['Delete_disallow'] = 'Delete';
 $lang['Delete_disallow_title'] = 'Remove a Disallowed Username';
-$lang['Delete_disallow_explain'] = 'You can remove a disallowed username by selecting the username from this list and clicking delete';
+$lang['Delete_disallow_explain'] = 'You can remove a disallowed username by selecting the username from this list and clicking submit';
 
 $lang['Add_disallow'] = 'Add';
 $lang['Add_disallow_title'] = 'Add a disallowed username';

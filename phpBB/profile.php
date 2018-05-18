@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: profile.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -20,10 +20,13 @@
  *
  ***************************************************************************/
 
+define("IN_PROFILE", true);
+define("IN_UCP", true);
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
+include_once($phpbb_root_path . 'common.'.$phpEx);
 
 //
 // Start session management
@@ -35,9 +38,9 @@ init_userprefs($userdata);
 //
 
 // session id check
-if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+if (!empty($_POST['sid']) || !empty($_GET['sid']))
 {
-	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
 }
 else
 {
@@ -58,11 +61,14 @@ $server_url = $server_protocol . $server_name . $server_port . $script_name;
 // -----------------------
 // Page specific functions
 //
-function gen_rand_string($hash)
+if (!function_exists('gen_rand_string'))
 {
-	$rand_str = dss_rand();
+	function gen_rand_string($hash)
+	{
+		$rand_str = dss_rand();
 
-	return ( $hash ) ? md5($rand_str) : substr($rand_str, 0, 8);
+		return ( $hash ) ? md5($rand_str) : substr($rand_str, 0, 8);
+	}
 }
 //
 // End page specific functions
@@ -71,14 +77,14 @@ function gen_rand_string($hash)
 //
 // Start of program proper
 //
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if ( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 	$mode = htmlspecialchars($mode);
 
 	if ( $mode == 'viewprofile' )
 	{
-		include($phpbb_root_path . 'includes/usercp_viewprofile.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_viewprofile.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'editprofile' || $mode == 'register' )
@@ -88,7 +94,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			redirect(append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
 
-		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'confirm' )
@@ -99,22 +105,22 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 			exit;
 		}
 
-		include($phpbb_root_path . 'includes/usercp_confirm.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_confirm.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'sendpassword' )
 	{
-		include($phpbb_root_path . 'includes/usercp_sendpasswd.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_sendpasswd.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'activate' )
 	{
-		include($phpbb_root_path . 'includes/usercp_activate.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_activate.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'email' )
 	{
-		include($phpbb_root_path . 'includes/usercp_email.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/usercp_email.'.$phpEx);
 		exit;
 	}
 }

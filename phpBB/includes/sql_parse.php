@@ -6,7 +6,7 @@
 *     copyright            : (C) 2001 The phpBB Group
 *     email                : support@phpbb.com
 *
-*     $Id$
+*     $Id: sql_parse.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
 *
 ****************************************************************************/
 
@@ -63,38 +63,13 @@ function remove_comments(&$output)
 	return $output;
 }
 
-//
-// remove_remarks will strip the sql comment lines out of an uploaded sql file
-//
-function remove_remarks($sql)
+/**
+* remove_remarks will strip the sql comment lines out of an uploaded sql file
+*/
+function remove_remarks(&$sql)
 {
-	$lines = explode("\n", $sql);
-	
-	// try to keep mem. use down
-	$sql = "";
-	
-	$linecount = count($lines);
-	$output = "";
-
-	for ($i = 0; $i < $linecount; $i++)
-	{
-		if (($i != ($linecount - 1)) || (strlen($lines[$i]) > 0))
-		{
-			if ($lines[$i][0] != "#")
-			{
-				$output .= $lines[$i] . "\n";
-			}
-			else
-			{
-				$output .= "\n";
-			}
-			// Trading a bit of speed for lower mem. use here.
-			$lines[$i] = "";
-		}
-	}
-	
-	return $output;
-	
+	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+	return $sql; 	
 }
 
 //

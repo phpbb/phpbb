@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: usercp_viewprofile.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -27,11 +27,11 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == ANONYMOUS )
+if ( empty($_GET[POST_USERS_URL]) || $_GET[POST_USERS_URL] == ANONYMOUS )
 {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
-$profiledata = get_userdata($HTTP_GET_VARS[POST_USERS_URL]);
+$profiledata = get_userdata($_GET[POST_USERS_URL]);
 
 if (!$profiledata)
 {

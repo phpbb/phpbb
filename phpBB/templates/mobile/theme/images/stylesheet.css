@@ -1,0 +1,206 @@
+/* BBCode Buttons */
+.bbimages:hover {
+	background-color: #ff5500;
+}
+
+/* Various */
+abbr, acronym {
+	border-bottom: 1px dotted #333333;
+	cursor: help;
+}
+
+.forum_rules { font-size: 10px; color: #ff0000; font-weight: bold; }
+
+b.date-today, .last-post b { color: #dd2222; font-weight: bold; }
+b.date-yesterday, .last-post em { color: #22cc33; font-weight: bold; font-style: italic; }
+
+/* MG BOXES */
+.bbcb_mg_codetitle, .post-text .mg_codetitle {
+	color: #ffffaa;
+	background: #559977 url('bbc_code.gif') no-repeat right;
+	border: 1px solid #dddddd;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: left;
+	padding: 5px;
+	width: 90%;
+	margin-top: 10px;
+}
+
+.bbcb_mg_codediv, .post-text .mg_codediv {
+	color: #006600;
+	background: #fafafa;
+	border: 1px solid #dddddd;
+	border-top: 0;
+	font-family: "Courier New", Courier, sans-serif;
+	font-size: 12px;
+	text-align: left;
+	padding: 5px;
+	overflow: auto;
+	width: 90%;
+	/* height: 100px; */
+}
+
+.bbcb_mg_quotetitle, .post-text .mg_quotetitle {
+	color: #446688;
+	background: #aaccff url('bbc_quote.gif') no-repeat right;
+	border: 1px solid #dddddd;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: left;
+	padding: 5px;
+	width: 90%;
+	margin-top: 10px;
+}
+
+.bbcb_mg_attachtitle, .post-text .mg_attachtitle {
+	color: #ffdd99;
+	background: #ff9933 url('bbc_zip.gif') no-repeat right;
+	border: 1px solid #dddddd;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: left;
+	padding: 5px;
+	width: 90%;
+	margin-top: 10px;
+}
+
+.bbcb_mg_quotediv, .post-text .mg_quotediv, .bbcb_mg_attachdiv, .post-text .mg_attachdiv {
+	color: #666666;
+	background: #fafafa;
+	border: 1px solid #dddddd;
+	border-top: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	text-align: left;
+	padding: 5px;
+	width: 90%;
+	overflow: auto;
+	direction: ltr;
+	/* max-height: 200px; */
+}
+
+.post-text .mg_codetitle, .post-text .mg_codediv, .post-text .mg_quotetitle, .post-text .mg_quotediv, .post-text .mg_attachtitle, .post-text .mg_attachdiv {
+	display: block;
+}
+
+.bbcb_mg_spoiler, .post-text .spoiler, .post-text .spoiler_trans {
+	background-color: #fafafa;
+	border: 1px solid #ff5500;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	line-height: 125%;
+	margin: 5px 20px;
+	padding: 5px;
+}
+
+.spoiler .code-header {
+	background-color: #fafafa !important;
+}
+
+.post-text .spoiler {
+	display: block;
+	/*overflow: hidden;*/
+	overflow: auto;
+	color: #666666;
+}
+
+.post-text .spoiler_trans {
+	display: block;
+	/*overflow: hidden;*/
+	overflow: auto;
+	color: #fafafa;
+	width: auto;
+}
+
+/* MG COLORS CLASSES */
+.topic_glo,
+a.topic_glo,
+a.topic_glo:link,
+a.topic_glo:active,
+a.topic_glo:visited { color: #ff5500; font-weight: bold; }
+
+a.topic_glo:hover { color: #cc3333; text-decoration: underline; }
+
+.topic_ann,
+a.topic_ann,
+a.topic_ann:link,
+a.topic_ann:active,
+a.topic_ann:visited { color: #dd2222; font-weight: bold; }
+
+a.topic_ann:hover { color: #cc3333; text-decoration: underline; }
+
+.topic_imp,
+a.topic_imp,
+a.topic_imp:link,
+a.topic_imp:active,
+a.topic_imp:visited { color: #228844; font-weight: bold; }
+
+a.topic_imp:hover { color: #cc3333; text-decoration: underline; }
+
+.topic_nor,
+a.topic_nor,
+a.topic_nor:link,
+a.topic_nor:active,
+a.topic_nor:visited { color: #224488; font-weight: bold; }
+
+a.topic_nor:hover { color: #cc3333; text-decoration: underline; }
+
+/* Dropdown & OnClick Menus */
+#dropmenudiv {
+	position: absolute;
+	border: 1px solid #113355;
+	border-bottom-width: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	line-height: 18px;
+	z-index: 100;
+}
+
+#dropmenudiv a {
+	width: 100%;
+	display: block;
+	text-indent: 3px;
+	border-bottom: 1px solid #113355;
+	padding: 1px 0;
+	text-decoration: none;
+}
+
+#dropmenudiv a:hover {
+	width: 100%;
+	display: block;
+	text-indent: 3px;
+	border-bottom: 1px solid #113355;
+	padding: 1px 0;
+	text-decoration: none;
+}
+
+#dropmenudiv a:hover { /*hover background color*/
+	background: #f0f0f0 url('white/bg_row_hover.gif') bottom right no-repeat;
+}
+
+/* UPI2DB */
+.upi2db_unread_color {
+	padding: 2px;
+	background-color: #ffdddd;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ff0000;
+}
+
+.upi2db_edit_color {
+	padding: 2px;
+	background-color: #ffffdd;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ffff00;
+}
+
+.upi2db_mark_color {
+	padding: 2px;
+	background-color: #ddffdd;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #33cc33;
+}
+

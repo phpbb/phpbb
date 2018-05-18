@@ -1,0 +1,164 @@
+<!-- IF S_IN_SEARCH_POPUP -->
+	<!-- INCLUDE simple_header.html -->
+	<!-- INCLUDE memberlist_search.html -->
+	<form method="post" id="results" action="{S_MODE_ACTION}" onsubmit="insert_marked_users('#results', this.user); return false;" data-form-name="{S_FORM_NAME}" data-field-name="{S_FIELD_NAME}">
+
+<!-- ELSE -->
+	<!-- INCLUDE overall_header.html -->
+	<div class="panel" id="memberlist_search"<!-- IF not S_SEARCH_USER --> style="display: none;"<!-- ENDIF -->>
+	<!-- INCLUDE memberlist_search.html -->
+	</div>
+	<form method="post" action="{S_MODE_ACTION}">
+
+<!-- ENDIF -->
+
+	<!-- IF S_SHOW_GROUP -->
+		<h2 class="group-title"<!-- IF GROUP_COLOR --> style="color:#{GROUP_COLOR};"<!-- ENDIF -->>{GROUP_NAME}</h2>
+		<!-- IF U_MANAGE -->
+			<p class="right responsive-center manage rightside"><a href="{U_MANAGE}">{L_MANAGE_GROUP}</a></p>
+		<!-- ENDIF -->
+		<p>{GROUP_DESC} {GROUP_TYPE}</p>
+
+		<p>
+			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
+			<!-- IF RANK_IMG -->{RANK_IMG}<!-- ENDIF -->
+			<!-- IF GROUP_RANK -->{GROUP_RANK}<!-- ENDIF -->
+		</p>
+	<!-- ELSE -->
+		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
+
+		<div class="action-bar top">
+			<div class="member-search panel">
+				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}" id="member_search" data-alt-text="{LA_HIDE_MEMBER_SEARCH}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}" id="member_search" data-alt-text="{LA_FIND_USERNAME}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
+				<strong>
+				<!-- BEGIN first_char -->
+					<a href="{first_char.U_SORT}">{first_char.DESC}</a>&nbsp;
+				<!-- END first_char -->
+				</strong>
+			</div>
+		
+			<div class="pagination">
+				{TOTAL_USERS}
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF S_LEADERS_SET or not S_SHOW_GROUP or not .memberrow -->
+	<div class="forumbg forumbg-table">
+		<div class="inner">
+
+		<table class="table1" id="memberlist">
+		<thead>
+		<tr>
+			<th class="name" data-dfn="{L_RANK}{L_COMMA_SEPARATOR}<!-- IF S_SHOW_GROUP and .memberrow -->{L_GROUP_LEADER}<!-- ELSE -->{L_USERNAME}<!-- ENDIF -->"><span class="rank-img"><a href="{U_SORT_RANK}">{L_RANK}</a></span><a href="{U_SORT_USERNAME}"><!-- IF S_SHOW_GROUP and .memberrow -->{L_GROUP_LEADER}<!-- ELSE -->{L_USERNAME}<!-- ENDIF --></a></th>
+			<th class="posts"><a href="{U_SORT_POSTS}#memberlist">{L_POSTS}</a></th>
+			<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
+			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
+			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+		</tr>
+		</thead>
+		<tbody>
+	<!-- ENDIF -->
+		<!-- BEGIN memberrow -->
+			<!-- IF S_SHOW_GROUP -->
+				<!-- IF not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
+				<!-- IF S_LEADERS_SET and memberrow.S_FIRST_ROW -->
+				<tr class="bg1">
+					<td colspan="<!-- IF U_SORT_ACTIVE -->5<!-- ELSE -->4<!-- ENDIF -->">&nbsp;</td>
+				</tr>
+				<!-- ENDIF -->
+<!-- IF S_LEADERS_SET -->
+		</tbody>
+		</table>
+
+	</div>
+</div>
+<!-- ENDIF -->
+<div class="forumbg forumbg-table">
+	<div class="inner">
+
+	<table class="table1">
+	<thead>
+	<tr>
+	<!-- IF not S_LEADERS_SET -->
+		<th class="name" data-dfn="{L_RANK}{L_COMMA_SEPARATOR}{L_USERNAME}"><span class="rank-img"><a href="{U_SORT_RANK}">{L_RANK}</a></span><a href="{U_SORT_USERNAME}"><!-- IF S_SHOW_GROUP -->{L_GROUP_MEMBERS}<!-- ELSE -->{L_USERNAME}<!-- ENDIF --></a></th>
+			<th class="posts"><a href="{U_SORT_POSTS}#memberlist">{L_POSTS}</a></th>
+			<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
+			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
+			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+	<!-- ELSEIF S_SHOW_GROUP -->
+		<th class="name">{L_GROUP_MEMBERS}</th>
+		<th class="posts">{L_POSTS}</th>
+		<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
+		<th class="joined">{L_JOINED}</th>
+		<!-- IF U_SORT_ACTIVE --><th class="active">{L_LAST_ACTIVE}</th><!-- ENDIF -->
+	<!-- ENDIF -->
+	</tr>
+	</thead>
+	<tbody>
+					<!-- DEFINE $S_MEMBER_HEADER = 1 -->
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+
+	<tr class="<!-- IF memberrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF memberrow.S_INACTIVE --> inactive<!-- ENDIF -->">
+		<td><span class="rank-img"><!-- EVENT memberlist_body_rank_prepend --><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --><!-- EVENT memberlist_body_rank_append --></span><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input type="checkbox" name="user" value="{memberrow.USERNAME}" /> <!-- ENDIF --><!-- EVENT memberlist_body_username_prepend -->{memberrow.USERNAME_FULL}<!-- IF memberrow.S_INACTIVE --> ({L_INACTIVE})<!-- ENDIF --><!-- EVENT memberlist_body_username_append --><!-- IF S_IN_SEARCH_POPUP --><br />[&nbsp;<a href="#" onclick="insert_single_user('#results', '{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
+		<td class="posts"><!-- IF memberrow.POSTS and S_DISPLAY_SEARCH --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
+		<td class="info"><!-- BEGIN custom_fields --><div>{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td>
+		<td>{memberrow.JOINED}</td>
+		<!-- IF S_VIEWONLINE --><td>{memberrow.LAST_ACTIVE}&nbsp;</td><!-- ENDIF -->
+	</tr>
+		<!-- BEGINELSE -->
+	<tr class="bg1">
+		<td colspan="<!-- IF S_VIEWONLINE -->5<!-- ELSE -->4<!-- ENDIF -->">{L_NO_MEMBERS}</td>
+	</tr>
+		<!-- END memberrow -->
+	</tbody>
+	</table>
+
+	</div>
+</div>
+
+<!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE -->
+<fieldset class="display-actions">
+	<input type="submit" name="submit" value="{L_SELECT_MARKED}" class="button2" />
+	<div><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></div>
+</fieldset>
+<!-- ENDIF -->
+
+<!-- IF S_IN_SEARCH_POPUP -->
+</form>
+<form method="post" id="sort-results" action="{S_MODE_ACTION}">
+<!-- ENDIF -->
+
+<!-- IF S_IN_SEARCH_POPUP and not S_SEARCH_USER -->
+<fieldset class="display-options">
+	<label for="sk">{L_SELECT_SORT_METHOD}{L_COLON} <select name="sk" id="sk">{S_MODE_SELECT}</select></label>
+	<label for="sd">{L_ORDER} <select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
+	<input type="submit" name="sort" value="{L_SUBMIT}" class="button2" />
+</fieldset>
+<!-- ENDIF -->
+
+</form>
+
+<div class="action-bar bottom">
+	<div class="pagination">
+		{TOTAL_USERS}
+		<!-- IF .pagination --> 
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE --> 
+			 &bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- IF S_IN_SEARCH_POPUP -->
+	<!-- INCLUDE simple_footer.html -->
+<!-- ELSE -->
+	<!-- INCLUDE jumpbox.html -->
+	<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

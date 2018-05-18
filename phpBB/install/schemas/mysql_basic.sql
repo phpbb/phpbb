@@ -1,7 +1,7 @@
 #
 # Basic DB data for phpBB2 devel
 #
-# $Id$
+# $Id: mysql_basic.sql,v 1.1 2010/10/10 15:10:39 orynider Exp $
 
 # -- Config
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('config_id','1');
@@ -68,7 +68,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.myserver.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.23');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.24-a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('rand_seed', '0');
 
 

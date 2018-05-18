@@ -1,0 +1,67 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<p></p>
+<form action="{S_LOGIN_ACTION}" method="post" id="login">
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+	<div class="content">
+		<h2>{L_LOGIN}</h2>
+		
+		<fieldset class="fields1">
+		<dl>
+			<dt><label for="username">{L_USERNAME}:</label></dt>
+			<dd><input type="text" tabindex="1" name="username" id="username" size="25" maxlength="40" value="{USERNAME}" class="inputbox autowidth" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="password">{L_PASSWORD}:</label></dt>
+			<dd><input type="password" tabindex="2" id="password" name="password" size="25" maxlength="25" class="inputbox autowidth" /></dd>
+			<dd><a href="{U_SEND_PASSWORD}">{L_SEND_PASSWORD}</a></dd>
+		</dl>
+		<dl>
+			<dd><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" class="checkbox" /> {L_LOG_ME_IN}</label></dd>
+		</dl>
+		<dl>
+			<dt>&nbsp;</dt>
+			<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" /></dd>
+		</dl>
+		</fieldset>
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>
+{JUMPBOX}
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

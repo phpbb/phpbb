@@ -1,0 +1,35 @@
+<!-- IF S_AJAX_REQUEST -->
+	<form action="{S_CONFIRM_ACTION}" method="post">
+		<h3>{MESSAGE_TITLE}</h3>
+		<p>{MESSAGE_TEXT}</p>
+
+		<fieldset class="submit-buttons">
+			<input type="button" name="confirm" value="{L_YES}" class="button2" />&nbsp;
+			<input type="button" name="cancel" value="{L_NO}" class="button2" />
+		</fieldset>
+	</form>
+
+<!-- ELSE -->
+
+<!-- INCLUDE overall_header.html -->
+
+<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+<div class="panel">
+	<div class="inner">
+
+	<h2 class="message-title">{MESSAGE_TITLE}</h2>
+	<p>{MESSAGE_TEXT}</p>
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}
+		<input type="submit" name="confirm" value="{L_YES}" class="button2" />&nbsp;
+		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+	</fieldset>
+
+	</div>
+</div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
+
+<!-- ENDIF -->

@@ -1,0 +1,2081 @@
+##############################################################
+## MOD Title: Simple Subforums MOD
+## MOD Author: pentapenguin < n/a > (Jeremy Conley) http://www.pentapenguin.com
+## MOD Author: CyberAlien <n/a> (Vjacheslav Trushkin) http://www.phpbbstyles.com
+## MOD Description: This MOD is a simple subforums MOD that doesn't include any extras and makes only
+## one small database change. It supports only one level deep subforums that should be enough for most forums.
+##
+## MOD Version: 1.0.2
+##
+## Installation Level: Intermediate
+## Installation Time: 30 Minutes
+##
+## Files To Edit: 20
+## admin/admin_forumauth.php
+## admin/admin_forums.php
+## includes/functions.php
+## includes/functions_admin.php
+## language/lang_english/lang_main.php
+## templates/subSilver/admin/forum_admin_body.tpl
+## templates/subSilver/index_body.tpl
+## templates/subSilver/modcp_body.tpl
+## templates/subSilver/modcp_split.tpl
+## templates/subSilver/overall_header.tpl
+## templates/subSilver/posting_body.tpl
+## templates/subSilver/subSilver.cfg
+## templates/subSilver/viewforum_body.tpl
+## templates/subSilver/viewtopic_body.tpl
+## index.php
+## modcp.php
+## posting.php
+## search.php
+## viewforum.php
+## viewtopic.php
+##
+## Included Files: 3
+## contrib/admin/xs_simple_subforums.cfg
+## templates/subSilver/images/folders_big.gif
+## templates/subSilver/images/folders_new_big.gif
+##
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes:
+##
+## Please remember that this MOD requires the eXtreme Styles MOD.
+## See the DIY INSTRUCTIONS below for download links.
+##
+## Instructions for use: to create a subforum, simply go to your admin panel->Forum Admin->Management.
+## From there, click on the "Edit" link next to a forum, and select the parent (main) forum from the 
+## "Category / Forum" dropdown box.
+##
+## This MOD includes a built-in update checker.
+## To access the update checker, go to your admin panel->eXtreme Styles->Styles Management->Check for Updates
+##
+## To run the required SQL updates please see this article in the phpBB.com knowledge base: 
+## http://www.phpbb.com/kb/article.php?article_id=264
+## Or use the SQL Generator Tool available here: http://www.phpbbstyles.com/sql.php
+##
+## This MOD is EasyMOD friendly! (http://area51.phpbb.com/phpBB/viewforum.php?f=17)
+##
+## For additional language and style downloads, please visit http://www.pentapenguin.com/forum/viewtopic.php?t=1416
+##
+## Thanks go out to CyberAlien for originally developing this MOD! :-)
+##
+## To update to version 1.0.1, please see the update/update_from_1.0.0_to_1.0.1.txt file.
+## To update to version 1.0.2, please see the update/update_from_1.0.1_to_1.0.2.txt file.
+##############################################################
+## MOD History:
+##
+##	2006-08-27 - Version 1.0.2
+##		- Updated MOD to be compatible with phpBB 2.0.21
+##		- Added MODX installation file
+##		- Fixed small bug in admin/admin_forums.php
+##
+##	2005-12-11 - Version 1.0.1
+##		- Fixed security bug
+##	
+##	2005-10-30 - Version 1.0.0
+##		- Initial Release
+##
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
+##############################################################
+
+
+#
+#-----[ DIY INSTRUCTIONS ]------------------------------------------
+#
+This MOD requires the eXtreme Styles MOD.
+You *must* install the eXtreme Styles MOD which is available at these locations:
+http://www.phpbbstyles.com/viewtopic.php?t=356
+http://www.phpbb.com/phpBB/viewtopic.php?t=125251
+
+
+#
+#-----[ SQL ]------------------------------------------
+#
+ALTER TABLE phpbb_forums ADD forum_parent INT NOT NULL DEFAULT '0';
+
+
+#
+#-----[ COPY ]------------------------------------------
+#
+copy root/admin/xs_simple_subforums.cfg to admin/xs_simple_subforums.cfg
+copy root/templates/subSilver/images/folders_big.gif to templates/subSilver/images/folders_big.gif
+copy root/templates/subSilver/images/folders_new_big.gif to templates/subSilver/images/folders_new_big.gif
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+admin/admin_forumauth.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	for($i = 0; $i < count($forum_rows); $i++)
+	{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+		// Begin Simple Subforums MOD
+		if( !$forum_rows[$i]['forum_parent'] )
+		{
+		// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		$select_list .= '<option value="' . $forum_rows[$i]['forum_id'] . '">' . $forum_rows[$i]['forum_name'] . '</option>';
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+		// Begin Simple Subforums MOD
+			$parent_id = $forum_rows[$i]['forum_id'];
+			for( $j = 0; $j < count($forum_rows); $j++ )
+			{
+				if( $forum_rows[$j]['forum_parent'] == $parent_id )
+				{
+					$select_list .= '<option value="' . $forum_rows[$j]['forum_id'] . '">-- ' . $forum_rows[$j]['forum_name'] . '</option>';
+				}
+			}
+		}
+		// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+admin/admin_forums.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	return($catlist);
+}
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+function get_list_cat($id, $parent, $forum_id)
+{
+	global $db;
+
+	// Get categories
+	$sql = 'SELECT * FROM ' . CATEGORIES_TABLE . ' ORDER BY cat_order ASC';
+	
+	if( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get list of categories", '', __LINE__, __FILE__, $sql);
+	}
+	
+	$cat_list = array();
+	
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$cat_list[] = $row;
+	}
+
+	$db->sql_freeresult($result);
+
+	// Get all forums and check if forum has subforums
+	$has_sub = false;
+	$sql = 'SELECT forum_id, cat_id, forum_name, forum_parent FROM ' . FORUMS_TABLE . ' ORDER BY forum_order ASC';
+	
+	if( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, "Couldn't get list of forums", '', __LINE__, __FILE__, $sql);
+	}
+	
+	$forums_list = array();
+	
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		if( $row['forum_parent'] > 0 && $row['forum_parent'] == $forum_id )
+		{
+			$has_sub = true;
+		}
+		
+		if( !$row['forum_parent'] )
+		{
+			$forums_list[] = $row;
+		}
+	}
+	$db->sql_freeresult($result);
+
+	// Generate select
+	for( $i = 0; $i < count($cat_list); $i++ )
+	{
+		$cat_id = $cat_list[$i]['cat_id'];
+		$selected = ( $id == $cat_id && $parent == 0 ) ? ' selected="selected"' : '';
+		$str .= '<option value="' . $cat_id . '"' . $selected . '>' . $cat_list[$i]['cat_title'] . '</option>';
+		
+		if( !$has_sub )
+		{
+			for( $j = 0; $j < count($forums_list); $j++)
+			{
+				if( $forums_list[$j]['cat_id'] == $cat_id && $forums_list[$j]['forum_id'] != $forum_id )
+				{
+					$forum_id2 = $forums_list[$j]['forum_id'];
+					$selected = ( $id == $cat_id && $parent == $forum_id2 ) ? ' selected="selected"' : '';
+					$str .= '<option value="' . $cat_id . ',' . $forum_id2 . '"' . $selected . '>- ' . $forums_list[$j]['forum_name'] . '</option>';
+				}
+			}
+		}
+	}
+	return $str;
+}
+// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				$cat_id = $row['cat_id'];
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+				// Begin Simple Subforums MOD
+				$parent_id = $row['forum_parent'];
+				// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				$forum_id = ''; 
+				$prune_enabled = '';
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+				// Begin Simple Subforums MOD
+				$parent_id = 0;
+				// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$catlist = get_list('category', $cat_id, TRUE);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			$catlist = get_list_cat($cat_id, $parent_id, $forum_id);
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				'L_CATEGORY' => $lang['Category'], 
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$lang['Category']
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . ' / ' . $lang['Forum']
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "INSERT INTO " . FORUMS_TABLE . " (forum_id, forum_name, cat_id, forum_desc, forum_order, forum_status, prune_enable" . $field_sql . ")
+				VALUES ('" . $next_id . "', '" . str_replace("\'", "''", $HTTP_POST_VARS['forumname']) . "', " . intval($HTTP_POST_VARS[POST_CAT_URL]) . ", '" . str_replace("\'", "''", $HTTP_POST_VARS['forumdesc']) . "', $next_order, " . intval($HTTP_POST_VARS['forumstatus']) . ", " . intval($HTTP_POST_VARS['prune_enable']) . $value_sql . ")";
+
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			$list = explode(',', $HTTP_POST_VARS[POST_CAT_URL]);
+			$new_cat = ( count($list) ) ? intval($list[0]) : intval($HTTP_POST_VARS[POST_CAT_URL]);
+			$new_parent = ( isset($list[1]) ) ? intval($list[1]) : 0;
+			// End Simple Subforums MOD
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+# We're still in the FIND command above: $sql = "INSERT INTO " . FORUMS_TABLE . " [snip]....
+#
+cat_id,
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ forum_parent,
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+intval($HTTP_POST_VARS[POST_CAT_URL])
+
+
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+$new_cat . ', ' . $new_parent
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		case 'modforum':
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			$forum_id = intval($HTTP_POST_VARS[POST_FORUM_URL]);
+			$row = get_info('forum', $forum_id);
+			$list = explode(',', $HTTP_POST_VARS[POST_CAT_URL]);
+			$new_cat = ( count($list) ) ? intval($list[0]) : intval($HTTP_POST_VARS[POST_CAT_URL]);
+			$new_parent = ( isset($list[1]) ) ? intval($list[1]) : 0;
+			
+			if( !$row['forum_parent'] && $row['cat_id'] !== $new_cat )
+			{
+				// Move subforums to new category
+				$sql = "UPDATE " . FORUMS_TABLE . " SET cat_id='$new_cat' WHERE forum_parent='$forum_id'";
+				$db->sql_query($sql);
+			}
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "UPDATE " . FORUMS_TABLE . "
+				SET forum_name = '" . str_replace("\'", "''", $HTTP_POST_VARS['forumname']) . "',
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+" . intval($HTTP_POST_VARS[POST_CAT_URL]) . "
+
+
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+$new_cat, forum_parent = $new_parent
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "DELETE FROM " . FORUMS_TABLE . "
+				WHERE forum_id = $from_id";
+			if( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't delete forum", "", __LINE__, __FILE__, $sql);
+			}
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			// Move subforums to category
+			$sql = "UPDATE " . FORUMS_TABLE . " SET forum_parent = '0' WHERE forum_parent = '$from_id'";
+			$db->sql_query($sql);
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$cat_id = $forum_info['cat_id'];
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			if( !$forum_info['forum_parent'] )
+			{
+				// Find previous/next forum
+				if( $move > 0 )
+				{
+					$sql = "SELECT forum_id, forum_order FROM " . FORUMS_TABLE . " WHERE cat_id = '$cat_id' AND forum_parent = '0' AND forum_order > '" . $forum_info['forum_order'] . "' ORDER BY forum_order ASC";
+				}
+				
+				else
+				{
+					$sql = "SELECT forum_id, forum_order FROM " . FORUMS_TABLE . " WHERE cat_id = '$cat_id' AND forum_parent = '0' AND forum_order < '" . $forum_info['forum_order'] . "' ORDER BY forum_order DESC";
+				}
+				
+				if( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, "Couldn't change category order", '', __LINE__, __FILE__, $sql);
+				}
+				
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+				if($row !== false)
+				{
+					// Swap forum orders
+					$sql = "UPDATE " . FORUMS_TABLE . " SET forum_order = '" . $row['forum_order'] . "' WHERE forum_id = '$forum_id'";
+					$db->sql_query($sql);
+					
+					$sql = "UPDATE " . FORUMS_TABLE . " SET forum_order = '" . $forum_info['forum_order'] . "' WHERE forum_id = " . $row['forum_id'];
+					$db->sql_query($sql);
+				}
+			}
+			
+			else
+			{
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				renumber_order('forum', $forum_info['cat_id']);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			}
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			if ($forum_rows[$j]['cat_id'] == $cat_id)
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$cat_id
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ && $forum_rows[$j]['forum_parent'] == 0
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+					'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id"))
+				);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+				// Begin Simple Subforums MOD
+				for( $k = 0; $k < $total_forums; $k++ )
+				{
+					$forum_id2 = $forum_rows[$k]['forum_id'];
+					if ( $forum_rows[$k]['forum_parent'] == $forum_id )
+					{
+						$template->assign_block_vars("catrow.forumrow",	array(
+							'FORUM_NAME' => $forum_rows[$k]['forum_name'],
+							'FORUM_DESC' => $forum_rows[$k]['forum_desc'],
+							'ROW_COLOR' => $row_color,
+							'NUM_TOPICS' => $forum_rows[$k]['forum_topics'],
+							'NUM_POSTS' => $forum_rows[$k]['forum_posts'],
+							'STYLE' => ' style="padding-left: 20px;" ',
+	
+							'U_VIEWFORUM' => append_sid($phpbb_root_path."viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id2"),
+							'U_FORUM_EDIT' => append_sid("admin_forums.$phpEx?mode=editforum&amp;" . POST_FORUM_URL . "=$forum_id2"),
+							'U_FORUM_DELETE' => append_sid("admin_forums.$phpEx?mode=deleteforum&amp;" . POST_FORUM_URL . "=$forum_id2"),
+							'U_FORUM_MOVE_UP' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=-15&amp;" . POST_FORUM_URL . "=$forum_id2"),
+							'U_FORUM_MOVE_DOWN' => append_sid("admin_forums.$phpEx?mode=forum_order&amp;move=15&amp;" . POST_FORUM_URL . "=$forum_id2"),
+							'U_FORUM_RESYNC' => append_sid("admin_forums.$phpEx?mode=forum_sync&amp;" . POST_FORUM_URL . "=$forum_id2"))
+						);
+
+					}
+					
+				} // for ... forums
+				// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+includes/functions.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+function make_jumpbox($action, $match_forum_id = 0)
+{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	$list = array();
+	return make_jumpbox_ref($action, $match_forum_id, $list);
+}
+
+function make_jumpbox_ref($action, $match_forum_id, &$forums_list)
+{
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$forum_rows[] = $row;
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+			// Begin Simple Subforums MOD
+			$forums_list[] = $row;
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$j]['auth_view'] <= AUTH_REG )
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+if (
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ !$forum_rows[$j]['forum_parent'] && 
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+//					if ( $forum_rows[$j]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$j]['forum_id']]['auth_view'] )
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+if (
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ !$forum_rows[$j]['forum_parent'] && 
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+						$selected = ( $forum_rows[$j]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
+
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+							// Begin Simple Subforums MOD
+							$id = $forum_rows[$j]['forum_id'];
+							// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+							'title' => $forum_rows[$j]['forum_name']
+						);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+						// Begin Simple Subforums MOD
+						for( $k = 0; $k < $total_forums; $k++ )
+						{
+							if ( $forum_rows[$k]['forum_parent'] == $id && $forum_rows[$k]['cat_id'] == $category_rows[$i]['cat_id'] && $forum_rows[$k]['auth_view'] <= AUTH_REG )
+							{
+//							if ( $forum_rows[$k]['forum_parent'] == $id && $forum_rows[$k]['cat_id'] == $category_rows[$i]['cat_id'] && $is_auth[$forum_rows[$k]['forum_id']]['auth_view'] )
+//							{
+								$selected = ( $forum_rows[$k]['forum_id'] == $match_forum_id ) ? 'selected="selected"' : '';
+								$boxstring_forums .=  '<option value="' . $forum_rows[$k]['forum_id'] . '"' . $selected . '>-- ' . $forum_rows[$k]['forum_name'] . '</option>';
+
+								//
+								// Add an array to $nav_links for the Mozilla navigation bar.
+								// 'chapter' and 'forum' can create multiple items, therefore we are using a nested array.
+								//
+								$nav_links['chapter forum'][$forum_rows[$k]['forum_id']] = array (
+									'url' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=" . $forum_rows[$k]['forum_id']),
+									'title' => $forum_rows[$k]['forum_name']
+								);
+								
+							}
+						}
+						// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+includes/functions_admin.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = 'SELECT f.forum_id, f.forum_name
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+f.forum_name
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, f.forum_parent 
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	$forum_list = '';
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	// Begin Simple Subforums MOD
+	$list = array();
+	// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	while( $row = $db->sql_fetchrow($result) )
+	{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	
+	// Begin Simple Subforums MOD
+		$list[] = $row;
+	}
+	$forum_list = '';
+	for( $i = 0; $i < count($list); $i++ )
+	{
+		if( !$list[$i]['forum_parent'] )
+		{
+			$row = $list[$i];
+			$parent_hidden = true;
+	// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>' . $row['forum_name'] . '</option>';
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+				$parent_hidden = false;
+			}
+			if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
+			{
+				$parent_id = $row['forum_id'];
+				for($j=0; $j<count($list); $j++)
+				{
+					$row = $list[$j];
+					if( $row['forum_parent'] == $parent_id && $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
+					{
+						if( $parent_hidden )
+						{
+							$forum_list .= '<option value="" disabled="disabled">' . $list[$i]['forum_name'] . '</option>';
+							$parent_hidden = false;
+						}
+						$selected = ( $select_forum == $row['forum_id'] ) ? ' selected="selected"' : '';
+						$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>-- ' . $row['forum_name'] . '</option>';
+					}
+				}			
+			}
+			// End Simple Subforums MOD
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+language/lang_english/lang_main.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+?>
+
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$lang['Subforums'] = 'Subforums';
+// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/admin/forum_admin_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		<td class="row2"><span class="gen"><a href="{catrow.forumrow.U_VIEWFORUM}"
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+"row2"
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+{catrow.forumrow.STYLE}
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/index_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+  <!-- BEGIN forumrow -->
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+  <!-- IF ! forumrow.PARENT -->
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+<span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+<!-- IF catrow.forumrow.MODERATORS --><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}<br /></span><!-- ENDIF -->
+	  <!-- BEGIN sub --><!-- DEFINE $HAS_SUB = 1 --><!-- IF catrow.forumrow.sub.NUM > 0 -->, <!-- ELSE --><span class="genmed">{L_SUBFORUMS}: <!-- ENDIF -->{catrow.forumrow.sub.LAST_POST_SUB} <a href="{catrow.forumrow.sub.U_VIEWFORUM}" <!-- IF catrow.forumrow.sub.UNREAD -->class="topic-new"<!-- ENDIF --> title="{catrow.forumrow.sub.FORUM_DESC_HTML}">{catrow.forumrow.sub.FORUM_NAME}</a><!-- END sub -->
+	  <!-- IF $HAS_SUB --></span><!-- UNDEFINE $HAS_SUB --><!-- ENDIF -->
+	</td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOTAL_TOPICS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOTAL_POSTS}</span></td>
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+  <!-- END forumrow -->
+
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+  <!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/modcp_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+</a>
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a> <!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/modcp_split.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{U_INDEX}" class="nav">{L_INDEX}</a><span class="nav"> 
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a> <!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/overall_header.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+@import url("templates/subSilver/formIE.css"); 
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+/* Begin Simple Subforums MOD */
+a.topic-new, a.topic-new:visited { color: {T_BODY_HLINK}; }
+a.topic-new:hover, a.topic-new:active { color: {T_BODY_LINK}; }
+/* End Simple Subforums MOD */
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/posting_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		<!-- BEGIN switch_not_privmsg --> 
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		<!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a> <!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/subSilver.cfg
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+$images['forum_locked'] = "$current_template_images/folder_locked_big.gif";
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$images['forums'] = "$current_template_images/folders_big.gif";
+$images['forums_new'] = "$current_template_images/folders_new_big.gif";
+// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/viewforum_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <td align="left" valign="middle" class="nav" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+</a>
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a> <!-- ENDIF -->
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <td align="right" valign="bottom" class="nav" nowrap="nowrap"><span class="gensmall"><a href="{U_MARK_READ}">{L_MARK_TOPICS_READ}</a></span></td>
+	</tr>
+  </table>
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+<!-- BEGIN catrow -->
+<table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
+  <tr> 
+	<th colspan="2" class="thCornerL" height="25" nowrap="nowrap">&nbsp;{catrow.CAT_DESC}&nbsp;</th>
+	<th width="50" class="thTop" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th width="50" class="thTop" nowrap="nowrap">&nbsp;{L_POSTS}&nbsp;</th>
+	<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+  </tr>
+  <!-- BEGIN forumrow -->
+  <tr> 
+	<td class="row1" align="center" valign="middle" height="50"><img src="{catrow.forumrow.FORUM_FOLDER_IMG}" width="46" height="25" alt="{catrow.forumrow.L_FORUM_FOLDER_ALT}" title="{catrow.forumrow.L_FORUM_FOLDER_ALT}" /></td>
+	<td class="row1" width="100%" height="50"><span class="forumlink"> <a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink<!-- IF catrow.forumrow.UNREAD --> topic-new<!-- ENDIF -->">{catrow.forumrow.FORUM_NAME}</a><br />
+	  </span> <span class="genmed">{catrow.forumrow.FORUM_DESC}<br />
+	  </span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+  </tr>
+  <!-- END forumrow -->
+</table>
+<br />
+<!-- END catrow -->
+
+<!-- IF NUM_TOPICS || ! HAS_SUBFORUMS -->
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+</a>
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a><!-- ENDIF -->
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
+	</tr>
+</table>
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+<!-- ELSE -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+	<td align="right">{JUMPBOX}</td>
+  </tr>
+</table>
+<!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/viewtopic_body.tpl
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+</a>
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a><!-- ENDIF -->
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+</a>
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a><!-- ENDIF -->
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+index.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+while ($row = $db->sql_fetchrow($result))
+{
+	$category_rows[] = $row;
+}
+$db->sql_freeresult($result);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$subforums_list = array();
+// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		'L_FORUM' => $lang['Forum'],
+
+	
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+		// Begin Simple Subforums MOD
+		'L_SUBFORUMS' => $lang['Subforums'],
+		// End Simple Subforums MOD
+
+	
+#
+#-----[ FIND ]------------------------------------------
+#
+								$folder_image = $images['forum_locked']; 
+								$folder_alt = $lang['Forum_locked'];
+
+	
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#	
+
+								// Begin Simple Subforums MOD
+								$unread_topics = false;
+								$folder_images = array(
+									'default'	=> $folder_image,
+									'new'		=> $images['forum_locked'],
+									'sub'		=> ( isset($images['forums_locked']) ) ? $images['forums_locked'] : $images['forum_locked'],
+									'subnew'	=> ( isset($images['forums_locked']) ) ? $images['forums_locked'] : $images['forum_locked'],
+									'subalt'	=> $lang['Forum_locked'],
+									'subaltnew'	=> $lang['Forum_locked'],
+									);
+								// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								$folder_image = ( $unread_topics ) ? $images['forum_new'] : $images['forum']; 
+								$folder_alt = ( $unread_topics ) ? $lang['New_posts'] : $lang['No_new_posts']; 
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#	
+
+								// Begin Simple Subforums MOD
+								$folder_images = array(
+									'default'	=> $folder_image,
+									'new'		=> $images['forum_new'],
+									'sub'		=> ( isset($images['forums']) ) ? $images['forums'] : $images['forum'],
+									'subnew'	=> ( isset($images['forums_new']) ) ? $images['forums_new'] : $images['forum_new'],
+									'subalt'	=> $lang['No_new_posts'],
+									'subaltnew'	=> $lang['New_posts'],
+									);
+								// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+								// Begin Simple Subforums MOD
+								$last_post_sub = '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . ($unread_topics ? $images['icon_newest_reply'] : $images['icon_latest_reply']) . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+								$last_post_time = $forum_data[$j]['post_time'];
+								// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								$last_post = $lang['No_Posts'];
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+								// Begin Simple Subforums MOD
+								$last_post_sub = '<img src="' . $images['icon_minipost'] . '" border="0" alt="' . $lang['No_Posts'] . '" title="' . $lang['No_Posts'] . '" />';
+								$last_post_time = 0;
+								// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								$moderator_list = '&nbsp;';
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+'&nbsp;';
+
+
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+'';
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								'L_FORUM_FOLDER_ALT' => $folder_alt, 
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+								// Begin Simple Subforums MOD
+								'FORUM_FOLDERS' => serialize($folder_images),
+								'HAS_SUBFORUMS' => 0,
+								'PARENT' => $forum_data[$j]['forum_parent'],
+								'ID' => $forum_data[$j]['forum_id'],
+								'UNREAD' => intval($unread_topics),
+								'TOTAL_UNREAD' => intval($unread_topics),
+								'TOTAL_POSTS' => $forum_data[$j]['forum_posts'],
+								'TOTAL_TOPICS' => $forum_data[$j]['forum_topics'],
+								'LAST_POST_FORUM' => $last_post,
+								'LAST_POST_TIME' => $last_post_time,
+								'LAST_POST_TIME_FORUM' => $last_post_time,
+								// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+								'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+							);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+							// Begin Simple Subforums MOD
+							if( $forum_data[$j]['forum_parent'] )
+							{
+								$subforums_list[] = array(
+									'forum_data'	=> $forum_data[$j],
+									'folder_image'	=> $folder_image,
+									'last_post'		=> $last_post,
+									'last_post_sub'	=> $last_post_sub,
+									'moderator_list'	=> $moderator_list,
+									'unread_topics'	=> $unread_topics,
+									'l_moderators'	=> $l_moderators,
+									'folder_alt'	=> $folder_alt,
+									'last_post_time'	=> $last_post_time,
+									'desc'			=> $forum_data[$j]['forum_desc'],
+									);
+							}
+							// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+else
+{
+	message_die(GENERAL_MESSAGE, $lang['No_forums']);
+}
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+unset($data);
+unset($item);
+unset($cat_item);
+unset($row_item);
+for( $i = 0; $i < count($subforums_list); $i++ )
+{
+	$forum_data = $subforums_list[$i]['forum_data'];
+	$parent_id = $forum_data['forum_parent'];
+	
+	// Find parent item
+	if( isset($template->_tpldata['catrow.']) )
+	{
+		$data = &$template->_tpldata['catrow.'];
+		$count = count($data);
+		for( $j = 0; $j < $count; $j++)
+		{
+			$cat_item = &$data[$j];
+			$row_item = &$cat_item['forumrow.'];
+			$count2 = count($row_item);
+			for( $k = 0; $k < $count2; $k++)
+			{
+				if( $row_item[$k]['ID'] == $parent_id )
+				{
+					$item = &$row_item[$k];
+					break;
+				}
+			}
+			if( isset($item) )
+			{
+				break;
+			}
+		}
+	}
+	
+	if( isset($item) )
+	{
+		if( isset($item['sub.']) )
+		{
+			$num = count($item['sub.']);
+			$data = &$item['sub.'];
+		}
+		else
+		{
+			$num = 0;
+			$item[] = 'sub.';
+			$data = &$item['sub.'];
+		}
+		
+		// Append new entry
+		$data[] = array(
+			'NUM' => $num,
+			'FORUM_FOLDER_IMG' => $subforums_list[$i]['folder_image'], 
+			'FORUM_NAME' => $forum_data['forum_name'],
+			'FORUM_DESC' => $forum_data['forum_desc'],
+			'FORUM_DESC_HTML' => htmlspecialchars(preg_replace('@<[\/\!]*?[^<>]*?>@si', '', $forum_data['forum_desc'])),
+			'POSTS' => $forum_data['forum_posts'],
+			'TOPICS' => $forum_data['forum_topics'],
+			'LAST_POST' => $subforums_list[$i]['last_post'],
+			'LAST_POST_SUB' => $subforums_list[$i]['last_post_sub'],
+			'LAST_TOPIC' => $forum_data['topic_title'],
+			'MODERATORS' => $subforums_list[$i]['moderator_list'],
+			'PARENT' => $forum_data['forum_parent'],
+			'ID' => $forum_data['forum_id'],
+			'UNREAD' => intval($subforums_list[$i]['unread_topics']),
+	
+			'L_MODERATOR' => $subforums_list[$i]['l_moderators'], 
+			'L_FORUM_FOLDER_ALT' => $subforums_list[$i]['folder_alt'], 
+	
+			'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $forum_data['forum_id'])
+		);
+		$item['HAS_SUBFORUMS'] ++;
+		$item['TOTAL_UNREAD'] += intval($subforums_list[$i]['unread_topics']);
+		// Change folder image
+		$images = unserialize($item['FORUM_FOLDERS']);
+		$item['FORUM_FOLDER_IMG'] = $item['TOTAL_UNREAD'] ? $images['subnew'] : $images['sub'];
+		$item['L_FORUM_FOLDER_ALT'] = $item['TOTAL_UNREAD'] ? $images['subaltnew'] : $images['subalt'];
+		// Check last post
+		if( $item['LAST_POST_TIME'] < $subforums_list[$i]['last_post_time'] )
+		{
+			$item['LAST_POST'] = $subforums_list[$i]['last_post'];
+			$item['LAST_POST_TIME'] = $subforums_list[$i]['last_post_time'];
+		}
+		if( !$item['LAST_POST_TIME_FORUM'] )
+		{
+			$item['LAST_POST_FORUM'] = $item['LAST_POST'];
+		}
+		// Add topics/posts
+		$item['TOTAL_POSTS'] += $forum_data['forum_posts'];
+		$item['TOTAL_TOPICS'] += $forum_data['forum_topics'];
+	}
+	unset($item);
+	unset($data);
+	unset($cat_item);
+	unset($row_item);
+}
+// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+modcp.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+			$template->set_filenames(array(
+				'split_body' => 'modcp_split.tpl')
+			);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+			// Begin Simple Subforums MOD
+			$all_forums = array();
+			make_jumpbox_ref('modcp.'.$phpEx, $forum_id, $all_forums);
+
+			$parent_id = 0;
+			for( $i = 0; $i < count($all_forums); $i++ )
+			{
+				if( $all_forums[$i]['forum_id'] == $forum_id )
+				{
+					$parent_id = $all_forums[$i]['forum_parent'];
+				}
+			}
+
+			if( $parent_id )
+			{
+				for( $i = 0; $i < count($all_forums); $i++)
+				{
+					if( $all_forums[$i]['forum_id'] == $parent_id )
+					{
+						$template->assign_vars(array(
+							'PARENT_FORUM'			=> 1,
+							'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+							'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+						));
+					}
+				}
+			}
+			// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		make_jumpbox('modcp.'.$phpEx);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+		// Begin Simple Subforums MOD
+		$all_forums = array();
+		make_jumpbox_ref('modcp.'.$phpEx, $forum_id, $all_forums);
+
+		$parent_id = 0;
+		for( $i = 0; $i < count($all_forums); $i++ )
+		{
+			if( $all_forums[$i]['forum_id'] == $forum_id )
+			{
+				$parent_id = $all_forums[$i]['forum_parent'];
+			}
+		}
+
+		if( $parent_id )
+		{
+			for( $i = 0; $i < count($all_forums); $i++)
+			{
+				if( $all_forums[$i]['forum_id'] == $parent_id )
+				{
+					$template->assign_vars(array(
+						'PARENT_FORUM'			=> 1,
+						'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+						'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+					));
+				}
+			}
+		}
+		// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+posting.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+make_jumpbox('viewforum.'.$phpEx);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$all_forums = array();
+make_jumpbox_ref('viewforum.'.$phpEx, $forum_id, $all_forums);
+
+$parent_id = 0;
+for( $i = 0; $i < count($all_forums); $i++ )
+{
+	if( $all_forums[$i]['forum_id'] == $forum_id )
+	{
+		$parent_id = $all_forums[$i]['forum_parent'];
+	}
+}
+
+if( $parent_id )
+{
+	for( $i = 0; $i < count($all_forums); $i++)
+	{
+		if( $all_forums[$i]['forum_id'] == $parent_id )
+		{
+			$template->assign_vars(array(
+				'PARENT_FORUM'			=> 1,
+				'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+				'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+				));
+		}
+	}
+}
+// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+search.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id
+
+
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+f.forum_id
+
+
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, f.forum_parent 
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+$s_forums = '';
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+$list = array();
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
+	{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$list[] = $row;
+	}
+}
+
+for( $i = 0; $i < count($list); $i++ )
+{
+	if( !$list[$i]['forum_parent'] )
+	{
+		$row = $list[$i];
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		if ( empty($list_cat[$row['cat_id']]) )
+		{
+			$list_cat[$row['cat_id']] = $row['cat_title'];
+		}
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$parent_id = $row['forum_id'];
+		for( $j = 0; $j < count($list); $j++ )
+		{
+			if( $list[$j]['forum_parent'] == $parent_id )
+			{
+				$row = $list[$j];
+				$s_forums .= '<option value="' . $row['forum_id'] . '">-- ' . $row['forum_name'] . '</option>';
+			}
+		}
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewforum.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+if ( $mark_read == 'topics' )
+{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+	// Begin Simple Subforums MOD
+	$mark_list = ( isset($HTTP_GET_VARS['mark_list']) ) ? explode(',', $HTTP_GET_VARS['mark_list']) : array($forum_id);
+	$old_forum_id = $forum_id;
+	// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+				setcookie($board_config['cookie_name'] . '_f', serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+				// Begin Simple Subforums MOD
+				$set_cookie = true;
+				if( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) )
+				{
+					$HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f'] = serialize($tracking_forums);
+				}
+				// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+		$template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">')
+
+
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+		// Begin Simple Subforums MOD
+		if( $set_cookie )
+		{
+			setcookie($board_config['cookie_name'] . '_f', serialize($tracking_forums), 0, $board_config['cookie_path'], $board_config['cookie_domain'], $board_config['cookie_secure']);
+		}
+		$forum_id = $old_forum_id;
+		// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+make_jumpbox('viewforum.'.$phpEx);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$all_forums = array();
+make_jumpbox_ref('viewforum.'.$phpEx, $forum_id, $all_forums);
+// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	'U_MARK_READ' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;mark=topics"))
+);
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+if( $forum_row['forum_parent'] )
+{
+	$parent_id = $forum_row['forum_parent'];
+	for( $i = 0; $i < count($all_forums); $i++ )
+	{
+		if( $all_forums[$i]['forum_id'] == $parent_id )
+		{
+			$template->assign_vars(array(
+				'PARENT_FORUM'			=> 1,
+				'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+				'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+				));
+		}
+	}
+}
+else
+{
+	$sub_list = array();
+	for( $i = 0; $i < count($all_forums); $i++ )
+	{
+		if( $all_forums[$i]['forum_parent'] == $forum_id )
+		{
+			$sub_list[] = $all_forums[$i]['forum_id'];
+		}
+	}
+	if( count($sub_list) )
+	{
+		$sub_list[] = $forum_id;
+		$template->vars['U_MARK_READ'] .= '&amp;mark_list=' . implode(',', $sub_list);
+	}
+}
+// assign additional variables for subforums mod
+$template->assign_vars(array(
+	'NUM_TOPICS' => $forum_row['forum_topics'],
+	'CAN_POST' => $is_auth['auth_post'] ? 1 : 0,
+	'L_FORUM' => $lang['Forum'],
+	));
+
+// End Simple Subforums MOD
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	$template->assign_block_vars('switch_no_topics', array() );
+
+}
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+switch(SQL_LAYER)
+{
+	case 'postgresql':
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
+			FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+			WHERE p.post_id = f.forum_last_post_id 
+				AND u.user_id = p.poster_id  
+				AND f.forum_parent = '{$forum_id}'
+				UNION (
+					SELECT f.*, NULL, NULL, NULL, NULL
+					FROM " . FORUMS_TABLE . " f
+					WHERE NOT EXISTS (
+						SELECT p.post_time
+						FROM " . POSTS_TABLE . " p
+						WHERE p.post_id = f.forum_last_post_id  
+					)
+				)
+				ORDER BY cat_id, forum_order";
+		break;
+
+	case 'oracle':
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
+			FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . USERS_TABLE . " u
+			WHERE p.post_id = f.forum_last_post_id(+)
+				AND u.user_id = p.poster_id(+)
+				AND f.forum_parent = '{$forum_id}'
+			ORDER BY f.cat_id, f.forum_order";
+		break;
+
+	default:
+		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+			FROM (( " . FORUMS_TABLE . " f
+			LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
+			LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
+			WHERE f.forum_parent = '{$forum_id}'
+			ORDER BY f.cat_id, f.forum_order";
+		break;
+}
+if ( !($result = $db->sql_query($sql)) )
+{
+	message_die(GENERAL_ERROR, 'Could not query subforums information', '', __LINE__, __FILE__, $sql);
+}
+
+$subforum_data = array();
+while( $row = $db->sql_fetchrow($result) )
+{
+	$subforum_data[] = $row;
+}
+$db->sql_freeresult($result);
+
+if ( ($total_forums = count($subforum_data)) > 0 )
+{
+	//
+	// Find which forums are visible for this user
+	//
+	$is_auth_ary = array();
+	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $subforum_data);
+
+	$display_forums = false;
+	for( $j = 0; $j < $total_forums; $j++ )
+	{
+		if ( $is_auth_ary[$subforum_data[$j]['forum_id']]['auth_view'] )
+		{
+			$display_forums = true;
+		}
+	}
+	
+	if( !$display_forums )
+	{
+		$total_forums = 0;
+	}
+}
+
+if( $total_forums )
+{
+	$template->assign_var('HAS_SUBFORUMS', 1);
+	$template->assign_block_vars('catrow', array(
+		'CAT_ID'	=> $forum_id,
+		'CAT_DESC'	=> $forum_row['forum_name'],
+		'U_VIEWCAT' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL ."=$forum_id"),
+		));
+
+	//
+	// Obtain a list of topic ids which contain
+	// posts made since user last visited
+	//
+	if ( $userdata['session_logged_in'] )
+	{
+		$sql = "SELECT t.forum_id, t.topic_id, p.post_time 
+			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
+			WHERE p.post_id = t.topic_last_post_id 
+				AND p.post_time > " . $userdata['user_lastvisit'] . " 
+				AND t.topic_moved_id = 0"; 
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not query new topic information', '', __LINE__, __FILE__, $sql);
+		}
+
+		$new_topic_data = array();
+		while( $topic_data = $db->sql_fetchrow($result) )
+		{
+			$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
+		}
+		$db->sql_freeresult($result);
+	}
+	//
+	// Obtain list of moderators of each forum
+	// First users, then groups ... broken into two queries
+	//
+	$subforum_moderators = array();
+	$sql = "SELECT aa.forum_id, u.user_id, u.username 
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g, " . USERS_TABLE . " u
+		WHERE aa.auth_mod = " . TRUE . " 
+			AND g.group_single_user = 1 
+			AND ug.group_id = aa.group_id 
+			AND g.group_id = aa.group_id 
+			AND u.user_id = ug.user_id 
+		GROUP BY u.user_id, u.username, aa.forum_id 
+		ORDER BY aa.forum_id, u.user_id";
+	if ( !($result = $db->sql_query($sql, false, true)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
+	}
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$subforum_moderators[$row['forum_id']][] = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
+	}
+	$db->sql_freeresult($result);
+	
+	$sql = "SELECT aa.forum_id, g.group_id, g.group_name 
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
+		WHERE aa.auth_mod = " . TRUE . " 
+			AND g.group_single_user = 0 
+			AND g.group_type <> " . GROUP_HIDDEN . "
+			AND ug.group_id = aa.group_id 
+			AND g.group_id = aa.group_id 
+		GROUP BY g.group_id, g.group_name, aa.forum_id 
+		ORDER BY aa.forum_id, g.group_id";
+	if ( !($result = $db->sql_query($sql, false, true)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
+	}
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$subforum_moderators[$row['forum_id']][] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . 	$row['group_name'] . '</a>';
+	}
+	$db->sql_freeresult($result);
+
+	// show subforums
+	for( $j = 0; $j < $total_forums; $j++ )
+	{
+		$subforum_id = $subforum_data[$j]['forum_id'];
+
+		if ( $is_auth_ary[$subforum_id]['auth_view'] )
+		{
+			$unread_topics = false;
+			if ( $subforum_data[$j]['forum_status'] == FORUM_LOCKED )
+			{
+				$folder_image = $images['forum_locked']; 
+				$folder_alt = $lang['Forum_locked'];
+			}
+			else
+			{
+				if ( $userdata['session_logged_in'] )
+				{
+					if ( !empty($new_topic_data[$subforum_id]) )
+					{
+						$subforum_last_post_time = 0;
+
+						while( list($check_topic_id, $check_post_time) = @each($new_topic_data[$subforum_id]) )
+						{
+							if ( empty($tracking_topics[$check_topic_id]) )
+							{
+								$unread_topics = true;
+								$subforum_last_post_time = max($check_post_time, $subforum_last_post_time);
+							}
+							else
+							{
+								if ( $tracking_topics[$check_topic_id] < $check_post_time )
+								{
+									$unread_topics = true;
+									$subforum_last_post_time = max($check_post_time, $subforum_last_post_time);
+								}
+							}
+						}
+						if ( !empty($tracking_forums[$subforum_id]) )
+						{
+							if ( $tracking_forums[$subforum_id] > $subforum_last_post_time )
+							{
+								$unread_topics = false;
+							}
+						}
+						if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+						{
+							if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $subforum_last_post_time )
+							{
+								$unread_topics = false;
+							}
+						}
+
+					}
+				}
+
+				$folder_image = ( $unread_topics ) ? $images['forum_new'] : $images['forum']; 
+				$folder_alt = ( $unread_topics ) ? $lang['New_posts'] : $lang['No_new_posts']; 
+			}
+
+			$posts = $subforum_data[$j]['forum_posts'];
+			$topics = $subforum_data[$j]['forum_topics'];
+
+			if ( $subforum_data[$j]['forum_last_post_id'] )
+			{
+				$last_post_time = create_date($board_config['default_dateformat'], $subforum_data[$j]['post_time'], $board_config['board_timezone']);
+
+				$last_post = $last_post_time . '<br />';
+
+				$last_post .= ( $subforum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($subforum_data[$j]['post_username'] != '' ) ? $subforum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $subforum_data[$j]['user_id']) . '">' . $subforum_data[$j]['username'] . '</a> ';
+								
+				$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $subforum_data[$j]['forum_last_post_id']) . '#' . $subforum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+			}
+			else
+			{
+				$last_post = $lang['No_Posts'];
+			}
+
+			if ( count($subforum_moderators[$subforum_id]) > 0 )
+			{
+				$l_moderators = ( count($subforum_moderators[$subforum_id]) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
+				$moderator_list = implode(', ', $subforum_moderators[$subforum_id]);
+			}
+			else
+			{
+				$l_moderators = '&nbsp;';
+				$moderator_list = '';
+			}
+
+			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+			$template->assign_block_vars('catrow.forumrow',	array(
+				'ROW_COLOR' => '#' . $row_color,
+				'ROW_CLASS' => $row_class,
+				'FORUM_FOLDER_IMG' => $folder_image, 
+				'FORUM_NAME' => $subforum_data[$j]['forum_name'],
+				'FORUM_DESC' => $subforum_data[$j]['forum_desc'],
+				'POSTS' => $subforum_data[$j]['forum_posts'],
+				'TOPICS' => $subforum_data[$j]['forum_topics'],
+				'LAST_POST' => $last_post,
+				'MODERATORS' => $moderator_list,
+				'ID' => $subforum_data[$j]['forum_id'],
+				'UNREAD' => intval($unread_topics),
+				'LAST_POST_TIME' => $last_post_time,
+
+				'L_MODERATOR' => $l_moderators, 
+				'L_FORUM_FOLDER_ALT' => $folder_alt, 
+
+				'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$subforum_id"))
+			);
+
+		}
+	}
+}
+// End Simple Subforums MOD
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewtopic.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+make_jumpbox('viewforum.'.$phpEx, $forum_id);
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+
+// Begin Simple Subforums MOD
+$all_forums = array();
+make_jumpbox_ref('viewforum.'.$phpEx, $forum_id, $all_forums);
+
+$parent_id = 0;
+for( $i = 0; $i < count($all_forums); $i++ )
+{
+	if( $all_forums[$i]['forum_id'] == $forum_id )
+	{
+		$parent_id = $all_forums[$i]['forum_parent'];
+	}
+}
+
+if( $parent_id )
+{
+	for( $i = 0; $i < count($all_forums); $i++ )
+	{
+		if( $all_forums[$i]['forum_id'] == $parent_id )
+		{
+			$template->assign_vars(array(
+				'PARENT_FORUM'			=> 1,
+				'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+				'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+				));
+		}
+	}
+}
+// End Simple Subforums MOD
+
+
+#
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

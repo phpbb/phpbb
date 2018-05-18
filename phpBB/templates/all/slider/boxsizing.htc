@@ -1,0 +1,157 @@
+<component lightWeight="true">
+<attach event="onpropertychange" onevent="checkPropertyChange()" />
+<attach event="ondetach" onevent="restore()" />
+<script>
+// <![CDATA[
+
+var doc = element.document;
+
+function init() {
+	updateBorderBoxWidth();
+	updateBorderBoxHeight();
+}
+
+function restore() {
+	element.runtimeStyle.width = "";
+	element.runtimeStyle.height = "";
+}
+
+/* border width getters */
+function getBorderWidth(sSide) {
+	if (element.currentStyle["border" + sSide + "Style"] == "none")
+		return 0;
+	var n = parseInt(element.currentStyle["border" + sSide + "Width"]);
+	return n || 0;
+}
+
+function getBorderLeftWidth() { return getBorderWidth("Left"); }
+function getBorderRightWidth() { return getBorderWidth("Right"); }
+function getBorderTopWidth() { return getBorderWidth("Top"); }
+function getBorderBottomWidth() { return getBorderWidth("Bottom"); }
+/* end border width getters */
+
+/* padding getters */
+function getPadding(sSide) {
+	var n = parseInt(element.currentStyle["padding" + sSide]);
+	return n || 0;
+}
+
+function getPaddingLeft() { return getPadding("Left"); }
+function getPaddingRight() { return getPadding("Right"); }
+function getPaddingTop() { return getPadding("Top"); }
+function getPaddingBottom() { return getPadding("Bottom"); }
+/* end padding getters */
+
+function getBoxSizing() {
+	var s = element.style;
+	var cs = element.currentStyle
+
+	if (typeof s.boxSizing != "undefined" && s.boxSizing != "")
+		return s.boxSizing;
+	if (typeof s["box-sizing"] != "undefined" && s["box-sizing"] != "")
+		return s["box-sizing"];
+	if (typeof cs.boxSizing != "undefined" && cs.boxSizing != "")
+		return cs.boxSizing;
+	if (typeof cs["box-sizing"] != "undefined" && cs["box-sizing"] != "")
+		return cs["box-sizing"];
+	return getDocumentBoxSizing();
+}
+
+function getDocumentBoxSizing() {
+	if (doc.compatMode == null || doc.compatMode == "BackCompat")
+		return "border-box";
+	return "content-box"
+}
+
+/* width and height setters */
+function setBorderBoxWidth(n) {
+	element.runtimeStyle.width = Math.max(0, n - getBorderLeftWidth() -
+		getPaddingLeft() - getPaddingRight() - getBorderRightWidth()) + "px";
+}
+
+function setBorderBoxHeight(n) {
+	element.runtimeStyle.height = Math.max(0, n - getBorderTopWidth() -
+		getPaddingTop() - getPaddingBottom() - getBorderBottomWidth()) + "px";
+}
+
+function setContentBoxWidth(n) {
+	element.runtimeStyle.width = Math.max(0, n + getBorderLeftWidth() +
+		getPaddingLeft() + getPaddingRight() + getBorderRightWidth()) + "px";
+}
+
+function setContentBoxHeight(n) {
+	element.runtimeStyle.height = Math.max(0, n + getBorderTopWidth() +
+		getPaddingTop() + getPaddingBottom() + getBorderBottomWidth()) + "px";
+}
+/* end width and height setters */
+
+function updateBorderBoxWidth() {
+	element.runtimeStyle.width = "";
+	if (getDocumentBoxSizing() == getBoxSizing())
+		return;
+	var csw = element.currentStyle.width;
+	if (csw != "auto" && csw.indexOf("px") != -1) {
+		if (getBoxSizing() == "border-box")
+			setBorderBoxWidth(parseInt(csw));
+		else
+			setContentBoxWidth(parseInt(csw));
+	}
+}
+
+function updateBorderBoxHeight() {
+	element.runtimeStyle.height = "";
+	if (getDocumentBoxSizing() == getBoxSizing())
+		return;
+	var csh = element.currentStyle.height;
+	if (csh != "auto" && csh.indexOf("px") != -1) {
+		if (getBoxSizing() == "border-box")
+			setBorderBoxHeight(parseInt(csh));
+		else
+			setContentBoxHeight(parseInt(csh));
+	}
+}
+
+function checkPropertyChange() {
+	var pn = event.propertyName;
+	var undef;
+
+	if (pn == "style.boxSizing" && element.style.boxSizing == "") {
+		element.style.removeAttribute("boxSizing");
+		element.runtimeStyle.boxSizing = undef;
+	}
+
+
+	switch (pn) {
+		case "style.width":
+		case "style.borderLeftWidth":
+		case "style.borderLeftStyle":
+		case "style.borderRightWidth":
+		case "style.borderRightStyle":
+		case "style.paddingLeft":
+		case "style.paddingRight":
+			updateBorderBoxWidth();
+			break;
+
+		case "style.height":
+		case "style.borderTopWidth":
+		case "style.borderTopStyle":
+		case "style.borderBottomWidth":
+		case "style.borderBottomStyle":
+		case "style.paddingTop":
+		case "style.paddingBottom":
+			updateBorderBoxHeight();
+			break;
+
+		case "className":
+		case "style.boxSizing":
+			updateBorderBoxWidth();
+			updateBorderBoxHeight();
+			break;
+	}
+}
+
+init();
+
+// ]]>
+</script>
+</component>

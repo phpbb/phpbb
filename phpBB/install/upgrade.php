@@ -6,7 +6,7 @@
 *     copyright            : (C) 2001 The phpBB Group
 *     email                : support@phpbb.com
 *
-*     $Id$
+*     $Id: upgrade.php,v 1.2 2011/03/20 17:18:17 orynider Exp $
 *
 ****************************************************************************/
 
@@ -26,7 +26,14 @@ $phpbb_root_path = './../';
 if ( !defined('INSTALLING') )
 {
 	error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-	set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+	// If we are on PHP >= 5.3.0 we do not need some code
+	if (phpversion() < '5.3.0')
+	{
+		/**
+		* @Disable magic_quotes_runtime
+		*/
+		@set_magic_quotes_runtime(0);
+	}
 
 	//
 	// If we are being called from the install script then we don't need these
@@ -35,7 +42,7 @@ if ( !defined('INSTALLING') )
 	include($phpbb_root_path . 'extension.inc');
 	include($phpbb_root_path . 'config.'.$phpEx);
 	include($phpbb_root_path . 'includes/constants.'.$phpEx);
-	include($phpbb_root_path . 'includes/functions.'.$phpEx);
+	require($phpbb_root_path . 'includes/functions.'.$phpEx);
 
 	if( defined("PHPBB_INSTALLED") )
 	{
@@ -48,9 +55,10 @@ if ( !defined('INSTALLING') )
 //
 $dbms = 'mysql';
 
-include($phpbb_root_path . 'includes/db.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+//include($phpbb_root_path . 'includes/db.'.$phpEx);
+include($phpbb_root_path.'includes/db/'.$dbms.'.'.$phpEx); // Load dbal and initiate class
+include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
 set_time_limit(0); // Unlimited execution time
 
@@ -397,7 +405,7 @@ function end_step($next)
 //
 // Start at the beginning if the user hasn't specified a specific starting point.
 //
-$next = ( isset($HTTP_GET_VARS['next']) ) ? $HTTP_GET_VARS['next'] : 'start';
+$next = ( isset($_GET['next']) ) ? $_GET['next'] : 'start';
 
 // If debug is set we'll do all steps in one go.
 $debug = 1;
@@ -1808,7 +1816,7 @@ if ( !empty($next) )
 
 			$version = $row['mysql_version'];
 
-			if ( preg_match("/^(3\.23)|(4\.)/", $version) )
+			if ( preg_match("/^(3\.24)|(4\.)/", $version) )
 			{
 				$sql = "ALTER TABLE " . $table_prefix . "sessions 
 					TYPE=HEAP MAX_ROWS=500";
@@ -1878,7 +1886,7 @@ if ( !empty($next) )
 			$max_post_id = $max_post_id['max_post_id'];
 			$per_percent = round(( $totalposts / 500 ) * 10);
 
-			$postcounter = ( !isset($HTTP_GET_VARS['batchstart']) ) ? 0 : $HTTP_GET_VARS['batchstart'];
+			$postcounter = ( !isset($_GET['batchstart']) ) ? 0 : $_GET['batchstart'];
 
 			$batchsize = 150; // Process this many posts per loop
 			$batchcount = 0;

@@ -1,0 +1,61 @@
+/* ROUNDED MSG BOX - BEGIN */
+/* rmbox => rounded message box */
+div.rmbox { border-radius: 3px 3px 3px 3px; border-style: solid; border-width: 1px; margin: 5px 15px 2px; padding: 0 0.6em; }
+div.rmbox p { font-size: 12px; line-height: 140%; margin: 0.5em 0; padding: 2px; }
+div.rmbox p.rmb-center { font-weight: bold; text-align: center !important; vertical-align: middle; }
+
+div.rmb-blue { background-color: #e8eeff; border-color: #0000cc; }
+div.rmb-gray { background-color: #eeeeee; border-color: #999999; }
+div.rmb-green { background-color: #e8ffee; border-color: #00cc00; }
+div.rmb-orange { background-color: #ffaa55; border-color: #ff5500; }
+div.rmb-red { background-color: #ffeee8; border-color: #cc0000; }
+div.rmb-yellow { background-color: #ffffdd; border-color: #ffdd22; }
+/* ROUNDED MSG BOX - END */
+
+/* TEXT BOX - BEGIN */
+.text_cont_center { display: block; clear: both; text-align: center; vertical-align: middle; margin: 0 auto; /*margin: 50px;*/ }
+
+.text_blue_cont, .text_gray_cont, .text_green_cont, .text_orange_cont, .text_red_cont, .text_yellow_cont { border-style: solid; border-width: 1px; padding: 10px; }
+
+.text_blue_cont { background-color: #aaccee; border-color: #557799; }
+.text_gray_cont { background-color: #dddddd; border-color: #888888; }
+.text_green_cont { background-color: #77dd99; border-color: #228822; }
+.text_orange_cont { background-color: #ffaa55; border-color: #ff5500; }
+.text_red_cont { background-color: #ff7777; border-color: #dd2222; }
+.text_yellow_cont { background-color: #ffffaa; border-color: #ff7777; }
+
+.text_bright, a.text_bright, a.text_bright:link, a.text_bright:active, a.text_bright:visited, .text_bright a, .text_bright a:link, .text_bright a:active, .text_bright a:visited { color: #ffffff; }
+a.text_bright:hover, .text_bright a:hover { color: #dddddd; text-decoration: underline; }
+
+.text_dark, a.text_dark, a.text_dark:link, a.text_dark:active, a.text_dark:visited, .text_dark a, .text_dark a:link, .text_dark a:active, .text_dark a:visited { color: #000000; }
+a.text_dark:hover, .text_dark a:hover { color: #222222; text-decoration: underline; }
+
+.text_blue, a.text_blue, a.text_blue:link, a.text_blue:active, a.text_blue:visited, .text_blue a, .text_blue a:link, .text_blue a:active, .text_blue a:visited { color: #557799; }
+a.text_blue:hover, .text_blue a:hover { color: #557799; text-decoration: underline; }
+
+.text_gray, a.text_gray, a.text_gray:link, a.text_gray:active, a.text_gray:visited, .text_gray a, .text_gray a:link, .text_gray a:active, .text_gray a:visited { color: #888888; }
+a.text_gray:hover, .text_gray a:hover { color: #888888; text-decoration: underline; }
+
+.text_green, a.text_green, a.text_green:link, a.text_green:active, a.text_green:visited, .text_green a, .text_green a:link, .text_green a:active, .text_green a:visited { color: #228822; }
+a.text_green:hover, .text_green a:hover { color: #228822; text-decoration: underline; }
+
+.text_orange, a.text_orange, a.text_orange:link, a.text_orange:active, a.text_orange:visited, .text_orange a, .text_orange a:link, .text_orange a:active, .text_orange a:visited { color: #ff5500; }
+a.text_orange:hover, .text_orange a:hover { color: #ff5500; text-decoration: underline; }
+
+.text_red, a.text_red, a.text_red:link, a.text_red:active, a.text_red:visited, .text_red a, .text_red a:link, .text_red a:active, .text_red a:visited { color: #dd2222; }
+a.text_red:hover, .text_red a:hover { color: #dd2222; text-decoration: underline; }
+
+.text_yellow, a.text_yellow, a.text_yellow:link, a.text_yellow:active, a.text_yellow:visited, .text_yellow a, .text_yellow a:link, .text_yellow a:active, .text_yellow a:visited { color: #ffffaa; }
+a.text_yellow:hover, .text_yellow a:hover { color: #ffffaa; text-decoration: underline; }
+/* TEXT BOX - END */
+
+/* GRAY - BEGIN */
+.gray_bg { background-color: #888888 !important; }
+.gray_txt { color: #888888 !important; }
+/* GRAY - END */
+
+/* POST-IT - BEGIN */
+.post-it-row1 { background: #ffffff url('images/bg_post_it_01.gif') repeat-x top !important; }
+.post-it-row2 { background: #ffffff url('images/bg_post_it_02.gif') repeat-x top !important; }
+.post-it-row3 { background: #ffffff url('images/bg_post_it_03.gif') repeat-x top !important; }
+/* POST-IT - END */

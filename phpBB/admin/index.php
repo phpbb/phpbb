@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: index.php,v 1.1 2010/10/10 15:05:22 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
+@define('IN_PHPBB', 1);
 
 //
 // Load default header
@@ -29,7 +29,7 @@ $no_page_header = TRUE;
 $phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
 require('./pagestart.' . $phpEx);
-
+include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 // ---------------
 // Begin functions
 //
@@ -51,7 +51,7 @@ function inarray($needle, $haystack)
 //
 // Generate relevant output
 //
-if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
+if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 {
 	$dir = @opendir(".");
 
@@ -118,7 +118,7 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 
 	include('./page_footer_admin.'.$phpEx);
 }
-elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
+elseif( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 {
 
 	include('./page_header_admin.'.$phpEx);
@@ -234,9 +234,9 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 			$row = $db->sql_fetchrow($result);
 			$version = $row['mysql_version'];
 
-			if( preg_match("/^(3\.23|4\.|5\.)/", $version) )
+			if( preg_match("/^(3\.24|4\.|5\.)/", $version) )
 			{
-				$db_name = ( preg_match("/^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)/", $version) ) ? "`$dbname`" : $dbname;
+				$db_name = ( preg_match("/^(3\.24\.[6-9])|(3\.24\.[1-9][1-9])|(4\.)|(5\.)/", $version) ) ? "`$dbname`" : $dbname;
 
 				$sql = "SHOW TABLE STATUS 
 					FROM " . $db_name;
@@ -247,7 +247,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 					$dbsize = 0;
 					for($i = 0; $i < count($tabledata_ary); $i++)
 					{
-						if( $tabledata_ary[$i]['Type'] != "MRG_MyISAM" )
+						if( $tabledata_ary[$i]['Engine'] != "MRG_MyISAM" )
 						{
 							if( $table_prefix != "" )
 							{
@@ -260,7 +260,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 							{
 								$dbsize += $tabledata_ary[$i]['Data_length'] + $tabledata_ary[$i]['Index_length'];
 							}
-						}
+						}						
 					}
 				} // Else we couldn't get the table status.
 			}
@@ -327,9 +327,9 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	//
 	// Get users online information.
 	//
-	$sql = "SELECT u.user_id, u.username, u.user_session_time, u.user_session_page, s.session_logged_in, s.session_ip, s.session_start 
+	$sql = "SELECT u.user_id, u.user_active, u.username, u.user_lastvisit, u.user_regdate, u.user_level, u.user_posts, u.user_timezone, u.user_session_time, u.user_session_page, u.user_style, u.user_lang, u.user_dateformat, u.user_allow_viewonline, u.user_notify, u.user_notify_pm, u.user_popup_pm, u.user_rank, u.user_avatar, u.user_avatar_type, u.user_email, u.user_icq, u.user_website, u.user_from, u.user_sig, u.user_sig_bbcode_uid, u.user_interests, u.user_actkey, u.user_permissions, u.user_level as user_type, s.session_logged_in, s.session_ip, s.session_start 
 		FROM " . USERS_TABLE . " u, " . SESSIONS_TABLE . " s
-		WHERE s.session_logged_in = " . TRUE . " 
+		WHERE s.session_logged_in = " . true . " 
 			AND u.user_id = s.session_user_id 
 			AND u.user_id <> " . ANONYMOUS . " 
 			AND s.session_time >= " . ( time() - 300 ) . " 
@@ -397,39 +397,39 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 						case PAGE_INDEX:
 							$location = $lang['Forum_index'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_POSTING:
 							$location = $lang['Posting_message'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_LOGIN:
 							$location = $lang['Logging_on'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_SEARCH:
 							$location = $lang['Searching_forums'];
-							$location_url = "index.$phpEx?pane=right";
+						$location_url = "index.$phpEx?pane=right";
 							break;
 						case PAGE_PROFILE:
 							$location = $lang['Viewing_profile'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_VIEWONLINE:
 							$location = $lang['Viewing_online'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_VIEWMEMBERS:
 							$location = $lang['Viewing_member_list'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_PRIVMSGS:
 							$location = $lang['Viewing_priv_msgs'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						case PAGE_FAQ:
 							$location = $lang['Viewing_FAQ'];
 							$location_url = "index.$phpEx?pane=right";
-							break;
+						break;
 						default:
 							$location = $lang['Forum_index'];
 							$location_url = "index.$phpEx?pane=right";
@@ -489,39 +489,39 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 					case PAGE_INDEX:
 						$location = $lang['Forum_index'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_POSTING:
 						$location = $lang['Posting_message'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_LOGIN:
 						$location = $lang['Logging_on'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_SEARCH:
 						$location = $lang['Searching_forums'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_PROFILE:
 						$location = $lang['Viewing_profile'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_VIEWONLINE:
 						$location = $lang['Viewing_online'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_VIEWMEMBERS:
 						$location = $lang['Viewing_member_list'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_PRIVMSGS:
 						$location = $lang['Viewing_priv_msgs'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					case PAGE_FAQ:
 						$location = $lang['Viewing_FAQ'];
 						$location_url = "index.$phpEx?pane=right";
-						break;
+					break;
 					default:
 						$location = $lang['Forum_index'];
 						$location_url = "index.$phpEx?pane=right";
@@ -566,62 +566,64 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 
 	$errno = 0;
 	$errstr = $version_info = '';
-
+	$phpbb_version_info = $cache->get('versioncheck');
+	
 	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr, 10))
 	{
-		@fputs($fsock, "GET /updatecheck/20x.txt HTTP/1.1\r\n");
-		@fputs($fsock, "HOST: www.phpbb.com\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
-
-		$get_info = false;
-		while (!@feof($fsock))
+		if ($phpbb_version_info === false || $force_update)
 		{
-			if ($get_info)
-			{
-				$version_info .= @fread($fsock, 1024);
-			}
-			else
-			{
-				if (@fgets($fsock, 1024) == "\r\n")
-				{
-					$get_info = true;
-				}
-			}
+			$errstr = '';
+			$errno = 0;
+
+			$phpbb_version_info = get_remote_file('version.phpbb.com', '/phpbb',
+				((defined('PHPBB_QA')) ? '20x_qa.txt' : '20x.txt'), $errstr, $errno);
 		}
-		@fclose($fsock);
-
-		$version_info = explode("\n", $version_info);
-		$latest_head_revision = (int) $version_info[0];
-		$latest_minor_revision = (int) $version_info[2];
-		$latest_version = (int) $version_info[0] . '.' . (int) $version_info[1] . '.' . (int) $version_info[2];
-
-		if ($latest_head_revision == 2 && $minor_revision == $latest_minor_revision)
+			
+		if (empty($phpbb_version_info))
 		{
-			$version_info = '<p style="color:green">' . $lang['Version_up_to_date'] . '</p>';
+			$cache->destroy('versioncheck');
+		}
+
+		$cache->put('versioncheck', $phpbb_version_info);			
+
+		$phpbb_version_info = explode("\n", $phpbb_version_info);
+		//$latest_version = trim($phpbb_version_info[0]); 
+		//$update_link = append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update');
+		$latest_phpbb_head_revision = $version1 = strtolower(trim($phpbb_version_info[0]));
+		$latest_phpbb_minor_revision = trim($phpbb_version_info[2]);
+		$latest_phpbb_version = trim($phpbb_version_info[0]) . '.' . trim($phpbb_version_info[1]) . '.' . trim($phpbb_version_info[2]);
+		$version2 = strtolower('2'.$board_config['version']);
+		$current_phpbb_version = explode(".", $board_config['version']);
+		$minor_phpbb_revision = $current_phpbb_version[2];
+		$operator = '<=';
+		
+		if (version_compare($version1, $version2, $operator))
+		{
+			$phpbb_version_info = '<p style="color:green">' . $lang['Version_up_to_date'] . '</p>';
 		}
 		else
 		{
-			$version_info = '<p style="color:red">' . $lang['Version_not_up_to_date'];
-			$version_info .= '<br />' . sprintf($lang['Latest_version_info'], $latest_version) . ' ' . sprintf($lang['Current_version_info'], '2' . $board_config['version']) . '</p>';
+			$phpbb_version_info = '<p style="color:red">' . $lang['Version_not_up_to_date'];
+			$phpbb_version_info .= '<br />' . sprintf($lang['Latest_version_info'], $latest_phpbb_version) . sprintf($lang['Current_version_info'], $board_config['version']) . '</p>';
 		}
 	}
 	else
 	{
 		if ($errstr)
 		{
-			$version_info = '<p style="color:red">' . sprintf($lang['Connect_socket_error'], $errstr) . '</p>';
+			$phpbb_version_info = '<p style="color:red">' . sprintf($lang['Connect_socket_error'], $errstr) . '</p>';
 		}
 		else
 		{
-			$version_info = '<p>' . $lang['Socket_functions_disabled'] . '</p>';
+			$phpbb_version_info = '<p>' . $lang['Socket_functions_disabled'] . '</p>';
 		}
 	}
 	
-	$version_info .= '<p>' . $lang['Mailing_list_subscribe_reminder'] . '</p>';
+	$phpbb_version_info .= '<p>' . $lang['Mailing_list_subscribe_reminder'] . '</p>';
 	
 
 	$template->assign_vars(array(
-		'VERSION_INFO'	=> $version_info,
+		'VERSION_INFO'	=> $phpbb_version_info,
 		'L_VERSION_INFORMATION'	=> $lang['Version_information'])
 	);
 

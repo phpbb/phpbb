@@ -6,7 +6,7 @@
     copyright            : (C) 2001 The phpBB Group
     email                : support@phpbb.com
 
-    $Id$
+    $Id: emailer.php,v 1.2 2011/03/06 05:48:25 orynider Exp $
 
 ***************************************************************************/
 
@@ -90,7 +90,7 @@ class emailer
 
 		if (trim($template_file) == '')
 		{
-			message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
+			//message_die(GENERAL_ERROR, 'No template file set', '', __LINE__, __FILE__);
 		}
 
 		if (trim($template_lang) == '')
@@ -108,13 +108,13 @@ class emailer
 
 				if (!@file_exists(@phpbb_realpath($tpl_file)))
 				{
-					message_die(GENERAL_ERROR, 'Could not find email template file :: ' . $template_file, '', __LINE__, __FILE__);
+					//message_die(GENERAL_ERROR, 'Could not find email template file :: ' . $template_file, '', __LINE__, __FILE__);
 				}
 			}
 
 			if (!($fd = @fopen($tpl_file, 'r')))
 			{
-				message_die(GENERAL_ERROR, 'Failed opening template file :: ' . $tpl_file, '', __LINE__, __FILE__);
+				//message_die(GENERAL_ERROR, 'Failed opening template file :: ' . $tpl_file, '', __LINE__, __FILE__);
 			}
 
 			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
@@ -188,8 +188,8 @@ class emailer
 
 		$to = $this->addresses['to'];
 
-		$cc = (count($this->addresses['cc'])) ? implode(', ', $this->addresses['cc']) : '';
-		$bcc = (count($this->addresses['bcc'])) ? implode(', ', $this->addresses['bcc']) : '';
+		$cc = (isset($this->addresses['cc']) && @count($this->addresses['cc'])) ? implode(', ', $this->addresses['cc']) : '';
+		$bcc = (isset($this->addresses['bcc']) && @count($this->addresses['bcc'])) ? implode(', ', $this->addresses['bcc']) : '';
 
 		// Build header
 		$this->extra_headers = (($this->reply_to != '') ? "Reply-to: $this->reply_to\n" : '') . (($this->from != '') ? "From: $this->from\n" : "From: " . $board_config['board_email'] . "\n") . "Return-Path: " . $board_config['board_email'] . "\nMessage-ID: <" . md5(uniqid(time())) . "@" . $board_config['server_name'] . ">\nMIME-Version: 1.0\nContent-type: text/plain; charset=" . $this->encoding . "\nContent-transfer-encoding: 8bit\nDate: " . date('r', time()) . "\nX-Priority: 3\nX-MSMail-Priority: Normal\nX-Mailer: PHP\nX-MimeOLE: Produced By phpBB2\n" . $this->extra_headers . (($cc != '') ? "Cc: $cc\n" : '')  . (($bcc != '') ? "Bcc: $bcc\n" : ''); 
@@ -220,7 +220,7 @@ class emailer
 					WHERE config_name = 'sendmail_fix'";
 				if (!$db->sql_query($sql))
 				{
-					message_die(GENERAL_ERROR, 'Unable to update config table', '', __LINE__, __FILE__, $sql);
+					//message_die(GENERAL_ERROR, 'Unable to update config table', '', __LINE__, __FILE__, $sql);
 				}
 
 				$board_config['sendmail_fix'] = 1;
@@ -231,7 +231,7 @@ class emailer
 		// Did it work?
 		if (!$result)
 		{
-			message_die(GENERAL_ERROR, 'Failed sending email :: ' . (($this->use_smtp) ? 'SMTP' : 'PHP') . ' :: ' . $result, '', __LINE__, __FILE__);
+			message_die(GENERAL_ERROR, 'Failed sending email :: ' . (($this->use_smtp) ? 'SMTP' : 'PHP') . ' :: ' . $result, '', __LINE__, __FILE__, $this->msg);
 		}
 
 		return true;

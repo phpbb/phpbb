@@ -1,0 +1,760 @@
+/* GENERAL - BEGIN */
+/*
+ul {
+	list-style: disc;
+	margin: 0 0 1em 2em;
+}
+
+hr {
+	border: 0 none;
+	border-top: 1px dashed #999999;
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+	height: 1px;
+}
+
+.small {
+	font-size: 0.85em;
+}
+
+ul, ol {
+	list-style-position: inside;
+	margin-left: 1em;
+}
+
+li {
+	display: list-item;
+	list-style-type: inherit;
+}
+*/
+/* GENERAL - END */
+
+/* TABLE - BEGIN */
+/*
+*/
+.permissions-panel table {
+	width: 100%;
+	border: 1px solid #cccfd3;
+	background-color: #ffffff;
+	padding: 1px;
+}
+
+.permissions-panel table th {
+	padding: 3px 4px;
+	color: #ffffff;
+	background: #70aed3 url("./images/gradient2b.gif") bottom left repeat-x;
+	border-top: 1px solid #6dacd2;
+	border-bottom: 1px solid #327aa5;
+	text-align: left;
+	font-size: 0.85em;
+	text-transform: uppercase;
+}
+
+.permissions-panel table td {
+	text-align: left;
+	font-size: 0.75em;
+	padding: 4px;
+	line-height: 1.20em;
+}
+
+table.type2 {
+	border: none;
+	background: none;
+	padding: 0;
+}
+
+table.type2 th {
+	background: none;
+	border-top: none;
+	text-align: center;
+	color: #115098;
+	padding: 2px 0;
+}
+
+table.type2 td {
+	padding: 0;
+	font-size: 1em;
+}
+
+table.type2 td.name {
+	padding: 2px;
+	vertical-align: middle;
+}
+
+table.type3  {
+	float: right;
+	width: 300px;
+	border: none;
+	background-color: transparent;
+	padding: 0;
+}
+
+table.type3 thead th {
+	background-color: transparent;
+	border-top: none;
+	text-align: center;
+	color: #115098;
+	padding: 0 3px;
+	font-size: 0.85em;
+	font-weight: normal;
+	text-transform: none;
+}
+
+table.type3 tbody th {
+	border-top: none;
+	text-align: left;
+	text-transform: none;
+	padding: 0;
+	border: none;
+	font-size: 0.90em;
+	font-weight: normal;
+	width: 100%;
+}
+
+table.type3 td {
+	text-align: center;
+	padding: 1px;
+}
+
+th.name {
+	text-align: left;
+	width: auto;
+}
+
+td.name {
+	text-align: left;
+	font-weight: bold;
+}
+
+.entry {
+	text-align: left;
+	font-weight: normal;
+}
+
+.bbrow1 { background-color: #f9f9f9; }
+.bbrow2 { background-color: #dcebfe; }
+.bbrow3 { background-color: #dbdfe2; }
+.bbrow4 { background-color: #e4e8eb; }
+.bbcol1 { background-color: #dcebfe; }
+.bbcol2 { background-color: #f9f9f9; }
+
+.spacer {
+	background-color: #dbdfe2;
+	height: 1px;
+	line-height: 1px;
+}
+/* TABLE - END */
+
+/* FORMS - BEGIN */
+fieldset.phpbb {
+	margin: 15px 0;
+	padding: 10px;
+	border-top: 1px solid #d7d7d7;
+	border-right: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+	border-left: 1px solid #d7d7d7;
+	background-color: #ffffff;
+	position: relative;
+
+	border-radius: 6px 6px 6px 6px;
+}
+
+* html fieldset.phpbb {
+	padding: 0 10px 5px 10px;
+}
+
+fieldset.phpbb p {
+	font-size: 0.85em;
+}
+
+legend.phpbb {
+	padding: 1px 0;
+	font-family: Tahoma, arial, Verdana, Sans-serif;
+	font-size: .9em;
+	font-weight: bold;
+	color: #115098;
+	margin-top: -.4em;
+	position: relative;
+	text-transform: none;
+	line-height: 1.2em;
+	top: -.2em;
+	vertical-align: middle;
+}
+
+* html legend.phpbb {
+	margin: 0 0 -10px -7px;
+	line-height: 1em;
+	font-size: .85em;
+}
+
+optgroup.phpbb, select.phpbb {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 0.85em;
+	font-weight: normal;
+	font-style: normal;
+	cursor: pointer;
+	vertical-align: middle;
+	width: auto;
+	color: #000000;
+}
+
+optgroup.phpbb {
+	font-size: 1.00em;
+	font-weight: bold;
+}
+
+optgroup.disabled-options {
+	display: none;
+	background-color: #888888;
+}
+
+option.phpbb {
+	padding: 0 1em 0 0;
+	color: #000000;
+}
+
+option.disabled-option {
+	color: #888888;
+}
+
+.sep {
+	font-weight: bold;
+}
+
+.username-coloured {
+	font-weight: bold;
+}
+
+label.phpbb {
+	cursor: pointer;
+	font-size: 0.85em;
+	padding: 0 5px 0 0;
+}
+
+label.phpbb input {
+	font-size: 1.00em;
+	vertical-align: middle;
+}
+
+label.phpbb img {
+	vertical-align: middle;
+}
+
+fieldset.quick, p.quick {
+	margin: 0 0 5px;
+	padding: 5px 0 0;
+	border: none;
+	background-color: transparent;
+	text-align: right;
+}
+
+fieldset.quick legend {
+	display: none;
+}
+
+fieldset.tabulated {
+	background: none;
+	margin: 0;
+	padding: 0;
+	padding-top: 5px;
+	border: 0;
+}
+
+fieldset.tabulated legend {
+	display: none;
+}
+
+fieldset.nobg {
+	margin: 15px 0 0 0;
+	padding: 0;
+	border: none;
+	background-color: transparent;
+}
+
+fieldset.display-options {
+	margin: 15px 0 2px 0;
+	padding: 0 0 4px 0;
+	border: none;
+	background-color: transparent;
+	text-align: center;
+	font-size: 0.75em;
+}
+
+fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
+	font-size: 1.00em;
+	vertical-align: middle;
+}
+
+select option.disabled {
+	background-color: #bbbbbb;
+	color: #ffffff;
+}
+
+dl {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.00em;
+}
+
+dt {
+	float: left;
+	width: auto;
+}
+
+dd { color: #666666;}
+dd + dd { padding-top: 5px;}
+dt span { padding: 0 5px 0 0;}
+
+dt .explain { font-style: italic;}
+
+dt label {
+	font-size: 1.00em;
+	text-align: left;
+	font-weight: bold;
+	color: #4a5a73;
+}
+
+dd label {
+	font-size: 1.00em;
+	white-space: nowrap;
+	margin: 0 10px 0 0;
+	color: #4a5a73;
+}
+
+html>body dd label input { vertical-align: text-bottom;}	/* Tweak for Moz to align checkboxes/radio buttons nicely */
+
+dd input {
+	font-size: 1.00em;
+	max-width: 100%;
+}
+
+dd select {
+	font-size: 100%;
+	width: auto;
+	max-width: 100%;
+}
+
+dd textarea {
+	font-size: 0.90em;
+	width: 90%;
+}
+
+dd select {
+	width: auto;
+	font-size: 1.00em;
+}
+
+fieldset dl {
+	margin-bottom: 10px;
+	font-size: 0.85em;
+}
+
+fieldset dt {
+	width: 45%;
+	text-align: left;
+	border: none;
+	border-right: 1px solid #cccccc;
+	padding-top: 3px;
+}
+
+fieldset dd {
+	margin: 0 0 0 45%;
+	padding: 0 0 0 5px;
+	border: none;
+	border-left: 1px solid #cccccc;
+	vertical-align: top;
+	font-size: 1.00em;
+}
+
+dd.full {
+	margin: 0;
+	border: 0;
+	padding: 0;
+	padding-top: 3px;
+	text-align: center;
+	width: 95%;
+}
+
+/* Hover highlights for form rows */
+fieldset dl:hover dt, fieldset dl:hover dd {
+	border-color: #666666;
+}
+
+fieldset dl:hover dt label {
+	color: #000000;
+}
+
+fieldset dl dd label:hover {
+	color: #bc2a4d;
+}
+
+/* Submit button fieldset or paragraph */
+fieldset.submit-buttons {
+	text-align: center;
+	border: none;
+	background-color: transparent;
+	margin: 0;
+	padding: 4px;
+	margin-top: -1px;
+}
+
+p.submit-buttons {
+	text-align: center;
+	margin: 0;
+	padding: 4px;
+	margin-top: 10px;
+}
+
+fieldset.submit-buttons input, p.submit-buttons input {
+	padding: 3px 2px;
+}
+
+fieldset.submit-buttons legend {
+	display: none;
+}
+
+/* Input field styles */
+input.radio, input.permissions-checkbox {
+	width: auto !important;
+	background-color: transparent;
+	border: none;
+	cursor: default;
+}
+
+input.full,
+textarea.full {
+	width: 99%;
+}
+
+* html input.full, * html textarea.full { width: 95%;}
+input.medium { width: 50%;}
+input.narrow { width: 25%;}
+input.tiny { width: 10%;}
+input.autowidth { width: auto !important;}
+.box2 .inputbox { background-color: #e9e9e9;}
+
+input.disabled {
+	font-weight: normal;
+	color: #666666;
+}
+/* FORMS - END */
+
+/* ACTIONS - BEGIN */
+/* Tooltip for permission roles */
+.tooltip {
+	width: 200px;
+	color: #000000;
+	text-align: center;
+	border: 1px solid #aaaaaa;
+}
+
+.tooltip span.top {
+	background: #efefef;
+	font-weight: bold;
+	padding: 2px;
+}
+
+.tooltip span.bottom {
+	padding: 5px;
+	color: #000000;
+	background: #ffffff;
+}
+
+.clearfix, .row, fieldset dl {
+	height: 1%;
+	overflow: hidden;
+}
+/* ACTIONS - BEGIN */
+
+/* PERMISSIONS - BEGIN */
+fieldset.permissions legend {
+	text-transform: none;
+}
+
+fieldset.permissions legend input{
+	height: 1.1em;
+}
+
+/* Permission sections */
+fieldset.permissions .permissions-simple {
+	text-align: left;
+	padding-top: 3px;
+}
+
+fieldset.permissions .permissions-advanced {
+	padding: 10px 0 0 5px;
+	vertical-align: top;
+	clear: right;
+}
+
+fieldset.permissions .permissions-switch {
+	float: right;
+}
+
+fieldset.permissions .padding {
+}
+
+.permissions-switch {
+	margin-top: -6px;
+	font-size: .9em;
+}
+
+.permissions-switch a {
+	text-decoration: underline;
+}
+
+.permissions-reset {
+	padding-bottom: 10px;
+}
+
+.permissions-reset a {
+	font-size: .85em;
+}
+
+/* Tabbed menu */
+.permissions-category {
+	line-height: normal;
+	margin: 0 0 -1px 7px;
+	min-width: 570px;
+	font-size: 0.85em;
+}
+
+.permissions-category ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.permissions-category li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+.permissions-category a {
+	float: left;
+	background: url("./images/bg_tabs_alt1.gif") no-repeat 0% -35px;
+	margin: 0 1px 0 0;
+	padding: 0 0 0 6px;
+	text-decoration: none;
+	position: relative;
+}
+
+.permissions-category a span.tabbg {
+	float: left;
+	display: block;
+	background: url("./images/bg_tabs_alt2.gif") no-repeat 100% -35px;
+	padding: 7px 12px 6px 6px;
+	color: #536482;
+	white-space: nowrap;
+}
+
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+.permissions-category a span.tabbg, .rtl .permissions-category a span.tabbg { float: none;}
+/* End hack */
+
+.permissions-category a:hover span.tabbg {
+	color: #dd6900;
+}
+
+.permissions-category .activetab a {
+	background-position: 0 0;
+}
+
+.permissions-category .activetab a span.tabbg {
+	background-position: 100% 0;
+	padding-bottom: 7px;
+	color: #333333;
+}
+
+.permissions-category a:hover {
+	background-position: 0 -70px;
+}
+
+.permissions-category a:hover span.tabbg {
+	background-position: 100% -70px;
+}
+
+.permissions-category .activetab a:hover span.tabbg {
+	color: #333333;
+	background-position: 100% 0;
+}
+
+.permissions-category .activetab a:hover {
+	background-position: 0 0;
+}
+
+.permissions-category a span.colour {
+	border: 1px solid #536482;
+	display: block;
+	float: left;
+	width: 10px;
+	height: 10px;
+	margin: 0 5px 0 0;
+}
+
+.permissions-category .activetab span.colour {
+	border-color: #333333;
+}
+
+.permissions-category a:hover span.colour {
+	border-color: #dd6900;
+}
+
+.permissions-category .activetab a:hover span.colour {
+	border-color: #333333;
+}
+
+/* Permission preset colours */
+.permissions-preset-yes span.colour,
+.yes {
+	background-color: #86f786;
+}
+
+.permissions-preset-custom span.colour {
+	background-color: #b2bbdd;
+}
+
+.permissions-preset-never span.colour {
+	background-color: #dd0000;
+}
+
+.permissions-preset-no span.colour,
+.never {
+	background-color: #efb0b2;
+}
+
+/* Permission panel */
+.permissions-panel {
+	float: left;
+	background-color: #cadceb;
+	width: 100%;
+}
+
+.permissions-panel span.corners-top {
+	background-image: url("./images/corners_left2.gif");
+}
+
+.permissions-panel span.corners-top span {
+	background-image: url("./images/corners_right2.gif");
+}
+
+.permissions-panel span.corners-bottom {
+	background-image: url("./images/corners_left2.gif");
+}
+
+.permissions-panel span.corners-bottom span {
+	background-image: url("./images/corners_right2.gif");
+}
+
+.permissions-panel span.corners-top, .permissions-panel span.corners-bottom,
+.permissions-panel span.corners-top span, .permissions-panel span.corners-bottom span {
+	font-size: 1px;
+	line-height: 1px;
+	display: block;
+	height: 5px;
+	background-repeat: no-repeat;
+}
+
+.permissions-panel span.corners-top {
+	background-image: url("./images/corners_left2.gif");
+	background-position: 0 0;
+	margin: 0 0;
+}
+
+.permissions-panel span.corners-top span {
+	background-image: url("./images/corners_right2.gif");
+	background-position: 100% 0;
+}
+
+.permissions-panel span.corners-bottom {
+	background-image: url("./images/corners_left2.gif");
+	background-position: 0 100%;
+	margin: 0 0;
+	clear: both;
+}
+
+.permissions-panel span.corners-bottom span {
+	background-image: url("./images/corners_right2.gif");
+	background-position: 100% 100%;
+}
+
+/* Permission table */
+.permissions-panel .tablewrap {
+	margin: 0 10px;
+}
+
+.permissions-panel table {
+	width: 100%;
+}
+
+.permissions-panel tr th {
+	text-transform: none;
+}
+
+.permissions-panel tr th.value {
+	text-align: center;
+}
+
+.permissions-panel tr th.name {
+	text-align: left;
+	width: auto;
+	text-transform: none;
+}
+
+.permissions-panel tr th.permissions-name {
+	border: none;
+	color: #536482;
+	font-weight: normal;
+}
+
+.permissions-panel tr th.permissions-name a.trace {
+	display: inline;
+}
+
+.permissions-panel tr th.bbrow3 {
+	background-image: none;
+	background-color: #d1d7dc;
+	color: #536482;
+	border: none;
+}
+
+.permissions-panel tr th.bbrow4 {
+	background-image: none;
+	background-color: #e4e8eb;
+	color: #536482;
+	border: none;
+}
+
+.permissions-panel tr th a:link, .permissions-panel tr th a:hover, .permissions-panel tr th a:visited {
+	display: block;
+	color: #ffffff;
+	text-decoration: underline;
+}
+
+.permissions-panel tr td.permissions-yes label:hover {
+	background-color: #86f786;
+}
+
+.permissions-panel tr td.permissions-no label:hover {
+	background-color: #efb0b2;
+}
+
+.permissions-panel tr td.permissions-never label:hover {
+	background-color: #dd0000;
+}
+
+.permissions-panel tr td {
+	padding: 0;
+	text-align: center;
+	width: 10%;
+}
+
+.permissions-panel tr td label {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+/* PERMISSIONS - END */
+

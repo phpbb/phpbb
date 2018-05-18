@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: usercp_sendpasswd.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -27,10 +27,10 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( isset($HTTP_POST_VARS['submit']) )
+if ( isset($_POST['submit']) )
 {
-	$username = ( !empty($HTTP_POST_VARS['username']) ) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
-	$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['email']))) : '';
+	$username = ( !empty($_POST['username']) ) ? phpbb_clean_username($_POST['username']) : '';
+	$email = ( !empty($_POST['email']) ) ? trim(strip_tags(htmlspecialchars($_POST['email']))) : '';
 
 	$sql = "SELECT user_id, username, user_email, user_active, user_lang 
 		FROM " . USERS_TABLE . " 

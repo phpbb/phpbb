@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: index.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -20,34 +20,39 @@
  *
  ***************************************************************************/
 
+/**
+* @ignore
+*/
+define("IN_INDEX", true);
+
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
-include($phpbb_root_path . 'common.'.$phpEx);
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'common.' . $phpEx);
+
 
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX);
-init_userprefs($userdata);
+$userdata = $user->session_pagestart($user_ip, PAGE_INDEX);
+$auth->acl($user->data);
+init_userprefs($user->data);
 //
 // End session management
 //
 
-$viewcat = ( !empty($HTTP_GET_VARS[POST_CAT_URL]) ) ? $HTTP_GET_VARS[POST_CAT_URL] : -1;
 
-if( isset($HTTP_GET_VARS['mark']) || isset($HTTP_POST_VARS['mark']) )
-{
-	$mark_read = ( isset($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : $HTTP_GET_VARS['mark'];
-}
-else
-{
-	$mark_read = '';
-}
+// UPI2DB - BEGIN
+$mark_always_read = request_var('always_read', '');
+$mark_forum_id = request_var('forum_id', 0);
 
-//
+$viewcat = (!empty($_GET[POST_CAT_URL]) ? intval($_GET[POST_CAT_URL]) : -1);
+$viewcat = (($viewcat <= 0) ? -1 : $viewcat);
+$viewcatkey = ($viewcat < 0) ? 'Root' : POST_CAT_URL . $viewcat;
+
+$mark_read = request_var('mark', '');
+
 // Handle marking posts
-//
 if( $mark_read == 'forums' )
 {
 	if( $userdata['session_logged_in'] )
@@ -63,12 +68,12 @@ if( $mark_read == 'forums' )
 
 	message_die(GENERAL_MESSAGE, $message);
 }
-//
 // End handle marking posts
-//
 
-$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_t"]) : array();
-$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . "_f"]) : array();
+
+
+$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . "_t"]) : array();
+$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . "_f"]) : array();
 
 //
 // If you don't use these stats on your index you may want to consider
@@ -107,6 +112,52 @@ else
 }
 
 
+$order_legend = 'group_name';
+// Grab group details for legend display
+if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+{
+	$sql = 'SELECT g.*, g.group_id as group_colour
+		FROM ' . GROUPS_TABLE . ' g
+		WHERE g.group_id > 0
+		ORDER BY ' . $order_legend . ' ASC';
+}
+else
+{
+	$sql = 'SELECT g.*, g.group_id as group_colour
+		FROM ' . GROUPS_TABLE . ' g
+		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+			ON (
+				g.group_id = ug.group_id
+				AND ug.user_id = ' . $user->data['user_id'] . '
+				AND ug.user_pending = 0
+			)
+		WHERE g.group_id > 0
+			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+		ORDER BY g.' . $order_legend . ' ASC';
+}
+$result = $db->sql_query($sql);
+
+$legend = array();
+
+while ($row = $db->sql_fetchrow($result))
+{
+	$colour_text = ($row['group_colour']) ? ' style="color:#FFA' . $row['group_colour'] . '4F"' : '';
+	$group_name = $row['group_name'];
+
+	if ($row['group_name'] == 'BOTS' || ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')))
+	{
+		$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
+	}
+	else
+	{
+		$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
+	}
+}
+$db->sql_freeresult($result);
+
+$legend = implode(', ', $legend);
+
+
 //
 // Start page proper
 //
@@ -124,6 +175,11 @@ while ($row = $db->sql_fetchrow($result))
 	$category_rows[] = $row;
 }
 $db->sql_freeresult($result);
+
+// Begin Simple Subforums MOD
+$subforums_list = array();
+// End Simple Subforums MOD
+$birthdays = $birthday_list = array();
 
 if( ( $total_categories = count($category_rows) ) )
 {
@@ -147,7 +203,7 @@ if( ( $total_categories = count($category_rows) ) )
 						)
 					)
 					ORDER BY cat_id, forum_order";
-			break;
+		break;
 
 		case 'oracle':
 			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id 
@@ -155,7 +211,7 @@ if( ( $total_categories = count($category_rows) ) )
 				WHERE p.post_id = f.forum_last_post_id(+)
 					AND u.user_id = p.poster_id(+)
 				ORDER BY f.cat_id, f.forum_order";
-			break;
+		break;
 
 		default:
 			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
@@ -163,7 +219,7 @@ if( ( $total_categories = count($category_rows) ) )
 				LEFT JOIN " . POSTS_TABLE . " p ON p.post_id = f.forum_last_post_id )
 				LEFT JOIN " . USERS_TABLE . " u ON u.user_id = p.poster_id )
 				ORDER BY f.cat_id, f.forum_order";
-			break;
+		break;
 	}
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -176,12 +232,11 @@ if( ( $total_categories = count($category_rows) ) )
 		$forum_data[] = $row;
 	}
 	$db->sql_freeresult($result);
-
 	if ( !($total_forums = count($forum_data)) )
 	{
 		message_die(GENERAL_MESSAGE, $lang['No_forums']);
 	}
-
+	
 	//
 	// Obtain a list of topic ids which contain
 	// posts made since user last visited
@@ -249,7 +304,7 @@ if( ( $total_categories = count($category_rows) ) )
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not query forum moderator information', '', __LINE__, __FILE__, $sql);
-	}
+	}	
 
 	while( $row = $db->sql_fetchrow($result) )
 	{
@@ -262,7 +317,12 @@ if( ( $total_categories = count($category_rows) ) )
 	//
 	$is_auth_ary = array();
 	$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata, $forum_data);
+	
+	// Generate birthday list if required ...
+	$show_birthdays = ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
 
+	$template->assign_block_vars_array('birthdays', $birthdays);	
+			
 	//
 	// Start output of page
 	//
@@ -273,33 +333,51 @@ if( ( $total_categories = count($category_rows) ) )
 	$template->set_filenames(array(
 		'body' => 'index_body.tpl')
 	);
-
+	
 	$template->assign_vars(array(
-		'TOTAL_POSTS' => sprintf($l_total_post_s, $total_posts),
-		'TOTAL_USERS' => sprintf($l_total_user_s, $total_users),
-		'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'), 
+		'L_STATISTICS' 		=> $lang['Statistics'],
+		
+		'L_LEGEND' 			=> $lang['Legend'],			
+		'LEGEND'			=> $legend,	
+		
+		'TOTAL_POSTS' 		=> sprintf($l_total_post_s, $total_posts),
+		'TOTAL_USERS' 		=> sprintf($l_total_user_s, $total_users),
+		'NEWEST_USER' 		=> sprintf($lang['Newest_user'], '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'), 
 
-		'FORUM_IMG' => $images['forum'],
-		'FORUM_NEW_IMG' => $images['forum_new'],
-		'FORUM_LOCKED_IMG' => $images['forum_locked'],
-
-		'L_FORUM' => $lang['Forum'],
-		'L_TOPICS' => $lang['Topics'],
-		'L_REPLIES' => $lang['Replies'],
-		'L_VIEWS' => $lang['Views'],
-		'L_POSTS' => $lang['Posts'],
-		'L_LASTPOST' => $lang['Last_Post'], 
-		'L_NO_NEW_POSTS' => $lang['No_new_posts'],
-		'L_NEW_POSTS' => $lang['New_posts'],
+		'FORUM_IMG' 		=> $images['forum'],
+		'FORUM_NEW_IMG' 	=> $images['forum_new'],
+		'FORUM_LOCKED_IMG' 	=> $images['forum_locked'],
+		
+		
+		'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),		
+		'S_DISPLAY_BIRTHDAY_LIST'	=> $show_birthdays,		
+		
+		'S_IS_LINK'		=> false,		
+		
+		'L_FORUM' 			=> $lang['Forum'],
+		// Begin Simple Subforums MOD
+		'L_SUBFORUMS' 		=> $lang['Subforums'],
+		// End Simple Subforums MOD		
+		'L_TOPICS' 			=> $lang['Topics'],
+		'L_REPLIES' 		=> $lang['Replies'],
+		'L_VIEWS' 			=> $lang['Views'],
+		'L_POSTS' 			=> $lang['Posts'],
+		'L_LASTPOST' 		=> $lang['Last_Post'], 
+		'L_NO_NEW_POSTS' 	=> $lang['No_new_posts'],
+		'L_NEW_POSTS' 		=> $lang['New_posts'],
 		'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
 		'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
-		'L_ONLINE_EXPLAIN' => $lang['Online_explain'], 
+		'L_ONLINE_EXPLAIN' 	=> $lang['Online_explain'], 
 
-		'L_MODERATOR' => $lang['Moderators'], 
-		'L_FORUM_LOCKED' => $lang['Forum_is_locked'],
-		'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'], 
-
-		'U_MARK_READ' => append_sid("index.$phpEx?mark=forums"))
+		'L_MODERATOR' 		=> $lang['Moderators'], 
+		'L_FORUM_LOCKED' 	=> $lang['Forum_is_locked'],
+		'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'],
+		
+		'U_TEAM'			=> ($user->data['user_id'] != ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
+		'U_TERMS_USE'		=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),		
+		'U_CANONICAL' 		=> generate_board_url() . '/' . append_sid("index.$phpEx"),			
+		'U_MARK_FORUMS'		=> ($userdata['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '', 
+		'U_MARK_READ' 		=> append_sid("index.$phpEx?mark=forums"))
 	);
 
 	//
@@ -348,6 +426,17 @@ if( ( $total_categories = count($category_rows) ) )
 							{
 								$folder_image = $images['forum_locked']; 
 								$folder_alt = $lang['Forum_locked'];
+								// Begin Simple Subforums MOD
+								$unread_topics = false;
+								$folder_images = array(
+									'default'	=> $folder_image,
+									'new'		=> $images['forum_locked'],
+									'sub'		=> ( isset($images['forums_locked']) ) ? $images['forums_locked'] : $images['forum_locked'],
+									'subnew'	=> ( isset($images['forums_locked']) ) ? $images['forums_locked'] : $images['forum_locked'],
+									'subalt'	=> $lang['Forum_locked'],
+									'subaltnew'	=> $lang['Forum_locked'],
+								);
+								// End Simple Subforums MOD								
 							}
 							else
 							{
@@ -384,9 +473,9 @@ if( ( $total_categories = count($category_rows) ) )
 											}
 										}
 
-										if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+										if ( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
 										{
-											if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $forum_last_post_time )
+											if ( $_COOKIE[$board_config['cookie_name'] . '_f_all'] > $forum_last_post_time )
 											{
 												$unread_topics = false;
 											}
@@ -396,7 +485,18 @@ if( ( $total_categories = count($category_rows) ) )
 								}
 
 								$folder_image = ( $unread_topics ) ? $images['forum_new'] : $images['forum']; 
-								$folder_alt = ( $unread_topics ) ? $lang['New_posts'] : $lang['No_new_posts']; 
+								$folder_alt = ( $unread_topics ) ? $lang['New_posts'] : $lang['No_new_posts'];
+								
+								// Begin Simple Subforums MOD
+								$folder_images = array(
+									'default'	=> $folder_image,
+									'new'		=> $images['forum_new'],
+									'sub'		=> ( isset($images['forums']) ) ? $images['forums'] : $images['forum'],
+									'subnew'	=> ( isset($images['forums_new']) ) ? $images['forums_new'] : $images['forum_new'],
+									'subalt'	=> $lang['No_new_posts'],
+									'subaltnew'	=> $lang['New_posts'],
+								);
+								// End Simple Subforums MOD								
 							}
 
 							$posts = $forum_data[$j]['forum_posts'];
@@ -406,18 +506,27 @@ if( ( $total_categories = count($category_rows) ) )
 							{
 								$last_post_time = create_date($board_config['default_dateformat'], $forum_data[$j]['post_time'], $board_config['board_timezone']);
 
-								$last_post = $last_post_time . '<br />';
+								$last_post = $lang['Posted_on_date'] . '&nbsp;' . $last_post_time . '<br />';
 
-								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != '' ) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
+								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( !empty($forum_data[$j]['post_username']) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : $lang['Post_by_author'] . '&nbsp;<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
 								
-								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+
+								// Begin Simple Subforums MOD
+								$last_post_sub = '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . ($unread_topics ? $images['icon_newest_reply'] : $images['icon_latest_reply']) . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+								$last_post_time = $forum_data[$j]['post_time'];
+								// End Simple Subforums MOD								
 							}
 							else
 							{
 								$last_post = $lang['No_Posts'];
+								// Begin Simple Subforums MOD
+								$last_post_sub = '<img src="' . $images['icon_minipost'] . '" border="0" alt="' . $lang['No_Posts'] . '" title="' . $lang['No_Posts'] . '" />';
+								$last_post_time = 0;
+								// End Simple Subforums MOD								
 							}
 
-							if ( count($forum_moderators[$forum_id]) > 0 )
+							if (isset($forum_moderators[$forum_id]) && (count($forum_moderators[$forum_id]) > 0))
 							{
 								$l_moderators = ( count($forum_moderators[$forum_id]) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
 								$moderator_list = implode(', ', $forum_moderators[$forum_id]);
@@ -425,16 +534,24 @@ if( ( $total_categories = count($category_rows) ) )
 							else
 							{
 								$l_moderators = '&nbsp;';
-								$moderator_list = '&nbsp;';
+								$moderator_list = '';
 							}
 
 							$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 							$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
+							
 							$template->assign_block_vars('catrow.forumrow',	array(
+								'S_IS_CAT'	=> (count($category_rows) > 0),
+								'S_NO_CAT'	=> (count($category_rows) == 0),								
+								'FORUM_ID'	=> $forum_data[$j]['forum_id'],							
 								'ROW_COLOR' => '#' . $row_color,
 								'ROW_CLASS' => $row_class,
-								'FORUM_FOLDER_IMG' => $folder_image, 
+								
+								'FORUM_FOLDER_IMG' 			=> $folder_image,
+								'FORUM_FOLDER_IMG_SRC' 		=> $user->img($folder_image, '', '27', '', 'src'),			
+								'FORUM_FOLDER_IMG_FULL_TAG' => $user->img($folder_image, '', '27', '', 'full_tag'),	
+								'FORUM_FOLDER_IMG_HTML' 	=> $user->img($folder_image, '', '27', '', 'html'),				
+											
 								'FORUM_NAME' => $forum_data[$j]['forum_name'],
 								'FORUM_DESC' => $forum_data[$j]['forum_desc'],
 								'POSTS' => $forum_data[$j]['forum_posts'],
@@ -444,9 +561,110 @@ if( ( $total_categories = count($category_rows) ) )
 
 								'L_MODERATOR' => $l_moderators, 
 								'L_FORUM_FOLDER_ALT' => $folder_alt, 
+								// Begin Simple Subforums MOD
+								'FORUM_FOLDERS' => serialize($folder_images),
+								'S_HAS_SUBFORUM' => ( (intval($forum_data[$j]['forum_parent'])) ? true : false ),
+								'PARENT' => $forum_data[$j]['forum_parent'],
+								'ID' => $forum_data[$j]['forum_id'],
+								'UNREAD' => intval($unread_topics),
+								'TOTAL_UNREAD' => intval($unread_topics),
+								'TOTAL_POSTS' => $forum_data[$j]['forum_posts'],
+								'TOTAL_TOPICS' => $forum_data[$j]['forum_topics'],
+								'LAST_POST_FORUM' => $last_post,
+								'LAST_POST_TIME' => $last_post_time,
+								'LAST_POST_TIME_FORUM' => $last_post_time,
+								// End Simple Subforums MOD								
 
-								'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))
+								'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"))		
 							);
+							
+							//Begin  assign template vars for simple phpBB3 templates 
+							// Empty category
+							if ($forum_data[$j]['forum_parent'] == $forum_data[$j]['forum_id'] && $forum_data[$j]['forum_type'] == FORUM_CAT)
+							{
+								$template->assign_block_vars('forumrow', array(
+									'S_IS_CAT'	=> (count($category_rows) > 0),
+									'S_NO_CAT'	=> (count($category_rows) == 0),								
+									'FORUM_ID'	=> $forum_data[$j]['forum_id'],							
+									'ROW_COLOR' => '#' . $row_color,
+									'ROW_CLASS' => $row_class,
+									
+									'FORUM_ID'				=> $forum_data[$j]['forum_id'],
+									'FORUM_NAME'			=> $forum_data[$j]['forum_name'],
+									'FORUM_DESC'			=> generate_text_for_display($forum_data[$j]['forum_desc'], $forum_data[$j]['forum_desc_uid'], $forum_data[$j]['forum_desc_bitfield'], $forum_data[$j]['forum_desc_options']),
+									
+									'FORUM_FOLDER_IMG' 			=> $folder_image,
+									'FORUM_FOLDER_IMG_SRC' 		=> $user->img($folder_image, '', '27', '', 'src'),			
+									'FORUM_FOLDER_IMG_FULL_TAG' => $user->img($folder_image, '', '27', '', 'full_tag'),	
+									'FORUM_FOLDER_IMG_HTML' 	=> $user->img($folder_image, '', '27', '', 'html'),				
+							
+									'FORUM_IMAGE'			=> ($forum_data[$j]['forum_image']) ? '<img src="' . $phpbb_root_path . $forum_data[$j]['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
+									'FORUM_IMAGE_SRC'		=> ($forum_data[$j]['forum_image']) ? $phpbb_root_path . $forum_data[$j]['forum_image'] : '',
+									'U_VIEWFORUM'			=> append_sid(PHPBB_URL . "viewforum.$phpEx", 'f=' . $forum_data[$j]['forum_id']))
+								);
+								continue;
+							}							
+							
+							$template->assign_block_vars('forumrow',	array(
+								'S_IS_CAT'	=> (count($category_rows) > 0),
+								'S_NO_CAT'	=> (count($category_rows) == 0),								
+							
+								'ROW_COLOR' => '#' . $row_color,
+								'ROW_CLASS' => $row_class,
+								
+								'FORUM_ID'	=> $forum_data[$j]['forum_id'],							
+								'S_ROW_COUNT'	=> $j,
+								
+								'FORUM_FOLDER_IMG' 			=> $folder_image,
+								'FORUM_FOLDER_IMG_SRC' 		=> $user->img($folder_image, '', '27', '', 'src'),			
+								'FORUM_FOLDER_IMG_FULL_TAG' => $user->img($folder_image, '', '27', '', 'full_tag'),	
+								'FORUM_FOLDER_IMG_HTML' 	=> $user->img($folder_image, '', '27', '', 'html'),				
+											
+								'FORUM_NAME' => $forum_data[$j]['forum_name'],
+								'FORUM_DESC' => $forum_data[$j]['forum_desc'],
+								'POSTS' => $forum_data[$j]['forum_posts'],
+								'TOPICS' => $forum_data[$j]['forum_topics'],
+								'LAST_POST' => $last_post,
+								'MODERATORS' => $moderator_list,
+
+								'L_MODERATOR' => $l_moderators, 
+								'L_FORUM_FOLDER_ALT' => $folder_alt, 
+								// Begin Simple Subforums MOD
+								'FORUM_FOLDERS' => serialize($folder_images),
+								'S_HAS_SUBFORUM' => ( (intval($forum_data[$j]['forum_parent'])) ? true : false ),
+								'PARENT' => $forum_data[$j]['forum_parent'],
+								'ID' => $forum_data[$j]['forum_id'],
+								'DEFINE' => $forum_data[$j]['forum_id'],
+								'UNREAD' => intval($unread_topics),
+								'TOTAL_UNREAD' => intval($unread_topics),
+								'TOTAL_POSTS' => $forum_data[$j]['forum_posts'],
+								'TOTAL_TOPICS' => $forum_data[$j]['forum_topics'],
+								'LAST_POST_FORUM' => $last_post,
+								'LAST_POST_TIME' => $last_post_time,
+								'LAST_POST_TIME_FORUM' => $last_post_time,
+								// End Simple Subforums MOD								
+
+								'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=".$forum_id))		
+							);							
+							//End  assign template vars for simple phpBB3 templates
+							
+							// Begin Simple Subforums MOD
+							if( $forum_data[$j]['forum_parent'] )
+							{
+								$subforums_list[] = array(
+									'forum_data'	=> $forum_data[$j],
+									'folder_image'	=> $folder_image,
+									'last_post'		=> $last_post,
+									'last_post_sub'	=> $last_post_sub,
+									'moderator_list'	=> $moderator_list,
+									'unread_topics'	=> $unread_topics,
+									'l_moderators'	=> $l_moderators,
+									'folder_alt'	=> $folder_alt,
+									'last_post_time' => $last_post_time,
+									'desc'			=> $forum_data[$j]['forum_desc'],
+									);
+							}
+							// End Simple Subforums MOD							
 						}
 					}
 				}
@@ -459,6 +677,112 @@ else
 {
 	message_die(GENERAL_MESSAGE, $lang['No_forums']);
 }
+
+// Begin Simple Subforums MOD
+unset($data);
+unset($item);
+unset($cat_item);
+unset($row_item);
+
+for( $i = 0; $i < count($subforums_list); $i++ )
+{
+	$forum_data = $subforums_list[$i]['forum_data'];
+	$parent_id = $forum_data['forum_parent'];
+	
+	// Find parent item
+	if( isset($template->_tpldata['catrow.']) )
+	{
+		$data = &$template->_tpldata['catrow.'];
+		$count = count($data);
+		for( $j = 0; $j < $count; $j++)
+		{
+			$cat_item = &$data[$j];
+			$row_item = &$cat_item['forumrow.'];
+			$count2 = count($row_item);
+			for( $k = 0; $k < $count2; $k++)
+			{
+				if( $row_item[$k]['ID'] == $parent_id )
+				{
+					$item = &$row_item[$k];
+					break;
+				}
+			}
+			if( isset($item) )
+			{
+				break;
+			}
+		}
+	}
+	
+	if( isset($item) )
+	{
+		if( isset($item['sub.']) )
+		{
+			$num = count($item['sub.']);
+			$data = &$item['sub.'];
+		}
+		else
+		{
+			$num = 0;
+			$item[] = 'sub.';
+			$data = &$item['sub.'];
+		}
+		
+		// Append new entry
+		$data[] = array(
+			'NUM' => $num,
+			
+			'FORUM_FOLDER_IMG' 	=> $subforums_list[$i]['folder_image'], 
+
+			'FORUM_NAME' 		=> $forum_data['forum_name'],
+			'FORUM_DESC' 		=> $forum_data['forum_desc'],
+			'FORUM_DESC_HTML' 	=> htmlspecialchars(preg_replace('@<[\/\!]*?[^<>]*?>@si', '', $forum_data['forum_desc'])),
+			
+			'POSTS' 		=> $forum_data['forum_posts'],
+			'TOPICS' 		=> $forum_data['forum_topics'],
+			
+			'LAST_POST' 	=> $subforums_list[$i]['last_post'],
+			'LAST_POST_SUB' => $subforums_list[$i]['last_post_sub'],
+			'LAST_TOPIC' 	=> $topic_data['topic_title'], //topic_title
+			
+			'MODERATORS' 	=> $subforums_list[$i]['moderator_list'],
+			'PARENT' 		=> $forum_data['forum_parent'],
+			'ID' 			=> $forum_data['forum_id'],
+			'UNREAD' 		=> intval($subforums_list[$i]['unread_topics']),
+	
+			'L_MODERATOR' => $subforums_list[$i]['l_moderators'], 
+			'L_FORUM_FOLDER_ALT' => $subforums_list[$i]['folder_alt'], 
+	
+			'U_VIEWFORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $forum_data['forum_id'])
+		);
+		
+		$item['HAS_SUBFORUMS'] ++;
+		$item['DEFINE'] = &$item['HAS_SUBFORUMS'];
+		$item['TOTAL_UNREAD'] += intval($subforums_list[$i]['unread_topics']);
+		// Change folder image
+		$images = unserialize($item['FORUM_FOLDERS']);
+		$item['FORUM_FOLDER_IMG'] = $item['TOTAL_UNREAD'] ? $images['subnew'] : $images['sub'];
+		$item['L_FORUM_FOLDER_ALT'] = $item['TOTAL_UNREAD'] ? $images['subaltnew'] : $images['subalt'];
+		// Check last post
+		if( $item['LAST_POST_TIME'] < $subforums_list[$i]['last_post_time'] )
+		{
+			$item['LAST_POST'] = $subforums_list[$i]['last_post'];
+			$item['LAST_POST_TIME'] = $subforums_list[$i]['last_post_time'];
+		}
+		if( !$item['LAST_POST_TIME_FORUM'] )
+		{
+			$item['LAST_POST_FORUM'] = $item['LAST_POST'];
+		}
+		// Add topics/posts
+		$item['TOTAL_POSTS'] += $forum_data['forum_posts'];
+		$item['TOTAL_TOPICS'] += $forum_data['forum_topics'];
+	}
+	unset($item);
+	unset($data);
+	unset($cat_item);
+	unset($row_item);
+}
+// End Simple Subforums MOD
 
 //
 // Generate the page

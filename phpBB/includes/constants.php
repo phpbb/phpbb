@@ -6,7 +6,7 @@
  *   copyright            : ('C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: constants.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -26,9 +26,20 @@ if ( !defined('IN_PHPBB') )
 }
 
 // Debug Level
-//define('DEBUG', 1); // Debugging on
-define('DEBUG', 1); // Debugging off
+$debug = 1; // Debugging on
+//$debug = 0; // Debugging off
+!defined('DEBUG') ? define('DEBUG', $debug) : false;
 
+// FOUNDER ID, this is the ID of the main admin of the site, only this user can access special features of the site and this ID is also used to send Welcome and Birthday PM
+define('FOUNDER_ID', 2);
+// ALLOW ONLY FOUNDER ACP, by setting this to true only the FOUNDER will be able to access ACP
+define('ONLY_FOUNDER_ACP', false);
+// Insert here the IDs of the main admins separated by commas, they will be able to access special features in ACP
+// Allowed features: Action Logs, Private Messages, DB Tools, Templates Edit (XS Style)
+// If the constant is deleted then every admin is able to access the Full ACP
+define('MAIN_ADMINS_ID', 2);
+
+define('EMAILER_DISABLED', false);
 
 // User Levels <- Do not change the values of USER or ADMIN
 define('DELETED', -1);
@@ -37,7 +48,8 @@ define('ANONYMOUS', -1);
 define('USER', 0);
 define('ADMIN', 1);
 define('MOD', 2);
-
+define('GLOBAL_MOD', 3);
+define('JUNIOR_ADMIN', 4);
 
 // User related
 define('USER_ACTIVATION_NONE', 0);
@@ -87,6 +99,10 @@ define('GENERAL_ERROR', 202);
 define('CRITICAL_MESSAGE', 203);
 define('CRITICAL_ERROR', 204);
 
+// URL PARAMETERS
+define('ALBUM_SHOWPAGE', 'ALBUM_SHOWPAGE');  
+define('ALBUM_PICM', 'ALBUM_PICM');
+define('ALBUM_THUMBNAIL', 'ALBUM_THUMBNAIL');
 
 // Private messaging
 define('PRIVMSGS_READ_MAIL', 0);
@@ -111,40 +127,234 @@ define('SESSION_METHOD_GET', 101);
 
 
 // Page numbers for session handling
-define('PAGE_INDEX', 0);
-define('PAGE_LOGIN', -1);
-define('PAGE_SEARCH', -2);
-define('PAGE_REGISTER', -3);
-define('PAGE_PROFILE', -4);
-define('PAGE_VIEWONLINE', -6);
-define('PAGE_VIEWMEMBERS', -7);
-define('PAGE_FAQ', -8);
-define('PAGE_POSTING', -9);
-define('PAGE_PRIVMSGS', -10);
-define('PAGE_GROUPCP', -11);
-define('PAGE_TOPIC_OFFSET', 5000);
+// Page numbers for session handling <- this values by MJ, Fully Modded phpBBFM , and OryNider, MXP CMS 
+!defined('PAGE_INDEX') ? define('PAGE_INDEX', 0) : false;
+!defined('PAGE_LOGIN') ? define('PAGE_LOGIN', -1) : false;
 
+@define('PAGE_HOME', 0);
+
+!defined('PAGE_SEARCH') ? define('PAGE_SEARCH', -2) : false;
+!defined('PAGE_REGISTER') ? define('PAGE_REGISTER', -3) : false;
+!defined('PAGE_PROFILE') ? define('PAGE_PROFILE', -4) : false;
+
+@define('PAGE_UCP', -4);
+
+!defined('PAGE_VIEWONLINE') ? define('PAGE_VIEWONLINE', -6) : false;
+!defined('PAGE_VIEWMEMBERS') ? define('PAGE_VIEWMEMBERS', -7) : false;
+
+@define('PAGE_VIEWFORUM', 0);
+@define('PAGE_VIEWFORUMLIST', 0);
+@define('PAGE_VIEWTOPIC', 0);
+@define('PAGE_PROFILE_MAIN', -4);
+
+@define('PAGE_VIEWPROFILE', -5);
+@define('PAGE_MEMBERLIST', -7);
+
+!defined('PAGE_FAQ') ? define('PAGE_FAQ', -8) : false;
+
+@define('PAGE_RULES', -8);
+
+!defined('PAGE_POSTING') ? define('PAGE_POSTING', -9) : false;
+!defined('PAGE_PRIVMSGS') ? define('PAGE_PRIVMSGS', -10) : false;
+!defined('PAGE_GROUPCP') ? define('PAGE_GROUPCP', -11) : false;
+
+@define('PAGE_GROUP_CP', -11); 
+
+define('PAGE_PRIVMSG', -10);
+
+define('PAGE_SMILES', -12);
+define('PAGE_TELLFRIEND', -13);
+// 14 defined in linksdb_constants.php
+// 15 defined in pafiledb_constants.php
+define('PAGE_TOPIC_VIEW', -16);
+define('PAGE_DIGEST', -17);
+define('PAGE_STAFF', -18);
+// 19 - 22 defined in music/music_constants.php
+define('PAGE_ATTACHMENTS', -23);
+define('PAGE_BOOKIES', -24);
+define('PAGE_BOOKIE_ALLSTATS', -25);
+define('PAGE_BOOKIE_YOURSTATS', -26);
+define('PAGE_CALENDAR', -27);
+define('PAGE_BANK', -28);
+define('PAGE_SHOP', -29);
+define('PAGE_STATISTICS', -30);
+define('PAGE_CARD', -31);
+define('PAGE_RATINGS', -32);
+define('PAGE_PORTAL', -33);
+define('PAGE_CHATROOM', -34);
+define('PAGE_IMLIST', -35);
+define('PAGE_TOPLIST', -36);
+define('PAGE_LOTTERY', -37);
+define('PAGE_ACTIVITY', -38);
+define('PAGE_PLAYING_GAMES', -39);
+define('PAGE_CHARTS', -40);
+define('PAGE_RSS', -41);
+define('PAGE_BANLIST', -43);
+define('PAGE_TOPICS_STARTED', -44);
+define('PAGE_MEETING', -45);
+define('PAGE_FORUM_TOUR', -46);
+define('PAGE_HELPDESK', -47);
+define('PAGE_THREAD_KICKER', -48);
+define('PAGE_SHOUTBOX', -49); 
+define('PAGE_SHOUTBOX_MAX', -49);
+// 50 - 53 defined in album/album_constants.php
+// 53 - 54 defined in attachments/constants.php change them if have conflict with album constants
+define('PAGE_AUCTIONS', -55);
+define('PAGE_MEDALS', -56);
+define('PAGE_JOBS', -57);
+define('PAGE_AVATAR_TOPLIST', -58);
+define('PAGE_AVATAR_LIST', -59);
+define('PAGE_GUESTBOOK', -60);
+define('PAGE_SITEMAP', -61);
+define('PAGE_REDIRECT', -62);
+define('PAGE_LEXICON', -63);
+define('PAGE_DRAFTS', -64);
+define('PAGE_ERRORS', -65);
+
+// Portal modules page numbers for session handling
+define('PAGE_LINKS', -14);
+define('PAGE_LINKDB', -14); // If this id generates a conflict with other mods, change it ;);
+
+define('PAGE_DL_DEFAULT', -15);
+define('PAGE_DLOAD', -15);
+define('PAGE_DOWNLOAD', -15); // If this id generates a conflict with other mods, change it ;);
+
+define('PAGE_MUSIC_DEFAULT', -19);
+define('PAGE_MUSIC', -19);	// for Session Handling
+define('PAGE_MUSIC_PERSONAL', -20);
+define('PAGE_MUSIC_PICTURE', -21);
+define('PAGE_MUSIC_SEARCH', -22);
+
+define('PAGE_KB_DEFAULT', -42);
+define('PAGE_KB', -42); // If this id generates a conflict with other mods, change it ;);
+
+define('PAGE_ALBUM_DEFAULT', -50);
+define('PAGE_ALBUM', -50);	// for Session Handling
+define('PAGE_ALBUM_PERSONAL', -51);
+define('PAGE_IMAGES', -52);
+define('PAGE_ALBUM_PICTURE', -52);
+define('PAGE_IMAGE_THUMBNAIL', -52);
+define('PAGE_IMAGE_THUMBNAIL_S', -52);
+define('PAGE_ALBUM_SEARCH', -53);
+define('PAGE_ALBUM_RSS', -54);
+
+define('PAGE_NEWS', -77);
+define('PAGE_NEWSSUITE', -77);
+
+define('PAGE_MODULE_ADMIN', -78);
+define('PAGE_PORTAL_ADMIN', -79);
+define('PAGE_META_ADMIN', -80);
+define('PAGE_ADS', -81);
+define('PAGE_ADS_POST'  , -82);
+define('PAGE_ADS_ADMIN'   , -83);
+
+define('PAGE_WELCOME'   , -84);
+define('PAGE_WELCOME_ADMIN', -85);
+
+define('PAGE_WEATHER', -86);
+define('PAGE_WEATHER_EDIT', -87);
+
+define('PAGE_URL', -88);
+
+//define('PAGE_CALENDAR', -91);
+
+define('PAGE_RECENT', -92);
+define('PAGE_REFERERS', -93);
+
+define('PAGE_AJAX_CHAT', -94); // for Session Handling
+define('PAGE_AJAX_SHOUTBOX', -95);
+
+define('PAGE_ANNOUNCEMENT', -75);
+define('PAGE_ANNOUNCEMENT_ADMIN'   , -76);
+
+define('PAGE_CONTACT_US', -98);
+
+// Portal page numbers for session handling
+define('PAGE_FORUM', -70);
+define('PAGE_MENU_NAV', -71);
+define('PAGE_MENU_ADMIN', -72);
+define('PAGE_POLL', -73);
+define('PAGE_LAST_MSG', -74);
+//define('PAGE_STATISTICS', -90);
+define('PAGE_CREDITS', -99);
+define('PAGE_TAGS', -100);
+
+!defined('PAGE_TOPIC_OFFSET') ? define('PAGE_TOPIC_OFFSET', 5000) : false;;
+
+// You can customize this page
+// BBCode UID length
+define('BBCODE_UID_LEN', 8);
+
+// Number of core BBCodes
+define('NUM_CORE_BBCODES', 12);
+define('NUM_PREDEFINED_BBCODES', 22);
+
+// BBCode IDs
+define('BBCODE_ID_QUOTE', 0);
+define('BBCODE_ID_B', 1);
+define('BBCODE_ID_I', 2);
+define('BBCODE_ID_URL', 3);
+define('BBCODE_ID_IMG', 4);
+define('BBCODE_ID_SIZE', 5);
+define('BBCODE_ID_COLOR', 6);
+define('BBCODE_ID_U', 7);
+define('BBCODE_ID_CODE', 8);
+define('BBCODE_ID_LIST', 9);
+define('BBCODE_ID_EMAIL', 10);
+define('BBCODE_ID_FLASH', 11);
+define('BBCODE_ID_ATTACH', 12);
+
+// BBCode hard limit
+define('BBCODE_LIMIT', 1511);
+
+// Smiley hard limit
+define('SMILEY_LIMIT', 1000);
+ 
 
 // Auth settings
-define('AUTH_LIST_ALL', 0);
-define('AUTH_ALL', 0);
+@define('AUTH_LIST_ALL', 0);
+@define('AUTH_ALL', 0);
 
-define('AUTH_REG', 1);
-define('AUTH_ACL', 2);
-define('AUTH_MOD', 3);
-define('AUTH_ADMIN', 5);
+// Auth settings - Levels
+@define('AUTH_NONE', -1);
+@define('AUTH_LIST_ALL', 0);
+@define('AUTH_ALL', 0);
+@define('AUTH_REG', 1);
+@define('AUTH_ACL', 2);
+@define('AUTH_MOD', 3);
+@define('AUTH_JADMIN', 4);
+@define('AUTH_ADMIN', 5);
+@define('AUTH_MAIN_ADMIN', 6);
+@define('AUTH_FOUNDER', 7);
+@define('AUTH_OWNER', 8);
+// Self AUTH - BEGIN
+@define('AUTH_SELF', 9);
+// Self AUTH - END
+@define('AUTH_GUEST_ONLY', 10);
+@define('AUTH_GUEST_ONLY_STRICT', 11);
 
-define('AUTH_VIEW', 1);
-define('AUTH_READ', 2);
-define('AUTH_POST', 3);
-define('AUTH_REPLY', 4);
-define('AUTH_EDIT', 5);
-define('AUTH_DELETE', 6);
-define('AUTH_ANNOUNCE', 7);
-define('AUTH_STICKY', 8);
-define('AUTH_POLLCREATE', 9);
-define('AUTH_VOTE', 10);
-define('AUTH_ATTACH', 11);
+@define('AUTH_VIEW', 1);
+@define('AUTH_READ', 2);
+@define('AUTH_POST', 3);
+@define('AUTH_REPLY', 4);
+@define('AUTH_EDIT', 5);
+@define('AUTH_DENNOUNCE', 7);
+@define('AUTH_SLETE', 6);
+@define('AUTH_ATICKY', 8);
+@define('AUTH_POLLCREATE', 9);
+@define('AUTH_VOTE', 10);
+@define('AUTH_ATTACH', 11);
+@define('AUTH_CAL', 12);
+@define('AUTH_POLLCREATE', 13);
+@define('AUTH_ATTACHMENTS', 14);
+@define('AUTH_DOWNLOAD', 15);
+@define('AUTH_BAN', 16);
+@define('AUTH_GREENCARD', 17);
+@define('AUTH_BLUECARD', 18);
+@define('AUTH_RATE', 19);
+@define('AUTH_NEWS', 20);
+@define('AUTH_GLOBALANNOUNCE', 21);
+
 
 
 // Table names

@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: smtp.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  ***************************************************************************/
 

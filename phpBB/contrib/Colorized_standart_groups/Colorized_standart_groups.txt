@@ -1,0 +1,1375 @@
+##############################################################
+## MOD Title: Colourized standart groups
+## MOD Author: rxu < n/a > (n/a) n/a
+## MOD Description: This mod adds colours for standart phpBB2 groups and their members.
+## MOD Version: 1.2.0
+## 
+## Installation Level: Intermediate
+## Installation Time: 30 minutes
+## Files To Edit: index.php
+##				  memberlist.php
+##                viewforum.php
+##                viewonline.php
+##                viewtopic.php
+##                includes/page_header.php
+##                groupcp.php
+##                admin/admin_groups.php
+##                includes/functions.php
+##                templates/subSilver/admin/group_edit_body.tpl
+##                templates/subSilver/groupcp_info_body.tpl
+##                templates/subSilver/groupcp_pending_info.tpl
+##                templates/subSilver/index_body.tpl
+##                templates/subSilver/memberlist_body.tpl
+##                language/lang_english/lang_admin.php
+##                language/lang_english/lang_main.php
+## Included Files: root/templates/color.js
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+## Generator: Phpbb.ModTeam.Tools
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes: After mod installation, you should create usergroups and assign them colours, or assign colours to existed usergroups.
+## If you want usergroup member to have a usergroup colour, you should click "Usergroups", then check appropriate checkboxes at "Default group" column and submit it.
+## If you want usergroup moderator to have a usergroup colour, you should go to Administration panel, look up an appropriate group at Group admin/Management, check "Default group" checkbox at Group moderator string and submit.
+## You can assign textual (like red, green, etc.) or digital (like #FF0000, #008000, etc.) colours' definitions.
+##############################################################
+## MOD History:
+## 
+## 2007-02-12 - Version 1.0.0
+##      -Initial release
+## 
+## 2007-02-12 - Version 1.1.0
+##      -Groups legend added
+## 
+## 2007-02-15 - Version 1.1.1
+##      -Double logged in userlist when installed with EasyMod bug fixed
+##
+## 2007-02-18 - Version 1.1.2
+##      -Users' colours at memberlist and usergroups added
+##      -Groups sort by name at legend added
+##
+## 2007-02-20 - Version 1.1.3
+##      -Color palette added (code is borrowed from phpBB3)
+##
+## 2007-02-20 - Version 1.1.4
+##      -Colourization at memberlist fixed
+##
+## 2007-11-05 - Version 1.2.0
+##      -version renumbered in according to phpBB versioning system (set even minor version number - release ready)
+##      -Color pallete display in IE bug fixed
+##      -Users' colorization for groups created before the mod installation fixed
+##      -Group without color creation bug fixed
+##      -Could not obtain moderator status error when assigning default group to users fixed
+##      -Properly escaping vars when adding them to database.
+##      -Minor code fixes
+## 
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD 
+##############################################################
+
+#
+#-----[ SQL ]------------------------------------------
+#
+ALTER TABLE phpbb_users ADD user_colour VARCHAR(50) NOT NULL;
+ALTER TABLE phpbb_groups ADD group_colour VARCHAR(50) NOT NULL;
+#
+#-----[ COPY ]------------------------------------------
+#
+copy root/templates/color.js to templates/
+#
+#-----[ OPEN ]------------------------------------------
+#
+index.php
+#
+#-----[ FIND ]------------------------------------------
+#
+$newest_user = $newest_userdata['username'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+$newest_user_colour = $newest_userdata['user_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_id
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_id
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_id
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+	//
+	// Obtain list of moderators of each forum
+	// First users, then groups ... broken into two queries
+	//
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, u.user_id, u.username
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.username
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+$forum_moderators[$row['forum_id']][]
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['user_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT aa.forum_id, g.group_id, g.group_name
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+g.group_name
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, g.group_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+$forum_moderators[$row['forum_id']][]
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['group_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['group_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+		'NEWEST_USER' => sprintf($lang['Newest_user'], '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$newest_uid") . '">', $newest_user, '</a>'),
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+"=$newest_uid")
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $newest_user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ?
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$forum_data[$j]['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $forum_data[$j]['user_colour']
+#
+#-----[ OPEN ]------------------------------------------
+#
+memberlist.php
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT username, user_id, user_viewemail, user_posts, user_regdate, user_from, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_avatar, user_avatar_type, user_allowavatar
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+user_allowavatar
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+		$user_id = $row['user_id'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$user_colour = $row['user_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+			'USERNAME' => $username,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+			'USER_COLOUR' => $user_colour,
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewforum.php
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT u.user_id, u.username
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.username
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+$moderators[] =
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['user_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT g.group_id, g.group_name
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+g.group_name
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, g.group_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+$moderators[] =
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$row['group_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $row['group_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+//
+// All announcement data, this keeps announcements
+// on each viewforum page ...
+//
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_id,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u2.user_id as id2,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u2.user_colour as colour2,
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT t.*, u.username, u.user_id, u2.username as user2,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_id,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u2.user_id as id2,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u2.user_colour as colour2,
+#
+#-----[ FIND ]------------------------------------------
+#
+$topic_author = ( $topic_rowset[$i]['user_id'] != ANONYMOUS ) ?
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$topic_rowset[$i]['user_id'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $topic_rowset[$i]['user_colour']
+#
+#-----[ FIND ]------------------------------------------
+#
+$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ?
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$topic_rowset[$i]['id2'])
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ . '" style="color:' . $topic_rowset[$i]['colour2']
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewonline.php
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_level,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_level,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+			if ( $row['user_level'] == ADMIN )
+			{
+				$username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
+			}
+			else if ( $row['user_level'] == MOD )
+			{
+				$username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
+			}
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+				$username = '<b style="color:' . $row['user_colour'] . '">' . $username . '</b>';
+#
+#-----[ OPEN ]------------------------------------------
+#
+viewtopic.php
+#
+#-----[ FIND ]------------------------------------------
+#
+//
+// Go ahead and pull all data for this topic
+//
+#
+#-----[ FIND ]------------------------------------------
+#
+$sql = "SELECT u.username, u.user_id,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_allowsmile,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+$poster = ( $poster_id == ANONYMOUS ) ?
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+$postrow[$i]['username']
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+'<span style="color:' . $postrow[$i]['user_colour'] . '">' . $postrow[$i]['username'] . '</span>'
+#
+#-----[ OPEN ]------------------------------------------
+#
+includes/page_header.php
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_level,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ( $row['user_level'] == ADMIN )
+				{
+					$row['username'] = '<b>' . $row['username'] . '</b>';
+					$style_color = 'style="color:#' . $theme['fontcolor3'] . '"';
+				}
+				else if ( $row['user_level'] == MOD )
+				{
+					$row['username'] = '<b>' . $row['username'] . '</b>';
+					$style_color = 'style="color:#' . $theme['fontcolor2'] . '"';
+				}
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+					$row['username'] = '<b>' . $row['username'] . '</b>';
+					$style_color = 'style="color:' . $row['user_colour'] . '"';
+#
+#-----[ FIND ]------------------------------------------
+#
+//
+// Obtain number of new private messages
+// if user is logged in
+//
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+//
+// Groups legend
+//
+
+	$groups_legend = '';
+	
+	$sql = "SELECT group_id, group_name, group_colour FROM " . GROUPS_TABLE . "
+		WHERE group_type <> " . GROUP_HIDDEN . " 
+			AND group_single_user <> " . true . " ORDER BY group_name ASC";
+	if ( !$result = $db->sql_query($sql) )
+	{
+		message_die(GENERAL_ERROR, 'Could not obtain group legend information', '', __LINE__, __FILE__, $sql);
+	}
+	
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		$group_legend_color = '';
+				
+		$row['group_name'] = '<b>' . $row['group_name'] . '</b>';
+		$group_legend_color = ' style="color:' . $row['group_colour'] . '"';
+		$group_legend_link = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '"' . $group_legend_color .'>' . $row['group_name'] . '</a>';
+		$groups_legend .= ( $groups_legend != '' ) ? ', ' . $group_legend_link : $group_legend_link;
+	}
+	$db->sql_freeresult($result);
+	
+	if($groups_legend != '')
+	{
+		$template->assign_block_vars('switch_groups_legend', array());
+	}
+		
+#
+#-----[ FIND ]------------------------------------------
+#
+	'PRIVATE_MESSAGE_NEW_FLAG' => $s_privmsg_new,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	'GROUPS_LEGEND' => $groups_legend,
+#
+#-----[ FIND ]------------------------------------------
+#
+	'L_WHOSONLINE_MOD' => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'),
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	'L_LEGEND' => $lang['Group_legend'],		
+#
+#-----[ OPEN ]------------------------------------------
+#
+groupcp.php
+#
+#-----[ FIND ]------------------------------------------
+#
+	return;
+}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+function var_escape($var)
+{
+	$var = addslashes($var);
+	$var = str_replace("\'", "''", $var);
+	return $var;
+}
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+g.group_type,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ g.group_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+g.group_type,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ g.group_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT g.group_moderator, g.group_type, aa.auth_mod
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+g.group_type,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ g.group_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ( ( ( isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) ) && isset($HTTP_POST_VARS['pending_members']) ) || ( isset($HTTP_POST_VARS['remove']) && isset($HTTP_POST_VARS['members']) ) )
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+isset($HTTP_POST_VARS['members']) )
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ || ( isset($HTTP_POST_VARS['remove']) && isset($HTTP_POST_VARS['default_group']) )
+#
+#-----[ FIND ]------------------------------------------
+#
+					$members = ( isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) ) ? $HTTP_POST_VARS['pending_members'] : $HTTP_POST_VARS['members'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+					$default_group = ( isset($HTTP_POST_VARS['default_group']) ) ? $HTTP_POST_VARS['default_group'] : array();
+#
+#-----[ FIND ]------------------------------------------
+#
+					$sql_in = '';
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$sql_in_default_group = '';
+#
+#-----[ FIND ]------------------------------------------
+#
+					for($i = 0; $i < count($members); $i++)
+					{
+						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . intval($members[$i]);
+					}
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+					for($i = 0; $i < count($default_group); $i++)
+					{
+						$sql_in_default_group .= ( ( $sql_in_default_group != '' ) ? ', ' : '' ) . intval($default_group[$i]);
+					}
+
+#
+#-----[ FIND ]------------------------------------------
+#
+						$sql = "UPDATE " . USER_GROUP_TABLE . " 
+							SET user_pending = 0 
+							WHERE user_id IN ($sql_in) 
+								AND group_id = $group_id";
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+								
+						$sql_update_users = "UPDATE "  . USERS_TABLE . " 
+							SET user_colour = '" . var_escape($group_info['group_colour']) . "'
+							WHERE user_id IN ($sql_in) AND user_colour = ''";
+						if ( !$db->sql_query($sql_update_users) )
+						{
+							message_die(GENERAL_ERROR, 'Could not update user colour', '', __LINE__, __FILE__, $sql);
+						}
+								
+
+#
+#-----[ FIND ]------------------------------------------
+#
+                  if ( $group_info['auth_mod'] )
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+                  if ( $group_info['auth_mod'] && !empty($members) )
+#
+#-----[ FIND ]------------------------------------------
+#
+						$sql = "DELETE FROM " . USER_GROUP_TABLE . " 
+							WHERE user_id IN ($sql_in) 
+								AND group_id = $group_id";
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+						if ( !empty($members) )
+						{
+
+
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+								
+						$sql_update_users = "UPDATE "  . USERS_TABLE . " 
+							SET user_colour = '' 
+							WHERE user_id IN ($sql_in) AND user_colour = '" . var_escape($group_info['group_colour']) . "'";
+						if ( !$db->sql_query($sql_update_users) )
+						{
+							message_die(GENERAL_ERROR, 'Could not delete user colour', '', __LINE__, __FILE__, $sql);
+						}						
+						
+						}
+						else if ( !empty($default_group) )
+						{
+							$sql = "UPDATE " . USERS_TABLE . " 
+								SET user_colour = '" . var_escape($group_info['group_colour']) . "' 
+								WHERE user_id IN ($sql_in_default_group)";
+						}
+
+#
+#-----[ FIND ]------------------------------------------
+#
+	//
+	// Get moderator details for this group
+	//
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT username, user_id, user_viewemail
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+user_msnm
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, user_colour						
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT u.username, u.user_id, u.user_viewemail, u.user_posts, u.user_regdate, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, ug.user_pending
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_msnm,
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ u.user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+	$sql = "SELECT u.username, u.user_id, u.user_viewemail,
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+u.user_msnm
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, u.user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+	$user_id = $group_moderator['user_id'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	$user_colour = $group_moderator['user_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+		'L_GROUP_MEMBERSHIP' => $lang['Group_membership'],
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'L_GROUP_DEFAULT' => $lang['Group_default'],
+#
+#-----[ FIND ]------------------------------------------
+#
+		'L_SUBMIT' => $lang['Sort'],
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		'L_SUBMIT' => $lang['Submit'],
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'L_DELETE' => $lang['Delete'],
+#
+#-----[ FIND ]------------------------------------------
+#
+		'GROUP_NAME' => $group_info['group_name'],
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+		'GROUP_NAME' => '<span style="color:' . $group_info['group_colour'] . '"><b>' . $group_info['group_name'] . '</b></span>',
+#
+#-----[ FIND ]------------------------------------------
+#
+		'MOD_USERNAME' => $username,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'MOD_USER_COLOUR' => $user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+		$user_id = $group_members[$i]['user_id'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$user_colour = $group_members[$i]['user_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+				'USERNAME' => $username,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+				'USER_COLOUR' => $user_colour,
+#
+#-----[ FIND ]------------------------------------------
+#
+				'YIM' => $yim,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+				'CHECKED' => ( !empty($group_info['group_colour']) && $group_members[$i]['user_colour'] == $group_info['group_colour'] ) ? 'checked="checked" disabled="disabled"' : '',
+#
+#-----[ FIND ]------------------------------------------
+#
+				$user_id = $modgroup_pending_list[$i]['user_id'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+				$user_colour = $modgroup_pending_list[$i]['user_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+					'USERNAME' => $username,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+					'USER_COLOUR' => $user_colour,
+#
+#-----[ OPEN ]------------------------------------------
+#
+admin/admin_groups.php
+#
+#-----[ FIND ]------------------------------------------
+#
+			'group_moderator' => '',
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+			'group_colour' => '',
+#
+#-----[ FIND ]------------------------------------------
+#
+		$sql = "SELECT user_id, username
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+username
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, user_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+	$group_hidden = ( $group_info['group_type'] == GROUP_HIDDEN ) ? ' checked="checked"' : '';
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	$group_default_moderator = ( ($row['user_colour'] == $group_info['group_colour'] && !empty($group_info['group_colour']) ) && $group_moderator ) ? ' checked="checked" disabled="disabled"' : '';
+#
+#-----[ FIND ]------------------------------------------
+#
+		'GROUP_MODERATOR' => $group_moderator,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'GROUP_COLOUR' => $group_info['group_colour'],
+#
+#-----[ FIND ]------------------------------------------
+#
+		'L_GROUP_STATUS' => $lang['group_status'],
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'L_GROUP_COLOUR' => $lang['Group_colour'],
+		'L_GROUP_DEFAULT' => $lang['Group_default'],
+#
+#-----[ FIND ]------------------------------------------
+#
+		'S_GROUP_HIDDEN_CHECKED' => $group_hidden,
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		'S_GROUP_DEFAULT_MODERATOR_CHECKED' => $group_default_moderator,
+#
+#-----[ FIND ]------------------------------------------
+#
+		//
+		// Reset User Moderator Level
+		//
+
+		// Is Group moderating a forum ?
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+		$sql = "SELECT group_colour
+			FROM " . GROUPS_TABLE . "
+			WHERE group_single_user <> " . TRUE . "
+			AND group_id = " . $group_id;
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Error getting group colour information', '', __LINE__, __FILE__, $sql);
+		}
+		if( !($row = $db->sql_fetchrow($result)) )
+		{
+			message_die(GENERAL_MESSAGE, $lang['Group_colour_not_exist']);
+		}
+		$group_colour = $row['group_colour'];
+#
+#-----[ FIND ]------------------------------------------
+#
+		$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . "
+			WHERE group_id = " . $group_id;
+		if ( !$db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, 'Could not update auth_access', '', __LINE__, __FILE__, $sql);
+		}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+
+		$sql = "UPDATE " . USERS_TABLE . " SET user_colour = ''
+			WHERE user_colour = '" . var_escape($group_colour) . "'";
+		if ( !$db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, 'Could not update users default group', '', __LINE__, __FILE__, $sql);
+		}	
+#
+#-----[ FIND ]------------------------------------------
+#
+		$delete_old_moderator = isset($HTTP_POST_VARS['delete_old_moderator']) ? true : false;
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+		$group_colour = isset($HTTP_POST_VARS['group_colour']) ? trim($HTTP_POST_VARS['group_colour']) : '';
+		$default_group_moderator = isset($HTTP_POST_VARS['default_group_moderator']) ? true : false;
+#
+#-----[ FIND ]------------------------------------------
+#
+		if( $mode == "editgroup" )
+		{
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+			$sql = "SELECT group_id
+				FROM " . GROUPS_TABLE . "
+				WHERE group_single_user <> " . TRUE . "
+				AND group_colour = '" . str_replace("\'", "''", $group_colour) . "'";
+			if ( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Error getting groups colours information', '', __LINE__, __FILE__, $sql);
+			}
+			if( ($check_colours = $db->sql_fetchrow($result)) )
+			{
+					
+				if ( $check_colours['group_id'] != $group_id && !empty($group_colour) )
+				{
+					message_die(GENERAL_MESSAGE, $lang['Group_colour_in_use']);
+				}			
+			}
+			$db->sql_freeresult($result);			
+#
+#-----[ FIND ]------------------------------------------
+#
+					$sql = "DELETE FROM " . USER_GROUP_TABLE . "
+						WHERE user_id = " . $group_info['group_moderator'] . " 
+							AND group_id = " . $group_id;
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
+					}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+					$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '' 
+						WHERE user_id = " . $group_info['group_moderator'] . " 
+							AND user_colour = " . var_escape($group_info['group_colour']);
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update deleted moderator color', '', __LINE__, __FILE__, $sql);
+					}	
+#
+#-----[ FIND ]------------------------------------------
+#
+				if ( !($row = $db->sql_fetchrow($result)) )
+				{
+					$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
+						VALUES (" . $group_id . ", " . $group_moderator . ", 0)";
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update group moderator', '', __LINE__, __FILE__, $sql);
+					}
+				}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+				
+				if ($default_group_moderator && !empty($group_colour) && !empty($group_info['group_colour']) )
+				{
+					$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . var_escape($group_info['group_colour']) . "' 
+						WHERE user_id = " . $group_moderator;
+					if ( !$db->sql_query($sql) )
+					{
+						message_die(GENERAL_ERROR, 'Could not update deleted moderator color', '', __LINE__, __FILE__, $sql);
+					}
+				}
+#
+#-----[ FIND ]------------------------------------------
+#
+				SET group_type = $group_type, group_name = '" . str_replace("\'", "''", $group_name) . "', group_description = '" . str_replace("\'", "''", $group_description) . "', group_moderator = $group_moderator
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+group_moderator = $group_moderator
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, group_colour = '" . str_replace("\'", "''", $group_colour) . "'
+#
+#-----[ FIND ]------------------------------------------
+#
+			$message = $lang['Updated_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+			if ( !empty($group_info['group_colour']) )
+			{
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_colour =  '" . $group_colour . "'
+					WHERE user_colour = '" . var_escape($group_info['group_colour']) . "'";
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update user colour', '', __LINE__, __FILE__, $sql);
+				}
+			}
+			
+			if ($default_group_moderator && !empty($group_colour) && !empty($group_info['group_colour']) )
+			{
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . str_replace("\'", "''", $group_colour) . "' 
+					WHERE user_id = " . $group_info['group_moderator'];
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update moderator color', '', __LINE__, __FILE__, $sql);
+				}
+			}			
+#
+#-----[ FIND ]------------------------------------------
+#
+		else if( $mode == 'newgroup' )
+		{
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+			$sql = "SELECT group_id
+				FROM " . GROUPS_TABLE . "
+				WHERE group_single_user <> " . TRUE . "
+				AND group_colour = '" . str_replace("\'", "''", $group_colour) . "'";
+			if ( !$result = $db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Error getting groups colours information', '', __LINE__, __FILE__, $sql);
+			}
+			if( ($check_colours = $db->sql_fetchrow($result)) )
+			{
+					
+				if ( $check_colours['group_id'] && !empty($group_colour) )
+				{
+					message_die(GENERAL_MESSAGE, $lang['Group_colour_in_use']);
+				}			
+			}
+			$db->sql_freeresult($result);
+			
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "INSERT INTO " . GROUPS_TABLE . " (group_type, group_name, group_description, group_moderator, group_single_user)
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+group_single_user
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, group_colour
+#
+#-----[ FIND ]------------------------------------------
+#
+				VALUES ($group_type, '" . str_replace("\'", "''", $group_name) . "', '" . str_replace("\'", "''", $group_description) . "', $group_moderator,	'0')";
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+'0'
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+,  '" . str_replace("\'", "''", $group_colour) . "'
+#
+#-----[ FIND ]------------------------------------------
+#
+			$message = $lang['Added_new_group'] . '<br /><br />' . sprintf($lang['Click_return_groupsadmin'], '<a href="' . append_sid("admin_groups.$phpEx") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+
+			if ($default_group_moderator)
+			{
+				$sql = "UPDATE " . USERS_TABLE . " SET user_colour = '" . str_replace("\'", "''", $group_colour) . "' 
+					WHERE user_id = " . $group_moderator;
+				if ( !$db->sql_query($sql) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update moderator color', '', __LINE__, __FILE__, $sql);
+				}
+			}
+			
+#
+#-----[ FIND ]------------------------------------------
+#
+?>
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+function var_escape($var)
+{
+	$var = addslashes($var);
+	$var = str_replace("\'", "''", $var);
+	return $var;
+}
+#
+#-----[ OPEN ]------------------------------------------
+#
+includes/functions.php
+#
+#-----[ FIND ]------------------------------------------
+#
+			$sql = "SELECT user_id, username
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+username
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+, user_colour
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/admin/group_edit_body.tpl
+#
+#-----[ FIND ]------------------------------------------
+#
+<h1>{L_GROUP_TITLE}</h1>
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+<script type="text/javascript" src="../templates/color.js"></script>
+#
+#-----[ FIND ]------------------------------------------
+#
+'HEIGHT=250,resizable=yes,WIDTH=400'
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+;return false;" />
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="default_group_moderator" {S_GROUP_DEFAULT_MODERATOR_CHECKED} />&nbsp;&nbsp;{L_GROUP_DEFAULT}
+#
+#-----[ FIND ]------------------------------------------
+#
+	<tr> 
+	  <td class="row1" width="38%"><span class="gen">{L_GROUP_STATUS}:</span></td>
+	  <td class="row2" width="62%"> 
+		<input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN}</td> 
+	</tr>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	<tr> 
+		<script type="text/javascript">
+		<!--
+			var form_name = 'post';
+			var text_name = 'group_colour';
+		//-->
+		</script>
+	  <td class="row1" width="38%"><span class="gen">{L_GROUP_COLOUR}:</span></td>
+	  <td class="row2" width="62%"><input type="text" class="post" name="group_colour" maxlength="7" size="7" value="{GROUP_COLOUR}" />
+		<script type="text/javascript">
+		<!--
+		colorPalette('h', 8, 7)
+		//--></script>	  
+	  </td>
+	</tr>
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/groupcp_info_body.tpl
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <th class="thCornerR">{L_SELECT}</th>
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+	  <th class="thCornerR">{L_GROUP_DEFAULT}</th>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	  <th class="thCornerR">{L_DELETE}</th>
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{U_MOD_VIEWPROFILE}"
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+<a href="{U_MOD_VIEWPROFILE}" class="gen"
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ style="color:{MOD_USER_COLOUR}"
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <td class="row1" align="center"> &nbsp; </td>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+	  <td class="row1" align="center"> &nbsp; </td>
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{member_row.U_VIEWPROFILE}"
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+<a href="{member_row.U_VIEWPROFILE}" class="gen"
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ style="color:{member_row.USER_COLOUR}"
+#
+#-----[ FIND ]------------------------------------------
+#
+	  <td class="{member_row.ROW_CLASS}" align="center"> 
+	  <!-- BEGIN switch_mod_option -->
+	  <input type="checkbox" name="members[]" value="{member_row.USER_ID}" /> 
+	  <!-- END switch_mod_option -->
+	  </td>
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+	  <td class="{member_row.ROW_CLASS}" align="center"> 
+	  <!-- BEGIN switch_mod_option -->
+	  <input type="checkbox" name="default_group[]" value="{member_row.USER_ID}" {member_row.CHECKED} /> 
+	  <!-- END switch_mod_option -->
+	  </td>
+#
+#-----[ FIND ]------------------------------------------
+#
+{L_NO_MEMBERS}
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+colspan="{%:1}"
+#
+#-----[ INCREMENT ]------------------------------------------
+#
+%:1 +1
+#
+#-----[ FIND ]------------------------------------------
+#
+{L_HIDDEN_MEMBERS}
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+colspan="{%:1}"
+#
+#-----[ INCREMENT ]------------------------------------------
+#
+%:1 +1
+#
+#-----[ FIND ]------------------------------------------
+#
+			<span class="cattitle"><input type="submit" name="remove" value="{L_REMOVE_SELECTED}"
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+L_REMOVE_SELECTED
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+L_SUBMIT
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/groupcp_pending_info.tpl
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{pending_members_row.U_VIEWPROFILE}"
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+<a href="{pending_members_row.U_VIEWPROFILE}" class="gen"
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ style="color:{pending_members_row.USER_COLOUR}"
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/index_body.tpl
+#
+#-----[ FIND ]------------------------------------------
+#
+whosonline.gif
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+rowspan="{%:1}"
+#
+#-----[ INCREMENT ]------------------------------------------
+#
+%:1 +1
+#
+#-----[ FIND ]------------------------------------------
+#
+{TOTAL_USERS_ONLINE}
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+ &nbsp; [ {L_WHOSONLINE_ADMIN} ] &nbsp; [ {L_WHOSONLINE_MOD} ]<br />
+#
+#-----[ IN-LINE REPLACE WITH ]------------------------------------------
+#
+<br />
+#
+#-----[ FIND ]------------------------------------------
+#
+  </tr>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+  <!-- BEGIN switch_groups_legend -->
+  <tr> 
+  	<td class="row1" align="left"><span class="gensmall">{L_LEGEND} :: {GROUPS_LEGEND}</span></td>
+  </tr>  
+  <!-- END switch_groups_legend -->
+#
+#-----[ OPEN ]------------------------------------------
+#
+templates/subSilver/memberlist_body.tpl
+#
+#-----[ FIND ]------------------------------------------
+#
+<a href="{memberrow.U_VIEWPROFILE}" class="gen"
+#
+#-----[ IN-LINE FIND ]------------------------------------------
+#
+<a href="{memberrow.U_VIEWPROFILE}" class="gen"
+#
+#-----[ IN-LINE AFTER, ADD ]------------------------------------------
+#
+ style="color:{memberrow.USER_COLOUR}"
+#
+#-----[ OPEN ]------------------------------------------
+#
+language/lang_english/lang_admin.php
+#
+#-----[ FIND ]------------------------------------------
+#
+?>
+#
+#-----[ BEFORE, ADD ]------------------------------------------
+#
+$lang['Group_colour'] = 'Group colour';
+#
+#-----[ OPEN ]------------------------------------------
+#
+language/lang_english/lang_main.php
+#
+#-----[ FIND ]------------------------------------------
+#
+$lang['Group_hidden'] = 
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+$lang['Group_default'] = 'Default group';
+$lang['Group_legend'] = 'Legend';
+$lang['Group_colour_in_use'] = 'Selected colour is already in use. Please choose different colour';
+#
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: install.php,v 1.2 2011/03/20 17:18:17 orynider Exp $
  *
  ***************************************************************************/
 
@@ -18,6 +18,7 @@
  *   (at your option) any later version.
  *
  ***************************************************************************/
+
 
 // ---------
 // FUNCTIONS
@@ -139,7 +140,7 @@ function page_error($error_title, $error)
 // match on a second pass instead of a straight "fuzzy" match.
 function guess_lang()
 {
-	global $phpbb_root_path, $HTTP_SERVER_VARS;
+	global $phpbb_root_path, $_SERVER;
 
 	// The order here _is_ important, at least for major_minor
 	// matches. Don't go moving these around without checking with
@@ -195,9 +196,9 @@ function guess_lang()
 		'chinese_simplified'		=> 'zh', 
 	);
 
-	if (isset($HTTP_SERVER_VARS['HTTP_ACCEPT_LANGUAGE']))
+	if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 	{
-		$accept_lang_ary = explode(',', $HTTP_SERVER_VARS['HTTP_ACCEPT_LANGUAGE']);
+		$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 		for ($i = 0; $i < sizeof($accept_lang_ary); $i++)
 		{
 			@reset($match_lang);
@@ -222,90 +223,122 @@ function guess_lang()
 // ---------
 
 // Begin
-error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-set_magic_quotes_runtime(0); // Disable magic_quotes_runtime
+//error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+//error_reporting(E_ALL);
+// If we are on PHP >= 5.3.0 we do not need some code
+// If we are on PHP >= 6.0.0 we do not need some code
+if (version_compare(PHP_VERSION, '5.3.0', '>='))
+{
+	/**
+	* @ignore
+	*/
+	define('STRIP', false);
+}
+else
+{
+	@set_magic_quotes_runtime(0);
+
+	// Be paranoid with passed vars
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on' || !function_exists('ini_get'))
+	{
+		@deregister_globals();
+	}
+
+	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
+}
+
+//Temp fix for timezone
+if (@function_exists('date_default_timezone_set') && @function_exists('date_default_timezone_get'))
+{
+	@date_default_timezone_set(@date_default_timezone_get());
+}
 
 // PHP5 with register_long_arrays off?
-if (!isset($HTTP_POST_VARS) && isset($_POST))
+if (!isset($_POST) && isset($_POST))
 {
-	$HTTP_POST_VARS = $_POST;
-	$HTTP_GET_VARS = $_GET;
-	$HTTP_SERVER_VARS = $_SERVER;
-	$HTTP_COOKIE_VARS = $_COOKIE;
-	$HTTP_ENV_VARS = $_ENV;
-	$HTTP_POST_FILES = $_FILES;
+	$_POST = $_POST;
+	$_GET = $_GET;
+	$_SERVER = $_SERVER;
+	$_COOKIE = $_COOKIE;
+	$_ENV = $_ENV;
+	$_POST = $_FILES;
 
 	// _SESSION is the only superglobal which is conditionally set
 	if (isset($_SESSION))
 	{
-		$HTTP_SESSION_VARS = $_SESSION;
+		$_SESSION = $_SESSION;
 	}
 }
 
-// Slash data if it isn't slashed
-if (!get_magic_quotes_gpc())
+// If we are on PHP >= 5.3.0 we do not need some code
+if (phpversion() < '5.3.0')
 {
-	if (is_array($HTTP_GET_VARS))
+	/**
+	* @Slash data if it isn't slashed
+	*/
+	if (!get_magic_quotes_gpc())
 	{
-		while (list($k, $v) = each($HTTP_GET_VARS))
+		if (is_array($_GET))
 		{
-			if (is_array($HTTP_GET_VARS[$k]))
+			while (list($k, $v) = each($_GET))
 			{
-				while (list($k2, $v2) = each($HTTP_GET_VARS[$k]))
+				if (is_array($_GET[$k]))
 				{
-					$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
+					while (list($k2, $v2) = each($_GET[$k]))
+					{
+						$_GET[$k][$k2] = addslashes($v2);
+					}
+					@reset($_GET[$k]);
 				}
-				@reset($HTTP_GET_VARS[$k]);
+				else
+				{
+					$_GET[$k] = addslashes($v);
+				}
 			}
-			else
-			{
-				$HTTP_GET_VARS[$k] = addslashes($v);
-			}
+			@reset($_GET);
 		}
-		@reset($HTTP_GET_VARS);
-	}
 
-	if (is_array($HTTP_POST_VARS))
-	{
-		while (list($k, $v) = each($HTTP_POST_VARS))
+		if (is_array($_POST))
 		{
-			if (is_array($HTTP_POST_VARS[$k]))
+			while (list($k, $v) = each($_POST))
 			{
-				while (list($k2, $v2) = each($HTTP_POST_VARS[$k]))
+				if (is_array($_POST[$k]))
 				{
-					$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
+					while (list($k2, $v2) = each($_POST[$k]))
+					{
+						$_POST[$k][$k2] = addslashes($v2);
+					}
+					@reset($_POST[$k]);
 				}
-				@reset($HTTP_POST_VARS[$k]);
+				else
+				{
+					$_POST[$k] = addslashes($v);
+				}
 			}
-			else
-			{
-				$HTTP_POST_VARS[$k] = addslashes($v);
-			}
+			@reset($_POST);
 		}
-		@reset($HTTP_POST_VARS);
-	}
 
-	if (is_array($HTTP_COOKIE_VARS))
-	{
-		while (list($k, $v) = each($HTTP_COOKIE_VARS))
+		if (is_array($_COOKIE))
 		{
-			if (is_array($HTTP_COOKIE_VARS[$k]))
+			while (list($k, $v) = each($_COOKIE))
 			{
-				while (list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]))
+				if (is_array($_COOKIE[$k]))
 				{
-					$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
+					while (list($k2, $v2) = each($_COOKIE[$k]))
+					{
+						$_COOKIE[$k][$k2] = addslashes($v2);
+					}
+					@reset($_COOKIE[$k]);
 				}
-				@reset($HTTP_COOKIE_VARS[$k]);
+				else
+				{
+					$_COOKIE[$k] = addslashes($v);
+				}
 			}
-			else
-			{
-				$HTTP_COOKIE_VARS[$k] = addslashes($v);
-			}
+			@reset($_COOKIE);
 		}
-		@reset($HTTP_COOKIE_VARS);
 	}
 }
-
 // Begin main prog
 define('IN_PHPBB', true);
 // Uncomment the following line to completely disable the ftp option...
@@ -314,14 +347,15 @@ $phpbb_root_path = './../';
 include($phpbb_root_path.'extension.inc');
 
 // Initialise some basic arrays
+$board_config = array();
 $userdata = array();
+$theme = array();
+$images = array();
 $lang = array();
+$nav_links = array();
+$dss_seeded = false;
+$gen_simple_header = FALSE;
 $error = false;
-
-// Include some required functions
-include($phpbb_root_path.'includes/constants.'.$phpEx);
-include($phpbb_root_path.'includes/functions.'.$phpEx);
-include($phpbb_root_path.'includes/sessions.'.$phpEx);
 
 // Define schema info
 $available_dbms = array(
@@ -334,11 +368,25 @@ $available_dbms = array(
 	), 
 	'mysql4' => array(
 		'LABEL'			=> 'MySQL 4.x/5.x',
-		'SCHEMA'		=> 'mysql', 
+		'SCHEMA'		=> 'mysql_40', 
 		'DELIM'			=> ';', 
 		'DELIM_BASIC'	=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	), 
+	'mysqli' => array(
+		'LABEL'			=> 'MySQL with MySQLi Extension',
+		'SCHEMA'		=> 'mysql_41',
+		'DELIM'			=> ';',
+		'DELIM_BASIC'	=> ';',
+		'COMMENTS'		=> 'remove_remarks'
+	),
+	'mysql6' => array(
+		'LABEL'			=> 'MySQL 6.x',
+		'SCHEMA'		=> 'mysql_61',
+		'DELIM'			=> ';',
+		'DELIM_BASIC'	=> ';',
+		'COMMENTS'		=> 'remove_remarks'
+	),	
 	'postgres' => array(
 		'LABEL'			=> 'PostgreSQL 7.x',
 		'SCHEMA'		=> 'postgres', 
@@ -370,64 +418,71 @@ $available_dbms = array(
 );
 
 // Obtain various vars
-$confirm = (isset($HTTP_POST_VARS['confirm'])) ? true : false;
-$cancel = (isset($HTTP_POST_VARS['cancel'])) ? true : false;
+$confirm = (isset($_POST['confirm'])) ? true : false;
+$cancel = (isset($_POST['cancel'])) ? true : false;
 
-if (isset($HTTP_POST_VARS['install_step']) || isset($HTTP_GET_VARS['install_step']))
+if (isset($_POST['install_step']) || isset($_GET['install_step']))
 {
-	$install_step = (isset($HTTP_POST_VARS['install_step'])) ? $HTTP_POST_VARS['install_step'] : $HTTP_GET_VARS['install_step'];
+	$install_step = (isset($_POST['install_step'])) ? $_POST['install_step'] : $_GET['install_step'];
 }
 else
 {
 	$install_step = '';
 }
 
-$upgrade = (!empty($HTTP_POST_VARS['upgrade'])) ? $HTTP_POST_VARS['upgrade']: '';
-$upgrade_now = (!empty($HTTP_POST_VARS['upgrade_now'])) ? $HTTP_POST_VARS['upgrade_now']:'';
+$upgrade = (!empty($_POST['upgrade'])) ? $_POST['upgrade']: '';
+$upgrade_now = (!empty($_POST['upgrade_now'])) ? $_POST['upgrade_now']:'';
 
-$dbms = isset($HTTP_POST_VARS['dbms']) ? $HTTP_POST_VARS['dbms'] : '';
+$dbms = isset($_POST['dbms']) ? $_POST['dbms'] : '';
 
-$dbhost = (!empty($HTTP_POST_VARS['dbhost'])) ? $HTTP_POST_VARS['dbhost'] : 'localhost';
-$dbuser = (!empty($HTTP_POST_VARS['dbuser'])) ? $HTTP_POST_VARS['dbuser'] : '';
-$dbpasswd = (!empty($HTTP_POST_VARS['dbpasswd'])) ? $HTTP_POST_VARS['dbpasswd'] : '';
-$dbname = (!empty($HTTP_POST_VARS['dbname'])) ? $HTTP_POST_VARS['dbname'] : '';
+$dbhost = (!empty($_POST['dbhost'])) ? $_POST['dbhost'] : 'localhost';
+$dbuser = (!empty($_POST['dbuser'])) ? $_POST['dbuser'] : '';
+$dbpasswd = (!empty($_POST['dbpasswd'])) ? $_POST['dbpasswd'] : '';
+$dbname = (!empty($_POST['dbname'])) ? $_POST['dbname'] : '';
 
-$table_prefix = (!empty($HTTP_POST_VARS['prefix'])) ? $HTTP_POST_VARS['prefix'] : '';
+$table_prefix = (!empty($_POST['prefix'])) ? $_POST['prefix'] : '';
 
-$admin_name = (!empty($HTTP_POST_VARS['admin_name'])) ? $HTTP_POST_VARS['admin_name'] : '';
-$admin_pass1 = (!empty($HTTP_POST_VARS['admin_pass1'])) ? $HTTP_POST_VARS['admin_pass1'] : '';
-$admin_pass2 = (!empty($HTTP_POST_VARS['admin_pass2'])) ? $HTTP_POST_VARS['admin_pass2'] : '';
+$admin_name = (!empty($_POST['admin_name'])) ? $_POST['admin_name'] : '';
+$admin_pass1 = (!empty($_POST['admin_pass1'])) ? $_POST['admin_pass1'] : '';
+$admin_pass2 = (!empty($_POST['admin_pass2'])) ? $_POST['admin_pass2'] : '';
 
-$ftp_path = (!empty($HTTP_POST_VARS['ftp_path'])) ? $HTTP_POST_VARS['ftp_path'] : '';
-$ftp_user = (!empty($HTTP_POST_VARS['ftp_user'])) ? $HTTP_POST_VARS['ftp_user'] : '';
-$ftp_pass = (!empty($HTTP_POST_VARS['ftp_pass'])) ? $HTTP_POST_VARS['ftp_pass'] : '';
+$ftp_path = (!empty($_POST['ftp_path'])) ? $_POST['ftp_path'] : '';
+$ftp_user = (!empty($_POST['ftp_user'])) ? $_POST['ftp_user'] : '';
+$ftp_pass = (!empty($_POST['ftp_pass'])) ? $_POST['ftp_pass'] : '';
 
-if (isset($HTTP_POST_VARS['lang']) && preg_match('#^[a-z_]+$#', $HTTP_POST_VARS['lang']))
+
+// Include some required functions
+include($phpbb_root_path.'includes/constants.'.$phpEx);
+include($phpbb_root_path.'includes/functions.'.$phpEx);
+include($phpbb_root_path.'includes/template.'.$phpEx);
+include($phpbb_root_path.'includes/sessions.'.$phpEx);
+
+if (isset($_POST['lang']) && preg_match('#^[a-z_]+$#', $_POST['lang']))
 {
-	$language = strip_tags($HTTP_POST_VARS['lang']);
+	$language = strip_tags($_POST['lang']);
 }
 else
 {
 	$language = guess_lang();
 }
 
-$board_email = (!empty($HTTP_POST_VARS['board_email'])) ? $HTTP_POST_VARS['board_email'] : '';
-$script_path = (!empty($HTTP_POST_VARS['script_path'])) ? $HTTP_POST_VARS['script_path'] : str_replace('install', '', dirname($HTTP_SERVER_VARS['PHP_SELF']));
+$board_email = (!empty($_POST['board_email'])) ? $_POST['board_email'] : '';
+$script_path = (!empty($_POST['script_path'])) ? $_POST['script_path'] : str_replace('install', '', dirname($_SERVER['PHP_SELF']));
 
-if (!empty($HTTP_POST_VARS['server_name']))
+if (!empty($_POST['server_name']))
 {
-	$server_name = $HTTP_POST_VARS['server_name'];
+	$server_name = $_POST['server_name'];
 }
 else
 {
 	// Guess at some basic info used for install..
-	if (!empty($HTTP_SERVER_VARS['SERVER_NAME']) || !empty($HTTP_ENV_VARS['SERVER_NAME']))
+	if (!empty($_SERVER['SERVER_NAME']) || !empty($_ENV['SERVER_NAME']))
 	{
-		$server_name = (!empty($HTTP_SERVER_VARS['SERVER_NAME'])) ? $HTTP_SERVER_VARS['SERVER_NAME'] : $HTTP_ENV_VARS['SERVER_NAME'];
+		$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : $_ENV['SERVER_NAME'];
 	}
-	else if (!empty($HTTP_SERVER_VARS['HTTP_HOST']) || !empty($HTTP_ENV_VARS['HTTP_HOST']))
+	else if (!empty($_SERVER['HTTP_HOST']) || !empty($_ENV['HTTP_HOST']))
 	{
-		$server_name = (!empty($HTTP_SERVER_VARS['HTTP_HOST'])) ? $HTTP_SERVER_VARS['HTTP_HOST'] : $HTTP_ENV_VARS['HTTP_HOST'];
+		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $_ENV['HTTP_HOST'];
 	}
 	else
 	{
@@ -435,15 +490,15 @@ else
 	}
 }
 
-if (!empty($HTTP_POST_VARS['server_port']))
+if (!empty($_POST['server_port']))
 {
-	$server_port = $HTTP_POST_VARS['server_port'];
+	$server_port = $_POST['server_port'];
 }
 else
 {
-	if (!empty($HTTP_SERVER_VARS['SERVER_PORT']) || !empty($HTTP_ENV_VARS['SERVER_PORT']))
+	if (!empty($_SERVER['SERVER_PORT']) || !empty($_ENV['SERVER_PORT']))
 	{
-		$server_port = (!empty($HTTP_SERVER_VARS['SERVER_PORT'])) ? $HTTP_SERVER_VARS['SERVER_PORT'] : $HTTP_ENV_VARS['SERVER_PORT'];
+		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : $_ENV['SERVER_PORT'];
 	}
 	else
 	{
@@ -477,7 +532,7 @@ if ($upgrade == 1)
 }
 
 // What do we need to do?
-if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1 && empty($HTTP_POST_VARS['upgrade_now']))
+if (!empty($_POST['send_file']) && $_POST['send_file'] == 1 && empty($_POST['upgrade_now']))
 {
 	header('Content-Type: text/x-delimtext; name="config.' . $phpEx . '"');
 	header('Content-disposition: attachment; filename="config.' . $phpEx . '"');
@@ -485,13 +540,13 @@ if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 1 &&
 	// We need to stripslashes no matter what the setting of magic_quotes_gpc is
 	// because we add slashes at the top if its off, and they are added automaticlly 
 	// if it is on.
-	echo stripslashes($HTTP_POST_VARS['config_data']);
+	echo stripslashes($_POST['config_data']);
 
 	exit;
 }
-else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] == 2)
+else if (!empty($_POST['send_file']) && $_POST['send_file'] == 2)
 {
-	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($HTTP_POST_VARS['config_data'])) . '" />';
+	$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="ftp_file" value="1" />';
 
 	if ($upgrade == 1)
@@ -524,7 +579,7 @@ else if (!empty($HTTP_POST_VARS['send_file']) && $HTTP_POST_VARS['send_file'] ==
 	exit;
 
 }
-else if (!empty($HTTP_POST_VARS['ftp_file']))
+else if (!empty($_POST['ftp_file']))
 {
 	// Try to connect ...
 	$conn_id = @ftp_connect('localhost');
@@ -535,7 +590,7 @@ else if (!empty($HTTP_POST_VARS['ftp_file']))
 		page_header($lang['NoFTP_config']);
 
 		// Error couldn't get connected... Go back to option to send file...
-		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($HTTP_POST_VARS['config_data'])) . '" />';
+		$s_hidden_fields = '<input type="hidden" name="config_data" value="' . htmlspecialchars(stripslashes($_POST['config_data'])) . '" />';
 		$s_hidden_fields .= '<input type="hidden" name="send_file" value="1" />';
 
 		// If we're upgrading ...
@@ -576,7 +631,7 @@ else if (!empty($HTTP_POST_VARS['ftp_file']))
 
 		$fp = @fopen($tmpfname, 'w');
 
-		@fwrite($fp, stripslashes($HTTP_POST_VARS['config_data']));
+		@fwrite($fp, stripslashes($_POST['config_data']));
 
 		@fclose($fp);
 
@@ -622,8 +677,8 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 
 	if (!empty($install_step))
 	{
-		if ((($HTTP_POST_VARS['admin_pass1'] != $HTTP_POST_VARS['admin_pass2'])) ||
-			(empty($HTTP_POST_VARS['admin_pass1']) || empty($dbhost)) && $HTTP_POST_VARS['cur_lang'] == $language)
+		if ((($_POST['admin_pass1'] != $_POST['admin_pass2'])) ||
+			(empty($_POST['admin_pass1']) || empty($dbhost)) && $_POST['cur_lang'] == $language)
 		{
 			$error = $lang['Password_mismatch'];
 		}
@@ -789,6 +844,11 @@ else
 				$check_exts = 'mysql';
 				$check_other = 'mysql';
 				break;
+				
+			case 'mysqli':
+				$check_exts = 'mysqli';
+				$check_other = 'mysqli';
+				break;				
 
 			case 'postgres':
 				$check_exts = 'pgsql';
@@ -804,7 +864,8 @@ else
 			exit;
 		}
 
-		include($phpbb_root_path.'includes/db.'.$phpEx);
+		//include($phpbb_root_path.'includes/db.'.$phpEx);
+		include($phpbb_root_path.'includes/db/'.$dbms.'.'.$phpEx); // Load dbal and initiate class
 	}
 
 	$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
@@ -835,11 +896,11 @@ else
 
 				for ($i = 0; $i < sizeof($sql_query); $i++)
 				{
-					if (trim($sql_query[$i]) != '')
+					if (trim(@$sql_query[$i]) != '')
 					{
-						if (!($result = $db->sql_query($sql_query[$i])))
+						if (!($result = @$db->sql_query(@$sql_query[$i])))
 						{
-							$error = $db->sql_error();
+							$error = @$db->sql_error();
 			
 							page_header($lang['Install'], '');
 							page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
@@ -858,11 +919,11 @@ else
 
 				for($i = 0; $i < sizeof($sql_query); $i++)
 				{
-					if (trim($sql_query[$i]) != '')
+					if (trim(@$sql_query[$i]) != '')
 					{
-						if (!($result = $db->sql_query($sql_query[$i])))
+						if (!($result = @$db->sql_query($sql_query[$i])))
 						{
-							$error = $db->sql_error();
+							$error = @$db->sql_error();
 
 							page_header($lang['Install'], '');
 							page_error($lang['Installer_Error'], $lang['Install_db_error'] . '<br />' . $error['message']);
@@ -883,14 +944,14 @@ else
 			// Update the default admin user with their information.
 			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
 				VALUES ('board_startdate', " . time() . ")";
-			if (!$db->sql_query($sql))
+			if (!@$db->sql_query($sql))
 			{
 				$error .= "Could not insert board_startdate :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
 
 			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
 				VALUES ('default_lang', '" . str_replace("\'", "''", $language) . "')";
-			if (!$db->sql_query($sql))
+			if (!@$db->sql_query($sql))
 			{
 				$error .= "Could not insert default_lang :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
@@ -907,7 +968,7 @@ else
 				$sql = "UPDATE " . $table_prefix . "config 
 					SET config_value = '$config_value' 
 					WHERE config_name = '$config_name'";
-				if (!$db->sql_query($sql))
+				if (!@$db->sql_query($sql))
 				{
 					$error .= "Could not insert default_lang :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 				}
@@ -918,14 +979,14 @@ else
 			$sql = "UPDATE " . $table_prefix . "users 
 				SET username = '" . str_replace("\'", "''", $admin_name) . "', user_password='" . str_replace("\'", "''", $admin_pass_md5) . "', user_lang = '" . str_replace("\'", "''", $language) . "', user_email='" . str_replace("\'", "''", $board_email) . "'
 				WHERE username = 'Admin'";
-			if (!$db->sql_query($sql))
+			if (!@$db->sql_query($sql))
 			{
 				$error .= "Could not update admin info :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}
 
 			$sql = "UPDATE " . $table_prefix . "users 
 				SET user_regdate = " . time();
-			if (!$db->sql_query($sql))
+			if (!@$db->sql_query($sql))
 			{
 				$error .= "Could not update user_regdate :: " . $sql . " :: " . __LINE__ . " :: " . __FILE__ . "<br /><br />";
 			}

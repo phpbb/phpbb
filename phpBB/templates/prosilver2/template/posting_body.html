@@ -1,0 +1,419 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<form action="{S_POST_ACTION}" method="post" name="post" onsubmit="return checkForm(this)">
+{POST_PREVIEW_BOX}
+{ERROR_BOX}
+<h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
+<div class="panel" id="postingbox">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_POST_A}</h3>
+	<fieldset class="fields1">
+	<!-- BEGIN switch_username_select -->
+	<dl style="clear: left;">
+		<dt><label for="subject">{L_USERNAME}:</label></dt>
+		<dd><input type="text" name="username" id="username" size="25" maxlength="30" tabindex="1" value="{USERNAME}" class="inputbox" /></dd>
+	</dl>
+	<!-- END switch_username_select -->
+	<!-- BEGIN switch_privmsg -->
+	<dl style="clear: left;">
+		<dt><label for="subject">{L_USERNAME}:</label></dt>
+		<dd><input type="text" name="username" id="username" size="25" maxlength="30" tabindex="1" value="{USERNAME}" class="inputbox" />&nbsp;<input type="submit" name="usersubmit" value="{L_FIND_USERNAME}" class="button2" onClick="window.open('{U_SEARCH_USER}', '_phpbbsearch', 'height=250,resizable=yes,width=400');return false;" /></dd>
+	</dl>
+	<!-- END switch_privmsg -->
+	<dl style="clear: left;">
+		<dt><label for="subject">{L_SUBJECT}:</label></dt>
+		<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox" /></dd>
+	</dl>
+		</dd>
+	</dl>
+</div>
+<script language="JavaScript" type="text/javascript">
+<!--
+// bbCode control by
+// subBlue design
+// www.subBlue.com
+
+// Startup variables
+var imageTag = false;
+var theSelection = false;
+
+// Check for Browser & Platform for PC & IE specific bits
+// More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
+var clientPC = navigator.userAgent.toLowerCase(); // Get client info
+var clientVer = parseInt(navigator.appVersion); // Get browser version
+
+var is_ie = ((clientPC.indexOf("msie") != -1) && (clientPC.indexOf("opera") == -1));
+var is_nav = ((clientPC.indexOf('mozilla')!=-1) && (clientPC.indexOf('spoofer')==-1)
+                && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera')==-1)
+                && (clientPC.indexOf('webtv')==-1) && (clientPC.indexOf('hotjava')==-1));
+var is_moz = 0;
+
+var is_win = ((clientPC.indexOf("win")!=-1) || (clientPC.indexOf("16bit") != -1));
+var is_mac = (clientPC.indexOf("mac")!=-1);
+
+// Helpline messages
+b_help = "{L_BBCODE_B_HELP}";
+i_help = "{L_BBCODE_I_HELP}";
+u_help = "{L_BBCODE_U_HELP}";
+q_help = "{L_BBCODE_Q_HELP}";
+c_help = "{L_BBCODE_C_HELP}";
+l_help = "{L_BBCODE_L_HELP}";
+o_help = "{L_BBCODE_O_HELP}";
+p_help = "{L_BBCODE_P_HELP}";
+w_help = "{L_BBCODE_W_HELP}";
+a_help = "{L_BBCODE_A_HELP}";
+s_help = "{L_BBCODE_S_HELP}";
+f_help = "{L_BBCODE_F_HELP}";
+
+// Define the bbCode tags
+bbcode = new Array();
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+imageTag = false;
+
+// Shows the help messages in the helpline window
+function helpline(help) {
+	document.post.helpbox.value = eval(help + "_help");
+}
+
+
+// Replacement for arrayname.length property
+function getarraysize(thearray) {
+	for (i = 0; i < thearray.length; i++) {
+		if ((thearray[i] == "undefined") || (thearray[i] == "") || (thearray[i] == null))
+			return i;
+		}
+	return thearray.length;
+}
+
+// Replacement for arrayname.push(value) not implemented in IE until version 5.5
+// Appends element to the array
+function arraypush(thearray,value) {
+	thearray[ getarraysize(thearray) ] = value;
+}
+
+// Replacement for arrayname.pop() not implemented in IE until version 5.5
+// Removes and returns the last element of an array
+function arraypop(thearray) {
+	thearraysize = getarraysize(thearray);
+	retval = thearray[thearraysize - 1];
+	delete thearray[thearraysize - 1];
+	return retval;
+}
+
+
+function checkForm() {
+
+	formErrors = false;    
+
+	if (document.post.message.value.length < 2) {
+		formErrors = "{L_EMPTY_MESSAGE}";
+	}
+
+	if (formErrors) {
+		alert(formErrors);
+		return false;
+	} else {
+		bbstyle(-1);
+		//formObj.preview.disabled = true;
+		//formObj.submit.disabled = true;
+		return true;
+	}
+}
+
+function emoticon(text) {
+	var txtarea = document.post.message;
+	text = ' ' + text + ' ';
+	if (txtarea.createTextRange && txtarea.caretPos) {
+		var caretPos = txtarea.caretPos;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+		txtarea.focus();
+	} else {
+		txtarea.value  += text;
+		txtarea.focus();
+	}
+}
+
+function bbfontstyle(bbopen, bbclose) {
+	var txtarea = document.post.message;
+
+	if ((clientVer >= 4) && is_ie && is_win) {
+		theSelection = document.selection.createRange().text;
+		if (!theSelection) {
+			txtarea.value += bbopen + bbclose;
+			txtarea.focus();
+			return;
+		}
+		document.selection.createRange().text = bbopen + theSelection + bbclose;
+		txtarea.focus();
+		return;
+	}
+	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	{
+		mozWrap(txtarea, bbopen, bbclose);
+		return;
+	}
+	else
+	{
+		txtarea.value += bbopen + bbclose;
+		txtarea.focus();
+	}
+	storeCaret(txtarea);
+}
+
+
+function bbstyle(bbnumber) {
+	var txtarea = document.post.message;
+
+	txtarea.focus();
+	donotinsert = false;
+	theSelection = false;
+	bblast = 0;
+
+	if (bbnumber == -1) { // Close all open tags & default button names
+		while (bbcode[0]) {
+			butnumber = arraypop(bbcode) - 1;
+			txtarea.value += bbtags[butnumber + 1];
+			buttext = eval('document.post.addbbcode' + butnumber + '.value');
+			eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+		}
+		imageTag = false; // All tags are closed including image tags :D
+		txtarea.focus();
+		return;
+	}
+
+	if ((clientVer >= 4) && is_ie && is_win)
+	{
+		theSelection = document.selection.createRange().text; // Get text selection
+		if (theSelection) {
+			// Add tags around selection
+			document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
+			txtarea.focus();
+			theSelection = '';
+			return;
+		}
+	}
+	else if (txtarea.selectionEnd && (txtarea.selectionEnd - txtarea.selectionStart > 0))
+	{
+		mozWrap(txtarea, bbtags[bbnumber], bbtags[bbnumber+1]);
+		return;
+	}
+	
+	// Find last occurance of an open tag the same as the one just clicked
+	for (i = 0; i < bbcode.length; i++) {
+		if (bbcode[i] == bbnumber+1) {
+			bblast = i;
+			donotinsert = true;
+		}
+	}
+
+	if (donotinsert) {		// Close all open tags up to the one just clicked & default button names
+		while (bbcode[bblast]) {
+				butnumber = arraypop(bbcode) - 1;
+				txtarea.value += bbtags[butnumber + 1];
+				buttext = eval('document.post.addbbcode' + butnumber + '.value');
+				eval('document.post.addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				imageTag = false;
+			}
+			txtarea.focus();
+			return;
+	} else { // Open tags
+	
+		if (imageTag && (bbnumber != 14)) {		// Close image tag before adding another
+			txtarea.value += bbtags[15];
+			lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
+			document.post.addbbcode14.value = "Img";	// Return button back to normal state
+			imageTag = false;
+		}
+		
+		// Open tag
+		txtarea.value += bbtags[bbnumber];
+		if ((bbnumber == 14) && (imageTag == false)) imageTag = 1; // Check to stop additional tags after an unclosed image tag
+		arraypush(bbcode,bbnumber+1);
+		eval('document.post.addbbcode'+bbnumber+'.value += "*"');
+		txtarea.focus();
+		return;
+	}
+	storeCaret(txtarea);
+}
+
+// From http://www.massless.org/mozedit/
+function mozWrap(txtarea, open, close)
+{
+	var selLength = txtarea.textLength;
+	var selStart = txtarea.selectionStart;
+	var selEnd = txtarea.selectionEnd;
+	if (selEnd == 1 || selEnd == 2) 
+		selEnd = selLength;
+
+	var s1 = (txtarea.value).substring(0,selStart);
+	var s2 = (txtarea.value).substring(selStart, selEnd)
+	var s3 = (txtarea.value).substring(selEnd, selLength);
+	txtarea.value = s1 + open + s2 + close + s3;
+	return;
+}
+
+// Insert at Claret position. Code from
+// http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
+function storeCaret(textEl) {
+	if (textEl.createTextRange) textEl.caretPos = document.selection.createRange().duplicate();
+}
+
+	var panels = new Array('poll-panel', 'options-panel');
+	var show_panel = 'options-panel';
+	
+//-->
+</script>
+
+<div id="format-buttons">
+	<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onMouseOver="helpline('b')" title="{L_BBCODE_B_HELP}" />
+	<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}" />
+	<input type="button" class="button2" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}" />
+	<input type="button" class="button2" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" title="{L_BBCODE_Q_HELP}" />
+	<input type="button" class="button2" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" title="{L_BBCODE_C_HELP}" />
+	<input type="button" class="button2" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" title="{L_BBCODE_L_HELP}" />
+	<input type="button" class="button2" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" title="{L_BBCODE_O_HELP}" />
+	<input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px" onclick="bbstyle(14)" title="{L_BBCODE_P_HELP}" />
+	<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" title="{L_BBCODE_W_HELP}" />
+	<select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_FONT_SIZE}">
+		<option value="7">{L_FONT_TINY}</option>
+		<option value="9">{L_FONT_SMALL}</option>
+		<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+		<option value="18">{L_FONT_LARGE}</option>
+		<option value="24">{L_FONT_HUGE}</option>
+	</select>
+</div>
+<div id="smiley-box">
+			<strong>{L_EMOTICONS}</strong><br />
+				<!-- BEGIN smilies_row -->
+				<!-- BEGIN smilies_col -->
+				<a href="javascript:emoticon('{smilies_row.smilies_col.SMILEY_CODE}')"><img src="{smilies_row.smilies_col.SMILEY_IMG}" alt="{smilies_row.smilies_col.SMILEY_DESC}" title="{smilies_row.smilies_col.SMILEY_DESC}" /></a>
+				<!-- END smilies_col -->
+				<!-- END smilies_row -->
+			<br /><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300'); return false;">{L_MORE_SMILIES}</a>
+		<hr />
+		{BBCODE_STATUS}<br />
+		{HTML_STATUS}<br />
+		{SMILIES_STATUS}
+	</div>
+	<div id="message-box">
+		<textarea name="message" id="signature" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" class="inputbox">{MESSAGE}</textarea>
+	</div>
+</fieldset>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+	<div class="panel bg2">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<fieldset class="submit-buttons">
+			{S_HIDDEN_FORM_FIELDS}<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1" />&nbsp;
+			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />
+		</fieldset>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+	<div id="tabs">
+		<ul>
+			<li id="options-panel-tab"><a href="#tabs" onclick="subPanels('options-panel'); return false;"><span>{L_OPTIONS}</span></a></li>
+			{POLLBOX}
+		</ul>
+	</div>
+	<div class="panel bg3" id="options-panel">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<fieldset class="fields1">
+			<!-- BEGIN switch_bbcode_checkbox -->
+				<div><label for="disable_bbcode"><input type="checkbox" name="disable_bbcode" id="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label></div>
+			<!-- END switch_bbcode_checkbox -->
+			<!-- BEGIN switch_html_checkbox -->
+				<div><label for="disable_html"><input type="checkbox" name="disable_html" id="disable_html" {S_BBCODE_CHECKED} /> {L_DISABLE_HTML}</label></div>
+			<!-- END switch_html_checkbox -->
+			<!-- BEGIN switch_smilies_checkbox -->
+				<div><label for="disable_smilies"><input type="checkbox" name="disable_smilies" id="disable_smilies"{S_SMILIES_CHECKED} /> {L_DISABLE_SMILIES}</label></div>
+			<!-- END switch_smilies_checkbox -->
+			<!-- BEGIN switch_signature_checkbox -->
+				<div><label for="attach_sig"><input type="checkbox" name="attach_sig" id="attach_sig"{S_SIGNATURE_CHECKED} /> {L_ATTACH_SIGNATURE}</label></div>
+			<!-- END switch_signature_checkbox -->
+			<!-- BEGIN switch_notify_checkbox -->
+				<div><label for="notify"><input type="checkbox" name="notify" id="notify"{S_NOTIFY_CHECKED} /> {L_NOTIFY_ON_REPLY}</label></div>
+			<!-- END switch_notify_checkbox -->
+			<hr class="dashed" />
+			<!-- BEGIN switch_type_toggle -->
+			<dl>
+				<dd>{S_TYPE_TOGGLE}</dd>
+			</dl>
+			<!-- END switch_type_toggle -->
+		</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel bg3" id="poll-panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<p>{L_ADD_POLL_EXPLAIN}</p>
+	<fieldset class="fields2">
+		<dl>
+			<dt><label for="poll_title">{L_POLL_QUESTION}:</label></dt>
+			<dd><input type="text" name="poll_title" id="poll_title" maxlength="255" value="{POLL_TITLE}" class="inputbox" /></dd>
+		</dl>
+		<!-- BEGIN poll_option_rows -->
+		<dl>
+			<dt><label for="poll_option_text">{L_POLL_OPTION}:</label><br /></dt>
+			<dd><input type="text" name="poll_option_text[{poll_option_rows.S_POLL_OPTION_NUM}]" size="50" class="inputbox" maxlength="255" value="{poll_option_rows.POLL_OPTION}" />&nbsp;<input type="submit" name="edit_poll_option" value="{L_UPDATE_OPTION}" class="button2" /> <input type="submit" name="del_poll_option[{poll_option_rows.S_POLL_OPTION_NUM}]" value="{L_DELETE_OPTION}" class="button2" /></dd>
+		</dl>
+		<!-- END poll_option_rows -->
+		<dl>
+			<dt><label for="poll_option_text">{L_POLL_OPTION}:</label><br /></dt>
+			<dd><input type="text" name="add_poll_option_text" size="50" maxlength="255" class="inputbox" value="{ADD_POLL_OPTION}" /></span>&nbsp;<input type="submit" name="add_poll_option" value="{L_ADD_OPTION}" class="button2" /></dd>
+		</dl>
+		<hr class="dashed" />
+		<dl>
+			<dt><label for="poll_length">{L_POLL_LENGTH}:</label></dt>
+			<dd><label for="poll_length"><input type="text" name="poll_length" id="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
+			<dd>{L_POLL_FOR_EXPLAIN}</dd>
+		</dl>
+		<!-- BEGIN switch_poll_delete_toggle -->
+		<dl class="fields1">
+			<dt><label for="poll_delete">{L_POLL_DELETE}:</label></dt>
+			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" /></label></dd>
+		</dl>
+		<!-- END switch_poll_delete_toggle -->
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+{TOPIC_REVIEW_BOX}
+</form>
+<script type="text/javascript">
+<!--
+	subPanels(show_panel);
+-->
+</script>
+</form>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

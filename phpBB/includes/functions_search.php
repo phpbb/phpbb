@@ -6,7 +6,7 @@
 *     copyright            : (C) 2002 The phpBB Group
 *     email                : support@phpbb.com
 *
-*     $Id$
+*     $Id: functions_search.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
 *
 ****************************************************************************/
 
@@ -78,7 +78,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	{
 		for ($j = 0; $j < count($synonym_list); $j++)
 		{
-			list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_list[$j])));
+			list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym_list[$j])));
 			if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) )
 			{
 				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
@@ -126,7 +126,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 			{ 
 				$search_matches[$i] = trim($search_matches[$i]);
 
-				if( $search_matches[$i] != '' ) 
+				if( !empty($search_matches[$i]) ) 
 				{
 					$word[] = $search_matches[$i];
 					if ( !strstr($word_insert_sql[$word_in], "'" . $search_matches[$i] . "'") )
@@ -150,7 +150,7 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 			if ( $word[$i] != $prev_word )
 			{
 				$temp_word[] = $word[$i];
-				$word_text_sql .= ( ( $word_text_sql != '' ) ? ', ' : '' ) . "'" . $word[$i] . "'";
+				$word_text_sql .= ( !empty( $word_text_sql ) ? ', ' : '' ) . "'" . $word[$i] . "'";
 			}
 			$prev_word = $word[$i];
 		}
@@ -195,30 +195,29 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 				{
 					case 'mysql':
 					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
-						break;
+					case 'mysqli':					
+						$value_sql .= ( !empty( $value_sql ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
+					break;
 					case 'mssql':
 					case 'mssql-odbc':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
-						break;
+						$value_sql .= ( !empty( $value_sql ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
+					break;
 					default:
 						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 							VALUES ('" . $word[$i] . "', 0)"; 
-						if( !$db->sql_query($sql) )
-						{
-							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
-						}
-						break;
+						$db->sql_query($sql);
+					break;
 				}
 			}
 		}
 
-		if ( $value_sql != '' )
+		if ( !empty($value_sql) )
 		{
 			switch ( SQL_LAYER )
 			{
 				case 'mysql':
 				case 'mysql4':
+				case 'mysqli':				
 					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						VALUES $value_sql"; 
 					break;
@@ -240,13 +239,12 @@ function add_search_words($mode, $post_id, $post_text, $post_title = '')
 	{
 		$title_match = ( $word_in == 'title' ) ? 1 : 0;
 
-		if ( $match_sql != '' )
+		if ( !empty($match_sql) )
 		{
 			$sql = "INSERT INTO " . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match) 
 				SELECT $post_id, word_id, $title_match  
 					FROM " . SEARCH_WORD_TABLE . " 
-					WHERE word_text IN ($match_sql)
-					AND word_common <> 1";
+					WHERE word_text IN ($match_sql)"; 
 			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert new word matches', '', __LINE__, __FILE__, $sql);
@@ -287,7 +285,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 			$word_id_sql = '';
 			for($i = 0; $i < count($word_id_list); $i++)
 			{
-				$word_id_sql .= ( ( $word_id_sql != '' ) ? ', ' : '' ) . "'" . $word_id_list[$i] . "'";
+				$word_id_sql .= ( !empty($word_id_sql) ? ', ' : '' ) . "'" . $word_id_list[$i] . "'";
 			}
 
 			$sql = "SELECT m.word_id 
@@ -313,11 +311,11 @@ function remove_common($mode, $fraction, $word_id_list = array())
 		$common_word_id = '';
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$common_word_id .= ( ( $common_word_id != '' ) ? ', ' : '' ) . $row['word_id'];
+			$common_word_id .= ( !empty($common_word_id) ? ', ' : '' ) . $row['word_id'];
 		}
 		$db->sql_freeresult($result);
 
-		if ( $common_word_id != '' )
+		if ( !empty($common_word_id) )
 		{
 			$sql = "UPDATE " . SEARCH_WORD_TABLE . "
 				SET word_common = " . TRUE . " 
@@ -358,7 +356,7 @@ function remove_search_post($post_id_sql)
 				$word_id_sql = '';
 				while ( $row = $db->sql_fetchrow($result) )
 				{
-					$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
+					$word_id_sql .= ( !empty($word_id_sql) ) ? ', ' . $row['word_id'] : $row['word_id']; 
 				}
 
 				$sql = "SELECT word_id 
@@ -371,10 +369,10 @@ function remove_search_post($post_id_sql)
 					$word_id_sql = '';
 					while ( $row = $db->sql_fetchrow($result) )
 					{
-						$word_id_sql .= ( $word_id_sql != '' ) ? ', ' . $row['word_id'] : $row['word_id']; 
+						$word_id_sql .= !empty($word_id_sql) ? ', ' . $row['word_id'] : $row['word_id']; 
 					}
 
-					if ( $word_id_sql != '' )
+					if ( !empty($word_id_sql) )
 					{
 						$sql = "DELETE FROM " . SEARCH_WORD_TABLE . " 
 							WHERE word_id IN ($word_id_sql)";
@@ -484,7 +482,7 @@ function username_search($search_match)
 		'S_SEARCH_ACTION' => append_sid("search.$phpEx?mode=searchuser"))
 	);
 
-	if ( $username_list != '' )
+	if ( !empty($username_list) )
 	{
 		$template->assign_block_vars('switch_select_name', array());
 	}

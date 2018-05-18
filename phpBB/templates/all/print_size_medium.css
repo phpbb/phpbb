@@ -1,0 +1,20 @@
+body { font-size: 11px; }
+
+#acp, #forumtable, p, td, th, .forumline th, .forumlinenb th, input, select, textarea { font-size: 12px; }
+
+.gen { font-size: 14px; }
+.genmed { font-size: 12px; }
+.gensmall { font-size: 11px; }
+.genmini { font-size: 10px; }
+.genmicro { font-size: 9px; }
+.gennull{ font-size: 0px; }
+
+.gotopage { font-size: 11px; }
+.pagination { font-size: 14px; }
+
+.copyright { font-size: 11px; }
+
+.code, .quote, post-text .code h6, .post-text .code-header, .post-text blockquote .quote-user, .post-text blockquote .quote-nouser { font-size: 12px; }
+.post-text, .post-text blockquote, .post-text .code { font-size: 14px; }
+
+

@@ -1,31 +1,31 @@
 <?php
 /***************************************************************************
- *                               privmsgs.php
- *                            -------------------
- *   begin                : Saturday, Jun 9, 2001
- *   copyright            : (C) 2001 The phpBB Group
- *   email                : support@phpbb.com
+ * privmsgs.php
+ * -------------------
+ *begin : Saturday, Jun 9, 2001
+ *copyright: (C) 2001 The phpBB Group
+ *email : support@phpbb.com
  *
- *   $Id$
+ *$Id: privmsg.php,v 1.96.2.50 2006/12/16 13:11:25 acydburn Exp $
  *
  *
  ***************************************************************************/
 
 /***************************************************************************
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
+ *This program is free software; you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation; either version 2 of the License, or
+ *(at your option) any later version.
  *
  ***************************************************************************/
 
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_post.'.$phpEx);
+include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+include_once($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 
 //
 // Is PM disabled?
@@ -41,24 +41,24 @@ $html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
 //
 // Parameters
 //
-$submit = ( isset($HTTP_POST_VARS['post']) ) ? TRUE : 0;
-$submit_search = ( isset($HTTP_POST_VARS['usersubmit']) ) ? TRUE : 0; 
-$submit_msgdays = ( isset($HTTP_POST_VARS['submit_msgdays']) ) ? TRUE : 0;
-$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
-$preview = ( isset($HTTP_POST_VARS['preview']) ) ? TRUE : 0;
-$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
-$delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : 0;
-$delete_all = ( isset($HTTP_POST_VARS['deleteall']) ) ? TRUE : 0;
-$save = ( isset($HTTP_POST_VARS['save']) ) ? TRUE : 0;
-$sid = (isset($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : 0;
+$submit = ( isset($_POST['post']) ) ? TRUE : 0;
+$submit_search = ( isset($_POST['usersubmit']) ) ? TRUE : 0; 
+$submit_msgdays = ( isset($_POST['submit_msgdays']) ) ? TRUE : 0;
+$cancel = ( isset($_POST['cancel']) ) ? TRUE : 0;
+$preview = ( isset($_POST['preview']) ) ? TRUE : 0;
+$confirm = ( isset($_POST['confirm']) ) ? TRUE : 0;
+$delete = ( isset($_POST['delete']) ) ? TRUE : 0;
+$delete_all = ( isset($_POST['deleteall']) ) ? TRUE : 0;
+$save = ( isset($_POST['save']) ) ? TRUE : 0;
+$sid = (isset($_POST['sid'])) ? $_POST['sid'] : 0;
 
 $refresh = $preview || $submit_search;
 
-$mark_list = ( !empty($HTTP_POST_VARS['mark']) ) ? $HTTP_POST_VARS['mark'] : 0;
+$mark_list = ( !empty($_POST['mark']) ) ? $_POST['mark'] : 0;
 
-if ( isset($HTTP_POST_VARS['folder']) || isset($HTTP_GET_VARS['folder']) )
+if ( isset($_POST['folder']) || isset($_GET['folder']) )
 {
-	$folder = ( isset($HTTP_POST_VARS['folder']) ) ? $HTTP_POST_VARS['folder'] : $HTTP_GET_VARS['folder'];
+	$folder = ( isset($_POST['folder']) ) ? $_POST['folder'] : $_GET['folder'];
 	$folder = htmlspecialchars($folder);
 
 	if ( $folder != 'inbox' && $folder != 'outbox' && $folder != 'sentbox' && $folder != 'savebox' )
@@ -91,9 +91,9 @@ if ( $cancel )
 //
 // Var definitions
 //
-if ( !empty($HTTP_POST_VARS['mode']) || !empty($HTTP_GET_VARS['mode']) )
+if ( !empty($_POST['mode']) || !empty($_GET['mode']) )
 {
-	$mode = ( !empty($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( !empty($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else
@@ -101,12 +101,12 @@ else
 	$mode = '';
 }
 
-$start = ( !empty($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( !empty($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($HTTP_POST_VARS[POST_POST_URL]) || isset($HTTP_GET_VARS[POST_POST_URL]) )
+if ( isset($_POST[POST_POST_URL]) || isset($_GET[POST_POST_URL]) )
 {
-	$privmsg_id = ( isset($HTTP_POST_VARS[POST_POST_URL]) ) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
+	$privmsg_id = ( isset($_POST[POST_POST_URL]) ) ? intval($_POST[POST_POST_URL]) : intval($_GET[POST_POST_URL]);
 }
 else
 {
@@ -118,17 +118,17 @@ $error = FALSE;
 //
 // Define the box image links
 //
-$inbox_img = ( $folder != 'inbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
-$inbox_url = ( $folder != 'inbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+$inbox_img = ( $folder != 'inbox' || !empty($mode) ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '"><img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" /></a>' : '<img src="' . $images['pm_inbox'] . '" border="0" alt="' . $lang['Inbox'] . '" />';
+$inbox_url = ( $folder != 'inbox' ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a></li>';
 
-$outbox_img = ( $folder != 'outbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
-$outbox_url = ( $folder != 'outbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+$outbox_img = ( $folder != 'outbox' || !empty($mode) ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '"><img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" /></a>' : '<img src="' . $images['pm_outbox'] . '" border="0" alt="' . $lang['Outbox'] . '" />';
+$outbox_url = ( $folder != 'outbox' || !empty($mode) ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a></li>';
 
-$sentbox_img = ( $folder != 'sentbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
-$sentbox_url = ( $folder != 'sentbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+$sentbox_img = ( $folder != 'sentbox' || !empty($mode) ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '"><img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" /></a>' : '<img src="' . $images['pm_sentbox'] . '" border="0" alt="' . $lang['Sentbox'] . '" />';
+$sentbox_url = ( $folder != 'sentbox' || !empty($mode) ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a></li>';
 
-$savebox_img = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
-$savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+$savebox_img = ( $folder != 'savebox' || !empty($mode) ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '"><img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" /></a>' : '<img src="' . $images['pm_savebox'] . '" border="0" alt="' . $lang['Savebox'] . '" />';
+$savebox_url = ( $folder != 'savebox' || !empty($mode) ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a></li>';
 
 // ----------
 // Start main
@@ -174,9 +174,9 @@ if ( $mode == 'newpm' )
 }
 else if ( $mode == 'read' )
 {
-	if ( !empty($HTTP_GET_VARS[POST_POST_URL]) )
+	if ( !empty($_GET[POST_POST_URL]) )
 	{
-		$privmsgs_id = intval($HTTP_GET_VARS[POST_POST_URL]);
+		$privmsgs_id = intval($_GET[POST_POST_URL]);
 	}
 	else
 	{
@@ -228,7 +228,7 @@ else if ( $mode == 'read' )
 	//
 	// Major query obtains the message ...
 	//
-	$sql = "SELECT u.username AS username_1, u.user_id AS user_id_1, u2.username AS username_2, u2.user_id AS user_id_2, u.user_sig_bbcode_uid, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text
+	$sql = "SELECT u.username AS username_1, u.user_id AS user_id_1, u2.username AS username_2, u2.user_id AS user_id_2, u.user_sig_bbcode_uid, u.user_regdate AS user_regdate1,u.user_posts AS user_posts1, u.user_from AS user_from1, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_rank AS user_rank1, u.user_sig, u.user_avatar AS user_avatar1,u.user_avatar_type AS user_avatar_type1, pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text
 		FROM " . PRIVMSGS_TABLE . " pm, " . PRIVMSGS_TEXT_TABLE . " pmt, " . USERS_TABLE . " u, " . USERS_TABLE . " u2 
 		WHERE pm.privmsgs_id = $privmsgs_id
 			AND pmt.privmsgs_text_id = pm.privmsgs_id 
@@ -261,10 +261,10 @@ else if ( $mode == 'read' )
 		{
 			case PRIVMSGS_NEW_MAIL:
 				$sql = "user_new_privmsg = user_new_privmsg - 1";
-				break;
+			break;
 			case PRIVMSGS_UNREAD_MAIL:
 				$sql = "user_unread_privmsg = user_unread_privmsg - 1";
-				break;
+			break;
 		}
 
 		$sql = "UPDATE " . USERS_TABLE . " 
@@ -361,11 +361,11 @@ else if ( $mode == 'read' )
 		'post_img' => '<a href="' . $post_urls['post'] . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0" /></a>',
 		'post' => '<a href="' . $post_urls['post'] . '">' . $lang['Post_new_pm'] . '</a>',
 		'reply_img' => '<a href="' . $post_urls['reply'] . '"><img src="' . $images['pm_replymsg'] . '" alt="' . $lang['Post_reply_pm'] . '" border="0" /></a>',
-		'reply' => '<a href="' . $post_urls['reply'] . '">' . $lang['Post_reply_pm'] . '</a>',
+		'reply' => '<div class="pmreply-icon">' . '<a href="' . $post_urls['reply'] . '" title=' . '"' . $lang['Post_reply_pm'] . '">' . '</a></div>',
 		'quote_img' => '<a href="' . $post_urls['quote'] . '"><img src="' . $images['pm_quotemsg'] . '" alt="' . $lang['Post_quote_pm'] . '" border="0" /></a>',
-		'quote' => '<a href="' . $post_urls['quote'] . '">' . $lang['Post_quote_pm'] . '</a>',
+		'quote' => '<li class="' . 'quote-icon' . '">' . '<a href="' . $post_urls['quote'] . '" title=' . '"' . $lang['Post_quote_pm'] . '">' . '</a></li>',
 		'edit_img' => '<a href="' . $post_urls['edit'] . '"><img src="' . $images['pm_editmsg'] . '" alt="' . $lang['Edit_pm'] . '" border="0" /></a>',
-		'edit' => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
+		'edit' => '<li class="' . 'edit-icon' . '">' . '<a href="' . $post_urls['edit'] . '" title=' . '"' . $lang['Edit_pm'] . '">' . '</a></li>'
 	);
 
 	if ( $folder == 'inbox' )
@@ -387,35 +387,35 @@ else if ( $mode == 'read' )
 		$quote_img = '';
 		$edit_img = $post_icons['edit_img'];
 		$post = $post_icons['post'];
-		$reply = '';
+		$reply = $post_icons['reply'];
 		$quote = '';
 		$edit = $post_icons['edit'];
 		$l_box_name = $lang['Outbox'];
 	}
 	else if ( $folder == 'savebox' )
 	{
-		if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL )
-		{
-			$post_img = $post_icons['post_img'];
-			$reply_img = $post_icons['reply_img'];
-			$quote_img = $post_icons['quote_img'];
-			$edit_img = '';
-			$post = $post_icons['post'];
-			$reply = $post_icons['reply'];
-			$quote = $post_icons['quote'];
-			$edit = '';
-		}
-		else
-		{
-			$post_img = $post_icons['post_img'];
-			$reply_img = '';
-			$quote_img = '';
-			$edit_img = '';
-			$post = $post_icons['post'];
-			$reply = '';
-			$quote = '';
-			$edit = '';
-		}
+	if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = $post_icons['quote_img'];
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = $post_icons['quote'];
+		$edit = '';
+	}
+	else
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = '';
+		$edit = '';
+	}
 		$l_box_name = $lang['Saved'];
 	}
 	else if ( $folder == 'sentbox' )
@@ -425,12 +425,11 @@ else if ( $mode == 'read' )
 		$quote_img = '';
 		$edit_img = '';
 		$post = $post_icons['post'];
-		$reply = '';
+		$reply = $post_icons['reply'];
 		$quote = '';
 		$edit = '';
 		$l_box_name = $lang['Sent'];
 	}
-
 	$s_hidden_fields = '<input type="hidden" name="mark[]" value="' . $privmsgs_id . '" />';
 
 	$page_title = $lang['Read_pm'];
@@ -497,14 +496,14 @@ else if ( $mode == 'read' )
 
 	$temp_url = append_sid("privmsg.$phpEx?mode=post&amp;" . POST_USERS_URL . "=$user_id_from");
 	$pm_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_pm'] . '" alt="' . $lang['Send_private_message'] . '" title="' . $lang['Send_private_message'] . '" border="0" /></a>';
-	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+	$pm = '<li class="' . 'pm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Send_private_message'] . '">' . '</a></li>';
 
 	if ( !empty($privmsg['user_viewemail']) || $userdata['user_level'] == ADMIN )
 	{
 		$email_uri = ( $board_config['board_email_form'] ) ? append_sid("profile.$phpEx?mode=email&amp;" . POST_USERS_URL .'=' . $user_id_from) : 'mailto:' . $privmsg['user_email'];
 
 		$email_img = '<a href="' . $email_uri . '"><img src="' . $images['icon_email'] . '" alt="' . $lang['Send_email'] . '" title="' . $lang['Send_email'] . '" border="0" /></a>';
-		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+		$email = '<li class="' . 'email-icon' . '">' . '<a href="' . $email_uri . '" title=' . '"' . $lang['Send_email'] . '">' . '</a></li>';
 	}
 	else
 	{
@@ -513,13 +512,13 @@ else if ( $mode == 'read' )
 	}
 
 	$www_img = ( $privmsg['user_website'] ) ? '<a href="' . $privmsg['user_website'] . '" target="_userwww"><img src="' . $images['icon_www'] . '" alt="' . $lang['Visit_website'] . '" title="' . $lang['Visit_website'] . '" border="0" /></a>' : '';
-	$www = ( $privmsg['user_website'] ) ? '<a href="' . $privmsg['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+	$www = ( $privmsg['user_website'] ) ? '<li class="' . 'web-icon' . '">' . '<a href="' . $privmsg['user_website'] . '" title=' . '"' . $lang['Visit_website'] . '">' . '</a></li>' : '';
 
 	if ( !empty($privmsg['user_icq']) )
 	{
 		$icq_status_img = '<a href="http://wwp.icq.com/' . $privmsg['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $privmsg['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
 		$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '"><img src="' . $images['icon_icq'] . '" alt="' . $lang['ICQ'] . '" title="' . $lang['ICQ'] . '" border="0" /></a>';
-		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+		$icq = '<li class="' . 'icq-icon' . '">' . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '" title=' . '"' . $lang['ICQ'] . '">' . '</a></li>';
 	}
 	else
 	{
@@ -529,14 +528,14 @@ else if ( $mode == 'read' )
 	}
 
 	$aim_img = ( $privmsg['user_aim'] ) ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?"><img src="' . $images['icon_aim'] . '" alt="' . $lang['AIM'] . '" title="' . $lang['AIM'] . '" border="0" /></a>' : '';
-	$aim = ( $privmsg['user_aim'] ) ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+	$aim = ( $privmsg['user_aim'] ) ? '<li class="' . 'aim-icon' . '">' . '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?" title=' . '"' . $lang['AIM'] . '">' . '</a></li>' : '';
 
 	$temp_url = append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$user_id_from");
 	$msn_img = ( $privmsg['user_msnm'] ) ? '<a href="' . $temp_url . '"><img src="' . $images['icon_msnm'] . '" alt="' . $lang['MSNM'] . '" title="' . $lang['MSNM'] . '" border="0" /></a>' : '';
-	$msn = ( $privmsg['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+	$msn = ( $privmsg['user_msnm'] ) ? '<li class="' . 'msnm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['MSNM'] . '">' . '</a></li>' : '';
 
 	$yim_img = ( $privmsg['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg"><img src="' . $images['icon_yim'] . '" alt="' . $lang['YIM'] . '" title="' . $lang['YIM'] . '" border="0" /></a>' : '';
-	$yim = ( $privmsg['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+	$yim = ( $privmsg['user_yim'] ) ? '<li class="' . 'yahoo-icon' . '">' . '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg" title=' . '"' . $lang['YIM'] . '">' . '</a></li>' : '';
 
 	$temp_url = append_sid("search.$phpEx?search_author=" . urlencode($username_from) . "&amp;showresults=posts");
 	$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $username_from) . '" title="' . sprintf($lang['Search_user_posts'], $username_from) . '" border="0" /></a>';
@@ -567,7 +566,7 @@ else if ( $mode == 'read' )
 	//
 	if ( !$board_config['allow_html'] || !$userdata['user_allowhtml'])
 	{
-		if ( $user_sig != '')
+		if ( !empty($user_sig) )
 		{
 			$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 		}
@@ -578,21 +577,21 @@ else if ( $mode == 'read' )
 		}
 	}
 
-	if ( $user_sig != '' && $privmsg['privmsgs_attach_sig'] && $user_sig_bbcode_uid != '' )
+	if ( !empty($user_sig) && $privmsg['privmsgs_attach_sig'] && !empty($user_sig_bbcode_uid) )
 	{
 		$user_sig = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($user_sig, $user_sig_bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $user_sig);
 	}
 
-	if ( $bbcode_uid != '' )
+	if ( !empty($bbcode_uid) )
 	{
 		$private_message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($private_message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $private_message);
 	}
 
 	$private_message = make_clickable($private_message);
 
-	if ( $privmsg['privmsgs_attach_sig'] && $user_sig != '' )
+	if ( $privmsg['privmsgs_attach_sig'] && !empty($user_sig) )
 	{
-		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
+		$private_message .= '</div><div class="signature">' . make_clickable($user_sig);
 	}
 
 	$orig_word = array();
@@ -612,6 +611,66 @@ else if ( $mode == 'read' )
 
 	$private_message = str_replace("\n", '<br />', $private_message);
 
+	//
+	//View poster body PM(rank username, avatar, number of posts, joined, location)
+	//
+	$sql = "SELECT *
+	FROM " . RANKS_TABLE . "
+	ORDER BY rank_special, rank_min";
+	if ( !($result = $db->sql_query($sql)) )
+	{
+	message_die(GENERAL_ERROR, "Could not obtain ranks information.", '', __LINE__, __FILE__, $sql);
+	}
+
+	$ranksrow = array();
+	while ( $row = $db->sql_fetchrow($result) )
+	{
+	$ranksrow[] = $row;
+	}
+	$db->sql_freeresult($result);
+	//
+	// Generate ranks, set them to empty string initially.
+	//
+	$poster_rank = '';
+	$rank_image = '';
+	if ( $privmsg['user_rank1'] )
+	{
+		for($j = 0; $j < count($ranksrow); $j++)
+		{
+		if ( $privmsg['user_rank1'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] )
+		{
+		$poster_rank = $ranksrow[$j]['rank_title'];
+		$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '</dd><dd><img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" />' : '';
+		}
+		}
+	}
+	else
+	{
+		for($j = 0; $j < count($ranksrow); $j++)
+		{
+		if ( $privmsg['user_posts1'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
+		{
+		$poster_rank = $ranksrow[$j]['rank_title'];
+		$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '</dd><dd><img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title=' . $poster_rank . '" />' : '';
+		}
+		}
+	}
+	if(!empty($privmsg['user_from1'])){
+	$lot='<dd><strong>' . $lang['Location'] . '</strong>: ' . $privmsg['user_from1'] . '</dd>'; //empty for Location
+	}
+	switch( $privmsg['user_avatar_type1'] )
+	{
+		case USER_AVATAR_UPLOAD:
+			$aimg = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+		case USER_AVATAR_REMOTE:
+			$aimg = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+		case USER_AVATAR_GALLERY:
+			$aimg =  ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+	}
+	$poster_avatar = '<dt><a href="profile.' . $phpEx . '?mode=viewprofile&amp;u=' . $user_id_from . '">' . $aimg . $username_from . '</a></dt><dd>' . $poster_rank . $rank_image . '</dd><dd>&nbsp;</dd><dd><strong>' . $lang['Post'] . '</strong>: ' . $privmsg['user_posts1'] . '</a></dd><dd><strong>' . $lang['Joined'] . ':</strong> ' . create_date($lang['DATE_FORMAT'], $privmsg['user_regdate1'], $board_config['board_timezone']) . '</dd>'.$lot.'';
 	//
 	// Dump it to the templating engine
 	//
@@ -667,8 +726,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 	if ( !$confirm )
 	{
 		$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
-		$s_hidden_fields .= ( isset($HTTP_POST_VARS['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
-		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		$s_hidden_fields .= ( isset($_POST['delete']) ) ? '<input type="hidden" name="delete" value="true" />' : '<input type="hidden" name="deleteall" value="true" />';
 
 		for($i = 0; $i < count($mark_list); $i++)
 		{
@@ -699,7 +757,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	}
-	else if ($confirm && $sid === $userdata['session_id'])
+	else if ( $confirm )
 	{
 		$delete_sql_id = '';
 
@@ -707,7 +765,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 		{
 			for ($i = 0; $i < count($mark_list); $i++)
 			{
-				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
+				$delete_sql_id .= (!empty($delete_sql_id) ? ', ' : '') . intval($mark_list[$i]);
 			}
 			$delete_sql_id = "AND privmsgs_id IN ($delete_sql_id)";
 		}
@@ -717,22 +775,22 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 			case 'inbox':
 				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
 				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-				break;
+			break;
 
 			case 'outbox':
 				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-				break;
+			break;
 
 			case 'sentbox':
 				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
-				break;
+			break;
 
 			case 'savebox':
 				$delete_type = "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
 					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
 				OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
 					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
-				break;
+			break;
 		}
 
 		$sql = "SELECT privmsgs_id
@@ -757,7 +815,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 			$delete_sql_id = '';
 			for ($i = 0; $i < sizeof($mark_list); $i++)
 			{
-				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
+				$delete_sql_id .= (!empty($delete_sql_id) ? ', ' : '') . intval($mark_list[$i]);
 			}
 
 			if ($folder == 'inbox' || $folder == 'outbox')
@@ -766,10 +824,10 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 				{
 					case 'inbox':
 						$sql = "privmsgs_to_userid = " . $userdata['user_id'];
-						break;
+					break;
 					case 'outbox':
 						$sql = "privmsgs_from_userid = " . $userdata['user_id'];
-						break;
+					break;
 				}
 
 				// Get information relevant to new or unread mail
@@ -786,19 +844,20 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 
 				if ( $row = $db->sql_fetchrow($result))
 				{
-					$update_users = $update_list = array();
-				
+					$update_users = array('new'		=> array(), 'unread'		=> array()); 
+					$update_list = array();
+								
 					do
 					{
 						switch ($row['privmsgs_type'])
 						{
 							case PRIVMSGS_NEW_MAIL:
 								$update_users['new'][$row['privmsgs_to_userid']]++;
-								break;
-
+							break;
+							
 							case PRIVMSGS_UNREAD_MAIL:
 								$update_users['unread'][$row['privmsgs_to_userid']]++;
-								break;
+							break;
 						}
 					}
 					while ($row = $db->sql_fetchrow($result));
@@ -820,19 +879,32 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 							{
 								case 'new':
 									$type = "user_new_privmsg";
-									break;
+								break;
 
 								case 'unread':
 									$type = "user_unread_privmsg";
-									break;
-							}
-
+								break;
+							}							
+							
+							// Update unread count
+							$sql = 'SELECT COUNT(pm.privmsgs_id) as num_messages, u.' . $type . '
+								FROM ' . PRIVMSGS_TABLE . ' pm, ' . USERS_TABLE . ' u
+								WHERE u.' . $type . ' = 1
+									AND pm.privmsgs_type IN ' . $row['privmsgs_type'] . '
+									AND u.user_id = pm.privmsgs_to_userid
+									AND pm.user_id = ' . $user->data['user_id'];
+							$result = $db->sql_query($sql);
+							$num_messages = (int) $db->sql_fetchfield('num_messages');
+							$user->data[$type] = (int) $db->sql_fetchfield($type);
+							$db->sql_freeresult($result);
+							
 							while (list($dec, $user_ary) = each($dec_ary))
 							{
 								$user_ids = implode(', ', $user_ary);
-
+								//$num_mesgs = $num_messages - $dec;
+								$num_mesgs = $user->data[$type];
 								$sql = "UPDATE " . USERS_TABLE . " 
-									SET $type = $type - $dec 
+									SET $type = $num_mesgs 
 									WHERE user_id IN ($user_ids)";
 								if ( !$db->sql_query($sql) )
 								{
@@ -877,12 +949,12 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 					break;
 			}
 
-			if ( !$db->sql_query($delete_sql, BEGIN_TRANSACTION) )
+			if ( !$db->sql_query($delete_sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete private message info', '', __LINE__, __FILE__, $delete_sql);
 			}
 
-			if ( !$db->sql_query($delete_text_sql, END_TRANSACTION) )
+			if ( !$db->sql_query($delete_text_sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete private message text', '', __LINE__, __FILE__, $delete_text_sql);
 			}
@@ -948,7 +1020,7 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		$saved_sql_id = '';
 		for ($i = 0; $i < sizeof($mark_list); $i++)
 		{
-			$saved_sql_id .= (($saved_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
+			$saved_sql_id .= (!empty($saved_sql_id) ? ', ' : '') . intval($mark_list[$i]);
 		}
 
 		// Process request
@@ -1075,11 +1147,11 @@ else if ( $save && $mark_list && $folder != 'savebox' && $folder != 'outbox' )
 		redirect(append_sid("privmsg.$phpEx?folder=savebox", true));
 	}
 }
-else if ( $submit || $refresh || $mode != '' )
+else if ( $submit || $refresh || !empty($mode) )
 {
 	if ( !$userdata['session_logged_in'] )
 	{
-		$user_id = ( isset($HTTP_GET_VARS[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($HTTP_GET_VARS[POST_USERS_URL]) : '';
+		$user_id = ( isset($_GET[POST_USERS_URL]) ) ? '&' . POST_USERS_URL . '=' . intval($_GET[POST_USERS_URL]) : '';
 		redirect(append_sid("login.$phpEx?redirect=privmsg.$phpEx&folder=$folder&mode=$mode" . $user_id, true));
 	}
 	
@@ -1092,7 +1164,7 @@ else if ( $submit || $refresh || $mode != '' )
 	}
 	else
 	{
-		$html_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
+		$html_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_html']) ) ? 0 : TRUE ) : $userdata['user_allowhtml'];
 	}
 
 	if ( !$board_config['allow_bbcode'] )
@@ -1101,7 +1173,7 @@ else if ( $submit || $refresh || $mode != '' )
 	}
 	else
 	{
-		$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
+		$bbcode_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_bbcode']) ) ? 0 : TRUE ) : $userdata['user_allowbbcode'];
 	}
 
 	if ( !$board_config['allow_smilies'] )
@@ -1110,11 +1182,11 @@ else if ( $submit || $refresh || $mode != '' )
 	}
 	else
 	{
-		$smilies_on = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
+		$smilies_on = ( $submit || $refresh ) ? ( ( !empty($_POST['disable_smilies']) ) ? 0 : TRUE ) : $userdata['user_allowsmile'];
 	}
 
-	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($HTTP_POST_VARS['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
-	$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
+	$attach_sig = ( $submit || $refresh ) ? ( ( !empty($_POST['attach_sig']) ) ? TRUE : 0 ) : $userdata['user_attachsig'];
+	$user_sig = ( !empty($userdata['user_sig']) && $board_config['allow_sig'] ) ? $userdata['user_sig'] : "";
 	
 	if ( $submit && $mode != 'edit' )
 	{
@@ -1171,9 +1243,9 @@ else if ( $submit || $refresh || $mode != '' )
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Session_invalid'];
 		}
 
-		if ( !empty($HTTP_POST_VARS['username']) )
+		if ( !empty($_POST['username']) )
 		{
-			$to_username = phpbb_clean_username($HTTP_POST_VARS['username']);
+			$to_username = phpbb_clean_username($_POST['username']);
 
 			$sql = "SELECT user_id, user_notify_pm, user_email, user_lang, user_active 
 				FROM " . USERS_TABLE . "
@@ -1197,14 +1269,14 @@ else if ( $submit || $refresh || $mode != '' )
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['No_to_user'];
 		}
 
-		$privmsg_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
+		$privmsg_subject = trim(htmlspecialchars($_POST['subject']));
 		if ( empty($privmsg_subject) )
 		{
 			$error = TRUE;
 			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Empty_subject'];
 		}
 
-		if ( !empty($HTTP_POST_VARS['message']) )
+		if ( !empty($_POST['message']) )
 		{
 			if ( !$error )
 			{
@@ -1213,7 +1285,7 @@ else if ( $submit || $refresh || $mode != '' )
 					$bbcode_uid = make_bbcode_uid();
 				}
 
-				$privmsg_message = prepare_message($HTTP_POST_VARS['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+				$privmsg_message = prepare_message($_POST['message'], $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
 
 			}
 		}
@@ -1287,9 +1359,19 @@ else if ( $submit || $refresh || $mode != '' )
 					}
 				}
 			}
-
-			$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_enable_html, privmsgs_enable_bbcode, privmsgs_enable_smilies, privmsgs_attach_sig)
-				VALUES (" . PRIVMSGS_NEW_MAIL . ", '" . str_replace("\'", "''", $privmsg_subject) . "', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', $html_on, $bbcode_on, $smilies_on, $attach_sig)";
+			
+			$sql_info = 'INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'privmsgs_type'				=> PRIVMSGS_NEW_MAIL,
+					'privmsgs_subject'			=> str_replace("\'", "''", $privmsg_subject),
+					'privmsgs_from_userid'		=> $userdata['user_id'],
+					'privmsgs_to_userid'		=> $to_userdata['user_id'], 
+					'privmsgs_date'				=> $msg_time, 
+					'privmsgs_ip'				=> $user_ip, 
+					'privmsgs_enable_html'		=> $html_on, 
+					'privmsgs_enable_bbcode'	=> $bbcode_on, 
+					'privmsgs_enable_smilies'	=> $smilies_on, 
+					'privmsgs_attach_sig'		=> $attach_sig)
+				);
 		}
 		else
 		{
@@ -1298,7 +1380,7 @@ else if ( $submit || $refresh || $mode != '' )
 				WHERE privmsgs_id = $privmsg_id";
 		}
 
-		if ( !($result = $db->sql_query($sql_info, BEGIN_TRANSACTION)) )
+		if ( !($db->sql_query($sql_info)) )
 		{
 			message_die(GENERAL_ERROR, "Could not insert/update private message sent info.", "", __LINE__, __FILE__, $sql_info);
 		}
@@ -1317,7 +1399,7 @@ else if ( $submit || $refresh || $mode != '' )
 				WHERE privmsgs_text_id = $privmsg_id";
 		}
 
-		if ( !$db->sql_query($sql, END_TRANSACTION) )
+		if ( !($db->sql_query($sql_info)) )
 		{
 			message_die(GENERAL_ERROR, "Could not insert/update private message sent text.", "", __LINE__, __FILE__, $sql);
 		}
@@ -1338,7 +1420,7 @@ else if ( $submit || $refresh || $mode != '' )
 			if ( $to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']) && $to_userdata['user_active'] )
 			{
 				$script_name = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path']));
-				$script_name = ( $script_name != '' ) ? $script_name . '/privmsg.'.$phpEx : 'privmsg.'.$phpEx;
+				$script_name = !empty($script_name) ? $script_name . '/privmsg.'.$phpEx : 'privmsg.'.$phpEx;
 				$server_name = trim($board_config['server_name']);
 				$server_protocol = ( $board_config['cookie_secure'] ) ? 'https://' : 'http://';
 				$server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config['server_port']) . '/' : '/';
@@ -1382,10 +1464,10 @@ else if ( $submit || $refresh || $mode != '' )
 		// passed to the script, process it a little, do some checks
 		// where neccessary, etc.
 		//
-		$to_username = (isset($HTTP_POST_VARS['username']) ) ? trim(htmlspecialchars(stripslashes($HTTP_POST_VARS['username']))) : '';
+		$to_username = (isset($_POST['username']) ) ? trim(htmlspecialchars(stripslashes($_POST['username']))) : '';
 
-		$privmsg_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))) : '';
-		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : '';
+		$privmsg_subject = ( isset($_POST['subject']) ) ? trim(htmlspecialchars(stripslashes($_POST['subject']))) : '';
+		$privmsg_message = ( isset($_POST['message']) ) ? trim($_POST['message']) : '';
 		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 		if ( !$preview )
 		{
@@ -1399,14 +1481,14 @@ else if ( $submit || $refresh || $mode != '' )
 		{
 			$page_title = $lang['Post_new_pm'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
+			$user_sig = ( !empty($userdata['user_sig']) && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'reply' )
 		{
 			$page_title = $lang['Post_reply_pm'];
 
-			$user_sig = ( $userdata['user_sig'] != '' && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
+			$user_sig = ( !empty($userdata['user_sig']) && $board_config['allow_sig'] ) ? $userdata['user_sig'] : '';
 
 		}
 		else if ( $mode == 'edit' )
@@ -1429,7 +1511,7 @@ else if ( $submit || $refresh || $mode != '' )
 					message_die(GENERAL_MESSAGE, $lang['Edit_own_posts']);
 				}
 
-				$user_sig = ( $postrow['user_sig'] != '' && $board_config['allow_sig'] ) ? $postrow['user_sig'] : '';
+				$user_sig = ( !empty($postrow['user_sig']) && $board_config['allow_sig'] ) ? $postrow['user_sig'] : '';
 			}
 		}
 	}
@@ -1440,9 +1522,9 @@ else if ( $submit || $refresh || $mode != '' )
 			message_die(GENERAL_ERROR, $lang['No_post_id']);
 		}
 
-		if ( !empty($HTTP_GET_VARS[POST_USERS_URL]) )
+		if ( !empty($_GET[POST_USERS_URL]) )
 		{
-			$user_id = intval($HTTP_GET_VARS[POST_USERS_URL]);
+			$user_id = intval($_GET[POST_USERS_URL]);
 
 			$sql = "SELECT username
 				FROM " . USERS_TABLE . "
@@ -1583,13 +1665,13 @@ else if ( $submit || $refresh || $mode != '' )
 		//
 		if ( !$html_on || !$board_config['allow_html'] || !$userdata['user_allowhtml'] )
 		{
-			if ( $user_sig != '' )
+			if ( !empty($user_sig) )
 			{
 				$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 			}
 		}
 
-		if ( $attach_sig && $user_sig != '' && $userdata['user_sig_bbcode_uid'] )
+		if ( $attach_sig && !empty($user_sig) && $userdata['user_sig_bbcode_uid'] )
 		{
 			$user_sig = bbencode_second_pass($user_sig, $userdata['user_sig_bbcode_uid']);
 		}
@@ -1599,9 +1681,9 @@ else if ( $submit || $refresh || $mode != '' )
 			$preview_message = bbencode_second_pass($preview_message, $bbcode_uid);
 		}
 
-		if ( $attach_sig && $user_sig != '' )
+		if ( $attach_sig && !empty($user_sig) )
 		{
-			$preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
+			$preview_message = $preview_message . '</div><div class="signature">' . $user_sig ;
 		}
 		
 		if ( count($orig_word) )
@@ -1726,7 +1808,7 @@ else if ( $submit || $refresh || $mode != '' )
 	// Signature toggle selection - only show if
 	// the user has a signature
 	//
-	if ( $user_sig != '' )
+	if ( !empty($user_sig) )
 	{
 		$template->assign_block_vars('switch_signature_checkbox', array());
 	}
@@ -1969,15 +2051,15 @@ switch( $folder )
 //
 // Show messages over previous x days/months
 //
-if ( $submit_msgdays && ( !empty($HTTP_POST_VARS['msgdays']) || !empty($HTTP_GET_VARS['msgdays']) ) )
+if ( $submit_msgdays && ( !empty($_POST['msgdays']) || !empty($_GET['msgdays']) ) )
 {
-	$msg_days = ( !empty($HTTP_POST_VARS['msgdays']) ) ? intval($HTTP_POST_VARS['msgdays']) : intval($HTTP_GET_VARS['msgdays']);
+	$msg_days = ( !empty($_POST['msgdays']) ) ? intval($_POST['msgdays']) : intval($_GET['msgdays']);
 	$min_msg_time = time() - ($msg_days * 86400);
 
 	$limit_msg_time_total = " AND privmsgs_date > $min_msg_time";
 	$limit_msg_time = " AND pm.privmsgs_date > $min_msg_time ";
 
-	if ( !empty($HTTP_POST_VARS['msgdays']) )
+	if ( !empty($_POST['msgdays']) )
 	{
 		$start = 0;
 	}
@@ -2042,7 +2124,7 @@ switch ( $folder )
 }
 $post_pm = append_sid("privmsg.$phpEx?mode=post");
 $post_pm_img = '<a href="' . $post_pm . '"><img src="' . $images['pm_postmsg'] . '" alt="' . $lang['Post_new_pm'] . '" border="0" /></a>';
-$post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
+$post_pm = '<a href="' . $post_pm . '" title=' . '"' . $lang['Post_new_pm'] . '">' . '</a>';
 
 //
 // Output data for inbox status

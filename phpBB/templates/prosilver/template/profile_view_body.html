@@ -1,0 +1,82 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<h2>{PAGE_TITLE} - {USERNAME}</h2>
+<form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
+<div class="panel bg1">
+	<div class="inner"><span class="corners-top"><span></span></span>
+		<dl class="left-box">
+			<dt>{AVATAR_IMG}</dt>
+			<dd style="text-align: center;">{POSTER_RANK}</dd>
+		</dl>
+	<dl class="left-box details" style="width: 80%;">
+		<dt>{L_USERNAME}:</dt>
+		<dd>
+			{USERNAME}
+		</dd>
+		<dt>{L_LOCATION}: </dt> <dd>{LOCATION}</dd>
+		<dt>{L_OCCUPATION}: </dt> <dd>{OCCUPATION}</dd>
+		<dt>{L_INTERESTS}: </dt> <dd>{INTERESTS}</dd>
+	</dl>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel bg2">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="column1">
+
+		<h3>{L_CONTACT} {USERNAME}</h3>
+		
+		<dl class="details">
+		<dt>{L_EMAIL_ADDRESS}:</dt> <dd>{EMAIL}</dd>
+		<dt>{L_WEBSITE}:</dt> <dd>{WWW}</dd>
+		<dt>{L_PM}:</dt> <dd>{PM}</dd>
+		<dt>{L_MESSENGER}:</dt> <dd>{MSN}</dd>
+		<dt>{L_YAHOO}:</dt> <dd>{YIM}&nbsp;</dd>
+		<dt>{L_AIM}:</dt> <dd>{AIM}</dd>
+		<dt>{L_ICQ_NUMBER}:</dt> <dd>{ICQ}</dd>
+		</dl>
+	</div>
+	<div class="column2">
+		<h3>{USERNAME}</h3>
+		<dl class="details">
+			<dt>{L_JOINED}:</dt> <dd>{JOINED}</dd>
+			<dt>{L_TOTAL_POSTS}:</dt> <dd>{POSTS} | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong><br />({POST_PERCENT_STATS} / {POST_DAY_STATS})</dd>
+		</dl>
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>
+{JUMPBOX}
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

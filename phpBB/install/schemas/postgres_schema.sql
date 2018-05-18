@@ -2,7 +2,7 @@
  phpBB2 PostgreSQL DB schema - phpBB group 2001
 
 
- $Id$
+ $Id: postgres_schema.sql,v 1.1 2010/10/10 15:10:39 orynider Exp $
 */
 
 CREATE SEQUENCE phpbb_banlist_id_seq start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
@@ -117,6 +117,7 @@ CREATE TABLE phpbb_disallow (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_forums (
    forum_id int4 DEFAULT '0' NOT NULL,
+   forum_parent int2 DEFAULT '0' NOT NULL,   
    cat_id int4,
    forum_name varchar(150),
    forum_desc text,
@@ -291,7 +292,6 @@ CREATE TABLE phpbb_sessions (
    session_page int4 DEFAULT '0' NOT NULL,
    session_logged_in int2 DEFAULT '0' NOT NULL,
    session_admin int2 DEFAULT '0' NOT NULL,
-   priv_session_id char(32) DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_session_pkey PRIMARY KEY (session_id)
 );
 CREATE INDEX session_user_id_phpbb_sessions_index ON phpbb_sessions (session_user_id);

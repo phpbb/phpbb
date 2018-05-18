@@ -1,0 +1,40 @@
+#dock {
+	width: 100%;
+	bottom: 0px;
+	/*position: absolute;*/
+	left: 0px;
+}
+
+.dock {
+	position: relative;
+	height: 50px;
+	text-align: center;
+}
+
+.dock-container {
+	position: absolute;
+	height: 50px;
+	background: url('images/dock-bg.gif');
+	padding-left: 20px;
+}
+
+a.dock-item {
+	display: block;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	width: 40px;
+	bottom: 0px;
+	position: absolute;
+	text-align: center;
+	text-decoration: none;
+}
+
+.dock-item span {
+	display: none;
+	padding-left: 20px;
+}
+
+.dock-item img {
+	border: none;
+	margin: 5px 10px 0px;
+	width: 100%;
+}

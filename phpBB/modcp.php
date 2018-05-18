@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: modcp.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  ***************************************************************************/
 
@@ -32,55 +32,55 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 //
 // Obtain initial var settings
 //
-if ( isset($HTTP_GET_VARS[POST_FORUM_URL]) || isset($HTTP_POST_VARS[POST_FORUM_URL]) )
+if ( isset($_GET[POST_FORUM_URL]) || isset($_POST[POST_FORUM_URL]) )
 {
-	$forum_id = (isset($HTTP_POST_VARS[POST_FORUM_URL])) ? intval($HTTP_POST_VARS[POST_FORUM_URL]) : intval($HTTP_GET_VARS[POST_FORUM_URL]);
+	$forum_id = (isset($_POST[POST_FORUM_URL])) ? intval($_POST[POST_FORUM_URL]) : intval($_GET[POST_FORUM_URL]);
 }
 else
 {
 	$forum_id = '';
 }
 
-if ( isset($HTTP_GET_VARS[POST_POST_URL]) || isset($HTTP_POST_VARS[POST_POST_URL]) )
+if ( isset($_GET[POST_POST_URL]) || isset($_POST[POST_POST_URL]) )
 {
-	$post_id = (isset($HTTP_POST_VARS[POST_POST_URL])) ? intval($HTTP_POST_VARS[POST_POST_URL]) : intval($HTTP_GET_VARS[POST_POST_URL]);
+	$post_id = (isset($_POST[POST_POST_URL])) ? intval($_POST[POST_POST_URL]) : intval($_GET[POST_POST_URL]);
 }
 else
 {
 	$post_id = '';
 }
 
-if ( isset($HTTP_GET_VARS[POST_TOPIC_URL]) || isset($HTTP_POST_VARS[POST_TOPIC_URL]) )
+if ( isset($_GET[POST_TOPIC_URL]) || isset($_POST[POST_TOPIC_URL]) )
 {
-	$topic_id = (isset($HTTP_POST_VARS[POST_TOPIC_URL])) ? intval($HTTP_POST_VARS[POST_TOPIC_URL]) : intval($HTTP_GET_VARS[POST_TOPIC_URL]);
+	$topic_id = (isset($_POST[POST_TOPIC_URL])) ? intval($_POST[POST_TOPIC_URL]) : intval($_GET[POST_TOPIC_URL]);
 }
 else
 {
 	$topic_id = '';
 }
 
-$confirm = ( $HTTP_POST_VARS['confirm'] ) ? TRUE : 0;
+$confirm = ( $_POST['confirm'] ) ? TRUE : 0;
 
 //
 // Continue var definitions
 //
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
-$delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : FALSE;
-$move = ( isset($HTTP_POST_VARS['move']) ) ? TRUE : FALSE;
-$lock = ( isset($HTTP_POST_VARS['lock']) ) ? TRUE : FALSE;
-$unlock = ( isset($HTTP_POST_VARS['unlock']) ) ? TRUE : FALSE;
+$delete = ( isset($_POST['delete']) ) ? TRUE : FALSE;
+$move = ( isset($_POST['move']) ) ? TRUE : FALSE;
+$lock = ( isset($_POST['lock']) ) ? TRUE : FALSE;
+$unlock = ( isset($_POST['unlock']) ) ? TRUE : FALSE;
 
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else
@@ -108,22 +108,13 @@ else
 }
 
 // session id check
-if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+if (!empty($_POST['sid']) || !empty($_GET['sid']))
 {
-	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+	$sid = (!empty($_POST['sid'])) ? $_POST['sid'] : $_GET['sid'];
 }
 else
 {
 	$sid = '';
-}
-// privileged session id check
-if (!empty($HTTP_POST_VARS['p_sid']) || !empty($HTTP_GET_VARS['p_sid']))
-{
-	$p_sid = (!empty($HTTP_POST_VARS['p_sid'])) ? $HTTP_POST_VARS['p_sid'] : $HTTP_GET_VARS['p_sid'];
-}
-else
-{
-	$p_sid = '';
 }
 
 //
@@ -184,7 +175,7 @@ init_userprefs($userdata);
 //
 
 // session id check
-if ($p_sid === '' || $p_sid !== $userdata['priv_session_id'])
+if ($sid == '' || $sid != $userdata['session_id'])
 {
 	message_die(GENERAL_ERROR, 'Invalid_session');
 }
@@ -193,7 +184,7 @@ if ($p_sid === '' || $p_sid !== $userdata['priv_session_id'])
 // Check if user did or did not confirm
 // If they did not, forward them to the last page they were on
 //
-if ( isset($HTTP_POST_VARS['cancel']) )
+if ( isset($_POST['cancel']) )
 {
 	if ( $topic_id )
 	{
@@ -240,14 +231,14 @@ switch( $mode )
 
 		if ( $confirm )
 		{
-  			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+  			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
 			include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-			$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ? $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+			$topics = ( isset($_POST['topic_id_list']) ) ? $_POST['topic_id_list'] : array($topic_id);
 
 			$topic_id_sql = '';
 			for($i = 0; $i < count($topics); $i++)
@@ -407,12 +398,12 @@ switch( $mode )
 
 			if ( !empty($topic_id) )
 			{
-				$redirect_page = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id");
+				$redirect_page = "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 				$l_redirect = sprintf($lang['Click_return_forum'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 			else
 			{
-				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;p_sid=" . $userdata['priv_session_id']);
+				$redirect_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 				$l_redirect = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
@@ -425,16 +416,16 @@ switch( $mode )
 		else
 		{
 			// Not confirmed, show confirmation message
-			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="p_sid" value="' . $userdata['priv_session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($HTTP_POST_VARS['topic_id_list']) )
+			if ( isset($_POST['topic_id_list']) )
 			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
+				$topics = $_POST['topic_id_list'];
 				for($i = 0; $i < count($topics); $i++)
 				{
 					$hidden_fields .= '<input type="hidden" name="topic_id_list[]" value="' . intval($topics[$i]) . '" />';
@@ -475,12 +466,12 @@ switch( $mode )
 
 		if ( $confirm )
 		{
-			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$new_forum_id = intval($HTTP_POST_VARS['new_forum']);
+			$new_forum_id = intval($_POST['new_forum']);
 			$old_forum_id = $forum_id;
 
 			$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
@@ -499,7 +490,7 @@ switch( $mode )
 
 			if ( $new_forum_id != $old_forum_id )
 			{
-				$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+				$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 				$topic_list = '';
 				for($i = 0; $i < count($topics); $i++)
@@ -524,7 +515,7 @@ switch( $mode )
 				{
 					$topic_id = $row[$i]['topic_id'];
 					
-					if ( isset($HTTP_POST_VARS['move_leave_shadow']) )
+					if ( isset($_POST['move_leave_shadow']) )
 					{
 						// Insert topic in the old forum that indicates that the forum has moved.
 						$sql = "INSERT INTO " . TOPICS_TABLE . " (forum_id, topic_title, topic_poster, topic_time, topic_status, topic_type, topic_vote, topic_views, topic_replies, topic_first_post_id, topic_last_post_id, topic_moved_id)
@@ -566,16 +557,16 @@ switch( $mode )
 
 			if ( !empty($topic_id) )
 			{
-				$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+				$redirect_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 				$message .= sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 			else
 			{
-				$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;p_sid=" . $userdata['priv_session_id']);
+				$redirect_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 				$message .= sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 			}
 
-			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id&amp;p_sid=" . $userdata['priv_session_id']) . '">', '</a>');
+			$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.$phpEx?" . POST_FORUM_URL . "=$old_forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
 			$template->assign_vars(array(
 				'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -585,16 +576,16 @@ switch( $mode )
 		}
 		else
 		{
-			if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+			if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 			{
 				message_die(GENERAL_MESSAGE, $lang['None_selected']);
 			}
 
-			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="p_sid" value="' . $userdata['priv_session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
+			$hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="mode" value="' . $mode . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
-			if ( isset($HTTP_POST_VARS['topic_id_list']) )
+			if ( isset($_POST['topic_id_list']) )
 			{
-				$topics = $HTTP_POST_VARS['topic_id_list'];
+				$topics = $_POST['topic_id_list'];
 
 				for($i = 0; $i < count($topics); $i++)
 				{
@@ -634,12 +625,12 @@ switch( $mode )
 		break;
 
 	case 'lock':
-		if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+		if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+		$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
@@ -659,16 +650,16 @@ switch( $mode )
 
 		if ( !empty($topic_id) )
 		{
-			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			$redirect_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
-			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;p_sid=" . $userdata['priv_session_id']);
+			$redirect_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -679,12 +670,12 @@ switch( $mode )
 		break;
 
 	case 'unlock':
-		if ( empty($HTTP_POST_VARS['topic_id_list']) && empty($topic_id) )
+		if ( empty($_POST['topic_id_list']) && empty($topic_id) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['None_selected']);
 		}
 
-		$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
+		$topics = ( isset($_POST['topic_id_list']) ) ?  $_POST['topic_id_list'] : array($topic_id);
 
 		$topic_id_sql = '';
 		for($i = 0; $i < count($topics); $i++)
@@ -704,16 +695,16 @@ switch( $mode )
 
 		if ( !empty($topic_id) )
 		{
-			$redirect_page = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id");
+			$redirect_page = "viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_topic'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 		else
 		{
-			$redirect_page = append_sid("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;p_sid=" . $userdata['priv_session_id']);
+			$redirect_page = "modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'];
 			$message = sprintf($lang['Click_return_modcp'], '<a href="' . $redirect_page . '">', '</a>');
 		}
 
-		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id") . '">', '</a>');
+		$message = $message . '<br \><br \>' . sprintf($lang['Click_return_forum'], '<a href="' . "viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
 
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . $redirect_page . '">')
@@ -729,9 +720,9 @@ switch( $mode )
 
 		$post_id_sql = '';
 
-		if (isset($HTTP_POST_VARS['split_type_all']) || isset($HTTP_POST_VARS['split_type_beyond']))
+		if (isset($_POST['split_type_all']) || isset($_POST['split_type_beyond']))
 		{
-			$posts = $HTTP_POST_VARS['post_id_list'];
+			$posts = $_POST['post_id_list'];
 
 			for ($i = 0; $i < count($posts); $i++)
 			{
@@ -786,13 +777,13 @@ switch( $mode )
 				}
 				while ($row = $db->sql_fetchrow($result));
 
-				$post_subject = trim(htmlspecialchars($HTTP_POST_VARS['subject']));
+				$post_subject = trim(htmlspecialchars($_POST['subject']));
 				if (empty($post_subject))
 				{
 					message_die(GENERAL_MESSAGE, $lang['Empty_subject']);
 				}
 
-				$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
+				$new_forum_id = intval($_POST['new_forum_id']);
 				$topic_time = time();
 				
 				$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
@@ -829,7 +820,7 @@ switch( $mode )
 					message_die(GENERAL_ERROR, 'Could not update topics watch table', '', __LINE__, __FILE__, $sql);
 				}
 
-				$sql_where = (!empty($HTTP_POST_VARS['split_type_beyond'])) ? " post_time >= $post_time AND topic_id = $topic_id" : "post_id IN ($post_id_sql)";
+				$sql_where = (!empty($_POST['split_type_beyond'])) ? " post_time >= $post_time AND topic_id = $topic_id" : "post_id IN ($post_id_sql)";
 
 				$sql = 	"UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
@@ -860,6 +851,35 @@ switch( $mode )
 			$template->set_filenames(array(
 				'split_body' => 'modcp_split.tpl')
 			);
+			
+			// Begin Simple Subforums MOD
+			$all_forums = array();
+			make_jumpbox_ref('modcp.'.$phpEx, $forum_id, $all_forums);
+
+			$parent_id = 0;
+			for( $i = 0; $i < count($all_forums); $i++ )
+			{
+				if( $all_forums[$i]['forum_id'] == $forum_id )
+				{
+					$parent_id = $all_forums[$i]['forum_parent'];
+				}
+			}
+
+			if( $parent_id )
+			{
+				for( $i = 0; $i < count($all_forums); $i++)
+				{
+					if( $all_forums[$i]['forum_id'] == $parent_id )
+					{
+						$template->assign_vars(array(
+							'PARENT_FORUM'			=> 1,
+							'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+							'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+						));
+					}
+				}
+			}
+			// End Simple Subforums MOD
 
 			$sql = "SELECT u.username, p.*, pt.post_text, pt.bbcode_uid, pt.post_subject, p.post_username
 				FROM " . POSTS_TABLE . " p, " . USERS_TABLE . " u, " . POSTS_TEXT_TABLE . " pt
@@ -982,7 +1002,7 @@ switch( $mode )
 		$page_title = $lang['Mod_CP'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-		$rdns_ip_num = ( isset($HTTP_GET_VARS['rdns']) ) ? $HTTP_GET_VARS['rdns'] : "";
+		$rdns_ip_num = ( isset($_GET['rdns']) ) ? $_GET['rdns'] : "";
 
 		if ( !$post_id )
 		{
@@ -1028,7 +1048,7 @@ switch( $mode )
 
 			'IP' => $ip_this_post, 
 				
-			'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;p_sid=" . $userdata['priv_session_id']))
+			'U_LOOKUP_IP' => "modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=$ip_this_post&amp;sid=" . $userdata['session_id'])
 		);
 
 		//
@@ -1069,7 +1089,7 @@ switch( $mode )
 					'IP' => $ip,
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
 
-					'U_LOOKUP_IP' => append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip'] . "&amp;p_sid=" . $userdata['priv_session_id']))
+					'U_LOOKUP_IP' => "modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=$post_id&amp;" . POST_TOPIC_URL . "=$topic_id&amp;rdns=" . $row['poster_ip'] . "&amp;sid=" . $userdata['session_id'])
 				);
 
 				$i++; 
@@ -1109,7 +1129,7 @@ switch( $mode )
 					'POSTS' => $row['postings'] . ' ' . ( ( $row['postings'] == 1 ) ? $lang['Post'] : $lang['Posts'] ),
 					'L_SEARCH_POSTS' => sprintf($lang['Search_user_posts'], $username), 
 
-					'U_PROFILE' => ($id == ANONYMOUS) ? append_sid("modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;p_sid=" . $userdata['priv_session_id']) : append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
+					'U_PROFILE' => ($id == ANONYMOUS) ? "modcp.$phpEx?mode=ip&amp;" . POST_POST_URL . "=" . $post_id . "&amp;" . POST_TOPIC_URL . "=" . $topic_id . "&amp;sid=" . $userdata['session_id'] : append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$id"),
 					'U_SEARCHPOSTS' => append_sid("search.$phpEx?search_author=" . (($id == ANONYMOUS) ? 'Anonymous' : urlencode($username)) . "&amp;showresults=topics"))
 				);
 
@@ -1142,14 +1162,41 @@ switch( $mode )
 			'L_SELECT' => $lang['Select'], 
 
 			'U_VIEW_FORUM' => append_sid("viewforum.$phpEx?" . POST_FORUM_URL . "=$forum_id"), 
-			'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="p_sid" value="' . $userdata['priv_session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
+			'S_HIDDEN_FIELDS' => '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" /><input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />',
 			'S_MODCP_ACTION' => append_sid("modcp.$phpEx"))
 		);
 
 		$template->set_filenames(array(
 			'body' => 'modcp_body.tpl')
 		);
-		make_jumpbox('modcp.'.$phpEx);
+		// Begin Simple Subforums MOD
+		$all_forums = array();
+		make_jumpbox_ref('modcp.'.$phpEx, $forum_id, $all_forums);
+
+		$parent_id = 0;
+		for( $i = 0; $i < count($all_forums); $i++ )
+		{
+			if( $all_forums[$i]['forum_id'] == $forum_id )
+			{
+				$parent_id = $all_forums[$i]['forum_parent'];
+			}
+		}
+
+		if( $parent_id )
+		{
+			for( $i = 0; $i < count($all_forums); $i++)
+			{
+				if( $all_forums[$i]['forum_id'] == $parent_id )
+				{
+					$template->assign_vars(array(
+						'PARENT_FORUM'			=> 1,
+						'U_VIEW_PARENT_FORUM'	=> append_sid("viewforum.$phpEx?" . POST_FORUM_URL .'=' . $all_forums[$i]['forum_id']),
+						'PARENT_FORUM_NAME'		=> $all_forums[$i]['forum_name'],
+					));
+				}
+			}
+		}
+		// End Simple Subforums MOD
 
 		//
 		// Define censored word matches
@@ -1230,7 +1277,7 @@ switch( $mode )
 				$topic_title = preg_replace($orig_word, $replacement_word, $topic_title);
 			}
 
-			$u_view_topic = append_sid("modcp.$phpEx?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id&amp;p_sid=" . $userdata['priv_session_id']);
+			$u_view_topic = "modcp.$phpEx?mode=split&amp;" . POST_TOPIC_URL . "=$topic_id&amp;sid=" . $userdata['session_id'];
 			$topic_replies = $row['topic_replies'];
 
 			$last_post_time = create_date($board_config['default_dateformat'], $row['post_time'], $board_config['board_timezone']);
@@ -1250,7 +1297,7 @@ switch( $mode )
 		}
 
 		$template->assign_vars(array(
-			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;p_sid=" . $userdata['priv_session_id'], $forum_topics, $board_config['topics_per_page'], $start),
+			'PAGINATION' => generate_pagination("modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'], $forum_topics, $board_config['topics_per_page'], $start),
 			'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $forum_topics / $board_config['topics_per_page'] )), 
 			'L_GOTO_PAGE' => $lang['Goto_page'])
 		);

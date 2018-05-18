@@ -6,7 +6,7 @@
  *     copyright            : (C) 2001 The phpBB Group
  *     email                : support@phpbb.com
  *
- *     $Id$
+ *     $Id: lang_main.php,v 1.1 2010/10/10 15:09:19 orynider Exp $
  *
  ****************************************************************************/
 
@@ -33,7 +33,8 @@
 // varies ... give it your best guess!
 //
 
-$lang['ENCODING'] = 'iso-8859-1';
+$lang['USER_LANG'] = 'en';
+$lang['ENCODING'] = 'UTF-8';
 $lang['DIRECTION'] = 'ltr';
 $lang['LEFT'] = 'left';
 $lang['RIGHT'] = 'right';
@@ -90,7 +91,7 @@ $lang['Error'] = 'Error';
 
 $lang['Next'] = 'Next';
 $lang['Previous'] = 'Previous';
-$lang['Goto_page'] = 'Goto page';
+$lang['Goto_page'] = '';
 $lang['Joined'] = 'Joined';
 $lang['IP_Address'] = 'IP Address';
 
@@ -162,18 +163,22 @@ $lang['Usergroups'] = 'Usergroups';
 $lang['Last_Post'] = 'Last Post';
 $lang['Moderator'] = 'Moderator';
 $lang['Moderators'] = 'Moderators';
-
+$lang['Post_by_author'] = 'by';
+$lang['Posted_on_date'] = 'on';
+$lang['In'] = 'in';
 
 //
 // Stats block text
 //
-$lang['Posted_articles_zero_total'] = 'Our users have posted a total of <b>0</b> articles'; // Number of posts
-$lang['Posted_articles_total'] = 'Our users have posted a total of <b>%d</b> articles'; // Number of posts
-$lang['Posted_article_total'] = 'Our users have posted a total of <b>%d</b> article'; // Number of posts
-$lang['Registered_users_zero_total'] = 'We have <b>0</b> registered users'; // # registered users
-$lang['Registered_users_total'] = 'We have <b>%d</b> registered users'; // # registered users
-$lang['Registered_user_total'] = 'We have <b>%d</b> registered user'; // # registered users
-$lang['Newest_user'] = 'The newest registered user is <b>%s%s%s</b>'; // a href, username, /a 
+$lang['Statistics'] = 'Statistics';
+$lang['Legend'] = 'Legend: ';
+$lang['Posted_articles_zero_total'] = 'No post'; // Number of posts
+$lang['Posted_articles_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Posted_article_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Registered_users_zero_total'] = 'No member'; // # registered users
+$lang['Registered_users_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Registered_user_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Newest_user'] = 'Our newest member <strong>%s%s%s</strong>'; // a href, username, /a  
 
 $lang['No_new_posts_last_visit'] = 'No new posts since your last visit';
 $lang['No_new_posts'] = 'No new posts';
@@ -244,7 +249,7 @@ $lang['Rules_delete_can'] = 'You <b>can</b> delete your posts in this forum';
 $lang['Rules_delete_cannot'] = 'You <b>cannot</b> delete your posts in this forum';
 $lang['Rules_vote_can'] = 'You <b>can</b> vote in polls in this forum';
 $lang['Rules_vote_cannot'] = 'You <b>cannot</b> vote in polls in this forum';
-$lang['Rules_moderate'] = 'You <b>can</b> %smoderate this forum%s'; // %s replaced by a href links, do not remove! 
+$lang['Rules_moderate'] = '%sModerate this forum%s'; // %s replaced by a href links, do not remove!
 
 $lang['No_topics_post_one'] = 'There are no posts in this forum.<br />Click on the <b>Post New Topic</b> link on this page to post one.';
 
@@ -283,11 +288,11 @@ $lang['Delete_post'] = 'Delete this post';
 $lang['wrote'] = 'wrote'; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = 'Quote'; // comes before bbcode quote output.
 $lang['Code'] = 'Code'; // comes before bbcode code output.
-$lang['Priv_Img'] = 'Image display disabled'; // Explanation for missing images in the ModCP.
 
 $lang['Edited_time_total'] = 'Last edited by %s on %s; edited %d time in total'; // Last edited by me on 12 Oct 2001; edited 1 time in total
 $lang['Edited_times_total'] = 'Last edited by %s on %s; edited %d times in total'; // Last edited by me on 12 Oct 2001; edited 2 times in total
 
+$lang['Quick_mod'] = 'Quick-mod tools:';
 $lang['Lock_topic'] = 'Lock this topic';
 $lang['Unlock_topic'] = 'Unlock this topic';
 $lang['Move_topic'] = 'Move this topic';
@@ -763,6 +768,7 @@ $lang['Search_author_explain'] = 'Use * as a wildcard for partial matches';
 
 $lang['Search_for_any'] = 'Search for any terms or use query as entered';
 $lang['Search_for_all'] = 'Search for all terms';
+$lang['Search_forums'] = 'Search within';
 $lang['Search_title_msg'] = 'Search topic title and message text';
 $lang['Search_msg_only'] = 'Search message text only';
 
@@ -1020,6 +1026,25 @@ $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has 
 $lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
 $lang['Session_invalid'] = 'Invalid Session. Please resubmit the form.';
+
+//====================================================================== |
+//==== Start Advanced BBCode Box MOD =================================== |
+//==== v5.1.0 ========================================================== |
+//====
+$lang['BBCode_box_hidden'] = 'Hidden';
+$lang['BBcode_box_view'] = 'Click to View Content';
+$lang['BBcode_box_hide'] = 'Click to Hide Content';
+$lang['bbcode_help']['GVideo'] = 'GVideo: [GVideo]GVideo URL[/GVideo]';
+$lang['GVideo_link'] = 'Link';
+$lang['bbcode_help']['youtube'] = 'YouTube: [youtube]YouTube URL[/youtube]';
+$lang['youtube_link'] = 'Link';
+//====
+//==== End Advanced BBCode Box MOD ==================================== |
+//===================================================================== |
+
+// Begin Simple Subforums MOD
+$lang['Subforums'] = 'Subforums';
+// End Simple Subforums MOD
 
 //
 // That's all, Folks!

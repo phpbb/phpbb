@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<title>jQuery UI Time Picker by Francois Gelinas</title>
+	<link rel="stylesheet" href="themes/cupertino/jquery-ui.css" type="text/css" />
+	<link rel="stylesheet" href="jquery-ui-timepicker.css?v=0.2.2" type="text/css" />
+
+	<script type="text/javascript" src="../jquery_compressed.js"></script>
+	<script type="text/javascript" src="jquery-ui.min.js"></script>
+	<script type="text/javascript" src="jquery-ui-timepicker.js?v=0.2.2"></script>
+	<style type="text/css">
+		/* some styling for the page */
+		body { font-size: 10px; /* for the widget natural size */}
+		#content { font-size: 1.4em; /* for the rest of the page to show at a normal size */
+				   font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; }
+		.box { border: 1px solid #888; padding: 15px; margin:12px; }
+		.code { margin: 6px; padding: 9px; background-color: #fdf5ce; border: 1px solid #c77405; }
+		fieldset { padding: 0.5em 2em }
+		hr { margin: 0.5em 0; clear: both }
+		a { cursor: pointer; }
+	</style>
+
+</head>
+<body>
+<div id="content">
+
+<div style="float: right; padding: 20px; font-size: 10px;">
+	<div id="floating_timepicker">
+
+	</div>
+	<script>
+		$(document).ready(function() {
+			$('#floating_timepicker').timepicker({
+				onSelect: function(time, inst) {
+					$('#floating_selected_time').html('You selected ' + time);
+				}
+			});
+		});
+	</script>
+	<span id="floating_selected_time">
+	</span>
+</div>
+
+<h1>jQuery UI Timepicker
+	<span style="color: #999; font-size:10px;">(By <a href="http://fgelinas.com">Fran&ccedil;ois G&eacute;linas</a>)</span>
+</h1>
+
+<h2>What is this?</h2>
+<p>
+	This is a jQuery UI time picker plugin build to match with other official jQuery UI widgets like the date picker.
+	<br />
+	Based on the existing date picker, this plugin will integrate nicely with your form and use your selected jQuery UI theme.
+	<br />
+	The plugin is very easy to integrate in your form for you time (hours / minutes) inputs.
+</p>
+
+
+<h2><a name="documentation"></a>Usage:</h2>
+<pre class="code">$('#timepicker').timepicker({
+	// Options
+	timeSeparator: ':',           // The character to use to separate hours and minutes. (default: ':')
+	showLeadingZero: true,        // Define whether or not to show a leading zero for hours < 10. (default: true)
+	showMinutesLeadingZero: true, // Define whether or not to show a leading zero for minutes < 10. (default: true)
+	showPeriod: false,            // Define whether or not to show AM/PM with selected time. (default: false)
+	showPeriodLabels: true,       // Define if the AM/PM labels on the left are displayed. (default: true)
+	altField: '#alternate_input', // Define an alternate input to parse selected time to
+	defaultTime: '12:34',         // Used as default time when input field is empty or for inline timePicker
+								  // (set to 'now' for the current time, '' for no highlighted time, default value: now)
+
+	zIndex: null,                 // Overwrite the default zIndex used by the time picker
+
+	// trigger options
+	showOn: 'focus',              // Define when the timepicker is shown.
+								  // 'focus': when the input gets focus, 'button' when the button trigger element is clicked,
+								  // 'both': when the input gets focus and when the button is clicked.
+	button: null,                 // jQuery selector that acts as button trigger. ex: '#trigger_button'
+
+	// Localization
+	hourText: 'Hour',             // Define the locale text for "Hours"
+	minuteText: 'Minute',         // Define the locale text for "Minute"
+	amPmText: ['AM', 'PM'],       // Define the locale text for periods
+
+	// Events
+	onSelect: onSelectCallback,   // Define a callback function when an hour / minutes is selected.
+	onClose: onCloseCallback,     // Define a callback function when the timepicker is closed.
+	onHourShow: onHourShow,       // Define a callback to enable / disable certain hours. ex: function onHourShow(hour)
+	onMinuteShow: onMinuteShow,   // Define a callback to enable / disable certain minutes. ex: function onMinuteShow(hour, minute)
+
+	// custom hours and minutes
+	hours: {
+		starts: 0,                  // first displayed hour
+		ends: 23                    // last displayed hour
+	},
+	minutes: {
+		starts: 0,                  // first displayed minute
+		ends: 55,                   // last displayed minute
+		interval: 5                 // interval of displayed minutes
+	},
+	rows: 4                         // number of rows for the input tables, minimum 2, makes more sense if you use multiple of 2
+});</pre>
+
+
+
+<h2>Examples : </h2>
+
+	<div class="box">
+
+	<div>
+		Default time picker :
+		<input type="text" style="width: 70px;" id="timepicker.1" value="" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker\\.1').timepicker();
+			});
+		</script>
+
+		<a onclick="$('#script_1').toggle(200); return false;">[Show code]</a>
+		<pre id="script_1" style="display: none" class="code">$('#timepicker').timepicker();</pre>
+	</div>
+
+
+	<hr />
+
+	<div>
+		Time picker with period (AM/PM) in input and with hours leading 0s :
+		<input type="text" style="width: 70px;" id="timepicker_6" value="01:30 PM" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_6').timepicker({
+					showPeriod: true,
+					showLeadingZero: true
+				});
+			});
+		</script>
+
+		<a onclick="$('#script_6').toggle(200)">[Show code]</a>
+<pre id="script_6" style="display: none" class="code">$('#timepicker').timepicker({
+	showPeriod: true,
+	showLeadingZero: true
+});</pre>
+	</div>
+
+	<hr />
+
+	<div>
+		Time picker without period in text input and without hours leading 0s :
+		<input type="text" style="width: 70px;" id="timepicker_5" value="13:30" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_5').timepicker({
+					showPeriod: false,
+					showLeadingZero: false
+				});
+			});
+		</script>
+
+		<a onclick="$('#script_5').toggle(200)">[Show code]</a>
+<pre id="script_5" style="display: none" class="code">$('#timepicker').timepicker({
+	showPeriod: false,
+	showLeadingZero: false
+});</pre>
+	</div>
+
+	<hr />
+
+	<div>
+		Time picker with labels in another language (Fran&ccedil;ais) :
+		<input type="text" style="width: 70px;" id="timepicker_locale" value="13h30" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_locale').timepicker({
+					hourText: 'Heures',
+					minuteText: 'Minutes',
+					amPmText: ['AM', 'PM'],
+					timeSeparator: 'h',
+					showLeadingZero: false
+				});
+			});
+
+		</script>
+		<a onclick="$('#script_locale').toggle(200)">[Show code]</a>
+<pre id="script_locale" style="display: none" class="code">$('#timepicker').timepicker({
+	hourText: 'Heures',
+	minuteText: 'Minutes',
+	amPmText: ['AM', 'PM'],
+	timeSeparator: 'h'
+});</pre>
+	</div>
+
+	<hr />
+
+	<div>
+		Time picker with restricted (disabled) hours / minutes. 8:30 PM to 6:30 AM disabled :
+		<input type="text" style="width: 70px" id="timepicker_7" value="01:30 PM" />
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_7').timepicker({
+					showPeriod: true,
+					onHourShow: timepicker7OnHourShowCallback,
+					onMinuteShow: timepicker7OnMinuteShowCallback
+				});
+			});
+			function timepicker7OnHourShowCallback(hour) {
+				if ((hour > 20) || (hour < 6)) {
+					return false;
+				}
+				return true;
+			}
+			function timepicker7OnMinuteShowCallback(hour, minute) {
+				if ((hour == 20) && (minute >= 30)) { return false; }
+				if ((hour == 6) && (minute < 30)) { return false; }
+				return true;
+			}
+
+		</script>
+		<a onclick="$('#script_7').toggle(200)">[Show code]</a>
+<pre id="script_7" style="display: none" class="code">$('#timepicker').timepicker({
+		showPeriod: true,
+		onHourShow: OnHourShowCallback,
+		onMinuteShow: OnMinuteShowCallback
+	});
+function OnHourShowCallback(hour) {
+	if ((hour > 20) || (hour < 6)) {
+		return false; // not valid
+	}
+	return true; // valid
+}
+function OnMinuteShowCallback(hour, minute) {
+	if ((hour == 20) && (minute >= 30)) { return false; } // not valid
+	if ((hour == 6) && (minute < 30)) { return false; }   // not valid
+	return true;  // valid
+}</pre>
+	</div>
+
+	<hr />
+
+	<div>
+		Define when the time picker is shown with the <kbd>showOn</kbd> option and set a trigger element with the <kbd>button</kbd> option
+		<input type="text" style="width: 70px;" id="timepicker_showon" value="13h30" />
+		<div class='timepicker_button_trigger'
+			 style="width: 16px; height:16px; background: url(ui-lightness/images/ui-icons_222222_256x240.png) -80px, -96px;
+					display: inline-block; border-radius: 2px; border: 1px solid #222222; margin-top: 3px; cursor:pointer"></div>
+		<button class='timepicker_button_trigger' id="btn_trigger_timepicker">Show</button>
+
+
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_showon').timepicker({
+					showOn: 'button',
+					button: $('.timepicker_button_trigger'),
+					showLeadingZero: false,
+					timeSeparator: 'h'
+				});
+			});
+
+		</script>
+		<a onclick="$('#script_showhide').toggle(200)">[Show code]</a>
+<pre id="script_showhide" style="display: none" class="code">$('#timepicker').timepicker({
+		showOn: 'button',
+		button: '.timepicker_button_trigger'
+});
+</pre>
+
+	</div>
+
+
+	<hr />
+
+	<div>
+		Time picker without the AM/PM labels on the left (showPeriodLabels option set to false:
+		<input type="text" style="width: 70px;" id="timepicker_noPeriodLabels" value="13:30" />
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_noPeriodLabels').timepicker({
+					showPeriodLabels: false
+				});
+			  });
+
+		</script>
+		<a onclick="$('#script_noPeriodLabels').toggle(200)">[Show code]</a>
+<pre id="script_noPeriodLabels" style="display: none" class="code">$('#timepicker').timepicker({
+	showPeriodLabels: false,
+});
+</pre>
+
+	</div>
+
+
+	<hr />
+
+	<div>
+
+		Custom defined hours range (Business hours 6am to 9pm) and minutes increment set to 15 instead of 5
+		<input type="text" style="width: 70px" id="timepicker_customrange" value="13:30">
+		<script type="text/javascript">
+			$(document).ready(function() {
+			   $('#timepicker_customrange').timepicker({
+				   hours: { starts: 6, ends: 21 },
+				   minutes: { interval: 15 },
+				   showPeriodLabels: false,
+				   minuteText: 'Min'
+			   })
+			});
+
+
+		</script>
+
+	</div>
+
+
+
+	<hr />
+
+	<div>
+		onSelect (hours and minutes both trigger event) and onClose events :
+		<input type="text" style="width: 70px" id="timepicker_3" value="13:30" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#timepicker_3').timepicker({
+					onClose: function(time, inst) {
+						log_event('onClose triggered with time : ' + time + ' for instance id : ' + inst.id);
+					},
+					onSelect: function(time, inst) {
+						log_event('onSelect triggered with time : ' + time + ' for instance id : ' + inst.id);
+					}
+				});
+			});
+
+			function log_event(event) {
+				$('#events_log').val(
+					$('#events_log').val() + "\n" + event
+				)
+			}
+		</script>
+
+		<a onclick="$('#script_3').toggle(200)">[Show code]</a>
+<pre id="script_3" style="display: none" class="code">function log_event(event) {
+	$('#events_log').val(
+		$('#events_log').val() + "\n" + event
+	)
+}
+$('#timepicker').timepicker({
+	onClose: function(time, inst) {
+		log_event('onClose triggered with time : ' + time + ' for instance id : ' + inst.id);
+	},
+	onSelect: function(time, inst) {
+		log_event('onSelect triggered with time : ' + time + ' for instance id : ' + inst.id);
+	}
+});
+</pre>
+		<br />
+		<textarea id="events_log" rows="4" cols="70" >events log :</textarea>
+	</div>
+
+
+<hr />
+
+	<div>
+
+		<div style="float: left">
+			Inline time picker :
+			<span style="color: #888;">
+				Alternate field :
+				<input type="text" style="width: 70px" id="timepicker_alt" value="13:30" readonly="readonly" disabled="disabled"/>
+			</span>
+			<br />
+			<input type="button" value="Change time to 16:55" onclick="javascript:$('#timepicker_inline_7').timepicker('setTime','16:55');">
+
+			<br />
+			<a onclick="$('#script_inline').toggle(200); return false;">[Show code]</a>
+		</div>
+		<div id="timepicker_inline_7" style="font-size: 10px; float: left; margin-left: 24px;"></div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+			   $('#timepicker_inline_7').timepicker({
+				   altField: '#timepicker_alt',
+				   defaultTime: '13:30'
+			   });
+			});
+		</script>
+		<div style="clear: both"></div>
+
+<pre class="code" id="script_inline" style="display: none">$('#timepicker_inline_div').timepicker({
+   altField: '#timepicker_alt_input',
+   defaultTime: '9:20'
+});
+function setNewTime() {
+	$('#timepicker_inline_div').timepicker('setTime','16:55');
+}</pre>
+
+	</div>
+
+
+
+</div>
+
+<hr />
+<!-- =============================================================================================================== -->
+	<h2>Requirements : </h2>
+	<ul>
+		<li>
+			<a href="http://jquery.com">
+				jQuery 1.5.1 (probably works with previous versions)
+			</a>
+		</li>
+		<li>
+			<a href="http://jqueryui.com/">
+				jQuery UI Core (included in jquery-ui-x.x.x.custom.min.js)
+			</a>
+		</li>
+		<li>
+			<a href="http://jqueryui.com/">
+				jQuery UI Theme.css (included in jquery-ui-x.x.x.custom.css)
+			</a>
+		</li>
+
+		<li>
+			<a href="jquery.ui.timepicker.js?v=0.2.2">
+				jquery.ui.timepicker.js
+			</a>
+		</li>
+
+		<li>
+			<a href="jquery-ui-timepicker.css?v=0.2.2">
+				jquery-ui-timepicker.css
+			</a>
+		</li>
+
+
+	</ul>
+	<p>
+		<strong>New! New!</strong> TimePicker is now 100% more social, on GitHub @ <a href="http://github.com/fgelinas/timepicker">http://github.com/fgelinas/timepicker</a>.
+	</p>
+	<p>
+		Get the release package here : <a href="releases/jquery-ui-timepicker-0.2.2.zip">jquery-ui-timepicker-0.2.2.zip</a>
+	</p>
+
+
+	<hr />
+<!-- =============================================================================================================== -->
+	<h2>Releases :</h2>
+	<dl>
+
+		<dt>0.2.3 (pending) </dt>
+		<dd>Fix github issue #3 : Bug when hours or minutes choices does not divide by number of rows (thanks wukimus).</dd>
+		<dd>Changed default behavior of the defaultTime option, if set to '' and input is empty, there will be no highlighted time in the popup (Thanks Rasmus Schultz)</dd>
+
+		<dt>0.2.2 - June 16, 2011</dt>
+		<dd>Fixed a "console.log" line that I forgot to remove before release 0.2.1. (Thanks Derek Lavine)</dd>
+
+		<dt>0.2.1 - June 8, 2011</dt>
+		<dd>Timepicker does not give the focus back to the input any more after time selection. This is similar to the datepicker behaviour and is more natural to the user because it shows the dialog again when the user click on the input again, as expected.</dd>
+		<dd>Added options to customize the hours and minutes ranges and interval for more customization.</dd>
+
+		<dt>0.2 - May 28, 2011</dt>
+		<dd>In the last release, I messed up versions and lost some changes so I'm fixing all this up with release 0.2</dd>
+
+
+		<dt>0.1.2 - May 26, 2011</dt>
+		<dd>Fixed a bug with inline timepickers that would append a #timepickr hashtag when selecting hours and minutes.</dd>
+		<dd>Fixed z-index problem with IE6 (Thanks Graham Bentley)</dd>
+		<dd>Added selection of highlighted text when enter is pressed on the input field (Thanks Glen Chiacchieri)</dd>
+		<dd>Adjusted some focus problems, now the input gets the focus back when the used click on hours / minutes.</dd>
+
+		<dt>0.1.something aka the lost release - around April 11</dt>
+		<dd>Fixed a bug for when input Id had a dot in it, it was getting double escaped when it should not. (Thanks Zdenek Machac)</dd>
+		<dd>So in 0.1.1 I created a bug that made timepicker changes the location hash, well now it's fixed. (Thanks Lucas Falk)</dd>
+
+		<dt>0.1.1 - April 6, 2011</dt>
+		<dd>Changed the cells click and dblclick binding for faster rendering in IE6/7 (Thanks Blair Parsons)</dd>
+		<dd>Fixed a class naming bug created in 0.1.0 (Thanks Morlion Peter)</dd>
+
+		<dt>0.1.0 - March 23, 2011</dt>
+		<dd>Fixed some bugs with version 0.0.9</dd>
+
+		<dt>0.0.9 - March 22, 2011</dt>
+		<dd>Added zIndex option (Thanks Frank Enderle)</dd>
+		<dd>Added showPeriodLabels option (default: true) to show/hide AM/PM labels on the left (thanks Frank Enderle)</dd>
+		<dd>Added showOn ['focus'|'button'|'both'] and button options for alternate trigger method</dd>
+
+		<dt>0.0.8 - February 17, 2011</dt>
+		<dd>Fixed close event not triggered when switching to another input with time picker (thanks Stuart Gregg)</dd>
+
+		<dt>0.0.7 - February 10, 2011</dt>
+		<dd>Added function to set time after initialisation :$('#timepicker').timepicker('setTime',newTime);</dd>
+		<dd>Added support for disabled period of time : onHourShow and onMinuteShow (thanks Rene Felgenträger)</dd>
+
+		<dt>0.0.6 - January 19, 2011</dt>
+		<dd>Replaced some div with tables to : fix some display bugs in IE7, fix inline display and fix my headhake.</dd>
+		<dd>Added standard "change" event being triggered on the input when the content changes. (Thanks Rasmus Schultz)</dd>
+		<dd>Added support for inline timePicker, attached to div or span.</dd>
+		<dd>Added altField that receive the parsed time value when selected time changes.</dd>
+		<dd>Added defaultTime value to use when input field is missing (inline) or input value is empty. If defaultTime is missing then current time is used.</dd>
+
+		<dt>0.0.5 - January 18, 2011</dt>
+		<dd>Now updating time picker selected value when manually typing in the text field (thanks Rasmus Schultz)<br />
+			<small>Another step toward inline time picker ?</small></dd>
+		<dd>Fixed : with showPeriod: true and showLeadingZero: true, PM hours did not show leading zeros (thanks Chandler May)</dd>
+		<dd>Fixed : with showPeriod: true and showLeadingZero: true, Selecting 12 AM shows as 00 AM in the input field, also parsing 12AM did not work correctly (thanks Rasmus Schultz)</dd>
+
+		<dt>0.0.4 - January 10, 2011</dt>
+		<dd>Changed showLeadingZero to affect only hours, added showMinutesLeadingZero for minutes display.</dd>
+		<dd>Changed the default value of timeSeparator from 'h' to ':'.</dd>
+		<dd>Removed width:100% on tables in the css, caused a bug in some browsers.</dd>
+
+		<dt>0.0.3 - January 8, 2011</dt>
+		<dd>Fixed a bug with the widget not displaying with some jQuery UI 1.8.7 css. (Thanks Alexander Fietz)</dd>
+		<dd>Fixed a display bug on page load, a small empty div was visible at the bottom of pages. (Thanks Gertjan van Roekel)</dd>
+		<dd>Modified the jquery-ui-timepicker.css to make the widget more dynamic to style and sizes changes.</dd>
+
+		<dt>0.0.2 - January 4, 2011</dt>
+		<dd>Added showPeriod: period (AM/PM) in input and showLeadingZero: to control display of number < 10. (big thanks Steve Commisso)</dd>
+
+		<dt>0.0.1 - December 2010</dt>
+		<dd>First release</dd>
+	</dl>
+
+	<hr />
+
+	<h2>To Do : </h2>
+
+	<ul>
+		<li>
+			Change the code style to use the jQuery widget framework.
+		</li>
+		<li>
+			Detect a second click on the same cell and close the picker (ie: the user selected hours and do not want to select different minutes or vice versa, and click twice on the same cell instead)
+			This is already simulated with the handling of the double click.
+		</li>
+	</ul>
+
+	Bug, ideas or comments : <a href="mailto:frank@fgelinas.com">frank@fgelinas.com</a>
+
+	<br />
+	<br />
+	--
+	<br />
+	Francois Gelinas
+
+	</div>
+</body>
+</html>

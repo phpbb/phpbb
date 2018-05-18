@@ -1,0 +1,29 @@
+/* Style Sheet Tweaks
+
+These style definitions are IE 8 & 9 only.
+They are required due to the poor CSS support in IE browsers.
+------------------------------------------------------------------------------*/
+
+/* IE 8 Tweaks (value)\9 equates to  IE <= 8
+------------------------------------------------------------------------------*/
+
+/* Clear float fix */
+.inner, ul.linklist { zoom: 1\9; }
+
+/* Align checkboxes/radio buttons nicely */
+dd label input { vertical-align: text-bottom\9; }
+
+/* Fixes header-avatar aspect-ratio */
+.header-avatar img { height: 20px\9; }
+
+/* IE8 often can't handle max-width in %, so we use px instead */
+.postprofile .avatar img { max-width: 150px\9; }
+
+
+/* IE 9 Tweaks
+------------------------------------------------------------------------------*/
+
+/* Border-radius bleed fix in IE9 */
+.search-header, .search-header .inputbox, .search-header a.button {
+	border-radius: 0;
+}

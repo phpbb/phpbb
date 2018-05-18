@@ -1,0 +1,71 @@
+<!-- IF S_AJAX_REQUEST -->
+
+	<h3>{MESSAGE_TITLE}</h3>
+	<p>{MESSAGE_TEXT}</p>
+
+	<!-- IF ADDITIONAL_MSG --><p>{ADDITIONAL_MSG}</p><!-- ENDIF -->
+
+	<label>
+		<strong>{L_SELECT_DESTINATION_FORUM}{L_COLON}</strong>
+		<select name="to_forum_id">{S_FORUM_SELECT}</select>
+	</label>
+
+	<!-- IF S_CAN_LEAVE_SHADOW -->
+		<label for="move_leave_shadow">
+			<input type="checkbox" name="move_leave_shadow" id="move_leave_shadow" />{L_LEAVE_SHADOW}
+		</label>
+	<!-- ENDIF -->
+
+	<!-- IF S_CAN_LOCK_TOPIC -->
+		<label for="move_lock_topics">
+			<input type="checkbox" name="move_lock_topics" id="move_lock_topics" />{L_LOCK_TOPIC}
+		</label>
+	<!-- ENDIF -->
+
+	<fieldset class="submit-buttons">
+		<input type="button" name="confirm" value="{YES_VALUE}" class="button1" />&nbsp;
+		<input type="button" name="cancel" value="{L_NO}" class="button2" />
+	</fieldset>
+
+<!-- ELSE -->
+
+<!-- INCLUDE overall_header.html -->
+
+<!-- EVENT mcp_move_before -->
+
+<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+
+<div class="panel">
+	<div class="inner">
+
+	<div class="content">
+		<h2 class="message-title">{MESSAGE_TITLE}</h2>
+		<!-- IF ADDITIONAL_MSG --><p>{ADDITIONAL_MSG}</p><!-- ENDIF -->
+
+		<fieldset>
+		<dl class="fields2">
+			<dt><label>{L_SELECT_DESTINATION_FORUM}{L_COLON}</label></dt>
+			<dd><select name="to_forum_id">{S_FORUM_SELECT}</select></dd>
+			<!-- IF S_CAN_LEAVE_SHADOW --><dd><label for="move_leave_shadow"><input type="checkbox" name="move_leave_shadow" id="move_leave_shadow" />{L_LEAVE_SHADOW}</label></dd><!-- ENDIF -->
+			<!-- IF S_CAN_LOCK_TOPIC --><dd><label for="move_lock_topics"><input type="checkbox" name="move_lock_topics" id="move_lock_topics" />{L_LOCK_TOPIC}</label></dd><!-- ENDIF -->
+		</dl>
+		<dl class="fields2">
+			<dt>&nbsp;</dt>
+			<dd><strong>{MESSAGE_TEXT}</strong></dd>
+		</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="button1" />&nbsp;
+			<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+			{S_FORM_TOKEN}
+		</fieldset>
+
+	</div>
+
+	</div>
+</div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

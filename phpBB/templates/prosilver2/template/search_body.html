@@ -1,0 +1,102 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<h2 class="solo">{L_SEARCH}</h2>
+<form method="post" action="{S_SEARCH_ACTION}">
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_SEARCH_QUERY}</h3>
+	<fieldset>
+	<dl>
+		<dt><label for="keywords">{L_SEARCH_KEYWORDS}:</label><br /><span>{L_SEARCH_KEYWORDS_EXPLAIN}</span></dt>
+		<dd><input type="text" class="inputbox" name="search_keywords" id="keywords" size="40" title="{L_SEARCH_KEYWORDS}" /></dd>
+		<dd><label for="terms1"><input type="radio" name="search_terms" id="terms1" value="all" checked="checked" /> {L_SEARCH_ALL_TERMS}</label></dd>
+		<dd><label for="terms2"><input type="radio" name="search_terms" id="terms2" value="any" /> {L_SEARCH_ANY_TERMS}</label></dd>
+	</dl>
+	<dl>
+		<dt><label for="author">{L_SEARCH_AUTHOR}:</label><br /><span>{L_SEARCH_AUTHOR_EXPLAIN}</span></dt>
+		<dd><input type="text" class="inputbox" name="search_author" id="author" size="40" title="{L_SEARCH_AUTHOR}" /></dd>
+	</dl>
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel bg2">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_SEARCH_OPTIONS}</h3>
+	<fieldset>
+	<dl>
+		<dt><label for="search_forum">{L_FORUM}:</label><br /><span>{L_SEARCH_FORUMS_EXPLAIN}</span></dt>
+		<dd><select name="search_forum">{S_FORUM_OPTIONS}</select></dd>
+	</dl>
+	<dl>
+		<dt><label for="sf1">{L_SEARCH_FORUMS}:</label></dt>
+		<dd><label for="sf1"><input type="radio" name="search_fields" id="sf1" value="all" checked="checked" /> {L_SEARCH_MESSAGE_TITLE}</label></dd>
+		<dd><label for="sf2"><input type="radio" name="search_fields" id="sf2" value="msgonly" /> {L_SEARCH_MESSAGE_ONLY}</label></dd>
+	</dl>
+	<hr class="dashed" />
+	<dl>
+		<dt><label for="show_results1">{L_DISPLAY_RESULTS}:</label></dt>
+		<dd>
+			<label for="show_results1"><input type="radio" name="show_results" id="show_results1" value="posts" checked="checked" /> {L_POSTS}</label> 
+			<label for="show_results2"><input type="radio" name="show_results" id="show_results2" value="topics" /> {L_TOPICS}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label for="sd">{L_SORT_BY}:</label></dt>
+		<dd><select name="sort_by">{S_SORT_OPTIONS}</select>&nbsp; 
+			<label for="sa"><input type="radio" name="sort_dir" id="sa" value="ASC" /> {L_SORT_ASCENDING}</label> 
+			<label for="sd"><input type="radio" name="sort_dir" id="sd" value="DESC" checked="checked" /> {L_SORT_DESCENDING}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_SEARCH_PREVIOUS}:</label></dt>
+		<dd><select name="search_time">{S_TIME_OPTIONS}</select></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_RETURN_FIRST}:</label></dt>
+		<dd><select name="return_chars" title="{L_RETURN_FIRST}">{S_CHARACTER_OPTIONS}</select> {L_CHARACTERS}</dd>
+	</dl>
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel bg3">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SEARCH}" class="button1" />
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

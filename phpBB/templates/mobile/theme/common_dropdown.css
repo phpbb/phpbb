@@ -1,0 +1,78 @@
+/* ## ChromeStyle ## DropDown Menu ## */
+.chromestyle {
+	font-weight: bold;
+}
+
+.chromestyle:after { /*Add margin between menu and rest of content in Firefox*/
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.chromestyle ul {
+	width: 100%;
+	padding: 2px 0;
+	margin: 0;
+	text-align: center; /*set value to "left", "center", or "right"*/
+}
+
+.chromestyle ul li {
+	display: inline;
+	vertical-align: middle;
+}
+
+.chromestyle ul li a {
+	padding: 0px 7px;
+	margin: 0;
+	text-decoration: none;
+	/*color: #555555;*/
+	/*border-right: 1px solid #dadada;*/
+}
+
+.chromestyle ul li a:hover {
+	color: #dd2222;
+}
+
+/*
+.chromestyle ul li a:hover {
+	background: url(images/ice/bg_th.gif) top repeat-x;
+}
+
+.chromestyle ul li a[rel]:after {
+content: " " url(downimage.gif);
+}
+*/
+
+.dropmenudiv {
+	position: absolute;
+	text-align: left;
+	vertical-align: middle;
+	top: 0;
+	border: 1px solid #333333; /*THEME CHANGE HERE*/
+	/*border-bottom-width: 0;*/
+	line-height: 18px;
+	z-index: 100;
+	width: 200px;
+	visibility: hidden;
+	background-color: #f8f8f8;
+}
+
+.dropmenudiv a {
+	display: block;
+	text-indent: 2px;
+	/*border-bottom: 1px solid #333333;*/ /*THEME CHANGE HERE*/
+	padding: 0px;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+* html .dropmenudiv a { /*IE only hack*/
+	width: 100%;
+}
+
+.dropmenudiv a:hover { /*THEME CHANGE HERE*/
+	/* background: #f0f0f0 url(images/ice/bg_row_hover.gif) bottom right no-repeat; */
+	background-color: #f0f0f0;
+}

@@ -1,0 +1,81 @@
+/*
+* jQuery Nivo Slider v1.6
+* http://nivo.dev7studios.com
+*
+* Copyright 2010, Gilbert Pellegrom
+* Free to use and abuse under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+*
+* March 2010
+*/
+
+.nivoSlider {
+	position: relative;
+}
+
+.nivoSlider img {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.nivoSlider a.nivo-imageLink {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	z-index: 60;
+	display: none;
+}
+
+.nivo-slice {
+	display: block;
+	position: absolute;
+	z-index: 50;
+	height: 100%;
+}
+
+.nivo-caption {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	background: #000000;
+	color: #ffffff;
+	opacity: 0.8;
+	width: 100%;
+	z-index: 89;
+}
+
+.nivo-caption p {
+	padding: 5px;
+	margin: 0;
+}
+
+.nivo-directionNav a {
+	position: absolute;
+	top: 45%;
+	z-index: 99;
+	cursor: pointer;
+}
+
+.nivo-prevNav {
+	left: 0px;
+}
+
+.nivo-nextNav {
+	right: 0px;
+}
+
+.nivo-controlNav a {
+	position: relative;
+	z-index: 99;
+	cursor: pointer;
+}
+
+.nivo-controlNav a.active {
+	font-weight: bold;
+}

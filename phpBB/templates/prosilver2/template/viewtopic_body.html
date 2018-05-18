@@ -1,0 +1,206 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a> <strong>&#8249;</strong> <a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+					<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+{S_AUTH_LIST}
+<h2><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+<p>
+<!-- IF S_QUICK_REPLY -->
+	<!-- INCLUDE quickreply_editor.html -->
+<!-- ENDIF -->
+</p>
+<!-- EVENT viewtopic_body_topic_actions_before -->
+<div class="action-bar bar-bottom">
+	<div class="topic-actions">
+	<!-- EVENT viewtopic_buttons_bottom_before -->
+	<div class="buttons">
+	
+	
+	<ul class="post-buttons">	
+		<span class="nav">		
+		<!-- IF S_IS_LOCKED -->
+		<a href="{U_POST_NEW_TOPIC}" title="{L_POST_NEW_TOPIC}">
+			<li class="post-icon fa-post fa-fw" aria-hidden="true" style="width: 96px; height: 25px; background-image: url('{POST_IMG}');">
+					<!--img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /-->
+			</li>&nbsp;&nbsp;&nbsp;
+		</a>
+			<li class="locked-icon fa-lock fa-fw" aria-hidden="true" style="width: 96px; height: 25px; background-image: url('{REPLY_IMG}');">	
+			<span>{L_BUTTON_TOPIC_LOCKED}</span> 
+				<!--img src="{REPLY_IMG}" border="0" alt="{L_BUTTON_TOPIC_LOCKED}" align="middle" /-->
+			</li>				
+		<!-- ELSE -->
+		<a href="{U_POST_NEW_TOPIC}" title="{L_POST_NEW_TOPIC}">
+			<li class="post-icon fa-post fa-fw" style="width: 96px; height: 25px; background-image: url('{POST_IMG}');">
+					<!--img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /-->
+			</li>&nbsp;&nbsp;&nbsp;
+		</a>
+		<a href="{U_POST_REPLY_TOPIC}" title="{L_POST_REPLY_TOPIC}">	
+			<li class="reply-icon fa-reply fa-fw" style="width: 96px; height: 25px; background-image: url('{REPLY_IMG}');">			
+					<!--img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /-->
+			</li>
+		</a>	
+		<!-- ENDIF -->
+		</span>
+	</ul>
+			
+		<div class="clear"><p></p></div>		
+	</div>
+</div>
+		<!-- EVENT viewtopic_body_post_buttons_after -->
+	<div class="pagination">
+		{PAGE_NUMBER}<span>{PAGINATION}</span>
+	</div>
+</div>
+<!-- EVENT viewtopic_body_topic_actions_after -->
+<div class="clear"></div>
+{POLL_DISPLAY}
+<!-- BEGIN postrow -->
+	<div id="{postrow.U_POST_ID}" class="post {postrow.ROW_CLASS}">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="postbody">
+				<ul class="profile-icons">
+					{postrow.QUOTE}
+					{postrow.EDIT}
+					{postrow.DELETE}
+					{postrow.IP}
+				</ul>
+			<h3 class="first"><a href="{postrow.U_MINI_POST}">{postrow.POST_SUBJECT}</a></h3>
+			<p class="author"><a href="{postrow.U_MINI_POST}"><img src="{postrow.MINI_POST_IMG}" alt="" /></a>{L_POST_BY_AUTHOR} <strong>{postrow.POSTER_NAME}</strong> {L_POSTED_ON_DATE} {postrow.POST_DATE} </p>
+				
+			<div class="content">{postrow.MESSAGE}</div>
+			{postrow.SIGNATURE}
+		</div>
+			<dl class="postprofile">
+			<dt>
+				<a href="{postrow.U_VIEWPROFILE}">{postrow.POSTER_AVATAR}</a><br />
+				<a href="{postrow.U_VIEWPROFILE}"><span style="color:{postrow.GLOWING_COLOR}">{postrow.POSTER_NAME}</span></a>
+			</dt>
+			<dd>{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}</dd>
+			<dd>&nbsp;</dd>
+			<dd>{postrow.POSTER_POSTS}</dd>
+			<dd>{postrow.POSTER_JOINED}</dd>
+			<dd>{postrow.POSTER_FROM}</dd>
+			<dd>
+				<ul class="profile-icons">
+					{postrow.PM}
+					{postrow.EMAIL}
+					{postrow.WWW}
+					{postrow.MSN}
+					{postrow.ICQ}
+					{postrow.YIM}
+					{postrow.AIM}
+				</ul>
+			</dd>
+		</dl>
+		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+	<hr class="divider" />
+<!-- END postrow -->
+	<form method="post" action="{S_POST_DAYS_ACTION}">
+	<fieldset class="display-options" style="margin-top: 0; ">
+		<label>{L_DISPLAY_POSTS}: {S_SELECT_POST_DAYS}&nbsp;{S_SELECT_POST_ORDER}&nbsp;<input type="submit" value="{L_GO}" class="button2" name="submit" /></label>
+	</fieldset>
+	</form>
+	<hr />
+
+<!-- EVENT viewtopic_body_topic_actions_before -->
+<div class="action-bar bar-bottom">
+	<div class="topic-actions">
+	<!-- EVENT viewtopic_buttons_bottom_before -->
+	<div class="buttons">
+	<ul class="post-buttons">	
+		<span class="nav">		
+		<!-- IF S_IS_LOCKED -->
+		<a href="{U_POST_NEW_TOPIC}" title="{L_POST_NEW_TOPIC}">
+			<li class="post-icon fa-post fa-fw" aria-hidden="true" style="width: 96px; height: 25px; background-image: url('{POST_IMG}');">
+					<!--img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /-->
+			</li>&nbsp;&nbsp;&nbsp;
+		</a>
+			<li class="locked-icon fa-lock fa-fw" aria-hidden="true" style="width: 96px; height: 25px; background-image: url('{REPLY_IMG}');">	
+			<span>{L_BUTTON_TOPIC_LOCKED}</span> 
+				<!--img src="{REPLY_IMG}" border="0" alt="{L_BUTTON_TOPIC_LOCKED}" align="middle" /-->
+			</li>				
+		<!-- ELSE -->
+		<a href="{U_POST_NEW_TOPIC}" title="{L_POST_NEW_TOPIC}">
+			<li class="post-icon fa-post fa-fw" style="width: 96px; height: 25px; background-image: url('{POST_IMG}');">
+					<!--img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /-->
+			</li>&nbsp;&nbsp;&nbsp;
+		</a>
+		<a href="{U_POST_REPLY_TOPIC}" title="{L_POST_REPLY_TOPIC}">	
+			<li class="reply-icon fa-reply fa-fw" style="width: 96px; height: 25px; background-image: url('{REPLY_IMG}');">			
+					<!--img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /-->
+			</li>
+		</a>	
+		<!-- ENDIF -->
+		</span>
+	</ul>	
+	</div>
+</div>
+		<!-- EVENT viewtopic_body_post_buttons_after -->
+	<div class="pagination">
+		{PAGE_NUMBER}<span>{PAGINATION}</span>
+	</div>
+</div>
+<!-- EVENT viewtopic_body_topic_actions_after -->
+<div class="clear"></div>
+<p><a href="{U_VIEW_FORUM}" class="left-box left">{FORUM_NAME}</a></p>
+{JUMPBOX}
+<script type="text/javascript">
+<!--
+function land(ref, target)
+{
+if (target=="_self") {window.location=loc;}
+else {if (target=="_top") {top.location=loc;}
+else {if (target=="_blank") {window.open(loc);}
+else {if (target=="_parent") {parent.location=loc;}
+else {parent.frames[target].location=loc;};
+}}}
+}
+function jump(menu)
+{
+ref=menu.choice.options[menu.choice.selectedIndex].value;
+splitc=ref.lastIndexOf("&");
+target="";
+if (splitc!=-1)
+{loc=ref.substring(0,splitc);
+target=ref.substring(splitc+1,1000).toLowerCase();}
+else {loc=ref; target="_self";};
+if (ref != "") {land(loc,target);}
+}
+-->
+</script>
+{S_TOPIC_ADMIN}
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+				{S_WATCH_TOPIC}
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>

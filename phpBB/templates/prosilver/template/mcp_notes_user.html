@@ -1,0 +1,129 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" id="mcp" action="{U_POST_ACTION}">
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+	<h3>{USERNAME_FULL}</h3>
+
+	<div>
+		<div class="column1">
+			<!-- IF AVATAR_IMG --><div>{AVATAR_IMG}</div><!-- ENDIF -->
+		</div>
+
+		<div class="column2">
+			<dl class="details">
+				<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
+				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+				<dt>{L_JOINED}{L_COLON}</dt><dd>{JOINED}</dd>
+				<dt>{L_TOTAL_POSTS}{L_COLON}</dt><dd>{POSTS}</dd>
+				<dt>{L_WARNINGS}{L_COLON} </dt><dd>{WARNINGS}</dd>
+			</dl>
+		</div>
+	</div>
+
+	</div>
+</div>
+
+<div class="panel">
+	<div class="inner">
+
+	<h3>{L_ADD_FEEDBACK}</h3>
+	<p>{L_ADD_FEEDBACK_EXPLAIN}</p>
+
+	<fieldset>
+		<textarea name="usernote" id="usernote" class="inputbox" cols="40" rows="3"></textarea>
+	</fieldset>
+
+	</div>
+</div>
+
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1" />
+	{S_FORM_TOKEN}
+</fieldset>
+
+<div class="panel">
+	<div class="inner">
+
+	<div class="action-bar top">
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		<div class="pagination">
+			{TOTAL_REPORTS}
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				 &bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	</div>
+
+	<table class="table1">
+	<thead>
+	<tr>
+		<th class="name reportby">{L_REPORT_BY}</th>
+		<th class="center">{L_IP}</th>
+		<th class="center">{L_TIME}</th>
+		<th>{L_ACTION_NOTE}</th>
+		<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN usernotes -->
+	<!-- IF usernotes.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
+		<td>{usernotes.REPORT_BY}</td>
+		<td class="center">{usernotes.IP}</td>
+		<td class="center">{usernotes.REPORT_AT}</td>
+		<td>{usernotes.ACTION}</td>
+
+		<!-- IF S_CLEAR_ALLOWED --><td class="center" style="width: 5%;"><input type="checkbox" name="marknote[]" id="note-{usernotes.ID}" value="{usernotes.ID}" /></td><!-- ENDIF -->
+	</tr>
+	<!-- BEGINELSE -->
+	<tr>
+		<td class="bg1" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+	</tr>
+	<!-- END usernotes -->
+	</tbody>
+	</table>
+
+	<hr />
+
+	<fieldset class="display-options">
+		<label>{L_DISPLAY_LOG}{L_COLON} {S_SELECT_SORT_DAYS}</label>
+		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
+		<input type="submit" name="sort" value="{L_GO}" class="button2" />
+	</fieldset>
+
+	<hr />
+
+	<div class="action-bar bottom">
+		<div class="pagination">
+			{TOTAL_REPORTS}
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				 &bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	</div>
+
+	</div>
+</div>
+
+<!-- IF S_CLEAR_ALLOWED -->
+<fieldset class="display-actions">
+	<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
+	&nbsp;<input class="button1" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+</fieldset>
+
+<fieldset class="display-actions">
+	<div><a href="#" onclick="marklist('mcp', 'marknote', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('mcp', 'marknote', false); return false;">{L_UNMARK_ALL}</a></div>
+</fieldset>
+<!-- ENDIF -->
+</form>
+
+<!-- INCLUDE mcp_footer.html -->

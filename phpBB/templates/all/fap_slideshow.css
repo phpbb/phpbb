@@ -1,0 +1,13 @@
+/* Full Album Pack - BEGIN*/
+img {
+	filter: alpha(opacity=100);
+	border: none;
+}
+
+/* duplicate image positioning */
+img.idupe {
+	position: absolute;
+	z-index: 30000;
+	visibility: hidden;
+}
+/* Full Album Pack - END*/

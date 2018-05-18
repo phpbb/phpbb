@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: usercp_confirm.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  ***************************************************************************/
 
@@ -33,12 +33,12 @@ if ( !defined('IN_PHPBB') )
 // than the GPL. We will be watching ... ;)
 
 // Do we have an id? No, then just exit
-if (empty($HTTP_GET_VARS['id']))
+if (empty($_GET['id']))
 {
 	exit;
 }
 
-$confirm_id = htmlspecialchars($HTTP_GET_VARS['id']);
+$confirm_id = htmlspecialchars($_GET['id']);
 
 // Define available charset
 $chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');

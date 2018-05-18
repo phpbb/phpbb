@@ -2,7 +2,7 @@
 
   mssql_schema.sql for phpBB2 (c) 2001, phpBB Group
 
- $Id$
+ $Id: mssql_schema.sql,v 1.1 2010/10/10 15:10:39 orynider Exp $
 
 */
 
@@ -72,6 +72,7 @@ GO
 
 CREATE TABLE [phpbb_forums] (
 	[forum_id] [int] NOT NULL ,
+	[forum_parent] [smallint] NOT NULL ,	  	
 	[cat_id] [int] NOT NULL ,
 	[forum_name] [varchar] (100) NOT NULL ,
 	[forum_desc] [varchar] (255) NULL ,
@@ -193,7 +194,6 @@ CREATE TABLE [phpbb_sessions] (
 	[session_page] [int] NULL ,
 	[session_logged_in] [smallint] NULL,
 	[session_admin] [smallint] NULL
-	[priv_session_id] [char] (32) NOT NULL ,
 ) ON [PRIMARY]
 GO
 

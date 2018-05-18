@@ -1,0 +1,125 @@
+<script language="Javascript" type="text/javascript">
+	//
+	// Should really check the browser to stop this whining ...
+	//
+	function select_switch(status)
+	{
+		for (i = 0; i < document.privmsg_list.length; i++)
+		{
+			document.privmsg_list.elements[i].checked = status;
+		}
+	}
+</script>
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<p>
+<form method="post" name="privmsg_list" action="{S_PRIVMSGS_ACTION}">
+<div id="tabs">
+	<ul>
+		<li><a href="{U_PROFILE}"><span>{L_PROFILE}</span></a></li>
+		<li class="activetab"><a href="{U_PRIVATEMSGS}"><span>{L_PRIVATEMSGS}</span></a></li>
+	</ul>
+</div>
+<div class="panel bg3">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<div style="width: 100%;">
+	<div id="cp-menu">
+		<div id="navigation">
+			<ul>
+				{INBOX}
+				{SENTBOX}
+				{OUTBOX}
+				{SAVEBOX}
+			</ul>
+		</div>
+	</div>
+	<div id="cp-main" class="ucp-main">
+<h2>{L_PRIVATEMSGS}</h2>
+<form id="viewfolder" method="post" action="{S_PM_ACTION}">
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<p>{BOX_SIZE_STATUS}</p>	
+	<ul class="linklist">
+		<li class="buttons">
+			<div class="newpm-icon">{POST_PM}</div>
+		<li class="rightside pagination">
+			{PAGE_NUMBER} <span>{PAGINATION}</span>
+		</li>
+	</ul>
+		<ul class="topiclist">
+			<li class="header">
+				<dl>
+					<dt>{L_SUBJECT}</dt>
+					<dd class="mark">{L_MARK}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist cplist pmlist">
+		<!-- BEGIN listrow -->
+			<li class="row bg3">
+				<dl class="icon" style="background-image: url({listrow.PRIVMSG_FOLDER_IMG});">
+					<dt>
+						<a href="{listrow.U_READ}" class="topictitle">{listrow.SUBJECT}</a>
+						<br />{L_MESSAGE_BY_AUTHOR} <a href="{listrow.U_FROM_USER_PROFILE}">{listrow.FROM}</a> {L_MESSAGE_SENT_ON} {listrow.DATE}
+					</dt>
+					<dd class="mark"><input type="checkbox" name="mark[]2" value="{listrow.S_MARK_ID}" /></dd>
+				</dl>
+			</li>
+		<!-- END listrow -->
+		</ul>
+	<!-- BEGIN switch_no_messages -->
+		<p><strong>{L_NO_MESSAGES}</strong></p>
+	<!-- END switch_no_messages -->
+	<fieldset class="display-actions">
+		<input type="submit" name="save" value="{L_SAVE_MARKED}" class="button2" />&nbsp; 
+		<input type="submit" name="delete" value="{L_DELETE_MARKED}" class="button2" />
+		<div><a href="javascript:select_switch(true);">{L_MARK_ALL}</a> &bull; <a href="javascript:select_switch(false);">{L_UNMARK_ALL}</a></div>
+	</fieldset>
+	<hr />
+	<ul class="linklist">
+		<li class="rightside pagination">
+			{PAGE_NUMBER} <span>{PAGINATION}</span>
+		</li>
+	</ul>
+			<span class="corners-bottom"><span></span></span></div>	
+	</div>
+		</div>
+	<div class="clear"></div>
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

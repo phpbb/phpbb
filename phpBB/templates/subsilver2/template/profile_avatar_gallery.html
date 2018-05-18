@@ -1,0 +1,67 @@
+<form action="{S_PROFILE_ACTION}" method="post">
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<p></p>
+<div class="panel">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<h3>{L_AVATAR_GALLERY}</h3>
+		<fieldset>
+			<label>{L_CATEGORY}: {S_CATEGORY_SELECT}</label>
+			<input type="submit" value="{L_GO}" name="avatargallery" class="button2" />
+		</fieldset>
+		<table id="gallery">
+		<!-- BEGIN avatar_row -->
+		<tr>
+		<!-- BEGIN avatar_column -->
+			<td><label><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="" /><br />
+				</label></td>
+		<!-- END avatar_column -->
+		</tr>
+		<tr>
+		<!-- BEGIN avatar_option_column -->
+		<td><label><input type="radio" name="avatarselect" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></label></td>
+		<!-- END avatar_option_column -->
+		</tr>
+		<!-- END avatar_row -->
+		</table>
+		<fieldset class="submit-buttons">
+			{S_HIDDEN_FIELDS}
+			<input type="submit" name="submitavatar" value="{L_SELECT_AVATAR}" class="button2" />&nbsp; <input type="submit" name="cancelavatar" value="{L_RETURN_PROFILE}" class="button2" />
+		</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>

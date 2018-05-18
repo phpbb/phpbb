@@ -1,0 +1,61 @@
+/*
+* Note: Include the nivo-slider.css file that comes
+* with the main download before including this file.
+*/
+
+@import url("jquery_nivo_slider.css");
+
+#slider {
+	position: relative;
+	margin: 30px 30px 60px 30px;
+	box-shadow: 0px 0px 10px #333333;
+}
+
+#slider img {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#slider a {
+	border: 0;
+}
+
+.nivo-controlNav {
+	position: absolute;
+	left: 47%;
+	bottom: -30px;
+}
+
+.nivo-controlNav a {
+	display: block;
+	width: 10px;
+	height: 10px;
+	background: url('bullets.png') no-repeat;
+	text-indent: -9999px;
+	border: 0;
+	margin-right: 3px;
+	float: left;
+}
+
+.nivo-controlNav a.active {
+	background-position: -10px 0;
+}
+
+.nivo-directionNav a {
+	display: block;
+	width: 32px;
+	height: 34px;
+	background: url('arrows.png') no-repeat;
+	text-indent: -9999px;
+	border: 0;
+}
+
+a.nivo-nextNav {
+	background-position: -32px 0;
+	right: 10px;
+}
+
+a.nivo-prevNav {
+	left: 10px;
+}

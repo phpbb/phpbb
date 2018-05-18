@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: functions_admin.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -30,7 +30,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 
 	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
-	$sql = 'SELECT f.forum_id, f.forum_name
+	$sql = 'SELECT f.forum_id, f.forum_name, f.forum_parent
 		FROM ' . CATEGORIES_TABLE . ' c, ' . FORUMS_TABLE . ' f
 		WHERE f.cat_id = c.cat_id 
 		ORDER BY c.cat_order, f.forum_order';
@@ -39,13 +39,49 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 		message_die(GENERAL_ERROR, 'Couldn not obtain forums information', '', __LINE__, __FILE__, $sql);
 	}
 
-	$forum_list = '';
+	//$forum_list = '';
+	// Begin Simple Subforums MOD
+	$list = array();
+	// End Simple Subforums MOD	
 	while( $row = $db->sql_fetchrow($result) )
 	{
+	// Begin Simple Subforums MOD
+		$list[] = $row;
+	}
+	$forum_list = '';
+	for( $i = 0; $i < count($list); $i++ )
+	{
+		if( !$list[$i]['forum_parent'] )
+		{
+			$row = $list[$i];
+			$parent_hidden = true;
+	// End Simple Subforums MOD	
 		if ( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
 		{
 			$selected = ( $select_forum == $row['forum_id'] ) ? ' selected="selected"' : '';
 			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>' . $row['forum_name'] . '</option>';
+			// Begin Simple Subforums MOD
+				$parent_hidden = false;
+			}
+			if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
+			{
+				$parent_id = $row['forum_id'];
+				for($j=0; $j<count($list); $j++)
+				{
+					$row = $list[$j];
+					if( $row['forum_parent'] == $parent_id && $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
+					{
+						if( $parent_hidden )
+						{
+							$forum_list .= '<option value="" disabled="disabled">' . $list[$i]['forum_name'] . '</option>';
+							$parent_hidden = false;
+						}
+						$selected = ( $select_forum == $row['forum_id'] ) ? ' selected="selected"' : '';
+						$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>-- ' . $row['forum_name'] . '</option>';
+					}
+				}			
+			}
+			// End Simple Subforums MOD			
 		}
 	}
 
@@ -188,4 +224,80 @@ function sync($type, $id = false)
 	return true;
 }
 
+/**
+ * Enter description here...
+ *
+ * @param unknown_type $default
+ * @param unknown_type $select_name
+ * @return unknown
+ */
+function generate_meta_select($default, $select_name)
+{
+	global $lang;
+
+	$select = '<select name="' . $select_name . '">';
+	foreach( $lang['mx_meta'][$select_name] as $key => $value )
+	{
+		$selected = ( $key == $default ) ? ' selected="selected"' : '';
+		$select .= '<option value="' . $key . '"' . $selected . '>' . $value . "</option>\n";
+	}
+	$select .= '</select>';
+
+	return $select;
+}
+
+/**
+* Retrieve contents from remotely stored file
+*/
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 10)
+{
+	global $user;
+
+	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
+	{
+		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
+		@fputs($fsock, "HOST: $host\r\n");
+		@fputs($fsock, "Connection: close\r\n\r\n");
+
+		$file_info = '';
+		$get_info = false;
+
+		while (!@feof($fsock))
+		{
+			if ($get_info)
+			{
+				$file_info .= @fread($fsock, 1024);
+			}
+			else
+			{
+				$line = @fgets($fsock, 1024);
+				if ($line == "\r\n")
+				{
+					$get_info = true;
+				}
+				else if (stripos($line, '404 not found') !== false)
+				{
+					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
+					return false;
+				}
+			}
+		}
+		@fclose($fsock);
+	}
+	else
+	{
+		if ($errstr)
+		{
+			$errstr = utf8_convert_message($errstr);
+			return false;
+		}
+		else
+		{
+			$errstr = $user->lang['FSOCK_DISABLED'];
+			return false;
+		}
+	}
+
+	return $file_info;
+}
 ?>

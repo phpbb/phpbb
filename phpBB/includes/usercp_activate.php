@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: usercp_activate.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -29,7 +29,7 @@ if ( !defined('IN_PHPBB') )
 
 $sql = "SELECT user_active, user_id, username, user_email, user_newpasswd, user_lang, user_actkey 
 	FROM " . USERS_TABLE . "
-	WHERE user_id = " . intval($HTTP_GET_VARS[POST_USERS_URL]);
+	WHERE user_id = " . intval($_GET[POST_USERS_URL]);
 if ( !($result = $db->sql_query($sql)) )
 {
 	message_die(GENERAL_ERROR, 'Could not obtain user information', '', __LINE__, __FILE__, $sql);
@@ -45,13 +45,13 @@ if ( $row = $db->sql_fetchrow($result) )
 
 		message_die(GENERAL_MESSAGE, $lang['Already_activated']);
 	}
-	else if ((trim($row['user_actkey']) == trim($HTTP_GET_VARS['act_key'])) && (trim($row['user_actkey']) != ''))
+	else if ((trim($row['user_actkey']) == trim($_GET['act_key'])) && (trim($row['user_actkey']) != ''))
 	{
 		if (intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '')
 		{
 			if (!$userdata['session_logged_in'])
 			{
-				redirect(append_sid('login.' . $phpEx . '?redirect=profile.' . $phpEx . '&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($HTTP_GET_VARS['act_key'])));
+				redirect(append_sid('login.' . $phpEx . '?redirect=profile.' . $phpEx . '&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($_GET['act_key'])));
 			}
 			else if ($userdata['user_level'] != ADMIN)
 			{

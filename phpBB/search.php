@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: search.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -20,18 +20,25 @@
  *
  ***************************************************************************/
 
+//
+// Allow people to reach SEARCH page
+//
+define("IN_SEARCH", true);
+
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
-include($phpbb_root_path . 'extension.inc');
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_search.'.$phpEx);
+include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+include_once($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_SEARCH);
-init_userprefs($userdata);
+$userdata = $user->session_pagestart($user_ip, PAGE_SEARCH);
+$user->set_lang($user->lang, $user->help, 'lang_admin');
+$lang = &$user->lang;
+init_userprefs($user->data);
 //
 // End session management
 //
@@ -39,27 +46,27 @@ init_userprefs($userdata);
 //
 // Define initial vars
 //
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
 	$mode = '';
 }
 
-if ( isset($HTTP_POST_VARS['search_keywords']) || isset($HTTP_GET_VARS['search_keywords']) )
+if ( isset($_POST['search_keywords']) || isset($_GET['search_keywords']) )
 {
-	$search_keywords = ( isset($HTTP_POST_VARS['search_keywords']) ) ? $HTTP_POST_VARS['search_keywords'] : $HTTP_GET_VARS['search_keywords'];
+	$search_keywords = ( isset($_POST['search_keywords']) ) ? $_POST['search_keywords'] : $_GET['search_keywords'];
 }
 else
 {
 	$search_keywords = '';
 }
 
-if ( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']))
+if ( isset($_POST['search_author']) || isset($_GET['search_author']))
 {
-	$search_author = ( isset($HTTP_POST_VARS['search_author']) ) ? $HTTP_POST_VARS['search_author'] : $HTTP_GET_VARS['search_author'];
+	$search_author = ( isset($_POST['search_author']) ) ? $_POST['search_author'] : $_GET['search_author'];
 	$search_author = phpbb_clean_username($search_author);
 }
 else
@@ -67,49 +74,49 @@ else
 	$search_author = '';
 }
 
-$search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? $HTTP_GET_VARS['search_id'] : '';
+$search_id = ( isset($_GET['search_id']) ) ? $_GET['search_id'] : '';
 
-$show_results = ( isset($HTTP_POST_VARS['show_results']) ) ? $HTTP_POST_VARS['show_results'] : 'posts';
+$show_results = ( isset($_POST['show_results']) ) ? $_POST['show_results'] : 'posts';
 $show_results = ($show_results == 'topics') ? 'topics' : 'posts';
 
-if ( isset($HTTP_POST_VARS['search_terms']) )
+if ( isset($_POST['search_terms']) )
 {
-	$search_terms = ( $HTTP_POST_VARS['search_terms'] == 'all' ) ? 1 : 0;
+	$search_terms = ( $_POST['search_terms'] == 'all' ) ? 1 : 0;
 }
 else
 {
 	$search_terms = 0;
 }
 
-if ( isset($HTTP_POST_VARS['search_fields']) )
+if ( isset($_POST['search_fields']) )
 {
-	$search_fields = ( $HTTP_POST_VARS['search_fields'] == 'all' ) ? 1 : 0;
+	$search_fields = ( $_POST['search_fields'] == 'all' ) ? 1 : 0;
 }
 else
 {
 	$search_fields = 0;
 }
 
-$return_chars = ( isset($HTTP_POST_VARS['return_chars']) ) ? intval($HTTP_POST_VARS['return_chars']) : 200;
+$return_chars = ( isset($_POST['return_chars']) ) ? intval($_POST['return_chars']) : 200;
 
-$search_cat = ( isset($HTTP_POST_VARS['search_cat']) ) ? intval($HTTP_POST_VARS['search_cat']) : -1;
-$search_forum = ( isset($HTTP_POST_VARS['search_forum']) ) ? intval($HTTP_POST_VARS['search_forum']) : -1;
+$search_cat = ( isset($_POST['search_cat']) ) ? intval($_POST['search_cat']) : -1;
+$search_forum = ( isset($_POST['search_forum']) ) ? intval($_POST['search_forum']) : -1;
 
-$sort_by = ( isset($HTTP_POST_VARS['sort_by']) ) ? intval($HTTP_POST_VARS['sort_by']) : 0;
+$sort_by = ( isset($_POST['sort_by']) ) ? intval($_POST['sort_by']) : 0;
 
-if ( isset($HTTP_POST_VARS['sort_dir']) )
+if ( isset($_POST['sort_dir']) )
 {
-	$sort_dir = ( $HTTP_POST_VARS['sort_dir'] == 'DESC' ) ? 'DESC' : 'ASC';
+	$sort_dir = ( $_POST['sort_dir'] == 'DESC' ) ? 'DESC' : 'ASC';
 }
 else
 {
 	$sort_dir =  'DESC';
 }
 
-if ( !empty($HTTP_POST_VARS['search_time']) || !empty($HTTP_GET_VARS['search_time']))
+if ( !empty($_POST['search_time']) || !empty($_GET['search_time']))
 {
-	$search_time = time() - ( ( ( !empty($HTTP_POST_VARS['search_time']) ) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']) ) * 86400 );
-	$topic_days = (!empty($HTTP_POST_VARS['search_time'])) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']);
+	$search_time = time() - ( ( ( !empty($_POST['search_time']) ) ? intval($_POST['search_time']) : intval($_GET['search_time']) ) * 86400 );
+	$topic_days = (!empty($_POST['search_time'])) ? intval($_POST['search_time']) : intval($_GET['search_time']);
 }
 else
 {
@@ -117,7 +124,7 @@ else
 	$topic_days = 0;
 }
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
@@ -135,9 +142,9 @@ if ( $mode == 'searchuser' )
 	//
 	// This handles the simple windowed user search functions called from various other scripts
 	//
-	if ( isset($HTTP_POST_VARS['search_username']) )
+	if ( is_post('search_username') )
 	{
-		username_search($HTTP_POST_VARS['search_username']);
+		username_search(request_var('search_username', ''));
 	}
 	else
 	{
@@ -146,10 +153,10 @@ if ( $mode == 'searchuser' )
 
 	exit;
 }
-else if ( $search_keywords != '' || $search_author != '' || $search_id )
+else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 {
-	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
-	$search_results = '';
+	$split_search = $search_results = '';
+	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');	
 
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
@@ -159,7 +166,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	//
 	// Cycle through options ...
 	//
-	if ( $search_id == 'newposts' || $search_id == 'egosearch' || $search_id == 'unanswered' || $search_keywords != '' || $search_author != '' )
+	if ( $search_id == 'newposts' || $search_id == 'egosearch' || $search_id == 'unanswered' || !empty($search_keywords) || !empty($search_author) )
 	{
 		//
 		// Flood control
@@ -179,7 +186,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 			}
 		}
-		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  )
+		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( !empty($search_author) && !empty($search_keywords) ) )
 		{
 			if ( $search_id == 'newposts' )
 			{
@@ -237,7 +244,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				{
 					do
 					{
-						$matching_userids .= ( ( $matching_userids != '' ) ? ', ' : '' ) . $row['user_id'];
+						$matching_userids .= ( !empty($matching_userids) ? ', ' : '' ) . $row['user_id'];
 					}
 					while( $row = $db->sql_fetchrow($result) );
 				}
@@ -271,14 +278,14 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			$total_match_count = count($search_ids);
 
 		}
-		else if ( $search_keywords != '' )
+		else if ( !empty($search_keywords) )
 		{
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
 
 			$split_search = array();
 			$stripped_keywords = stripslashes($search_keywords);
-			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', $stripped_keywords, $stopword_array, $synonym_array), 'search') : explode(' ', $search_keywords);	
 			unset($stripped_keywords);
 
 			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( ( strstr($multibyte_charset, $lang['ENCODING']) ) ? '' : '' );
@@ -301,15 +308,15 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				{
 					case 'and':
 						$current_match_type = 'and';
-						break;
+					break;
 
 					case 'or':
 						$current_match_type = 'or';
-						break;
+					break;
 
 					case 'not':
 						$current_match_type = 'not';
-						break;
+					break;
 
 					default:
 						if ( !empty($search_terms) )
@@ -425,20 +432,20 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			{
 				if ( !$value['auth_read'] )
 				{
-					$ignore_forum_sql .= ( ( $ignore_forum_sql != '' ) ? ', ' : '' ) . $key;
+					$ignore_forum_sql .= ( !empty($ignore_forum_sql) ? ', ' : '' ) . $key;
 				}
 			}
 
-			if ( $ignore_forum_sql != '' )
+			if ( !empty($ignore_forum_sql) )
 			{
-				$auth_sql .= ( $auth_sql != '' ) ? " AND f.forum_id NOT IN ($ignore_forum_sql) " : "f.forum_id NOT IN ($ignore_forum_sql) ";
+				$auth_sql .= !empty($auth_sql) ? " AND f.forum_id NOT IN ($ignore_forum_sql) " : "f.forum_id NOT IN ($ignore_forum_sql) ";
 			}
 		}
 
 		//
 		// Author name search 
 		//
-		if ( $search_author != '' )
+		if ( !empty($search_author) )
 		{
 			$search_author = str_replace('*', '%', trim($search_author));
 
@@ -501,13 +508,13 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					{
 						$from_sql = POSTS_TABLE . " p"; 
 
-						if ( $search_author != '' )
+						if ( !empty($search_author) )
 						{
 							$from_sql .= ", " . USERS_TABLE . " u";
 							$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author' ";
 						}
 
-						if ( $auth_sql != '' )
+						if ( !empty($auth_sql) )
 						{
 							$from_sql .= ", " . FORUMS_TABLE . " f";
 							$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
@@ -535,7 +542,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$total_match_count = sizeof($search_ids);
 		
 			}
-			else if ( $search_author != '' || $search_time || $auth_sql != '' )
+			else if ( !empty($search_author) || $search_time || !empty($auth_sql) )
 			{
 				$search_id_chunks = array();
 				$count = 0;
@@ -573,13 +580,13 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$where_sql .= ( $search_author == '' && $auth_sql == '' ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time";
 					}
 
-					if ( $auth_sql != '' )
+					if ( !empty($auth_sql) )
 					{
 						$from_sql .= ", " . FORUMS_TABLE . " f";
 						$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
 					}
 
-					if ( $search_author != '' )
+					if ( !empty($search_author) )
 					{
 						$from_sql .= ", " . USERS_TABLE . " u";
 						$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
@@ -605,7 +612,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		}
 		else if ( $search_id == 'unanswered' )
 		{
-			if ( $auth_sql != '' )
+			if ( !empty($auth_sql) )
 			{
 				$sql = "SELECT t.topic_id, f.forum_id
 					FROM " . TOPICS_TABLE . "  t, " . FORUMS_TABLE . " f
@@ -692,7 +699,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$result_array = serialize($store_search_data);
 		unset($store_search_data);
 
-		$search_id = abs(crc32(dss_rand()));
+		mt_srand ((double) microtime() * 1000000);
+		$search_id = mt_rand();
 
 		$sql = "UPDATE " . SEARCH_TABLE . " 
 			SET search_id = $search_id, search_time = $current_time, search_array = '" . str_replace("\'", "''", $result_array) . "'
@@ -735,7 +743,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	//
 	// Look up data ...
 	//
-	if ( $search_results != '' )
+	if ( !empty($search_results) )
 	{
 		if ( $show_results == 'posts' )
 		{
@@ -842,7 +850,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				for ($k = 0; $k < count($synonym_array); $k++)
 				{ 
-					list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_array[$k]))); 
+					list($replace_synonym, $match_synonym) = explode(' ', trim(strtolower($synonym_array[$k]))); 
 
 					if ( $replace_synonym == $split_word )
 					{
@@ -855,8 +863,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 		$highlight_active = urlencode(trim($highlight_active));
 
-		$tracking_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) : array();
-		$tracking_forums = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) ) ? unserialize($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f']) : array();
+		$tracking_topics = ( isset($_COOKIE[$board_config['cookie_name'] . '_t']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_t']) : array();
+		$tracking_forums = ( isset($_COOKIE[$board_config['cookie_name'] . '_f']) ) ? unserialize($_COOKIE[$board_config['cookie_name'] . '_f']) : array();
 
 		for($i = 0; $i < count($searchset); $i++)
 		{
@@ -899,7 +907,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 							}
 						}
 
-						if ( $bbcode_uid != '' )
+						if ( !empty($bbcode_uid) )
 						{
 							$message = ( $board_config['allow_bbcode'] ) ? bbencode_second_pass($message, $bbcode_uid) : preg_replace('/\:[0-9a-z\:]+\]/si', ']', $message);
 						}
@@ -991,7 +999,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					}
 					else
 					{
-						$post_subject = ( $searchset[$i]['post_subject'] != '' ) ? $searchset[$i]['post_subject'] : $topic_title;
+						$post_subject = ( !empty($searchset[$i]['post_subject']) ) ? $searchset[$i]['post_subject'] : $topic_title;
 					}
 
 					if ($board_config['allow_smilies'] && $searchset[$i]['enable_smilies'])
@@ -1088,7 +1096,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				if ( ( $replies + 1 ) > $board_config['posts_per_page'] )
 				{
 					$total_pages = ceil( ( $replies + 1 ) / $board_config['posts_per_page'] );
-					$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
+					$goto_page = '<strong class="' . 'pagination"' . '><span>';
 
 					$times = 1;
 					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
@@ -1102,11 +1110,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						}
 						else if ( $times < $total_pages )
 						{
-							$goto_page .= ', ';
+							$goto_page .= '';
 						}
 						$times++;
 					}
-					$goto_page .= ' ] ';
+					$goto_page .= '</span></strong>';
 				}
 				else
 				{
@@ -1156,7 +1164,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					{
 						if ( $searchset[$i]['post_time'] > $userdata['user_lastvisit'] ) 
 						{
-							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+							if ( !empty($tracking_topics) || !empty($tracking_forums) || isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
 							{
 
 								$unread_topics = true;
@@ -1177,9 +1185,9 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 									}
 								}
 
-								if ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']) )
+								if ( isset($_COOKIE[$board_config['cookie_name'] . '_f_all']) )
 								{
-									if ( $HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] )
+									if ( $_COOKIE[$board_config['cookie_name'] . '_f_all'] > $searchset[$i]['post_time'] )
 									{
 										$unread_topics = false;
 									}
@@ -1233,7 +1241,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 
 				$topic_author = ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $searchset[$i]['user_id']) . '">' : '';
-				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( ( $searchset[$i]['post_username'] != '' ) ? $searchset[$i]['post_username'] : $lang['Guest'] );
+				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? $searchset[$i]['username'] : ( !empty($searchset[$i]['post_username']) ? $searchset[$i]['post_username'] : $lang['Guest'] );
 
 				$topic_author .= ( $searchset[$i]['user_id'] != ANONYMOUS ) ? '</a>' : '';
 
@@ -1241,7 +1249,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 				$last_post_time = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
-				$last_post_author = ( $searchset[$i]['id2'] == ANONYMOUS ) ? ( ($searchset[$i]['post_username2'] != '' ) ? $searchset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $searchset[$i]['id2']) . '">' . $searchset[$i]['user2'] . '</a>';
+				$last_post_author = ( $searchset[$i]['id2'] == ANONYMOUS ) ? ( !empty($searchset[$i]['post_username2']) ? $searchset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $searchset[$i]['id2']) . '">' . $searchset[$i]['user2'] . '</a>';
 
 				$last_post_url = '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $searchset[$i]['topic_last_post_id']) . '#' . $searchset[$i]['topic_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" border="0" /></a>';
 
@@ -1304,7 +1312,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 //
 // Search forum
 //
-$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id  
+$sql = "SELECT c.cat_title, c.cat_id, f.forum_name, f.forum_id, f.forum_parent  
 	FROM " . CATEGORIES_TABLE . " c, " . FORUMS_TABLE . " f
 	WHERE f.cat_id = c.cat_id 
 	ORDER BY c.cat_order, f.forum_order";
@@ -1317,19 +1325,39 @@ if ( !$result )
 $is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
 $s_forums = '';
+$list = array();
 while( $row = $db->sql_fetchrow($result) )
 {
 	if ( $is_auth_ary[$row['forum_id']]['auth_read'] )
 	{
+		$list[] = $row;
+	}
+}
+
+for( $i = 0; $i < count($list); $i++ )
+{
+	if( !$list[$i]['forum_parent'] )
+	{
+		$row = $list[$i];
+
 		$s_forums .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
 		if ( empty($list_cat[$row['cat_id']]) )
 		{
 			$list_cat[$row['cat_id']] = $row['cat_title'];
 		}
+		$parent_id = $row['forum_id'];
+		for( $j = 0; $j < count($list); $j++ )
+		{
+			if( $list[$j]['forum_parent'] == $parent_id )
+			{
+				$row = $list[$j];
+				$s_forums .= '<option value="' . $row['forum_id'] . '">-- ' . $row['forum_name'] . '</option>';
+			}
+		}		
 	}
 }
 
-if ( $s_forums != '' )
+if ( !empty($s_forums) )
 {
 	$s_forums = '<option value="-1">' . $lang['All_available'] . '</option>' . $s_forums;
 
@@ -1403,6 +1431,7 @@ $template->assign_vars(array(
 	'L_SEARCH_AUTHOR_EXPLAIN' => $lang['Search_author_explain'], 
 	'L_SEARCH_ANY_TERMS' => $lang['Search_for_any'],
 	'L_SEARCH_ALL_TERMS' => $lang['Search_for_all'], 
+	'L_SEARCH_FORUMS' => $lang['Search_forums'],
 	'L_SEARCH_MESSAGE_ONLY' => $lang['Search_msg_only'], 
 	'L_SEARCH_MESSAGE_TITLE' => $lang['Search_title_msg'], 
 	'L_CATEGORY' => $lang['Category'], 

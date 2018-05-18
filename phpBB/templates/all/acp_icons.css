@@ -1,0 +1,15 @@
+a.icon-edit-move-empty { cursor: move; text-decoration: none; }
+
+a.icon-edit-move {
+	background: url("images/cms_icon_move.png") 0 0;
+	width: 16px;
+	height: 16px;
+	float: left;
+	text-decoration: none;
+	margin: 0;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding: 0;
+	cursor: move;
+}
+

@@ -1,0 +1,212 @@
+/* Link Styles
+---------------------------------------- */
+
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+a {
+	direction: ltr;
+	unicode-bidi: embed;
+	text-decoration: none;
+}
+
+a:hover	{ text-decoration: underline; }
+
+/* Coloured usernames */
+.username-coloured {
+	font-weight: bold;
+	display: inline !important;
+	padding: 0 !important;
+}
+
+/* Links on gradient backgrounds */
+.forumbg .header a, .forabg .header a, th a {
+	text-decoration: none;
+}
+
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	text-decoration: underline;
+}
+
+/* Navigation bar links */
+li.breadcrumbs span:first-child > a {
+	display: inline-block;
+	padding-left: 17px;
+}
+
+/* Notification mark read link */
+.dropdown-extended a.mark_read {
+	background-position: center center;
+	background-repeat: no-repeat;
+	border-radius: 3px 0 0 3px;
+	display: none;
+	margin-top: -20px;
+	position: absolute;
+	z-index: 2;
+	right: 0;
+	top: 50%;
+	width: 30px;
+	height: 40px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.dropdown-extended li:hover a.mark_read {
+	display: block;
+}
+
+.dropdown-extended a.mark_read:hover {
+	width: 40px;
+}
+
+/* Links for forum/topic lists */
+a.forumtitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.forumtitle:hover {
+	text-decoration: underline;
+}
+
+a.topictitle {
+	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.topictitle:hover {
+	text-decoration: underline;
+}
+
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
+}
+
+/* Post body links */
+.postlink {
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	padding-bottom: 0;
+}
+
+.postlink:hover {
+	text-decoration: none;
+}
+
+.signature a, .signature a:hover {
+	border: none;
+	text-decoration: underline;
+}
+
+/* Profile links */
+.postprofile a, .postprofile dt.author a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.postprofile a:hover, .postprofile dt.author a:hover {
+	text-decoration: underline;
+}
+
+/* Profile searchresults */
+.search .postprofile a {
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.search .postprofile a:hover {
+	text-decoration: underline;
+}
+
+/* Back to top of page */
+.back2top {
+	clear: both;
+	height: 11px;
+	text-align: right;
+}
+
+a.top {
+	background: none no-repeat top left;
+	text-decoration: none;
+	width: 11px;
+	height: 11px;
+	display: block;
+	float: right;
+	overflow: hidden;
+	letter-spacing: 1000px;
+	text-indent: 11px;
+}
+
+a.top2 {
+	background: none no-repeat 0 50%;
+	text-decoration: none;
+	padding-left: 15px;
+}
+
+/* Arrow links  */
+a.arrow-up		{ background: none no-repeat left center; }
+a.arrow-down		{ background: none no-repeat right center; }
+a.arrow-left		{ background: none no-repeat 3px 60%; }
+a.arrow-right		{ background: none no-repeat 95% 60%; }
+
+a.arrow-up {
+	padding-left: 10px;
+	text-decoration: none;
+	border-bottom-width: 0;
+}
+
+a.arrow-up:hover {
+	background-position: left top;
+}
+
+a.arrow-down {
+	padding-right: 10px;
+}
+
+a.arrow-down:hover {
+	background-position: right bottom;
+	text-decoration: none;
+}
+
+a.arrow-left {
+	padding-left: 12px;
+}
+
+a.arrow-left:hover {
+	text-decoration: none;
+	background-position: 0 60%;
+}
+
+a.arrow-right {
+	padding-right: 12px;
+}
+
+a.arrow-right:hover {
+	text-decoration: none;
+	background-position: 100% 60%;
+}
+
+/* invisible skip link, used for accessibility  */
+.skiplink {
+	position: absolute;
+	left: -999px;
+	width: 990px;
+}
+
+/* Feed icon in forumlist_body.html */
+a.feed-icon-forum {
+	float: right;
+	margin: 3px;
+}
+
+a.anchor {
+	display: block;
+}

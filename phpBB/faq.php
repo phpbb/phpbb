@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: faq.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -40,9 +40,9 @@ $faq = array();
 //
 // Load the appropriate faq file
 //
-if( isset($HTTP_GET_VARS['mode']) )
+if( isset($_GET['mode']) )
 {
-	switch( $HTTP_GET_VARS['mode'] )
+	switch( $_GET['mode'] )
 	{
 		case 'bbcode':
 			$lang_file = 'lang_bbcode';
@@ -111,9 +111,30 @@ for($i = 0; $i < count($faq_block); $i++)
 {
 	if( count($faq_block[$i]) )
 	{
-		$template->assign_block_vars('faq_block', array(
-			'BLOCK_TITLE' => $faq_block_titles[$i])
-		);
+		// Pull the array data from the lang pack
+		$switch_column = $found_switch = false;			
+		if ($faq_block_titles[0] == '--')
+		{
+			if ($faq_block_titles[$i] == '--')
+			{
+				$switch_column = true;
+				$found_switch = true;
+				continue;
+			}
+
+			$this->template->assign_block_vars('faq_block', array(
+				'BLOCK_TITLE'		=> $faq_block_titles[$i],
+				'SWITCH_COLUMN'		=> $switch_column)
+			);
+		}
+		else		
+		{		
+			$template->assign_block_vars('faq_block', array(
+				'BLOCK_TITLE' 		=> $faq_block_titles[$i],
+				'SWITCH_COLUMN'		=> $switch_column)
+			);
+		}		
+		
 		$template->assign_block_vars('faq_block_link', array( 
 			'BLOCK_TITLE' => $faq_block_titles[$i])
 		);
@@ -126,20 +147,24 @@ for($i = 0; $i < count($faq_block); $i++)
 			$template->assign_block_vars('faq_block.faq_row', array(
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
-				'FAQ_QUESTION' => $faq_block[$i][$j]['question'], 
-				'FAQ_ANSWER' => $faq_block[$i][$j]['answer'], 
+				
+				'FAQ_QUESTION'	=> $faq_block[$i][$j]['question'], 
+				'FAQ_ANSWER'	=> $faq_block[$i][$j]['answer'], 
 
-				'U_FAQ_ID' => $faq_block[$i][$j]['id'])
+				'U_FAQ_ID'		=> $faq_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
 				'ROW_COLOR' => '#' . $row_color,
 				'ROW_CLASS' => $row_class,
-				'FAQ_LINK' => $faq_block[$i][$j]['question'], 
+				
+				'FAQ_LINK'		=> $faq_block[$i][$j]['question'], 
 
-				'U_FAQ_LINK' => '#' . $faq_block[$i][$j]['id'])
+				'U_FAQ_LINK'	=> '#' . $faq_block[$i][$j]['id'],
+				'S_DISPLAY_JUMPBOX' =>  true)
 			);
 		}
+		$template->assign_var('SWITCH_COLUMN_MANUALLY', !$found_switch);		
 	}
 }
 

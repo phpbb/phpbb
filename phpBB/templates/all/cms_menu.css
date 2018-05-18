@@ -1,0 +1,174 @@
+/* STYLE DD MENU - BEGIN */
+/* Horizontal Menu Position */
+#horiz-menu {
+	height: 46px;
+	width: 100%;
+}
+
+#horiz-menu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	float: right;
+}
+
+#horiz-menu li {
+	display: block;
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+
+#horiz-menu a,
+#horiz-menu li.active a {
+	white-space: nowrap;
+	display: block;
+	float: left;
+	height: 46px;
+	line-height: 46px;
+	padding: 0 17px;
+	font-weight: normal;
+	font-size: 100%;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+#horiz-menu ul ul li a,
+#horiz-menu ul li.active.parent ul a {
+	padding-left: 5px;
+}
+
+#horiz-menu ul ul li a:hover,
+#horiz-menu ul li.active.parent ul a:hover {
+	padding-left: 5px;
+	/*background: url('images/dropdown-arrow-over.png') 10px 50% no-repeat;*/
+	color: #ffffff;
+}
+
+/* Horizontal Menu */
+.menutop, .menutop * {
+	margin: 0;
+	padding: 0;
+}
+
+div#horiz-menu {
+/* this is a z-index ie6 and ie7 bug fix */
+	z-index: 50;
+	/* This has to be verified to be working fine in every browser */
+	/*position: relative;*/
+	position: static;
+}
+
+#horiz-menu li li {
+	margin: 0;
+}
+
+.menutop {
+	line-height: 1.0;
+	float: left;
+	margin-bottom: 1.5em;
+	position: relative;
+}
+
+.menutop ul {
+	background: #ffffff;
+	/*IE6 needs this*/
+	padding: 0;
+}
+
+.menutop li {
+	float: left;
+	list-style: none;
+	position: relative;
+}
+
+div#horiz-menu li li a, div#horiz-menu li.active li a {
+	display: block;
+	padding: 0;
+	margin: 0;
+	text-decoration: none;
+	float: none;
+	height: 26px;
+	line-height: 30px;
+	text-indent: 18px;
+	width: 98%;
+}
+
+.menutop li ul {
+	float: none;
+	left: -999em;
+	position: absolute;
+	width: 177px;
+	z-index: 5;
+}
+
+.menutop li:hover ul,
+.menutop li.sfHover ul {
+	left: 0px;
+	top: 45px;
+}
+
+.menutop li:hover li ul,
+.menutop li.sfHover li ul,
+.menutop li li:hover li ul,
+.menutop li li.sfHover li ul,
+.menutop li li li:hover li ul,
+.menutop li li li.sfHover li ul {
+	top: -999em;
+}
+
+.menutop li li:hover ul,
+.menutop li li.sfHover ul,
+.menutop li li li:hover ul,
+.menutop li li li.sfHover ul,
+.menutop li li li li:hover ul,
+.menutop li li li li.sfHover ul {
+	left: 177px;
+	top: 0px;
+}
+
+.menutop li li {
+	position: relative;
+	float: none;
+	width: 100%;
+}
+
+/* Horizontal Menu Colors */
+#horiz-menu {
+	/*background: url('images/horiz-menu-bg.png') 0 0 repeat-x;*/
+}
+
+#horiz-menu ul ul {
+	background: #ffffff;
+	border-left: 1px solid #000000;
+	border-right: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+}
+
+#horiz-menu ul ul ul {
+	border-top: 1px solid #000000;
+}
+
+#horiz-menu li a {
+	/*background: url('images/horiz-menu-div.png') 100% 50% no-repeat;*/
+}
+
+#horiz-menu a,
+#horiz-menu li.active a {
+	color: #000000;
+}
+
+#horiz-menu li.active a {
+	color: #000000;
+}
+
+#horiz-menu a:hover {
+	color: #000000;
+}
+
+#horiz-menu ul ul li a,
+#horiz-menu ul li.active.parent ul a {
+	/*background: url('images/dropdown-arrow.png') 10px 50% no-repeat;*/
+	color: #000000;
+}
+/* STYLE DD MENU - END */

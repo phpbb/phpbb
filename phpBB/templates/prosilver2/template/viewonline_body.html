@@ -1,0 +1,69 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+					<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<h2>{TOTAL_REGISTERED_USERS_ONLINE}</h2>
+<p>{TOTAL_GUEST_USERS_ONLINE}</p>
+<div class="forumbg">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	
+	<table class="table1" cellspacing="1">
+		<thead>
+		<tr>
+			<th class="name">{L_USERNAME}</th>
+			<th class="info">{L_FORUM_LOCATION}</th>
+			<th class="active">{L_LAST_UPDATE}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- BEGIN reg_user_row -->
+		<tr class="bg1">
+			<td><a href="{reg_user_row.U_USER_PROFILE}" class="title">{reg_user_row.USERNAME}</a></td>
+			<td class="info"><a href="{reg_user_row.U_FORUM_LOCATION}">{reg_user_row.FORUM_LOCATION}</a></td>
+			<td class="active">{reg_user_row.LASTUPDATE}</td>
+		</tr>
+		<!-- END reg_user_row -->
+		<!-- BEGIN guest_user_row -->
+		<tr class="bg1">
+			<td>{guest_user_row.USERNAME}</td>
+			<td class="info"><a href="{guest_user_row.U_FORUM_LOCATION}">{guest_user_row.FORUM_LOCATION}</a></td>
+			<td class="active">{guest_user_row.LASTUPDATE}</td>
+		</tr>
+		<!-- END guest_user_row -->
+	</tbody>
+	</table>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+{JUMPBOX}
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>

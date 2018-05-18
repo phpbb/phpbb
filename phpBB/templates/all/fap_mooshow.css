@@ -1,0 +1,141 @@
+/* MooShow - BEGIN */
+/* mooShow 0.01 beta CSS Document */
+
+.mooshow a img {
+	border: none;
+	outline: none;
+	-moz-outline: none;
+}
+
+.mooshow_outerContainer{
+	position: relative;
+	background-color: #ffffff;
+	color: inherit;
+	width: 20px;
+	height: 1px;
+	margin: 0 auto;
+	display: table;
+}
+
+.dropShadowBorder {
+	border-top: 1px solid #ffffff;
+	border-right: 1px solid #cccccc;
+	border-left: 1px solid #ffffff;
+	border-bottom: 1px solid #cccccc;
+}
+
+.mooshow {
+	position: inherit;
+	display: none;
+}
+
+.mooshow_loading{
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: none;
+	/*
+	text-align: center;
+	vertical-align: middle;
+	*/
+}
+
+.mooshow_copyright{
+	position: absolute;
+	top: 15px;
+	right: 10px;
+	color: #cccccc;
+	font-size: 9px;
+}
+
+.mooshow_extras{
+	margin: 0 auto;
+	text-align: left;
+	color: #666666;
+	background-color: inherit;
+}
+
+.mooshow_topNav{
+	padding-top: 5px;
+	padding-bottom: 15px;
+	text-align: left;
+	font-size: 8px;
+	background-color: inherit;
+	color: #cccccc;
+	line-height: 170%;
+	width: 100%;
+}
+
+.mooshow_captions{
+	background-color: #ffffff;
+	color: #999999;
+	margin: 0 auto;
+	text-align: left;
+	line-height: 140%;
+	height: 35px;
+	width: 100%;
+}
+
+.mooshow_contentContainer{
+	background-color: #666666;
+	color: inherit;
+	position: relative;
+	text-align: center;
+	line-height: 0.0;
+}
+
+.mooshow_overlayNav{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	margin: 0 auto;
+}
+
+.mooshow_prevLink, .mooshow_nextLink{
+	width: 30%;
+	height: 100%;
+	background: transparent url('../../images/album/fap_blank.gif') no-repeat; /* Trick IE into showing hover */
+	outline: none;
+}
+
+.mooshow_prevLink { left: 0; float: left; outline: none; -moz-outline: none;}
+.mooshow_nextLink { right: 0; float: right; outline: none; -moz-outline: none;}
+.mooshow_prevLink:hover, .mooshow_prevLink:visited:hover { background: url('../../images/album/fap_prev.gif') left 100% no-repeat; }
+.mooshow_nextLink:hover, .mooshow_nextLink:visited:hover { background: url('../../images/album/fap_next.gif') right 100% no-repeat; }
+
+.mooshow_IPTC{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: auto;
+	background-color: #000;
+	color: #cccccc;
+	font-size: 9px;
+	line-height: 140%;
+	text-align: left;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+	display: none;
+}
+
+.mooshow_IPTCbutton{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.mooshow_IPTC_left{
+	float: left;
+	text-align: right;
+	width: 18%;
+}
+
+.mooshow_IPTC_right{
+	float: right;
+	text-align: left;
+	width: 80%;
+}
+/* MooShow - END */
+

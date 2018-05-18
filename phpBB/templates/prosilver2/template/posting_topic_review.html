@@ -1,0 +1,18 @@
+<h3><span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == ''){rev_text.data = ''; } else if (rev_text.data == ''){rev_text.data = ''};"><strong>+ / -</strong></a></span>{L_TOPIC_REVIEW}</h3>
+<div id="topicreview">
+<!-- BEGIN postrow -->
+<div class="post {postrow.ROW_CLASS}">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="postbody">
+		<h3>{postrow.POST_SUBJECT}</h3>
+		<p class="author"><img src="{postrow.MINI_POST_IMG}" alt="{postrow.L_MINI_POST_ALT}" title="{postrow.L_MINI_POST_ALT}" /> {L_POST_BY_AUTHOR}<strong>  {postrow.POSTER_NAME}</strong> {L_POSTED_ON_DATE} {postrow.POST_DATE}</p>
+		<div class="content">
+			{postrow.MESSAGE}
+		</div>
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<!-- END postrow -->
+</div>
+<hr />
+<p><a href="#postingbox" class="top2">&nbsp;</a></p>

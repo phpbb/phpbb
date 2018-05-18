@@ -1,0 +1,250 @@
+/* Button Styles
+---------------------------------------- */
+
+.button {
+	cursor: pointer;
+	display: inline-block;
+	height: 18px;
+	font-size: 1.2em;
+	white-space: nowrap;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	background: transparent none 0 0 repeat-x;
+	padding: 2px 8px;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	position: relative;
+	text-decoration: none !important;
+	outline-style: none !important;
+	vertical-align: bottom;
+}
+
+.dropdown-select {
+	padding-right: 24px;
+}
+
+.icon-button:before {
+	background: transparent 0 0 no-repeat;
+	content: '';
+	display: inline-block;
+	float: right;
+	height: 12px;
+	margin: 3px 0 0 2px;
+	width: 12px;
+}
+
+.dropdown-select.icon-button:before {
+	margin-right: 4px;
+}
+
+.dropdown-select:after {
+	background-position: -103px 10px;
+	border-left: 1px solid;
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 22px;
+	width: 16px;
+}
+
+.dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
+	background-position: -103px -10px;
+}
+
+.buttons, .buttons .button {
+	float: left;
+}
+
+.buttons .button, .dropdown-select {
+	margin-right: 5px;
+}
+
+#jumpbox .dropdown-select {
+	margin: 0;
+}
+
+/* Big button images */
+.reply-icon:before, .pmreply-icon:before					{ background-position: -20px 0; }
+.reply-icon:hover:before, .pmreply-icon:hover:before		{ background-position: -20px -20px; }
+
+.post-icon:before, .newpm-icon:before, .reply-all:before	{ background-position: 0 0; }
+.post-icon:hover:before,
+.newpm-icon:hover:before,
+.reply-all:hover:before										{ background-position: 0 -20px; }
+
+.locked-icon:before											{ background-position: -60px 0; }
+.locked-icon:hover:before									{ background-position: -60px -20px; }
+
+.forwardpm-icon:before										{ background-position: -40px 0; }
+.forwardpm-icon:hover:before								{ background-position: -40px -20px; }
+
+.modtools-icon {
+	font-size: 0;
+}
+
+.tools-icon:before, .modtools-icon:before, .search-icon:before, .search-adv-icon:before {
+	background-position: -80px 0;
+	height: 16px;
+	margin-top: 2px;
+	width: 16px;
+}
+
+.dropdown-visible .tools-icon:before,
+.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+
+.search-icon:before											{ background-position: -245px 0; }
+.search-icon:hover:before									{ background-position: -245px -20px; }
+
+.search-adv-icon:before										{ background-position: -265px 0; }
+.search-adv-icon:hover:before								{ background-position: -265px -20px; }
+
+.modtools-icon:before										{ background-position: -225px 0; }
+.dropdown-visible .modtools-icon:before,
+.nojs .dropdown-container:hover .modtools-icon:before		{ background-position: -225px -20px; }
+
+/* Icon images
+---------------------------------------- */
+.small-icon {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+}
+
+.small-icon > a {
+	display: inline-block;
+	padding: 0 0 0 18px;
+}
+
+ul.linklist.bulletin > li.small-icon:before {
+	display: none;
+}
+
+.dropdown .small-icon > a {
+	display: block;
+}
+
+/* Poster contact icons
+----------------------------------------*/
+.contact-icons.dropdown-contents {
+	min-width: 0;
+	padding: 0;
+	font-size: 0;
+}
+
+.contact-icon {
+	background-repeat: no-repeat;
+	display: block;
+	height: 16px;
+	width: 16px;
+}
+.contact-icons a {
+	border-bottom: 1px dotted;
+	border-right: 1px dotted;
+	display: block;
+	float: left;
+	padding: 8px;
+}
+
+.contact-icons .last-cell {
+	border-right: none;
+}
+
+.contact-icons div:last-child a {
+	border-bottom: none;
+}
+
+.contact-icons div {
+	clear: left;
+}
+
+/* Profile icons */
+.pm-icon		{ background-position: 0 0; }
+.email-icon		{ background-position: -21px 0; }
+.jabber-icon	{ background-position: -80px 0; }
+.phpbb_icq-icon	{ background-position: -61px 0 ; }
+.phpbb_wlm-icon	{ background-position: -182px 0; }
+.phpbb_aol-icon	{ background-position: -244px 0; }
+.phpbb_website-icon		{ background-position: -40px 0; }
+.phpbb_youtube-icon		{ background-position: -98px 0; }
+.phpbb_facebook-icon	{ background-position: -119px 0; }
+.phpbb_googleplus-icon	{ background-position: -140px 0; }
+.phpbb_skype-icon		{ background-position: -161px 0; }
+.phpbb_twitter-icon		{ background-position: -203px 0; }
+.phpbb_yahoo-icon		{ background-position: -224px 0; }
+
+/* Post control buttons
+--------------------------------------------- */
+.post-buttons {
+	float: right;
+	list-style: none;
+	margin-top: 2px;
+}
+
+.has-profile .post-buttons {
+	float: none;
+	position: absolute;
+	margin: 0;
+	right: 0;
+	top: 5px;
+}
+
+.post-buttons > li {
+	float: left;
+	margin-right: 3px;
+}
+
+.post-buttons .icon-button {
+	padding: 0 5px;
+}
+
+.hastouch .post-buttons .icon-button {
+	padding: 2px 8px;
+}
+
+.post-buttons .icon-button span {
+	display: block;
+	height: 0;
+	overflow: hidden;
+	position: absolute;
+	width: 1px;
+}
+
+.post-buttons .icon-button:before {
+	margin-left: 0;
+}
+
+.quote-icon:before							{ background-position: -122px 0; }
+.quote-icon:hover:before					{ background-position: -122px -21px; }
+.edit-icon:before							{ background-position: -137px 0; }
+.edit-icon:hover:before						{ background-position: -137px -21px; }
+.warn-icon:before							{ background-position: -208px 0; }
+.warn-icon:hover:before						{ background-position: -208px -21px; }
+.delete-icon:before							{ background-position: -152px 0; }
+.delete-icon:hover:before					{ background-position: -152px -21px; }
+.report-icon:before							{ background-position: -165px 0; }
+.report-icon:hover:before					{ background-position: -165px -21px; }
+.info-icon:before							{ background-position: -175px 0; }
+.info-icon:hover:before						{ background-position: -175px -21px; }
+.button.responsive-menu-link:before			{ background-position: -191px 0; }
+.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
+
+/* Responsive buttons in post body */
+.post-buttons .dropdown {
+	top: 18px;
+}
+
+.post-buttons .dropdown a {
+	display: block;
+	font-size: 1.2em;
+	text-align: right;
+}
+
+.hasjs .postbody .post-buttons {
+	max-width: 40%;
+}
+
+/* Browser-specific tweaks */
+button::-moz-focus-inner {
+	padding: 0;
+	border: 0
+}

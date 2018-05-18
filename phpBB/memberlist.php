@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: memberlist.php,v 1.1 2010/10/10 15:01:18 orynider Exp $
  *
  ***************************************************************************/
 
@@ -33,25 +33,25 @@ init_userprefs($userdata);
 // End session management
 //
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
-if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
+if ( isset($_GET['mode']) || isset($_POST['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? htmlspecialchars($HTTP_POST_VARS['mode']) : htmlspecialchars($HTTP_GET_VARS['mode']);
+	$mode = ( isset($_POST['mode']) ) ? htmlspecialchars($_POST['mode']) : htmlspecialchars($_GET['mode']);
 }
 else
 {
 	$mode = 'joined';
 }
 
-if(isset($HTTP_POST_VARS['order']))
+if(isset($_POST['order']))
 {
-	$sort_order = ($HTTP_POST_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
+	$sort_order = ($_POST['order'] == 'ASC') ? 'ASC' : 'DESC';
 }
-else if(isset($HTTP_GET_VARS['order']))
+else if(isset($_GET['order']))
 {
-	$sort_order = ($HTTP_GET_VARS['order'] == 'ASC') ? 'ASC' : 'DESC';
+	$sort_order = ($_GET['order'] == 'ASC') ? 'ASC' : 'DESC';
 }
 else
 {

@@ -1,0 +1,77 @@
+##############################################################
+## MOD Title: Simple Subforums MOD
+## MOD Author: pentapenguin < n/a > (Jeremy Conley) http://www.pentapenguin.com
+## MOD Author: CyberAlien <n/a> (Vjacheslav Trushkin) http://www.phpbbstyles.com
+## MOD Description: This MOD is a simple subforums MOD that doesn't include any extras and makes only
+## one small database change. It supports only one level deep subforums that should be enough for most forums.
+## MOD Version: 1.0.2
+##
+## Installation Level: Easy
+## Installation Time: 2 Minutes
+##
+## Files To Edit: 1
+## admin/admin_forums.php
+##
+## Included Files: 1
+## contrib/admin/xs_simple_subforums.cfg
+##
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes:
+##
+## This is an update from version 1.0.1 to 1.0.2
+##
+##############################################################
+## MOD History:
+##
+##	2006-08-27 - Version 1.0.2
+##		- Updated MOD to be compatible with phpBB 2.0.21
+##		- Added MODX installation file
+##		- Fixed small bug in admin/admin_forums.php
+##
+##	2005-12-11 - Version 1.0.1
+##		- Fixed security bug
+##	
+##	2005-10-30 - Version 1.0.0
+##		- Initial Release
+##
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
+##############################################################
+
+
+#
+#-----[ COPY ]------------------------------------------
+#
+copy contrib/admin/xs_simple_subforums.cfg to admin/xs_simple_subforums.cfg
+
+
+#
+#-----[ OPEN ]------------------------------------------
+#
+admin/admin_forums.php
+
+
+#
+#-----[ FIND ]------------------------------------------
+#
+					$sql = "UPDATE " . FORUMS_TABLE . " SET forum_order = '" . $forum_info['forum_order'] . "' WHERE forum_id = '" . $row['forum_id'];
+
+
+#
+#-----[ REPLACE WITH ]------------------------------------------
+#
+					$sql = "UPDATE " . FORUMS_TABLE . " SET forum_order = '" . $forum_info['forum_order'] . "' WHERE forum_id = " . $row['forum_id'];
+
+
+#
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------
+#
+# EoM

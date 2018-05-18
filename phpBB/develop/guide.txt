@@ -1,0 +1,992 @@
+######################################################## 
+## 
+## Name: prosilver
+## Version: 1.0.3
+## Released: 7 December 2007
+## phpBB Version: 2.0.22
+## 
+## Author: Meow (http://chita.us)
+## Designer: subBlue (http://www.subblue.com)
+## 
+## Description: Make your phpBB2 look like phpBB3.
+## 
+## Installation Level: Medium
+## Installation Time: 30 minutes 
+## Files To Edit: 10
+## includes/functions.php
+## includes/page_header.php
+## index.php
+## language/lang_english/lang_bbcode.php
+## language/lang_english/lang_main.php
+## posting.php
+## privmsg.php
+## search.php
+## viewforum.php
+## viewtopic.php
+## 
+############################################################## 
+## Before adding this style to your forum, you should back up 
+## all files related to this style 
+##############################################################
+# 
+#-----[ COPY ]------------------------------------------ 
+# 
+prosilver/ to templates/
+
+(If you don't want to edit them by an editor and 30 min.)
+functions.php to includes/functions.php
+page_header.php to includes/page_header.php
+index.php
+lang_bbcode.php to language/lang_english/lang_bbcode.php
+lang_main.php to language/lang_english/lang_main.php
+posting.php
+privmsg.php
+search.php
+viewforum.php
+viewtopic.php
+(If you don't want to edit them by an editor and 30 min.)
+# 
+#-----[ OPEN ]------------------------------------------ 
+#
+includes/functions.php
+# 
+#-----[ FIND, LINE 576 ]------------------------------------------ 
+#
+			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $init_page_max )
+			{
+				$page_string .= ", ";
+			}
+		}
+
+		if ( $total_pages > 3 )
+		{
+			if ( $on_page > 1  && $on_page < $total_pages )
+			{
+				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
+
+				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
+				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
+
+				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
+				{
+					$page_string .= ($i == $on_page) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					if ( $i <  $init_page_max + 1 )
+					{
+						$page_string .= ', ';
+					}
+				}
+
+				$page_string .= ( $on_page < $total_pages - 4 ) ? ' ... ' : ', ';
+			}
+			else
+			{
+				$page_string .= ' ... ';
+			}
+
+			for($i = $total_pages - 2; $i < $total_pages + 1; $i++)
+			{
+				$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				if( $i <  $total_pages )
+				{
+					$page_string .= ", ";
+				}
+			}
+		}
+	}
+	else
+	{
+		for($i = 1; $i < $total_pages + 1; $i++)
+		{
+			$page_string .= ( $i == $on_page ) ? '<b>' . $i . '</b>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $total_pages )
+			{
+				$page_string .= ', ';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$page_string .= ( $i == $on_page ) ? '<strong>' . $i . '</strong>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $init_page_max )
+			{
+				$page_string .= "";
+			}
+		}
+
+		if ( $total_pages > 3 )
+		{
+			if ( $on_page > 1  && $on_page < $total_pages )
+			{
+				$page_string .= ( $on_page > 5 ) ? ' ... ' : ', ';
+
+				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
+				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
+
+				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
+				{
+					$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+					if ( $i <  $init_page_max + 1 )
+					{
+						$page_string .= '';
+					}
+				}
+
+				$page_string .= ( $on_page < $total_pages - 4 ) ? ' ... ' : ', ';
+			}
+			else
+			{
+				$page_string .= ' ... ';
+			}
+
+			for($i = $total_pages - 2; $i < $total_pages + 1; $i++)
+			{
+				$page_string .= ( $i == $on_page ) ? '<strong>' . $i . '</strong>'  : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+				if( $i <  $total_pages )
+				{
+					$page_string .= "";
+				}
+			}
+		}
+	}
+	else
+	{
+		for($i = 1; $i < $total_pages + 1; $i++)
+		{
+			$page_string .= ( $i == $on_page ) ? '<strong>' . $i . '</strong>' : '<a href="' . append_sid($base_url . "&amp;start=" . ( ( $i - 1 ) * $per_page ) ) . '">' . $i . '</a>';
+			if ( $i <  $total_pages )
+			{
+				$page_string .= '';
+# 
+#-----[ OPEN ]------------------------------------------ 
+#
+includes/page_header.php
+# 
+#-----[ FIND, LINE 339 ]------------------------------------------ 
+#
+// Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+$img_lang = $board_config['default_lang'];
+
+# 
+#-----[ FIND, LINE 349 ]------------------------------------------ 
+#
+	'PAGE_TITLE' => $page_title,
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+	'LANG' => $img_lang,
+# 
+#-----[ FIND, LINE 380 ]------------------------------------------ 
+#
+	'L_WHOSONLINE_MOD' => sprintf($lang['Mod_online_color'], '<span style="color:#' . $theme['fontcolor2'] . '">', '</span>'),
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+	'L_POST_BY_AUTHOR' => $lang['Post_by_author'],
+	'L_POSTED_ON_DATE' => $lang['Posted_on_date'],
+	'L_IN' => $lang['In'],
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+index.php
+# 
+#-----[ FIND, LINE 278 ]------------------------------------------ 
+#
+		'TOTAL_POSTS' => sprintf($l_total_post_s, $total_posts),
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+		'L_STATISTICS' => $lang['Statistics'],
+		'L_LEGEND' => $lang['Legend'],
+# 
+#-----[ FIND, LINE 409 ]------------------------------------------ 
+#
+								$last_post = $last_post_time . '<br />';
+
+								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != '' ) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
+								
+								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" border="0" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+								$last_post = $lang['Posted_on_date'] . '&nbsp;' . $last_post_time . '<br />';
+
+								$last_post .= ( $forum_data[$j]['user_id'] == ANONYMOUS ) ? ( ($forum_data[$j]['post_username'] != '' ) ? $forum_data[$j]['post_username'] . ' ' : $lang['Guest'] . ' ' ) : $lang['Post_by_author'] . '&nbsp;<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $forum_data[$j]['user_id']) . '">' . $forum_data[$j]['username'] . '</a> ';
+								
+								$last_post .= '<a href="' . append_sid("viewtopic.$phpEx?"  . POST_POST_URL . '=' . $forum_data[$j]['forum_last_post_id']) . '#' . $forum_data[$j]['forum_last_post_id'] . '"><img src="' . $images['icon_latest_reply'] . '" alt="' . $lang['View_latest_post'] . '" title="' . $lang['View_latest_post'] . '" /></a>';
+# 
+#-----[ OPEN ]------------------------------------------ 
+#
+language/lang_english/lang_bbcode.php
+# 
+#-----[ FIND, LINE 66 WITHIN ]------------------------------------------ 
+#
+<img src=\"templates/subSilver/images/logo_phpBB_med.gif\" border=\"0\" alt=\"\" />
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+<img src=\"templates/prosilver/images/phpbb_logo.gif\" alt=\"\" />
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+language/lang_english/lang_main.php
+# 
+#-----[ FIND, LINE 93 ]------------------------------------------ 
+#
+$lang['Goto_page'] = 'Goto page';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$lang['Goto_page'] = '';
+# 
+#-----[ FIND, LINE 164 ]------------------------------------------ 
+#
+$lang['Moderators'] = 'Moderators';
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+
+$lang['Post_by_author'] = 'by';
+$lang['Posted_on_date'] = 'on';
+$lang['In'] = 'in';
+# 
+#-----[ FIND, LINE 170 ]------------------------------------------ 
+#
+$lang['Posted_articles_zero_total'] = 'Our users have posted a total of <b>0</b> articles'; // Number of posts
+$lang['Posted_articles_total'] = 'Our users have posted a total of <b>%d</b> articles'; // Number of posts
+$lang['Posted_article_total'] = 'Our users have posted a total of <b>%d</b> article'; // Number of posts
+$lang['Registered_users_zero_total'] = 'We have <b>0</b> registered users'; // # registered users
+$lang['Registered_users_total'] = 'We have <b>%d</b> registered users'; // # registered users
+$lang['Registered_user_total'] = 'We have <b>%d</b> registered user'; // # registered users
+$lang['Newest_user'] = 'The newest registered user is <b>%s%s%s</b>'; // a href, username, /a 
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$lang['Statistics'] = 'Statistics';
+$lang['Legend'] = 'Legend: ';
+$lang['Posted_articles_zero_total'] = 'No post'; // Number of posts
+$lang['Posted_articles_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Posted_article_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Registered_users_zero_total'] = 'No member'; // # registered users
+$lang['Registered_users_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Registered_user_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Newest_user'] = 'Our newest member <strong>%s%s%s</strong>'; // a href, username, /a 
+# 
+#-----[ FIND, LINE 247 ]------------------------------------------ 
+#
+$lang['Rules_moderate'] = 'You <b>can</b> %smoderate this forum%s'; // %s replaced by a href links, do not remove! 
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$lang['Rules_moderate'] = '%sModerate this forum%s'; // %s replaced by a href links, do not remove!
+# 
+#-----[ FIND, LINE 290 ]------------------------------------------ 
+#
+$lang['Lock_topic'] = 'Lock this topic';
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+$lang['Quick_mod'] = 'Quick-mod tools:';
+# 
+#-----[ FIND, LINE 764 ]------------------------------------------ 
+#
+$lang['Search_for_all'] = 'Search for all terms';
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+$lang['Search_forums'] = 'Search within';
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+posting.php
+# 
+#-----[ FIND, LINE 719 ]------------------------------------------ 
+#
+			$preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$preview_message = $preview_message . '<div class="signature">' . $user_sig . '</div>';
+#-----[ OPEN ]------------------------------------------ 
+# 
+privmsg.php
+# 
+#-----[ FIND, LINE 122 ]------------------------------------------ 
+#
+$inbox_url = ( $folder != 'inbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a>' : $lang['Inbox'];
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$inbox_url = ( $folder != 'inbox' ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=inbox") . '">' . $lang['Inbox'] . '</a></li>';
+# 
+#-----[ FIND, LINE 125 ]------------------------------------------ 
+#
+$outbox_url = ( $folder != 'outbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a>' : $lang['Outbox'];
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$outbox_url = ( $folder != 'outbox' || $mode != '' ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=outbox") . '">' . $lang['Outbox'] . '</a></li>';
+# 
+#-----[ FIND, LINE 128 ]------------------------------------------ 
+#
+$sentbox_url = ( $folder != 'sentbox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a>' : $lang['Sentbox'];
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$sentbox_url = ( $folder != 'sentbox' || $mode != '' ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=sentbox") . '">' . $lang['Sentbox'] . '</a></li>';
+# 
+#-----[ FIND, LINE 131 ]------------------------------------------ 
+#
+$savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a>' : $lang['Savebox'];
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$savebox_url = ( $folder != 'savebox' || $mode != '' ) ? '<li><a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a></li>' : '<li id="active-subsection' . '">' . '<a href="' . append_sid("privmsg.$phpEx?folder=savebox") . '">' . $lang['Savebox'] . '</a></li>';
+# 
+#-----[ FIND, LINE 231 ]------------------------------------------ 
+#
+	$sql = "SELECT u.username AS username_1, u.user_id AS user_id_1, u2.username AS username_2, u2.user_id AS user_id_2, u.user_sig_bbcode_uid, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_avatar, pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$sql = "SELECT u.username AS username_1, u.user_id AS user_id_1, u2.username AS username_2, u2.user_id AS user_id_2, u.user_sig_bbcode_uid, u.user_regdate AS user_regdate1,u.user_posts AS user_posts1, u.user_from AS user_from1, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_msnm, u.user_viewemail, u.user_rank AS user_rank1, u.user_sig, u.user_avatar AS user_avatar1,u.user_avatar_type AS user_avatar_type1, pm.*, pmt.privmsgs_bbcode_uid, pmt.privmsgs_text
+# 
+#-----[ FIND, LINE 364 ]------------------------------------------ 
+#
+		'reply' => '<a href="' . $post_urls['reply'] . '">' . $lang['Post_reply_pm'] . '</a>',
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		'reply' => '<div class="pmreply-icon">' . '<a href="' . $post_urls['reply'] . '" title=' . '"' . $lang['Post_reply_pm'] . '">' . '</a></div>',
+# 
+#-----[ FIND, LINE 366 ]------------------------------------------ 
+#
+		'quote' => '<a href="' . $post_urls['quote'] . '">' . $lang['Post_quote_pm'] . '</a>',
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		'quote' => '<li class="' . 'quote-icon' . '">' . '<a href="' . $post_urls['quote'] . '" title=' . '"' . $lang['Post_quote_pm'] . '">' . '</a></li>',
+# 
+#-----[ FIND, LINE 368 ]------------------------------------------ 
+#
+		'edit' => '<a href="' . $post_urls['edit'] . '">' . $lang['Edit_pm'] . '</a>'
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		'edit' => '<li class="' . 'edit-icon' . '">' . '<a href="' . $post_urls['edit'] . '" title=' . '"' . $lang['Edit_pm'] . '">' . '</a></li>'
+# 
+#-----[ FIND, LINE 383 ]------------------------------------------ 
+#
+	else if ( $folder == 'outbox' )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = $post_icons['edit_img'];
+		$post = $post_icons['post'];
+		$reply = '';
+		$quote = '';
+		$edit = $post_icons['edit'];
+		$l_box_name = $lang['Outbox'];
+	}
+	else if ( $folder == 'savebox' )
+	{
+		if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL )
+		{
+			$post_img = $post_icons['post_img'];
+			$reply_img = $post_icons['reply_img'];
+			$quote_img = $post_icons['quote_img'];
+			$edit_img = '';
+			$post = $post_icons['post'];
+			$reply = $post_icons['reply'];
+			$quote = $post_icons['quote'];
+			$edit = '';
+		}
+		else
+		{
+			$post_img = $post_icons['post_img'];
+			$reply_img = '';
+			$quote_img = '';
+			$edit_img = '';
+			$post = $post_icons['post'];
+			$reply = '';
+			$quote = '';
+			$edit = '';
+		}
+		$l_box_name = $lang['Saved'];
+	}
+	else if ( $folder == 'sentbox' )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = '';
+		$quote = '';
+		$edit = '';
+		$l_box_name = $lang['Sent'];
+	}
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	else if ( $folder == 'outbox' )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = $post_icons['edit_img'];
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = '';
+		$edit = $post_icons['edit'];
+		$l_box_name = $lang['Outbox'];
+	}
+	else if ( $folder == 'savebox' )
+	{
+	if ( $privmsg['privmsgs_type'] == PRIVMSGS_SAVED_IN_MAIL )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = $post_icons['quote_img'];
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = $post_icons['quote'];
+		$edit = '';
+	}
+	else
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = '';
+		$edit = '';
+	}
+		$l_box_name = $lang['Saved'];
+	}
+	else if ( $folder == 'sentbox' )
+	{
+		$post_img = $post_icons['post_img'];
+		$reply_img = '';
+		$quote_img = '';
+		$edit_img = '';
+		$post = $post_icons['post'];
+		$reply = $post_icons['reply'];
+		$quote = '';
+		$edit = '';
+		$l_box_name = $lang['Sent'];
+	}
+# 
+#-----[ FIND, LINE 500 ]------------------------------------------ 
+#
+	$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$pm = '<li class="' . 'pm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Send_private_message'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 507 ]------------------------------------------ 
+#
+		$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$email = '<li class="' . 'email-icon' . '">' . '<a href="' . $email_uri . '" title=' . '"' . $lang['Send_email'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 516 ]------------------------------------------ 
+#
+	$www = ( $privmsg['user_website'] ) ? '<a href="' . $privmsg['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$www = ( $privmsg['user_website'] ) ? '<li class="' . 'web-icon' . '">' . '<a href="' . $privmsg['user_website'] . '" title=' . '"' . $lang['Visit_website'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 522 ]------------------------------------------ 
+#
+		$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$icq = '<li class="' . 'icq-icon' . '">' . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $privmsg['user_icq'] . '" title=' . '"' . $lang['ICQ'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 532 ]------------------------------------------ 
+#
+	$aim = ( $privmsg['user_aim'] ) ? '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$aim = ( $privmsg['user_aim'] ) ? '<li class="' . 'aim-icon' . '">' . '<a href="aim:goim?screenname=' . $privmsg['user_aim'] . '&amp;message=Hello+Are+you+there?" title=' . '"' . $lang['AIM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 536 ]------------------------------------------ 
+#
+	$msn = ( $privmsg['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$msn = ( $privmsg['user_msnm'] ) ? '<li class="' . 'msnm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['MSNM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 539 ]------------------------------------------ 
+#
+	$yim = ( $privmsg['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$yim = ( $privmsg['user_yim'] ) ? '<li class="' . 'yahoo-icon' . '">' . '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $privmsg['user_yim'] . '&amp;.src=pg" title=' . '"' . $lang['YIM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 595 ]------------------------------------------ 
+#
+		$private_message .= '<br /><br />_________________<br />' . make_clickable($user_sig);
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$private_message .= '</div><div class="signature">' . make_clickable($user_sig);
+# 
+#-----[ FIND, LINE 615 ]------------------------------------------ 
+#
+	//
+	// Dump it to the templating engine
+	//
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+	//
+	//View poster body PM(rank username, avatar, number of posts, joined, location)
+	//
+	$sql = "SELECT *
+	FROM " . RANKS_TABLE . "
+	ORDER BY rank_special, rank_min";
+	if ( !($result = $db->sql_query($sql)) )
+	{
+	message_die(GENERAL_ERROR, "Could not obtain ranks information.", '', __LINE__, __FILE__, $sql);
+	}
+
+	$ranksrow = array();
+	while ( $row = $db->sql_fetchrow($result) )
+	{
+	$ranksrow[] = $row;
+	}
+	$db->sql_freeresult($result);
+	//
+	// Generate ranks, set them to empty string initially.
+	//
+	$poster_rank = '';
+	$rank_image = '';
+	if ( $privmsg['user_rank1'] )
+	{
+		for($j = 0; $j < count($ranksrow); $j++)
+		{
+		if ( $privmsg['user_rank1'] == $ranksrow[$j]['rank_id'] && $ranksrow[$j]['rank_special'] )
+		{
+		$poster_rank = $ranksrow[$j]['rank_title'];
+		$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '</dd><dd><img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title="' . $poster_rank . '" />' : '';
+		}
+		}
+	}
+	else
+	{
+		for($j = 0; $j < count($ranksrow); $j++)
+		{
+		if ( $privmsg['user_posts1'] >= $ranksrow[$j]['rank_min'] && !$ranksrow[$j]['rank_special'] )
+		{
+		$poster_rank = $ranksrow[$j]['rank_title'];
+		$rank_image = ( $ranksrow[$j]['rank_image'] ) ? '</dd><dd><img src="' . $ranksrow[$j]['rank_image'] . '" alt="' . $poster_rank . '" title=' . $poster_rank . '" />' : '';
+		}
+		}
+	}
+	if(!empty($privmsg['user_from1'])){
+	$lot='<dd><strong>' . $lang['Location'] . '</strong>: ' . $privmsg['user_from1'] . '</dd>'; //empty for Location
+	}
+	switch( $privmsg['user_avatar_type1'] )
+	{
+		case USER_AVATAR_UPLOAD:
+			$aimg = ( $board_config['allow_avatar_upload'] ) ? '<img src="' . $board_config['avatar_path'] . '/' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+		case USER_AVATAR_REMOTE:
+			$aimg = ( $board_config['allow_avatar_remote'] ) ? '<img src="' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+		case USER_AVATAR_GALLERY:
+			$aimg =  ( $board_config['allow_avatar_local'] ) ? '<img src="' . $board_config['avatar_gallery_path'] . '/' . $privmsg['user_avatar1'] . '" alt="" /><br />' : '';
+		break;
+	}
+	$poster_avatar = '<dt><a href="profile.' . $phpEx . '?mode=viewprofile&amp;u=' . $user_id_from . '">' . $aimg . $username_from . '</a></dt><dd>' . $poster_rank . $rank_image . '</dd><dd>&nbsp;</dd><dd><strong>' . $lang['Post'] . '</strong>: ' . $privmsg['user_posts1'] . '</a></dd><dd><strong>' . $lang['Joined'] . ':</strong> ' . create_date($lang['DATE_FORMAT'], $privmsg['user_regdate1'], $board_config['board_timezone']) . '</dd>'.$lot.'';
+# 
+#-----[ FIND, LINE 1662 ]------------------------------------------ 
+#
+			$preview_message = $preview_message . '<br /><br />_________________<br />' . $user_sig;
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$preview_message = $preview_message . '</div><div class="signature">' . $user_sig;
+# 
+#-----[ FIND, LINE 2044 ]------------------------------------------ 
+#
+$post_pm = '<a href="' . $post_pm . '">' . $lang['Post_new_pm'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$post_pm = '<a href="' . $post_pm . '" title=' . '"' . $lang['Post_new_pm'] . '">' . '</a>';
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+search.php
+# 
+#-----[ FIND, LINE 1092 ]------------------------------------------ 
+#
+					$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
+
+					$times = 1;
+					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+					{
+						$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+						if ( $times == 1 && $total_pages > 4 )
+						{
+							$goto_page .= ' ... ';
+							$times = $total_pages - 3;
+							$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+						}
+						else if ( $times < $total_pages )
+						{
+							$goto_page .= ', ';
+						}
+						$times++;
+					}
+					$goto_page .= ' ] ';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+					$goto_page = '<strong class="' . 'pagination"' . '><span>';
+
+					$times = 1;
+					for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+					{
+						$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+						if ( $times == 1 && $total_pages > 4 )
+						{
+							$goto_page .= ' ... ';
+							$times = $total_pages - 3;
+							$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+						}
+						else if ( $times < $total_pages )
+						{
+							$goto_page .= '';
+						}
+						$times++;
+					}
+					$goto_page .= '</span></strong>';
+# 
+#-----[ FIND, LINE 1417 ]------------------------------------------ 
+#
+	'L_SEARCH_MESSAGE_ONLY' => $lang['Search_msg_only'],
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+	'L_SEARCH_FORUMS' => $lang['Search_forums'],
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+viewforum.php
+# 
+#-----[ FIND, LINE 375 ]------------------------------------------ 
+#
+	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . "&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$s_auth_can2 .= sprintf($lang['Rules_moderate'], "<p>[&nbsp;<a href=\"modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;start=" . $start . "&amp;sid=" . $userdata['session_id'] . '">', '</a>&nbsp;]</p>');
+# 
+#-----[ FIND, LINE 435 ]------------------------------------------ 
+#
+	'S_AUTH_LIST' => $s_auth_can,
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+	'S_AUTH_LIST2' => $s_auth_can2,
+# 
+#-----[ FIND, LINE 594 ]------------------------------------------ 
+#
+			$goto_page = ' [ <img src="' . $images['icon_gotopost'] . '" alt="' . $lang['Goto_page'] . '" title="' . $lang['Goto_page'] . '" />' . $lang['Goto_page'] . ': ';
+
+			$times = 1;
+			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+			{
+				$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+				if( $times == 1 && $total_pages > 4 )
+				{
+					$goto_page .= ' ... ';
+					$times = $total_pages - 3;
+					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+				}
+				else if ( $times < $total_pages )
+				{
+					$goto_page .= '';
+				}
+				$times++;
+			}
+			$goto_page .= ' ] ';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$goto_page = '<strong class="' . 'pagination"' . '><span>';
+
+			$times = 1;
+			for($j = 0; $j < $replies + 1; $j += $board_config['posts_per_page'])
+			{
+				$goto_page .= '<a href="' . append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . "=" . $topic_id . "&amp;start=$j") . '">' . $times . '</a>';
+				if( $times == 1 && $total_pages > 4 )
+				{
+					$goto_page .= ' ... ';
+					$times = $total_pages - 3;
+					$j += ( $total_pages - 4 ) * $board_config['posts_per_page'];
+				}
+				else if ( $times < $total_pages )
+				{
+					$goto_page .= '';
+				}
+				$times++;
+			}
+			$goto_page .= '</span></strong>';
+# 
+#-----[ FIND, LINE 628 ]------------------------------------------ 
+#
+		$last_post_time = create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+
+		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username2'] != '' ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$last_post_time = $lang['Posted_on_date'] . '&nbsp;' . create_date($board_config['default_dateformat'], $topic_rowset[$i]['post_time'], $board_config['board_timezone']);
+
+		$last_post_author = ( $topic_rowset[$i]['id2'] == ANONYMOUS ) ? ( ($topic_rowset[$i]['post_username2'] != '' ) ? $topic_rowset[$i]['post_username2'] . ' ' : $lang['Guest'] . ' ' ) : $lang['Post_by_author'] . '&nbsp;<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '='  . $topic_rowset[$i]['id2']) . '">' . $topic_rowset[$i]['user2'] . '</a>';
+# 
+#-----[ OPEN ]------------------------------------------ 
+# 
+viewtopic.php
+# 
+#-----[ FIND, LINE 390 ]------------------------------------------ 
+#
+$sql = "SELECT u.username, u.user_id, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_regdate, u.user_msnm, u.user_viewemail, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_avatar, u.user_avatar_type, u.user_allowavatar, u.user_allowsmile, p.*,  pt.post_text, pt.post_subject, pt.bbcode_uid
+# 
+#-----[ FIND WITHIN ]------------------------------------------ 
+#
+u.user_posts
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+, u.user_level
+# 
+#-----[ FIND, LINE 583 ]------------------------------------------ 
+#
+$s_auth_can = ( ( $is_auth['auth_post'] ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
+$s_auth_can .= ( ( $is_auth['auth_reply'] ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
+$s_auth_can .= ( ( $is_auth['auth_edit'] ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
+$s_auth_can .= ( ( $is_auth['auth_delete'] ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
+$s_auth_can .= ( ( $is_auth['auth_vote'] ) ? $lang['Rules_vote_can'] : $lang['Rules_vote_cannot'] ) . '<br />';
+
+$topic_mod = '';
+
+if ( $is_auth['auth_mod'] )
+{
+	$s_auth_can .= sprintf($lang['Rules_moderate'], "<a href=\"modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>');
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+$topic_mod = '';
+
+if ( $is_auth['auth_mod'] )
+{
+	$s_auth_can .= sprintf($lang['Rules_moderate'], "<p>[&nbsp;<a href=\"modcp.$phpEx?" . POST_FORUM_URL . "=$forum_id&amp;sid=" . $userdata['session_id'] . '">', '</a>&nbsp;]</p>');
+# 
+#-----[ FIND, LINE 595 ]------------------------------------------ 
+#
+	$topic_mod .= "<a href=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_delete'] . '" alt="' . $lang['Delete_topic'] . '" title="' . $lang['Delete_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= "<a href=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_move'] . '" alt="' . $lang['Move_topic'] . '" title="' . $lang['Move_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= ( $forum_topic_data['topic_status'] == TOPIC_UNLOCKED ) ? "<a href=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_lock'] . '" alt="' . $lang['Lock_topic'] . '" title="' . $lang['Lock_topic'] . '" border="0" /></a>&nbsp;' : "<a href=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_unlock'] . '" alt="' . $lang['Unlock_topic'] . '" title="' . $lang['Unlock_topic'] . '" border="0" /></a>&nbsp;';
+
+	$topic_mod .= "<a href=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '"><img src="' . $images['topic_mod_split'] . '" alt="' . $lang['Split_topic'] . '" title="' . $lang['Split_topic'] . '" border="0" /></a>&nbsp;';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$topic_mod .= '<form><fieldset class="' . 'jumpbox"' . '><label>' . $lang['Quick_mod'] . '&nbsp;' . '</label><select name="' . 'choice">';
+
+	$topic_mod .= "<option value=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=delete&amp;sid=" . $userdata['session_id'] . '&amp;_top">' . $lang['Delete_topic'] . '</option>';
+
+	$topic_mod .= "<option value=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=move&amp;sid=" . $userdata['session_id'] . '&amp;_top">' . $lang['Move_topic'] . '</option>';
+
+	$topic_mod .= ( $forum_topic_data['topic_status'] == TOPIC_UNLOCKED ) ? "<option value=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=lock&amp;sid=" . $userdata['session_id'] . '&amp;_top">' . $lang['Lock_topic'] . '</option>' : "<option value=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=unlock&amp;sid=" . $userdata['session_id'] . '&amp;_top">' . $lang['Unlock_topic'] . '</option>';
+
+	$topic_mod .= "<option value=\"modcp.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;mode=split&amp;sid=" . $userdata['session_id'] . '&amp;_top">' . $lang['Split_topic'] . '</option>';
+	
+	$topic_mod .= '</select> <input class="' . 'button2"' . ' type="' . 'button" value=' . '"Go' . '" onClick=' . '"jump(this.form)' . '"></fieldset></form>';
+# 
+#-----[ FIND, LINE 612 ]------------------------------------------ 
+#
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Stop_watching_topic'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;unwatch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '" class=' . '"icon-subscribe' . '">' . $lang['Stop_watching_topic'] . '</a>';
+# 
+#-----[ FIND, LINE 617 ]------------------------------------------ 
+#
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '">' . $lang['Start_watching_topic'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$s_watching_topic = "<a href=\"viewtopic.$phpEx?" . POST_TOPIC_URL . "=$topic_id&amp;watch=topic&amp;start=$start&amp;sid=" . $userdata['session_id'] . '" class=' . '"icon-subscribe' . '">' . $lang['Start_watching_topic'] . '</a>';
+# 
+#-----[ FIND, LINE 927 ]------------------------------------------ 
+#
+		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$pm = '<li class="' . 'pm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Send_private_message'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 934 ]------------------------------------------ 
+#
+			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$email = '<li class="' . 'email-icon' . '">' . '<a href="' . $email_uri . '" title=' . '"' . $lang['Send_email'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 943 ]------------------------------------------ 
+#
+		$www = ( $postrow[$i]['user_website'] ) ? '<a href="' . $postrow[$i]['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$www = ( $postrow[$i]['user_website'] ) ? '<li class="' . 'web-icon' . '">' . '<a href="' . $postrow[$i]['user_website'] . '" title=' . '"' . $lang['Visit_website'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 949 ]------------------------------------------ 
+#
+			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$icq = '<li class="' . 'icq-icon' . '">' . '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $postrow[$i]['user_icq'] . '" title=' . '"' . $lang['ICQ'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 959 ]------------------------------------------ 
+#
+		$aim = ( $postrow[$i]['user_aim'] ) ? '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$aim = ( $postrow[$i]['user_aim'] ) ? '<li class="' . 'aim-icon' . '">' . '<a href="aim:goim?screenname=' . $postrow[$i]['user_aim'] . '&amp;message=Hello+Are+you+there?" title=' . '"' . $lang['AIM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 963 ]------------------------------------------ 
+#
+		$msn = ( $postrow[$i]['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$msn = ( $postrow[$i]['user_msnm'] ) ? '<li class="' . 'msnm-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['MSNM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 966 ]------------------------------------------ 
+#
+		$yim = ( $postrow[$i]['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$yim = ( $postrow[$i]['user_yim'] ) ? '<li class="' . 'yahoo-icon' . '">' . '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $postrow[$i]['user_yim'] . '&amp;.src=pg" title=' . '"' . $lang['YIM'] . '">' . '</a></li>' : '';
+# 
+#-----[ FIND, LINE 991 ]------------------------------------------ 
+#
+	$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+	$quote = '<li class="' . 'quote-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Reply_with_quote'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 1001 ]------------------------------------------ 
+#
+		$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$edit = '<li class="' . 'edit-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Edit_delete_post'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 1013 ]------------------------------------------ 
+#
+		$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$ip = '<li class="' . 'info-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['View_IP'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 1017 ]------------------------------------------ 
+#
+		$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$delpost = '<li class="' . 'delete-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Delete_post'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 1028 ]------------------------------------------ 
+#
+			$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+			$delpost = '<li class="' . 'delete-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Delete_post'] . '">' . '</a></li>';
+# 
+#-----[ FIND, LINE 1132 ]------------------------------------------ 
+#
+		$user_sig = '<br />_________________<br />' . str_replace("\n", "\n<br />\n", $user_sig);
+# 
+#-----[ REPLACE WITH ]------------------------------------------ 
+#
+		$user_sig = '<div class="signature">' . str_replace("\n", "\n<br />\n", $user_sig) . '</div>';
+# 
+#-----[ FIND, LINE 1155 ]------------------------------------------ 
+#
+	//
+	// Again this will be handled by the templating
+	// code at some point
+	//
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+	// 
+	// Username in colouring 
+	// 
+		if($postrow[$i]['user_level'] == 1) // Admin 
+	{
+		$glowing_color = '#' . $theme['fontcolor3']; 
+	}
+		else if($postrow[$i]['user_level'] == 2) // Moderator 
+	{
+		$glowing_color = '#' . $theme['fontcolor2']; 
+	} 
+		else // normal 
+	{
+		$glowing_color = ''; 
+	}
+# 
+#-----[ FIND, LINE 1174 ]------------------------------------------ 
+#
+		'MINI_POST_IMG' => $mini_post_img,
+# 
+#-----[ BEFORE ADD ]------------------------------------------ 
+#
+		'GLOWING_COLOR' => $glowing_color, // Username in colouring
+# 
+#-----[ FIND, LINE 1203 ]------------------------------------------ 
+#
+		'L_MINI_POST_ALT' => $mini_post_alt,
+# 
+#-----[ AFTER ADD ]------------------------------------------ 
+#
+		'U_VIEWPROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=$poster_id"),
+# 
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------ 
+# 
+# EoM

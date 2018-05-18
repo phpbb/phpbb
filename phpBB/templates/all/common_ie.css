@@ -1,0 +1,111 @@
+body {
+	behavior: url('templates/all/csshover3.htc');
+}
+
+#global-wrapper {
+}
+
+#forumtable {
+}
+
+.topic-title-hide-flow-header {
+	width: 660px;
+}
+
+.topic-title-hide-flow {
+	width: 360px;
+	vertical-align: top;
+	margin-bottom: 3px;
+	/*display: inline;*/
+}
+
+.post-subject {
+	width: 400px;
+}
+
+.post-text {
+	width: 98% !important;
+	/* this is set to avoid one line post being hidden by scrollers in IE */
+	height: auto !important; /* modern browsers */
+	/*height: 40px;*/ /* IE5.x and IE6 */
+	min-height: 20px; /* modern browsers */
+	/*line-height: 150%;*/
+	padding-bottom: 20px;
+	margin-bottom: 10px;
+}
+
+.post-text-chat {
+	height: auto !important; /* modern browsers */
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+}
+
+.post-text-hide-flow {
+	width: 660px;
+}
+
+blockquote, .post-text blockquote, .code-content {
+	overflow: auto;
+}
+
+blockquote.quote .post-text {
+	width: 100%;
+	min-height: 20px;
+	padding-bottom: 20px;
+	margin-bottom: 0px;
+	/*overflow: auto;*/
+}
+
+.code-content .post-text {
+	width: 90%;
+	/*overflow: auto;*/
+}
+
+blockquote, .post-text blockquote, .code-content, .post-text .code-header {
+	/*padding-bottom: 10px;*/
+	/*margin-bottom: 20px;*/
+}
+
+.row1h, .row1h-new, .row2h, .row2h-new {
+}
+
+li.code-row {
+	wrap-option: emergency;
+}
+
+input, select, textarea {
+	box-sizing: content-box;
+}
+
+.message-box textarea {
+	width: 560px !important;
+}
+
+textarea {
+}
+
+input[type="radio"], input[type="radio"]:hover, input[type="checkbox"], input[type="checkbox"]:hover {
+	background-color: transparent;
+	border: 0px none !important;
+	border-size: 0px !important;
+}
+
+/* BBCODE - BEGIN */
+div.opacity:hover { opacity: 1.0; filter: alpha(opacity=100); /* For IE8 and earlier */ }
+/* BBCODE - BEGIN */
+
+/* IMG Fading - BEGIN */
+.imgfade, .imgfade_nm { opacity: 0.75; filter: alpha(opacity=75); }
+.imgfade:hover, .imgfade_nm:hover { opacity: 1.0; filter: alpha(opacity=100); /* For IE8 and earlier */ }
+/* IMG Fading - END */
+
+/* MG PNG */
+img.pngimg {
+	behavior: url('templates/all/pngbehavior.htc');
+}
+
+/* ## ChromeStyle ## DropDown Menu ## */
+.dropmenudiv{
+	filter: progid:DXImageTransform.Microsoft.Shadow(color=#cacaca,direction=135,strength=4); /*Add Shadow in IE. Remove if desired*/
+}
+

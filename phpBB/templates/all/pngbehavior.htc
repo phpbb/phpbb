@@ -1,0 +1,80 @@
+<public:component lightWeight="true">
+<public:attach event="onpropertychange" onevent="propertyChanged()" />
+<public:attach event="onbeforeprint" onevent="beforePrint()" for="window" />
+<public:attach event="onafterprint" onevent="afterPrint()"  for="window" />
+<script>
+
+var supported = /MSIE ((5\.5)|[6789])/.test(navigator.userAgent) && navigator.platform == 'Win32';
+
+var realSrc;
+var blankSrc = 'images/blank.gif';
+var isPrinting = false;
+
+if (supported)
+{
+	fixImage();
+}
+
+function propertyChanged()
+{
+	if (!supported || isPrinting)
+	{
+		return;
+	}
+
+	var pName = event.propertyName;
+	if (pName != 'src')
+	{
+		return;
+	}
+
+	if (!new RegExp(blankSrc).test(src))
+	{
+		fixImage();
+	}
+};
+
+function fixImage()
+{
+	element.runtimeStyle.visibility = 'visible';
+	element.style.width  = element.xwidth?element.xwidth:parseInt(element.width);
+	element.style.height = element.xheight?element.xheight:parseInt(element.height);
+	var src = element.src.replace(/%/gi, '%25');
+	if (src == realSrc && /\.png$/i.test(src))
+	{
+		element.src = blankSrc;
+		return;
+	}
+
+	if (!new RegExp(blankSrc).test(src))
+	{
+		realSrc = src;
+	}
+
+	if (/\.png$/i.test(realSrc))
+	{
+		element.src = blankSrc;
+		element.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + src + "', sizingMethod='scale')";
+	}
+	else
+	{
+		element.runtimeStyle.filter = '';
+	}
+}
+
+function beforePrint()
+{
+	isPrinting = true;
+	element.src = realSrc;
+	element.runtimeStyle.filter = '';
+	realSrc = null;
+}
+
+function afterPrint()
+{
+	isPrinting = false;
+	fixImage();
+}
+
+</script>
+</public:component>

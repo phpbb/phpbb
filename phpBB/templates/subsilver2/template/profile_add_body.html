@@ -1,0 +1,288 @@
+<form action="{S_PROFILE_ACTION}" {S_FORM_ENCTYPE} method="post">
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+						<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<p></p>
+<div id="tabs">
+	<ul>
+		<li class="activetab"><a href="{U_PROFILE}"><span>{L_PROFILE}</span></a></li>
+		<li><a href="{U_PRIVATEMSGS}"><span>{L_PRIVATEMSGS}</span></a></li>
+	</ul>
+</div>
+<div class="panel bg3">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<div style="width: 100%;">
+	<div id="cp-menu">
+		<div id="navigation">
+			<ul>
+				<li id="details-panel-tab"><a href="#details-panel"><span>{L_REGISTRATION_INFO}</span></a></li>
+				<li id="info-panel-tab"><a href="#info-panel"><span>{L_PROFILE_INFO}</span></a></li>
+				<li id="pref-panel-tab"><a href="#pref-panel"><span>{L_PREFERENCES}</span></a></li>
+				<!-- BEGIN switch_avatar_block -->
+				<li id="avatar-panel-tab"><a href="#avatar-panel"><span>{L_AVATAR_PANEL}</span></a></li>
+				<!-- END switch_avatar_block -->
+			</ul>
+		</div>
+	</div>
+	<div id="cp-main" class="ucp-main">
+{ERROR_BOX}
+<div class="panel" id="details-panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_REGISTRATION_INFO}</h3>
+	<p>{L_ITEMS_REQUIRED}</p>
+	<fieldset>
+	<!-- BEGIN switch_namechange_disallowed -->
+	<dl>
+		<dt><label>{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
+		<dd><strong>{USERNAME}</strong></dd>
+	</dl>
+	<!-- END switch_namechange_disallowed -->
+	<!-- BEGIN switch_namechange_allowed -->
+	<dl>
+		<dt><label>{L_USERNAME}: *</label></dt>
+		<dd><input type="text" name="username" maxlength="30" value="{USERNAME}" class="inputbox" /></dd>
+	</dl>
+	<!-- END switch_namechange_allowed -->
+	<dl>
+		<dt><label>{L_EMAIL_ADDRESS}: *</label></dt>
+		<dd><input type="text" name="email" maxlength="60" value="{EMAIL}" class="inputbox" /></dd>
+	</dl>
+		<dl>
+			<dt><label>{L_NEW_PASSWORD}: *</label><br /><span>{L_PASSWORD_IF_CHANGED}</span></dt>
+			<dd><input type="password" name="new_password" maxlength="255" value="{NEW_PASSWORD}" class="inputbox" /></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_CONFIRM_PASSWORD}: *</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
+			<dd><input type="password" name="password_confirm" maxlength="255" value="{PASSWORD_CONFIRM}" class="inputbox" /></dd>
+		</dl>
+	<!-- BEGIN switch_edit_profile -->
+		<dl>
+			<dt><label>{L_CURRENT_PASSWORD}:</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
+			<dd><input type="password" name="cur_password" maxlength="255" value="{CUR_PASSWORD}" class="inputbox" /></dd>
+		</dl>
+	<!-- END switch_edit_profile -->
+	<!-- BEGIN switch_confirm -->
+		<dl>
+			<dt><label>{L_CONFIRM_CODE} *:</label></dt>
+			<dd>{L_CONFIRM_CODE_IMPAIRED}</dd>
+			<dd>{CONFIRM_IMG}</dd>
+			<dd><input type="text" name="confirm_code" size="8" maxlength="8" class="inputbox narrow" title="{L_CONFIRM_CODE}" /></dd>
+			<dd>{L_CONFIRM_CODE_EXPLAIN}</dd>
+		</dl>
+	<!-- END switch_confirm -->
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel" id="info-panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_PROFILE_INFO}</h3>
+	<p>{L_PROFILE_INFO_NOTICE}</p>
+	<fieldset>
+	<dl>
+		<dt><label>{L_ICQ_NUMBER}:</label></dt>
+		<dd><input type="text" name="icq" maxlength="15" value="{ICQ}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_AIM}:</label></dt>
+		<dd><input type="text" name="aim" maxlength="255" value="{AIM}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_MESSENGER}:</label></dt>
+		<dd><input type="text" name="msn" maxlength="255" value="{MSN}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_YAHOO}:</label></dt>
+		<dd><input type="text" name="yim" maxlength="255" value="{YIM}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_WEBSITE}:</label></dt>
+		<dd><input type="text" name="website" maxlength="255" value="{WEBSITE}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_LOCATION}:</label></dt>
+		<dd><input type="text" name="location" maxlength="255" value="{LOCATION}" class="inputbox" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_OCCUPATION}:</label></dt>
+		<dd><textarea name="occupation" class="inputbox" rows="3" cols="30">{OCCUPATION}</textarea></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_INTERESTS}:</label></dt>
+		<dd><textarea name="interests" class="inputbox" rows="3" cols="30">{INTERESTS}</textarea></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_SIGNATURE}:</label><br /><span>{L_SIGNATURE_EXPLAIN}</span><br /><br/>{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</dt>
+		<dd><textarea name="signature" class="inputbox" rows="6" cols="30">{SIGNATURE}</textarea></dd>
+	</dl>
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="panel" id="pref-panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_PREFERENCES}</h3>
+	<fieldset>
+	<dl>
+		<dt><label>{L_PUBLIC_VIEW_EMAIL}:</label></dt>
+		<dd>
+			<label><input type="radio" name="viewemail" value="1" {VIEW_EMAIL_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="viewemail" value="0" {VIEW_EMAIL_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_HIDE_USER}:</label></dt>
+		<dd>
+			<label><input type="radio" name="hideonline" value="1" {HIDE_USER_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="hideonline" value="0" {HIDE_USER_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_NOTIFY_ON_REPLY}:</label><br /><span>{L_NOTIFY_ON_REPLY_EXPLAIN}</span></dt>
+		<dd>
+			<label><input type="radio" name="notifyreply" value="1" {NOTIFY_REPLY_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="notifyreply" value="0" {NOTIFY_REPLY_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_NOTIFY_ON_PRIVMSG}:</label></dt>
+		<dd>
+			<label><input type="radio" name="notifypm" value="1" {NOTIFY_PM_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="notifypm" value="0" {NOTIFY_PM_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_POPUP_ON_PRIVMSG}:</label><br /><span>{L_POPUP_ON_PRIVMSG_EXPLAIN}</span></dt>
+		<dd>
+			<label><input type="radio" name="popup_pm" value="1" {POPUP_PM_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="popup_pm" value="0" {POPUP_PM_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_ALWAYS_ADD_SIGNATURE}:</label></dt>
+		<dd>
+			<label><input type="radio" name="attachsig" value="1" {ALWAYS_ADD_SIGNATURE_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="attachsig" value="0" {ALWAYS_ADD_SIGNATURE_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_ALWAYS_ALLOW_BBCODE}:</label></dt>
+		<dd>
+			<label><input type="radio" name="allowbbcode" value="1" {ALWAYS_ALLOW_BBCODE_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="allowbbcode" value="0" {ALWAYS_ALLOW_BBCODE_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_ALWAYS_ALLOW_HTML}:</label></dt>
+		<dd>
+			<label><input type="radio" name="allowhtml" value="1" {ALWAYS_ALLOW_HTML_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="allowhtml" value="0" {ALWAYS_ALLOW_HTML_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_ALWAYS_ALLOW_SMILIES}:</label></dt>
+		<dd>
+			<label><input type="radio" name="allowsmilies" value="1" {ALWAYS_ALLOW_SMILIES_YES} /> {L_YES}</label> 
+			<label><input type="radio" name="allowsmilies" value="0" {ALWAYS_ALLOW_SMILIES_NO} /> {L_NO}</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_BOARD_LANGUAGE}:</label></dt>
+		<dd>{LANGUAGE_SELECT}</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_BOARD_STYLE}:</label></dt>
+		<dd>{STYLE_SELECT}</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_TIMEZONE}:</label></dt>
+		<dd>{TIMEZONE_SELECT}</dd>
+	</dl>
+	<dl>
+		<dt><label>{L_DATE_FORMAT}:</label><br /><span>{L_DATE_FORMAT_EXPLAIN}</span></dt>
+		<dd>
+			<input type="text" name="dateformat" maxlength="14" value="{DATE_FORMAT}" class="inputbox" />
+		</dd>
+	</dl>
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<!-- BEGIN switch_avatar_block -->
+<div class="panel" id="avatar-panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	<h3>{L_AVATAR_PANEL}</h3>
+	<fieldset>
+	<dl>
+		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+		<dd>{AVATAR}</dd>
+		<dd><label><input type="checkbox" name="avatardel" /> {L_DELETE_AVATAR}</label></dd>
+	</dl>
+	<!-- BEGIN switch_avatar_local_upload -->
+		<dl>
+			<dt><label>{L_UPLOAD_AVATAR_FILE}:</label></dt>
+			<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_SIZE}" /><input type="file" name="avatar" class="inputbox autowidth" /></dd>
+		</dl>
+	<!-- END switch_avatar_local_upload -->
+	<!-- BEGIN switch_avatar_remote_upload -->
+		<dl>
+			<dt><label>{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
+			<dd><input type="text" name="avatarurl" value="{AVATAR_URL}" class="inputbox" /></dd>
+		</dl>
+	<!-- END switch_avatar_remote_upload -->
+	<!-- BEGIN switch_avatar_remote_link -->
+		<dl>
+			<dt><label>{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
+			<dd><input type="text" name="avatarremoteurl" value="{AVATAR_REMOTE}" class="inputbox" /></dd>
+		</dl>
+	<!-- END switch_avatar_remote_link -->
+	<!-- BEGIN switch_avatar_local_gallery -->
+		<dl>
+			<dt><label>{L_AVATAR_GALLERY}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
+			<dd><input type="submit" name="avatargallery" value="{L_SHOW_GALLERY}" class="button2" /></dd>
+		</dl>
+	<!-- END switch_avatar_local_gallery -->
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<!-- END switch_avatar_block -->
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+</fieldset>
+	<div class="clear"></div>
+	</div>
+	</div>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>
+</form>

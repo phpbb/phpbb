@@ -1,0 +1,64 @@
+############################################################################################################# 
+## MOD Title: Colour Palet
+## MOD Author: Carlo Claessen <vraag-en-antwoord@vraag-en-antwoord.nl> (N/A) http://www.vraag-en-antwoord.nl 
+## MOD Description: Adds a Colour Palette page to your phpBB
+## MOD Version: 1.0.0
+## 
+## Installation Level: Easy
+## Installation Time: 2 Minutes 
+## Files To Edit: language\lang_english\lang_main.php
+## Included Files: colour.php
+##		   colour.tpl
+##
+############################################################## 
+## For Security Purposes, Please Check: http://www.phpbb.com/mods/ for the 
+## latest version of this MOD. Downloading this MOD from other sites could cause malicious code 
+## to enter into your phpBB Forum. As such, phpBB will not offer support for MOD's not offered 
+## in our MOD-Database, located at: http://www.phpbb.com/mods/ 
+############################################################## 
+## Author Notes: easiest MOD you possible should install.
+## 		when you feel the need you can create a link in the overall_header.tpl
+##		not planning to expand this MOD its just for developpers an reference
+############################################################## 
+## MOD History: 
+##
+##   2003-09-05 - Version 1.0.0
+##      - some changes to fit the mod dbase template
+##
+##   2003-09-05 - Version 0.0.1
+##      - released
+## 
+############################################################## 
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD 
+############################################################## 
+
+# 
+#-----[ COPY ]------------------------------------------ 
+#
+
+copy colour.php to colour.php
+copy colour.tpl to templates/subSilver/colour.tpl
+
+# 
+#-----[ OPEN ]------------------------------------------ 
+#
+language/lang_english/lang_main.php
+
+# 
+#-----[ FIND ]------------------------------------------ 
+# 
+
+//
+// That's all Folks!
+//
+
+# 
+#-----[ BEFORE, ADD ]------------------------------------------ 
+# 
+
+$lang['Colour_card'] = 'Colour Page';
+
+# 
+#-----[ SAVE/CLOSE ALL FILES ]------------------------------------------ 
+# 
+# EoM 

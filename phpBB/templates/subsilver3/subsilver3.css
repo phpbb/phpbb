@@ -1,0 +1,195 @@
+/*  MX-Publisher 3.0 Style Sheet
+    --------------------------------------------------------------
+	Style name:		subsilver2
+	Based on style:	subSilver (the default phpBB 2 style)
+	Original author:	subBlue ( http://www.subBlue.com/ )
+	Modified by:		psoTFX and the phpBB team ( http://www.phpbb.com )
+
+	This is an alternative style for phpBB3 for those wishing to stay with
+	the familiar subSilver style of phpBB version 2.x
+
+	Copyright 2006 phpBB Group ( http://www.phpbb.com/ )
+    --------------------------------------------------------------
+*/
+
+@import url("./theme/normalize.css?v=3.2");
+@import url("./theme/base.css?v=3.2");
+@import url("./theme/utilities.css?v=3.2");
+@import url("./theme/common.css?v=3.2");
+@import url("./theme/links.css?v=3.2");
+@import url("./theme/content.css?v=3.2");
+@import url("./theme/buttons.css?v=3.2");
+@import url("./theme/cp.css?v=3.2");
+@import url("./theme/forms.css?v=3.2");
+@import url("./theme/icons.css?v=3.2");
+@import url("./theme/colours.css?v=3.2");
+@import url("./theme/responsive.css?v=3.2");
+
+/* Edit this colors for every subsilver-ish ported template */
+.row1, .bg1	{ background-color: #EFEFEF; } /* .bg1 */
+.row2, .bg2	{ background-color: #DEE3E7; } /* .bg2 */
+.row2, .bg3	{ background-color: #D1D7DC; } /* .bg3 */
+.row4, .bg4	{ background-color: #EFEFEF; }
+.row5, .bg5	{ background-color: #DEE3E7; }
+.row6, .bg6	{ background-color: #D1D7DC; }
+
+/* font sizes for old modules */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+
+/************************************************************\
+| Addon or redefined CSS definitions for MX-Publisher
+\************************************************************/
+
+th {
+	font-size: 1.1em;
+	font-weight: bold;
+	background-image: url('./theme/images/cellpic3.gif');
+	white-space: none;
+	padding: 2px 1px;
+}
+
+.catdiv, .rowpic {
+		background-image: url('./theme/images/cellpic2.jpg');
+		background-repeat: repeat-y scroll top left;
+}
+
+.cat, .catHead, .catSides, .catLeft, .catRight, .catBottom {
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	background-color:#D1D7DC; border: 0; height: 28px;
+	background-image: url('./theme/images/cellpic1.gif');
+	text-indent: 4px;
+} 
+
+.cat, .catHead, .catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+.thHead, .thSides, .thTop, .thLeft, .thRight, .thBottom, .thCornerL, .thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px; }
+.row3Right, .spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid; }
+
+.thHead, .catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+.thSides, .catSides, .spaceRow	 { border-width: 0px 1px 0px 1px; }
+.thRight, .catRight, .row3Right	 { border-width: 0px 1px 0px 0px; }
+.thLeft, .catLeft	  { border-width: 0px 0px 0px 1px; }
+.thBottom, .catBottom  { border-width: 0px 1px 1px 1px; }
+.thTop	 { border-width: 1px 0px 0px 0px; }
+.thCornerL { border-width: 1px 0px 0px 1px; }
+.thCornerR { border-width: 1px 1px 0px 0px; }
+
+.helpline { border-style: none; }
+
+.nav {
+	padding: 2px;
+}
+
+.bodyline	{ border: 1px #98AAB1 solid; padding: 0px 0px 0px 0px; }
+
+.forumline	{ border: 2px #006699 solid; padding: 0px 0px 0px 0px; }
+
+.mx_main_table	{
+}
+
+.mx_header_table	{
+	border: 2px solid #006699;
+	padding: 0px 0px 0px 0px;
+}
+
+.mx_body_table	{
+}
+
+/* This is the style used for the top page title. */
+.pagetitle	{
+	font-weight: bold;
+	font-size: 30px;
+	font-family: "Comic Sans MS", Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	line-height : 120%;
+	color : #000066;
+	font-variant: small-caps;
+	text-transform: capitalize;
+	letter-spacing: 5px;
+	vertical-align: 20%;
+}
+
+/* This is the style used for the top site title. */
+.sitetitle	{
+	font-family: Arial;
+	font-variant: small-caps;
+	font-weight: bolder;
+	font-size: 12pt;
+	color: #000066;
+}
+
+/* This is the style used for the top site description. */
+.sitetitle_desc	{
+	color: #006699;
+	font-size: 9px;
+}
+
+/* Customized hr below site title */
+hr.hrtop	{
+	height: 3px;
+	border: solid #000066 1px;
+	border-top-width: 1px;
+}
+
+/* For all contract/expand rollup buttons  */
+.mx_rollup_button	{
+	font-size: 11px;
+	margin: 0px;
+	padding: 0px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+/* Form elements */
+form	{
+	margin-bottom: 0px;
+}
+
+/* Form elements */
+form.mx_editform	{
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+/* This is the border around numbers in pagination */
+.mx_pagination, .mx_pagination_sele, .mx_pagination_over	{
+	padding-left: 2px;
+	padding-right: 2px;
+	border-top: 1px solid #B0B0B0;
+	border-right: 1px solid #B0B0B0;
+	border-bottom: 1px solid #B0B0B0;
+	border-left: 1px solid #B0B0B0;
+	text-decoration: none;
+}
+
+.mx_pagination_sele	{
+	background-color: #E0E0E0;
+}
+.mx_pagination_over	{
+	background-color: #F0F0F0;
+}
+
+.shadow	{
+	color: #00AA00;
+	filter: DropShadow(Color=#660000, OffX=5, OffY=5, Positive=1);
+}
+img.shadow	{
+	color: #00AA00;
+	filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray', Positive='true');
+}
+
+/* TinyMCE specific rules */
+body.mceContentBody {
+	text-align: left;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #000;
+   	background: #FFF;
+}

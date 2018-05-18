@@ -1,0 +1,498 @@
+/* CSS FOR BLOCKS EDITOR - BEGIN */
+#forumtable ul.cms-editor-container, div.cms-editor-container {
+	display: block;
+	list-style-type: none;
+	margin: 0;
+	padding: 3px;
+	border-radius: 6px;
+	padding-top: 30px;
+	min-height: 50px;
+	border: solid 1px #dde8ee;
+	background-color: #f2f5f8;
+}
+
+#forumtable ul.cms-editor-container.sort-over {
+	border-color: #e76e6e;
+}
+
+#forumtable div.cms-block-header {
+	position: relative;
+	top: 24px;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+div.cms-editor-container {
+	font-weight: bold;
+	color: #999999;
+	background-color: #f8f8f8;
+	font-size: 14px;
+	padding: 50px;
+	min-height: 0;
+}
+
+#forumtable li.cms-editor-block {
+	list-style-type: none;
+	margin: 0;
+	margin-top: 4px;
+	border: solid 1px #c7dbe5;
+	background-color: #f8f8f8;
+	padding: 2px;
+}
+
+#forumtable li.cms-block-removed {
+	list-style-type: none;
+	margin: 0;
+	margin-top: 4px;
+	border: solid 1px #c7dbe5;
+	background-color: #f8f8f8;
+	padding: 55px 2px;
+	text-align: center;
+}
+
+#forumtable li.cms-editor-block p.block-title, li.cms-editor-block .block-title-edit {
+	display: block;
+	padding: 2px;
+	margin: 0;
+	text-align: left;
+	font-size: 12px;
+	line-height: 16px;
+	font-weight: bold;
+	border: solid 1px #dde8ee;
+	border-right-color: #aac6d4;
+	border-bottom-color: #aac6d4;
+	background-color: #c7dbe5;
+}
+
+#forumtable .block-title a, #forumtable .block-type a {
+	float: right;
+	text-decoration: none;
+	margin: 0;
+	margin-left: 2px;
+	padding: 0;
+}
+
+p.block-title a.edit-title, p.block-type a.edit-type {
+	background: url("images/cms_icon_edit.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+p.block-type a.edit-settings {
+	background: url("images/cms_icon_settings.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+p.block-view a.edit-view {
+	background: url("images/cms_icon_permissions.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+p.block-groups a.edit-groups {
+	background: url("images/cms_icon_groups_permissions.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+p.block-title a.edit-parent, div.block-parent-info a.edit-parent {
+	text-decoration: none;
+	margin: 0;
+	margin-right: 2px;
+	padding: 0;
+}
+
+div.block-parent-info a.edit-parent {
+	float: right;
+}
+
+a.edit-parent {
+	background: url("images/cms_icon_blocks_edit.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+a.icon-edit-move {
+	background: url("images/cms_icon_move.png") 0 0;
+	width: 16px;
+	height: 16px;
+	float: left;
+	text-decoration: none;
+	margin: 0;
+	margin-left: 2px;
+	margin-right: 2px;
+	padding: 0;
+	cursor: move;
+}
+
+p.block-title a.edit-move {
+	background: url("images/cms_icon_move.png") 0 0;
+	width: 16px;
+	height: 16px;
+	cursor: move;
+}
+
+p.block-title a.edit-delete {
+	background: url("images/cms_icon_delete.png") 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+#forumtable li.cms-block-item a.edit-delete {
+	margin-right: 3px;
+}
+
+#forumtable li.cms-editor-block ul, #forumtable ul.options {
+	list-style-type: none;
+}
+
+#forumtable li.cms-editor-block li, #forumtable ul.options li {
+	list-style-type: none;
+	text-align: left;
+	display: block;
+	background: url("images/cms_icon_delete.png") 0 50% no-repeat;
+	margin: 0;
+	padding: 2px;
+	padding-left: 17px;
+}
+
+#forumtable li.cms-editor-block li.checked, #forumtable ul.options li.checked {
+	background: url("images/cms_icon_ok.png") 0 50% no-repeat;
+}
+/* CSS FOR BLOCKS EDITOR - END */
+
+/* EDIT BLOCK TITLE - BEGIN */
+#forumtable .block-title-edit {
+	font-size: 11px;
+	font-weight: normal;
+	display: none;
+}
+
+#forumtable .block-title-edit input {
+	width: 96%;
+	max-width: 400px;
+	border: solid 1px #abc4d2;
+	background-color: #f8f8f8;
+	color: #333;
+	font-size: 11px;
+	line-height: 1em;
+	margin: 1px 4px 1px 0;
+	padding: 1px;
+}
+
+#forumtable span.block-title-edit input {
+	max-width: 200px;
+}
+
+#forumtable .block-title-edit input:hover {
+	border-color: #dd2222;
+	background-color: #fafafa;
+	color: #dd2222;
+}
+
+#forumtable .block-title-edit input:focus {
+	border-color: #ff5500;
+	background-color: #eeeeee;
+	color: #333333;
+}
+/* EDIT BLOCK TITLE - END */
+
+/* BUTTONS - BEGIN */
+#forumtable .block-title-edit a, #forumtable .block-title-edit a:visited, .cms-block-extra .buttons a, .cms-block-extra .buttons a:visited, #forumtable a.cms-button-small, #forumtable a.cms-button-small:visited {
+	display: inline-block;
+	text-decoration: none;
+	border: solid 1px #666666;
+	background: url("images/bg_input_sprite.gif") repeat-x scroll left top #f8f8f8;
+	color: #333333;
+	border-radius: 6px;
+	margin: 1px 4px 1px 0;
+	padding: 3px 6px;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 1em;
+}
+
+#forumtable .block-title-edit a:hover, .cms-block-extra .buttons a:hover, #forumtable a.cms-button-small:hover {
+	background: url("images/bg_input_sprite.gif") repeat-x scroll 0 -24px #fafafa;
+	border-color: #dd2222;
+	color: #dd2222;
+}
+/* BUTTONS - END */
+
+/* TRANSITIONS - BEGIN */
+#forumtable .block-title-edit a, .cms-block-extra .buttons a, #forumtable a.cms-button-small {
+	transition-property: border-color, background-color, color;
+	transition-duration: 0.5s;
+	-webkit-transition-property: border-color, background-color, color;
+	-webkit-transition-duration: 0.5s;
+	-o-transition-property: border-color, background-color, color;
+	-o-transition-duration: 0.5s;
+	-moz-transition-property: border-color, background-color, color;
+	-moz-transition-duration: 0.5s;
+}
+/* TRANSITIONS - END */
+
+/* PARENT BLOCK - BEGIN */
+#forumtable li.cms-editor-block p.block-parent, #forumtable li.cms-editor-block div.block-parent-info {
+	margin: 0;
+	padding: 2px;
+	border-bottom: solid 1px #c7dbe5;
+	line-height: 1.4em;
+	text-align: left;
+}
+
+#forumtable li.cms-editor-block p.block-parent {
+	border-bottom: dotted 1px #eeeeee;
+}
+
+#forumtable li.cms-editor-block p.block-parent span {
+	display: inline-block;
+	padding-right: 2px;
+}
+/* PARENT BLOCK - END */
+
+/* NOTICE - BEGIN */
+#cms-editor-header {
+	border: 1px solid transparent;
+	margin: 5px 0;
+	padding: 6px;
+	font-size: 12px;
+	color: #f8f8f8;
+	transition-property: border-color, background-color, color;
+	-webkit-transition-property: border-color, background-color, color;
+	-moz-transition-property: border-color, background-color, color;
+	-o-transition-property: border-color, background-color, color;
+	transition-duration: 0.5s;
+	-webkit-transition-duration: 0.5s;
+	-moz-transition-duration: 0.5s;
+	-o-transition-duration: 0.5s;
+}
+
+#forumtable div.header-notice {
+	background-color: #f8f8f8;
+	border-color: #e99898;
+	color: #000000;
+}
+/* NOTICE - END */
+
+/* ADD BLOCK - BEGIN */
+#forumtable div.add-form, div.cms-block-extra p.status, #forumtable div.move-all-form {
+	border-radius: 6px;
+	border: solid 1px #dde8ee;
+	background-color: #f2f5f8;
+	margin: 0;
+	margin-bottom: 2px;
+	padding: 4px;
+	float: left;
+}
+
+#forumtable .cms-block-extra {
+	margin: 2px;
+	text-align: left;
+}
+
+#forumtable div.cms-block-extra dl {
+	display: block;
+}
+
+#forumtable div.cms-block-extra dt {
+	clear: left;
+	float: left;
+	display: block;
+	margin: 0;
+	padding: 0;
+	padding-top: 5px;
+}
+
+#forumtable div.cms-block-extra dd {
+	display: block;
+	margin: 0;
+	margin-left: 80px;
+	padding: 0;
+}
+
+#forumtable div.cms-block-extra div.buttons {
+	text-align: center;
+	padding: 4px;
+}
+
+div.cms-block-extra p.status {
+	text-align: center;
+	padding: 30px 20px;
+}
+/* ADD BLOCK - END */
+
+/* BLOCK SETTINGS PAGE - BEGIN */
+ul.cms-blocks-list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #dde8ee;
+	border-bottom-width: 0;
+}
+
+li.cms-block-item {
+	list-style-type: none;
+	margin: 0;
+	padding: 3px;
+	border-bottom: 1px solid #dde8ee;
+}
+
+li.cms-block-item:hover {
+	/*background-color: #f4f6f8;*/
+	background-color: #ffffdd;
+}
+
+#forumtable li.cms-block-item p.block-title, #forumtable li.cms-block-item p.block-type, #forumtable li.cms-block-item p.block-view {
+	min-width: 25%;
+}
+
+#forumtable li.cms-block-item p.block-type {
+	padding-left: 3px;
+}
+
+li.cms-block-item p.block-title, li.cms-block-item p.block-type, li.cms-block-item p.block-view {
+	float: left;
+	border-right: 1px solid #dde8ee;
+}
+
+#forumtable li.cms-block-item p.block-title span, #forumtable li.cms-block-item p.block-type span {
+	display: inline-block;
+	padding-top: 2px;
+}
+
+#forumtable li.cms-block-item p.block-title a.edit-title, #forumtable li.cms-block-item p.block-title a.edit-parent, #forumtable li.cms-block-item p.block-type a.edit-type {
+	float: left;
+	margin-left: 0;
+	margin-right: 4px;
+}
+
+#forumtable li.cms-block-item p.block-groups a.edit-groups, #forumtable li.cms-block-item p.block-view a.edit-view {
+	float: left;
+	margin-left: 3px;
+	margin-right: 0;
+}
+
+#forumtable p.block-title span.block-title-edit {
+	display: inline-block;
+	clear: left;
+	float: left;
+	white-space: nowrap;
+	padding-top: 4px;
+}
+
+#forumtable span.block-title-edit a {
+	float: none;
+}
+
+#forumtable li.cms-block-item p.block-view select {
+	width: 100px;
+}
+
+#forumtable li.cms-block-item p.block-groups span, #forumtable li.cms-block-item p.block-view span {
+	display: inline-block;
+	padding-left: 3px;
+	padding-top: 2px;
+}
+
+#forumtable li.cms-block-item ul.used-list {
+	clear: both;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	border-top: 1px dotted #eeeeee;
+	color: #999999;
+}
+
+/* Comment/decomment this section to enable autohide for parents blocks */
+/*
+#forumtable li.cms-block-item ul.used-list {
+	display: none;
+}
+
+#forumtable li.cms-block-item:hover ul.used-list {
+	display: block;
+}
+*/
+
+#forumtable li.cms-block-item ul.used-list li {
+	list-style-type: none;
+	float: left;
+	padding: 3px;
+}
+
+#forumtable li.cms-block-item ul.used-list li.note {
+	padding-left: 3px;
+}
+/* BLOCK SETTINGS PAGE - END */
+
+/* EDIT BLOCK TYPE - BEGIN */
+#forumtable div.block-change-type {
+	clear: left;
+	margin-left: 25%;
+	padding: 4px 0 2px 6px;
+	text-align: left;
+	line-height: 1.4em;
+}
+
+#forumtable div.block-change-type ul, #forumtable div.block-change-groups ul, #forumtable div.block-change-view ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#forumtable div.block-change-type li, #forumtable div.block-change-groups li, #forumtable div.block-change-view li {
+	list-style-type: none;
+	text-align: left;
+	display: block;
+	background: url("images/cms_icon_delete.png") 0 50% no-repeat;
+	margin: 0;
+	padding: 2px;
+	padding-left: 18px;
+}
+
+#forumtable div.block-change-type li.checked, #forumtable div.block-change-groups li.checked, #forumtable div.block-change-view li.checked {
+	background: url("images/cms_icon_ok.png") 0 50% no-repeat;
+}
+
+#forumtable div.block-change-type li a {
+	display: inline-block;
+	min-width: 36px;
+	margin-right: 4px;
+}
+
+#forumtable div.block-change-type div.block-type-content {
+	padding-top: 3px;
+}
+
+#forumtable div.block-change-type div.block-type-content textarea {
+	width: 98%;
+	height: 200px;
+}
+
+div.block-type-content p.buttons {
+	padding-top: 3px;
+}
+
+#forumtable div.block-change-type li.edit-settings {
+	color: #999999;
+	background-image: none;
+}
+/* EDIT BLOCK TYPE - END */
+
+/* EDIT GROUPS LIST - BEGIN */
+#forumtable div.block-change-groups, #forumtable div.block-change-view {
+	margin-left: 75%;
+	padding-left: 9px;
+	padding-top: 6px;
+	text-align: left;
+	line-height: 1.4em;
+}
+
+#forumtable div.block-change-view {
+	margin-left: 50%;
+	padding-left: 6px;
+}
+/* EDIT GROUPS LIST - END */
+

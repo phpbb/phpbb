@@ -1,0 +1,61 @@
+<h2>{L_TITLE}<!-- IF CUR_FOLDER_NAME -->{L_COLON} {CUR_FOLDER_NAME}<!-- ENDIF --></h2>
+
+<form id="viewfolder" method="post" action="{S_PM_ACTION}">
+
+<div class="panel">
+	<div class="inner">
+	<!-- IF FOLDER_STATUS and FOLDER_MAX_MESSAGES neq 0 --><p>{FOLDER_STATUS}</p><!-- ENDIF -->
+
+	<div class="action-bar top">
+	<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
+		<div class="buttons">
+			<!-- IF U_POST_REPLY_PM -->
+				<a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}" class="button icon-button pmreply-icon">
+					{L_BUTTON_PM_REPLY}
+				</a>
+			<!-- ELSEIF U_POST_NEW_TOPIC -->
+				<a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}" class="button icon-button newpm-icon">
+					{L_BUTTON_PM_NEW}
+				</a>
+			<!-- ENDIF -->
+			<!-- IF U_FORWARD_PM -->
+				<a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" class="button icon-button forwardpm-icon">
+					{L_BUTTON_PM_FORWARD}
+				</a>
+			<!-- ENDIF -->
+			<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 -->
+				<a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}" class="button icon-button reply-all">
+					{L_BUTTON_PM_REPLY_ALL}
+				</a>
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF not S_IS_BOT and U_PRINT_PM -->
+		<div class="dropdown-container dropdown-button-control topic-tools">
+			<span title="{L_PM_TOOLS}" class="dropdown-trigger dropdown-select button icon-button tools-icon"></span>
+			<div class="dropdown hidden">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+					<!-- IF U_PRINT_PM --><li class="small-icon icon-print"><a href="{U_PRINT_PM}" title="{L_PRINT_PM}" accesskey="p">{L_PRINT_PM}</a></li><!-- ENDIF -->
+				</ul>
+			</div>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
+		<div class="pagination">
+			<!-- IF S_VIEW_MESSAGE -->
+				<a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_CURRENT_FOLDER}">{L_RETURN_TO_FOLDER}</a>
+			<!-- ELSEIF FOLDER_CUR_MESSAGES neq 0 -->
+				<!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}" class="mark">{L_PM_MARK_ALL_READ}</a> &bull; <!-- ENDIF -->
+				{TOTAL_MESSAGES}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+	</div>

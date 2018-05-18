@@ -1,0 +1,125 @@
+/* TABBED MENU - BEGIN */
+#tabs {
+	line-height: normal;
+	/*margin: 20px 0 -1px 7px;*/
+	margin: 0px 0 27px 12px;
+	min-width: 570px;
+}
+
+#tabs ul {
+	margin:0;
+	padding: 0;
+	list-style: none;
+}
+
+#tabs li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#tabs a {
+	float: left;
+	background: none no-repeat 0% -35px;
+	background-image: url("./images/bg_tabs1.gif");
+	background-color: transparent;
+	margin: 0 1px 0 0;
+	padding: 0 0 0 5px;
+	text-decoration: none;
+	position: relative;
+	cursor: pointer;
+}
+
+#tabs a span {
+	float: left;
+	display: block;
+	background: none no-repeat 100% -35px;
+	background-image: url("./images/bg_tabs2.gif");
+	background-color: transparent;
+	color: #536482;
+	/*padding: 6px 10px 6px 5px;*/
+	padding: 5px 10px 5px 5px;
+	white-space: nowrap;
+}
+
+#tabs a span img {
+	vertical-align: bottom;
+}
+
+#tabs a:hover span {
+	color: #dd2222;
+}
+
+#tabs .activetab a {
+	background-position: 0 0;
+	border-bottom: 1px solid #ebebeb;
+	border-bottom-color: #cadceb;
+}
+
+#tabs .activetab a span {
+	background-position: 100% 0;
+	/*padding-bottom: 7px;*/
+	padding-bottom: 6px;
+	color: #333333;
+}
+
+#tabs a:hover {
+	background-position: 0 -70px;
+}
+
+#tabs a:hover span {
+	background-position:100% -70px;
+}
+
+#tabs .activetab a:hover {
+	background-position: 0 0;
+}
+
+#tabs .activetab a:hover span {
+	color: #000000;
+	background-position: 100% 0;
+}
+
+/* TABBED MENU - END */
+
+/* MINI TABBED MENU - BEGIN */
+----------------------------------------*/
+#minitabs {
+	line-height: normal;
+	margin: -20px 7px 0 0;
+}
+
+#minitabs ul {
+	margin:0;
+	padding: 0;
+	list-style: none;
+}
+
+#minitabs li {
+	display: block;
+	float: right;
+	padding: 0 10px 4px 10px;
+	font-size: 1em;
+	font-weight: bold;
+	background-color: #e1ebf2;
+	margin-left: 2px;
+}
+
+#minitabs a {
+}
+
+#minitabs a:hover {
+	text-decoration: none;
+}
+
+#minitabs li.activetab {
+	background-color: #f9f9f9;
+}
+
+#minitabs li.activetab a, #minitabs li.activetab a:hover {
+	color: #333333;
+}
+/* MINI TABBED MENU - END */
+

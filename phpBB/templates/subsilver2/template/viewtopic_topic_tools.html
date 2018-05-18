@@ -1,0 +1,25 @@
+<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or U_EMAIL_TOPIC or U_PRINT_TOPIC or S_DISPLAY_TOPIC_TOOLS) -->
+	<div class="dropdown-container dropdown-button-control topic-tools">
+		<span title="{L_TOPIC_TOOLS}" class="button icon-button tools-icon dropdown-trigger dropdown-select"></span>
+		<div class="dropdown hidden">
+			<div class="pointer"><div class="pointer-inner"></div></div>
+			<ul class="dropdown-contents">
+				<!-- EVENT viewtopic_topic_tools_before -->
+				<!-- IF U_WATCH_TOPIC -->
+					<li class="small-icon icon-<!-- IF S_WATCHING_TOPIC -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->">
+						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon icon-<!-- IF not S_WATCHING_TOPIC -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">{S_WATCH_TOPIC_TITLE}</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_BOOKMARK_TOPIC -->
+					<li class="small-icon icon-bookmark">
+						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">{S_BOOKMARK_TOPIC}</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_BUMP_TOPIC --><li class="small-icon icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
+				<!-- IF U_EMAIL_TOPIC --><li class="small-icon icon-sendemail"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
+				<!-- IF U_PRINT_TOPIC --><li class="small-icon icon-print"><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p">{L_PRINT_TOPIC}</a></li><!-- ENDIF -->
+				<!-- EVENT viewtopic_topic_tools_after -->
+			</ul>
+		</div>
+	</div>
+<!-- ENDIF -->

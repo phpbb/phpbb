@@ -1,0 +1,50 @@
+#wrapper, .top-header, .top-menu, .page-footer, .roundedbox, .roundedbox h3 {
+	/*behavior: url('./templates/all/border-radius.htc');*/
+}
+
+.forumline, .roundedbox, div.roundedbox div.inside {
+	margin-bottom: 0px !important;
+}
+
+.roundedbox {
+	/*border-width: 0px !important;*/
+}
+
+/* Nice method for clearing floated blocks without having to insert any extra markup (like spacer above)
+   From http://www.positioniseverything.net/easyclearing.html
+#tabs:after, #minitabs:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}*/
+
+#tabs, #minitabs {
+	height: 1%;
+	overflow: hidden;
+}
+
+#tabs {
+	margin: 20px 0 -1px 7px;
+}
+
+#tabs a span {
+	padding: 6px 10px 6px 5px;
+}
+
+#tabs .activetab a span {
+	padding-bottom: 7px;
+}
+
+/* #minitabs fix for IE */
+.tabs-container {
+	zoom: 1;
+}
+
+#minitabs {
+	white-space: nowrap;
+	*min-width: 50%;
+}
+/*
+*/

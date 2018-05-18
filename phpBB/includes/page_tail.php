@@ -6,7 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
- *   $Id$
+ *   $Id: page_tail.php,v 1.1 2010/10/10 15:05:27 orynider Exp $
  *
  *
  ***************************************************************************/
@@ -30,17 +30,23 @@ global $do_gzip_compress;
 //
 // Show the overall footer.
 //
- $admin_link = ( $userdata['user_level'] == ADMIN ) ? '<a href="admin/index.' . $phpEx . '?sid=' . $userdata['session_id'] . '&amp;p_sid=' . $userdata['priv_session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
+$admin_link = ($user->data['user_level'] == ADMIN) ? '<a href="admin/index.' . $phpEx . '?sid=' . $user->data['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '';
 
 $template->set_filenames(array(
 	'overall_footer' => ( empty($gen_simple_header) ) ? 'overall_footer.tpl' : 'simple_footer.tpl')
 );
-
+//Temp fix for page tail
+$lang['POWERED_BY'] = !empty($lang['POWERED_BY']) ? $lang['POWERED_BY'] : 'Powered by %s';
 $template->assign_vars(array(
 	'TRANSLATION_INFO' => (isset($lang['TRANSLATION_INFO'])) ? $lang['TRANSLATION_INFO'] : ((isset($lang['TRANSLATION'])) ? $lang['TRANSLATION'] : ''),
-	'ADMIN_LINK' => $admin_link)
+	'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $board_config, $auth, $user, $cache),
+	'CREDIT_LINE'			=> $user->lang('POWERED_BY', ' <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
+	
+	'ADMIN_LINK' => $admin_link,
+	'L_ACP' => $lang['Admin_panel'],
+	'U_ACP' => ($user->data['user_level'] == ADMIN) ? "{$phpbb_root_path}admin/index.$phpEx?sid=" . $user->session_id : $admin_link)
 );
-
+	
 $template->pparse('overall_footer');
 
 //

@@ -1,0 +1,35 @@
+
+<!-- BEGIN forumrow -->
+	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT  -->
+			</ul>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	<!-- ENDIF -->
+
+
+		<li class="row">
+			<dl class="icon" style="background-image: url({catrow.forumrow.FORUM_FOLDER_IMG});">
+				<dt>
+					<a href="{catrow.forumrow.U_VIEWFORUM}" class="forumtitle">{catrow.forumrow.FORUM_NAME}</a><br />
+					{catrow.forumrow.FORUM_DESC}
+					<br />{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}
+				</dt>
+					<dd class="topics">{catrow.forumrow.TOPICS}</dd>
+					<dd class="posts">{catrow.forumrow.POSTS}</dd>
+					<dd class="lastpost"><span>
+						{catrow.forumrow.LAST_POST}</span>
+					</dd>
+			</dl>
+		</li>
+
+
+	<!-- IF forumrow.S_LAST_ROW -->
+			</ul>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	<!-- ENDIF -->
+
+
+<!-- END forumrow -->

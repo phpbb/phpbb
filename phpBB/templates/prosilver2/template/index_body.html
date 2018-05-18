@@ -1,0 +1,123 @@
+<div class="navbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="linklist navlinks">
+				<li><a class="icon-home" href="{U_INDEX}">{L_INDEX}</a></li>
+				<li class="rightside"></li>
+			</ul>
+			<ul class="linklist">
+				<!-- BEGIN switch_user_logged_in -->
+					<li>
+						<a href="{U_PROFILE}" title="{L_PROFILE}" class="icon-ucp">{L_PROFILE}</a>
+							 (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>) &bull; 
+						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					</li>
+				<!-- END switch_user_logged_in -->
+				<li class="rightside">
+					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
+					<a href="{U_SEARCH}" title="{L_SEARCH}" class="icon-search">{L_SEARCH}</a>&nbsp; 
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; 
+					<!-- BEGIN switch_user_logged_out -->
+					<a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; 
+					<!-- END switch_user_logged_out -->
+					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="icon-logout">{L_LOGIN_LOGOUT}</a>
+				</li>
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+</div>
+<ul class="linklist">
+	<li>
+	<a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a>
+	<!-- BEGIN switch_user_logged_in -->
+	 &bull; <a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a> &bull; <a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+	<!-- END switch_user_logged_in -->
+	</li>
+	<!-- BEGIN switch_user_logged_in -->
+	<li class="rightside"><a href="{U_MARK_FORUMS}">{L_MARK_FORUMS_READ}</a></li>
+	<!-- END switch_user_logged_in -->
+	</ul>
+<!-- BEGIN catrow -->
+		<div class="forabg">
+			<div class="inner"><span class="corners-top"><span></span></span>
+			<ul class="topiclist">
+				<li class="header">
+					<dl class="icon">
+						<dt><a href="{catrow.U_VIEWCAT}">{catrow.CAT_DESC}</a></dt>
+						<dd class="topics">{L_TOPICS}</dd>
+						<dd class="posts">{L_POSTS}</dd>
+						<dd class="lastpost"><span>{L_LASTPOST}</span></dd>
+					</dl>
+				</li>
+			</ul>
+			<ul class="topiclist forums">
+			
+<!-- EVENT index_body_forumlist_body_before -->			
+			
+<!-- BEGIN forumrow -->
+
+	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT  -->
+			</ul>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	<!-- ENDIF -->
+		<li class="row">
+			<dl class="icon">
+			<dd>{catrow.forumrow.FORUM_FOLDER_IMG_FULL_TAG}</dd>
+				<dt>
+					<a href="{catrow.forumrow.U_VIEWFORUM}" class="forumtitle">
+					{catrow.forumrow.FORUM_NAME}
+					</a>
+					<br />
+					{catrow.forumrow.FORUM_DESC}
+					<br />{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}
+				</dt>
+					<dd class="topics">{catrow.forumrow.TOPICS}</dd>
+					<dd class="posts">{catrow.forumrow.POSTS}</dd>
+					<dd class="lastpost"><span>
+						{catrow.forumrow.LAST_POST}</span>
+					</dd>
+			</dl>
+		</li>
+
+
+	<!-- IF forumrow.S_LAST_ROW -->
+			</ul>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	<!-- ENDIF -->
+
+
+<!-- END forumrow -->
+
+<!-- EVENT index_body_forumlist_body_after -->
+			
+
+			</ul>
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	<!-- END catrow -->
+<!-- BEGIN switch_user_logged_out -->
+	<form method="post" action="{S_LOGIN_ACTION}" class="headerspace">
+		<h3><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a>&nbsp; &bull; &nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a></h3>
+		<fieldset class="quick-login">
+			<label for="username">{L_USERNAME}:</label>&nbsp;<input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" />  
+			<label for="password">{L_PASSWORD}:</label>&nbsp;<input type="password" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" /> | 
+			<label for="autologin">{L_LOG_ME_IN} <input type="checkbox" name="autologin" id="autologin" class="checkbox" /></label> <input type="submit" name="login" value="{L_LOGIN}" class="button2" />
+		</fieldset>
+	</form>
+<!-- END switch_user_logged_out -->
+	<h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3>
+	<p>{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}</p>
+	<p>{LOGGED_IN_USER_LIST}<br /><em>({L_LEGEND}{L_WHOSONLINE_ADMIN},&nbsp;{L_WHOSONLINE_MOD})</em></p>
+	<p>{TOTAL_POSTS} &bull; {TOTAL_USERS} &bull; {NEWEST_USER}</p>
+<div class="navbar">
+		<div class="inner"><span class="corners-top"><span></span></span>
+		<ul class="linklist">
+			<li>
+				<a class="icon-home" href="{U_INDEX}">{L_INDEX}</a>  
+			</li>
+			<li class="rightside"><a href="{U_GROUP_CP}">{L_USERGROUPS}</a> &bull; {S_TIMEZONE}</li>
+		</ul>
+		<span class="corners-bottom"><span></span></span></div>
+</div>
