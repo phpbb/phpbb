@@ -3,6 +3,7 @@ services:
     phpbb.mention.controller:
         class: phpbb\mention\controller\mention
         arguments:
+            - '@phpbb.mention.source_collection'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -15,11 +16,17 @@ services:
         tags:
             - { name: service_collection, tag: mention.source }
 
+    phpbb.mention.source.friend:
+        class: phpbb\mention\source\friend
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+        tags:
+            - { name: mention.source }
+
     phpbb.mention.source.topic:
         class: phpbb\mention\source\topic
         arguments:
             - '@dbal.conn'
-            - '@request'
         tags:
             - { name: mention.source }
-
