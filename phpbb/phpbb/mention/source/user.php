@@ -13,7 +13,7 @@
 
 namespace phpbb\mention\source;
 
-abstract class user
+abstract class user implements source_interface
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -26,8 +26,18 @@ abstract class user
 		$this->db = $db;
 	}
 
+	/**
+	 * Builds a query based on user input
+	 *
+	 * @param string $keyword  Search string
+	 * @param int    $topic_id Current topic ID
+	 * @return string Query ready for execution
+	 */
 	abstract protected function query($keyword, $topic_id);
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get($keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
