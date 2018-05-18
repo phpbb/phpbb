@@ -15,6 +15,9 @@ namespace phpbb\mention\source;
 
 class topic extends user
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function query($keyword, $topic_id)
 	{
 		$query = $this->db->sql_build_query('SELECT', [

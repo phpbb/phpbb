@@ -32,6 +32,9 @@ class friend extends user
 		parent::__construct($db);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function query($keyword, $topic_id)
 	{
 		$query = $this->db->sql_build_query('SELECT', [
