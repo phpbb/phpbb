@@ -1089,7 +1089,10 @@ class user
 	
 	var $cloned_current_template_path = 'templates/subSilver';
 	var $default_current_template_path = 'templates/subsilver2';
-
+	
+	var $imageset_backend = 'phpbb2';
+	var $ext_imageset_backend = 'phpbb2';	
+	
 	var $imageset_path = '/theme/images/';	
 	var $img_array = array();
 	
@@ -2386,15 +2389,15 @@ class user
 		elseif (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/images/"))
 		{
 			$this->imageset_path = '/theme/images/';  //phpBB3 Images
-			if ((@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/images/lang_{$this->user_language_name}")) || (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/images/lang_{$this->default_language_name}")))
+			if ((@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/lang_{$this->user_language_name}")) || (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/lang_{$this->default_language_name}")))
 			{
-				$this->img_lang = (file_exists($phpbb_root_path . $this->template_path . $this->template_name . $this->imageset_path . 'lang_' . $this->user_language_name)) ? $this->user_language_name : $this->default_language_name;
+				$this->img_lang = (file_exists($phpbb_root_path . $this->template_path . $this->template_name . '/theme/' . 'lang_' . $this->user_language_name)) ? $this->user_language_name : $this->default_language_name;
 				$this->img_lang_dir = 'lang_' . $this->img_lang;
 				$this->imageset_backend = 'phpbb2';	
 			}
-			if ((@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/images/{$this->user_language}")) || (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/images/{$this->default_language}")))
+			if ((@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/{$this->user_language}")) || (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/{$this->default_language}")))
 			{
-				$this->img_lang = (file_exists($phpbb_root_path . $this->template_path . $this->template_name . $this->imageset_path . $this->user_language_name)) ? $this->user_language : $this->default_language;
+				$this->img_lang = (file_exists($phpbb_root_path . $this->template_path . $this->template_name . '/theme/' . $this->user_language_name)) ? $this->user_language : $this->default_language;
 				$this->img_lang_dir = $this->img_lang;
 				$this->imageset_backend = 'phpbb3';	
 			}			

@@ -1,6 +1,6 @@
 <?php
 
-// eXtreme Styles mod cache. Generated on Thu, 17 May 2018 09:51:16 +0000 (time=1526550676)
+// eXtreme Styles mod cache. Generated on Wed, 23 May 2018 16:47:11 +0000 (time=1527094031)
 
 ?><!-- INCLUDEX overall_header.html -->
 <!-- EVENT viewforum_forum_title_before -->
@@ -35,7 +35,7 @@
 		<a href="<?php echo isset($this->vars['U_MARK_FORUMS']) ? $this->vars['U_MARK_FORUMS'] : $this->lang('U_MARK_FORUMS'); ?>" class="mark-read rightside" data-ajax="mark_forums_read"><?php echo isset($this->vars['L_MARK_SUBFORUMS_READ']) ? $this->vars['L_MARK_SUBFORUMS_READ'] : $this->lang('L_MARK_SUBFORUMS_READ'); ?></a>
 	</div>
 <?php } ?>
-	<?php  $this->set_filename('xs_include_b51e269216595a616b6e43b092f7ad27', 'forumlist_body.html', true);  $this->pparse('xs_include_b51e269216595a616b6e43b092f7ad27');  ?>
+	<?php  $this->set_filename('xs_include_36e0ed90b1a57d500c5a6816cf2a431c', 'forumlist_body.html', true);  $this->pparse('xs_include_36e0ed90b1a57d500c5a6816cf2a431c');  ?>
 <?php } ?>
 
 <?php if ($this->vars['S_DISPLAY_POST_INFO'] || $this->vars['PAGINATION'] || $this->vars['TOTAL_POSTS'] || $this->vars['TOTAL_TOPICS']) {  ?>
@@ -70,7 +70,7 @@
 		<?php if (! $this->vars['S_IS_BOT'] && $this->vars['U_MARK_TOPICS'] && $this->vars['S_HAS_SUBFORUM']) {  ?><a href="<?php echo isset($this->vars['U_MARK_TOPICS']) ? $this->vars['U_MARK_TOPICS'] : $this->lang('U_MARK_TOPICS'); ?>" class="mark" accesskey="m" data-ajax="mark_topics_read"><?php echo isset($this->vars['L_MARK_TOPICS_READ']) ? $this->vars['L_MARK_TOPICS_READ'] : $this->lang('L_MARK_TOPICS_READ'); ?></a> &bull; <?php } ?>
 		<?php echo isset($this->vars['TOTAL_TOPICS']) ? $this->vars['TOTAL_TOPICS'] : $this->lang('TOTAL_TOPICS'); ?>
 		<?php if ($this->vars['PAGINATION']) {  ?>
-			<?php  $this->set_filename('xs_include_aaec1812ce388c80dddfe4848de01726', 'pagination.html', true);  $this->pparse('xs_include_aaec1812ce388c80dddfe4848de01726');  ?>
+			<?php  $this->set_filename('xs_include_0ae39ac3b7ffe3b7b1482129188133a1', 'pagination.html', true);  $this->pparse('xs_include_0ae39ac3b7ffe3b7b1482129188133a1');  ?>
 		<?php } else { ?>
 			&bull; <?php echo isset($this->vars['PAGE_NUMBER']) ? $this->vars['PAGE_NUMBER'] : $this->lang('PAGE_NUMBER'); ?>
 		<?php } ?>
@@ -285,7 +285,7 @@ if(isset($topicrow_item)) { unset($topicrow_item); }
 			<?php if (! $this->vars['S_IS_BOT'] && $this->vars['U_MARK_TOPICS'] && $this->vars['S_HAS_SUBFORUM']) {  ?><a href="<?php echo isset($this->vars['U_MARK_TOPICS']) ? $this->vars['U_MARK_TOPICS'] : $this->lang('U_MARK_TOPICS'); ?>" data-ajax="mark_topics_read"><?php echo isset($this->vars['L_MARK_TOPICS_READ']) ? $this->vars['L_MARK_TOPICS_READ'] : $this->lang('L_MARK_TOPICS_READ'); ?></a> &bull; <?php } ?>
 			<?php echo isset($this->vars['TOTAL_TOPICS']) ? $this->vars['TOTAL_TOPICS'] : $this->lang('TOTAL_TOPICS'); ?>
 			<?php if ($this->vars['PAGINATION']) {  ?>
-				<?php  $this->set_filename('xs_include_918f5c2c0ca64e7f8d357541e7170387', 'pagination.html', true);  $this->pparse('xs_include_918f5c2c0ca64e7f8d357541e7170387');  ?>
+				<?php  $this->set_filename('xs_include_eb9e4577dccf1151c30307ec02a8e701', 'pagination.html', true);  $this->pparse('xs_include_eb9e4577dccf1151c30307ec02a8e701');  ?>
 			<?php } else { ?>
 				 &bull; <?php echo isset($this->vars['PAGE_NUMBER']) ? $this->vars['PAGE_NUMBER'] : $this->lang('PAGE_NUMBER'); ?>
 			<?php } ?>
@@ -293,7 +293,7 @@ if(isset($topicrow_item)) { unset($topicrow_item); }
 	</div>
 <?php } ?>
 
-<?php  $this->set_filename('xs_include_f2b0887c64f1868efe0b86af85952a0c', 'jumpbox.html', true);  $this->pparse('xs_include_f2b0887c64f1868efe0b86af85952a0c');  ?>
+<?php  $this->set_filename('xs_include_0b11ef8b80a421b7c2997a36ebba346b', 'jumpbox.html', true);  $this->pparse('xs_include_0b11ef8b80a421b7c2997a36ebba346b');  ?>
 
 <?php if ($this->vars['S_DISPLAY_ONLINE_LIST'] && $this->vars['U_VIEWONLINE']) {  ?>
 	<div class="stat-block online-list">

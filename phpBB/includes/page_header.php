@@ -781,7 +781,7 @@ $template->assign_vars(array(
 	'T_SMILIES_PATH'		=> "{$web_path}{$board_config['smilies_path']}/",
 	'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$board_config['avatar_gallery_path']}/",
 	
-	'T_ICONS_PATH'			=> !empty($board_config['icons_path']) ? "{$web_path}{$board_config['icons_path']}/" : $web_path.'/images/icons/',
+	'T_ICONS_PATH'			=> !empty($board_config['icons_path']) ? "{$web_path}{$board_config['icons_path']}/" : '', //$web_path.'/images/icons/',
 	'T_RANKS_PATH'			=> !empty($board_config['ranks_path']) ? "{$web_path}{$board_config['ranks_path']}/" : $web_path.'/images/ranks/',
 	'T_UPLOAD_PATH'			=> !empty($board_config['upload_path']) ? "{$web_path}{$board_config['upload_path']}/" : $web_path.'/cache/',	
 	
@@ -800,9 +800,9 @@ $template->assign_vars(array(
 	'T_SMILIES'				=> $board_config['smilies_path'],
 	'T_AVATAR_GALLERY'		=> $board_config['avatar_gallery_path'],
 	
-	'T_ICONS_PATH'		=> !empty($board_config['icons_path']) ? $board_config['icons_path'] : '/images/icons/',
-	'T_RANKS_PATH'		=> !empty($board_config['ranks_path']) ? $board_config['ranks_path'] : '/images/ranks/',
-	'T_UPLOAD_PATH'		=> !empty($board_config['upload_path']) ? $board_config['upload_path'] : '/cache/',
+	//'T_ICONS_PATH'		=> !empty($board_config['icons_path']) ? $board_config['icons_path'] : '/images/icons/',
+	//'T_RANKS_PATH'		=> !empty($board_config['ranks_path']) ? $board_config['ranks_path'] : '/images/ranks/',
+	//'T_UPLOAD_PATH'		=> !empty($board_config['upload_path']) ? $board_config['upload_path'] : '/cache/',
 
 	'SITE_LOGO_IMG'		=> ($theme['template_name'] == 'subSilver') ? 'logo_phpBB.gif' : 'site_logo.gif',	
 	
