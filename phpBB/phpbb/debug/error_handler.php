@@ -17,7 +17,7 @@ use Symfony\Component\Debug\ErrorHandler;
 
 class error_handler extends ErrorHandler
 {
-	public function handleError($type, $message, $file, $line, array $context, array $backtrace = null)
+	public function handleError($type, $message, $file, $line)
 	{
 		if ($type === E_USER_WARNING || $type === E_USER_NOTICE)
 		{
@@ -26,6 +26,6 @@ class error_handler extends ErrorHandler
 			$handler($type, $message, $file, $line);
 		}
 
-		return parent::handleError($type, $message, $file, $line, $context, $backtrace);
+		return parent::handleError($type, $message, $file, $line);
 	}
 }
