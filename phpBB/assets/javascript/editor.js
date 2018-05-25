@@ -384,11 +384,20 @@ function getCaretPosition(txtarea) {
 	return caretPos;
 }
 
-/**
-* Allow to use tab character when typing code
-* Keep indentation of last line of code when typing code
-*/
 (function($) {
+	function handle_mentions(txtarea) {
+		$(txtarea).atwho({
+			at: "@",
+			callbacks: {
+				remoteFilter: function(query, callback) {
+					$.getJSON(mention_url, {keyword: query, topic_id: mention_topic_id}, function (data) {
+						callback(data)
+					});
+				}
+			}
+		});
+	}
+
 	$(document).ready(function() {
 		var doc, textarea;
 
@@ -405,9 +414,18 @@ function getCaretPosition(txtarea) {
 
 		textarea = doc.forms[form_name].elements[text_name];
 
+		/**
+		 * Allow to use tab character when typing code
+		 * Keep indentation of last line of code when typing code
+		 */
 		phpbb.applyCodeEditor(textarea);
+
 		if ($('#attach-panel').length) {
 			phpbb.showDragNDrop(textarea);
+		}
+
+		if (mention_url) {
+			handle_mentions(textarea);
 		}
 
 		$('textarea').on('keydown', function (e) {
