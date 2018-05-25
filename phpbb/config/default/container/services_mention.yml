@@ -30,3 +30,12 @@ services:
             - '@dbal.conn'
         tags:
             - { name: mention.source }
+
+    phpbb.mention.source.usergroup:
+        class: phpbb\mention\source\usergroup
+        arguments:
+            - '@dbal.conn'
+            - '@group_helper'
+            - '@user'
+        tags:
+            - { name: mention.source }
