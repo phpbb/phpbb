@@ -43,10 +43,10 @@ class mention
 
 	public function handle()
 	{
-//		if (!$this->request->is_ajax())
-//		{
-//			redirect(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
-//		}
+		if (!$this->request->is_ajax())
+		{
+			redirect(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
+		}
 
 		$keyword = $this->request->variable('keyword', '', true);
 		$topic_id = $this->request->variable('topic_id', 0);
@@ -57,6 +57,12 @@ class mention
 			$names = array_merge($names, $source->get($keyword, $topic_id));
 		}
 
-		return new JsonResponse($names);
+		$clean_names = [];
+		foreach ($names as $name)
+		{
+			$clean_names[] = $name['name'];
+		}
+
+		return new JsonResponse($clean_names);
 	}
 }
