@@ -13,7 +13,7 @@
 
 namespace phpbb\mention\source;
 
-class friend extends user
+class usergroup extends group
 {
 	/** @var  \phpbb\user */
 	protected $user;
@@ -21,11 +21,11 @@ class friend extends user
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, \phpbb\user $user)
 	{
 		$this->user = $user;
 
-		parent::__construct($db);
+		parent::__construct($db, $helper);
 	}
 
 	/**
@@ -34,21 +34,17 @@ class friend extends user
 	protected function query($keyword, $topic_id)
 	{
 		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'u.username, u.user_id',
+			'SELECT'    => 'g.group_id',
 			'FROM'      => [
-				USERS_TABLE => 'u',
+				GROUPS_TABLE => 'g',
 			],
 			'LEFT_JOIN' => [
 				[
-					'FROM' => [ZEBRA_TABLE => 'z'],
-					'ON'   => 'u.user_id = z.zebra_id'
+					'FROM' => [USER_GROUP_TABLE => 'ug'],
+					'ON'   => 'g.group_id = ug.group_id'
 				]
 			],
-			'WHERE'     => 'z.friend = 1 AND z.user_id = ' . (int) $this->user->data['user_id'] . '
-				AND u.user_id <> ' . ANONYMOUS . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
-			'ORDER_BY'  => 'u.user_lastvisit DESC'
+			'WHERE'     => 'ug.user_id = ' . (int) $this->user->data['user_id'],
 		]);
 		return $query;
 	}
