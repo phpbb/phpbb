@@ -73,12 +73,14 @@
 	<dt><label for="bangivereason">{L_BAN_GIVE_REASON}{L_COLON}</label></dt>
 	<dd><input name="bangivereason" type="text" class="text medium" maxlength="255" id="bangivereason" /></dd>
 </dl>
-
-<p class="submit-buttons">
-	<input class="button1" type="submit" id="bansubmit" name="bansubmit" value="{L_SUBMIT}" />&nbsp;
-	<input class="button2" type="reset" id="banreset" name="banreset" value="{L_RESET}" />
-</p>
-{S_FORM_TOKEN}
+</fieldset>
+<fieldset>
+	<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="bansubmit" name="bansubmit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="banreset" name="banreset" value="{L_RESET}" />
+	</p>
+	{S_FORM_TOKEN}
 </fieldset>
 </form>
 

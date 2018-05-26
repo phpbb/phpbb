@@ -137,16 +137,16 @@ class acp_board
 					$avatar_vars += $driver->prepare_form_acp($user);
 				}
 
+				$legend2 = 'ACP_SUBMIT_CHANGES';
+
 				$display_vars = array(
 					'title'	=> 'ACP_AVATAR_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_AVATAR_SETTINGS',
-
 						'avatar_min_width'		=> array('lang' => 'MIN_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_min_height'		=> array('lang' => 'MIN_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_max_width'		=> array('lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_max_height'		=> array('lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
-
 						'allow_avatar'			=> array('lang' => 'ALLOW_AVATARS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
@@ -158,9 +158,7 @@ class acp_board
 					$display_vars['vars'] += $avatar_vars;
 				}
 
-				$display_vars['vars'] += [
-					'legend2'	=> 'ACP_SUBMIT_CHANGES'
-				];
+				$display_vars['vars']['legend2'] = 'ACP_SUBMIT_CHANGES';
 			break;
 
 			case 'message':
@@ -368,7 +366,6 @@ class acp_board
 						'load_user_activity_limit'		=> array('lang' => 'LOAD_USER_ACTIVITY_LIMIT',		'validate' => 'int:0:99999999',	'type' => 'number:0:99999999', 'explain' => true),
 						'load_tplcompile'		=> array('lang' => 'RECOMPILE_STYLES',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_cdn'				=> array('lang' => 'ALLOW_CDN',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'enable_accurate_pm_button'	=> array('lang' => 'YES_ACCURATE_PM_BUTTON',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_live_searches'	=> array('lang' => 'ALLOW_LIVE_SEARCHES',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'CUSTOM_PROFILE_FIELDS',
