@@ -501,8 +501,8 @@ else
 			'STYLING'			=> 'notification-reported',
 			'AVATAR'			=> phpbb_get_user_avatar($user->data),
 			'FORMATTED_TITLE'	=> $user->lang('NOTIFICATION', $user->data['username'], false),
-			
-			'REFERENCE'			=> $user->lang('NOTIFICATION_REFERENCE', censor_text($l_privmsgs_text)),
+			'REFERENCE'			=> $user->lang('NOTIFICATION_REFERENCE', $l_privmsgs_text),			
+			//'REFERENCE'			=> $user->lang('NOTIFICATION_REFERENCE', censor_text($l_privmsgs_text)),
 			'FORUM'				=> append_sid('privmsg.'.$phpEx.'?folder=inbox'), //$this->get_forum(),
 			'REASON'			=> $notifications['REASON'], //$this->get_reason(),
 			'URL'				=> append_sid('privmsg.'.$phpEx.'?folder=inbox'), //$this->get_url(),
@@ -804,7 +804,7 @@ $template->assign_vars(array(
 	//'T_RANKS_PATH'		=> !empty($board_config['ranks_path']) ? $board_config['ranks_path'] : '/images/ranks/',
 	//'T_UPLOAD_PATH'		=> !empty($board_config['upload_path']) ? $board_config['upload_path'] : '/cache/',
 
-	'SITE_LOGO_IMG'		=> ($theme['template_name'] == 'subSilver') ? 'logo_phpBB.gif' : 'site_logo.gif',	
+	'SITE_LOGO_IMG'		=> ($user->imageset_backend == 'phpbb2') ? 'logo_phpBB.gif' : $user->img('site_logo.gif', '', '27', '', 'code'),	
 	
 	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],
 	'T_BODY_BACKGROUND' => $theme['body_background'],

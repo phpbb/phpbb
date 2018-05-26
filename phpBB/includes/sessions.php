@@ -3110,7 +3110,7 @@ class user
 		{
 			return $this->lang_id;
 		}
-
+		
 		if (!$this->lang_name)
 		{
 			$this->lang_name = $board_config['default_lang'];
@@ -3136,6 +3136,7 @@ class user
 	public function default_bitfield()
 	{
 		static $value;
+		
 		if (isset($value))
 		{
 			return $value;
@@ -3143,8 +3144,15 @@ class user
 
 		// Hardcoded template bitfield to add for new templates
 		$default_bitfield = '1111111111111';
-
-		$bitfield = new bitfield();
+		
+		if (!class_exists('bitfield'))
+		{		
+			global $phpEx;
+			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		}			
+		
+		$bitfield = new bitfield();		
+		
 		for ($i = 0; $i < strlen($default_bitfield); $i++)
 		{
 			if ($default_bitfield[$i] == '1')

@@ -463,7 +463,7 @@ else
 	$limit_posts_time = '';
 	$post_days = 0;
 }
-
+include_once($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 $s_forum_rules = '';
 if (isset($forum_topic_data['forum_rules']))
 {

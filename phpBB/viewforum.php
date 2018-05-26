@@ -242,7 +242,7 @@ while( $row = $db->sql_fetchrow($result) )
 	
 $l_moderators = ( count($moderators) == 1 ) ? $lang['Moderator'] : $lang['Moderators'];
 $forum_moderators = ( count($moderators) ) ? implode(', ', $moderators) : $lang['None'];
-
+include_once($phpbb_root_path . 'includes/functions_post.'.$phpEx);
 $s_forum_rules = '';
 if (isset($forum_row['forum_rules']))
 {
