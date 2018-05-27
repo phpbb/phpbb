@@ -92,7 +92,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$template->assign_vars(array(
 			'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
 			'AVATAR_UPLOAD_SIZE' => $this->config['avatar_filesize'],
-			'AVATAR_ALLOWED_EXTENSIONS' => $this->allowed_extensions,
+			'AVATAR_ALLOWED_EXTENSIONS' => implode(',', preg_replace('/^/', '.', $this->allowed_extensions)),
 		));
 
 		return true;
