@@ -353,7 +353,8 @@ ol.def-rules li {
 	padding: 5px;
 }
 
-.cplist .topictitle {
+.cplist .topictitle,
+.cplist .topictitle-unread {
 	line-height: 30px;
 }
 

@@ -44,6 +44,10 @@ a:hover {
 	color: #d41142;
 }
 
+a.topictitle-unread {
+	color: #d41142;
+}
+
 /* links on gradient backgrounds */
 .forumbg .header a,
 .forabg .header a,

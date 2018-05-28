@@ -66,7 +66,7 @@
 							<a href="{messagerow.U_REMOVE_PM}" class="topictitle">{L_DELETE_MESSAGE}</a><br />
 							<span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span>
 						<!-- ELSE -->
-							<a href="{messagerow.U_VIEW_PM}" class="topictitle">{messagerow.SUBJECT}</a>
+							<a href="{messagerow.U_VIEW_PM}" class="<!-- IF messagerow.FOLDER_IMG_STYLE == 'pm_unread' --> topictitle-unread<!-- ELSE --> topictitle<!-- ENDIF -->">{messagerow.SUBJECT}</a>
 						<!-- ENDIF -->
 						<!-- IF messagerow.S_AUTHOR_DELETED -->
 							<br /><em class="small">{L_PM_FROM_REMOVED_AUTHOR}</em>
