@@ -4,5 +4,9 @@ parameters:
 services:
     filesystem:
         class: phpbb\filesystem\filesystem
+
+    temp:
+        class: phpbb\filesystem\temp
         arguments:
+            - '@filesystem'
             - '%core.filesystem.cache_temp_dir%'

@@ -35,7 +35,7 @@ class file extends \phpbb\cache\driver\base
 		global $phpbb_container;
 
 		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_container->getParameter('core.cache_dir');
-		$this->filesystem = new \phpbb\filesystem\filesystem('');
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!is_dir($this->cache_dir))
 		{
