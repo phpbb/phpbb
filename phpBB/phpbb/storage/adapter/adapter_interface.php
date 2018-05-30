@@ -90,6 +90,9 @@ interface adapter_interface
 	 * Get direct link.
 	 *
 	 * @param string	$path	The file
+	 *
+	 * @return string	Returns link.
+	 *
 	 */
 	public function get_link($path);
 }
