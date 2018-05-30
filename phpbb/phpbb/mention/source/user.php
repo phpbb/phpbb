@@ -47,7 +47,9 @@ abstract class user implements source_interface
 		while ($row = $this->db->sql_fetchrow($res))
 		{
 			$names['u' . $row['user_id']] = [
-				'name' => $row['username'],
+				'name'	=> $row['username'],
+				'param'	=> 'user_id',
+				'id'	=> $row['user_id'],
 			];
 		}
 

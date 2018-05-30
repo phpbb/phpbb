@@ -388,6 +388,7 @@ function getCaretPosition(txtarea) {
 	function handle_mentions(txtarea) {
 		$(txtarea).atwho({
 			at: "@",
+			insertTpl: "[mention ${param}=${id}]${name}[/mention]",
 			callbacks: {
 				remoteFilter: function(query, callback) {
 					$.getJSON(mention_url, {keyword: query, topic_id: mention_topic_id}, function (data) {
