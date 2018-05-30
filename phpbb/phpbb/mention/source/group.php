@@ -94,7 +94,9 @@ abstract class group implements source_interface
 		foreach ($group_ids as $group_id)
 		{
 			$names['g' . $group_id] = [
-				'name' => $groups[$group_id]['group_name'],
+				'name'	=> $groups[$group_id]['group_name'],
+				'param'	=> 'group_id',
+				'id'	=> $group_id,
 			];
 		}
 

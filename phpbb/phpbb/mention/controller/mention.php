@@ -57,12 +57,6 @@ class mention
 			$names = array_merge($names, $source->get($keyword, $topic_id));
 		}
 
-		$clean_names = [];
-		foreach ($names as $name)
-		{
-			$clean_names[] = $name['name'];
-		}
-
-		return new JsonResponse($clean_names);
+		return new JsonResponse(array_values($names));
 	}
 }
