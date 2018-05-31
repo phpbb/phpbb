@@ -2463,7 +2463,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-	$template->assign_vars(array(
+	$login_box_template_data = array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
@@ -2480,7 +2480,29 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
-	));
+	);
+
+	/**
+	 * Event to add/modify login box template data
+	 *
+	 * @event core.login_box_modify_template_data
+	 * @var	int		admin							Flag whether user is admin
+	 * @var	string	username						User name
+	 * @var	int		autologin						Flag whether autologin is enabled
+	 * @var string	redirect						Redirect URL
+	 * @var	array	login_box_template_data			Array with the login box template data
+	 * @since 3.2.3-RC2
+	 */
+	$vars = array(
+		'admin',
+		'username',
+		'autologin',
+		'redirect',
+		'login_box_template_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.login_box_modify_template_data', compact($vars)));
+
+	$template->assign_vars($login_box_template_data);
 
 	page_header($user->lang['LOGIN']);
 
