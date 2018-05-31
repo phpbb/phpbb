@@ -164,7 +164,7 @@ abstract class base_extractor implements extractor_interface
 
 		if ($store === true)
 		{
-			$file = $this->temp->get_temp_dir() . '/' . $filename . $ext;
+			$file = $this->temp->get_dir() . '/' . $filename . $ext;
 
 			$this->fp = $open($file, 'w');
 

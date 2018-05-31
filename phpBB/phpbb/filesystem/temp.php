@@ -16,7 +16,7 @@ namespace phpbb\filesystem;
 class temp
 {
 	/**
-	* @var string
+	* @var string	Temporary directory path
 	*/
 	protected $temp_dir;
 
@@ -47,7 +47,7 @@ class temp
 	 *
 	 * @return string	returns the directory
 	 */
-	public function get_temp_dir()
+	public function get_dir()
 	{
 		return $this->temp_dir;
 	}

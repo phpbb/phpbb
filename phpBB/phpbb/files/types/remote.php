@@ -146,7 +146,7 @@ class remote extends base
 
 		$data = $response->getBody();
 
-		$filename = tempnam($this->temp->get_temp_dir(), unique_id() . '-');
+		$filename = tempnam($this->temp->get_dir(), unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{

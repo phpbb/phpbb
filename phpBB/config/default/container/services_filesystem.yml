@@ -5,7 +5,7 @@ services:
     filesystem:
         class: phpbb\filesystem\filesystem
 
-    temp:
+    filesystem.temp:
         class: phpbb\filesystem\temp
         arguments:
             - '@filesystem'

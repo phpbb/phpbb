@@ -71,7 +71,7 @@ services:
         arguments:
             - '@config'
             - '@files.factory'
-            - '@temp'
+            - '@filesystem.temp'
             - '@language'
             - '@php_ini'
             - '@request'
@@ -82,7 +82,7 @@ services:
         arguments:
             - '@config'
             - '@files.factory'
-            - '@temp'
+            - '@filesystem.temp'
             - '@language'
             - '@php_ini'
             - '@request'

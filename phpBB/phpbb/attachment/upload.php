@@ -240,7 +240,7 @@ class upload
 		{
 			$source = $this->file->get('filename');
 			$destination_name = 'thumb_' . $this->file->get('realname');
-			$destination = $this->temp->get_temp_dir() . '/' . $destination_name;
+			$destination = $this->temp->get_dir() . '/' . $destination_name;
 
 			if (create_thumbnail($source, $destination, $this->file->get('mimetype')))
 			{
