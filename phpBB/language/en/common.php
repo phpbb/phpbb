@@ -608,6 +608,7 @@ $lang = array_merge($lang, array(
 	'PREVIOUS'				=> 'Previous',		// Used in pagination
 	'PREVIOUS_STEP'			=> 'Previous',
 	'PRIVACY'				=> 'Privacy policy',
+	'PRIVACY_LINK'			=> 'Privacy',
 	'PRIVATE_MESSAGE'		=> 'Private message',
 	'PRIVATE_MESSAGES'		=> 'Private messages',
 	'PRIVATE_MESSAGING'		=> 'Private messaging',
@@ -732,6 +733,7 @@ $lang = array_merge($lang, array(
 	'SUBMIT'					=> 'Submit',
 
 	'TB'				=> 'TB',
+	'TERMS_LINK'		=> 'Terms',
 	'TERMS_USE'			=> 'Terms of use',
 	'TEST_CONNECTION'	=> 'Test connection',
 	'THE_TEAM'			=> 'The team',
