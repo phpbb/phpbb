@@ -367,7 +367,7 @@ class filesystem implements filesystem_interface
 				$common_php_group	= @filegroup(__FILE__);
 
 				// And the owner and the groups PHP is running under.
-				$php_uid	= (function_exists('posic_getuid')) ? @posix_getuid() : false;
+				$php_uid	= (function_exists('posix_getuid')) ? @posix_getuid() : false;
 				$php_gids	= (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
 
 				// If we are unable to get owner/group, then do not try to set them by guessing
