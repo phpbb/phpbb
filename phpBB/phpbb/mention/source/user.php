@@ -18,12 +18,16 @@ abstract class user implements source_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader)
 	{
 		$this->db = $db;
+		$this->user_loader = $user_loader;
 	}
 
 	/**
@@ -47,9 +51,13 @@ abstract class user implements source_interface
 		while ($row = $this->db->sql_fetchrow($res))
 		{
 			$names['u' . $row['user_id']] = [
-				'name'	=> $row['username'],
-				'param'	=> 'user_id',
-				'id'	=> $row['user_id'],
+				'name'		=> $row['username'],
+				'param'		=> 'user_id',
+				'id'		=> $row['user_id'],
+				'avatar'	=> [
+					'type'	=> 'user',
+					'src'	=> $this->user_loader->get_avatar($row['user_id'], true),
+				],
 			];
 		}
 

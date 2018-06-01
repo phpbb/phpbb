@@ -388,6 +388,11 @@ function getCaretPosition(txtarea) {
 	function handle_mentions(txtarea) {
 		$(txtarea).atwho({
 			at: "@",
+			displayTpl: function(data) {
+				var avatar = (data.avatar.src) ? "<img src='" + data.avatar.src + "'>" :
+					"<span class='mention-avatar'><i class='fa fa-" + data.avatar.type + "'></i></span>";
+				return "<li>" + avatar + "<span>" + data.name + "</span></li>";
+			},
 			insertTpl: "[mention ${param}=${id}]${name}[/mention]",
 			callbacks: {
 				remoteFilter: function(query, callback) {

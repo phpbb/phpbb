@@ -930,6 +930,17 @@
 	float: left;
 }
 
+/* Mention dropdown */
+.atwho-container .atwho-view ul li {
+	padding-right: 45px;
+	padding-left: 15px;
+}
+
+.mention-avatar {
+	right: 8px;
+	left: auto;
+}
+
 /* Search box
 ---------------------------------------- */
 

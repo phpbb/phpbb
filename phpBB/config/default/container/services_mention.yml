@@ -20,6 +20,7 @@ services:
         class: phpbb\mention\source\friend
         arguments:
             - '@dbal.conn'
+            - '@user_loader'
             - '@user'
         tags:
             - { name: mention.source }
@@ -28,6 +29,7 @@ services:
         class: phpbb\mention\source\topic
         arguments:
             - '@dbal.conn'
+            - '@user_loader'
         tags:
             - { name: mention.source }
 
