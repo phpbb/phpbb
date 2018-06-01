@@ -287,7 +287,7 @@ fieldset.submit-buttons input {
 /* Mention dropdown */
 .atwho-container .atwho-view {
 	font-size: 12px;
-	min-width: 300px;
+	min-width: 260px;
 }
 
 .atwho-container .atwho-view ul li {
@@ -304,11 +304,17 @@ fieldset.submit-buttons input {
 	border-radius: 100%;
 	position: absolute;
 	top: 50%;
-	left: 8px;
+	left: 7px;
 	display: inline-block;
 	width: 30px;
 	height: 30px;
-	margin-top: -15px;
+	margin-top: -16px;
+}
+
+.mention-rank {
+	font-size: 10px;
+	display: block;
+	margin-top: 2px;
 }
 
 /* Input field styles

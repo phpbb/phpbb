@@ -21,13 +21,26 @@ abstract class group implements source_interface
 	/** @var \phpbb\group\helper */
 	protected $helper;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, $phpbb_root_path, $phpEx)
 	{
 		$this->db = $db;
 		$this->helper = $helper;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+
+		if (!function_exists('phpbb_get_user_rank'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
+		}
 	}
 
 	/**
@@ -93,6 +106,7 @@ abstract class group implements source_interface
 		$names = [];
 		foreach ($group_ids as $group_id)
 		{
+			$group_rank = phpbb_get_user_rank($groups[$group_id], false);
 			$names['g' . $group_id] = [
 				'name'		=> $groups[$group_id]['group_name'],
 				'param'		=> 'group_id',
@@ -101,6 +115,7 @@ abstract class group implements source_interface
 					'type'	=> 'group',
 					'src'	=> phpbb_get_group_avatar($groups[$group_id]),
 				],
+				'rank'		=> $group_rank['title'],
 			];
 		}
 
