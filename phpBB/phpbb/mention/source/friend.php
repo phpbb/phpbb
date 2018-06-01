@@ -21,11 +21,11 @@ class friend extends user
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->user = $user;
 
-		parent::__construct($db, $user_loader);
+		parent::__construct($db, $user_loader, $phpbb_root_path, $phpEx);
 	}
 
 	/**

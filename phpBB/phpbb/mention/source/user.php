@@ -21,13 +21,26 @@ abstract class user implements source_interface
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader, $phpbb_root_path, $phpEx)
 	{
 		$this->db = $db;
 		$this->user_loader = $user_loader;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+
+		if (!function_exists('phpbb_get_user_rank'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
+		}
 	}
 
 	/**
@@ -50,6 +63,7 @@ abstract class user implements source_interface
 		$names = [];
 		while ($row = $this->db->sql_fetchrow($res))
 		{
+			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
 			$names['u' . $row['user_id']] = [
 				'name'		=> $row['username'],
 				'param'		=> 'user_id',
@@ -58,6 +72,7 @@ abstract class user implements source_interface
 					'type'	=> 'user',
 					'src'	=> $this->user_loader->get_avatar($row['user_id'], true),
 				],
+				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
 			];
 		}
 

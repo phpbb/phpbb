@@ -22,6 +22,8 @@ services:
             - '@dbal.conn'
             - '@user_loader'
             - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: mention.source }
 
@@ -30,6 +32,8 @@ services:
         arguments:
             - '@dbal.conn'
             - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: mention.source }
 
@@ -39,5 +43,7 @@ services:
             - '@dbal.conn'
             - '@group_helper'
             - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: mention.source }

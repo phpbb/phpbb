@@ -21,11 +21,11 @@ class usergroup extends group
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->user = $user;
 
-		parent::__construct($db, $helper);
+		parent::__construct($db, $helper, $phpbb_root_path, $phpEx);
 	}
 
 	/**
