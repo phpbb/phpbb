@@ -357,5 +357,17 @@ ol.def-rules li {
 	line-height: 30px;
 }
 
+p.notification-title,
+p.notification-forum,
+p.notification-reason,
+p.notification-time {
+	line-height: 14px;
+	margin-bottom: 4px;
+}
+
+p.notification-time {
+	margin-bottom: 0;
+}
+
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
