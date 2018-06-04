@@ -1,0 +1,78 @@
+/* -------------------------------------------------------------- /*
+	Styles for the refactored PM module
+/* -------------------------------------------------------------- */
+
+/* Main PM box */
+
+.left-inner {
+	font-size: 13px;
+	position: relative;
+	padding: 5px;
+}
+
+.row-time-date {
+	font-size: 12px;
+	position: absolute;
+	right: 5px;
+}
+
+.message-row {
+	color: #888f98;
+	padding: 10px;
+	list-style-type: none;
+}
+
+.pm-left-panel {
+	width: 35%;
+}
+
+.title-read,
+.title-unread {
+	display: inline;
+}
+
+.pm-pagination {
+	font-size: 13px;
+	position: absolute;
+	right: 5px;
+}
+
+.pm-action-bar-bottom {
+	position: relative;
+}
+
+/*	colours and backgrounds */
+
+.title-unread {
+	color: #ffffff;
+}
+
+.title-read {
+	color: #96a0bb;
+}
+
+.row1 {
+	background-color: #1c2135;
+}
+
+.row2 {
+	background-color: #222943;
+}
+
+.row1:hover,
+.row2:hover {
+	background-color: #3f3f3f;
+}
+
+.msg-unread {
+	box-shadow: 5px 0 0 0 #f7d05a inset;
+}
+
+/* Links for titles */
+
+.msg-title {
+	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	text-decoration: none;
+}
