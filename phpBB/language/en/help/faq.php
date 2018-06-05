@@ -1,19 +1,19 @@
 <?php
 /**
- *
- * This file is part of the phpBB Forum Software package.
- *
- * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- * For full copyright and license information, please see
- * the docs/CREDITS.txt file.
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 /**
- * DO NOT CHANGE
- */
+* DO NOT CHANGE
+*/
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	'HELP_FAQ_BOOKMARKS_FORUM_QUESTION'	=> 'How do I subscribe to specific forums?',
 	'HELP_FAQ_BOOKMARKS_REMOVE_ANSWER'	=> 'To remove your subscriptions, go to your User Control Panel and follow the links to your subscriptions.',
 	'HELP_FAQ_BOOKMARKS_REMOVE_QUESTION'	=> 'How do I remove my subscriptions?',
-	'HELP_FAQ_BOOKMARKS_TOPIC_ANSWER'	=> 'You can bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br />Replying to a topic with the “Notify me when a reply is posted” option checked will also subscribe you to the topic.',
+	'HELP_FAQ_BOOKMARKS_TOPIC_ANSWER'	=> 'You can bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br>Replying to a topic with the “Notify me when a reply is posted” option checked will also subscribe you to the topic.',
 	'HELP_FAQ_BOOKMARKS_TOPIC_QUESTION'	=> 'How do I bookmark or subscribe to specific topics?',
 
 	'HELP_FAQ_FORMATTING_ANNOUNCEMENT_ANSWER'	=> 'Announcements often contain important information for the forum you are currently reading and you should read them whenever possible. Announcements appear at the top of every page in the forum to which they are posted. As with global announcements, announcement permissions are granted by the board administrator.',
@@ -92,7 +92,7 @@ $lang = array_merge($lang, array(
 	'HELP_FAQ_GROUPS_USERGROUPS_LEAD_QUESTION'	=> 'How do I become a usergroup leader?',
 	'HELP_FAQ_GROUPS_USERGROUPS_QUESTION'	=> 'What are usergroups?',
 
-	'HELP_FAQ_ISSUES_ADMIN_ANSWER'	=> 'All users of the board can use the “Contact us” form, if the option was enabled by the board administrator.<br />Members of the board can also use the “The team” link.',
+	'HELP_FAQ_ISSUES_ADMIN_ANSWER'	=> 'All users of the board can use the “Contact us” form, if the option was enabled by the board administrator.<br>Members of the board can also use the “The team” link.',
 	'HELP_FAQ_ISSUES_ADMIN_QUESTION'	=> 'How do I contact a board administrator?',
 	'HELP_FAQ_ISSUES_FEATURE_ANSWER'	=> 'This software was written by and licensed through phpBB Limited. If you believe a feature needs to be added please visit the <a href="https://www.phpbb.com/ideas/">phpBB Ideas Centre</a>, where you can upvote existing ideas or suggest new features.',
 	'HELP_FAQ_ISSUES_FEATURE_QUESTION'	=> 'Why isn’t X feature available?',
@@ -113,7 +113,7 @@ $lang = array_merge($lang, array(
 	'HELP_FAQ_LOGIN_COPPA_QUESTION'	=> 'What is COPPA?',
 	'HELP_FAQ_LOGIN_DELETE_COOKIES_ANSWER'	=> '“Delete all board cookies” deletes the cookies created by phpBB which keep you authenticated and logged into the board. Cookies also provide functions such as read tracking if they have been enabled by a board administrator. If you are having login or logout problems, deleting board cookies may help.',
 	'HELP_FAQ_LOGIN_DELETE_COOKIES_QUESTION'	=> 'What does the “Delete all board cookies” do?',
-	'HELP_FAQ_LOGIN_LOST_PASSWORD_ANSWER'	=> 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br />However, if you are not able to reset your password, contact a board administrator.',
+	'HELP_FAQ_LOGIN_LOST_PASSWORD_ANSWER'	=> 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br>However, if you are not able to reset your password, contact a board administrator.',
 	'HELP_FAQ_LOGIN_LOST_PASSWORD_QUESTION'	=> 'I’ve lost my password!',
 	'HELP_FAQ_LOGIN_REGISTER_ANSWER'	=> 'You may not have to, it is up to the administrator of the board as to whether you need to register in order to post messages. However; registration will give you access to additional features not available to guest users such as definable avatar images, private messaging, emailing of fellow users, usergroup subscription, etc. It only takes a few moments to register so it is recommended you do so.',
 	'HELP_FAQ_LOGIN_REGISTER_CONFIRM_ANSWER'	=> 'First, check your username and password. If they are correct, then one of two things may have happened. If COPPA support is enabled and you specified being under 13 years old during registration, you will have to follow the instructions you received. Some boards will also require new registrations to be activated, either by yourself or by an administrator before you can logon; this information was present during registration. If you were sent an email, follow the instructions. If you did not receive an email, you may have provided an incorrect email address or the email may have been picked up by a spam filer. If you are sure the email address you provided is correct, try contacting an administrator.',
