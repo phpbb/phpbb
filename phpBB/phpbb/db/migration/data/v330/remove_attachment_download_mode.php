@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v330;
 
 class remove_attachment_download_mode extends \phpbb\db\migration\migration
 {
-	public function update_data()
+	public function update_schema()
 	{
 		return array(
 			'drop_columns'	=> array(
