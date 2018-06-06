@@ -1670,6 +1670,52 @@ fieldset.submit-buttons legend {
 	}
 }
 
+/* Mentions and mention dropdown
+---------------------------------------- */
+.mention {
+	font-weight: bold;
+}
+
+.atwho-container .atwho-view {
+	font-size: 12px;
+	min-width: 260px;
+}
+
+.atwho-container .atwho-view ul li {
+	position: relative;
+	padding: 15px 5px 15px 45px;
+}
+
+.atwho-container .atwho-view ul li:hover,
+.atwho-container .atwho-view ul li.cur {
+	background-color: #0077b3;
+	color: #ffffff;
+}
+
+.mention-avatar {
+	font-size: 14px;
+	line-height: 30px;
+	text-align: center;
+	vertical-align: middle;
+	background-color: #0077b3;
+	border: 1px solid #ffffff;
+	border-radius: 100%;
+	color: #ffffff;
+	position: absolute;
+	top: 50%;
+	left: 7px;
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	margin-top: -16px;
+}
+
+.mention-rank {
+	font-size: 10px;
+	display: block;
+	margin-top: 2px;
+}
+
 /* Input field styles
 ---------------------------------------- */
 input.radio,
