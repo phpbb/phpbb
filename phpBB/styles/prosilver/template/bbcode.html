@@ -8,26 +8,6 @@
 <!-- BEGIN listitem --><li><!-- END listitem -->
 <!-- BEGIN listitem_close --></li><!-- END listitem_close -->
 
-<!-- BEGIN mention -->
-<xsl:text>@</xsl:text>
-<xsl:choose>
-	<xsl:when test="@profile_url">
-		<a class="mention">
-			<xsl:attribute name="href"><xsl:value-of select="@profile_url"/></xsl:attribute>
-			<xsl:if test="@color">
-				<xsl:attribute name="style">color: #<xsl:value-of select="@color"/>;</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates/>
-		</a>
-	</xsl:when>
-	<xsl:otherwise>
-		<span class="mention">
-			<xsl:apply-templates/>
-		</span>
-	</xsl:otherwise>
-</xsl:choose>
-<!-- END mention -->
-
 <!-- BEGIN quote_username_open --><blockquote><div><cite>{USERNAME} {L_WROTE}{L_COLON}</cite><!-- END quote_username_open -->
 <!-- BEGIN quote_open --><blockquote class="uncited"><div><!-- END quote_open -->
 <!-- BEGIN quote_close --></div></blockquote><!-- END quote_close -->
