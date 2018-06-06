@@ -60,10 +60,10 @@ abstract class group implements source_interface
 					GROUPS_TABLE => 'g',
 				],
 			]);
-			$res = $this->db->sql_query($query);
+			$result = $this->db->sql_query($query);
 
 			$groups = [];
-			while ($row = $this->db->sql_fetchrow($res))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$group_name = $this->helper->get_name($row['group_name']);
 				$groups['names'][$row['group_id']] = $group_name;
@@ -89,10 +89,10 @@ abstract class group implements source_interface
 	public function get($keyword, $topic_id)
 	{
 		// Grab all group IDs
-		$res = $this->db->sql_query($this->query($keyword, $topic_id));
+		$result = $this->db->sql_query($this->query($keyword, $topic_id));
 
 		$group_ids = [];
-		while ($row = $this->db->sql_fetchrow($res))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$group_ids[] = $row['group_id'];
 		}

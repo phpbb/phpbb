@@ -74,9 +74,9 @@ class mention_helper
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
 				AND ' . $this->db->sql_in_set('u.user_id', $user_ids),
 			]);
-			$res = $this->db->sql_query($query);
+			$result = $this->db->sql_query($query);
 
-			while ($row = $this->db->sql_fetchrow($res))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$this->cached_colors['users'][$row['user_id']] = $row['user_colour'];
 			}
@@ -91,9 +91,9 @@ class mention_helper
 				],
 				'WHERE'  => $this->db->sql_in_set('g.group_id', $group_ids),
 			]);
-			$res = $this->db->sql_query($query);
+			$result = $this->db->sql_query($query);
 
-			while ($row = $this->db->sql_fetchrow($res))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$this->cached_colors['groups'][$row['group_id']] = $row['group_colour'];
 			}
