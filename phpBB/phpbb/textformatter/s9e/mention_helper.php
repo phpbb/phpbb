@@ -80,6 +80,8 @@ class mention_helper
 			{
 				$this->cached_colors['users'][$row['user_id']] = $row['user_colour'];
 			}
+
+			$this->db->sql_freeresult($result);
 		}
 
 		if (!empty($group_ids))
@@ -97,6 +99,8 @@ class mention_helper
 			{
 				$this->cached_colors['groups'][$row['group_id']] = $row['group_colour'];
 			}
+
+			$this->db->sql_freeresult($result);
 		}
 	}
 

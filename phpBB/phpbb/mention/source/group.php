@@ -70,6 +70,8 @@ abstract class group implements source_interface
 				$groups[$row['group_id']] = $row;
 				$groups[$row['group_id']]['group_name'] = $group_name;
 			}
+
+			$this->db->sql_freeresult($result);
 		}
 		return $groups;
 	}
@@ -96,6 +98,8 @@ abstract class group implements source_interface
 		{
 			$group_ids[] = $row['group_id'];
 		}
+
+		$this->db->sql_freeresult($result);
 
 		// Grab group data
 		$groups = $this->get_groups();
