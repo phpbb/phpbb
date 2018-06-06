@@ -58,10 +58,10 @@ abstract class user implements source_interface
 	public function get($keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
-		$res = $this->db->sql_query_limit($this->query($keyword, $topic_id), 5);
+		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), 5);
 
 		$names = [];
-		while ($row = $this->db->sql_fetchrow($res))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
 			$names['u' . $row['user_id']] = [
