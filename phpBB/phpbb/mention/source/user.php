@@ -76,6 +76,8 @@ abstract class user implements source_interface
 			];
 		}
 
+		$this->db->sql_freeresult($result);
+
 		return $names;
 	}
 }
