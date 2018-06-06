@@ -9,15 +9,19 @@
 <!-- BEGIN listitem_close --></li><!-- END listitem_close -->
 
 <!-- BEGIN mention -->
+<xsl:text>@</xsl:text>
 <xsl:choose>
 	<xsl:when test="@profile_url">
-		<a>
+		<a class="mention">
 			<xsl:attribute name="href"><xsl:value-of select="@profile_url"/></xsl:attribute>
+			<xsl:if test="@color">
+				<xsl:attribute name="style">color: #<xsl:value-of select="@color"/>;</xsl:attribute>
+			</xsl:if>
 			<xsl:apply-templates/>
 		</a>
 	</xsl:when>
 	<xsl:otherwise>
-		<span>
+		<span class="mention">
 			<xsl:apply-templates/>
 		</span>
 	</xsl:otherwise>
