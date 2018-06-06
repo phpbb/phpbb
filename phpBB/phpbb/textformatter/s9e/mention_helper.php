@@ -126,7 +126,7 @@ class mention_helper
 				{
 					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $user_profile_url);
 
-					if (isset($this->cached_colors['users'][$attributes['user_id']]))
+					if (!empty($this->cached_colors['users'][$attributes['user_id']]))
 					{
 						$attributes['color'] = $this->cached_colors['users'][$attributes['user_id']];
 					}
@@ -135,7 +135,7 @@ class mention_helper
 				{
 					$attributes['profile_url'] = str_replace('{GROUP_ID}', $attributes['group_id'], $group_profile_url);
 
-					if (isset($this->cached_colors['groups'][$attributes['group_id']]))
+					if (!empty($this->cached_colors['groups'][$attributes['group_id']]))
 					{
 						$attributes['color'] = $this->cached_colors['groups'][$attributes['group_id']];
 					}
