@@ -114,13 +114,13 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @var array Default templates, taken from bbcode::bbcode_tpl()
 	*/
 	protected $default_templates = array(
-		'b'     => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
-		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
-		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
-		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
-		'size'	=> '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
-		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
-		'email' => '<a>
+		'b'       => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
+		'i'       => '<span style="font-style: italic"><xsl:apply-templates/></span>',
+		'u'       => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
+		'img'     => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
+		'size'	  => '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
+		'color'   => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
+		'email'   => '<a>
 			<xsl:attribute name="href">
 				<xsl:text>mailto:</xsl:text>
 				<xsl:value-of select="@email"/>
@@ -132,6 +132,23 @@ class factory implements \phpbb\textformatter\cache_interface
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</a>',
+		'mention' => '<xsl:text>@</xsl:text>
+		<xsl:choose>
+			<xsl:when test="@profile_url">
+				<a class="mention">
+					<xsl:attribute name="href"><xsl:value-of select="@profile_url"/></xsl:attribute>
+					<xsl:if test="@color">
+						<xsl:attribute name="style">color: #<xsl:value-of select="@color"/>;</xsl:attribute>
+					</xsl:if>
+					<xsl:apply-templates/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<span class="mention">
+					<xsl:apply-templates/>
+				</span>
+			</xsl:otherwise>
+		</xsl:choose>',
 	);
 
 	/**
