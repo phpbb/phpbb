@@ -63,6 +63,17 @@ class local implements adapter_interface, stream_interface
 	protected $path;
 
 	/*
+	 * Subdirectories depth
+	 *
+	 * Instead of storing all folders on the same directory, they can be divided
+	 * into smaller directories. This variable means the number of subdirectories of
+	 * depth to store the file. For example:
+	 * depth = 0 -> /images/avatars/upload/my_avatar.jpg
+	 * depth = 2 -> /images/avatars/upload/d9/8c/my_avatar.jpg
+	 * This is for those who have problems storing a large number of files on
+	 * a single directory.
+	 * More info: https://tracker.phpbb.com/browse/PHPBB3-15371
+	 *
 	 * @var int dir_depth
 	 */
 	protected $dir_depth;
@@ -251,6 +262,12 @@ class local implements adapter_interface, stream_interface
 		while ($path && @rmdir($dirpath . $path));
 	}
 
+	/**
+	 * Get the path to the file, appending subdirectories for directory depth
+	 * if $dir_depth > 0.
+	 *
+	 * @param string	$path	The file path
+	 */
 	protected function get_filepath($path)
 	{
 		$pathinfo = pathinfo($path);
