@@ -13,7 +13,6 @@
 
 namespace phpbb\db\migration\data\v330;
 
-
 class remove_attachment_flash extends \phpbb\db\migration\migration
 {
 	// Following constants were deprecated in 3.3
