@@ -7,49 +7,49 @@
 {% if messagerow %}
 	<div class="pm-main">
 		<div class="pm-left-panel">
-
-		{% for message in messagerow %}
 			<ul class="pm-list">
-				<li class="message-row {{ message.S_ROW_COUNT is odd ? 'row1' : 'row2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'msg-unread' }}">
-					<div class="left-inner">
-						<span class="row-msg-title">
-							<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
-						</span>
-						{% if S_SHOW_RECIPIENTS %}
-							{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
-						{% else %}
-						<span class="row-msg-author">
-							{message.MESSAGE_AUTHOR_FULL}
-						</span>
-						<span class="row-time-date">
-								{message.SENT_TIME}
-						</span>
-						{% endif %}
+				{% for message in messagerow %}
+					<li class="message-row {{ message.S_ROW_COUNT is odd ? 'row1' : 'row2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'msg-unread' }}">
+						<div class="left-inner">
+							<span class="row-msg-title">
+								<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
+							</span>
+							{% if S_SHOW_RECIPIENTS %}
+								{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
+							{% else %}
+							<span class="row-msg-author">
+								{message.MESSAGE_AUTHOR_FULL}
+							</span>
+							<span class="row-time-date">
+									{message.SENT_TIME}
+							</span>
+							{% endif %}
 
-					</div>
-				</li>
+						</div>
+					</li>
+				{% endfor %}
+
 			</ul>
-		{% endfor %}
 
 		</div><br>
 
 		<div class="pm-right-panel">
 		</div>
 
-		<div class="pm-action-bar-bottom">
-			{% include 'display_options.html' %}
-			<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+	</div>
 
-			<div class="pm-pagination">
-				{TOTAL_MESSAGES}
-				{% if pagination %}
-					{% include 'pagination.html' %}
-				{% else %}
-				&bull; {PAGE_NUMBER}
-				{% endif %}
-			</div>
+	<div class="pm-action-bar-bottom">
+		{% include 'display_options.html' %}
+		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+
+		<div class="pm-pagination">
+			{TOTAL_MESSAGES}
+			{% if pagination %}
+			{% include 'pagination.html' %}
+			{% else %}
+			&bull; {PAGE_NUMBER}
+			{% endif %}
 		</div>
-
 	</div>
 {% endif %}
 
