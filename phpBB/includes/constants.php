@@ -239,6 +239,7 @@ define('ACL_ROLES_DATA_TABLE',		$table_prefix . 'acl_roles_data');
 define('ACL_ROLES_TABLE',			$table_prefix . 'acl_roles');
 define('ACL_USERS_TABLE',			$table_prefix . 'acl_users');
 define('ATTACHMENTS_TABLE',			$table_prefix . 'attachments');
+define('BACKUPS_TABLE',				$table_prefix . 'backups');
 define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');
 define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');

@@ -21,6 +21,7 @@ use \phpbb\language\language;
 use \phpbb\mimetype\guesser;
 use \phpbb\plupload\plupload;
 use \phpbb\storage\storage;
+use \phpbb\filesystem\temp;
 use \phpbb\user;
 
 /**
@@ -55,6 +56,9 @@ class upload
 	/** @var storage */
 	protected $storage;
 
+	/** @var temp */
+	protected $temp;
+
 	/** @var user */
 	protected $user;
 
@@ -80,9 +84,10 @@ class upload
 	 * @param guesser $mimetype_guesser
 	 * @param dispatcher $phpbb_dispatcher
 	 * @param plupload $plupload
+	 * @param temp $temp
 	 * @param user $user
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, user $user)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -93,6 +98,7 @@ class upload
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->plupload = $plupload;
 		$this->storage = $storage;
+		$this->temp = $temp;
 		$this->user = $user;
 	}
 
@@ -234,7 +240,7 @@ class upload
 		{
 			$source = $this->file->get('filename');
 			$destination_name = 'thumb_' . $this->file->get('realname');
-			$destination = sys_get_temp_dir() . '/' . $destination_name;
+			$destination = $this->temp->get_dir() . '/' . $destination_name;
 
 			if (create_thumbnail($source, $destination, $this->file->get('mimetype')))
 			{

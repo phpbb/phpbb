@@ -36,4 +36,5 @@ services:
             - '@dispatcher'
             - '@plupload'
             - '@storage.attachment'
+            - '@filesystem.temp'
             - '@user'

@@ -43,6 +43,7 @@ $lang = array_merge($lang, array(
 
 	'BACKUP_DELETE'		=> 'The backup file has been deleted successfully.',
 	'BACKUP_INVALID'	=> 'The selected file to backup is invalid.',
+	'BACKUP_ERROR'		=> 'Error while saving file.',
 	'BACKUP_OPTIONS'	=> 'Backup options',
 	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully.',
 	'BACKUP_TYPE'		=> 'Backup type',
@@ -58,6 +59,7 @@ $lang = array_merge($lang, array(
 	'FILE_WRITE_FAIL'	=> 'Unable to write file to storage folder.',
 	'FULL_BACKUP'		=> 'Full',
 
+	'RESTORE_DOWNLOAD_FAIL'	=> 'Error while copying file from storage to local temporary folder.',
 	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',
 	'RESTORE_OPTIONS'		=> 'Restore options',
 	'RESTORE_SELECTED_BACKUP'	=> 'Are you sure you want to restore the selected backup?',

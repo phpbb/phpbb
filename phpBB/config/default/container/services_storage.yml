@@ -17,6 +17,14 @@ services:
         tags:
             - { name: storage }
 
+    storage.backup:
+        class: phpbb\storage\storage
+        arguments:
+            - '@storage.adapter.factory'
+            - 'backup'
+        tags:
+            - { name: storage }
+
 # Factory
     storage.adapter.factory:
         class: phpbb\storage\adapter_factory

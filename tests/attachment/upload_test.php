@@ -54,7 +54,11 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \phpbb\attachment\upload */
 	protected $upload;
 
+	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
+
+	/** @var \phpbb\filesystem\temp */
+	protected $temp;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $container;
@@ -143,6 +147,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->factory = new \phpbb\files\factory($this->container);
 		$this->files_upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 
 		$this->upload = new \phpbb\attachment\upload(
@@ -155,6 +160,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
+			$this->temp,
 			$this->user
 		);
 	}
@@ -247,6 +253,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
+			$this->temp,
 			$this->user
 		);
 
@@ -411,6 +418,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$plupload,
 			$this->storage,
+			$this->temp,
 			$this->user
 		);
 

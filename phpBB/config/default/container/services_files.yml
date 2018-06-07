@@ -71,10 +71,10 @@ services:
         arguments:
             - '@config'
             - '@files.factory'
+            - '@filesystem.temp'
             - '@language'
             - '@php_ini'
             - '@request'
-            - '%core.root_path%'
 
     files.types.remote_storage:
         class: phpbb\files\types\remote_storage
@@ -82,7 +82,7 @@ services:
         arguments:
             - '@config'
             - '@files.factory'
+            - '@filesystem.temp'
             - '@language'
             - '@php_ini'
             - '@request'
-            - '%core.root_path%'
