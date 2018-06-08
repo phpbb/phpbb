@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8679db725dd0df075765f914b01a8ab9",
+    "content-hash": "d4049e58bd7f34c266088eb78b8eb847",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -2692,25 +2692,29 @@
         },
         {
             "name": "laravel/homestead",
-            "version": "v4.0.5",
+            "version": "v7.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/homestead.git",
-                "reference": "a1bcbde2462d8ac1fa608cd6f00b46623aabd705"
+                "reference": "4895d028e1214c9df34ed0104775e6ae1eb23d77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/homestead/zipball/a1bcbde2462d8ac1fa608cd6f00b46623aabd705",
-                "reference": "a1bcbde2462d8ac1fa608cd6f00b46623aabd705",
+                "url": "https://api.github.com/repos/laravel/homestead/zipball/4895d028e1214c9df34ed0104775e6ae1eb23d77",
+                "reference": "4895d028e1214c9df34ed0104775e6ae1eb23d77",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.9",
-                "symfony/console": "~2.3|~3.0",
-                "symfony/process": "~2.3|~3.0"
+                "php": "^5.6 || ^7.0",
+                "symfony/console": "~3.3|~4.0",
+                "symfony/process": "~3.3|~4.0",
+                "symfony/yaml": "~3.3|~4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7 || ^6.0"
             },
             "bin": [
-                "homestead"
+                "bin/homestead"
             ],
             "type": "library",
             "extra": {
@@ -2734,7 +2738,7 @@
                 }
             ],
             "description": "A virtual machine for web artisans.",
-            "time": "2017-02-07T19:06:26+00:00"
+            "time": "2018-06-03T21:17:32+00:00"
         },
         {
             "name": "myclabs/deep-copy",
