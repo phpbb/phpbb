@@ -575,6 +575,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			// Mark all topic notifications read for this user
 			$phpbb_notifications->mark_notifications(array(
 				'notification.type.topic',
+				'notification.type.mention',
 				'notification.type.quote',
 				'notification.type.bookmark',
 				'notification.type.post',
@@ -660,6 +661,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$db->sql_freeresult($result);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -771,6 +773,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		), $topic_id, $user->data['user_id'], $post_time);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',

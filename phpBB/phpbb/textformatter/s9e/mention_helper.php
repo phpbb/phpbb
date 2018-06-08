@@ -149,4 +149,30 @@ class mention_helper
 			}
 		);
 	}
+
+	/**
+	 * Get a list of mentioned users
+	 * TODO: decide what to do with groups
+	 *
+	 * @param  string   $xml Parsed text
+	 * @return int[]         List of user IDs
+	 */
+	public function get_mentioned_users($xml)
+	{
+		$user_ids = array();
+		if (strpos($xml, '<MENTION ') === false)
+		{
+			return $user_ids;
+		}
+
+		$dom = new \DOMDocument;
+		$dom->loadXML($xml);
+		$xpath = new \DOMXPath($dom);
+		foreach ($xpath->query('//MENTION/@user_id') as $user_id)
+		{
+			$user_ids[] = (int) $user_id->textContent;
+		}
+
+		return $user_ids;
+	}
 }

@@ -332,6 +332,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_GROUP_REQUEST'					=> 'Someone requests to join a group you lead',
 	'NOTIFICATION_TYPE_FORUM'							=> 'Someone replies to a topic in a forum to which you are subscribed',
 	'NOTIFICATION_TYPE_IN_MODERATION_QUEUE'				=> 'A post or topic needs approval',
+	'NOTIFICATION_TYPE_MENTION'							=> 'Someone mentiones you in a post',
 	'NOTIFICATION_TYPE_MODERATION_QUEUE'				=> 'Your topics/posts are approved or disapproved by a moderator',
 	'NOTIFICATION_TYPE_PM'								=> 'Someone sends you a private message',
 	'NOTIFICATION_TYPE_POST'							=> 'Someone replies to a topic to which you are subscribed',
