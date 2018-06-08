@@ -810,10 +810,14 @@ class mcp_queue
 							), $post_data);
 						}
 					}
-					$phpbb_notifications->add_notifications(array('notification.type.quote'), $post_data);
+					$phpbb_notifications->add_notifications(array(
+						'notification.type.mention',
+						'notification.type.quote',
+					), $post_data);
 					$phpbb_notifications->delete_notifications('notification.type.post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications(array(
+						'notification.type.mention',
 						'notification.type.quote',
 						'notification.type.bookmark',
 						'notification.type.post',
@@ -1045,12 +1049,13 @@ class mcp_queue
 					if ($topic_data['topic_visibility'] == ITEM_UNAPPROVED)
 					{
 						$phpbb_notifications->add_notifications(array(
+							'notification.type.mention',
 							'notification.type.quote',
 							'notification.type.topic',
 						), $topic_data);
 					}
 
-					$phpbb_notifications->mark_notifications('quote', $topic_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications(array('mention', 'quote'), $topic_data['post_id'], $user->data['user_id']);
 					$phpbb_notifications->mark_notifications('topic', $topic_id, $user->data['user_id']);
 
 					if ($notify_poster)
