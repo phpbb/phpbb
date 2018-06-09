@@ -27,6 +27,26 @@ services:
         tags:
             - { name: mention.source }
 
+    phpbb.mention.source.member:
+        class: phpbb\mention\source\member
+        arguments:
+            - '@dbal.conn'
+            - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: mention.source }
+
+    phpbb.mention.source.team:
+        class: phpbb\mention\source\team
+        arguments:
+            - '@dbal.conn'
+            - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: mention.source }
+
     phpbb.mention.source.topic:
         class: phpbb\mention\source\topic
         arguments:
