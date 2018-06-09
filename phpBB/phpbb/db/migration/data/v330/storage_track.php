@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v330;
 
+use phpbb\storage\storage;
+
 class storage_track extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
@@ -28,7 +30,7 @@ class storage_track extends \phpbb\db\migration\migration
 	{
 		return array(
 			'add_tables' => array(
-				$this->table_prefix . 'storage'	=> array(
+				STORAGE_TABLE	=> array(
 					'COLUMNS' => array(
 						'file_id'			=> array('UINT', null, 'auto_increment'),
 						'file_path'			=> array('VCHAR', ''),
@@ -61,16 +63,53 @@ class storage_track extends \phpbb\db\migration\migration
 
 	public function track_avatars()
 	{
+		/** @var storage $storage */
+		$storage = $this->container->get('storage.avatar');
 
+		$sql = 'SELECT user_avatar
+			FROM ' . USERS_TABLE . "
+			WHERE user_avatar_type = 'avatar.driver.upload'";
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$storage->track_file($row['user_avatar']);
+		}
+		$this->db->sql_freeresult($result);
 	}
 
 	public function track_attachments()
 	{
+		/** @var storage $storage */
+		$storage = $this->container->get('storage.attachment');
 
+		$sql = 'SELECT physical_filename
+			FROM ' . ATTACHMENTS_TABLE;
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$storage->track_file($row['physical_filename']);
+		}
+		$this->db->sql_freeresult($result);
 	}
 
 	public function track_backups()
 	{
+		/** @var storage $storage */
+		$storage = $this->container->get('storage.backup');
 
+		$sql = 'SELECT filename
+			FROM ' . BACKUPS_TABLE;
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$storage->track_file($row['filename']);
+		}
+		$this->db->sql_freeresult($result);
 	}
 }
