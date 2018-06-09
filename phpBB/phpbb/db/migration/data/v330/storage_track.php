@@ -84,7 +84,7 @@ class storage_track extends \phpbb\db\migration\migration
 		/** @var storage $storage */
 		$storage = $this->container->get('storage.attachment');
 
-		$sql = 'SELECT physical_filename
+		$sql = 'SELECT physical_filename, thumbnail
 			FROM ' . ATTACHMENTS_TABLE;
 
 		$result = $this->db->sql_query($sql);
@@ -92,6 +92,11 @@ class storage_track extends \phpbb\db\migration\migration
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$storage->track_file($row['physical_filename']);
+
+			if($row['thumbnail'] == 1)
+			{
+				$storage->track_file('thumb_' . $row['physical_filename']);
+			}
 		}
 		$this->db->sql_freeresult($result);
 	}
