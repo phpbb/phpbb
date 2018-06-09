@@ -19,13 +19,13 @@ class friend extends user
 	protected $user;
 
 	/**
-	 * Constructor
+	 * Set the user service used to retrieve current user ID
+	 *
+	 * @param \phpbb\user $user
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function set_user(\phpbb\user $user)
 	{
 		$this->user = $user;
-
-		parent::__construct($db, $user_loader, $phpbb_root_path, $phpEx);
 	}
 
 	/**

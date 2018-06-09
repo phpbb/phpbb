@@ -35,7 +35,7 @@ class mention_helper
 	/**
 	* @var array Array of users' and groups' colors for each cached ID
 	*/
-	protected $cached_colors = [];
+	protected $cached_colours = [];
 
 	/**
 	* Constructor
@@ -59,9 +59,9 @@ class mention_helper
 	 */
 	protected function get_colors($user_ids, $group_ids)
 	{
-		$this->cached_colors = [];
-		$this->cached_colors['users'] = [];
-		$this->cached_colors['groups'] = [];
+		$this->cached_colours = [];
+		$this->cached_colours['users'] = [];
+		$this->cached_colours['groups'] = [];
 
 		if (!empty($user_ids))
 		{
@@ -78,7 +78,7 @@ class mention_helper
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$this->cached_colors['users'][$row['user_id']] = $row['user_colour'];
+				$this->cached_colours['users'][$row['user_id']] = $row['user_colour'];
 			}
 
 			$this->db->sql_freeresult($result);
@@ -97,7 +97,7 @@ class mention_helper
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$this->cached_colors['groups'][$row['group_id']] = $row['group_colour'];
+				$this->cached_colours['groups'][$row['group_id']] = $row['group_colour'];
 			}
 
 			$this->db->sql_freeresult($result);
@@ -130,18 +130,18 @@ class mention_helper
 				{
 					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $user_profile_url);
 
-					if (!empty($this->cached_colors['users'][$attributes['user_id']]))
+					if (!empty($this->cached_colours['users'][$attributes['user_id']]))
 					{
-						$attributes['color'] = $this->cached_colors['users'][$attributes['user_id']];
+						$attributes['color'] = $this->cached_colours['users'][$attributes['user_id']];
 					}
 				}
 				else if (isset($attributes['group_id']))
 				{
 					$attributes['profile_url'] = str_replace('{GROUP_ID}', $attributes['group_id'], $group_profile_url);
 
-					if (!empty($this->cached_colors['groups'][$attributes['group_id']]))
+					if (!empty($this->cached_colours['groups'][$attributes['group_id']]))
 					{
-						$attributes['color'] = $this->cached_colors['groups'][$attributes['group_id']];
+						$attributes['color'] = $this->cached_colours['groups'][$attributes['group_id']];
 					}
 				}
 
