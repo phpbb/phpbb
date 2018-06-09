@@ -96,15 +96,8 @@ class storage
 	 */
 	public function put_contents($path, $content)
 	{
-		try
-		{
-			$this->get_adapter()->put_contents($path, $content);
-			$this->track_file($path);
-		}
-		catch (\Exception $e)
-		{
-			throw $e;
-		}
+		$this->get_adapter()->put_contents($path, $content);
+		$this->track_file($path);
 	}
 
 	/**
@@ -144,15 +137,8 @@ class storage
 	 */
 	public function delete($path)
 	{
-		try
-		{
-			$this->get_adapter()->delete($path);
-			$this->untrack_file($path);
-		}
-		catch (\Exception $e)
-		{
-			throw $e;
-		}
+		$this->get_adapter()->delete($path);
+		$this->untrack_file($path);
 	}
 
 	/**
@@ -166,16 +152,9 @@ class storage
 	 */
 	public function rename($path_orig, $path_dest)
 	{
-		try
-		{
-			$this->get_adapter()->rename($path_orig, $path_dest);
-			$this->untrack_file($path_orig);
-			$this->track_file($path_dest);
-		}
-		catch (\Exception $e)
-		{
-			throw $e;
-		}
+		$this->get_adapter()->rename($path_orig, $path_dest);
+		$this->untrack_file($path_orig);
+		$this->track_file($path_dest);
 	}
 
 	/**
@@ -189,15 +168,8 @@ class storage
 	 */
 	public function copy($path_orig, $path_dest)
 	{
-		try
-		{
-			$this->get_adapter()->copy($path_orig, $path_dest);
-			$this->track_file($path_dest);
-		}
-		catch (\Exception $e)
-		{
-			throw $e;
-		}
+		$this->get_adapter()->copy($path_orig, $path_dest);
+		$this->track_file($path_dest);
 	}
 
 	/**
@@ -231,6 +203,7 @@ class storage
 
 	/**
 	 * Writes a new file using a stream.
+	 * You have to track file after use this method
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
@@ -244,7 +217,6 @@ class storage
 		if ($adapter instanceof stream_interface)
 		{
 			$adapter->write_stream($path, $resource);
-			$this->track_file($path); // Not sure if here, or after close the file
 		}
 		else
 		{
@@ -337,9 +309,9 @@ class storage
 			FROM ' .  $this->storage_table . "
 			WHERE storage = '" . $this->get_name() . "'";
 		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
+		$total = (int) $this->db->sql_fetchfield('total');
 		$this->db->sql_freeresult($result);
 
-		return $row['total'];
+		return $row;
 	}
 }

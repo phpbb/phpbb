@@ -248,6 +248,7 @@ class upload
 				$fp = fopen($destination, 'rb');
 				$this->storage->write_stream($destination_name, $fp);
 				fclose($fp);
+				$this->storage->track_file($destination_name);
 			}
 			else
 			{

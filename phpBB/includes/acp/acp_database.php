@@ -189,6 +189,8 @@ class acp_database
 
 								fclose($fp);
 
+								$storage->track_file($file);
+
 								// Remove file from tmp
 								@unlink($temp_dir . '/' . $file);
 
