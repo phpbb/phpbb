@@ -13,7 +13,7 @@
 
 namespace phpbb\mention\source;
 
-class team extends user
+class team extends base_user
 {
 	/**
 	 * {@inheritdoc}

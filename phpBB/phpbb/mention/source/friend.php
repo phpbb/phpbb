@@ -13,7 +13,7 @@
 
 namespace phpbb\mention\source;
 
-class friend extends user
+class friend extends base_user
 {
 	/** @var  \phpbb\user */
 	protected $user;
