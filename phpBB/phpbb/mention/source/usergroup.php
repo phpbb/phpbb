@@ -13,21 +13,8 @@
 
 namespace phpbb\mention\source;
 
-class usergroup extends group
+class usergroup extends base_group
 {
-	/** @var  \phpbb\user */
-	protected $user;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, \phpbb\user $user, $phpbb_root_path, $phpEx)
-	{
-		$this->user = $user;
-
-		parent::__construct($db, $helper, $phpbb_root_path, $phpEx);
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */
