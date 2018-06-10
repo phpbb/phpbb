@@ -299,8 +299,6 @@ class storage
 	/**
 	 * Get total storage size.
 	 *
-	 * @param string	$path	The file
-	 *
 	 * @return int	Size in bytes
 	 */
 	public function get_size()
@@ -313,5 +311,22 @@ class storage
 		$this->db->sql_freeresult($result);
 
 		return $row;
+	}
+
+	/**
+	 * Get number of storage files.
+	 *
+	 * @return int	Number of files
+	 */
+	public function get_num_files()
+	{
+		$sql = 'SELECT COUNT(file_id) AS total
+			FROM ' .  $this->storage_table . "
+			WHERE storage = '" . $this->get_name() . "'";
+		$result = $this->db->sql_query($sql);
+		$total = (int) $this->db->sql_fetchfield('total');
+		$this->db->sql_freeresult($result);
+
+		return $total;
 	}
 }
