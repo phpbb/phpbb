@@ -13,7 +13,8 @@
 
 namespace phpbb\storage;
 
-use phpbb\db\driver\driver_interface;
+use phpbb\cache\driver\driver_interface as cache;
+use phpbb\db\driver\driver_interface as db;
 
 /**
  * @internal Experimental
@@ -21,9 +22,25 @@ use phpbb\db\driver\driver_interface;
 class storage
 {
 	/**
+	 * @var \phpbb\storage\adapter\adapter_interface
+	 */
+	protected $adapter;
+
+	/**
 	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $db;
+
+	/**
+	 * Cache driver
+	 * @var \phpbb\cache\driver\driver_interface
+	 */
+	protected $cache;
+
+	/**
+	 * @var \phpbb\storage\adapter_factory
+	 */
+	protected $factory;
 
 	/**
 	 * @var string
@@ -36,25 +53,17 @@ class storage
 	protected $storage_table;
 
 	/**
-	 * @var \phpbb\storage\adapter_factory
-	 */
-	protected $factory;
-
-	/**
-	 * @var \phpbb\storage\adapter\adapter_interface
-	 */
-	protected $adapter;
-
-	/**
 	 * Constructor
 	 *
+	 * @param \phpbb\cache\driver\driver_interface	$db
 	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\storage\adapter_factory	$factory
 	 * @param string							$storage_name
 	 */
-	public function __construct(driver_interface $db, adapter_factory $factory, $storage_name, $storage_table)
+	public function __construct(db $db, cache $cache, adapter_factory $factory, $storage_name, $storage_table)
 	{
 		$this->db = $db;
+		$this->cache = $cache;
 		$this->factory = $factory;
 		$this->storage_name = $storage_name;
 		$this->storage_table = $storage_table;
@@ -255,6 +264,9 @@ class storage
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 			$this->db->sql_query($sql);
 		}
+
+		$this->cache->destroy('_storage_' . $this->get_name() . '_totalsize');
+		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
 	}
 
 	public function untrack_file($path)
@@ -267,6 +279,9 @@ class storage
 		$sql = 'DELETE FROM ' . $this->storage_table . '
 			WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
 		$this->db->sql_query($sql);
+
+		$this->cache->destroy('_storage_' . $this->get_name() . '_totalsize');
+		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
 	}
 
 	/**
@@ -303,14 +318,22 @@ class storage
 	 */
 	public function get_size()
 	{
-		$sql = 'SELECT SUM(filesize) AS total
-			FROM ' .  $this->storage_table . "
-			WHERE storage = '" . $this->get_name() . "'";
-		$result = $this->db->sql_query($sql);
-		$total = (int) $this->db->sql_fetchfield('total');
-		$this->db->sql_freeresult($result);
+		$total_size = $this->cache->get('_storage_' . $this->get_name() . '_totalsize');
 
-		return $row;
+		if ($total_size === false)
+		{
+			$sql = 'SELECT SUM(filesize) AS totalsize
+				FROM ' .  $this->storage_table . "
+				WHERE storage = '" . $this->get_name() . "'";
+			$result = $this->db->sql_query($sql);
+
+			$total_size = (int) $this->db->sql_fetchfield('totalsize');
+			$this->cache->put('_storage_' . $this->get_name() . '_totalsize', $total_size);
+
+			$this->db->sql_freeresult($result);
+		}
+
+		return $total_size;
 	}
 
 	/**
@@ -320,13 +343,21 @@ class storage
 	 */
 	public function get_num_files()
 	{
-		$sql = 'SELECT COUNT(file_id) AS total
-			FROM ' .  $this->storage_table . "
-			WHERE storage = '" . $this->get_name() . "'";
-		$result = $this->db->sql_query($sql);
-		$total = (int) $this->db->sql_fetchfield('total');
-		$this->db->sql_freeresult($result);
+		$number_files = $this->cache->get('_storage_' . $this->get_name() . '_numfiles');
 
-		return $total;
+		if ($number_files === false)
+		{
+			$sql = 'SELECT COUNT(file_id) AS numfiles
+				FROM ' .  $this->storage_table . "
+				WHERE storage = '" . $this->get_name() . "'";
+			$result = $this->db->sql_query($sql);
+
+			$number_files = (int) $this->db->sql_fetchfield('numfiles');
+			$this->cache->put('_storage_' . $this->get_name() . '_numfiles', $number_files);
+
+			$this->db->sql_freeresult($result);
+		}
+
+		return $number_files;
 	}
 }
