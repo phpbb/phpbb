@@ -295,7 +295,7 @@ class storage
 	 */
 	public function file_info($path)
 	{
-		return new file_info($this->adapter, $path);
+		return new file_info($this->get_adapter(), $path);
 	}
 
 	/**
