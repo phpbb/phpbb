@@ -30,16 +30,6 @@
 	display: inline;
 }
 
-.pm-pagination {
-	font-size: 13px;
-	position: absolute;
-	right: 5px;
-}
-
-.pm-action-bar-bottom {
-	position: relative;
-}
-
 /*	colours and backgrounds */
 
 .title-unread {
@@ -58,13 +48,16 @@
 	background-color: #ecf4f7;
 }
 
-.row1:hover,
-.row2:hover {
-	background-color: #83a9c6;
+.msg-unread {
+	box-shadow: 5px 0 0 0 #d41142 inset !important;
 }
 
-.msg-unread {
-	box-shadow: 5px 0 0 0 #d41142 inset;
+.fa-exclamation-circle {
+	color: #000000;
+}
+
+.fa-check-circle {
+	color: #006400;
 }
 
 /* Links for titles */
