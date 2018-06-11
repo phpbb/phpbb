@@ -14,20 +14,26 @@
 
 							<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
 							<span class="pm-left-secondary">
-								<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
 
 								{% if S_SHOW_RECIPIENTS %}
 								<span class="row-msg-author">
 									{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
+
 								{% else %}
 									{message.MESSAGE_AUTHOR_FULL}
 								</span>
-								<span class="row-time-date">
-									<i class="far fa-clock fa-fw" aria-hidden="true"></i>
-									{message.SENT_TIME}
-								</span>
 								{% endif %}
 
+								{% if message.PM_CLASS == "pm_foe_colour" %}
+									<i class="fa fa-exclamation-circle fa-fw" aria-hidden="true"></i>
+								{% elseif message.PM_CLASS == "pm_friend_colour" %}
+									<i class="fa fa-check-circle fa-fw" aria-hidden="true"></i>
+								{% endif %}
+
+								<span class="row-time-date">
+									<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
+									{message.SENT_TIME}
+								</span>
 							</span>
 						</span>
 					</li>
@@ -42,16 +48,16 @@
 
 	</div>
 
-	<div class="pm-action-bar-bottom">
+	<div class="action-bar bottom">
 		{% include 'display_options.html' %}
 		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 
-		<div class="pm-pagination">
+		<div class="pagination">
 			{TOTAL_MESSAGES}
 			{% if pagination %}
-			{% include 'pagination.html' %}
+				{% include 'pagination.html' %}
 			{% else %}
-			&bull; {PAGE_NUMBER}
+				&bull; {PAGE_NUMBER}
 			{% endif %}
 		</div>
 	</div>
