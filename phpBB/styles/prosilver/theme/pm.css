@@ -4,26 +4,25 @@
 
 /* Main PM box */
 
-.left-inner {
+.pm-left-primary {
 	font-size: 13px;
-	position: relative;
+	word-wrap: break-word;
+	display: inline-block;
+	width: 35%;
 	padding: 5px;
 }
 
 .row-time-date {
 	font-size: 12px;
 	position: absolute;
-	right: 5px;
+	right: 10px;
 }
 
 .message-row {
 	color: #888f98;
+	position: relative;
 	padding: 10px;
 	list-style-type: none;
-}
-
-.pm-left-panel {
-	width: 35%;
 }
 
 .title-read,
@@ -44,28 +43,28 @@
 /*	colours and backgrounds */
 
 .title-unread {
-	color: #ffffff;
+	color: #d41142;
 }
 
 .title-read {
-	color: #96a0bb;
+	color: #0f4d8a;
 }
 
 .row1 {
-	background-color: #1c2135;
+	background-color: #dce9f1;
 }
 
 .row2 {
-	background-color: #222943;
+	background-color: #ecf4f7;
 }
 
 .row1:hover,
 .row2:hover {
-	background-color: #3f3f3f;
+	background-color: #83a9c6;
 }
 
 .msg-unread {
-	box-shadow: 5px 0 0 0 #f7d05a inset;
+	box-shadow: 5px 0 0 0 #d41142 inset;
 }
 
 /* Links for titles */

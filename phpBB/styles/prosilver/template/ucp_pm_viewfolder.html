@@ -7,25 +7,29 @@
 {% if messagerow %}
 	<div class="pm-main">
 		<div class="pm-left-panel">
-			<ul class="pm-list">
+			<ul class="pm-left-primary">
 				{% for message in messagerow %}
 					<li class="message-row {{ message.S_ROW_COUNT is odd ? 'row1' : 'row2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'msg-unread' }}">
-						<div class="left-inner">
-							<span class="row-msg-title">
-								<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
-							</span>
-							{% if S_SHOW_RECIPIENTS %}
-								{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
-							{% else %}
-							<span class="row-msg-author">
-								{message.MESSAGE_AUTHOR_FULL}
-							</span>
-							<span class="row-time-date">
-									{message.SENT_TIME}
-							</span>
-							{% endif %}
+						<span class="left-inner">
 
-						</div>
+							<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
+							<span class="pm-left-secondary">
+								<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+								{% if S_SHOW_RECIPIENTS %}
+								<span class="row-msg-author">
+									{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
+								{% else %}
+									{message.MESSAGE_AUTHOR_FULL}
+								</span>
+								<span class="row-time-date">
+									<i class="far fa-clock fa-fw" aria-hidden="true"></i>
+									{message.SENT_TIME}
+								</span>
+								{% endif %}
+
+							</span>
+						</span>
 					</li>
 				{% endfor %}
 
