@@ -500,8 +500,6 @@ class acp_main
 		$users_per_day = sprintf('%.2f', $total_users / $boarddays);
 		$files_per_day = sprintf('%.2f', $total_files / $boarddays);
 
-		//$storage_attachment = $phpbb_container->get('storage.attachments');
-		//$upload_dir_size = get_formatted_filesize($storage_attachment->get_size());
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
 
 		$storage_avatar = $phpbb_container->get('storage.avatar');
