@@ -118,7 +118,7 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->dump_file($this->root_path . $this->get_filepath($path), $content);
+			$this->filesystem->dump_file($this->root_path . $this->get_path($path) . $this->get_filename($path), $content);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -136,7 +136,7 @@ class local implements adapter_interface, stream_interface
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		$content = @file_get_contents($this->root_path . $this->get_filepath($path));
+		$content = @file_get_contents($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		if ($content === false)
 		{
@@ -151,7 +151,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function exists($path)
 	{
-		return $this->filesystem->exists($this->root_path . $this->get_filepath($path));
+		return $this->filesystem->exists($this->root_path . $this->get_path($path) . $this->get_filename($path));
 	}
 
 	/**
@@ -161,7 +161,7 @@ class local implements adapter_interface, stream_interface
 	{
 		try
 		{
-			$this->filesystem->remove($this->root_path . $this->get_filepath($path));
+			$this->filesystem->remove($this->root_path . $this->get_path($path) . $this->get_filename($path));
 		}
 		catch (filesystem_exception $e)
 		{
@@ -180,7 +180,7 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->rename($this->root_path . $this->get_filepath($path_orig), $this->root_path . $this->get_filepath($path_dest), false);
+			$this->filesystem->rename($this->root_path . $this->get_path($path_orig) . $this->get_filename($path_orig), $this->root_path . $this->get_path($path_dest) . $this->get_filename($path_dest), false);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -199,7 +199,7 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->copy($this->root_path . $this->get_filepath($path_orig), $this->root_path . $this->get_filepath($path_dest), false);
+			$this->filesystem->copy($this->root_path . $this->get_path($path_orig) . $this->get_filename($path_orig), $this->root_path . $this->get_path($path_dest) . $this->get_filename($path_dest), false);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -233,7 +233,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function ensure_directory_exists($path)
 	{
-		$path = dirname($this->root_path . $this->get_filepath($path));
+		$path = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
 		$path = filesystem_helper::make_path_relative($path, $this->root_path);
 
 		if (!$this->exists($path))
@@ -250,7 +250,7 @@ class local implements adapter_interface, stream_interface
 	protected function remove_empty_dirs($path)
 	{
 		$dirpath = dirname($this->root_path . $path);
-		$filepath = dirname($this->root_path . $this->get_filepath($path));
+		$filepath = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
 		$path = filesystem_helper::make_path_relative($filepath, $dirpath);
 
 		do
@@ -268,13 +268,11 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The file path
 	 */
-	protected function get_filepath($path)
+	protected function get_path($path)
 	{
-		$pathinfo = pathinfo($path);
-		$dirname = $pathinfo['dirname'];
-		$filename = $pathinfo['basename'];
+		$dirname = dirname($path);
 
-		$hash = md5($filename);
+		$hash = md5(basename($path));
 
 		$parts = str_split($hash, 2);
 		$parts = array_slice($parts, 0, $this->dir_depth);
@@ -287,7 +285,17 @@ class local implements adapter_interface, stream_interface
 			$path .= implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
 		}
 
-		return $path . $filename;
+		return $path;
+	}
+
+	/**
+	 * To be used in other PR
+	 *
+	 * @param string	$path	The file path
+	 */
+	protected function get_filename($path)
+	{
+		return basename($path);
 	}
 
 	/**
@@ -295,7 +303,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function read_stream($path)
 	{
-		$stream = @fopen($this->root_path . $this->get_filepath($path), 'rb');
+		$stream = @fopen($this->root_path . $this->get_path($path) . $this->get_filename($path), 'rb');
 
 		if (!$stream)
 		{
@@ -317,7 +325,7 @@ class local implements adapter_interface, stream_interface
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
-		$stream = @fopen($this->root_path . $this->get_filepath($path), 'w+b');
+		$stream = @fopen($this->root_path . $this->get_path($path) . $this->get_filename($path), 'w+b');
 
 		if (!$stream)
 		{
@@ -342,7 +350,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_size($path)
 	{
-		$size = filesize($this->root_path . $this->get_filepath($path));
+		$size = filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		if ($size === null)
 		{
@@ -361,7 +369,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_mimetype($path)
 	{
-		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $this->get_filepath($path))];
+		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $this->get_path($path) . $this->get_filename($path))];
 	}
 
 	/**
@@ -373,12 +381,12 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function image_dimensions($path)
 	{
-		$size = $this->imagesize->getImageSize($this->root_path . $this->get_filepath($path));
+		$size = $this->imagesize->getImageSize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		// For not supported types like swf
 		if ($size === false)
 		{
-			$imsize = getimagesize($this->root_path . $this->get_filepath($path));
+			$imsize = getimagesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 			$size = ['width' => $imsize[0], 'height' => $imsize[1]];
 		}
 
