@@ -73,6 +73,7 @@ class extension extends \Twig_Extension
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
+			new \Twig_SimpleFilter('format_bytes', 'get_formatted_filesize'),
 		);
 	}
 

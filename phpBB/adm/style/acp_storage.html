@@ -6,6 +6,28 @@
 
 <p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
 
+<table class="table1 zebra-table">
+	<thead>
+		<tr>
+			<th>{L_STORAGE_NAME}</th>
+			<th>{L_STORAGE_NUM_FILES}</th>
+			<th>{L_STORAGE_SIZE}</th>
+			<th>{L_STORAGE_FREE}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for storage in STORAGES %}
+		<tr>
+			<td>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</td>
+			<td>{{ storage.get_num_files }}</td>
+			<td>{{ storage.get_size | format_bytes }}</td>
+			<td>{{ storage.free_space | format_bytes }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+
 <form id="acp_storage" method="post" action="{{ U_ACTION }}">
 
 	{% for storage in STORAGES %}
