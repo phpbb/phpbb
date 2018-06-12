@@ -95,4 +95,13 @@ interface adapter_interface
 	 *
 	 */
 	public function get_link($path);
+
+	/*
+	 * Get space available in bytes.
+	 *
+	 * @throws \phpbb\storage\exception\exception		When can't get available space
+	 *
+	 * @return int	Returns available space
+	 */
+	public function free_space();
 }

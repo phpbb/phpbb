@@ -424,4 +424,23 @@ class local implements adapter_interface, stream_interface
 	{
 		return generate_board_url() . $this->path . $path;
 	}
+
+	/*
+	 * Get space available in bytes.
+	 *
+	 * @throws \phpbb\storage\exception\exception		When can't get available space
+	 *
+	 * @return int	Returns available space
+	 */
+	public function free_space()
+	{
+		$free_space = @disk_free_space($this->root_path);
+
+		if ($free_space === false)
+		{
+			throw new exception('STORAGE_CANNOT_GET_FREE_SPACE');
+		}
+
+		return (int) $free_space;
+	}
 }

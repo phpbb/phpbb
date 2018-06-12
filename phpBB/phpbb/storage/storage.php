@@ -360,4 +360,17 @@ class storage
 
 		return $number_files;
 	}
+
+	/**
+	 * Get space available in bytes.
+	 *
+	 * @throws \phpbb\storage\exception\exception		When can't get available space
+	 *
+	 * @return int	Returns available space
+	 */
+	public function free_space()
+	{
+		return $this->get_adapter()->free_space();
+	}
+
 }
