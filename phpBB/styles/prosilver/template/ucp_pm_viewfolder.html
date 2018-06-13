@@ -5,32 +5,27 @@
 {% endif %}
 
 {% if messagerow %}
-	<div class="pm-main">
-		<div class="pm-left-panel">
-			<ul class="pm-left-primary">
+	<div class="pm">
+		<div class="pm-list-container">
+			<ul class="pm-list">
 				{% for message in messagerow %}
-					<li class="message-row {{ message.S_ROW_COUNT is odd ? 'row1' : 'row2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'msg-unread' }}">
-						<span class="left-inner">
+					<li class="pm-item {{ message.S_ROW_COUNT is odd ? 'bg1' : 'bg2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">
+						<span class="pm-primary">
 
-							<a href="{message.U_VIEW_PM}" class="msg-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a><br><br>
-							<span class="pm-left-secondary">
+							<a href="{message.U_VIEW_PM}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a>
+							<span class="pm-secondary">
 
+								<span class="pm-secondary-item pm-authour">
+									<i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>
 								{% if S_SHOW_RECIPIENTS %}
-								<span class="row-msg-author">
 									{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
-
 								{% else %}
 									{message.MESSAGE_AUTHOR_FULL}
+								{% endif %}
+
 								</span>
-								{% endif %}
 
-								{% if message.PM_CLASS == "pm_foe_colour" %}
-									<i class="fa fa-exclamation-circle fa-fw" aria-hidden="true"></i>
-								{% elseif message.PM_CLASS == "pm_friend_colour" %}
-									<i class="fa fa-check-circle fa-fw" aria-hidden="true"></i>
-								{% endif %}
-
-								<span class="row-time-date">
+								<span class="pm-secondary-item pm-date">
 									<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
 									{message.SENT_TIME}
 								</span>
@@ -43,7 +38,7 @@
 
 		</div><br>
 
-		<div class="pm-right-panel">
+		<div class="pm-viewer">
 		</div>
 
 	</div>
