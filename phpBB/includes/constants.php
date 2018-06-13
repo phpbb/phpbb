@@ -183,7 +183,6 @@ define('BBCODE_ID_LIST', 9);
 define('BBCODE_ID_EMAIL', 10);
 define('BBCODE_ID_FLASH', 11);
 define('BBCODE_ID_ATTACH', 12);
-define('BBCODE_ID_MENTION', 13);
 
 // BBCode hard limit
 define('BBCODE_LIMIT', 1511);
