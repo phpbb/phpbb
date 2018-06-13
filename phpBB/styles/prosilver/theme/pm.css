@@ -1,70 +1,65 @@
 /* -------------------------------------------------------------- /*
-	Styles for the refactored PM module
+    Styles for the refactored PM module
 /* -------------------------------------------------------------- */
 
-/* Main PM box */
-
-.pm-left-primary {
-	font-size: 13px;
-	word-wrap: break-word;
-	display: inline-block;
-	width: 35%;
-	padding: 5px;
-}
-
-.row-time-date {
-	font-size: 12px;
-	position: absolute;
-	right: 10px;
-}
-
-.message-row {
-	color: #888f98;
-	position: relative;
-	padding: 10px;
+.pm-list {
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.04em;
+	margin: 0;
+	padding: 0;
 	list-style-type: none;
 }
 
-.title-read,
-.title-unread {
-	display: inline;
+.pm-item {
+	border-left: 5px solid transparent;
+	position: relative;
+	display: flex;
+	overflow: hidden;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 16px;
 }
 
-/*	colours and backgrounds */
-
-.title-unread {
-	color: #d41142;
+.pm-unread {
+	border-left: 5px solid #d41142;
 }
 
-.title-read {
-	color: #0f4d8a;
+.pm-primary,
+.pm-secondary {
+	display: block;
 }
+
+.pm-primary {
+	line-height: 1.5;
+}
+
+.pm-secondary {
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25;
+	text-decoration: inherit;
+	letter-spacing: 0.04em;
+	text-transform: inherit;
+}
+
+.pm-authour,
+.pm-date {
+	line-height: 1.2857142857;
+	padding-right: 1rem;
+}
+
+/*	colours and backgrounds  */
 
 .row1 {
-	background-color: #dce9f1;
+	background-color: #dbe9f0;
 }
 
 .row2 {
-	background-color: #ecf4f7;
+	background-color: #edf4f7;
 }
 
-.msg-unread {
-	box-shadow: 5px 0 0 0 #d41142 inset !important;
-}
-
-.fa-exclamation-circle {
-	color: #000000;
-}
-
-.fa-check-circle {
-	color: #006400;
-}
-
-/* Links for titles */
-
-.msg-title {
-	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
-	font-size: 16px;
-	font-weight: bold;
-	text-decoration: none;
+.title-unread {
+	color: #d41142;
 }
