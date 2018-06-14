@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $user, $template;
+	global $config, $user, $template, $auth;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 	global $phpbb_dispatcher, $phpbb_container;
 
@@ -89,7 +89,9 @@ function adm_page_header($page_title)
 		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 
-		'UA_MENTION_URL'		=> $controller_helper->route('phpbb_mention_controller'),
+		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention')) ? true : false,
+		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
+		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
 
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",

@@ -310,8 +310,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			$configurator->tags['QUOTE']->nestingLimit = PHP_INT_MAX;
 		}
 
-		// Modify the template to disable images/flash depending on user's settings
-		foreach (array('FLASH', 'IMG') as $name)
+		// Modify the template to disable images/flash/mentions depending on user's settings
+		foreach (array('FLASH', 'IMG', 'MENTION') as $name)
 		{
 			$tag = $configurator->tags[$name];
 			$tag->template = '<xsl:choose><xsl:when test="$S_VIEW' . $name . '">' . $tag->template . '</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose>';

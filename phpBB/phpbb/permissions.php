@@ -231,6 +231,7 @@ class permissions
 
 		'u_attach'		=> array('lang' => 'ACL_U_ATTACH', 'cat' => 'post'),
 		'u_download'	=> array('lang' => 'ACL_U_DOWNLOAD', 'cat' => 'post'),
+		'u_mention'		=> array('lang' => 'ACL_U_MENTION', 'cat' => 'post'),
 		'u_savedrafts'	=> array('lang' => 'ACL_U_SAVEDRAFTS', 'cat' => 'post'),
 		'u_chgcensors'	=> array('lang' => 'ACL_U_CHGCENSORS', 'cat' => 'post'),
 		'u_sig'			=> array('lang' => 'ACL_U_SIG', 'cat' => 'post'),
@@ -276,6 +277,7 @@ class permissions
 		'f_sticky'		=> array('lang' => 'ACL_F_STICKY', 'cat' => 'post'),
 		'f_announce'	=> array('lang' => 'ACL_F_ANNOUNCE', 'cat' => 'post'),
 		'f_announce_global'	=> array('lang' => 'ACL_F_ANNOUNCE_GLOBAL', 'cat' => 'post'),
+		'f_mention'		=> array('lang' => 'ACL_F_MENTION', 'cat' => 'post'),
 		'f_reply'		=> array('lang' => 'ACL_F_REPLY', 'cat' => 'post'),
 		'f_edit'		=> array('lang' => 'ACL_F_EDIT', 'cat' => 'post'),
 		'f_delete'		=> array('lang' => 'ACL_F_DELETE', 'cat' => 'post'),
