@@ -4,8 +4,6 @@
 	var text_name = <!-- IF $SIG_EDIT -->'signature'<!-- ELSE -->'message'<!-- ENDIF -->;
 	var load_draft = false;
 	var upload = false;
-	var mention_url = '{UA_MENTION_URL}';
-	var mention_topic_id = '{S_TOPIC_ID}';
 
 	// Define the bbCode tags
 	var bbcode = new Array();
@@ -27,6 +25,10 @@
 		}
 	}
 </script>
+
+<!-- IF S_ALLOW_MENTIONS -->
+<div id="mention_params" style="display: none;" data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-topic-id="{S_TOPIC_ID}"></div>
+<!-- ENDIF -->
 <!-- INCLUDECSS {T_ASSETS_PATH}/css/jquery.atwho.min.css -->
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/jquery.caret.min.js -->
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/jquery.atwho.min.js -->

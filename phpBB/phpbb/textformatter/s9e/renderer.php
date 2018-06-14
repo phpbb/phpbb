@@ -64,6 +64,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	protected $viewsmilies = false;
 
 	/**
+	* @var bool Whether the user is allowed to use mentions
+	*/
+	protected $usemention = false;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\cache\driver\driver_interface $cache
@@ -177,6 +182,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		$this->set_viewflash($user->optionget('viewflash'));
 		$this->set_viewimg($user->optionget('viewimg'));
 		$this->set_viewsmilies($user->optionget('viewsmilies'));
+		$this->set_usemention($config['allow_mentions'] && $auth->acl_get('u_mention'));
 
 		// Set the stylesheet parameters
 		foreach (array_keys($this->renderer->getParameters()) as $param_name)
@@ -329,5 +335,14 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	{
 		$this->viewsmilies = $value;
 		$this->renderer->setParameter('S_VIEWSMILIES', $value);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_usemention($value)
+	{
+		$this->usemention = $value;
+		$this->renderer->setParameter('S_VIEWMENTION', $value);
 	}
 }

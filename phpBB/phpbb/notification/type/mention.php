@@ -58,7 +58,7 @@ class mention extends \phpbb\notification\type\post
 	*/
 	public function is_available()
 	{
-		return true;
+		return $this->config['allow_mentions'] && $this->auth->acl_get('u_mention');
 	}
 
 	/**

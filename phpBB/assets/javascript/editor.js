@@ -386,6 +386,10 @@ function getCaretPosition(txtarea) {
 
 (function($) {
 	function handle_mentions(txtarea) {
+		var $mentionParams = $('#mention_params'),
+			mentionURL = $mentionParams.data('mentionUrl'),
+			mentionNamesLimit = $mentionParams.data('mentionNamesLimit'),
+			mentionTopicId = $mentionParams.data('topicId');
 		$(txtarea).atwho({
 			at: "@",
 			displayTpl: function(data) {
@@ -395,9 +399,10 @@ function getCaretPosition(txtarea) {
 				return "<li>" + avatar + "<span>" + data.name + "</span>" + rank + "</li>";
 			},
 			insertTpl: "[mention ${param}=${id}]${name}[/mention]",
+			limit: mentionNamesLimit,
 			callbacks: {
 				remoteFilter: function(query, callback) {
-					$.getJSON(mention_url, {keyword: query, topic_id: mention_topic_id}, function (data) {
+					$.getJSON(mentionURL, {keyword: query, topic_id: mentionTopicId}, function (data) {
 						callback(data)
 					});
 				}
@@ -431,7 +436,7 @@ function getCaretPosition(txtarea) {
 			phpbb.showDragNDrop(textarea);
 		}
 
-		if (mention_url) {
+		if ($('#mention_params').length) {
 			handle_mentions(textarea);
 		}
 

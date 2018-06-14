@@ -161,6 +161,7 @@ $lang = array_merge($lang, array(
 // Post Settings
 $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
+	'ALLOW_MENTIONS'					=> 'Allow mentions of users and groups boardwide',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOWED_SCHEMES_LINKS'				=> 'Allowed schemes in links',
@@ -191,6 +192,8 @@ $lang = array_merge($lang, array(
 	'MAX_POST_IMG_WIDTH_EXPLAIN'	=> 'Maximum width of a flash file in postings. Set to 0 for unlimited size.',
 	'MAX_POST_URLS'					=> 'Maximum links per post',
 	'MAX_POST_URLS_EXPLAIN'			=> 'Maximum number of URLs in a post. Set to 0 for unlimited links.',
+	'MENTIONS'						=> 'Mentions',
+	'MENTION_NAMES_LIMIT'			=> 'Maximum number of names in dropdown list',
 	'MIN_CHAR_LIMIT'				=> 'Minimum characters per post/message',
 	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message. The minimum for this setting is 1.',
 	'POSTING'						=> 'Posting',
