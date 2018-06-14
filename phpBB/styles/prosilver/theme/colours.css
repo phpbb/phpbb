@@ -983,8 +983,19 @@ fieldset.fields2 dl:hover dt label {
 	outline-color: rgba(19, 164, 236, 0.5);
 }
 
-.atwho-container .atwho-view ul li:hover,
-.atwho-container .atwho-view ul li.cur {
+.atwho-view {
+	background: #ffffff;
+	border-color: #dddddd;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+	color: #000000;
+}
+
+.mention-name {
+	border-bottom-color: #dddddd;
+}
+
+.mention-name:hover,
+.mention-name.cur {
 	background-color: #0077b3;
 	color: #ffffff;
 }
