@@ -65,12 +65,12 @@ class local implements adapter_interface, stream_interface
 	/*
 	 * Subdirectories depth
 	 *
-	 * Instead of storing all folders on the same directory, they can be divided
-	 * into smaller directories. This variable means the number of subdirectories of
-	 * depth to store the file. For example:
+	 * Instead of storing all folders in the same directory, they can be divided
+	 * into smaller directories. The variable describes the number of subdirectories
+	 * to be used for storing the files. For example:
 	 * depth = 0 -> /images/avatars/upload/my_avatar.jpg
 	 * depth = 2 -> /images/avatars/upload/d9/8c/my_avatar.jpg
-	 * This is for those who have problems storing a large number of files on
+	 * This is for those who have problems storing a large number of files in
 	 * a single directory.
 	 * More info: https://tracker.phpbb.com/browse/PHPBB3-15371
 	 *
