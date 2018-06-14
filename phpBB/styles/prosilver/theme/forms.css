@@ -285,14 +285,33 @@ fieldset.submit-buttons input {
 }
 
 /* Mention dropdown */
-.atwho-container .atwho-view {
-	font-size: 12px;
+.atwho-view {
+	border: 1px solid transparent;
+	border-radius: 3px;
+	position: absolute;
+	z-index: 11110 !important;
+	top: 0;
+	left: 0;
+	display: none;
 	min-width: 260px;
+	margin-top: 18px;
 }
 
-.atwho-container .atwho-view ul li {
+.atwho-view-ul {
+	overflow-y: auto;
+	max-height: 200px;
+	margin: auto;
+	padding: 0;
+	list-style: none;
+}
+
+.mention-name {
+	font-size: 12px;
+	border-bottom: 1px solid transparent;
 	position: relative;
+	display: block;
 	padding: 15px 5px 15px 45px;
+	cursor: pointer;
 }
 
 .mention-avatar {

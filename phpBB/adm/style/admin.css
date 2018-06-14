@@ -1676,18 +1676,45 @@ fieldset.submit-buttons legend {
 	font-weight: bold;
 }
 
-.atwho-container .atwho-view {
-	font-size: 12px;
+.atwho-view {
+	background: #ffffff;
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+	color: #000000;
+	position: absolute;
+	z-index: 11110 !important;
+	top: 0;
+	left: 0;
+	display: none;
 	min-width: 260px;
+	margin-top: 18px;
 }
 
-.atwho-container .atwho-view ul li {
+.atwho-view-ul {
+	overflow-y: auto;
+	max-height: 200px;
+	margin: auto;
+	padding: 0;
+	list-style: none;
+}
+
+.mention-name {
+	font-size: 12px;
+	border-bottom: 1px solid #dddddd;
 	position: relative;
+	display: block;
 	padding: 15px 5px 15px 45px;
+	cursor: pointer;
 }
 
-.atwho-container .atwho-view ul li:hover,
-.atwho-container .atwho-view ul li.cur {
+.rtl .mention-name {
+	padding-right: 45px;
+	padding-left: 15px;
+}
+
+.mention-name:hover,
+.mention-name.cur {
 	background-color: #0077b3;
 	color: #ffffff;
 }
@@ -1708,6 +1735,11 @@ fieldset.submit-buttons legend {
 	width: 30px;
 	height: 30px;
 	margin-top: -16px;
+}
+
+.rtl .mention-avatar {
+	right: 7px;
+	left: auto;
 }
 
 .mention-rank {

@@ -396,7 +396,7 @@ function getCaretPosition(txtarea) {
 				var avatar = (data.avatar.src) ? "<img src='" + data.avatar.src + "'>" :
 					"<span class='mention-avatar'><i class='fa fa-" + data.avatar.type + "'></i></span>",
 					rank = (data.rank) ? "<span class='mention-rank'>" + data.rank + "</span>" : '';
-				return "<li>" + avatar + "<span>" + data.name + "</span>" + rank + "</li>";
+				return "<li class='mention-name'>" + avatar + "<span>" + data.name + "</span>" + rank + "</li>";
 			},
 			insertTpl: "[mention ${param}=${id}]${name}[/mention]",
 			limit: mentionNamesLimit,

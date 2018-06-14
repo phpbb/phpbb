@@ -931,12 +931,12 @@
 }
 
 /* Mention dropdown */
-.atwho-container .atwho-view ul li {
+.rtl .mention-name {
 	padding-right: 45px;
 	padding-left: 15px;
 }
 
-.mention-avatar {
+.rtl .mention-avatar {
 	right: 7px;
 	left: auto;
 }
