@@ -118,11 +118,6 @@ class local implements adapter_interface, stream_interface
 	{
 		$this->ensure_directory_exists($path);
 
-		if ($this->exists($path))
-		{
-			throw new exception('STORAGE_FILE_EXISTS', $path);
-		}
-
 		try
 		{
 			$this->filesystem->dump_file($this->root_path . $this->get_path($path) . $this->get_filename($path), $content);
