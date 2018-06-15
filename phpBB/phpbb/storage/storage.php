@@ -106,8 +106,22 @@ class storage
 	 */
 	public function put_contents($path, $content)
 	{
-		$this->get_adapter()->put_contents($path, $content);
-		$this->track_file($path);
+		if ($this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_EXISTS', $path);
+		}
+
+		try
+		{
+			$this->get_adapter()->put_contents($path, $content);
+			$this->track_file($path);
+		}
+		catch (\Exception $e)
+		{
+			$this->get_adapter()->delete($path);
+			$this->untrack_file($path);
+			throw $e;
+		}
 	}
 
 	/**
@@ -123,6 +137,11 @@ class storage
 	 */
 	public function get_contents($path)
 	{
+		if (!$this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+		}
+
 		return $this->get_adapter()->get_contents($path);
 	}
 
@@ -147,6 +166,11 @@ class storage
 	 */
 	public function delete($path)
 	{
+		if (!$this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+		}
+
 		$this->get_adapter()->delete($path);
 		$this->untrack_file($path);
 	}
@@ -157,13 +181,31 @@ class storage
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
+	 *													When target exists
 	 * 													When file/directory cannot be renamed
 	 */
 	public function rename($path_orig, $path_dest)
 	{
-		$this->get_adapter()->rename($path_orig, $path_dest);
-		$this->track_rename($path_orig, $path_dest);
+		if (!$this->exists($path_orig))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path_orig);
+		}
+
+		if ($this->exists($path_dest))
+		{
+			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
+		}
+
+		try {
+			$this->get_adapter()->rename($path_orig, $path_dest);
+			$this->track_rename($path_orig, $path_dest);
+		}
+		catch (\Exception $e)
+		{
+			$this->untrack_file($path_dest);
+			throw $e;
+		}
 	}
 
 	/**
@@ -172,13 +214,32 @@ class storage
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
+	 *													When target exists
 	 * 													When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest)
 	{
-		$this->get_adapter()->copy($path_orig, $path_dest);
-		$this->track_file($path_dest);
+		if (!$this->exists($path_orig))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path_orig);
+		}
+
+		if ($this->exists($path_dest))
+		{
+			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
+		}
+
+		try
+		{
+			$this->get_adapter()->copy($path_orig, $path_dest);
+			$this->track_file($path_dest);
+		}
+		catch (\Exception $e)
+		{
+			$this->untrack_file($path_dest);
+			throw $e;
+		}
 	}
 
 	/**
@@ -186,12 +247,18 @@ class storage
 	 *
 	 * @param string	$path	File to read
 	 *
-	 * @throws \phpbb\storage\exception\exception		When unable to open file
+	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
+	 *													When unable to open file
 	 *
 	 * @return resource	Returns a file pointer
 	 */
 	public function read_stream($path)
 	{
+		if (!$this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+		}
+
 		$stream = null;
 		$adapter = $this->get_adapter();
 
@@ -217,15 +284,29 @@ class storage
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
 	 *
-	 * @throws \phpbb\storage\exception\exception		When target file cannot be created
+	 * @throws \phpbb\storage\exception\exception		When the file exist
+	 *													When target file cannot be created
 	 */
 	public function write_stream($path, $resource)
 	{
+		if ($this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_EXISTS', $path);
+		}
+
 		$adapter = $this->get_adapter();
 
 		if ($adapter instanceof stream_interface)
 		{
-			$adapter->write_stream($path, $resource);
+			try
+			{
+				$adapter->write_stream($path, $resource);
+			}
+			catch (\Exception $e)
+			{
+				$this->get_adapter()->delete($path);
+				$this->untrack_file($path);
+			}
 		}
 		else
 		{
