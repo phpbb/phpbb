@@ -9,19 +9,19 @@
 		<div class="pm-list-container">
 			<ul class="pm-list">
 				{% for message in messagerow %}
-					<li class="pm-item {{ message.S_ROW_COUNT is odd ? 'bg1' : 'bg2' }} {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">
+					<li class="pm-item {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">
 						<span class="pm-primary">
 
-							<a href="{message.U_VIEW_PM}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'title-unread' : 'title-read' }}">{message.SUBJECT}</a>
+							<a href="{message.U_VIEW_PM}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread-pm-title' : 'title-read' }}">{message.SUBJECT}</a>
 							<span class="pm-secondary">
 
 								<span class="pm-secondary-item pm-authour">
 									<i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>
-								{% if S_SHOW_RECIPIENTS %}
-									{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
-								{% else %}
-									{message.MESSAGE_AUTHOR_FULL}
-								{% endif %}
+									{% if S_SHOW_RECIPIENTS %}
+										{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
+									{% else %}
+										{message.MESSAGE_AUTHOR_FULL}
+									{% endif %}
 
 								</span>
 
