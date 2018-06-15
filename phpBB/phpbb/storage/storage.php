@@ -15,6 +15,7 @@ namespace phpbb\storage;
 
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\db\driver\driver_interface as db;
+use phpbb\storage\exception\exception;
 
 /**
  * @internal Experimental
