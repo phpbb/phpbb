@@ -154,7 +154,7 @@ class storage
 	 */
 	public function exists($path)
 	{
-		return $this->get_adapter()->exists($path);
+		return $this->is_tracked($path);
 	}
 
 	/**
@@ -374,6 +374,23 @@ class storage
 
 		$this->cache->destroy('_storage_' . $this->get_name() . '_totalsize');
 		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
+	}
+
+	public function is_tracked($path)
+	{
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
+
+		// Get file, if exist update filesize, if not add new record
+		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return ($row) ? true : false;
 	}
 
 	/**
