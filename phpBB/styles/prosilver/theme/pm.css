@@ -13,6 +13,7 @@
 }
 
 .pm-item {
+	background-color: #dbe9f0;
 	border-left: 5px solid transparent;
 	position: relative;
 	display: flex;
@@ -44,22 +45,17 @@
 	text-transform: inherit;
 }
 
-.pm-authour,
-.pm-date {
+.pm-secondary-item {
 	line-height: 1.2857142857;
 	padding-right: 1rem;
 }
 
 /*	colours and backgrounds  */
 
-.row1 {
-	background-color: #dbe9f0;
-}
-
-.row2 {
+.pm-item:nth-child(even) {
 	background-color: #edf4f7;
 }
 
-.title-unread {
+.pm-unread-pm-title {
 	color: #d41142;
 }
