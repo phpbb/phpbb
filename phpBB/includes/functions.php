@@ -71,7 +71,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 function gen_rand_string($num_chars = 8)
 {
 	// [a, z] + [0, 9] = 36
-	return substr(strtoupper(base_convert(unique_id(), 16, 36)), 0, $num_chars);
+	return substr(strtoupper(base_convert(bin2hex(random_bytes($num_chars)), 16, 36)), 0, $num_chars);
 }
 
 /**
@@ -82,7 +82,7 @@ function gen_rand_string($num_chars = 8)
 */
 function gen_rand_string_friendly($num_chars = 8)
 {
-	$rand_str = unique_id();
+	$rand_str = bin2hex(random_bytes($num_chars));
 
 	// Remove Z and Y from the base_convert(), replace 0 with Z and O with Y
 	// [a, z] + [0, 9] - {z, y} = [a, z] + [0, 9] - {0, o} = 34
