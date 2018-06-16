@@ -81,7 +81,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$config = $this->config;
 		$this->db = $this->new_dbal();
 		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $phpbb_root_path, $phpEx);
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
@@ -336,14 +336,14 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	 */
 	public function test_image_upload($is_image, $plupload_active, $config_data, $expected)
 	{
-		$filespec = $this->getMock('\phpbb\files\filespec',
-			array(
+		$filespec = $this->getMockBuilder('\phpbb\files\filespec')
+			->setMethods(array(
 				'init_error',
 				'is_image',
 				'move_file',
 				'is_uploaded',
-			),
-			array(
+			))
+			->setConstructorArgs(array(
 				$this->filesystem,
 				$this->language,
 				$this->php_ini,
@@ -351,7 +351,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 				$this->phpbb_root_path,
 				$this->mimetype_guesser,
 				$this->plupload
-			));
+			))
+			->getMock();
 		foreach ($config_data as $key => $value)
 		{
 			$this->config[$key] = $value;

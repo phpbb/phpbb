@@ -281,7 +281,7 @@ class convertor
 				$bad_folders = array();
 
 				$local_paths = array(
-					'avatar_path'			=> path($config['avatar_path']),
+					'avatar_path'			=> path($config['storage\\avatar\\config\\path']),
 					'avatar_gallery_path'	=> path($config['avatar_gallery_path']),
 					'icons_path'			=> path($config['icons_path']),
 					'ranks_path'			=> path($config['ranks_path']),

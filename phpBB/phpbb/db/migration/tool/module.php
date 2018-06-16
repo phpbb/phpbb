@@ -509,7 +509,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Get parent module id
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
-	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
+	* @param int|string|array $data The module_id, module_langname for existence checking or module data array for adding
 	* @param bool $throw_exception The flag indicating if exception should be thrown on error
 	* @return mixed The int parent module_id, an array of int parent module_id values or false
 	* @throws \phpbb\db\migration\exception

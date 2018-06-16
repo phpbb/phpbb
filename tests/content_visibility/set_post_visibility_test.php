@@ -120,7 +120,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
@@ -173,7 +173,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');

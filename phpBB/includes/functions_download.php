@@ -25,30 +25,27 @@ if (!defined('IN_PHPBB'))
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config, $phpbb_root_path;
+	global $config, $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	$prefix = $config['avatar_salt'] . '_';
-	$image_dir = $config['avatar_path'];
+	$file_path = $prefix . $file;
 
-	// Adjust image_dir path (no trailing slash)
-	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
+	if ($storage->exists($file_path) && !headers_sent())
 	{
-		$image_dir = substr($image_dir, 0, -1) . '/';
-	}
-	$image_dir = str_replace(array('../', '..\\', './', '.\\'), '', $image_dir);
+		$file_info = $storage->file_info($file_path);
 
-	if ($image_dir && ($image_dir[0] == '/' || $image_dir[0] == '\\'))
-	{
-		$image_dir = '';
-	}
-	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
-
-	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
-	{
 		header('Cache-Control: public');
 
-		$image_data = @getimagesize($file_path);
-		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
+		try
+		{
+			header('Content-Type: ' . $file_info->mimetype);
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Just don't send this header
+		}
 
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
@@ -69,24 +66,26 @@ function send_avatar_to_browser($file, $browser)
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
-		$size = @filesize($file_path);
-		if ($size)
+		try
 		{
-			header("Content-Length: $size");
+			header('Content-Length: ' . $file_info->size);
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Just don't send this header
 		}
 
-		if (@readfile($file_path) == false)
+		try
 		{
-			$fp = @fopen($file_path, 'rb');
-
-			if ($fp !== false)
-			{
-				while (!feof($fp))
-				{
-					echo fread($fp, 8192);
-				}
-				fclose($fp);
-			}
+			$fp = $storage->read_stream($file_path);
+			$output = fopen('php://output', 'w+b');
+			stream_copy_to_stream($fp, $output);
+			fclose($fp);
+			fclose($output);
+		}
+		catch (\Exception $e)
+		{
+			// Send nothing
 		}
 
 		flush();
