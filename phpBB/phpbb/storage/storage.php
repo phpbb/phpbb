@@ -153,9 +153,9 @@ class storage
 	 *
 	 * @return bool	Returns true if the file/directory exist, false otherwise.
 	 */
-	public function exists($path)
+	public function exists($path, $full_check = false)
 	{
-		return $this->is_tracked($path);
+		return ($this->is_tracked($path) && $full_check && $this->get_adapter()->exists($path));
 	}
 
 	/**
