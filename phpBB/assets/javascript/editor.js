@@ -386,10 +386,10 @@ function getCaretPosition(txtarea) {
 
 (function($) {
 	function handle_mentions(txtarea) {
-		var $mentionParams = $('#mention_params'),
-			mentionURL = $mentionParams.data('mentionUrl'),
-			mentionNamesLimit = $mentionParams.data('mentionNamesLimit'),
-			mentionTopicId = $mentionParams.data('topicId');
+		var $mentionDataContainer = $('#format-buttons'),
+			mentionURL = $mentionDataContainer.data('mentionUrl'),
+			mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit'),
+			mentionTopicId = $mentionDataContainer.data('topicId');
 		$(txtarea).atwho({
 			at: "@",
 			displayTpl: function(data) {
