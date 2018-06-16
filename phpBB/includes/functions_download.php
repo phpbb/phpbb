@@ -231,9 +231,6 @@ function send_file_to_browser($attachment, $category)
 		}
 	}
 
-	// Close the db connection before sending the file etc.
-	file_gc(false);
-
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
 		if ($size)
@@ -245,6 +242,9 @@ function send_file_to_browser($attachment, $category)
 		@set_time_limit(0);
 
 		$fp = $storage->read_stream($filename);
+
+		// Close the db connection before sending the file etc.
+		file_gc(false);
 
 		if ($fp !== false)
 		{
