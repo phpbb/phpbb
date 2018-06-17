@@ -158,7 +158,7 @@ class acp_storage
 				}
 			}
 
-			// If there is no errors
+			// If there is no changes
 			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
