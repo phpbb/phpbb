@@ -66,6 +66,8 @@ function set_var(&$result, $var, $type, $multibyte = false)
 /**
 * Generates an alphanumeric random string of given length
 *
+* @param int $num_chars Length of random string, defaults to 8
+*
 * @return string
 */
 function gen_rand_string($num_chars = 8)
@@ -77,6 +79,8 @@ function gen_rand_string($num_chars = 8)
 /**
 * Generates a user-friendly alphanumeric random string of given length
 * We remove 0 and O so users cannot confuse those in passwords etc.
+*
+* @param int $num_chars Length of random string, defaults to 8
 *
 * @return string
 */
