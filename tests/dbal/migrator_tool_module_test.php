@@ -11,6 +11,9 @@
 *
 */
 
+require_once dirname(__FILE__) . '/ext/foo/bar/acp/acp_test_info.php';
+require_once dirname(__FILE__) . '/ext/foo/bar/ucp/ucp_test_info.php';
+
 class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 {
 	public function getDataSet()
@@ -38,6 +41,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+
+		// Correctly set the root path for this test to this directory, so the classes can be found
+		$phpbb_root_path = dirname(__FILE__) . '/';
 
 		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 		$module_manager = new \phpbb\module\module_manager($cache, $this->db, $phpbb_extension_manager, MODULES_TABLE, $phpbb_root_path, $phpEx);
@@ -403,6 +409,35 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertEquals(true, $this->tool->exists('ucp', 'UCP_NEW_SUBCAT', 'UCP_NEW_MODULE'));
+
+		// Test adding new UCP module the automatic way, single mode
+		try
+		{
+			$this->tool->add('ucp', 'UCP_NEW_CAT', array(
+				'module_basename'	=> '\foo\bar\ucp\ucp_test_module',
+				'modes'				=> array('mode_1'),
+			));
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertEquals(true, $this->tool->exists('ucp', 'UCP_NEW_CAT', 'UCP_NEW_MODULE_MODE_1'));
+		$this->assertEquals(false, $this->tool->exists('ucp', 'UCP_NEW_CAT', 'UCP_NEW_MODULE_MODE_2'));
+
+		// Test adding new ACP module the automatic way, all modes
+		try
+		{
+			$this->tool->add('acp', 'ACP_NEW_CAT', array(
+				'module_basename' => '\foo\bar\acp\acp_test_module',
+			));
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE_MODE_1'));
+		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE_MODE_2'));
 	}
 
 	public function test_remove()

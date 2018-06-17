@@ -519,12 +519,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
 
-		// If automatic adding is in action, convert array back to string to simplify things
-		if (is_array($data) && count($data) == 1)
-		{
-			$data = $data['module_langname'];
-		}
-
 		if (!is_numeric($parent_id))
 		{
 			// Refresh the $module_categories array
