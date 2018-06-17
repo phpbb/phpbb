@@ -69,10 +69,12 @@ services:
         class: phpbb\storage\adapter\local
         shared: false
         arguments:
+            - '@dbal.conn'
             - '@filesystem'
             - '@upload_imagesize'
             - '@mimetype.guesser'
             - '%core.root_path%'
+            - '%tables.storage%'
         tags:
             - { name: storage.adapter }
 

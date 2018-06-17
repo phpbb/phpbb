@@ -39,6 +39,13 @@ class local implements provider_interface
 		return [
 			'path' => array('type' => 'text'),
 			'depth' => array('type' => 'text'),
+			'safe_filename' => array(
+				'type' => 'radio',
+				'options' => array(
+					'YES' => '1',
+					'NO' => '0',
+				),
+			),
 		];
 	}
 

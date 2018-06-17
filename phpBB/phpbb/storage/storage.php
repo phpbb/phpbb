@@ -93,6 +93,8 @@ class storage
 			$this->adapter = $this->factory->get($this->storage_name);
 		}
 
+		$this->adapter->set_storage($this->get_name());
+
 		return $this->adapter;
 	}
 
@@ -163,7 +165,8 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception		When removal fails.
+	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
+	 *													When removal fails.
 	 */
 	public function delete($path)
 	{
@@ -322,7 +325,7 @@ class storage
 	 * @param string	$path		The target file
 	 * @param bool		$update		Update file size when already tracked
 	 */
-	public function track_file($path, $update = false)
+	public function track_file($path, $update = true)
 	{
 		if (!$this->get_adapter()->exists($path))
 		{
@@ -345,6 +348,7 @@ class storage
 		{
 			$file = new file_info($this->get_adapter(), $path);
 			$sql_ary['filesize'] = $file->size;
+			$sql_ary['safe_filename'] = md5(unique_id());
 
 			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
 			$this->db->sql_query($sql);
@@ -392,6 +396,7 @@ class storage
 		// Get file, if exist update filesize, if not add new record
 		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

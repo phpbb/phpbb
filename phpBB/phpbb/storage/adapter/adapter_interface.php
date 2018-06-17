@@ -18,15 +18,22 @@ interface adapter_interface
 	/**
 	 * Set adapter parameters
 	 *
-	 * @param array	options		Storage-specific options.
+	 * @param array	options		Storage-specific options
 	 */
 	public function configure($options);
 
 	/**
-	 * Dumps content into a file
+	 * Set storage
 	 *
-	 * @param string	path		The file to be written to.
-	 * @param string	content		The data to write into the file.
+	 * @param string	storage_name		The storage name
+	 */
+	public function set_storage($storage_name);
+
+	/**
+	 * Dumps content into a file.
+	 *
+	 * @param string	path		The file to be written to
+	 * @param string	content		The data to write into the file
 	 *
 	 * @throws \phpbb\storage\exception\exception		When the file cannot be written
 	 */

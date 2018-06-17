@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\db\driver\driver_interface;
 use phpbb\storage\stream_interface;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
@@ -24,8 +25,13 @@ use FastImageSize\FastImageSize;
 /**
  * @internal Experimental
  */
-class local implements adapter_interface, stream_interface
+class local extends adapter implements stream_interface
 {
+	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $db;
+
 	/**
 	 * Filesystem component
 	 *
@@ -51,6 +57,11 @@ class local implements adapter_interface, stream_interface
 	 * @var string path
 	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * @var string storage table
+	 */
+	protected $storage_table;
 
 	/**
 	 * @var string path
@@ -79,14 +90,21 @@ class local implements adapter_interface, stream_interface
 	protected $dir_depth;
 
 	/**
+	 * @var bool safe filename
+	 */
+	protected $safe_filename;
+
+	/**
 	 * Constructor
 	 */
-	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
+	public function __construct(driver_interface $db, filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path, $storage_table)
 	{
+		$this->db = $db;
 		$this->filesystem = $filesystem;
 		$this->imagesize = $imagesize;
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->storage_table = $storage_table;
 	}
 
 	/**
@@ -273,7 +291,12 @@ class local implements adapter_interface, stream_interface
 		$parts = array_slice($parts, 0, $this->dir_depth);
 
 		// Create path
-		$path = $dirname . DIRECTORY_SEPARATOR;
+		$path = '';
+
+		if ($dirname != '.')
+		{
+			$path .= $dirname . DIRECTORY_SEPARATOR;
+		}
 
 		if (!empty($parts))
 		{
@@ -284,13 +307,49 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * To be used in other PR
+	 * Get the file name
 	 *
 	 * @param string	$path	The file path
 	 */
 	protected function get_filename($path)
 	{
-		return basename($path);
+		$filename = basename($path);
+
+		if ($this->safe_filename)
+		{
+			$sql = 'SELECT safe_filename
+				FROM ' .  $this->storage_table . "
+				WHERE file_path = '" . $path . "'
+					AND storage = '" . $this->storage . "'";
+
+			$result = $this->db->sql_query($sql);
+
+			$filename = $this->db->sql_fetchfield('safe_filename');
+			$this->db->sql_freeresult($result);
+
+			// I need to add the file to storage table after update it,
+			// because if safe_filenames are enabled the method doesn't
+			// know where to write.
+			// The filesize should be updated when it is tracked.
+			// If there is any error, this row it's supposed to be deleted.
+			echo $path."-".$this->storage."-".$filename.PHP_EOL;
+			if ($filename === false)
+			{
+				$filename = md5(unique_id());
+
+				$sql_ary = array(
+					'file_path'			=> $path,
+					'storage'			=> $this->storage,
+					'filesize'			=> 0,
+					'safe_filename'		=> $filename,
+				);
+
+				$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+				$this->db->sql_query($sql);
+			}
+		}
+
+		return $filename;
 	}
 
 	/**
