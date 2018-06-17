@@ -501,6 +501,29 @@ class mcp_queue
 								AND t.topic_id = p.topic_id
 								AND u.user_id = p.poster_id
 							ORDER BY ' . $sort_order_sql;
+
+						/**
+						* Alter sql query to get information on all posts in queue
+						*
+						* @event core.mcp_queue_get_posts_for_posts_query_before
+						* @var	string	sql						String with the query to be executed
+						* @var	array	forum_list				List of forums that contain the posts
+						* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
+						* @var	int		topic_id				topic_id in the page request
+						* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+						* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+						* @since 3.2.3-RC2
+						*/
+						$vars = array(
+							'sql',
+							'forum_list',
+							'visibility_const',
+							'topic_id',
+							'limit_time_sql',
+							'sort_order_sql',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.mcp_queue_get_posts_for_posts_query_before', compact($vars)));
+
 						$result = $db->sql_query($sql);
 
 						$post_data = $rowset = array();
@@ -588,7 +611,7 @@ class mcp_queue
 						$row['post_username'] = $row['username'] ?: $user->lang['GUEST'];
 					}
 
-					$template->assign_block_vars('postrow', array(
+					$post_row = array(
 						'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 						'U_VIEWFORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 						'U_VIEWPOST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
@@ -606,7 +629,25 @@ class mcp_queue
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'S_HAS_ATTACHMENTS'	=> $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
-					));
+					);
+
+					/**
+					* Alter sql query to get information on all topics in the list of forums provided.
+					*
+					* @event core.mcp_queue_get_posts_modify_post_row
+					* @var	array	post_row	Template variables for current post
+					* @var	array	row			Post data
+					* @var	array	forum_names	Forum names
+					* @since 3.2.3-RC2
+					*/
+					$vars = array(
+						'post_row',
+						'row',
+						'forum_names',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_queue_get_posts_modify_post_row', compact($vars)));
+
+					$template->assign_block_vars('postrow', $post_row);
 				}
 				unset($rowset, $forum_names);
 
