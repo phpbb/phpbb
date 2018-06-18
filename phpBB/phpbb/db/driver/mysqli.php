@@ -178,7 +178,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			{
 				$this->sql_report('start', $query);
 			}
-			else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+			else if ($this->debug_load_time)
 			{
 				$this->curtime = microtime(true);
 			}
@@ -197,7 +197,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 				{
 					$this->sql_report('stop', $query);
 				}
-				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+				else if ($this->debug_load_time)
 				{
 					$this->sql_time += microtime(true) - $this->curtime;
 				}

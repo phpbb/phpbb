@@ -4532,10 +4532,12 @@ function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $re
 */
 function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 {
+	global $phpbb_container;
+
 	$debug_info = array();
 
 	// Output page creation time
-	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+	if ($phpbb_container->getParameter('debug.load_time'))
 	{
 		if (isset($GLOBALS['starttime']))
 		{
