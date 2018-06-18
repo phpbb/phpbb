@@ -191,7 +191,6 @@ class create_config_file extends \phpbb\install\task_base
 		}
 
 		$config_content .= "\n@define('PHPBB_INSTALLED', true);\n";
-		$config_content .= "// @define('PHPBB_DISPLAY_LOAD_TIME', true);\n";
 
 		if ($environment)
 		{

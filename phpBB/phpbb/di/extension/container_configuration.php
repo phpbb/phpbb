@@ -35,6 +35,7 @@ class container_configuration implements ConfigurationInterface
 					->addDefaultsIfNotSet()
 					->children()
 						->booleanNode('exceptions')->defaultValue(false)->end()
+						->booleanNode('load_time')->defaultValue(false)->end()
 						->booleanNode('sql_explain')->defaultValue(false)->end()
 					->end()
 				->end()

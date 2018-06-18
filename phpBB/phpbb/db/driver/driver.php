@@ -78,6 +78,11 @@ abstract class driver implements driver_interface
 	/**
 	* @var bool
 	*/
+	protected $debug_load_time = false;
+
+	/**
+	* @var bool
+	*/
 	protected $debug_sql_explain = false;
 
 	/**
@@ -98,6 +103,14 @@ abstract class driver implements driver_interface
 		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
 		$this->any_char = chr(0) . '%';
 		$this->one_char = chr(0) . '_';
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_debug_load_time($value)
+	{
+		$this->debug_load_time = $value;
 	}
 
 	/**
