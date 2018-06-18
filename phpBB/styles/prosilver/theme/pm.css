@@ -2,29 +2,72 @@
     Styles for the refactored PM module
 /* -------------------------------------------------------------- */
 
+@media (min-width: 768px) {
+	.pm {
+		background-color: #d3d3d3;
+		display: flex;
+	}
+}
+
+.pm-title {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: inline-block;
+	overflow: auto;
+	max-width: 200px;
+	margin-bottom: -6px;
+}
+
+.pm-checkbox {
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.pm-list-container {
+	flex: 1;
+}
+
+.pm-meta {
+	color: rgba(0, 0, 0, 0.25);
+	opacity: 0;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+}
+
+.pm-viewer {
+	background-color: #d3d3d3;
+	flex: 2;
+	padding: 1.5rem;
+}
+
 .pm-list {
-	font-size: 1rem;
-	font-weight: 400;
-	line-height: 1.5;
-	letter-spacing: 0.04em;
+	background-color: #edf4f7;
+	flex: 1 auto;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
 }
 
-.pm-item {
-	background-color: #dbe9f0;
-	border-left: 5px solid transparent;
-	position: relative;
-	display: flex;
+.pm-authour {
+	white-space: nowrap;
+	display: block;
 	overflow: hidden;
-	justify-content: flex-start;
-	align-items: center;
-	padding: 16px;
+	width: 220px;
 }
 
-.pm-unread {
-	border-left: 5px solid #d41142;
+.pm-item {
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	position: relative;
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	height: 72px;
+	padding: 16px;
 }
 
 .pm-primary,
@@ -34,10 +77,11 @@
 
 .pm-primary {
 	line-height: 1.5;
+	flex-grow: 1;
 }
 
 .pm-secondary {
-	font-size: 0.875rem;
+	font-size: 13px;
 	font-weight: 400;
 	line-height: 1.25;
 	text-decoration: inherit;
@@ -52,10 +96,14 @@
 
 /*	colours and backgrounds  */
 
-.pm-item:nth-child(even) {
-	background-color: #edf4f7;
+.pm-unread .pm-title {
+	color: #d41142;
 }
 
-.pm-unread-pm-title {
+.fa-star {
+	color: #ff9500;
+}
+
+.fa-certificate {
 	color: #d41142;
 }

@@ -11,12 +11,24 @@
 				{% for message in messagerow %}
 					<li class="pm-item {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">
 						<span class="pm-primary">
+							{% if message.FOLDER_IMG_STYLE == "pm_unread" %}
+								<i class="fa fa-certificate fa-fw" title="Unread message" aria-hidden="true"></i>
+							{% endif %}
 
-							<a href="{message.U_VIEW_PM}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread-pm-title' : 'title-read' }}">{message.SUBJECT}</a>
+							{% if message.PM_CLASS == "pm_marked_colour" %}
+								<i class="fa fa-star fa-fw" title="You marked this message important!" aria-hidden="true"></i>
+							{% endif %}
+
+							<a href="{message.U_VIEW_PM}" title="{message.SUBJECT}" class="pm-title">{message.SUBJECT}</a>
 							<span class="pm-secondary">
 
 								<span class="pm-secondary-item pm-authour">
-									<i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>
+									{% if message.PM_CLASS == "pm_foe_colour" %}
+										<i class="fa fa-exclamation-circle fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-hidden="true"></i>
+									{% else %}
+										<i class="fa fa-user fa-fw" title="{message.MESSAGE_AUTHOR}" aria-hidden="true"></i>
+									{% endif %}
+
 									{% if S_SHOW_RECIPIENTS %}
 										{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
 									{% else %}
@@ -26,10 +38,14 @@
 								</span>
 
 								<span class="pm-secondary-item pm-date">
-									<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
+									<i class="fa fa-clock-o fa-fw" title="{message.SENT_TIME}" aria-hidden="true"></i>
 									{message.SENT_TIME}
 								</span>
 							</span>
+						</span>
+						<span class="pm-meta">
+							<i class="fa fa-square fa-fw pm-checkbox" aria-label="Mark"></i>
+							<input id="mark-1" type="checkbox" hidden>
 						</span>
 					</li>
 				{% endfor %}
@@ -39,6 +55,9 @@
 		</div><br>
 
 		<div class="pm-viewer">
+			<div class="pm-message">
+				This will be taken care of in another PR
+			</div>
 		</div>
 
 	</div>
