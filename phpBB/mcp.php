@@ -309,8 +309,8 @@ $vars = array(
 extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
 
 $template->assign_block_vars('navlinks', array(
-	'FORUM_NAME'	=> $user->lang('MCP'),
-	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
+	'BREADCRUMB_NAME'	=> $user->lang('MCP'),
+	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
 ));
 
 // Load and execute the relevant module
