@@ -118,8 +118,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 		{
 			global $cache;
 
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG'))
+			if ($this->debug_sql_explain)
 			{
 				$this->sql_report('start', $query);
 			}
@@ -156,7 +155,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 					}
 				}
 
-				if (defined('DEBUG'))
+				if ($this->debug_sql_explain)
 				{
 					$this->sql_report('stop', $query);
 				}
@@ -175,7 +174,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 			}
-			else if (defined('DEBUG'))
+			else if ($this->debug_sql_explain)
 			{
 				$this->sql_report('fromcache', $query);
 			}

@@ -6,6 +6,7 @@ core:
 
     debug:
         exceptions: true
+        sql_explain: true
 
     twig:
         debug: true
