@@ -365,8 +365,8 @@ switch ($mode)
 		}
 
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $page_title,
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=team"),
+			'BREADCRUMB_NAME'	=> $page_title,
+			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=team"),
 		));
 
 		$template->assign_vars(array(
@@ -467,8 +467,8 @@ switch ($mode)
 		}
 
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $page_title,
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=$action&amp;u=$user_id"),
+			'BREADCRUMB_NAME'	=> $page_title,
+			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=$action&amp;u=$user_id"),
 		));
 
 		// Send vars to the template
@@ -799,12 +799,12 @@ switch ($mode)
 		$template_html = 'memberlist_view.html';
 
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $user->lang('MEMBERLIST'),
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
+			'BREADCRUMB_NAME'	=> $user->lang('MEMBERLIST'),
+			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		));
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $member['username'],
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&u=$user_id"),
+			'BREADCRUMB_NAME'	=> $member['username'],
+			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&u=$user_id"),
 		));
 
 	break;
@@ -873,8 +873,8 @@ switch ($mode)
 
 			generate_forum_nav($topic_data);
 			$template->assign_block_vars('navlinks', array(
-				'FORUM_NAME'	=> $topic_data['topic_title'],
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id"),
+				'BREADCRUMB_NAME'	=> $topic_data['topic_title'],
+				'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id"),
 			));
 
 			$navlink_name = $user->lang('EMAIL_TOPIC');
@@ -887,8 +887,8 @@ switch ($mode)
 		}
 
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $navlink_name,
-			'U_VIEW_FORUM'	=> $navlink_url,
+			'BREADCRUMB_NAME'	=> $navlink_name,
+			'U_BREADCRUMB'		=> $navlink_url,
 		));
 
 	break;
@@ -929,8 +929,8 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		$template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $page_title,
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
+			'BREADCRUMB_NAME'	=> $page_title,
+			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		));
 
 		/* @var $pagination \phpbb\pagination */
@@ -1239,8 +1239,8 @@ switch ($mode)
 			}
 
 			$template->assign_block_vars('navlinks', array(
-				'FORUM_NAME'	=> $group_helper->get_name($group_row['group_name']),
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g=$group_id"),
+				'BREADCRUMB_NAME'	=> $group_helper->get_name($group_row['group_name']),
+				'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g=$group_id"),
 			));
 
 			$template->assign_vars(array(

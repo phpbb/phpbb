@@ -488,8 +488,8 @@ $base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&a
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
 
 $template->assign_block_vars('navlinks', array(
-	'FORUM_NAME'	=> $user->lang('WHO_IS_ONLINE'),
-	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+	'BREADCRUMB_NAME'	=> $user->lang('WHO_IS_ONLINE'),
+	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
 ));
 
 // Send data to template
