@@ -12,6 +12,7 @@ services:
         class: phpbb\symfony_request
         arguments:
             - '@request'
+        lazy: true
 
     request_stack:
         class: Symfony\Component\HttpFoundation\RequestStack
@@ -21,3 +22,4 @@ services:
         arguments:
             - null
             - '%core.disable_super_globals%'
+        lazy: true

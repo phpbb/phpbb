@@ -3,6 +3,7 @@ services:
         class: phpbb\event\dispatcher
         arguments:
             - '@service_container'
+        lazy: true
 
     kernel_exception_subscriber:
         class: phpbb\event\kernel_exception_subscriber
