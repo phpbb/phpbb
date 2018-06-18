@@ -131,6 +131,8 @@ catch (InvalidArgumentException $e)
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
+$phpbb_container->get('dbal.conn')->set_debug_sql_explain($phpbb_container->getParameter('debug.sql_explain'));
+
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();

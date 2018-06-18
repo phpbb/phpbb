@@ -68,6 +68,14 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function set_debug_sql_explain($value)
+	{
+		$this->get_driver()->set_debug_sql_explain($value);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_sql_layer()
 	{
 		return $this->get_driver()->get_sql_layer();
