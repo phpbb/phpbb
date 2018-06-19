@@ -30,7 +30,7 @@ class storage_track extends \phpbb\db\migration\migration
 	{
 		return array(
 			'add_tables' => array(
-				STORAGE_TABLE	=> array(
+				$this->table_prefix . 'storage'	=> array(
 					'COLUMNS' => array(
 						'file_id'			=> array('UINT', null, 'auto_increment'),
 						'file_path'			=> array('VCHAR', ''),
@@ -93,7 +93,7 @@ class storage_track extends \phpbb\db\migration\migration
 		{
 			$storage->track_file($row['physical_filename']);
 
-			if($row['thumbnail'] == 1)
+			if ($row['thumbnail'] == 1)
 			{
 				$storage->track_file('thumb_' . $row['physical_filename']);
 			}

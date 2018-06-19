@@ -86,7 +86,9 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		));
 		$config = $this->config;
 		$this->db = $this->new_dbal();
+		$db_mock = $this->createMock('\phpbb\db\driver\driver_interface');
 		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $phpbb_root_path, $phpEx);
+		$cache_mock = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
@@ -109,7 +111,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$this->storage = new \phpbb\storage\storage($db_mock, $cache_mock, $adapter_factory_mock, '', '');
 
 		$factory_mock = $this->getMockBuilder('\phpbb\files\factory')
 			->disableOriginalConstructor()

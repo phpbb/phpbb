@@ -304,7 +304,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// Create auth mock
 		$auth = $this->createMock('\phpbb\auth\auth');

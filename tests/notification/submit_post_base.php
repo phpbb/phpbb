@@ -56,6 +56,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Database
 		$this->db = $this->new_dbal();
 		$db = $this->db;
+		$db_mock = $this->createMock('\phpbb\db\driver\driver_interface');
 
 		// Auth
 		$auth = $this->createMock('\phpbb\auth\auth');
@@ -92,13 +93,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		// Storage
-		$adapter = new \phpbb\storage\adapter\local(new \phpbb\filesystem\filesystem(), new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
-		$adapter->configure(['path' => 'files']);
-		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
-		$adapter_factory_mock->expects($this->any())
-			->method('get')
-			->willReturn($adapter);
-		$storage = new \phpbb\storage\storage($db, $adapter_factory_mock, '', '');
+		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// User
 		$user = $this->createMock('\phpbb\user', array(), array(
