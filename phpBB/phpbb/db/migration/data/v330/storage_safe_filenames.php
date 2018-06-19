@@ -13,8 +13,6 @@
 
 namespace phpbb\db\migration\data\v330;
 
-use phpbb\storage\storage;
-
 class storage_safe_filenames extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
