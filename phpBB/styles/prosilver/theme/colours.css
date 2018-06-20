@@ -1151,3 +1151,29 @@ input.disabled {
 	background-color: #d41142;
 	color: #ffffff;
 }
+
+/* pm.css */
+
+.pm-list {
+	background-color: #edf4f7;
+}
+
+.pm-item {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.pm-marked {
+	color: #ff9500;
+}
+
+.pm-unread {
+	color: #d41142;
+}
+
+.pm-meta {
+	color: rgba(0, 0, 0, 0.25);
+}
+
+.pm-viewer {
+	background-color: #d3d3d3;
+}
