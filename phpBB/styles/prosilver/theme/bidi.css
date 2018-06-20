@@ -366,6 +366,24 @@
 }
 
 /**
+* mentions.css
+*/
+
+/* Mention block
+---------------------------------------- */
+
+/* Mention dropdown
+---------------------------------------- */
+.rtl .atwho-view { /* mention-container */
+	text-align: right;
+}
+
+.rtl .mention-media {
+	margin-right: 0;
+	margin-left: 10px;
+}
+
+/**
 * content.css
 */
 .rtl ul.topiclist dt,
@@ -928,17 +946,6 @@
 /* Emoticons panel */
 .rtl .smiley-box {
 	float: left;
-}
-
-/* Mention dropdown */
-.rtl .mention-name {
-	padding-right: 45px;
-	padding-left: 15px;
-}
-
-.rtl .mention-avatar {
-	right: 7px;
-	left: auto;
 }
 
 /* Search box

@@ -576,11 +576,6 @@ blockquote .codebox {
 	padding: 5px 3px;
 }
 
-/* Mention block */
-.mention {
-	font-weight: bold;
-}
-
 /* Attachments
 ---------------------------------------- */
 .attachbox {

@@ -386,17 +386,17 @@ function getCaretPosition(txtarea) {
 
 (function($) {
 	function handle_mentions(txtarea) {
-		var $mentionDataContainer = $('#format-buttons'),
+		var $mentionDataContainer = $('[data-mention-url]'),
 			mentionURL = $mentionDataContainer.data('mentionUrl'),
 			mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit'),
 			mentionTopicId = $mentionDataContainer.data('topicId');
 		$(txtarea).atwho({
 			at: "@",
 			displayTpl: function(data) {
-				var avatar = (data.avatar.src) ? "<img src='" + data.avatar.src + "'>" :
-					"<span class='mention-avatar'><i class='fa fa-" + data.avatar.type + "'></i></span>",
+				var avatar = (data.avatar.src) ? "<img src='" + data.avatar.src + "' class='mention-media-avatar'>" :
+					"<i class='mention-media-avatar fa fa-" + data.avatar.type + "'></i>",
 					rank = (data.rank) ? "<span class='mention-rank'>" + data.rank + "</span>" : '';
-				return "<li class='mention-name'>" + avatar + "<span>" + data.name + "</span>" + rank + "</li>";
+				return "<li class='mention-item'><span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + data.name + rank + "</span></li>";
 			},
 			insertTpl: "[mention ${param}=${id}]${name}[/mention]",
 			limit: mentionNamesLimit,
@@ -436,7 +436,7 @@ function getCaretPosition(txtarea) {
 			phpbb.showDragNDrop(textarea);
 		}
 
-		if ($('#mention_params').length) {
+		if ($('[data-mention-url]').length) {
 			handle_mentions(textarea);
 		}
 
