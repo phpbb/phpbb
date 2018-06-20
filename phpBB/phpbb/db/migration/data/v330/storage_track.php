@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v330;
 
 use phpbb\storage\storage;
 
-class storage_track extends \phpbb\db\migration\migration
+class storage_track extends \phpbb\db\migration\container_aware_migration
 {
 	static public function depends_on()
 	{
@@ -74,7 +74,19 @@ class storage_track extends \phpbb\db\migration\migration
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$storage->track_file($row['user_avatar']);
+			$avatar_group = false;
+			$filename = $row['user_avatar'];
+
+			if (isset($filename[0]) && $filename[0] === 'g')
+			{
+				$avatar_group = true;
+				$filename = substr($filename, 1);
+			}
+
+			$ext		= substr(strrchr($filename, '.'), 1);
+			$filename	= (int) $filename;
+
+			$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
 		}
 		$this->db->sql_freeresult($result);
 	}
