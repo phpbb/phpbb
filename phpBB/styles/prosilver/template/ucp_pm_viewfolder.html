@@ -6,27 +6,25 @@
 
 {% if messagerow %}
 	<div class="pm">
-		<div class="pm-list-container">
 			<ul class="pm-list">
 				{% for message in messagerow %}
-					<li class="pm-item {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">
+					<li class="pm-item">
 						<span class="pm-primary">
 							{% if message.FOLDER_IMG_STYLE == "pm_unread" %}
-								<i class="fa fa-certificate fa-fw" title="Unread message" aria-hidden="true"></i>
+								<i class="fa fa-certificate fa-fw pm-unread" title="Unread message" aria-label="Unread message"></i>
 							{% endif %}
 
 							{% if message.PM_CLASS == "pm_marked_colour" %}
-								<i class="fa fa-star fa-fw" title="You marked this message important!" aria-hidden="true"></i>
+								<i class="fa fa-star fa-fw pm-marked" title="You marked this message important!" aria-label="You marked this message important!"></i>
 							{% endif %}
 
-							<a href="{message.U_VIEW_PM}" title="{message.SUBJECT}" class="pm-title">{message.SUBJECT}</a>
+							<a href="{message.U_VIEW_PM}" title="{message.SUBJECT}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">{message.SUBJECT}</a>
 							<span class="pm-secondary">
-
 								<span class="pm-secondary-item pm-authour">
 									{% if message.PM_CLASS == "pm_foe_colour" %}
-										<i class="fa fa-exclamation-circle fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-hidden="true"></i>
+										<i class="fa fa-ban fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-title="{message.MESSAGE_AUTHOR} is your foe!"></i>
 									{% else %}
-										<i class="fa fa-user fa-fw" title="{message.MESSAGE_AUTHOR}" aria-hidden="true"></i>
+										<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 									{% endif %}
 
 									{% if S_SHOW_RECIPIENTS %}
@@ -34,11 +32,9 @@
 									{% else %}
 										{message.MESSAGE_AUTHOR_FULL}
 									{% endif %}
-
 								</span>
-
 								<span class="pm-secondary-item pm-date">
-									<i class="fa fa-clock-o fa-fw" title="{message.SENT_TIME}" aria-hidden="true"></i>
+									<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
 									{message.SENT_TIME}
 								</span>
 							</span>
@@ -49,17 +45,12 @@
 						</span>
 					</li>
 				{% endfor %}
-
 			</ul>
-
-		</div><br>
-
 		<div class="pm-viewer">
 			<div class="pm-message">
-				This will be taken care of in another PR
+				This will be taken care of in another PR. Or not.
 			</div>
 		</div>
-
 	</div>
 
 	<div class="action-bar bottom">
