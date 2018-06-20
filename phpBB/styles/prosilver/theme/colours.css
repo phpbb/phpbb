@@ -369,6 +369,41 @@ p.post-notice {
 	background-image: none;
 }
 
+/*	colours and backgrounds for mentions.css */
+
+/* mention dropdown */
+.atwho-view { /* mention-container */
+	background-color: #ffffff;
+	box-shadow:
+		0 3px 1px -2px rgba(0, 0, 0, 0.2),
+		0 2px 2px 0 rgba(0, 0, 0, 0.14),
+		0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.mention-media {
+	color: #757575;
+}
+
+.mention-item {
+	border-bottom-color: #dddddd;
+	color: #212121;
+}
+
+.mention-item:hover,
+.mention-item.cur {
+	background-color: #eeeeee;
+	color: #2d80d2;
+}
+
+.mention-item:hover .mention-media-avatar,
+.mention-item.cur .mention-media-avatar {
+	color: #2d80d2;
+}
+
+.mention-rank {
+	color: #757575;
+}
+
 /*	colours and backgrounds for content.css */
 ul.forums {
 	background-color: #edf4f7;
@@ -981,29 +1016,6 @@ fieldset.fields2 dl:hover dt label {
 
 .message-box textarea.drag-n-drop-highlight {
 	outline-color: rgba(19, 164, 236, 0.5);
-}
-
-.atwho-view {
-	background: #ffffff;
-	border-color: #dddddd;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-	color: #000000;
-}
-
-.mention-name {
-	border-bottom-color: #dddddd;
-}
-
-.mention-name:hover,
-.mention-name.cur {
-	background-color: #0077b3;
-	color: #ffffff;
-}
-
-.mention-avatar {
-	background-color: #0077b3;
-	border-color: #ffffff;
-	color: #ffffff;
 }
 
 /* input field styles */

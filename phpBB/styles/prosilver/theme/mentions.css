@@ -1,0 +1,87 @@
+/* -------------------------------------------------------------- /*
+	$Mentions
+/* -------------------------------------------------------------- */
+
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+
+/* Mention block
+---------------------------------------- */
+.mention {
+	font-weight: bold;
+}
+
+/* Mention dropdown
+---------------------------------------- */
+.atwho-view { /* mention-container */
+	text-align: left;
+	border-radius: 2px;
+	position: absolute;
+	z-index: 999;
+	top: 20px;
+	overflow: auto;
+	transition: all 0.2s ease;
+}
+
+.atwho-view-ul { /* mention-list */
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.mention-media {
+	display: inline-flex;
+	flex-shrink: 0;
+	justify-content: center;
+	align-items: center;
+	margin-right: 10px;
+	margin-left: 0;
+}
+
+.mention-media-avatar {
+	font-size: 32px;
+	line-height: 36px;
+	text-align: center;
+	vertical-align: center;
+	width: 36px;
+	height: 36px;
+}
+
+.mention-item {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid transparent;
+	position: relative;
+	display: flex;
+	overflow: hidden;
+	justify-content: flex-start;
+	align-items: center;
+	max-width: 300px;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.mention-item:hover {
+	text-decoration: none;
+}
+
+.mention-name,
+.mention-rank {
+	display: block;
+}
+
+.mention-name {
+	line-height: 1.25;
+}
+
+.mention-rank {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.2871;
+	letter-spacing: 0.04em;
+}
+
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */

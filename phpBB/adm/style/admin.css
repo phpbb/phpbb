@@ -1676,76 +1676,99 @@ fieldset.submit-buttons legend {
 	font-weight: bold;
 }
 
-.atwho-view {
-	background: #ffffff;
-	border: 1px solid #dddddd;
-	border-radius: 3px;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-	color: #000000;
+.atwho-view { /* mention-container */
+	text-align: left;
+	background-color: #ffffff;
+	border-radius: 2px;
+	box-shadow:
+		0 3px 1px -2px rgba(0, 0, 0, 0.2),
+		0 2px 2px 0 rgba(0, 0, 0, 0.14),
+		0 1px 5px 0 rgba(0, 0, 0, 0.12);
 	position: absolute;
-	z-index: 11110 !important;
-	top: 0;
-	left: 0;
-	display: none;
-	min-width: 260px;
-	margin-top: 18px;
+	z-index: 999;
+	top: 20px;
+	overflow: auto;
+	transition: all 0.2s ease;
 }
 
-.atwho-view-ul {
-	overflow-y: auto;
-	max-height: 200px;
-	margin: auto;
+.rtl .atwho-view { /* mention-container */
+	text-align: right;
+}
+
+.atwho-view-ul { /* mention-list */
+	margin: 0;
 	padding: 0;
-	list-style: none;
+	list-style-type: none;
 }
 
-.mention-name {
-	font-size: 12px;
+.mention-media {
+	color: #757575;
+	display: inline-flex;
+	flex-shrink: 0;
+	justify-content: center;
+	align-items: center;
+	margin-right: 10px;
+	margin-left: 0;
+}
+
+.rtl .mention-media {
+	margin-right: 0;
+	margin-left: 10px;
+}
+
+.mention-media-avatar {
+	font-size: 32px;
+	line-height: 36px;
+	text-align: center;
+	vertical-align: center;
+	width: 36px;
+	height: 36px;
+}
+
+.mention-item {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.04em;
 	border-bottom: 1px solid #dddddd;
+	color: #212121;
 	position: relative;
-	display: block;
-	padding: 15px 5px 15px 45px;
+	display: flex;
+	overflow: hidden;
+	justify-content: flex-start;
+	align-items: center;
+	max-width: 300px;
+	padding: 10px;
 	cursor: pointer;
 }
 
-.rtl .mention-name {
-	padding-right: 45px;
-	padding-left: 15px;
+.mention-item:hover,
+.mention-item.cur {
+	text-decoration: none;
+	background-color: #eeeeee;
+	color: #2d80d2;
 }
 
-.mention-name:hover,
-.mention-name.cur {
-	background-color: #0077b3;
-	color: #ffffff;
+.mention-item:hover .mention-media-avatar,
+.mention-item.cur .mention-media-avatar {
+	color: #2d80d2;
 }
 
-.mention-avatar {
-	font-size: 14px;
-	line-height: 30px;
-	text-align: center;
-	vertical-align: middle;
-	background-color: #0077b3;
-	border: 1px solid #ffffff;
-	border-radius: 100%;
-	color: #ffffff;
-	position: absolute;
-	top: 50%;
-	left: 7px;
-	display: inline-block;
-	width: 30px;
-	height: 30px;
-	margin-top: -16px;
+.mention-name,
+.mention-rank {
+	display: block;
 }
 
-.rtl .mention-avatar {
-	right: 7px;
-	left: auto;
+.mention-name {
+	line-height: 1.25;
 }
 
 .mention-rank {
-	font-size: 10px;
-	display: block;
-	margin-top: 2px;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.2871;
+	letter-spacing: 0.04em;
+	color: #757575;
 }
 
 /* Input field styles

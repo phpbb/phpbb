@@ -284,58 +284,6 @@ fieldset.submit-buttons input {
 	margin: 3px;
 }
 
-/* Mention dropdown */
-.atwho-view {
-	border: 1px solid transparent;
-	border-radius: 3px;
-	position: absolute;
-	z-index: 11110 !important;
-	top: 0;
-	left: 0;
-	display: none;
-	min-width: 260px;
-	margin-top: 18px;
-}
-
-.atwho-view-ul {
-	overflow-y: auto;
-	max-height: 200px;
-	margin: auto;
-	padding: 0;
-	list-style: none;
-}
-
-.mention-name {
-	font-size: 12px;
-	border-bottom: 1px solid transparent;
-	position: relative;
-	display: block;
-	padding: 15px 5px 15px 45px;
-	cursor: pointer;
-}
-
-.mention-avatar {
-	font-size: 14px;
-	line-height: 30px;
-	text-align: center;
-	vertical-align: middle;
-	border: 1px solid transparent;
-	border-radius: 100%;
-	position: absolute;
-	top: 50%;
-	left: 7px;
-	display: inline-block;
-	width: 30px;
-	height: 30px;
-	margin-top: -16px;
-}
-
-.mention-rank {
-	font-size: 10px;
-	display: block;
-	margin-top: 2px;
-}
-
 /* Input field styles
 ---------------------------------------- */
 .inputbox {
