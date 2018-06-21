@@ -1686,7 +1686,6 @@ fieldset.submit-buttons legend {
 		0 1px 5px 0 rgba(0, 0, 0, 0.12);
 	position: absolute;
 	z-index: 999;
-	top: 20px;
 	overflow: auto;
 	transition: all 0.2s ease;
 }
