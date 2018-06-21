@@ -18,6 +18,9 @@ abstract class base_user implements source_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
@@ -30,9 +33,10 @@ abstract class base_user implements source_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user_loader $user_loader, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\user_loader $user_loader, $phpbb_root_path, $phpEx)
 	{
 		$this->db = $db;
+		$this->config = $config;
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -58,7 +62,7 @@ abstract class base_user implements source_interface
 	public function get($keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
-		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), 5);
+		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), $this->config['mention_names_limit']);
 
 		$names = [];
 		while ($row = $this->db->sql_fetchrow($result))
