@@ -30,6 +30,7 @@ services:
         abstract: true
         arguments:
             - '@dbal.conn'
+            - '@config'
             - '@user_loader'
             - '%core.root_path%'
             - '%core.php_ext%'
