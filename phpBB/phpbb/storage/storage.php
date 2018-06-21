@@ -155,7 +155,7 @@ class storage
 	 */
 	public function exists($path, $full_check = false)
 	{
-		return ($this->is_tracked($path) && ($full_check ? $this->get_adapter()->exists($path) : true));
+		return ($this->is_tracked($path) && !$full_check || $this->get_adapter()->exists($path));
 	}
 
 	/**
