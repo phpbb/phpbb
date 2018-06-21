@@ -305,7 +305,7 @@ class storage
 			}
 			catch (\Exception $e)
 			{
-				$this->get_adapter()->delete($path);
+				$adapter->delete($path);
 				$this->untrack_file($path);
 			}
 		}
