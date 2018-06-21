@@ -1707,26 +1707,26 @@ fieldset.submit-buttons legend {
 	flex-shrink: 0;
 	justify-content: center;
 	align-items: center;
-	margin-right: 10px;
+	margin-right: 16px;
 	margin-left: 0;
 }
 
 .rtl .mention-media {
 	margin-right: 0;
-	margin-left: 10px;
+	margin-left: 16px;
 }
 
 .mention-media-avatar {
-	font-size: 32px;
-	line-height: 36px;
-	text-align: center;
-	vertical-align: center;
-	width: 36px;
-	height: 36px;
+	width: 40px;
+	height: 40px;
+}
+
+svg.mention-media-avatar { /* TODO: remove it after general normalization */
+	fill: currentColor;
 }
 
 .mention-item {
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: 400;
 	line-height: 1.5;
 	letter-spacing: 0.04em;
@@ -1738,7 +1738,7 @@ fieldset.submit-buttons legend {
 	justify-content: flex-start;
 	align-items: center;
 	max-width: 300px;
-	padding: 10px;
+	padding: 16px;
 	cursor: pointer;
 }
 
@@ -1764,7 +1764,7 @@ fieldset.submit-buttons legend {
 }
 
 .mention-rank {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 400;
 	line-height: 1.2871;
 	letter-spacing: 0.04em;
