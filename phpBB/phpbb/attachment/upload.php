@@ -159,9 +159,7 @@ class upload
 			$this->file->upload->set_max_filesize($allowed_filesize);
 		}
 
-		// fixme: a.b.c.zip will be renamed to a_34hjk2hj4hjk2.zip
-		$this->file->clean_filename('real');
-		$this->file->clean_filename('unique_ext', pathinfo($this->file->get('realname'), PATHINFO_FILENAME).'_');
+		$this->file->clean_filename('attachment');
 
 		// Do we have to create a thumbnail?
 		$this->file_data['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
