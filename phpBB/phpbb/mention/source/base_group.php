@@ -124,7 +124,7 @@ abstract class base_group implements source_interface
 		// Grab group data
 		$groups = $this->get_groups();
 
-		$matches = preg_grep('/^' . $keyword . '.*/i', $groups['names']);
+		$matches = preg_grep('/^' . preg_quote($keyword) . '.*/i', $groups['names']);
 		$group_ids = array_intersect($group_ids, array_flip($matches));
 
 		$names = [];
