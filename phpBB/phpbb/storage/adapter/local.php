@@ -356,7 +356,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_size($path)
 	{
-		$size = filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
+		$size = @filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		if ($size === null)
 		{
