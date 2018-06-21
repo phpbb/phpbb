@@ -155,7 +155,7 @@ class storage
 	 */
 	public function exists($path, $full_check = false)
 	{
-		return ($this->is_tracked($path) && $full_check && $this->get_adapter()->exists($path));
+		return ($this->is_tracked($path) && ($full_check ? $this->get_adapter()->exists($path) : true));
 	}
 
 	/**
@@ -324,6 +324,11 @@ class storage
 	 */
 	public function track_file($path, $update = false)
 	{
+		if (!$this->get_adapter()->exists($path))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+		}
+
 		$sql_ary = array(
 			'file_path'		=> $path,
 			'storage'		=> $this->get_name(),
@@ -338,7 +343,7 @@ class storage
 
 		if (!$row)
 		{
-			$file = $this->file_info($path);
+			$file = new file_info($this->get_adapter(), $path);
 			$sql_ary['filesize'] = $file->size;
 
 			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
@@ -420,6 +425,11 @@ class storage
 	 */
 	public function file_info($path)
 	{
+		if (!$this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+		}
+
 		return new file_info($this->get_adapter(), $path);
 	}
 
