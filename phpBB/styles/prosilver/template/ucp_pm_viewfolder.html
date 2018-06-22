@@ -22,7 +22,7 @@
 							<span class="pm-secondary">
 								<span class="pm-secondary-item pm-authour">
 									{% if message.PM_CLASS == "pm_foe_colour" %}
-										<i class="fa fa-ban fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-title="{message.MESSAGE_AUTHOR} is your foe!"></i>
+										<i class="fa fa-ban fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-label="{message.MESSAGE_AUTHOR} is your foe!"></i>
 									{% else %}
 										<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 									{% endif %}
@@ -41,7 +41,7 @@
 						</span>
 						<span class="pm-meta">
 							<i class="fa fa-square fa-fw pm-checkbox" aria-label="Mark"></i>
-							<input id="mark-1" type="checkbox" hidden>
+							<input id="mark-{{ loop.index }}" type="checkbox" hidden>
 						</span>
 					</li>
 				{% endfor %}
