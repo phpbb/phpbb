@@ -120,6 +120,7 @@ class local extends adapter implements stream_interface
 		$this->path = $options['path'];
 		$this->root_path = $this->phpbb_root_path . $options['path'];
 		$this->dir_depth = (int) $options['depth'];
+		$this->safe_filename = (bool) $options['safe_filename'];
 	}
 
 	/**
@@ -332,7 +333,6 @@ class local extends adapter implements stream_interface
 			// know where to write.
 			// The filesize should be updated when it is tracked.
 			// If there is any error, this row it's supposed to be deleted.
-			echo $path."-".$this->storage."-".$filename.PHP_EOL;
 			if ($filename === false)
 			{
 				$filename = md5(unique_id());
