@@ -44,6 +44,9 @@ services:
     text_formatter.s9e.quote_helper:
         synthetic: true
 
+    text_formatter.s9e.mention_helper:
+        synthetic: true
+
     text_formatter.parser:
         synthetic: true
 

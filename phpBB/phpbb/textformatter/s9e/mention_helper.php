@@ -13,7 +13,7 @@
 
 namespace phpbb\textformatter\s9e;
 
-use s9e\TextFormatter\Utils;
+use s9e\TextFormatter\Utils as TextFormatterUtils;
 
 class mention_helper
 {
@@ -117,11 +117,11 @@ class mention_helper
 
 		// TODO: think about optimization for caching colors.
 		$this->get_colors(
-			Utils::getAttributeValues($xml, 'MENTION', 'user_id'),
-			Utils::getAttributeValues($xml, 'MENTION', 'group_id')
+			TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'user_id'),
+			TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'group_id')
 		);
 
-		return Utils::replaceAttributes(
+		return TextFormatterUtils::replaceAttributes(
 			$xml,
 			'MENTION',
 			function ($attributes) use ($user_profile_url, $group_profile_url)
