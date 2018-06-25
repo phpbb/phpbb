@@ -99,7 +99,7 @@ interface adapter_interface
 	/*
 	 * Get space available in bytes.
 	 *
-	 * @throws \phpbb\storage\exception\exception		When can't get available space
+	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage spac
 	 *
 	 * @return int	Returns available space
 	 */

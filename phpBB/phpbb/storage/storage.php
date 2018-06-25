@@ -235,6 +235,12 @@ class storage
 		}
 	}
 
+	/**
+	 * Track file into database.
+	 *
+	 * @param string	$path		The target file
+	 * @param bool		$update		Update file size when already tracked
+	 */
 	public function track_file($path, $update = false)
 	{
 		$sql_ary = array(
@@ -270,6 +276,11 @@ class storage
 		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
 	}
 
+	/**
+	 * Untrack file.
+	 *
+	 * @param string	$path		The target file
+	 */
 	public function untrack_file($path)
 	{
 		$sql_ary = array(
