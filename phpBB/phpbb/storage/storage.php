@@ -305,7 +305,8 @@ class storage
 	{
 		$sql = 'UPDATE ' . $this->storage_table . "
 			SET file_path = '" . $path_dest . "'
-			WHERE file_path = '" . $path_orig . "'";
+			WHERE file_path = '" . $path_orig . "'
+				AND storage = '" . $this->storage_name . "'";
 		$this->db->sql_query($sql);
 	}
 
