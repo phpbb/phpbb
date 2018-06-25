@@ -39,15 +39,17 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 
 	// Template
-	'STORAGE_TITLE'					=> 'Storage Settings',
-	'STORAGE_TITLE_EXPLAIN'			=> 'Change storage providers for the file storage types of phpBB. Choose local or remote providers to store files added to or created by phpBB.',
-	'STORAGE_SELECT'				=> 'Select storage',
-	'STORAGE_SELECT_DESC'			=> 'Select a storage from the list.',
-	'STORAGE_NAME'					=> 'Storage name',
-	'STORAGE_NUM_FILES'				=> 'Number of files',
-	'STORAGE_SIZE'					=> 'Size',
-	'STORAGE_FREE'					=> 'Available space',
-	'STORAGE_UNKNOWN'				=> 'Unknown',
+	'STORAGE_TITLE'							=> 'Storage Settings',
+	'STORAGE_TITLE_EXPLAIN'					=> 'Change storage providers for the file storage types of phpBB. Choose local or remote providers to store files added to or created by phpBB.',
+	'STORAGE_SELECT'						=> 'Select storage',
+	'STORAGE_SELECT_DESC'					=> 'Select a storage from the list.',
+	'STORAGE_NAME'							=> 'Storage name',
+	'STORAGE_NUM_FILES'						=> 'Number of files',
+	'STORAGE_SIZE'							=> 'Size',
+	'STORAGE_FREE'							=> 'Available space',
+	'STORAGE_UNKNOWN'						=> 'Unknown',
+	'STORAGE_REMOVE_OLD_FILES'				=> 'Remove old files',
+	'STORAGE_REMOVE_OLD_FILES_EXPLAIN'		=> 'Remove old files after they are copied to the new storage system.',
 
 	// Storage names
 	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',

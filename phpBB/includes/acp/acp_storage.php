@@ -24,6 +24,9 @@ class acp_storage
 	/** @var \phpbb\config\config $config */
 	protected $config;
 
+	/** @var \db\driver\driver_interface $db */
+	protected $db;
+
 	/** @var \phpbb\language\language $lang */
 	protected $lang;
 
@@ -32,6 +35,9 @@ class acp_storage
 
 	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\di\service_collection */
+	protected $adapter_collection;
 
 	/** @var \phpbb\di\service_collection */
 	protected $provider_collection;
@@ -63,10 +69,13 @@ class acp_storage
 		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path;
 
 		$this->config = $phpbb_container->get('config');
+		$this->db = $phpbb_container->get('dbal.conn');
 		$this->filesystem = $phpbb_container->get('filesystem');
 		$this->lang = $phpbb_container->get('language');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
+		$this->user = $phpbb_container->get('user');
+		$this->adapter_collection = $phpbb_container->get('storage.adapter_collection');
 		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
 		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -153,6 +162,31 @@ class acp_storage
 				{
 					foreach ($modified_storages as $storage_name)
 					{
+						$current_adapter = $this->get_current_adapter($storage_name);
+						$new_adapter = $this->get_new_adapter($storage_name);
+
+						$sql = 'SELECT file_path
+							FROM ' . STORAGE_TABLE . "
+							WHERE  storage = '" . $storage_name . "'";
+						$result = $this->db->sql_query($sql);
+
+						while ($row = $this->db->sql_fetchrow($result))
+						{
+							$stream = $current_adapter->read_stream($row['file_path']);
+							$new_adapter->write_stream($row['file_path'], $stream);
+							fclose($stream);
+						}
+
+						$this->db->sql_rowseek(0, $result);
+
+						if ($this->request->variable('remove_old', false))
+						{
+							while ($row = $this->db->sql_fetchrow($result))
+							{
+								$current_adapter->delete($row['file_path']);
+							}
+						}
+
 						$this->update_storage_config($storage_name);
 					}
 
@@ -374,5 +408,43 @@ class acp_storage
 				$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
 			}
 		}
+	}
+
+	protected function get_current_adapter($storage_name)
+	{
+		$provider = $this->get_current_provider($storage_name);
+		$provider_class = $this->provider_collection->get_by_class($provider);
+
+		$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
+		$definitions = $this->get_provider_options($provider);
+
+		$options = [];
+		foreach (array_keys($definitions) as $definition)
+		{
+			$options[$definition] = $this->get_current_definition($storage_name, $definition);
+		}
+
+		$adapter->configure($options);
+
+		return $adapter;
+	}
+
+	protected function get_new_adapter($storage_name)
+	{
+		$provider = $this->get_new_provider($storage_name);
+		$provider_class = $this->provider_collection->get_by_class($provider);
+
+		$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
+		$definitions = $this->get_provider_options($provider);
+
+		$options = [];
+		foreach (array_keys($definitions) as $definition)
+		{
+			$options[$definition] = $this->get_new_definition($storage_name, $definition);
+		}
+
+		$adapter->configure($options);
+
+		return $adapter;
 	}
 }
