@@ -163,8 +163,7 @@ class storage
 	public function rename($path_orig, $path_dest)
 	{
 		$this->get_adapter()->rename($path_orig, $path_dest);
-		$this->untrack_file($path_orig);
-		$this->track_file($path_dest);
+		$this->track_rename($path_orig, $path_dest);
 	}
 
 	/**
@@ -297,6 +296,20 @@ class storage
 	}
 
 	/**
+	 * Rename tracked file.
+	 *
+	 * @param string	$path_orig	The original file/direcotry
+	 * @param string	$path_dest	The target file/directory
+	 */
+	protected function track_rename($path_orig, $path_dest)
+	{
+		$sql = 'UPDATE ' . $this->storage_table . "
+			SET file_path = '" . $path_dest . "'
+			WHERE file_path = '" . $path_orig . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	 * Get file info.
 	 *
 	 * @param string	$path	The file
@@ -345,7 +358,7 @@ class storage
 			$this->db->sql_freeresult($result);
 		}
 
-		return $total_size;
+		return (int) $total_size;
 	}
 
 	/**
