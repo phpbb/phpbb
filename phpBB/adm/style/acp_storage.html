@@ -97,6 +97,15 @@
 		{% endfor %}
 	{% endfor %}
 
+	<fieldset>
+		<dl>
+			<dt><label for="remove_old">{{ lang('STORAGE_REMOVE_OLD_FILES') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_REMOVE_OLD_FILES_EXPLAIN') }}</span></dt>
+			<dd>
+				<input type="checkbox" name="remove_old">
+			</dd>
+		</dl>
+	</fieldset>
+
 	<fieldset class="submit-buttons">
 		<legend>{{ lang('SUBMIT') }}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
