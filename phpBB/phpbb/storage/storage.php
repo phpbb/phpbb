@@ -304,9 +304,9 @@ class storage
 	protected function track_rename($path_orig, $path_dest)
 	{
 		$sql = 'UPDATE ' . $this->storage_table . "
-			SET file_path = '" . $path_dest . "'
-			WHERE file_path = '" . $path_orig . "'
-				AND storage = '" . $this->storage_name . "'";
+			SET file_path = '" . $this->db->sql_escape($path_dest) . "'
+			WHERE file_path = '" . $this->db->sql_escape($path_orig) . "'
+				AND storage = '" . $this->db->sql_escape($this->get_name()) . "'";
 		$this->db->sql_query($sql);
 	}
 
@@ -350,7 +350,7 @@ class storage
 		{
 			$sql = 'SELECT SUM(filesize) AS totalsize
 				FROM ' .  $this->storage_table . "
-				WHERE storage = '" . $this->get_name() . "'";
+				WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'";
 			$result = $this->db->sql_query($sql);
 
 			$total_size = (int) $this->db->sql_fetchfield('totalsize');
@@ -375,7 +375,7 @@ class storage
 		{
 			$sql = 'SELECT COUNT(file_id) AS numfiles
 				FROM ' .  $this->storage_table . "
-				WHERE storage = '" . $this->get_name() . "'";
+				WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'";
 			$result = $this->db->sql_query($sql);
 
 			$number_files = (int) $this->db->sql_fetchfield('numfiles');
