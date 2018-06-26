@@ -320,8 +320,8 @@ class local extends adapter implements stream_interface
 		{
 			$sql = 'SELECT safe_filename
 				FROM ' .  $this->storage_table . "
-				WHERE file_path = '" . $path . "'
-					AND storage = '" . $this->storage . "'";
+				WHERE file_path = '" . $this->db->sql_escape($path) . "'
+					AND storage = '" . $this->db->sql_escape($this->storage) . "'";
 
 			$result = $this->db->sql_query($sql);
 

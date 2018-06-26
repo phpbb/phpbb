@@ -88,13 +88,13 @@ class storage_safe_filenames extends \phpbb\db\migration\migration
 			$new_physical_filename = $this->convert_physical_filename($row['real_filename']);
 
 			$sql = 'UPDATE ' . $this->table_prefix . "attachments
-				SET physical_filename = '" . $new_physical_filename . "'
-				WHERE attach_id = '" . $row['attach_id'] . "'";
+				SET physical_filename = '" . $this->db->sql_escape($new_physical_filename) . "'
+				WHERE attach_id = " . $row['attach_id'];
 			$this->db->sql_query($sql);
 
 			$sql = 'UPDATE ' . $this->table_prefix . "storage
-				SET file_path = '" . $new_physical_filename . "', safe_filename = '" . $row['physical_filename'] . "'
-				WHERE file_path = '" . $row['physical_filename'] . "'
+				SET file_path = '" . $this->db->sql_escape($new_physical_filename) . "', safe_filename = '" . $this->db->sql_escape($row['physical_filename']) . "'
+				WHERE file_path = '" . $this->db->sql_escape($row['physical_filename']) . "'
 					AND storage = 'attachment'";
 			$this->db->sql_query($sql);
 		}
@@ -117,8 +117,8 @@ class storage_safe_filenames extends \phpbb\db\migration\migration
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "storage
-				SET safe_filename = '" . md5(unique_id()) . "'
-				WHERE file_id = '" . $row['file_id'] . "'";
+				SET safe_filename = '" . $this->db->sql_escape(md5(unique_id())) . "'
+				WHERE file_id = " . $row['file_id'];
 			$this->db->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
