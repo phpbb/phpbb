@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------- /*
-    Styles for the refactored PM module
+    Styles for the PM Module
 /* -------------------------------------------------------------- */
 
 @media (min-width: 768px) {
@@ -67,18 +67,6 @@
 .pm-secondary-item {
 	line-height: 1.2857142857;
 	padding-right: 1rem;
-}
-
-.pm-meta {
-	opacity: 0;
-	justify-content: center;
-	align-items: center;
-	width: 20px;
-}
-
-.pm-checkbox {
-	font-size: 20px;
-	cursor: pointer;
 }
 
 .pm-viewer {

@@ -1,71 +1,67 @@
 {% include 'ucp_header.html' %}
 
 {% if not PROMPT %}
-	{% include 'ucp_pm_message_header.html' %}
+{% include 'ucp_pm_message_header.html' %}
 {% endif %}
 
 {% if messagerow %}
-	<div class="pm">
-			<ul class="pm-list">
-				{% for message in messagerow %}
-					<li class="pm-item">
-						<span class="pm-primary">
-							{% if message.FOLDER_IMG_STYLE == "pm_unread" %}
-								<i class="fa fa-certificate fa-fw pm-unread" title="Unread message" aria-label="Unread message"></i>
-							{% endif %}
+<div class="pm">
+	<ul class="pm-list">
+		{% for message in messagerow %}
+		<li class="pm-item">
+			<span class="pm-primary">
+				{% if message.S_PM_UNREAD %}
+					<i class="fa fa-certificate fa-fw pm-unread" title="{{ lang('UCP_PM_UNREAD') }}" aria-label="{{ lang('UCP_PM_UNREAD') }}"></i>
+				{% endif %}
 
-							{% if message.PM_CLASS == "pm_marked_colour" %}
-								<i class="fa fa-star fa-fw pm-marked" title="You marked this message important!" aria-label="You marked this message important!"></i>
-							{% endif %}
+				{% if message.S_PM_MARKED %}
+					<i class="fa fa-star fa-fw pm-marked" title="{{ lang('UCP_PM_MARKED') }}" aria-label="{{ lang('UCP_PM_MARKED') }}"></i>
+				{% endif %}
 
-							<a href="{message.U_VIEW_PM}" title="{message.SUBJECT}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">{message.SUBJECT}</a>
-							<span class="pm-secondary">
-								<span class="pm-secondary-item pm-authour">
-									{% if message.PM_CLASS == "pm_foe_colour" %}
-										<i class="fa fa-ban fa-fw" title="{message.MESSAGE_AUTHOR} is your foe!" aria-label="{message.MESSAGE_AUTHOR} is your foe!"></i>
-									{% else %}
-										<i class="fa fa-user fa-fw" aria-hidden="true"></i>
-									{% endif %}
+				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">{{ message.SUBJECT }}</a>
+				<span class="pm-secondary">
+					<span class="pm-secondary-item pm-authour">
+						{% if message.PM_CLASS == "pm_foe_colour" %}
+							<i class="fa fa-ban fa-fw" title="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}" aria-label="{{ message.MESSAGE_AUTHOR }} is your foe!"></i>
+						{% else %}
+							<i class="fa fa-user fa-fw" aria-hidden="true"></i>
+						{% endif %}
 
-									{% if S_SHOW_RECIPIENTS %}
-										{{ lang('MESSAGE_TO') }} {message.RECIPIENTS}
-									{% else %}
-										{message.MESSAGE_AUTHOR_FULL}
-									{% endif %}
-								</span>
-								<span class="pm-secondary-item pm-date">
-									<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
-									{message.SENT_TIME}
-								</span>
-							</span>
-						</span>
-						<span class="pm-meta">
-							<i class="fa fa-square fa-fw pm-checkbox" aria-label="Mark"></i>
-							<input id="mark-{{ loop.index }}" type="checkbox" hidden>
-						</span>
-					</li>
-				{% endfor %}
-			</ul>
-		<div class="pm-viewer">
-			<div class="pm-message">
-				This will be taken care of in another PR. Or not.
-			</div>
+						{% if S_SHOW_RECIPIENTS %}
+							{{ lang('MESSAGE_TO') }} {{ message.RECIPIENTS }}
+						{% else %}
+							{{ message.MESSAGE_AUTHOR_FULL }}
+						{% endif %}
+					</span>
+					<span class="pm-secondary-item pm-date">
+						<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
+						{{ message.SENT_TIME }}
+					</span>
+				</span>
+			</span>
+		</li>
+		{% endfor %}
+	</ul>
+	<div class="pm-viewer">
+		<div class="pm-message">
+			This will be taken care of in another PR. Or not.
 		</div>
 	</div>
+</div>
 
-	<div class="action-bar bottom">
-		{% include 'display_options.html' %}
-		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+<div class="action-bar bottom">
+	{% include 'display_options.html' %}
+	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 
-		<div class="pagination">
-			{TOTAL_MESSAGES}
-			{% if pagination %}
-				{% include 'pagination.html' %}
-			{% else %}
-				&bull; {PAGE_NUMBER}
-			{% endif %}
-		</div>
+	<div class="pagination">
+		{TOTAL_MESSAGES}
+		{% if pagination %}
+		{% include 'pagination.html' %}
+		{% else %}
+		&bull; {PAGE_NUMBER}
+		{% endif %}
 	</div>
+</div>
 {% endif %}
 
 {% include 'ucp_pm_message_footer.html' %}

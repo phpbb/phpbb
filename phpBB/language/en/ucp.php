@@ -415,6 +415,7 @@ $lang = array_merge($lang, array(
 	'PASSWORD_UPDATED_IF_EXISTED'	=> 'If your account exists, a new password was sent to your registered email address. If you do not receive an email, it may be because you are banned, your account is not activated, or you are not allowed to change your password. Contact admin if any of those reasons apply. Also, check your spam filter.',
 	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',
 	'PERMISSIONS_TRANSFERRED'	=> 'Successfully transferred permissions from <strong>%s</strong>, you are now able to browse the board with this user’s permissions.<br />Please note that admin permissions were not transferred. You are able to revert to your permission set at any time.',
+	'PM_AUTHOR_FOE'				=> '%s is your foe',
 	'PM_DISABLED'				=> 'Private messaging has been disabled on this board.',
 	'PM_FROM'					=> 'From',
 	'PM_FROM_REMOVED_AUTHOR'	=> 'This message was sent by a user no longer registered.',
@@ -545,6 +546,7 @@ $lang = array_merge($lang, array(
 	'UCP_PM_OPTIONS'			=> 'Rules, folders &amp; settings',
 	'UCP_PM_UNREAD'				=> 'Unread messages',
 	'UCP_PM_VIEW'				=> 'View messages',
+	'UCP_PM_MARKED'				=> 'You marked this message important!',
 
 	'UCP_PROFILE'				=> 'Profile',
 	'UCP_PROFILE_AVATAR'		=> 'Edit avatar',
