@@ -73,6 +73,7 @@
 	flex: 120 0;
 	padding: 1.5rem;
 }
+
 .msg-list {
 	background-color: #edf4f7;
 	flex: 1 auto;
@@ -94,12 +95,11 @@
 
 .msg-title {
 	white-space: nowrap;
+	text-decoration: underline;
 	text-overflow: ellipsis;
 	display: inline-block;
 	overflow: auto;
 	max-width: 500px;
-	/*margin-bottom: -6px;*/
-	text-decoration: underline;
 }
 
 .msg-authour,
@@ -115,13 +115,8 @@
 .msg-primary-item,
 .msg-secondary {
 	display: block;
-	/*line-height: 1;*/
-}
-
-.msg-secondary {
-	/*line-height: 1.5;*/
 }
 
 .msg-unread {
-	color: black;
+	color: #000000;
 }
