@@ -248,30 +248,8 @@ function send_file_to_browser($attachment, $category)
 
 		if ($fp !== false)
 		{
-			// Deliver file partially if requested
-			if ($range = phpbb_http_byte_range($size))
-			{
-				fseek($fp, $range['byte_pos_start']);
-
-				send_status_line(206, 'Partial Content');
-				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
-				header('Content-Length: ' . $range['bytes_requested']);
-
-				// First read chunks
-				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
-				{
-					echo fread($fp, 8192);
-				}
-				// Then, read the remainder
-				echo fread($fp, $range['bytes_requested'] % 8192);
-			}
-			else
-			{
-				while (!feof($fp))
-				{
-					echo fread($fp, 8192);
-				}
-			}
+			$output = fopen('php://output', 'w+b');
+			stream_copy_to_stream($fp, $output);
 			fclose($fp);
 		}
 
