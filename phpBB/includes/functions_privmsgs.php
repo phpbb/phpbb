@@ -2006,7 +2006,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	{
 		$sql .= " AND (p.root_level = " . $message_row['root_level'] . ' OR p.msg_id = ' . $message_row['root_level'] . ')';
 	}
-	$sql .= ' ORDER BY p.message_time DESC';
+	$sql .= ' ORDER BY p.message_time ASC';
 
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
@@ -2040,7 +2040,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	if (count($rowset) == 1 && !$in_post_mode)
+	if (!count($rowset) && !$in_post_mode)
 	{
 		return false;
 	}
