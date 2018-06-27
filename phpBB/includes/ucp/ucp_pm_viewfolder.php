@@ -173,6 +173,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 					'S_PM_REPORTED'		=> (isset($row['report_id'])) ? true : false,
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
+					'S_PM_MARKED'		=> $row['pm_marked'],
+					'S_AUTHOR_FOE'		=> ($row_indicator == 'foe') ? true : false,
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',

@@ -18,11 +18,11 @@
 					<i class="fa fa-star fa-fw pm-marked" title="{{ lang('UCP_PM_MARKED') }}" aria-label="{{ lang('UCP_PM_MARKED') }}"></i>
 				{% endif %}
 
-				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title {{ message.FOLDER_IMG_STYLE == 'pm_unread' ? 'pm-unread' }}">{{ message.SUBJECT }}</a>
+				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title {% if message.S_PM_UNREAD %} pm-unread{% endif %}">{{ message.SUBJECT }}</a>
 				<span class="pm-secondary">
 					<span class="pm-secondary-item pm-authour">
-						{% if message.PM_CLASS == "pm_foe_colour" %}
-							<i class="fa fa-ban fa-fw" title="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}" aria-label="{{ message.MESSAGE_AUTHOR }} is your foe!"></i>
+						{% if message.S_AUTHOR_FOE %}
+							<i class="fa fa-ban fa-fw" title="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}" aria-label="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}"></i>
 						{% else %}
 							<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 						{% endif %}
@@ -51,14 +51,14 @@
 
 <div class="action-bar bottom">
 	{% include 'display_options.html' %}
-	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+	<input type="hidden" name="cur_folder_id" value="{{ CUR_FOLDER_ID }}" />
 
 	<div class="pagination">
-		{TOTAL_MESSAGES}
+		{{ TOTAL_MESSAGES }}
 		{% if pagination %}
-		{% include 'pagination.html' %}
+			{% include 'pagination.html' %}
 		{% else %}
-		&bull; {PAGE_NUMBER}
+			&bull; {{ PAGE_NUMBER }}
 		{% endif %}
 	</div>
 </div>
