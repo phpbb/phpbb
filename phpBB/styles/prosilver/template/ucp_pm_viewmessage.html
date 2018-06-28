@@ -34,7 +34,7 @@
 					<!--Some way to indicate this is the message clicked, change of color isn't good enough-->
 					<!--<i class="fa fa-certificate fa-fw msg-unread" title="Unread message" aria-label="Unread message"></i>-->
 				{% endif %}
-				<a href="{{ history.U_VIEW_MESSAGE }}" class="msg-title {% if history.S_CURRENT_MSG %} msg-unread{% endif %}">{{ history.SUBJECT }}</a>
+				<a href="{{ history.U_VIEW_MESSAGE }}" class="msg-title{% if history.S_CURRENT_MSG %} msg-unread{% endif %}">{{ history.SUBJECT }}</a>
 				<br />
 				{% if history.MESSAGE %}
 					{{ history.MESSAGE }}
@@ -47,5 +47,6 @@
 	{% endfor %}
 </ul>
 
+</div>
 {% include 'ucp_pm_message_footer.html' %}
 {% include 'ucp_footer.html' %}

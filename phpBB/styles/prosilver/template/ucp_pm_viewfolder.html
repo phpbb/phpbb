@@ -18,7 +18,7 @@
 					<i class="fa fa-star fa-fw pm-marked" title="{{ lang('UCP_PM_MARKED') }}" aria-label="{{ lang('UCP_PM_MARKED') }}"></i>
 				{% endif %}
 
-				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title {% if message.S_PM_UNREAD %} pm-unread{% endif %}">{{ message.SUBJECT }}</a>
+				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}">{{ message.SUBJECT }}</a>
 				<span class="pm-secondary">
 					<span class="pm-secondary-item pm-authour">
 						{% if message.S_AUTHOR_FOE %}
@@ -64,6 +64,7 @@
 </div>
 {% endif %}
 
+</div>
 {% include 'ucp_pm_message_footer.html' %}
 
 {% include 'ucp_footer.html' %}
