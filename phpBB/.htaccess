@@ -19,6 +19,14 @@ RewriteEngine on
 #RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 
 #
+# The following 3 lines will rewrite URLs for style assets to
+# strip out any caching version number included in the path
+#
+RewriteRule ^assets[.][0-9]+/(.*)$ assets/$1 [L]
+RewriteRule (.*)/assets[.][0-9]+/(.*)$ $1/assets/$2 [L]
+RewriteRule (.*)/theme[.][0-9]+/(.*)$ $1/theme/$2 [L]
+
+#
 # The following 3 lines will rewrite URLs passed through the front controller
 # to not require app.php in the actual URL. In other words, a controller is
 # by default accessed at /app.php/my/controller, but can also be accessed at

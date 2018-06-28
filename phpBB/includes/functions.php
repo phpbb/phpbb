@@ -4103,6 +4103,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
+			$theme = ($config['enable_mod_rewrite']) ? $theme . '.' . $config['assets_version'] : $theme;
 
 			$src = 'src="' . $theme . '/images/no_avatar.gif" data-src="' . $avatar_data['src'] . '"';
 		}
@@ -4450,8 +4451,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_SEARCH_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
-		'T_ASSETS_PATH'			=> "{$web_path}assets",
-		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme',
+		'T_ASSETS_PATH'			=> "{$web_path}assets" . (($config['enable_mod_rewrite']) ? '.' . $config['assets_version'] : ''),
+		'T_ASSETS_VERSION_QUERY'=> ($config['enable_mod_rewrite']) ? '' : '?assets_version=' . $config['assets_version'],
+		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme' . (($config['enable_mod_rewrite']) ? '.' . $config['assets_version'] : ''),
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
@@ -4461,9 +4463,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
+		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme' . (($config['enable_mod_rewrite']) ? '.' . $config['assets_version'] . '/stylesheet.css' : '/stylesheet.css?assets_version=' . $config['assets_version']),
+		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme' . (($config['enable_mod_rewrite']) ? '.' . $config['assets_version'] . '/' . $user->lang_name . '/stylesheet.css' : '/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version']),
+		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets" . (($config['enable_mod_rewrite']) ? '.' . $config['assets_version'] . '/css/font-awesome.min.css' : '/css/font-awesome.min.css?assets_version=' . $config['assets_version']),
 		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $config['assets_version'],
 		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
