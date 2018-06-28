@@ -451,6 +451,9 @@ class ucp_register
 				{
 					$message = $user->lang['ACCOUNT_ADDED'];
 					$email_template = 'user_welcome';
+
+					// Autologin after registration
+					$user->session_create($user_id, 0, false, 1);
 				}
 
 				if ($config['email_enable'])
