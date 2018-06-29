@@ -393,10 +393,13 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+					view_folder($id, $mode, $folder_id, $folder);
+
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
-					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
+					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewfolder';
 				}
 
 			break;
