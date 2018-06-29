@@ -266,6 +266,16 @@ else
 		$display_cat = ATTACHMENT_CATEGORY_NONE;
 	}
 
+	if ($thumbnail)
+	{
+		$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
+	}
+	else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
+	{
+		// Update download count
+		phpbb_increment_downloads($db, $attachment['attach_id']);
+	}
+
 	$redirect = '';
 
 	/**
@@ -293,16 +303,6 @@ else
 		'redirect',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
-
-	if ($thumbnail)
-	{
-		$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
-	}
-	else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'] && !phpbb_http_byte_range($attachment['filesize']))
-	{
-		// Update download count
-		phpbb_increment_downloads($db, $attachment['attach_id']);
-	}
 
 	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
 	{
