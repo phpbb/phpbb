@@ -23,6 +23,8 @@ if (!defined('IN_PHPBB'))
 * Wraps an url into a simple html page. Used to display attachments in IE.
 * this is a workaround for now; might be moved to template system later
 * direct any complaints to 1 Microsoft Way, Redmond
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
 */
 function wrap_img_in_html($src, $title)
 {
@@ -124,10 +126,7 @@ function send_file_to_browser($attachment, $category)
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
 
-	if (phpbb_is_greater_ie_version($user->browser, 7))
-	{
-		header('X-Content-Type-Options: nosniff');
-	}
+	header('X-Content-Type-Options: nosniff');
 
 	if (empty($user->browser) || ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7)))
 	{
@@ -316,20 +315,17 @@ function set_modified_headers($stamp, $browser)
 	// let's see if we have to send the file at all
 	$last_load 	=  $request->header('If-Modified-Since') ? strtotime(trim($request->header('If-Modified-Since'))) : false;
 
-	if (strpos(strtolower($browser), 'msie 6.0') === false && !phpbb_is_greater_ie_version($browser, 7))
+	if ($last_load !== false && $last_load >= $stamp)
 	{
-		if ($last_load !== false && $last_load >= $stamp)
-		{
-			send_status_line(304, 'Not Modified');
-			// seems that we need those too ... browsers
-			header('Cache-Control: private');
-			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
-			return true;
-		}
-		else
-		{
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $stamp) . ' GMT');
-		}
+		send_status_line(304, 'Not Modified');
+		// seems that we need those too ... browsers
+		header('Cache-Control: private');
+		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
+		return true;
+	}
+	else
+	{
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $stamp) . ' GMT');
 	}
 	return false;
 }
@@ -646,6 +642,8 @@ function phpbb_download_check_pm_auth($db, $user_id, $msg_id)
 * @param int $version IE version to check against
 *
 * @return bool true if internet explorer version is greater than $version
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
 */
 function phpbb_is_greater_ie_version($user_agent, $version)
 {

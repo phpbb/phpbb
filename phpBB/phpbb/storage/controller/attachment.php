@@ -214,24 +214,16 @@ class attachment extends controller
 			);
 			extract($this->phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
-			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
+			if (!empty($redirect))
 			{
-				wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
-				file_gc();
+				redirect($redirect, false, true);
 			}
 			else
 			{
-				if (!empty($redirect))
-				{
-					redirect($redirect, false, true);
-				}
-				else
-				{
-					send_file_to_browser($attachment, $display_cat);
-				}
-
-				file_gc();
+				send_file_to_browser($attachment, $display_cat);
 			}
+
+			file_gc();
 		}
 	}
 }
