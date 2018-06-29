@@ -82,3 +82,22 @@ services:
         arguments:
         tags:
             - { name: storage.provider }
+
+# Controllers
+    storage.controller.avatar:
+        class: phpbb\storage\controller\avatar
+        arguments:
+            - '@config'
+            - '@storage.avatar'
+
+    storage.controller.attachment:
+        class: phpbb\storage\controller\attachment
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@request'
+            - '@storage.attachment'
+            - '@user'

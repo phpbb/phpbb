@@ -1,0 +1,9 @@
+phpbb_storage_avatar:
+    path:             /download/avatar/{file}
+    defaults:
+        _controller:  storage.controller.avatar:handle
+
+phpbb_storage_attachment:
+    path:             /download/attachment/{file}
+    defaults:
+        _controller:  storage.controller.attachment:handle
