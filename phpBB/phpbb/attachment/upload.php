@@ -333,7 +333,7 @@ class upload
 	/**
 	 * Check if there is enough free space available on disk
 	 *
-	 * @return bool True if disk space is available or can't get it, false if not
+	 * @return bool True if disk space is available or not limited, false if not
 	 */
 	protected function check_disk_space()
 	{
