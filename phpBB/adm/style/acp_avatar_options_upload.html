@@ -1,6 +1,6 @@
 <dl>
 	<dt><label for="avatar_upload_file">{L_UPLOAD_AVATAR_FILE}{L_COLON}</label></dt>
-	<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_UPLOAD_SIZE}" /><input type="file" name="avatar_upload_file" id="avatar_upload_file" class="inputbox autowidth" /></dd>
+	<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_UPLOAD_SIZE}" /><input type="file" name="avatar_upload_file" id="avatar_upload_file" class="inputbox autowidth" accept="{{ AVATAR_ALLOWED_EXTENSIONS }}" /></dd>
 </dl>
 
 <!-- IF S_UPLOAD_AVATAR_URL -->
