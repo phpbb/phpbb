@@ -4,6 +4,7 @@ parameters:
 services:
     filesystem:
         class: phpbb\filesystem\filesystem
+        lazy: true
 
     filesystem.temp:
         class: phpbb\filesystem\temp

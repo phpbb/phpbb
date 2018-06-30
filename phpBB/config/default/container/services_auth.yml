@@ -2,6 +2,7 @@ services:
 # ----- Auth management -----
     auth:
         class: phpbb\auth\auth
+        lazy: true
 
 # ----- Auth providers -----
     auth.provider_collection:

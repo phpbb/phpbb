@@ -9,6 +9,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@cache'
+        lazy: true
 
     ext.composer.installer:
         class: phpbb\composer\installer

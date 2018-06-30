@@ -3,6 +3,7 @@ services:
         class: phpbb\db\driver\factory
         arguments:
             - '@service_container'
+        lazy: true
 
     dbal.conn.driver:
         synthetic: true

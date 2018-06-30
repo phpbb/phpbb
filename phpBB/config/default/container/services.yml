@@ -43,6 +43,7 @@ services:
              - '@dbal.conn'
              - '%core.root_path%'
              - '%core.php_ext%'
+        lazy: true
 
     cache.driver:
         class: '%cache.driver.class%'
@@ -73,6 +74,7 @@ services:
             - '@dbal.conn'
             - '@cache.driver'
             - '%tables.config%'
+        lazy: true
 
     config.php:
         synthetic: true
@@ -124,6 +126,7 @@ services:
             - '%core.adm_relative_path%'
             - '%core.php_ext%'
             - '%tables.log%'
+        lazy: true
 
     path_helper:
         class: phpbb\path_helper
@@ -133,6 +136,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%core.adm_relative_path%'
+        lazy: true
 
     plupload:
         class: phpbb\plupload\plupload
