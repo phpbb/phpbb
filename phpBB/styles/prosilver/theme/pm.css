@@ -2,6 +2,11 @@
     Styles for the PM Module
 /* -------------------------------------------------------------- */
 
+.cp-main {
+	float: none;
+	width: 100%;
+}
+
 @media (min-width: 768px) {
 	.pm {
 		display: flex;
