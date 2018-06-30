@@ -34,9 +34,6 @@ class attachment extends controller
 	/** @var content_visibility */
 	protected $content_visibility;
 
-	/** @var driver_interface */
-	protected $db;
-
 	/** @var dispatcher */
 	protected $dispatcher;
 

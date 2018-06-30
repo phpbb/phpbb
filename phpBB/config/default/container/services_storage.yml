@@ -87,7 +87,9 @@ services:
     storage.controller.avatar:
         class: phpbb\storage\controller\avatar
         arguments:
+            - '@cache'
             - '@config'
+            - '@dbal.conn'
             - '@storage.avatar'
 
     storage.controller.attachment:

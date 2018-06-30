@@ -13,8 +13,8 @@
 
 namespace phpbb\storage\controller;
 
-
 use phpbb\cache\service;
+use phpbb\db\driver\driver_interface;
 use phpbb\storage\storage;
 
 class controller
@@ -23,12 +23,16 @@ class controller
 	/** @var service */
 	protected $cache;
 
+	/** @var driver_interface */
+	protected $db;
+
 	/** @var storage */
 	protected $storage;
 
-	public function __construct(service $cache, storage $storage)
+	public function __construct(service $cache, driver_interface $db, storage $storage)
 	{
 		$this->cache = $cache;
+		$this->db = $db;
 		$this->storage = $storage;
 	}
 
