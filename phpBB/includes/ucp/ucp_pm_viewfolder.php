@@ -54,15 +54,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 			$color_rows = array_merge($color_rows, array('friend', 'foe'));
 		}
 
-		foreach ($color_rows as $var)
-		{
-			$template->assign_block_vars('pm_colour_info', array(
-				'IMG'	=> $user->img("pm_{$var}", ''),
-				'CLASS'	=> "pm_{$var}_colour",
-				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
-			);
-		}
-
 		$mark_options = array('mark_important', 'delete_marked');
 
 		// Minimise edits
@@ -186,7 +177,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 			$template->assign_vars(array(
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
-				'S_SHOW_COLOUR_LEGEND'	=> true,
 
 				'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'PM_REPORTED'),
 				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
@@ -536,30 +526,17 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported, (
-			SELECT SUM(tu.pm_unread)
-			FROM ' . PRIVMSGS_TO_TABLE . ' tu
-			LEFT JOIN ' . PRIVMSGS_TABLE . ' pu
-				ON (tu.msg_id = pu.msg_id)
-			WHERE pu.root_level = p.msg_id
-				OR pu.msg_id = p.msg_id
-		) AS pm_unread',
+		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported',
 		'FROM'		=> array(
 			PRIVMSGS_TO_TABLE	=> 't',
-		),
-		'LEFT_JOIN'	=> array(
-			array(
-				'FROM'	=> array(PRIVMSGS_TABLE => 'p'),
-				'ON'	=> 't.msg_id = p.msg_id',
-			),
-			array(
-				'FROM'	=> array(USERS_TABLE => 'u'),
-				'ON'	=> 'p.author_id = u.user_id',
-			),
+			PRIVMSGS_TABLE		=> 'p',
+			USERS_TABLE			=> 'u',
 		),
 		'WHERE'		=> "t.user_id = $user_id
-			AND p.root_level = 0
+		AND p.root_level = 0
+			AND p.author_id = u.user_id
 			AND $folder_sql
+			AND t.msg_id = p.msg_id
 			$sql_limit_time",
 		'ORDER_BY'	=> $sql_sort_order,
 	);
