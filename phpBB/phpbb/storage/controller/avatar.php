@@ -66,7 +66,7 @@ class avatar extends controller
 	{
 		if (!headers_sent())
 		{
-			header('Content-Disposition: inline; ' . header_filename($file));
+			header("Content-Disposition: inline; filename*=UTF-8''" . rawurlencode($file));
 
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600*24*365) . ' GMT');
 		}

@@ -44,26 +44,6 @@ function wrap_img_in_html($src, $title)
 }
 
 /**
-* Get a browser friendly UTF-8 encoded filename
-*/
-function header_filename($file)
-{
-	global $request;
-
-	$user_agent = $request->header('User-Agent');
-
-	// There be dragons here.
-	// Not many follows the RFC...
-	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Konqueror') !== false)
-	{
-		return "filename=" . rawurlencode($file);
-	}
-
-	// follow the RFC for extended filename for the rest
-	return "filename*=UTF-8''" . rawurlencode($file);
-}
-
-/**
 * Garbage Collection
 *
 * @param bool $exit		Whether to die or not.

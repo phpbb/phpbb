@@ -313,7 +313,7 @@ class attachment extends controller
 		}
 		else
 		{
-			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . "; filename*=UTF-8''" . rawurlencode(htmlspecialchars_decode($attachment['real_filename'])));
 
 			if (strpos($attachment['mimetype'], 'image') !== 0)
 			{
