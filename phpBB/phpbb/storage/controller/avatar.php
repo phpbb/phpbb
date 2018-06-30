@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\controller;
 
+use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\storage\storage;
 
@@ -23,8 +24,9 @@ class avatar extends controller
 
 	protected $allowed_extensions = ['png', 'gif', 'jpg', 'jpeg'];
 
-	public function __construct(config $config, storage $storage)
+	public function __construct(service $cache, config $config, storage $storage)
 	{
+		$this->cache = $cache;
 		$this->config = $config;
 		$this->storage = $storage;
 	}

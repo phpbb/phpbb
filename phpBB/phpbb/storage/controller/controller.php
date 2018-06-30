@@ -13,37 +13,38 @@
 
 namespace phpbb\storage\controller;
 
+
+use phpbb\cache\service;
 use phpbb\storage\storage;
 
 class controller
 {
+
+	/** @var service */
+	protected $cache;
+
 	/** @var storage */
 	protected $storage;
 
-	public function __construct(storage $storage)
+	public function __construct(service $cache, storage $storage)
 	{
+		$this->cache = $cache;
 		$this->storage = $storage;
 	}
 
 	public function handle($file)
 	{
-		if (!function_exists('file_gc'))
-		{
-			global $phpbb_root_path, $phpEx;
-			require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
-		}
-
 		if (!$this->is_allowed($file))
 		{
 			send_status_line(403, 'Forbidden');
-			file_gc();
+			$this->file_gc();
 			exit;
 		}
 
 		if (!$this->file_exists($file))
 		{
 			send_status_line(404, 'Not Found');
-			file_gc();
+			$this->file_gc();
 			exit;
 		}
 
@@ -62,12 +63,6 @@ class controller
 
 	protected function send($file)
 	{
-		if (!function_exists('file_gc'))
-		{
-			global $phpbb_root_path, $phpEx;
-			require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
-		}
-
 		if (!headers_sent())
 		{
 			header('Cache-Control: public');
@@ -95,7 +90,7 @@ class controller
 			$fp = $this->storage->read_stream($file);
 
 			// Close db connection
-			file_gc(false);
+			$this->file_gc(false);
 
 			$output = fopen('php://output', 'w+b');
 
@@ -104,8 +99,29 @@ class controller
 			fclose($fp);
 			fclose($output);
 
-			// ??
 			flush();
+		}
+	}
+
+	/**
+	* Garbage Collection
+	*
+	* @param bool $exit		Whether to die or not.
+	*
+	* @return null
+	*/
+	protected function file_gc($exit = true)
+	{
+		if (!empty($this->cache))
+		{
+			$this->cache->unload();
+		}
+
+		$this->db->sql_close();
+
+		if ($exit)
+		{
+			exit;
 		}
 	}
 }

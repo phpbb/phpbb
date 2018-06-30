@@ -96,6 +96,7 @@ services:
             - '@auth'
             - '@cache'
             - '@config'
+            - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
             - '@request'
