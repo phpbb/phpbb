@@ -43,7 +43,7 @@ class storage
 	protected $factory;
 
 	/**
-	 * @var string
+	 * @var stringshould be caste
 	 */
 	protected $storage_name;
 
@@ -384,7 +384,7 @@ class storage
 			$this->db->sql_freeresult($result);
 		}
 
-		return $number_files;
+		return (int) $number_files;
 	}
 
 	/**
@@ -392,7 +392,7 @@ class storage
 	 *
 	 * @throws \phpbb\storage\exception\exception		When can't get available space
 	 *
-	 * @return int	Returns available space
+	 * @return mixed	Returns available space or null when unable to retrieve available space
 	 */
 	public function free_space()
 	{
