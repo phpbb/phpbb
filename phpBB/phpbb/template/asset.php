@@ -194,8 +194,17 @@ class asset
 	*
 	* @param string $version Version
 	*/
-	public function add_assets_version($version)
+	public function add_assets_version($version, $adjust_path)
 	{
+        if ($adjust_path) 
+        {
+            if(preg_match('#((^|[/])assets|/theme)/#', $this->components['path']))
+            {
+                $this->components['path'] = preg_replace('#((^|[/])assets|/theme)/#', "$1.$version/", $this->components['path']);
+                unset($this->components['query']);
+                return;
+            }
+        }
 		if (!isset($this->components['query']))
 		{
 			$this->components['query'] = 'assets_version=' . $version;
