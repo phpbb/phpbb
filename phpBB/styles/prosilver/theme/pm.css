@@ -78,7 +78,7 @@
 	flex: 120 0;
 }
 
-.msg-list {
+.pm-message-list {
 	background-color: #edf4f7;
 	flex: 1 auto;
 	margin: 0;
@@ -86,7 +86,7 @@
 	list-style-type: none;
 }
 
-.msg-item {
+.pm-message-item {
 	font-weight: 400;
 	letter-spacing: 0.04em;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -97,7 +97,7 @@
 	padding: 5px;
 }
 
-.msg-title {
+.pm-message-title {
 	white-space: nowrap;
 	text-decoration: underline;
 	text-overflow: ellipsis;
@@ -106,8 +106,8 @@
 	max-width: 500px;
 }
 
-.msg-authour,
-.msg-date {
+.pm-message-authour,
+.pm-message-date {
 	font-size: 14px;
 	font-weight: 400;
 	line-height: 2;
@@ -116,11 +116,11 @@
 	text-transform: inherit;
 }
 
-.msg-primary-item,
-.msg-secondary {
+.pm-message-primary-item,
+.pm-message-secondary {
 	display: block;
 }
 
-.msg-unread {
+.pm-message-unread {
 	color: #000000;
 }
