@@ -199,6 +199,7 @@ class upload
 		// Check for attachment quota and free space
 		if (!$this->check_attach_quota() || !$this->check_disk_space())
 		{
+			$this->file->remove($this->storage);
 			return $this->file_data;
 		}
 
@@ -321,8 +322,6 @@ class upload
 				$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				$this->file_data['post_attach'] = false;
 
-				$this->file->remove($this->storage);
-
 				return false;
 			}
 		}
@@ -352,8 +351,6 @@ class upload
 					$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				}
 				$this->file_data['post_attach'] = false;
-
-				$this->file->remove($this->storage);
 
 				return false;
 			}
