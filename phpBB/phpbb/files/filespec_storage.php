@@ -288,6 +288,10 @@ class filespec_storage
 		{
 			$storage->delete($this->destination_file);
 		}
+		else
+		{
+			@unlink($this->filename);
+		}
 	}
 
 	/**
