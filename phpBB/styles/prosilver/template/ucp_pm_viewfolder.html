@@ -59,8 +59,8 @@
 				{% endfor %}
 			{% endif %}
 
-			<ul class="pm-message-list">
-				{% for history in history_row %}
+			{% for history in history_row %}
+				<ul class="pm-message-list{% if history.USER_ID != history.USER_ID_CURRENT %} pm-not-self{% endif %}">
 					<li class="pm-message-item ">
 						<span class="pm-message-primary">
 							<span class="pm-message-primary-item">
@@ -90,8 +90,8 @@
 							</span>
 						</span>
 					</li>
-				{% endfor %}
-			</ul>
+				</ul>
+			{% endfor %}
 		</div>
 	</div>
 </div>
