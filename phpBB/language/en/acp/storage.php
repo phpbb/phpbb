@@ -47,6 +47,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_NUM_FILES'				=> 'Number of files',
 	'STORAGE_SIZE'					=> 'Size',
 	'STORAGE_FREE'					=> 'Available space',
+	'STORAGE_UNKNOWN'				=> 'Unknown',
 
 	// Storage names
 	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',

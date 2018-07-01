@@ -21,7 +21,11 @@
 			<td>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</td>
 			<td>{{ storage.get_num_files }}</td>
 			<td>{{ storage.get_size | format_bytes }}</td>
-			<td>{{ storage.free_space | format_bytes }}</td>
+			{% if storage.free_space !== false %}
+				<td>{{ storage.free_space | format_bytes }}</td>
+			{% else %}
+				<td>{L_STORAGE_UNKNOWN}</td>
+			{% endif %}
 		</tr>
 	{% endfor %}
 	</tbody>
