@@ -177,10 +177,10 @@ class acp_storage
 							fclose($stream);
 						}
 
-						$this->db->sql_rowseek(0, $result);
-
 						if ($this->request->variable('remove_old', false))
 						{
+							$this->db->sql_rowseek(0, $result);
+
 							while ($row = $this->db->sql_fetchrow($result))
 							{
 								$current_adapter->delete($row['file_path']);
