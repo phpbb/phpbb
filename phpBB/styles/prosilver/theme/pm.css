@@ -82,11 +82,17 @@
 	background-color: #edf4f7;
 	flex: 1 auto;
 	margin: 0;
-	padding: 0;
+	padding-right: 0;
 	list-style-type: none;
 	width: 300px;
+	border-radius: 20px;
+
+}
+
+.pm-clear {
 	clear:both
 }
+
 .pm-not-self {
 	float: right;
 }
