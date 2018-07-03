@@ -402,7 +402,8 @@ function getCaretPosition(txtarea) {
 			$(txtarea).atwho({
 				at: "@",
 				displayTpl: function(data) {
-					let avatar = (data.avatar.src) ? "<img src='" + data.avatar.src + "' class='mention-media-avatar'>" : defaultAvatar(data.avatar.type),
+					// TODO: handle image scaling
+					let avatar = (data.avatar.img) ? "<span class='mention-media-avatar'>" + data.avatar.img + "</span>" : defaultAvatar(data.avatar.type),
 						rank = (data.rank) ? "<span class='mention-rank'>" + data.rank + "</span>" : '';
 					return "<li class='mention-item'><span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + data.name + rank + "</span></li>";
 				},
@@ -410,7 +411,8 @@ function getCaretPosition(txtarea) {
 				limit: mentionNamesLimit,
 				callbacks: {
 					remoteFilter: function(query, callback) {
-						$.getJSON(mentionURL, {keyword: query, topic_id: mentionTopicId}, function (data) {
+						let params = {keyword: query, topic_id: mentionTopicId, _referer: location.href};
+						$.getJSON(mentionURL, params, function (data) {
 							callback(data)
 						});
 					}

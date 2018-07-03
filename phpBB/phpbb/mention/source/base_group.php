@@ -137,7 +137,7 @@ abstract class base_group implements source_interface
 				'id'		=> $group_id,
 				'avatar'	=> [
 					'type'	=> 'group',
-					'src'	=> phpbb_get_group_avatar($groups[$group_id]),
+					'img'	=> phpbb_get_group_avatar($groups[$group_id]),
 				],
 				'rank'		=> $group_rank['title'],
 			];
