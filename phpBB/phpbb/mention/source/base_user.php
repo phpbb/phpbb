@@ -74,7 +74,7 @@ abstract class base_user implements source_interface
 				'id'		=> $row['user_id'],
 				'avatar'	=> [
 					'type'	=> 'user',
-					'src'	=> $this->user_loader->get_avatar($row['user_id'], true),
+					'img'	=> $this->user_loader->get_avatar($row['user_id'], true),
 				],
 				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
 			];
