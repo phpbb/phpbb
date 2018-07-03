@@ -1177,3 +1177,11 @@ input.disabled {
 .pm-viewer {
 	background-color: #d3d3d3;
 }
+
+.pm-message-list {
+	background-color: white;
+}
+
+.pm-message-unread {
+	color: #000000;
+}
