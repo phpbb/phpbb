@@ -70,7 +70,7 @@ abstract class base_user implements source_interface
 			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
 			$names['u' . $row['user_id']] = [
 				'name'		=> $row['username'],
-				'param'		=> 'user_id',
+				'type'		=> 'u',
 				'id'		=> $row['user_id'],
 				'avatar'	=> [
 					'type'	=> 'user',

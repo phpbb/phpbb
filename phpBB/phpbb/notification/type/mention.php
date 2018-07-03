@@ -75,7 +75,7 @@ class mention extends \phpbb\notification\type\post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$user_ids = $this->helper->get_mentioned_users($post['post_text']);
+		$user_ids = $this->helper->get_mentioned_ids($post['post_text']);
 
 		$user_ids = array_unique($user_ids);
 

@@ -23,17 +23,17 @@ class mention_helper
 	protected $db;
 
 	/**
-	* @var string Base URL for a user profile link, uses {USER_ID} as placeholder
+	* @var string Base URL for a user profile link, uses {ID} as placeholder
 	*/
 	protected $user_profile_url;
 
 	/**
-	* @var string Base URL for a group profile link, uses {GROUP_ID} as placeholder
+	* @var string Base URL for a group profile link, uses {ID} as placeholder
 	*/
 	protected $group_profile_url;
 
 	/**
-	* @var array Array of users' and groups' colors for each cached ID
+	* @var array Array of users' and groups' colours for each cached ID
 	*/
 	protected $cached_colours = [];
 
@@ -47,57 +47,61 @@ class mention_helper
 	public function __construct($db, $root_path, $php_ext)
 	{
 		$this->db = $db;
-		$this->user_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={USER_ID}', false);
-		$this->group_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=group&g={GROUP_ID}', false);
+		$this->user_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={ID}', false);
+		$this->group_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=group&g={ID}', false);
 	}
 
 	/**
-	 * Caches colors for specified user IDs and group IDs
+	 * Returns SQL query data for colour SELECT request
 	 *
-	 * @param array $user_ids
-	 * @param array $group_ids
+	 * @param string $type Name type ('u' for users, 'g' for groups)
+	 * @param array  $ids  Array of IDs
+	 * @return array Array of SQL SELECT query data for extracting colours for names
 	 */
-	protected function get_colors($user_ids, $group_ids)
+	protected function get_colours_sql($type, $ids)
 	{
-		$this->cached_colours = [];
-		$this->cached_colours['users'] = [];
-		$this->cached_colours['groups'] = [];
-
-		if (!empty($user_ids))
+		switch ($type)
 		{
-			$query = $this->db->sql_build_query('SELECT', [
-				'SELECT' => 'u.user_colour, u.user_id',
-				'FROM'   => [
-					USERS_TABLE => 'u',
-				],
-				'WHERE'  => 'u.user_id <> ' . ANONYMOUS . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-				AND ' . $this->db->sql_in_set('u.user_id', $user_ids),
-			]);
-			$result = $this->db->sql_query($query);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$this->cached_colours['users'][$row['user_id']] = $row['user_colour'];
-			}
-
-			$this->db->sql_freeresult($result);
+			default:
+			case 'u':
+				return [
+					'SELECT' => 'u.user_colour as colour, u.user_id as id',
+					'FROM'   => [
+						USERS_TABLE => 'u',
+					],
+					'WHERE'  => 'u.user_id <> ' . ANONYMOUS . '
+						AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
+						AND ' . $this->db->sql_in_set('u.user_id', $ids),
+				];
+			case 'g':
+				return [
+					'SELECT' => 'g.group_colour as colour, g.group_id as id',
+					'FROM'   => [
+						GROUPS_TABLE => 'g',
+					],
+					'WHERE'  => $this->db->sql_in_set('g.group_id', $ids),
+				];
 		}
+	}
 
-		if (!empty($group_ids))
+	/**
+	 * Caches colours for selected IDs of the specified type
+	 *
+	 * @param string $type Name type ('u' for users, 'g' for groups)
+	 * @param array  $ids  Array of IDs
+	 */
+	protected function get_colours($type, $ids)
+	{
+		$this->cached_colours[$type] = [];
+
+		if (!empty($ids))
 		{
-			$query = $this->db->sql_build_query('SELECT', [
-				'SELECT' => 'g.group_colour, g.group_id',
-				'FROM'   => [
-					GROUPS_TABLE => 'g',
-				],
-				'WHERE'  => $this->db->sql_in_set('g.group_id', $group_ids),
-			]);
+			$query = $this->db->sql_build_query('SELECT', $this->get_colours_sql($type, $ids));
 			$result = $this->db->sql_query($query);
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$this->cached_colours['groups'][$row['group_id']] = $row['group_colour'];
+				$this->cached_colours[$type][$row['id']] = $row['colour'];
 			}
 
 			$this->db->sql_freeresult($result);
@@ -112,36 +116,31 @@ class mention_helper
 	*/
 	public function inject_metadata($xml)
 	{
-		$user_profile_url = $this->user_profile_url;
-		$group_profile_url = $this->group_profile_url;
+		$profile_urls = [
+			'u' => $this->user_profile_url,
+			'g' => $this->group_profile_url,
+		];
 
 		// TODO: think about optimization for caching colors.
-		$this->get_colors(
-			TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'user_id'),
-			TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'group_id')
-		);
+		$this->cached_colours = [];
+		$this->get_colours('u', $this->get_mentioned_ids($xml, 'u'));
+		$this->get_colours('g', $this->get_mentioned_ids($xml, 'g'));
 
 		return TextFormatterUtils::replaceAttributes(
 			$xml,
 			'MENTION',
-			function ($attributes) use ($user_profile_url, $group_profile_url)
+			function ($attributes) use ($profile_urls)
 			{
-				if (isset($attributes['user_id']))
+				if (isset($attributes['type']) && isset($attributes['id']))
 				{
-					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $user_profile_url);
+					$type = $attributes['type'];
+					$id = $attributes['id'];
 
-					if (!empty($this->cached_colours['users'][$attributes['user_id']]))
-					{
-						$attributes['color'] = $this->cached_colours['users'][$attributes['user_id']];
-					}
-				}
-				else if (isset($attributes['group_id']))
-				{
-					$attributes['profile_url'] = str_replace('{GROUP_ID}', $attributes['group_id'], $group_profile_url);
+					$attributes['profile_url'] = str_replace('{ID}', $id, $profile_urls[$type]);
 
-					if (!empty($this->cached_colours['groups'][$attributes['group_id']]))
+					if (!empty($this->cached_colours[$type][$id]))
 					{
-						$attributes['color'] = $this->cached_colours['groups'][$attributes['group_id']];
+						$attributes['color'] = $this->cached_colours[$type][$id];
 					}
 				}
 
@@ -151,28 +150,33 @@ class mention_helper
 	}
 
 	/**
-	 * Get a list of mentioned users
+	 * Get a list of mentioned names
 	 * TODO: decide what to do with groups
 	 *
-	 * @param  string   $xml Parsed text
-	 * @return int[]         List of user IDs
+	 * @param string $xml  Parsed text
+	 * @param string $type Name type ('u' for users, 'g' for groups)
+	 * @return int[]       List of IDs
 	 */
-	public function get_mentioned_users($xml)
+	public function get_mentioned_ids($xml, $type = 'u')
 	{
-		$user_ids = array();
+		$ids = array();
 		if (strpos($xml, '<MENTION ') === false)
 		{
-			return $user_ids;
+			return $ids;
 		}
 
 		$dom = new \DOMDocument;
 		$dom->loadXML($xml);
 		$xpath = new \DOMXPath($dom);
-		foreach ($xpath->query('//MENTION/@user_id') as $user_id)
+		/** @var \DOMElement $mention */
+		foreach ($xpath->query('//MENTION') as $mention)
 		{
-			$user_ids[] = (int) $user_id->textContent;
+			if ($mention->getAttribute('type') === $type)
+			{
+				$ids[] = (int) $mention->getAttribute('id');
+			}
 		}
 
-		return $user_ids;
+		return $ids;
 	}
 }
