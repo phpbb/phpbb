@@ -85,10 +85,8 @@ class factory implements \phpbb\textformatter\cache_interface
 		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext} #createChild=LI]{TEXT}[/LIST]',
 		'li'    => '[* $tagName=LI]{TEXT}[/*]',
 		'mention' =>
-			"[MENTION
-				group_id={UINT;optional}
+			"[MENTION={PARSE=/^(?<type>[ug]):(?<id>\d+)$/}
 				profile_url={URL;optional;postFilter=#false}
-				user_id={UINT;optional}
 			]{TEXT}[/MENTION]",
 		'quote' =>
 			"[QUOTE

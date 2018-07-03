@@ -133,7 +133,7 @@ abstract class base_group implements source_interface
 			$group_rank = phpbb_get_user_rank($groups[$group_id], false);
 			$names['g' . $group_id] = [
 				'name'		=> $groups[$group_id]['group_name'],
-				'param'		=> 'group_id',
+				'type'		=> 'g',
 				'id'		=> $group_id,
 				'avatar'	=> [
 					'type'	=> 'group',
