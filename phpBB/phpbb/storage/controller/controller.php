@@ -15,6 +15,7 @@ namespace phpbb\storage\controller;
 
 use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
+use phpbb\exception\http_exception;
 use phpbb\storage\storage;
 
 class controller
@@ -40,16 +41,12 @@ class controller
 	{
 		if (!$this->is_allowed($file))
 		{
-			send_status_line(403, 'Forbidden');
-			$this->file_gc();
-			exit;
+			throw new http_exception(403, 'Forbidden');
 		}
 
 		if (!$this->file_exists($file))
 		{
-			send_status_line(404, 'Not Found');
-			$this->file_gc();
-			exit;
+			throw new http_exception(404, 'Not Found');
 		}
 
 		$this->send($file);
@@ -94,7 +91,7 @@ class controller
 			$fp = $this->storage->read_stream($file);
 
 			// Close db connection
-			$this->file_gc(false);
+			$this->file_gc();
 
 			$output = fopen('php://output', 'w+b');
 
@@ -114,7 +111,7 @@ class controller
 	*
 	* @return null
 	*/
-	protected function file_gc($exit = true)
+	protected function file_gc()
 	{
 		if (!empty($this->cache))
 		{
@@ -122,10 +119,5 @@ class controller
 		}
 
 		$this->db->sql_close();
-
-		if ($exit)
-		{
-			exit;
-		}
 	}
 }

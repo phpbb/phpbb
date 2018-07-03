@@ -19,9 +19,11 @@ use phpbb\config\config;
 use phpbb\content_visibility;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher;
+use phpbb\exception\http_exception;
 use phpbb\request\request;
 use phpbb\storage\storage;
 use phpbb\user;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class attachment extends controller
 {
@@ -61,10 +63,9 @@ class attachment extends controller
 
 	public function handle($file)
 	{
-		$attach_id = $file;
+		$attach_id = (int) $file;
 		$mode = $this->request->variable('mode', '');
 		$thumbnail = $this->request->variable('t', false);
-		global $phpbb_container;
 
 		// Start session management, do not update session page.
 		$this->user->session_begin(false);
@@ -73,14 +74,12 @@ class attachment extends controller
 
 		if (!$this->config['allow_attachments'] && !$this->config['allow_pm_attach'])
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
+			throw new http_exception(404, 'ATTACHMENT_FUNCTIONALITY_DISABLED');
 		}
 
 		if (!$attach_id)
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error('NO_ATTACHMENT_SELECTED');
+			throw new http_exception(404, 'NO_ATTACHMENT_SELECTED');
 		}
 
 		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
@@ -92,133 +91,124 @@ class attachment extends controller
 
 		if (!$attachment)
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error('ERROR_NO_ATTACHMENT');
+			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 		}
 		else if (!$this->download_allowed())
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error($this->user->lang['LINKAGE_FORBIDDEN']);
+			throw new http_exception(403, 'LINKAGE_FORBIDDEN');
+		}
+
+		$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
+
+		if (!$attachment['in_message'] && !$this->config['allow_attachments'] || $attachment['in_message'] && !$this->config['allow_pm_attach'])
+		{
+			throw new http_exception(404, 'ATTACHMENT_FUNCTIONALITY_DISABLED');
+		}
+
+		if ($attachment['is_orphan'])
+		{
+			// We allow admins having attachment permissions to see orphan attachments...
+			$own_attachment = ($this->auth->acl_get('a_attach') || $attachment['poster_id'] == $this->user->data['user_id']) ? true : false;
+
+			if (!$own_attachment || ($attachment['in_message'] && !$this->auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$this->auth->acl_get('u_download')))
+			{
+				throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
+			}
+
+			// Obtain all extensions...
+			$extensions = $this->cache->obtain_attach_extensions(true);
 		}
 		else
 		{
-			$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
-
-			if (!$attachment['in_message'] && !$this->config['allow_attachments'] || $attachment['in_message'] && !$this->config['allow_pm_attach'])
+			if (!$attachment['in_message'])
 			{
-				send_status_line(404, 'Not Found');
-				trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
-			}
+				$this->phpbb_download_handle_forum_auth($attachment['topic_id']);
 
-			if ($attachment['is_orphan'])
-			{
-				// We allow admins having attachment permissions to see orphan attachments...
-				$own_attachment = ($this->auth->acl_get('a_attach') || $attachment['poster_id'] == $this->user->data['user_id']) ? true : false;
+				$sql = 'SELECT forum_id, post_visibility
+					FROM ' . POSTS_TABLE . '
+					WHERE post_id = ' . (int) $attachment['post_msg_id'];
+				$result = $this->db->sql_query($sql);
+				$post_row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
 
-				if (!$own_attachment || ($attachment['in_message'] && !$this->auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$this->auth->acl_get('u_download')))
+				if (!$post_row || !$this->content_visibility->is_visible('post', $post_row['forum_id'], $post_row))
 				{
-					send_status_line(404, 'Not Found');
-					trigger_error('ERROR_NO_ATTACHMENT');
+					// Attachment of a soft deleted post and the user is not allowed to see the post
+					throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 				}
-
-				// Obtain all extensions...
-				$extensions = $this->cache->obtain_attach_extensions(true);
 			}
 			else
 			{
-				if (!$attachment['in_message'])
-				{
-					$this->phpbb_download_handle_forum_auth($attachment['topic_id']);
-
-					$sql = 'SELECT forum_id, post_visibility
-						FROM ' . POSTS_TABLE . '
-						WHERE post_id = ' . (int) $attachment['post_msg_id'];
-					$result = $this->db->sql_query($sql);
-					$post_row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					if (!$post_row || !$this->content_visibility->is_visible('post', $post_row['forum_id'], $post_row))
-					{
-						// Attachment of a soft deleted post and the user is not allowed to see the post
-						send_status_line(404, 'Not Found');
-						trigger_error('ERROR_NO_ATTACHMENT');
-					}
-				}
-				else
-				{
-					// Attachment is in a private message.
-					$post_row = array('forum_id' => false);
-					$this->phpbb_download_handle_pm_auth( $attachment['post_msg_id']);
-				}
-
-				$extensions = array();
-				if (!extension_allowed($post_row['forum_id'], $attachment['extension'], $extensions))
-				{
-					send_status_line(403, 'Forbidden');
-					trigger_error(sprintf($this->user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
-				}
+				// Attachment is in a private message.
+				$post_row = array('forum_id' => false);
+				$this->phpbb_download_handle_pm_auth( $attachment['post_msg_id']);
 			}
 
-			$display_cat = $extensions[$attachment['extension']]['display_cat'];
-
-			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg'))
+			$extensions = array();
+			if (!extension_allowed($post_row['forum_id'], $attachment['extension'], $extensions))
 			{
-				$display_cat = ATTACHMENT_CATEGORY_NONE;
+				throw new http_exception(403, 'EXTENSION_DISABLED_AFTER_POSTING', [$attachment['extension']]);
 			}
+		}
 
-			if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$this->user->optionget('viewflash'))
-			{
-				$display_cat = ATTACHMENT_CATEGORY_NONE;
-			}
+		$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-			if ($thumbnail)
-			{
-				$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
-			}
-			else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'])
-			{
-				// Update download count
-				$this->phpbb_increment_downloads($attachment['attach_id']);
-			}
+		if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg'))
+		{
+			$display_cat = ATTACHMENT_CATEGORY_NONE;
+		}
 
-			$redirect = '';
+		if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$this->user->optionget('viewflash'))
+		{
+			$display_cat = ATTACHMENT_CATEGORY_NONE;
+		}
 
-			/**
-			* Event to modify data before sending file to browser
-			*
-			* @event core.download_file_send_to_browser_before
-			* @var	int		attach_id			The attachment ID
-			* @var	array	attachment			Array with attachment data
-			* @var	int		display_cat			Attachment category
-			* @var	array	extensions			Array with file extensions data
-			* @var	string	mode				Download mode
-			* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
-			* @var	string	redirect			Do a redirection instead of reading the file
-			* @since 3.1.6-RC1
-			* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
-			* @changed 3.3.0-a1		Add redirect variable
-			*/
-			$vars = array(
-				'attach_id',
-				'attachment',
-				'display_cat',
-				'extensions',
-				'mode',
-				'thumbnail',
-				'redirect',
-			);
-			extract($this->dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
+		if ($thumbnail)
+		{
+			$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
+		}
+		else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'])
+		{
+			// Update download count
+			$this->phpbb_increment_downloads($attachment['attach_id']);
+		}
 
-			if (!empty($redirect))
-			{
-				redirect($redirect, false, true);
-			}
-			else
-			{
-				$this->send_file_to_browser($attachment, $display_cat);
-			}
+		$redirect = '';
 
-			$this->file_gc();
+		/**
+		* Event to modify data before sending file to browser
+		*
+		* @event core.download_file_send_to_browser_before
+		* @var	int		attach_id			The attachment ID
+		* @var	array	attachment			Array with attachment data
+		* @var	int		display_cat			Attachment category
+		* @var	array	extensions			Array with file extensions data
+		* @var	string	mode				Download mode
+		* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
+		* @var	string	redirect			Do a redirection instead of reading the file
+		* @since 3.1.6-RC1
+		* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
+		* @changed 3.3.0-a1		Add redirect variable
+		*/
+		$vars = array(
+			'attach_id',
+			'attachment',
+			'display_cat',
+			'extensions',
+			'mode',
+			'thumbnail',
+			'redirect',
+		);
+		extract($this->dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
+
+		if (!empty($redirect))
+		{
+			$response = new RedirectResponse($redirect);
+			$response->send();
+		}
+		else
+		{
+			$this->send_file_to_browser($attachment, $display_cat);
 		}
 	}
 
@@ -231,8 +221,7 @@ class attachment extends controller
 
 		if (!$this->storage->exists($filename))
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error('ERROR_NO_ATTACHMENT');
+			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 		}
 
 		// Correct the mime type - we force application/octetstream for all files, except images
@@ -281,8 +270,7 @@ class attachment extends controller
 		// Check if headers already sent or not able to get the file contents.
 		if (headers_sent())
 		{
-			send_status_line(500, 'Internal Server Error');
-			trigger_error('UNABLE_TO_DELIVER_FILE');
+			throw new http_exception(500, 'UNABLE_TO_DELIVER_FILE');
 		}
 
 		// Make sure the database record for the filesize is correct
@@ -331,7 +319,7 @@ class attachment extends controller
 			$fp = $this->storage->read_stream($filename);
 
 			// Close the db connection before sending the file etc.
-			$this->file_gc(false);
+			$this->file_gc();
 
 			if ($fp !== false)
 			{
@@ -372,8 +360,7 @@ class attachment extends controller
 
 		if ($row && !$this->content_visibility->is_visible('topic', $row['forum_id'], $row))
 		{
-			send_status_line(404, 'Not Found');
-			trigger_error('ERROR_NO_ATTACHMENT');
+			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 		}
 		else if ($row && $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $row['forum_id']))
 		{
@@ -385,8 +372,7 @@ class attachment extends controller
 		}
 		else
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('SORRY_AUTH_VIEW_ATTACH');
+			throw new http_exception(403, 'SORRY_AUTH_VIEW_ATTACH');
 		}
 	}
 
@@ -401,8 +387,7 @@ class attachment extends controller
 	{
 		if (!$this->auth->acl_get('u_pm_download'))
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('SORRY_AUTH_VIEW_ATTACH');
+			throw new http_exception(403, 'SORRY_AUTH_VIEW_ATTACH');
 		}
 
 		$allowed = $this->phpbb_download_check_pm_auth($msg_id);
@@ -421,8 +406,7 @@ class attachment extends controller
 
 		if (!$allowed)
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('ERROR_NO_ATTACHMENT');
+			throw new http_exception(403, 'ERROR_NO_ATTACHMENT');
 		}
 	}
 

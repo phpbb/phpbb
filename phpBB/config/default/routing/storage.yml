@@ -7,3 +7,5 @@ phpbb_storage_attachment:
     path:             /download/attachment/{file}
     defaults:
         _controller:  storage.controller.attachment:handle
+    requirements:
+        file:         \d+
