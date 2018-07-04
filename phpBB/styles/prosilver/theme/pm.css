@@ -79,17 +79,17 @@
 }
 
 .pm-message-list {
-	flex: 1 auto;
-	padding-right: 0;
-	list-style-type: none;
-	width: 310px;
 	border-radius: 20px;
+	flex: 1 auto;
 	margin-left: 10px;
+	padding-right: 0;
+	width: 310px;
+	list-style-type: none;
 }
 
 .pm-not-self {
-	margin-left: auto;
 	margin-right: 10px;
+	margin-left: auto;
 }
 
 .pm-message-item {
@@ -126,4 +126,3 @@
 .pm-message-secondary {
 	display: block;
 }
-
