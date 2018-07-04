@@ -91,6 +91,10 @@ ul.cplist {
 	margin: 0;
 }
 
+.cp-wrap {
+	width: 100%;
+}
+
 /* MCP Specific tweaks */
 .mcp-main .postbody {
 	width: 100%;

@@ -526,17 +526,30 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported',
+		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported, (
+			SELECT SUM(tu.pm_unread)
+			FROM ' . PRIVMSGS_TO_TABLE . ' tu
+			LEFT JOIN ' . PRIVMSGS_TABLE . ' pu
+				ON (tu.msg_id = pu.msg_id)
+			WHERE pu.root_level = p.msg_id
+				OR pu.msg_id = p.msg_id
+		) AS pm_unread',
 		'FROM'		=> array(
 			PRIVMSGS_TO_TABLE	=> 't',
-			PRIVMSGS_TABLE		=> 'p',
-			USERS_TABLE			=> 'u',
+		),
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(PRIVMSGS_TABLE => 'p'),
+				'ON'	=> 't.msg_id = p.msg_id',
+			),
+			array(
+				'FROM'	=> array(USERS_TABLE => 'u'),
+				'ON'	=> 'p.author_id = u.user_id',
+			),
 		),
 		'WHERE'		=> "t.user_id = $user_id
-		AND p.root_level = 0
-			AND p.author_id = u.user_id
+			AND p.root_level = 0
 			AND $folder_sql
-			AND t.msg_id = p.msg_id
 			$sql_limit_time",
 		'ORDER_BY'	=> $sql_sort_order,
 	);

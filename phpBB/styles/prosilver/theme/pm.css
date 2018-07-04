@@ -82,17 +82,13 @@
 	flex: 1 auto;
 	padding-right: 0;
 	list-style-type: none;
-	width: 300px;
+	width: 310px;
 	border-radius: 20px;
 	margin-left: 10px;
 }
 
-.pm-clear {
-	clear:both
-}
-
 .pm-not-self {
-	float: right;
+	margin-left: auto;
 	margin-right: 10px;
 }
 
