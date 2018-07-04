@@ -258,7 +258,7 @@ function set_actions(container, actions) {
 		// ajaxify this action as well
 		phpbb.ajaxify({
 			selector: a,
-			refresh: false,
+			refresh: true,
 			callback: actions[i].ACTION_AJAX
 		});
 
