@@ -17,6 +17,8 @@ use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\storage\storage;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class avatar extends controller
 {
@@ -31,13 +33,14 @@ class avatar extends controller
 		$this->config = $config;
 		$this->db = $db;
 		$this->storage = $storage;
+		$this->response = new StreamedResponse();
 	}
 
 	public function handle($file)
 	{
 		$file = $this->decode_avatar_filename($file);
 
-		parent::handle($file);
+		return parent::handle($file);
 	}
 
 	protected function is_allowed($file)
@@ -68,9 +71,15 @@ class avatar extends controller
 	{
 		if (!headers_sent())
 		{
-			header("Content-Disposition: inline; filename*=UTF-8''" . rawurlencode($file));
+			$disposition = $this->response->headers->makeDisposition(
+				ResponseHeaderBag::DISPOSITION_INLINE,
+				rawurlencode($file)
+			);
 
-			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600*24*365) . ' GMT');
+			$this->response->headers->set('Content-Disposition', $disposition);
+
+			$time = new \Datetime();
+			$this->response->setExpires($time->modify('+1 year'));
 		}
 
 		parent::send($file);

@@ -24,6 +24,7 @@ use phpbb\request\request;
 use phpbb\storage\storage;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class attachment extends controller
 {
@@ -59,6 +60,7 @@ class attachment extends controller
 		$this->request = $request;
 		$this->storage = $storage;
 		$this->user = $user;
+		$this->response = new StreamedResponse();
 	}
 
 	public function handle($file)
@@ -203,13 +205,14 @@ class attachment extends controller
 
 		if (!empty($redirect))
 		{
-			$response = new RedirectResponse($redirect);
-			$response->send();
+			$this->response = new RedirectResponse($redirect);
 		}
 		else
 		{
 			$this->send_file_to_browser($attachment, $display_cat);
 		}
+
+		return $this->response->send();
 	}
 
 	/**
@@ -229,11 +232,6 @@ class attachment extends controller
 		if ($category != ATTACHMENT_CATEGORY_IMAGE || strpos($attachment['mimetype'], 'image') !== 0)
 		{
 			$attachment['mimetype'] = (strpos(strtolower($this->user->browser), 'msie') !== false || strpos(strtolower($this->user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
-		}
-
-		if (@ob_get_length())
-		{
-			@ob_end_clean();
 		}
 
 		// Now send the File Contents to the Browser
@@ -284,10 +282,10 @@ class attachment extends controller
 		}
 
 		// Now the tricky part... let's dance
-		header('Cache-Control: public');
+		$this->response->setPublic();
 
 		// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
-		header('Content-Type: ' . $attachment['mimetype']);
+		$this->response->headers->set('Content-Type', $attachment['mimetype']);
 
 		header('X-Content-Type-Options: nosniff');
 
@@ -310,7 +308,7 @@ class attachment extends controller
 		{
 			if ($size)
 			{
-				header("Content-Length: $size");
+				$this->response->headers->set('Content-Length', $size);
 			}
 
 			// Try to deliver in chunks
@@ -324,14 +322,15 @@ class attachment extends controller
 			if ($fp !== false)
 			{
 				$output = fopen('php://output', 'w+b');
-				stream_copy_to_stream($fp, $output);
-				fclose($fp);
+
+				$this->response->setCallback(function () use ($fp, $output) {
+					stream_copy_to_stream($fp, $output);
+					fclose($fp);
+					fclose($output);
+					flush();
+				});
 			}
-
-			flush();
 		}
-
-		exit;
 	}
 
 	/**

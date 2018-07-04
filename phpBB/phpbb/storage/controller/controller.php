@@ -17,10 +17,10 @@ use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\storage\storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class controller
 {
-
 	/** @var service */
 	protected $cache;
 
@@ -30,11 +30,15 @@ class controller
 	/** @var storage */
 	protected $storage;
 
+	/** @var StreamedResponse */
+	protected $response;
+
 	public function __construct(service $cache, driver_interface $db, storage $storage)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->storage = $storage;
+		$this->response = new StreamedResponse();
 	}
 
 	public function handle($file)
@@ -50,6 +54,8 @@ class controller
 		}
 
 		$this->send($file);
+
+		return $this->response->send();
 	}
 
 	protected function is_allowed($file)
@@ -64,44 +70,43 @@ class controller
 
 	protected function send($file)
 	{
-		if (!headers_sent())
+		$this->response->setPublic();
+
+		$file_info = $this->storage->file_info($file);
+
+		try
 		{
-			header('Cache-Control: public');
+			$this->response->headers->set('Content-Type', $file_info->mimetype);
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Just don't send this header
+		}
 
-			$file_info = $this->storage->file_info($file);
+		try
+		{
+			$this->response->headers->set('Content-Length', $file_info->size);
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Just don't send this header
+		}
 
-			try
-			{
-				header('Content-Type: ' . $file_info->mimetype);
-			}
-			catch (\phpbb\storage\exception\exception $e)
-			{
-				// Just don't send this header
-			}
+		@set_time_limit(0);
 
-			try
-			{
-				header('Content-Length: ' . $file_info->size);
-			}
-			catch (\phpbb\storage\exception\exception $e)
-			{
-				// Just don't send this header
-			}
+		$fp = $this->storage->read_stream($file);
 
-			$fp = $this->storage->read_stream($file);
+		// Close db connection
+		$this->file_gc();
 
-			// Close db connection
-			$this->file_gc();
+		$output = fopen('php://output', 'w+b');
 
-			$output = fopen('php://output', 'w+b');
-
+		$this->response->setCallback(function () use ($fp, $output) {
 			stream_copy_to_stream($fp, $output);
-
 			fclose($fp);
 			fclose($output);
-
 			flush();
-		}
+		});
 	}
 
 	/**
