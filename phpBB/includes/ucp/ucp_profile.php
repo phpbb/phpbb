@@ -159,7 +159,7 @@ class ucp_profile
 							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
 								'reportee_id' => $user->data['user_id'],
 								$user->data['username'],
-								$data['user_email'],
+								$user->data['user_email'],
 								$data['email']
 							));
 						}
