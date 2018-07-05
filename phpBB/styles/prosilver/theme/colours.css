@@ -1178,6 +1178,10 @@ input.disabled {
 	background-color: #d3d3d3;
 }
 
+.pm-message-item {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .pm-message-list {
 	background-color: #ffffff;
 }

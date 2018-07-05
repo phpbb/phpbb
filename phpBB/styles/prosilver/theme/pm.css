@@ -2,11 +2,6 @@
     Styles for the PM Module
 /* -------------------------------------------------------------- */
 
-.cp-main {
-	float: none;
-	width: 100%;
-}
-
 @media (min-width: 768px) {
 	.pm {
 		display: flex;
@@ -81,9 +76,9 @@
 .pm-message-list {
 	border-radius: 20px;
 	flex: 1 auto;
+	width: 310px;
 	margin-left: 10px;
 	padding-right: 0;
-	width: 310px;
 	list-style-type: none;
 }
 
@@ -95,7 +90,6 @@
 .pm-message-item {
 	font-weight: 400;
 	letter-spacing: 0.04em;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	position: relative;
 	display: flex;
 	align-items: center;
