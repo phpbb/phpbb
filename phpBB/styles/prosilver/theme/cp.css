@@ -15,8 +15,8 @@
 }
 
 .cp-main {
-	float: left;
-	width: 81%;
+	float: none;
+	width: 100%;
 }
 
 .cp-main .content {
