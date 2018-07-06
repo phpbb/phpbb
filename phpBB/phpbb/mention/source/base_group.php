@@ -131,7 +131,7 @@ abstract class base_group implements source_interface
 		foreach ($group_ids as $group_id)
 		{
 			$group_rank = phpbb_get_user_rank($groups[$group_id], false);
-			$names['g' . $group_id] = [
+			$names[] = [
 				'name'		=> $groups[$group_id]['group_name'],
 				'type'		=> 'g',
 				'id'		=> $group_id,
