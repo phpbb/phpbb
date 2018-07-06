@@ -15,6 +15,9 @@ namespace phpbb\mention\source;
 
 abstract class base_user implements source_interface
 {
+	/** @var int */
+	const NAMES_BATCH_SIZE = 100;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -57,18 +60,29 @@ abstract class base_user implements source_interface
 	abstract protected function query($keyword, $topic_id);
 
 	/**
+	 * Returns the priority of the currently selected name
+	 *
+	 * @param array $row Array of fetched user data
+	 * @return int Priority (defaults to 1)
+	 */
+	public function get_priority($row)
+	{
+		return 1;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get($keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
-		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), $this->config['mention_names_limit']);
+		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), self::NAMES_BATCH_SIZE);
 
 		$names = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
-			$names['u' . $row['user_id']] = [
+			$names[] = [
 				'name'		=> $row['username'],
 				'type'		=> 'u',
 				'id'		=> $row['user_id'],
@@ -77,6 +91,7 @@ abstract class base_user implements source_interface
 					'img'	=> $this->user_loader->get_avatar($row['user_id'], true),
 				],
 				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
+				'priority'	=> $this->get_priority($row),
 			];
 		}
 

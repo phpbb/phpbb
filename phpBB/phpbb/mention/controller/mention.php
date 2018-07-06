@@ -54,7 +54,7 @@ class mention
 
 		foreach ($this->mention_sources as $source)
 		{
-			$names = array_merge($names, $source->get($keyword, $topic_id));
+			$names += $source->get($keyword, $topic_id);
 		}
 
 		return new JsonResponse(array_values($names));
