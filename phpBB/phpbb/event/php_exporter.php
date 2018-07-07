@@ -270,8 +270,8 @@ class php_exporter
 					{
 						$description_line = substr(trim($this->file_lines[$description_line_num]), strlen('* '));
 
-						// Reached end of description if line is empty or a tag
-						if (!strlen($description_line) || $description_line[0] == '@')
+						// Reached end of description if line is a tag
+						if (strlen($description_line) && $description_line[0] == '@')
 						{
 							break;
 						}
