@@ -268,7 +268,8 @@ class php_exporter
 
 					while (true)
 					{
-						$description_line = substr(trim($this->file_lines[$description_line_num]), strlen('* '));
+						$description_line = substr(trim($this->file_lines[$description_line_num]), strlen('*'));
+						$description_line = trim(str_replace("\t", " ", $description_line));
 
 						// Reached end of description if line is a tag
 						if (strlen($description_line) && $description_line[0] == '@')
