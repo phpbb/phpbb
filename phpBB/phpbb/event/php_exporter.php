@@ -281,7 +281,7 @@ class php_exporter
 						$description_line_num++;
 					}
 
-					$description = implode(' ', $description_lines);
+					$description = trim(implode(' ', $description_lines));
 
 					if (isset($this->events[$this->current_event]))
 					{
