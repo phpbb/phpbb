@@ -33,6 +33,9 @@ abstract class base_group implements source_interface
 	/** @var string */
 	protected $php_ext;
 
+	/** @var array Fetched groups' data */
+	protected $groups = null;
+
 	/**
 	 * Constructor
 	 */
@@ -58,9 +61,7 @@ abstract class base_group implements source_interface
 	 */
 	protected function get_groups()
 	{
-		static $groups = null;
-
-		if (is_null($groups))
+		if (is_null($this->groups))
 		{
 			$query = $this->db->sql_build_query('SELECT', [
 				'SELECT' => 'g.*, ug.user_id as ug_user_id',
@@ -76,7 +77,7 @@ abstract class base_group implements source_interface
 			]);
 			$result = $this->db->sql_query($query);
 
-			$groups = [];
+			$this->groups = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				if ($row['group_type'] == GROUP_SPECIAL && !in_array($row['group_name'], ['ADMINISTRATORS', 'GLOBAL_MODERATORS']) || $row['group_type'] == GROUP_HIDDEN && !$this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $this->user->data['user_id'])
@@ -86,14 +87,14 @@ abstract class base_group implements source_interface
 				}
 
 				$group_name = $this->helper->get_name($row['group_name']);
-				$groups['names'][$row['group_id']] = $group_name;
-				$groups[$row['group_id']] = $row;
-				$groups[$row['group_id']]['group_name'] = $group_name;
+				$this->groups['names'][$row['group_id']] = $group_name;
+				$this->groups[$row['group_id']] = $row;
+				$this->groups[$row['group_id']]['group_name'] = $group_name;
 			}
 
 			$this->db->sql_freeresult($result);
 		}
-		return $groups;
+		return $this->groups;
 	}
 
 	/**

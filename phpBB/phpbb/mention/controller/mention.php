@@ -14,6 +14,7 @@
 namespace phpbb\mention\controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class mention
 {
@@ -45,7 +46,7 @@ class mention
 	{
 //		if (!$this->request->is_ajax())
 //		{
-//			redirect(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
+//			new RedirectResponse(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
 //		}
 
 		$keyword = $this->request->variable('keyword', '', true);
