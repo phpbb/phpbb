@@ -281,6 +281,12 @@ class php_exporter
 						$description_line_num++;
 					}
 
+					// If there is an empty line between description and first tag, remove it
+					if (!strlen(end($description_lines)))
+					{
+						array_pop($description_lines);
+					}
+
 					$description = trim(implode('<br/>', $description_lines));
 
 					if (isset($this->events[$this->current_event]))
