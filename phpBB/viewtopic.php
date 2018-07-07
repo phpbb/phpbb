@@ -1150,7 +1150,7 @@ $sql = 'SELECT p.post_id
 	ORDER BY $sql_sort_order";
 	
 /**
-* Event to modify the SQL query before the post and poster data is retrieved
+* Event to modify the SQL query that retreives the post_list
 *
 * @event core.viewtopic_modify_post_list_sql
 * @var	int		sql			The SQL query to generate the post_list
