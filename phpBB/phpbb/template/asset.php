@@ -194,7 +194,7 @@ class asset
 	*
 	* @param string $version Version
 	*/
-	public function add_assets_version($version, $adjust_path)
+	public function add_assets_version($version, $adjust_path = 0)
 	{
 		if ($adjust_path)
 		{
