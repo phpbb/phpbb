@@ -506,7 +506,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		'WHERE'		=> '(t.forum_id = ' . $forum_id . '
 				AND t.topic_type = ' . POST_ANNOUNCE . ') OR
-			(' . $db->sql_in_set('t.forum_id', $g_forum_ary) . '
+			(' . $db->sql_in_set('t.forum_id', $g_forum_ary, false, true) . '
 				AND t.topic_type = ' . POST_GLOBAL . ')',
 
 		'ORDER_BY'	=> 't.topic_time DESC',
