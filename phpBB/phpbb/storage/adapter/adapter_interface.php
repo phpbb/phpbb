@@ -99,7 +99,7 @@ interface adapter_interface
 	/*
 	 * Get space available in bytes.
 	 *
-	 * @return mixed	Returns available space or null when unable to retrieve available space
+	 * @return mixed	Returns available space or false when unable to retrieve available space
 	 */
 	public function free_space();
 }

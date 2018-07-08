@@ -43,7 +43,7 @@ class storage
 	protected $factory;
 
 	/**
-	 * @var stringshould be caste
+	 * @var string
 	 */
 	protected $storage_name;
 
@@ -392,7 +392,7 @@ class storage
 	 *
 	 * @throws \phpbb\storage\exception\exception		When can't get available space
 	 *
-	 * @return mixed	Returns available space or null when unable to retrieve available space
+	 * @return mixed	Returns available space or false when unable to retrieve available space
 	 */
 	public function free_space()
 	{
