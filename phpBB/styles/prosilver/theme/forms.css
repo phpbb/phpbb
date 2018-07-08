@@ -252,6 +252,7 @@ fieldset.submit-buttons input {
 .format-buttons input,
 .format-buttons select {
 	vertical-align: middle;
+	margin-bottom: 3px;
 }
 
 /* Main message box */

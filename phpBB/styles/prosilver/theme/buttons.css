@@ -163,6 +163,12 @@
 	max-width: 40%;
 }
 
+/* Format buttons
+--------------------------------------------- */
+.format-buttons .button {
+	margin-bottom: 3px;
+}
+
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
 	border: 0;
