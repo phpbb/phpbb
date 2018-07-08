@@ -16,6 +16,13 @@ namespace phpbb\db\driver;
 interface driver_interface
 {
 	/**
+	* Set value for load_time debug parameter
+	*
+	* @param bool $value
+	*/
+	public function set_debug_load_time($value);
+
+	/**
 	* Set value for sql_explain debug parameter
 	*
 	* @param bool $value

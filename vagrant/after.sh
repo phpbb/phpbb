@@ -37,9 +37,6 @@ echo "@define('DEBUG', true);" >> ${PHPBB_CONFIG}
 # Change environment to development
 sed -i '/^.*PHPBB_ENVIRONMENT.*$/s/production/development/' ${PHPBB_CONFIG}
 
-# Display load time
-sed -i '/^.*PHPBB_DISPLAY_LOAD_TIME.*$/s/^\/\/[[:blank:]]*//' ${PHPBB_CONFIG}
-
 # Update the PHP memory limits (enough to allow phpunit tests to run)
 sed -i "s/memory_limit = .*/memory_limit = 1024M/" /etc/php/7.1/fpm/php.ini
 

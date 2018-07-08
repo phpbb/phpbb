@@ -68,6 +68,14 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function set_debug_load_time($value)
+	{
+		$this->get_driver()->set_debug_load_time($value);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function set_debug_sql_explain($value)
 	{
 		$this->get_driver()->set_debug_sql_explain($value);

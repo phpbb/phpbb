@@ -78,6 +78,11 @@ abstract class driver implements driver_interface
 	/**
 	* @var bool
 	*/
+	protected $debug_load_time = false;
+
+	/**
+	* @var bool
+	*/
 	protected $debug_sql_explain = false;
 
 	/**
@@ -103,9 +108,7 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function set_debug_sql_explain($value)
 	{
-		$this->debug_sql_explain = $value;
 	}
 
 	/**
