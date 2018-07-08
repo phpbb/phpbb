@@ -387,6 +387,7 @@ function getCaretPosition(txtarea) {
 (function($) {
 	function Mentions() {
 		let $mentionDataContainer = $('[data-mention-url]:first');
+		let queryInProgress = null;
 		let cachedNames = null;
 		let cachedFor = null;
 		let cachedSearchKey = 'name';
@@ -449,10 +450,20 @@ function getCaretPosition(txtarea) {
 							return;
 						}
 
+						/*
+						* Do not make a new request until the previous one for the same query is returned
+						* This fixes duplicate server queries e.g. when arrow keys are pressed
+						*/
+						if (queryInProgress === query) {
+							return;
+						}
+						queryInProgress = query;
+
 						let params = {keyword: query, topic_id: mentionTopicId, _referer: location.href};
 						$.getJSON(mentionURL, params, function (data) {
 							cachedNames = data;
 							cachedFor = query;
+							queryInProgress = null;
 							callback(data);
 						});
 					},
