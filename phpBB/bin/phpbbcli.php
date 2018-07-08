@@ -71,9 +71,12 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
 
+/** @var \phpbb\config\config $config */
+$config = $phpbb_container->get('config');
+
 /** @var \phpbb\language\language $language */
 $language = $phpbb_container->get('language');
-$language->set_default_language($phpbb_container->get('config')['default_lang']);
+$language->set_default_language($config['default_lang']);
 $language->add_lang(array('common', 'acp/common', 'cli'));
 
 /* @var $user \phpbb\user */
