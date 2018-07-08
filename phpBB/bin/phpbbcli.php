@@ -76,9 +76,12 @@ if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload
 	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 }
 
+/** @var \phpbb\config\config $config */
+$config = $phpbb_container->get('config');
+
 /** @var \phpbb\language\language $language */
 $language = $phpbb_container->get('language');
-$language->set_default_language($phpbb_container->get('config')['default_lang']);
+$language->set_default_language($config['default_lang']);
 $language->add_lang(array('common', 'acp/common', 'cli'));
 
 /* @var $user \phpbb\user */
