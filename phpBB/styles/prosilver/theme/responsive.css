@@ -499,6 +499,7 @@
 	.left-box.profile-details {
 		float: none;
 		width: auto;
+		clear: both;
 	}
 
 	/* Polls
