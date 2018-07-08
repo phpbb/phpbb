@@ -1154,7 +1154,7 @@ $sql = 'SELECT p.post_id
 *
 * @event core.viewtopic_modify_post_list_sql
 * @var	string	sql			The SQL query to generate the post_list
-* @var	int		sql_limit	The number of posts that the query fetches
+* @var	int		sql_limit	The number of posts the query fetches
 * @var	int		sql_start	The index the query starts to fetch from
 * @var	string	sort_key	Key the posts are sorted by
 * @var	string	sort_days	Display posts of previous x days
