@@ -760,7 +760,7 @@ class migrator
 
 				$condition = $parameters[0];
 
-				if (!$condition)
+				if (!$condition || (is_array($condition) && !$this->run_step($condition, $last_result, $reverse)))
 				{
 					return false;
 				}
