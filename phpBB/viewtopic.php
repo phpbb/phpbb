@@ -1159,7 +1159,7 @@ $sql = 'SELECT p.post_id
 * @var	string	sort_key	Key the posts are sorted by
 * @var	string	sort_days	Display posts of previous x days
 * @var	int		forum_id	Forum ID
-* @since 3.2.4-rc1
+* @since 3.2.4-RC1
 */
 $vars = array(
 	'sql',
