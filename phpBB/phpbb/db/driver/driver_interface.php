@@ -16,6 +16,13 @@ namespace phpbb\db\driver;
 interface driver_interface
 {
 	/**
+	* Set value for sql_explain debug parameter
+	*
+	* @param bool $value
+	*/
+	public function set_debug_sql_explain($value);
+
+	/**
 	* Gets the name of the sql layer.
 	*
 	* @return string

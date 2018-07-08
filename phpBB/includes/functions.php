@@ -4558,6 +4558,8 @@ function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $re
 */
 function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 {
+	global $phpbb_container;
+
 	$debug_info = array();
 
 	// Output page creation time
@@ -4589,7 +4591,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 			$debug_info[] = 'Load: ' . $user->load;
 		}
 
-		if ($auth->acl_get('a_'))
+		if ($auth->acl_get('a_') && $phpbb_container->getParameter('debug.sql_explain'))
 		{
 			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
 		}
