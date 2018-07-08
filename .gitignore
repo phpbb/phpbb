@@ -16,6 +16,9 @@
 /phpBB/store/*
 /phpBB/styles/*
 !/phpBB/styles/prosilver
+/phpBB/styles/prosilver/theme/*/
+!/phpBB/styles/prosilver/theme/en
+!/phpBB/styles/prosilver/theme/images
 !/phpBB/styles/all
 node_modules
 /phpBB/vendor
