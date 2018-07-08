@@ -109,7 +109,7 @@ abstract class base_group implements source_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get($keyword, $topic_id)
+	public function get(array &$names, $keyword, $topic_id)
 	{
 		// Grab all group IDs
 		$result = $this->db->sql_query($this->query($keyword, $topic_id));
@@ -128,11 +128,10 @@ abstract class base_group implements source_interface
 		$matches = preg_grep('/^' . preg_quote($keyword) . '.*/i', $groups['names']);
 		$group_ids = array_intersect($group_ids, array_flip($matches));
 
-		$names = [];
 		foreach ($group_ids as $group_id)
 		{
 			$group_rank = phpbb_get_user_rank($groups[$group_id], false);
-			$names[] = [
+			array_push($names, [
 				'name'		=> $groups[$group_id]['group_name'],
 				'type'		=> 'g',
 				'id'		=> $group_id,
@@ -141,7 +140,7 @@ abstract class base_group implements source_interface
 					'img'	=> phpbb_get_group_avatar($groups[$group_id]),
 				],
 				'rank'		=> $group_rank['title'],
-			];
+			]);
 		}
 
 		return $names;
