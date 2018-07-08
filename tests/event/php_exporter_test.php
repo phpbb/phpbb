@@ -57,7 +57,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 						'file'			=> 'extra_description.test',
 						'arguments'		=> array(),
 						'since'			=> '3.1.0-b2',
-						'description'	=> 'Description',
+						'description'	=> 'Description<br/><br/>NOTE: This will also be exported',
 					),
 				),
 			),
