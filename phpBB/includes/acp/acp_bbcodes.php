@@ -302,7 +302,7 @@ class acp_bbcodes
 					* @var	string	action		Type of the action: modify|create
 					* @var	int		bbcode_id	The id of the added or updated bbcode
 					* @var	array	sql_ary		Array with bbcode data (read only)
-					* @since 3.2.3-RC1
+					* @since 3.2.4-RC1
 					*/
 					$vars = array(
 						'action',
@@ -355,7 +355,7 @@ class acp_bbcodes
 						* @var	string	action		Type of the action: delete
 						* @var	int		bbcode_id	The id of the deleted bbcode
 						* @var	string	bbcode_tag	The tag of the deleted bbcode
-						* @since 3.2.3-RC1
+						* @since 3.2.4-RC1
 						*/
 						$vars = array(
 							'action',
