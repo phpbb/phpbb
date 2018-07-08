@@ -101,7 +101,7 @@ class add_tables extends \phpbb\install\task_base
 
 		$db_table_schema = @file_get_contents($this->schema_file_path);
 		$db_table_schema = json_decode($db_table_schema, true);
-		$total = sizeof($db_table_schema);
+		$total = count($db_table_schema);
 		$i = $this->config->get('add_table_index', 0);
 		$db_table_schema = array_slice($db_table_schema, $i);
 

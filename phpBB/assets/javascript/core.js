@@ -27,9 +27,9 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', { 
-			id: 'loading_indicator', 
-			class: 'loading_indicator', 
+		$loadingIndicator = $('<div />', {
+			'id': 'loading_indicator',
+			'class': 'loading_indicator'
 		});
 		$loadingIndicator.appendTo('#page-footer');
 	}
@@ -179,7 +179,7 @@ phpbb.alert.close = function($alert, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
-	fadedark = fadedark !== 'undefined' ? fadedark : true;
+	fadedark = typeof fadedark !== 'undefined' ? fadedark : true;
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
@@ -1331,6 +1331,8 @@ phpbb.toggleDropdown = function() {
 			$this.css({
 				marginLeft: 0,
 				left: 0,
+				marginRight: 0,
+				right: 0,
 				maxWidth: (windowWidth - 4) + 'px'
 			});
 
@@ -1654,7 +1656,7 @@ $(function() {
 
 	phpbb.registerPageDropdowns();
 
-	$('#color_palette_placeholder').each(function() {
+	$('[data-orientation]').each(function() {
 		phpbb.registerPalette($(this));
 	});
 

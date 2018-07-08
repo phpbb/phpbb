@@ -55,7 +55,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
+		global $db, $user, $auth, $template, $phpbb_log, $request, $phpbb_dispatcher;
 
 		$all_forums = $request->variable('all_forums', 0);
 		$forum_id = $request->variable('f', array(0));
@@ -97,7 +97,7 @@ class acp_prune
 					'S_PRUNED'		=> true)
 				);
 
-				$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
+				$sql_forum = (count($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
 
 				// Get a list of forum's or the data for the forum that we are pruning.
 				$sql = 'SELECT forum_id, forum_name
@@ -165,7 +165,7 @@ class acp_prune
 			}
 			else
 			{
-				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields(array(
+				$hidden_fields = array(
 					'i'				=> $id,
 					'mode'			=> $mode,
 					'submit'		=> 1,
@@ -177,13 +177,25 @@ class acp_prune
 					'prune_old_polls'	=> $request->variable('prune_old_polls', 0),
 					'prune_announce'	=> $request->variable('prune_announce', 0),
 					'prune_sticky'		=> $request->variable('prune_sticky', 0),
-				)));
+				);
+
+				/**
+				 * Use this event to pass data from the prune form to the confirmation screen
+				 *
+				 * @event core.prune_forums_settings_confirm
+				 * @var array	hidden_fields	Hidden fields that are passed through the confirm screen
+				 * @since 3.2.2-RC1
+				 */
+				$vars = array('hidden_fields');
+				extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
+
+				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields($hidden_fields));
 			}
 		}
 
 		// If they haven't selected a forum for pruning yet then
 		// display a select box to use for pruning.
-		if (!sizeof($forum_id))
+		if (!count($forum_id))
 		{
 			$template->assign_vars(array(
 				'U_ACTION'			=> $this->u_action,
@@ -215,15 +227,27 @@ class acp_prune
 
 			$db->sql_freeresult($result);
 
-			$l_selected_forums = (sizeof($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
+			$l_selected_forums = (count($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
-			$template->assign_vars(array(
+			$template_data = array(
 				'L_SELECTED_FORUMS'		=> $user->lang[$l_selected_forums],
 				'U_ACTION'				=> $this->u_action,
 				'U_BACK'				=> $this->u_action,
 				'FORUM_LIST'			=> $forum_list,
-				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 			);
+
+			/**
+			 * Event to add/modify prune forums settings template data
+			 *
+			 * @event core.prune_forums_settings_template_data
+			 * @var array	template_data	Array with form template data
+			 * @since 3.2.2-RC1
+			 */
+			$vars = array('template_data');
+			extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_template_data', compact($vars)));
+
+			$template->assign_vars($template_data);
 		}
 	}
 
@@ -252,7 +276,7 @@ class acp_prune
 				$user_ids = $usernames = array();
 
 				$this->get_prune_users($user_ids, $usernames);
-				if (sizeof($user_ids))
+				if (count($user_ids))
 				{
 					if ($action == 'deactivate')
 					{
@@ -291,7 +315,7 @@ class acp_prune
 				$user_ids = $usernames = array();
 				$this->get_prune_users($user_ids, $usernames);
 
-				if (!sizeof($user_ids))
+				if (!count($user_ids))
 				{
 					trigger_error($user->lang['USER_PRUNE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -434,7 +458,7 @@ class acp_prune
 			}
 			// implicit else when both arrays are empty do nothing
 
-			if ((sizeof($active) && sizeof($active) != 3) || (sizeof($joined_before) && sizeof($joined_before) != 3) || (sizeof($joined_after) && sizeof($joined_after) != 3))
+			if ((count($active) && count($active) != 3) || (count($joined_before) && count($joined_before) != 3) || (count($joined_after) && count($joined_after) != 3))
 			{
 				trigger_error($user->lang['WRONG_ACTIVE_JOINED_DATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
@@ -448,15 +472,15 @@ class acp_prune
 			$where_sql .= ($count !== false) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// First handle pruning of users who never logged in, last active date is 0000-00-00
-			if (sizeof($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
+			if (count($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
 			{
 				$where_sql .= ' AND user_lastvisit = 0';
 			}
-			else if (sizeof($active) && $active_select != 'lt')
+			else if (count($active) && $active_select != 'lt')
 			{
 				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
 			}
-			else if (sizeof($active))
+			else if (count($active))
 			{
 				$where_sql .= ' AND (user_lastvisit > 0 AND user_lastvisit < ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) . ')';
 			}

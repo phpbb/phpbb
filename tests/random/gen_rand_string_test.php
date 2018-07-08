@@ -40,7 +40,10 @@ class phpbb_random_gen_rand_string_test extends phpbb_test_case
 				$random_string_length = strlen($random_string);
 
 				$this->assertTrue($random_string_length >= self::MIN_STRING_LENGTH);
-				$this->assertTrue($random_string_length <= $num_chars);
+				$this->assertTrue(
+					$random_string_length == $num_chars,
+					sprintf('Failed asserting that random string length matches expected length. Expected %1$u, Actual %2$u', $num_chars, $random_string_length)
+				);
 				$this->assertRegExp('#^[A-Z0-9]+$#', $random_string);
 			}
 		}
@@ -56,7 +59,10 @@ class phpbb_random_gen_rand_string_test extends phpbb_test_case
 				$random_string_length = strlen($random_string);
 
 				$this->assertTrue($random_string_length >= self::MIN_STRING_LENGTH);
-				$this->assertTrue($random_string_length <= $num_chars);
+				$this->assertTrue(
+					$random_string_length == $num_chars,
+					sprintf('Failed asserting that random string length matches expected length. Expected %1$u, Actual %2$u', $num_chars, $random_string_length)
+				);
 				$this->assertRegExp('#^[A-NP-Z1-9]+$#', $random_string);
 			}
 		}

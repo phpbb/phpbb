@@ -568,7 +568,7 @@ function phpbb_parse_range_request($request_array, $filesize)
 		$range = explode('-', trim($range_string));
 
 		// "-" is invalid, "0-0" however is valid and means the very first byte.
-		if (sizeof($range) != 2 || $range[0] === '' && $range[1] === '')
+		if (count($range) != 2 || $range[0] === '' && $range[1] === '')
 		{
 			continue;
 		}
@@ -662,6 +662,8 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
+	global $phpbb_container;
+
 	$sql_array = array(
 		'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
 		'FROM'		=> array(
@@ -677,7 +679,9 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($row && $row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
+	if ($row && !$phpbb_content_visibility->is_visible('topic', $row['forum_id'], $row))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');

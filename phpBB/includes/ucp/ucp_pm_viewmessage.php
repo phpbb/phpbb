@@ -113,7 +113,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			$db->sql_freeresult($result);
 
 			// No attachments exist, but message table thinks they do so go ahead and reset attach flags
-			if (!sizeof($attachments))
+			if (!count($attachments))
 			{
 				$sql = 'UPDATE ' . PRIVMSGS_TABLE . "
 					SET message_attachment = 0
@@ -134,7 +134,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		parse_attachments(false, $message, $attachments, $update_count);
 
 		// Update the attachment download counts
-		if (sizeof($update_count))
+		if (count($update_count))
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET download_count = download_count + 1
@@ -240,7 +240,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
 
-		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
+		'S_HAS_ATTACHMENTS'	=> (count($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
@@ -267,6 +267,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var 	array	user_info	User data of the sender
 	* @since 3.1.0-a1
 	* @changed 3.1.6-RC1		Added user_info into event
+	* @changed 3.2.2-RC1		Deprecated
+	* @deprecated 4.0.0			Event name is misspelled and is replaced with new event with correct name
 	*/
 	$vars = array(
 		'id',
@@ -280,6 +282,34 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'user_info',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
+
+	/**
+	 * Modify pm and sender data before it is assigned to the template
+	 *
+	 * @event core.ucp_pm_view_message
+	 * @var	mixed	id			Active module category (can be int or string)
+	 * @var	string	mode		Active module
+	 * @var	int		folder_id	ID of the folder the message is in
+	 * @var	int		msg_id		ID of the private message
+	 * @var	array	folder		Array with data of user's message folders
+	 * @var	array	message_row	Array with message data
+	 * @var	array	cp_row		Array with senders custom profile field data
+	 * @var	array	msg_data	Template array with message data
+	 * @var array	user_info	User data of the sender
+	 * @since 3.2.2-RC1
+	 */
+	$vars = array(
+		'id',
+		'mode',
+		'folder_id',
+		'msg_id',
+		'folder',
+		'message_row',
+		'cp_row',
+		'msg_data',
+		'user_info',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_message', compact($vars)));
 
 	$template->assign_vars($msg_data);
 
@@ -330,7 +360,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
-	if (isset($attachments) && sizeof($attachments))
+	if (isset($attachments) && count($attachments))
 	{
 		foreach ($attachments as $attachment)
 		{

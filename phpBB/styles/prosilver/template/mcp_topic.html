@@ -94,6 +94,7 @@
 
 	<div id="topicreview" class="topicreview">
 		<!-- BEGIN postrow -->
+		<!-- EVENT mcp_topic_postrow_post_before -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<div class="inner">
 
@@ -143,6 +144,8 @@
 
 				<div class="content" id="message_{postrow.POST_ID}">{postrow.MESSAGE}</div>
 
+				<!-- EVENT mcp_topic_postrow_attachments_before -->
+
 				<!-- IF postrow.S_HAS_ATTACHMENTS -->
 					<dl class="attachbox">
 						<dt>{L_ATTACHMENTS}</dt>
@@ -151,6 +154,8 @@
 						<!-- END attachment -->
 					</dl>
 				<!-- ENDIF -->
+
+				<!-- EVENT mcp_topic_postrow_attachments_after -->
 
 			</div>
 

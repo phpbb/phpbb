@@ -57,7 +57,7 @@ class acp_logs
 			{
 				$conditions = array();
 
-				if ($deletemark && sizeof($marked))
+				if ($deletemark && count($marked))
 				{
 					$conditions['log_id'] = array('IN' => $marked);
 				}
@@ -167,7 +167,7 @@ class acp_logs
 				'IP'				=> $row['ip'],
 				'DATE'				=> $user->format_date($row['time']),
 				'ACTION'			=> $row['action'],
-				'DATA'				=> (sizeof($data)) ? implode(' | ', $data) : '',
+				'DATA'				=> (count($data)) ? implode(' | ', $data) : '',
 				'ID'				=> $row['id'],
 				)
 			);

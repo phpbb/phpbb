@@ -506,7 +506,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				}
 			}
 
-			$l_subforums = (sizeof($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'];
+			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'];
 			$folder_image = ($forum_unread) ? 'forum_unread_subforum' : 'forum_read_subforum';
 		}
 		else
@@ -537,7 +537,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
 		{
-			if ($row['forum_password_last_post'] === '' && $auth->acl_get('f_read', $row['forum_id_last_post']))
+			if ($row['forum_password_last_post'] === '' && $auth->acl_gets('f_read', 'f_list_topics', $row['forum_id_last_post']))
 			{
 				$last_post_subject = censor_text($row['forum_last_post_subject']);
 				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang['ELLIPSIS']);
@@ -558,7 +558,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$l_moderator = $moderators_list = '';
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
-			$l_moderator = (sizeof($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
+			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
 			$moderators_list = implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]);
 		}
 
@@ -605,7 +605,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_AUTH_READ'		=> $auth->acl_get('f_read', $row['forum_id']),
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
-			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
+			'S_SUBFORUMS'		=> (count($subforums_list)) ? true : false,
 			'S_DISPLAY_SUBJECT'	=>	($last_post_subject !== '' && $config['display_last_subject']) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
@@ -1646,10 +1646,10 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		($data['user_type'] != USER_INACTIVE || $data['user_inactive_reason'] != INACTIVE_MANUAL) &&
 
 		// They must be able to read PMs
-		sizeof($auth->acl_get_list($user_id, 'u_readpm')) &&
+		count($auth->acl_get_list($user_id, 'u_readpm')) &&
 
 		// They must not be permanently banned
-		!sizeof(phpbb_get_banned_user_ids($user_id, false)) &&
+		!count(phpbb_get_banned_user_ids($user_id, false)) &&
 
 		// They must allow users to contact via PM
 		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])

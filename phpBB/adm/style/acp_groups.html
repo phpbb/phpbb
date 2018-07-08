@@ -316,7 +316,7 @@
 	<tbody>
 		<!-- ELSE -->
 		<tr>
-			<td><strong>{groups.GROUP_NAME}</strong></td>
+			<td><strong<!-- IF groups.GROUP_COLOR --> style="color: #{groups.GROUP_COLOR}"<!-- ENDIF -->>{groups.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{groups.TOTAL_MEMBERS}</td>
 			<td style="text-align: center;">{groups.PENDING_MEMBERS}</td>
 			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_SETTINGS}</a></td>

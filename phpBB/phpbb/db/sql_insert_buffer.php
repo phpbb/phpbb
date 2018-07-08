@@ -92,7 +92,7 @@ class sql_insert_buffer
 
 		// Flush buffer if it is full or when DB does not support multi inserts.
 		// In the later case, the buffer will always only contain one row.
-		if (!$this->db->get_multi_insert() || sizeof($this->buffer) >= $this->max_buffered_rows)
+		if (!$this->db->get_multi_insert() || count($this->buffer) >= $this->max_buffered_rows)
 		{
 			return $this->flush();
 		}
@@ -104,7 +104,7 @@ class sql_insert_buffer
 	* Inserts a row set, i.e. an array of rows, by calling insert().
 	*
 	* Please note that it is in most cases better to use insert() instead of
-	* first building a huge rowset. Or at least sizeof($rows) should be kept
+	* first building a huge rowset. Or at least count($rows) should be kept
 	* small.
 	*
 	* @param array $rows

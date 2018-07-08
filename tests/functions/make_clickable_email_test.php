@@ -17,9 +17,10 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $config, $user, $request;
+		global $config, $user, $request, $symfony_request;
 		$user = new phpbb_mock_user();
 		$request = new phpbb_mock_request();
+		$symfony_request = new \phpbb\symfony_request($request);
 	}
 
 	/**
@@ -168,7 +169,7 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 			array('abc,def@example.com'),		// invalid character ,
 			array('abc<def@example.com'),		// invalid character <
 			array('abc>def@example.com', 'abc><!-- e --><a href="mailto:def@example.com">def@example.com</a><!-- e -->'),		// invalid character >
-			
+
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
 			array('missingDomain@.com'),
 			array('@missingLocal.org'),

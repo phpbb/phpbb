@@ -163,7 +163,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'order_dir'		=> 'ASC',
 		), $options));
 
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
+		$this->assertEquals(count($expected), $notifications['unread_count']);
 
 		$i = 0;
 		foreach ($notifications['notifications'] as $notification)

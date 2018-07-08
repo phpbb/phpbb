@@ -11,6 +11,9 @@
 *
 */
 
+require_once dirname(__FILE__) . '/ext/foo/bar/acp/acp_test_info.php';
+require_once dirname(__FILE__) . '/ext/foo/bar/ucp/ucp_test_info.php';
+
 class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 {
 	public function getDataSet()
@@ -39,6 +42,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
+		// Correctly set the root path for this test to this directory, so the classes can be found
+		$phpbb_root_path = dirname(__FILE__) . '/';
+
 		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 		$module_manager = new \phpbb\module\module_manager($cache, $this->db, $phpbb_extension_manager, MODULES_TABLE, $phpbb_root_path, $phpEx);
 
@@ -52,11 +58,39 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			array(
 				'',
 				'ACP_CAT',
+				false,
 				true,
 			),
 			array(
 				0,
 				'ACP_CAT',
+				false,
+				true,
+			),
+			array(
+				false,
+				'ACP_CAT',
+				false,
+				true,
+			),
+
+			// Test the existing category lazily
+			array(
+				'',
+				'ACP_CAT',
+				true,
+				true,
+			),
+			array(
+				0,
+				'ACP_CAT',
+				true,
+				true,
+			),
+			array(
+				false,
+				'ACP_CAT',
+				true,
 				true,
 			),
 
@@ -65,15 +99,38 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'ACP_MODULE',
 				false,
+				false,
 			),
 			array(
 				false,
 				'ACP_MODULE',
+				false,
 				true,
 			),
 			array(
 				'ACP_CAT',
 				'ACP_MODULE',
+				false,
+				true,
+			),
+
+			// Test the existing module lazily
+			array(
+				'',
+				'ACP_MODULE',
+				true,
+				false,
+			),
+			array(
+				false,
+				'ACP_MODULE',
+				true,
+				true,
+			),
+			array(
+				'ACP_CAT',
+				'ACP_MODULE',
+				true,
 				true,
 			),
 
@@ -82,10 +139,38 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'ACP_NON_EXISTANT_CAT',
 				false,
+				false,
+			),
+			array(
+				false,
+				'ACP_NON_EXISTANT_CAT',
+				false,
+				false,
 			),
 			array(
 				'ACP_CAT',
 				'ACP_NON_EXISTANT_MODULE',
+				false,
+				false,
+			),
+
+			// Test for non-existant modules lazily
+			array(
+				'',
+				'ACP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				false,
+				'ACP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				'ACP_CAT',
+				'ACP_NON_EXISTANT_MODULE',
+				true,
 				false,
 			),
 		);
@@ -94,9 +179,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 	/**
 	* @dataProvider exists_data_acp
 	*/
-	public function test_exists_acp($parent, $module, $expected)
+	public function test_exists_acp($parent, $module, $lazy, $expected)
 	{
-		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module));
+		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module, $lazy));
 	}
 
 	public function exists_data_ucp()
@@ -106,11 +191,39 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			array(
 				'',
 				'UCP_MAIN_CAT',
+				false,
 				true,
 			),
 			array(
 				0,
 				'UCP_MAIN_CAT',
+				false,
+				true,
+			),
+			array(
+				false,
+				'UCP_MAIN_CAT',
+				false,
+				true,
+			),
+
+			// Test the existing category lazily
+			array(
+				'',
+				'UCP_MAIN_CAT',
+				true,
+				true,
+			),
+			array(
+				0,
+				'UCP_MAIN_CAT',
+				true,
+				true,
+			),
+			array(
+				false,
+				'UCP_MAIN_CAT',
+				true,
 				true,
 			),
 
@@ -119,20 +232,50 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'UCP_SUBCATEGORY',
 				false,
+				false,
 			),
 			array(
 				false,
 				'UCP_SUBCATEGORY',
+				false,
+				true,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_SUBCATEGORY',
+				false,
+				true,
+			),
+			array(
+				'UCP_SUBCATEGORY',
+				'UCP_MODULE',
+				false,
+				true,
+			),
+
+			// Test the existing module lazily
+			array(
+				'',
+				'UCP_SUBCATEGORY',
+				true,
+				false,
+			),
+			array(
+				false,
+				'UCP_SUBCATEGORY',
+				true,
 				true,
 			),
 			array(
 				'UCP_MAIN_CAT',
 				'UCP_SUBCATEGORY',
 				true,
+				true,
 			),
 			array(
 				'UCP_SUBCATEGORY',
 				'UCP_MODULE',
+				true,
 				true,
 			),
 
@@ -141,10 +284,26 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'UCP_NON_EXISTANT_CAT',
 				false,
+				false,
 			),
 			array(
 				'UCP_MAIN_CAT',
 				'UCP_NON_EXISTANT_MODULE',
+				false,
+				false,
+			),
+
+			// Test for non-existant modules lazily
+			array(
+				'',
+				'UCP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_NON_EXISTANT_MODULE',
+				true,
 				false,
 			),
 		);
@@ -153,9 +312,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 	/**
 	* @dataProvider exists_data_ucp
 	*/
-	public function test_exists_ucp($parent, $module, $expected)
+	public function test_exists_ucp($parent, $module, $lazy, $expected)
 	{
-		$this->assertEquals($expected, $this->tool->exists('ucp', $parent, $module));
+		$this->assertEquals($expected, $this->tool->exists('ucp', $parent, $module, $lazy));
 	}
 
 	public function test_add()
@@ -192,25 +351,6 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE'));
-
-		// Test adding module when plural parent module_langname exists
-		// PHPBB3-14703
-		// Adding fail
-		try
-		{
-			$this->tool->add('acp', 'ACP_FORUM_BASED_PERMISSIONS', array(
-				'module_basename'	=> 'acp_new_permissions_module',
-				'module_langname'	=> 'ACP_NEW_PERMISSIONS_MODULE',
-				'module_mode'		=> 'test',
-				'module_auth'		=> '',
-			));
-			$this->fail('Exception not thrown');
-		}
-		catch (Exception $e)
-		{
-			$this->assertEquals('phpbb\db\migration\exception', get_class($e));
-			$this->assertEquals('MODULE_EXIST_MULTIPLE', $e->getMessage());
-		}
 
 		// Test adding module when plural parent module_langname exists
 		// PHPBB3-14703
@@ -269,6 +409,35 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertEquals(true, $this->tool->exists('ucp', 'UCP_NEW_SUBCAT', 'UCP_NEW_MODULE'));
+
+		// Test adding new UCP module the automatic way, single mode
+		try
+		{
+			$this->tool->add('ucp', 'UCP_NEW_CAT', array(
+				'module_basename'	=> '\foo\bar\ucp\ucp_test_module',
+				'modes'				=> array('mode_1'),
+			));
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertEquals(true, $this->tool->exists('ucp', 'UCP_NEW_CAT', 'UCP_NEW_MODULE_MODE_1'));
+		$this->assertEquals(false, $this->tool->exists('ucp', 'UCP_NEW_CAT', 'UCP_NEW_MODULE_MODE_2'));
+
+		// Test adding new ACP module the automatic way, all modes
+		try
+		{
+			$this->tool->add('acp', 'ACP_NEW_CAT', array(
+				'module_basename' => '\foo\bar\acp\acp_test_module',
+			));
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE_MODE_1'));
+		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE_MODE_2'));
 	}
 
 	public function test_remove()

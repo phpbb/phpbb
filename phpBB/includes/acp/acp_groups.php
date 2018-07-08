@@ -187,7 +187,7 @@ class acp_groups
 
 							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
-							$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+							$start = (count($mark_ary) < 200) ? 0 : $start + 200;
 						}
 						else
 						{
@@ -486,7 +486,7 @@ class acp_groups
 						$error = array_merge($error, $validation_error);
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
 						// group. This prevents existing group members being updated if no changes
@@ -614,7 +614,7 @@ class acp_groups
 						}
 					}
 
-					if (sizeof($error))
+					if (count($error))
 					{
 						$error = array_map(array(&$user, 'lang'), $error);
 						$group_rank = $submit_ary['rank'];
@@ -732,12 +732,12 @@ class acp_groups
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
-					'S_ERROR'			=> (sizeof($error)) ? true : false,
+					'S_ERROR'			=> (count($error)) ? true : false,
 					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 					'S_USER_FOUNDER'	=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 
-					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'				=> (count($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> $group_helper->get_name($group_name),
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
@@ -926,7 +926,7 @@ class acp_groups
 		);
 
 		// Get us all the groups
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 			FROM ' . GROUPS_TABLE . ' g
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
@@ -985,6 +985,7 @@ class acp_groups
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 
 					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOR'	=> $row['group_colour'],
 					'TOTAL_MEMBERS'	=> $row['total_members'],
 					'PENDING_MEMBERS' => $row['pending_members']
 				));

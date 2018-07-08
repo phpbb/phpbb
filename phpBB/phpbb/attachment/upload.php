@@ -162,7 +162,7 @@ class upload
 		// Make sure the image category only holds valid images...
 		$this->check_image($is_image);
 
-		if (sizeof($this->file->error))
+		if (count($this->file->error))
 		{
 			$this->file->remove();
 			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);

@@ -4,7 +4,7 @@
 	"type": "project",
 	"keywords": ["phpbb", "forum"],
 	"homepage": "https://www.phpbb.com",
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "phpBB Limited",
@@ -33,7 +33,7 @@
 		"marc1706/fast-image-size": "^1.1",
 		"paragonie/random_compat": "^1.4",
 		"patchwork/utf8": "^1.1",
-		"s9e/text-formatter": "~0.11.0",
+		"s9e/text-formatter": "~0.13.0",
 		"symfony/config": "^2.8",
 		"symfony/console": "^2.8",
 		"symfony/debug": "^2.8",
@@ -69,7 +69,7 @@
 	},
 	"config": {
 		"platform": {
-			"php": "5.4"
+			"php": "5.4.7"
 		}
 	}
 }

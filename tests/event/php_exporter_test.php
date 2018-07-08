@@ -38,6 +38,18 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				),
 			),
 			array(
+				'event_migration.test',
+				array(
+					'core.ucp_pm_view_message'	=> array(
+						'event'			=> 'core.ucp_pm_view_message',
+						'file'			=> 'event_migration.test',
+						'arguments'		=> array('cp_row', 'folder', 'folder_id', 'id', 'message_row', 'mode', 'msg_data', 'msg_id', 'user_info'),
+						'since'			=> '3.1.0-a1',
+						'description'	=> 'Modify pm and sender data before it is assigned to the template',
+					),
+				),
+			),
+			array(
 				'extra_description.test',
 				array(
 					'extra_description.dispatch'	=> array(
@@ -240,6 +252,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array("\t\$phpbb_dispatcher->dispatch('dispatch.one2.thr_ee4');", 'dispatch.one2.thr_ee4'),
 			array("\$this->dispatcher->dispatch('dispatch.one2');", 'dispatch.one2'),
 			array("\$phpbb_dispatcher->dispatch('dis_patch.one');", 'dis_patch.one'),
+			array("\$phpbb_dispatcher->dispatch(['dis_patch.one', 'dis_patch.one2']);", 'dis_patch.one'),
+			array("\$phpbb_dispatcher->dispatch(['dis_patch.one', 'dis_patch.one2', 'dis_patch.two3']);", 'dis_patch.one'),
 		);
 	}
 
@@ -259,6 +273,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array("\$phpbb_dispatcher->dispatch('');"),
 			array("\$phpbb_dispatcher->dispatch('dispatch.2one');"),
 			array("\$phpbb_dispatcher->dispatch('dispatch');"),
+			array("\$phpbb_dispatcher->dispatch(['dispatch.one']);"),
+			array("\$phpbb_dispatcher->dispatch(array('dispatch.one', 'dispatch.one2'));"),
 		);
 	}
 
@@ -279,6 +295,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array("\textract(\$phpbb_dispatcher->trigger_event('dispatch.one2.thr_ee4', compact(\$vars)));", 'dispatch.one2.thr_ee4'),
 			array("extract(\$this->dispatcher->trigger_event('dispatch.one2', compact(\$vars)));", 'dispatch.one2'),
 			array("extract(\$phpbb_dispatcher->trigger_event('dis_patch.one', compact(\$vars)));", 'dis_patch.one'),
+			array("extract(\$phpbb_dispatcher->trigger_event(['dis_patch.one', 'dis_patch.one2'], compact(\$vars)));", 'dis_patch.one'),
+			array("extract(\$phpbb_dispatcher->trigger_event(['dis_patch.one', 'dis_patch.one2', 'dis_patch.two3'], compact(\$vars)));", 'dis_patch.one'),
 		);
 	}
 
@@ -301,6 +319,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array("extract(\$phpbb_dispatcher->trigger_event('dispatch.one', \$vars));"),
 			array("extract(\$phpbb_dispatcher->trigger_event('dispatch.one', compact(\$var)));"),
 			array("extract(\$phpbb_dispatcher->trigger_event('dispatch.one', compact(\$array)));"),
+			array("extract(\$phpbb_dispatcher->trigger_event(['dispatch.one'], compact(\$vars)));"),
 			array("\$phpbb_dispatcher->trigger_event('dis_patch.one', compact(\$vars));", 'dis_patch.one'),
 		);
 	}

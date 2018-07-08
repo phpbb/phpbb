@@ -135,7 +135,7 @@ class file extends \phpbb\cache\driver\base
 
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
-			if (!sizeof($this->vars))
+			if (!count($this->vars))
 			{
 				$this->load();
 			}
@@ -290,7 +290,7 @@ class file extends \phpbb\cache\driver\base
 		}
 		else
 		{
-			if (!sizeof($this->vars))
+			if (!count($this->vars))
 			{
 				$this->load();
 			}
@@ -576,7 +576,7 @@ class file extends \phpbb\cache\driver\base
 
 			if (function_exists('opcache_invalidate'))
 			{
-				@opcache_invalidate($this->cache_file);
+				@opcache_invalidate($file);
 			}
 
 			try

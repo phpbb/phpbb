@@ -113,7 +113,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 
 	$topics = array();
 
-	if (!sizeof($topic_ids))
+	if (!count($topic_ids))
 	{
 		return array();
 	}
@@ -130,7 +130,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 		$cache_topic_ids = array();
 	}
 
-	if (sizeof($topic_ids))
+	if (count($topic_ids))
 	{
 		$sql_array = array(
 			'SELECT'	=> 't.*, f.*',
@@ -197,11 +197,11 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 */
 function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $config, $user;
+	global $db, $auth, $config, $user, $phpbb_container;
 
 	$rowset = array();
 
-	if (!sizeof($post_ids))
+	if (!count($post_ids))
 	{
 		return array();
 	}
@@ -246,6 +246,8 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 	$result = $db->sql_query($sql);
 	unset($sql_array);
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -253,7 +255,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 			continue;
 		}
 
-		if ($row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+		if (!$phpbb_content_visibility->is_visible('post', $row['forum_id'], $row))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -280,7 +282,7 @@ function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = 
 		$forum_id = array($forum_id);
 	}
 
-	if (!sizeof($forum_id))
+	if (!count($forum_id))
 	{
 		return array();
 	}
@@ -329,7 +331,7 @@ function phpbb_get_pm_data($pm_ids)
 
 	$rowset = array();
 
-	if (!sizeof($pm_ids))
+	if (!count($pm_ids))
 	{
 		return array();
 	}
@@ -730,7 +732,7 @@ function phpbb_check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_foru
 	}
 	$db->sql_freeresult($result);
 
-	if (!sizeof($ids))
+	if (!count($ids))
 	{
 		return false;
 	}

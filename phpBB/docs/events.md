@@ -433,6 +433,13 @@ acp_prune_forums_prepend
 * Since: 3.1.7-RC1
 * Purpose: Add content before the forum select form label
 
+acp_prune_forums_settings_append
+===
+* Locations:
+    + adm/style/acp_prune_forums.html
+* Since: 3.2.2-RC1
+* Purpose: Add content after the prune settings
+
 acp_prune_users_find_username_append
 ===
 * Locations:
@@ -672,6 +679,34 @@ forumlist_body_category_header_row_prepend
     + styles/prosilver/template/forumlist_body.html
 * Since: 3.1.5-RC1
 * Purpose: Add content before the header row of the category on the forum list.
+
+forumlist_body_forum_image_after
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content after the forum image on the forum list.
+
+forumlist_body_forum_image_append
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content at the start of the forum image on the forum list.
+
+forumlist_body_forum_image_before
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content before the forum image on the forum list.
+
+forumlist_body_forum_image_prepend
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content at the end of the forum image on the forum list.
 
 forumlist_body_forum_row_after
 ===
@@ -952,6 +987,27 @@ mcp_topic_options_before
     + styles/prosilver/template/mcp_topic.html
 * Since: 3.1.6-RC1
 * Purpose: Add some options (field, checkbox, ...) before the subject field when split a subject
+
+mcp_topic_postrow_attachments_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.2-RC1
+* Purpose: Show additional content after attachments in mcp topic review
+
+mcp_topic_postrow_attachments_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.2-RC1
+* Purpose: Show additional content before attachments in mcp topic review
+
+mcp_topic_postrow_post_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.2-RC1
+* Purpose: Show additional content after postrow begins in mcp topic review
 
 mcp_topic_postrow_post_details_after
 ===

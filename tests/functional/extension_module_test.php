@@ -29,7 +29,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 	{
 		parent::setUpBeforeClass();
 
-		self::$helper = new phpbb_test_case_helpers(self);
+		self::$helper = new phpbb_test_case_helpers(__CLASS__);
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 

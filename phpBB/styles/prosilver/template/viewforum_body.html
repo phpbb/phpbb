@@ -165,10 +165,10 @@
 								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
 							</a>
 						<!-- ENDIF -->
-						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.U_VIEW_TOPIC --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><!-- ELSE -->{topicrow.TOPIC_TITLE}<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+							<a href="{topicrow.U_MCP_QUEUE}" title="<!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF -->">
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only"><!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF --></span>
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_DELETED -->
@@ -224,7 +224,7 @@
 				<dd class="views">{topicrow.VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 				<dd class="lastpost">
 					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-						<!-- IF not S_IS_BOT -->
+						<!-- IF not S_IS_BOT and topicrow.U_LAST_POST -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 							</a>
@@ -250,10 +250,10 @@
 		<strong>{L_NO_TOPICS}</strong>
 		</div>
 	</div>
-	<!-- ELSE IF not S_USER_CAN_POST -->
+	<!-- ELSE IF not S_HAS_SUBFORUM -->
 	<div class="panel">
 		<div class="inner">
-			<strong>{L_NO_FORUMS}</strong>
+			<strong>{L_NO_FORUMS_IN_CATEGORY}</strong>
 		</div>
 	</div>
 	<!-- ENDIF -->

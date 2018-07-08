@@ -71,7 +71,7 @@ class ucp_groups
 					}
 					$db->sql_freeresult($result);
 
-					if (!sizeof($group_row))
+					if (!count($group_row))
 					{
 						trigger_error('GROUP_NOT_EXIST');
 					}
@@ -330,7 +330,7 @@ class ucp_groups
 
 				$sql = 'SELECT group_id, group_name, group_colour, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
-					WHERE ' . ((sizeof($group_id_ary)) ? $db->sql_in_set('group_id', $group_id_ary, true) . ' AND ' : '') . "
+					WHERE ' . ((count($group_id_ary)) ? $db->sql_in_set('group_id', $group_id_ary, true) . ' AND ' : '') . "
 						group_type $sql_and
 					ORDER BY group_type DESC, group_name";
 				$result = $db->sql_query($sql);
@@ -562,7 +562,7 @@ class ucp_groups
 								$error = array_merge($error, $colour_error);
 							}
 
-							if (!sizeof($error))
+							if (!count($error))
 							{
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
 								// group. This prevents existing group members being updated if no changes
@@ -605,7 +605,7 @@ class ucp_groups
 								}
 							}
 
-							if (sizeof($error))
+							if (count($error))
 							{
 								$error = array_map(array(&$user, 'lang'), $error);
 								$group_rank = $submit_ary['rank'];
@@ -703,12 +703,12 @@ class ucp_groups
 							'S_EDIT'			=> true,
 							'S_INCLUDE_SWATCH'	=> true,
 							'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
-							'S_ERROR'			=> (sizeof($error)) ? true : false,
+							'S_ERROR'			=> (count($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 							'S_AVATARS_ENABLED'	=> ($config['allow_avatar'] && $avatars_enabled),
 							'S_GROUP_MANAGE'	=> true,
 
-							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+							'ERROR_MSG'				=> (count($error)) ? implode('<br />', $error) : '',
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 							'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 							'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
@@ -911,7 +911,7 @@ class ucp_groups
 
 						if (confirm_box(true))
 						{
-							if (!sizeof($mark_ary))
+							if (!count($mark_ary))
 							{
 								$start = 0;
 
@@ -934,7 +934,7 @@ class ucp_groups
 
 										group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 
-										$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+										$start = (count($mark_ary) < 200) ? 0 : $start + 200;
 									}
 									else
 									{
@@ -1073,7 +1073,7 @@ class ucp_groups
 								'action'	=> $action
 							);
 
-							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', sizeof($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', count($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

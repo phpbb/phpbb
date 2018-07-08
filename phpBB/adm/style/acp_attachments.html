@@ -329,42 +329,71 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table class="table1 zebra-table fixed-width-table">
-	<thead>
-	<tr>
-		<th>{L_FILENAME}</th>
-		<th style="width: 15%;">{L_FILEDATE}</th>
-		<th style="width: 15%;">{L_FILESIZE}</th>
-		<th style="width: 15%;">{L_ATTACH_POST_ID}</th>
-		<th style="width: 15%;">{L_ATTACH_TO_POST}</th>
-		<th style="width: 15%;">{L_DELETE}</th>
-	</tr>
-	</thead>
-	<tbody>
-	<!-- BEGIN orphan -->
+	<div class="pagination top-pagination">
+	<!-- IF .pagination or TOTAL_FILES -->
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+	</div>
+
+	<!-- IF .orphan -->
+		<table class="table1 zebra-table fixed-width-table">
+		<thead>
 		<tr>
-			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
-			<td>{orphan.FILETIME}</td>
-			<td>{orphan.FILESIZE}</td>
-			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" min="0" max="9999999999" name="post_id[{orphan.ATTACH_ID}]" value="{orphan.POST_ID}" style="width: 75%;" /></td>
-			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
-			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
+			<th>{L_FILENAME}</th>
+			<th style="width: 15%;">{L_FILEDATE}</th>
+			<th style="width: 15%;">{L_FILESIZE}</th>
+			<th style="width: 15%;">{L_ATTACH_POST_ID}</th>
+			<th style="width: 15%;">{L_ATTACH_TO_POST}</th>
+			<th style="width: 15%;">{L_DELETE}</th>
 		</tr>
-	<!-- END orphan -->
-	<tr class="row4">
-		<td colspan="4">&nbsp;</td>
-		<td class="small"><a href="#" onclick="marklist('orphan', 'add', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'add', false); return false;">{L_UNMARK_ALL}</a></td>
-		<td class="small"><a href="#" onclick="marklist('orphan', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
-	</tr>
-	</tbody>
-	</table>
+		</thead>
+		<tbody>
+		<!-- BEGIN orphan -->
+			<tr>
+				<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
+				<td>{orphan.FILETIME}</td>
+				<td>{orphan.FILESIZE}</td>
+				<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" min="0" max="9999999999" name="post_id[{orphan.ATTACH_ID}]" value="{orphan.POST_ID}" style="width: 75%;" /></td>
+				<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
+				<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
+			</tr>
+		<!-- END orphan -->
+		<tr class="row4">
+			<td colspan="4">&nbsp;</td>
+			<td class="small"><a href="#" onclick="marklist('orphan', 'add', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'add', false); return false;">{L_UNMARK_ALL}</a></td>
+			<td class="small"><a href="#" onclick="marklist('orphan', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('orphan', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
+		</tr>
+		</tbody>
+		</table>
+	<!-- ELSE -->
+		<div class="errorbox">
+			<p>{L_NO_ATTACHMENTS}</p>
+		</div>
+	<!-- ENDIF -->
 
-	<br />
+	<!-- IF TOTAL_FILES -->
+	<div class="pagination">
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
 
-	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	</p>
+	<!-- IF .orphan -->
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
+	<!-- ENDIF -->
+
 	{S_FORM_TOKEN}
 	</fieldset>
 	</form>
@@ -440,7 +469,7 @@
 		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br />
 		<p class="small">
 			<a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> &bull;
-			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>		
+			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>
 		</p>
 	</fieldset>
 <!-- ENDIF -->

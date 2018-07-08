@@ -107,7 +107,7 @@ class delete extends \phpbb\console\command\command
 			{
 				$thumbnail_deleted[] = $row['attach_id'];
 
-				if (sizeof($thumbnail_deleted) === 250)
+				if (count($thumbnail_deleted) === 250)
 				{
 					$this->commit_changes($thumbnail_deleted);
 					$thumbnail_deleted = array();

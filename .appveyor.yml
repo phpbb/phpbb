@@ -1,0 +1,143 @@
+build: false
+clone_folder: c:\projects\phpbb
+version: '{build}'
+
+services:
+  - iis
+
+environment:
+  matrix:
+  - db: mssql
+    db_version: sql2012sp1
+    php: 7.0
+  - db: mssql
+    db_version: sql2014
+    php: 7.0
+  - db: mssql
+    db_version: sql2016
+    php: 7.1.12
+#  - db: mssql
+#    db_version: sql2017
+#    php: 7.1
+#  - db: mariadb
+#    php: 7.1
+#  - db: mysqli
+#    php: 7.1
+#  - db: sqlite
+#    php: 7.1
+#  - db: postgresql
+#    php: 7.1
+
+hosts:
+  phpbb.test: 127.0.0.1
+
+init:
+  - SET PATH=%systemroot%\system32\inetsrv\;C:\Program Files\OpenSSL;C:\tools\php;c:\php;%PATH%
+  - SET ANSICON=121x90 (121x90)
+  - REG ADD "HKEY_CURRENT_USER\Software\Microsoft\Command Processor" /v DelayedExpansion /t REG_DWORD /d 1 /f
+
+before_test:
+  - ps: |
+      Set-Service wuauserv -StartupType Manual
+      cinst -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+      Get-ChildItem -Path "c:\tools\php$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1$2')" -Recurse |
+          Move-Item -destination "c:\tools\php"
+      cd c:\tools\php
+      cat php.ini-development | %{$_ -replace "memory_limit = 128M","memory_limit = 1024M"} | Out-File -Encoding "Default" php.ini
+      Add-Content php.ini "`n date.timezone=UTC"
+      Add-Content php.ini "`n display_errors=On"
+      Add-Content php.ini "`n extension_dir=ext"
+      Add-Content php.ini "`n extension=php_openssl.dll"
+      Add-Content php.ini "`n extension=php_mbstring.dll"
+      Add-Content php.ini "`n extension=php_curl.dll"
+      Add-Content php.ini "`n extension=php_gd2.dll"
+      Add-Content php.ini "`n extension=php_tidy.dll"
+      Add-Content php.ini "`n extension=php_fileinfo.dll"
+      Add-Content php.ini "`n extension=php_pdo_sqlite.dll"
+      Add-Content php.ini "`n extension=php_sqlite3.dll"
+      Add-Content php.ini "`n extension=php_pdo_mysql.dll"
+      Add-Content php.ini "`n extension=php_mysqli.dll"
+      Add-Content php.ini "`n extension=php_pdo_pgsql.dll"
+      Add-Content php.ini "`n extension=php_pgsql.dll"
+
+      # Get MSSQL driver
+      if ($env:db -eq "mssql") {
+        cd c:\tools\php\ext
+        $DLLVersion = "4.1.6.1"
+        curl -o php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        7z x -y php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
+        curl -o php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        7z x -y php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
+        Remove-Item c:\tools\php\* -include .zip
+        cd c:\tools\php
+        Add-Content php.ini "`nextension=php_sqlsrv.dll"
+        Add-Content php.ini "`nextension=php_pdo_sqlsrv.dll"
+        Add-Content php.ini "`n"
+
+        $instanceName = $env:db_version.ToUpper()
+        Start-Service "MSSQL`$$instanceName"
+        Set-Variable -Name "sqlServerPath" -Value "(local)\$($env:db_version.ToUpper())"
+
+        # Create database write test config
+        sqlcmd -S $sqlServerPath -Q "Use [master]; CREATE DATABASE [phpbb_test] COLLATE Latin1_General_CI_AS"
+        $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mssqlnative';`n`$dbhost = '.\\$env:db_version';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'sa';`n`$dbpasswd = 'Password12!';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
+      }
+      elseif ($env:db -eq "mysqli") {
+        Start-Service MySQL57
+        $env:MYSQL_PWD="Password12!"
+        $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database phpbb_test;" --user=root'
+        iex "& $cmd"
+        $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mysqli';`n`$dbhost = 'localhost';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'root';`n`$dbpasswd = 'Password12!';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
+      }
+      elseif ($env:db -eq "postgresql") {
+        Start-Service postgresql-x64-9.5
+        $env:PGUSER="postgres"
+        $env:PGPASSWORD="Password12!"
+        $Env:Path="C:\Program Files\PostgreSQL\9.6\bin\;$($Env:Path)"
+        createdb phpbb_test
+        $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\postgres';`n`$dbhost = 'localhost';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'postgres';`n`$dbpasswd = 'Password12!';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
+      }
+      elseif ($env:db -eq "mariadb") {
+        appveyor-retry cinst -y --force mariadb
+        $env:MYSQL_PWD=""
+        $cmd = '"C:\Program Files\MariaDB 10.2\bin\mysql" -e "create database phpbb_test;" --user=root'
+        iex "& $cmd"
+        $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mysqli';`n`$dbhost = 'localhost';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'root';`n`$dbpasswd = '';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
+      }
+      elseif ($env:db -eq "sqlite") {
+        # install sqlite
+        appveyor-retry cinst -y sqlite
+        sqlite3 c:\projects\test.db "create table aTable(field1 int); drop table aTable;"
+        $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\sqlite3';`n`$dbhost = 'c:\\projects\\test.db';`n`$dbport = '';`n`$dbname = '';`n`$dbuser = '';`n`$dbpasswd = '';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
+      }
+
+      # Install PhantomJS
+      cinst -y phantomjs
+      Start-Process "phantomjs" "--webdriver=8910" | Out-Null
+  - ps: |
+      cd c:\projects\phpbb\phpBB
+      (Get-Content c:\projects\phpbb\phpBB\web.config).replace("<configuration>", "<configuration>`n`t<system.web>`n`t`t<customErrors mode=`"Off`"/>`n`t</system.web>") | Set-Content c:\projects\phpbb\phpBB\web.config
+      (Get-Content c:\projects\phpbb\phpBB\web.config).replace("`t</system.webServer>", "`t`t<httpErrors errorMode=`"Detailed`" />`n`t</system.webServer>") | Set-Content c:\projects\phpbb\phpBB\web.config
+  - cd c:\projects\phpbb\phpBB
+  - php ..\composer.phar install
+  - choco install -y urlrewrite
+  - ps: New-WebSite -Name 'phpBBTest' -PhysicalPath 'c:\projects\phpbb\phpBB' -Force
+  - ps: Import-Module WebAdministration; Set-ItemProperty 'IIS:\Sites\phpBBTest' -name Bindings -value @{protocol='http';bindingInformation='*:80:phpbb.test'}
+  - echo Change default anonymous user AUTH to ApplicationPool
+  - appcmd set config -section:anonymousAuthentication /username:"" --password
+  - echo Setup FAST-CGI configuration
+  - appcmd set config /section:system.webServer/fastCGI /+[fullPath='C:\tools\php\php-cgi.exe']
+  - echo Setup FACT-CGI handler
+  - appcmd set config /section:system.webServer/handlers /+[name='PHP-FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='C:\tools\php\php-cgi.exe',resourceType='Either']
+  - iisreset
+  - NET START W3SVC
+  - mkdir "C:\projects\phpbb\phpBB\cache\test"
+  - mkdir "C:\projects\phpbb\phpBB\cache\installer"
+  - icacls "C:\projects\phpbb\phpBB\cache" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\files" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\store" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\images\avatars\upload" /grant Users:F /T
+
+test_script:
+  - cd c:\projects\phpbb
+  - php -e phpBB\vendor\phpunit\phpunit\phpunit --verbose

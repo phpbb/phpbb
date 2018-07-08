@@ -24,8 +24,9 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $msg, $extra_headers, $replyto, $from, $subject;
+	var $msg, $replyto, $from, $subject;
 	var $addresses = array();
+	var $extra_headers = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
@@ -84,7 +85,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
+		$pos = isset($this->addresses['to']) ? count($this->addresses['to']) : 0;
 
 		$this->addresses['to'][$pos]['email'] = trim($address);
 
@@ -109,7 +110,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
+		$pos = isset($this->addresses['cc']) ? count($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
 		$this->addresses['cc'][$pos]['name'] = trim($realname);
 	}
@@ -124,7 +125,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
+		$pos = isset($this->addresses['bcc']) ? count($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
 	}
@@ -140,7 +141,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
+		$pos = isset($this->addresses['im']) ? count($this->addresses['im']) : 0;
 		$this->addresses['im'][$pos]['uid'] = trim($address);
 		$this->addresses['im'][$pos]['name'] = trim($realname);
 	}
@@ -416,7 +417,7 @@ class messenger
 		switch ($type)
 		{
 			case 'EMAIL':
-				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/' . $config['email_function_name'] . '()') . '</strong>';
+				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/mail()') . '</strong>';
 			break;
 
 			default:
@@ -503,7 +504,7 @@ class messenger
 		$vars = array('headers');
 		extract($phpbb_dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
-		if (sizeof($this->extra_headers))
+		if (count($this->extra_headers))
 		{
 			$headers = array_merge($headers, $this->extra_headers);
 		}
@@ -814,7 +815,7 @@ class queue
 			}
 
 			$package_size = $data_ary['package_size'];
-			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
+			$num_items = (!$package_size || count($data_ary['data']) < $package_size) ? count($data_ary['data']) : $package_size;
 
 			/*
 			* This code is commented out because it causes problems on some web hosts.
@@ -823,9 +824,9 @@ class queue
 			* web host and the package size setting is wrong.
 
 			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
-			if (sizeof($data_ary['data']) > $package_size * 2.5)
+			if (count($data_ary['data']) > $package_size * 2.5)
 			{
-				$num_items = sizeof($data_ary['data']);
+				$num_items = count($data_ary['data']);
 			}
 			*/
 
@@ -914,7 +915,7 @@ class queue
 			}
 
 			// No more data for this object? Unset it
-			if (!sizeof($this->queue_data[$object]['data']))
+			if (!count($this->queue_data[$object]['data']))
 			{
 				unset($this->queue_data[$object]);
 			}
@@ -930,7 +931,7 @@ class queue
 			}
 		}
 
-		if (!sizeof($this->queue_data))
+		if (!count($this->queue_data))
 		{
 			@unlink($this->cache_file);
 		}
@@ -965,7 +966,7 @@ class queue
 	*/
 	function save()
 	{
-		if (!sizeof($this->data))
+		if (!count($this->data))
 		{
 			return;
 		}
@@ -979,7 +980,7 @@ class queue
 
 			foreach ($this->queue_data as $object => $data_ary)
 			{
-				if (isset($this->data[$object]) && sizeof($this->data[$object]))
+				if (isset($this->data[$object]) && count($this->data[$object]))
 				{
 					$this->data[$object]['data'] = array_merge($data_ary['data'], $this->data[$object]['data']);
 				}
@@ -1067,7 +1068,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	$mail_rcpt = $mail_to = $mail_cc = array();
 
 	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
-	if (isset($addresses['to']) && sizeof($addresses['to']))
+	if (isset($addresses['to']) && count($addresses['to']))
 	{
 		foreach ($addresses['to'] as $which_ary)
 		{
@@ -1076,7 +1077,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 		}
 	}
 
-	if (isset($addresses['bcc']) && sizeof($addresses['bcc']))
+	if (isset($addresses['bcc']) && count($addresses['bcc']))
 	{
 		foreach ($addresses['bcc'] as $which_ary)
 		{
@@ -1084,7 +1085,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 		}
 	}
 
-	if (isset($addresses['cc']) && sizeof($addresses['cc']))
+	if (isset($addresses['cc']) && count($addresses['cc']))
 	{
 		foreach ($addresses['cc'] as $which_ary)
 		{
@@ -1802,11 +1803,11 @@ function mail_encode($str, $eol = "\r\n")
 	$array = utf8_str_split($str);
 	$str = '';
 
-	while (sizeof($array))
+	while (count($array))
 	{
 		$text = '';
 
-		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
+		while (count($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
 		{
 			$text .= array_shift($array);
 		}
@@ -1839,7 +1840,8 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
 	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
 	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
-	$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
+	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	$collector->uninstall();
 	$err_msg = $collector->format_errors();

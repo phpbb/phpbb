@@ -66,7 +66,7 @@ class phpbb_wrapper_version_compare_test extends phpbb_test_case
 			'3.2-A1',
 		);
 
-		for ($i = 0, $size = sizeof($releases); $i < $size - 1; ++$i)
+		for ($i = 0, $size = count($releases); $i < $size - 1; ++$i)
 		{
 			$version1 = $releases[$i];
 			$version2 = $releases[$i + 1];

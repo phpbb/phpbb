@@ -136,6 +136,11 @@ class pagination
 	*/
 	public function generate_template_pagination($base_url, $block_var_name, $start_name, $num_items, $per_page, $start = 1, $reverse_count = false, $ignore_on_page = false)
 	{
+		if (empty($base_url))
+		{
+			return;
+		}
+
 		$total_pages = ceil($num_items / $per_page);
 		$on_page = $this->get_on_page($per_page, $start);
 		$u_previous_page = $u_next_page = '';
