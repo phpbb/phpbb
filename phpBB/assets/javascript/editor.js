@@ -386,10 +386,29 @@ function getCaretPosition(txtarea) {
 
 (function($) {
 	function Mentions() {
-		let $mentionDataContainer = $('[data-mention-url]:first'), cachedNames = null, filteredNamesCount = 0;
+		let $mentionDataContainer = $('[data-mention-url]:first');
+		let cachedNames = null;
+		let cachedFor = null;
+		let cachedSearchKey = 'name';
 
 		function defaultAvatar(type) {
 			return (type === 'group') ? '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>' : '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></svg>';
+		}
+
+		function getMatchedNames(query, items, searchKey) {
+			let i, len;
+			let _results = [];
+			for (i = 0, len = items.length; i < len; i++) {
+				let item = items[i];
+				if (String(item[searchKey]).toLowerCase().indexOf(query.toLowerCase()) === 0) {
+					_results.push(item);
+				}
+			}
+			return _results;
+		}
+
+		function getNumberOfMatchedCachedNames(query) {
+			return getMatchedNames(query, cachedNames, cachedSearchKey).length;
 		}
 
 		this.isEnabled = function() {
@@ -397,10 +416,10 @@ function getCaretPosition(txtarea) {
 		};
 
 		this.handle = function(txtarea) {
-			let mentionURL = $mentionDataContainer.data('mentionUrl'),
-				mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit'),
-				mentionTopicId = $mentionDataContainer.data('topicId'),
-				defaultFilter = $.fn.atwho['default'].callbacks.filter;
+			let mentionURL = $mentionDataContainer.data('mentionUrl');
+			let mentionBatchSize = $mentionDataContainer.data('mentionBatchSize');
+			let mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit');
+			let mentionTopicId = $mentionDataContainer.data('topicId');
 			$(txtarea).atwho({
 				at: "@",
 				acceptSpaceBar: true,
@@ -413,51 +432,78 @@ function getCaretPosition(txtarea) {
 				insertTpl: "[mention=${type}:${id}]${name}[/mention]",
 				limit: mentionNamesLimit,
 				callbacks: {
-					filter: function(query, data, searchKey) {
-						data = defaultFilter(query, data, searchKey);
-
-						// Update our cached statistics used by remoteFilter
-						filteredNamesCount = data.length;
-
-						return data;
-					},
 					remoteFilter: function(query, callback) {
-						if (cachedNames && filteredNamesCount >= mentionNamesLimit) {
+						/*
+						* Use cached values when we can:
+						* 1) There are some names in the cache
+						* 2) The cache contains relevant data for the query
+						*    (it was made for the query with the same first characters)
+						* 3) We have enough names to display OR
+						*    all relevant names have been fetched from the server
+						*/
+						if (cachedNames &&
+							query.indexOf(cachedFor) === 0 &&
+							(getNumberOfMatchedCachedNames(query) >= mentionNamesLimit ||
+								cachedNames.length < mentionBatchSize)) {
 							callback(cachedNames);
 							return;
 						}
+
 						let params = {keyword: query, topic_id: mentionTopicId, _referer: location.href};
 						$.getJSON(mentionURL, params, function (data) {
 							cachedNames = data;
+							cachedFor = query;
 							callback(data);
 						});
 					},
 					sorter: function(query, items, searchKey) {
-						let _unsorted, _results, _exactMatch, i, item, len, highestPriority = 0;
-						_unsorted = {u: {}, g: {}};
-						_exactMatch = [];
+						let i, len;
+						let highestPriority = 0;
+						let _unsorted = {u: {}, g: {}};
+						let _exactMatch = [];
+						let _results = [];
+
+						// Reduce the items array to the relevant ones
+						items = getMatchedNames(query, items, searchKey);
+
+						// Group names by their types and calculate priorities
 						for (i = 0, len = items.length; i < len; i++) {
-							item = items[i];
+							let item = items[i];
+
+							// Exact matches should not be prioritised - they always come first
 							if (item.name === query) {
 								_exactMatch.push(items[i]);
 								continue;
 							}
+
+							// Check for unsupported type - in general, this should never happen
 							if (!_unsorted[item.type]) {
 								continue;
 							}
+
+							// If the item hasn't been added yet - add it
+							// Group names do not have priorities and are also handled here
 							if (!_unsorted[item.type][item.id] || item.type === 'g') {
 								_unsorted[item.type][item.id] = item;
 								continue;
 							}
+
+							// Priority is calculated as the sum of priorities from different sources
 							_unsorted[item.type][item.id].priority += parseFloat(item.priority);
+
+							// Calculate the highest priority - we'll give it to group names
 							highestPriority = Math.max(highestPriority, _unsorted[item.type][item.id].priority);
 						}
-						_results = [];
+
+						// Push user names to the result array
 						if (_unsorted['u']) {
 							$.each(_unsorted['u'], function(name, value) {
 								_results.push(value);
 							});
 						}
+
+						// Push group names to the result array and give them the highest priority
+						// They will be sorted together with the usernames on top of the list
 						if (_unsorted['g']) {
 							$.each(_unsorted['g'], function(name, value) {
 								// Groups should come at the same level of importance
@@ -466,12 +512,17 @@ function getCaretPosition(txtarea) {
 								_results.push(value);
 							});
 						}
+
+						// Sort names by priorities - higher values come first
 						_results = _results.sort(function(a, b) {
-							return a.priority - b.priority;
+							return b.priority - a.priority;
 						});
+
+						// Exact match is the most important - should come above anything else
 						$.each(_exactMatch, function(name, value) {
 							_results.unshift(value);
 						});
+
 						return _results;
 					}
 				}

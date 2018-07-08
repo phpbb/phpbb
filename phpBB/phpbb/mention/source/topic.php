@@ -31,7 +31,7 @@ class topic extends base_user
 					'ON'   => 'u.user_id = p.poster_id'
 				]
 			],
-			'WHERE'     => 'p.topic_id = ' . $topic_id . ' AND u.user_id <> ' . ANONYMOUS . '
+			'WHERE'     => 'p.topic_id = ' . $topic_id . '
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
 				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
 			'ORDER_BY'  => 'p.post_time DESC'

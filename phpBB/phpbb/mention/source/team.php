@@ -28,7 +28,6 @@ class team extends base_user
 				TEAMPAGE_TABLE => 't',
 			],
 			'WHERE'     => 'ug.group_id = t.group_id AND ug.user_id = u.user_id AND ug.user_pending = 0
-				AND u.user_id <> ' . ANONYMOUS . '
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
 				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
 			'ORDER_BY'  => 'u.user_lastvisit DESC'

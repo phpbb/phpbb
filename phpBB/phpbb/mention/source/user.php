@@ -25,8 +25,7 @@ class user extends base_user
 			'FROM'      => [
 				USERS_TABLE => 'u',
 			],
-			'WHERE'     => 'u.user_id <> ' . ANONYMOUS . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
+			'WHERE'     => $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
 				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
 			'ORDER_BY'  => 'u.user_lastvisit DESC'
 		]);

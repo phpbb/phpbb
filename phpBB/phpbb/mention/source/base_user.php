@@ -73,16 +73,15 @@ abstract class base_user implements source_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get($keyword, $topic_id)
+	public function get(array &$names, $keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
 		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), self::NAMES_BATCH_SIZE);
 
-		$names = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
-			$names[] = [
+			array_push($names, [
 				'name'		=> $row['username'],
 				'type'		=> 'u',
 				'id'		=> $row['user_id'],
@@ -92,7 +91,7 @@ abstract class base_user implements source_interface
 				],
 				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
 				'priority'	=> $this->get_priority($row),
-			];
+			]);
 		}
 
 		$this->db->sql_freeresult($result);
