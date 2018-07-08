@@ -2463,7 +2463,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-	$template->assign_vars(array(
+	$login_box_template_data = array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
@@ -2471,6 +2471,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
+		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
@@ -2480,7 +2481,29 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
-	));
+	);
+
+	/**
+	 * Event to add/modify login box template data
+	 *
+	 * @event core.login_box_modify_template_data
+	 * @var	int		admin							Flag whether user is admin
+	 * @var	string	username						User name
+	 * @var	int		autologin						Flag whether autologin is enabled
+	 * @var string	redirect						Redirect URL
+	 * @var	array	login_box_template_data			Array with the login box template data
+	 * @since 3.2.3-RC2
+	 */
+	$vars = array(
+		'admin',
+		'username',
+		'autologin',
+		'redirect',
+		'login_box_template_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.login_box_modify_template_data', compact($vars)));
+
+	$template->assign_vars($login_box_template_data);
 
 	page_header($user->lang['LOGIN']);
 
@@ -4404,6 +4427,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_TEAM'				=> ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
+		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
