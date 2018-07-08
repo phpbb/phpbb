@@ -936,8 +936,8 @@ class p_master
 				if (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id)
 				{
 					$template->assign_block_vars('navlinks', array(
-						'FORUM_NAME'	=> $item_ary['lang'],
-						'U_VIEW_FORUM'	=> $u_title,
+						'BREADCRUMB_NAME'	=> $item_ary['lang'],
+						'U_BREADCRUMB'		=> $u_title,
 					));
 				}
 

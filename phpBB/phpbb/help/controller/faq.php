@@ -26,8 +26,8 @@ class faq extends controller
 		$this->language->add_lang('help/faq');
 
 		$this->template->assign_block_vars('navlinks', array(
-			'FORUM_NAME'	=> $this->language->lang('FAQ_EXPLAIN'),
-			'U_VIEW_FORUM'	=> $this->helper->route('phpbb_help_faq_controller'),
+			'BREADCRUMB_NAME'	=> $this->language->lang('FAQ_EXPLAIN'),
+			'U_BREADCRUMB'		=> $this->helper->route('phpbb_help_faq_controller'),
 		));
 
 		$this->manager->add_block(
