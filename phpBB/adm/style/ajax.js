@@ -158,6 +158,34 @@ phpbb.addAjaxCallback('row_delete', function(res) {
 });
 
 /**
+ * Callbacks for extension actions
+ */
+phpbb.addAjaxCallback('ext_enable', function(res) {
+	if (res.EXT_ENABLE_SUCCESS) {
+		move_to_enabled(this.parentNode.parentNode);
+		set_actions(this.parentNode, res.ACTIONS);
+		show_enabled_header();
+		hide_disabled_header_if_empty();
+	}
+});
+phpbb.addAjaxCallback('ext_delete_data', function(res) {
+	if (res.EXT_DELETE_DATA_SUCCESS) {
+		move_to_disabled(this.parentNode.parentNode);
+		set_actions(this.parentNode, res.ACTIONS);
+		show_disabled_header();
+		hide_enabled_header_if_empty();
+	}
+});
+phpbb.addAjaxCallback('ext_disable', function(res) {
+	if (res.EXT_DISABLE_SUCCESS) {
+		move_to_disabled(this.parentNode.parentNode);
+		set_actions(this.parentNode, res.ACTIONS);
+		show_disabled_header();
+		hide_enabled_header_if_empty();
+	}
+});
+
+/**
  * Handler for submitting permissions form in chunks
  * This call will submit permissions forms in chunks of 5 fieldsets.
  */
