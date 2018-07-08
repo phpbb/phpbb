@@ -264,7 +264,30 @@ class php_exporter
 
 					// Find event description line
 					$description_line_num = $this->find_description();
-					$description = substr(trim($this->file_lines[$description_line_num]), strlen('* '));
+					$description_lines = array();
+
+					while (true)
+					{
+						$description_line = substr(trim($this->file_lines[$description_line_num]), strlen('*'));
+						$description_line = trim(str_replace("\t", " ", $description_line));
+
+						// Reached end of description if line is a tag
+						if (strlen($description_line) && $description_line[0] == '@')
+						{
+							break;
+						}
+
+						$description_lines[] = $description_line;
+						$description_line_num++;
+					}
+
+					// If there is an empty line between description and first tag, remove it
+					if (!strlen(end($description_lines)))
+					{
+						array_pop($description_lines);
+					}
+
+					$description = trim(implode('<br/>', $description_lines));
 
 					if (isset($this->events[$this->current_event]))
 					{

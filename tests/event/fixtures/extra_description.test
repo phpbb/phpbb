@@ -3,7 +3,7 @@
 /**
 * Description
 *
-* NOTE: This will not be exported
+* NOTE: This will also be exported
 *
 * @event extra_description.dispatch
 * @since 3.1.0-b2
