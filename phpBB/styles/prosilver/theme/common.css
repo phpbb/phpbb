@@ -1427,7 +1427,7 @@ ul.linklist:after,
 	width: 50px;
 }
 
-.dropdown .clone.hidden  {
+.dropdown .clone.hidden {
 	display: none;
 }
 
