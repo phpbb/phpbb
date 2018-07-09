@@ -107,7 +107,7 @@ class ucp_pm
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 				compose_pm($id, $mode, $action, $user_folders);
 
-				$tpl_file = 'posting_body';
+				$tpl_file = 'ucp_pm_viewfolder';
 			break;
 
 			case 'options':
@@ -392,6 +392,11 @@ class ucp_pm
 					{
 						trigger_error('NO_MESSAGE');
 					}
+
+					$action = 'reply';
+
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+					compose_pm($id, $mode, $action, $user_folders);
 
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
 					view_folder($id, $mode, $folder_id, $folder);
