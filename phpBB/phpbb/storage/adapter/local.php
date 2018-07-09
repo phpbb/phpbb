@@ -432,6 +432,11 @@ class local implements adapter_interface, stream_interface
 	{
 		$free_space = @disk_free_space($this->root_path);
 
+		if ($free_space === false)
+		{
+			throw new exception('STORAGE_CANNOT_GET_FREE_SPACE');
+		}
+
 		return $free_space;
 	}
 }

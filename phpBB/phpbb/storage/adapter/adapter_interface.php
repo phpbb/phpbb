@@ -99,7 +99,9 @@ interface adapter_interface
 	/*
 	 * Get space available in bytes.
 	 *
-	 * @return mixed	Returns available space or false when unable to retrieve available space
+	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
+	 *
+	 * @return float	Returns available space
 	 */
 	public function free_space();
 }

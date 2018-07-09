@@ -390,13 +390,12 @@ class storage
 	/**
 	 * Get space available in bytes.
 	 *
-	 * @throws \phpbb\storage\exception\exception		When can't get available space
+	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
 	 *
-	 * @return mixed	Returns available space or false when unable to retrieve available space
+	 * @return float	Returns available space
 	 */
 	public function free_space()
 	{
 		return $this->get_adapter()->free_space();
 	}
-
 }
