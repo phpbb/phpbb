@@ -108,6 +108,14 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function set_debug_load_time($value)
+	{
+		$this->debug_load_time = $value;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function set_debug_sql_explain($value)
 	{
 		$this->debug_sql_explain = $value;
