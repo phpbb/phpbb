@@ -2040,7 +2040,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	if (!count($rowset) && !$in_post_mode)
+	if (empty($rowset) && !$in_post_mode)
 	{
 		return false;
 	}
