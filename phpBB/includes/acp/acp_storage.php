@@ -162,8 +162,29 @@ class acp_storage
 			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		$storage_stats = [];
+		foreach ($this->storage_collection as $storage)
+		{
+			try
+			{
+				$free_space = get_formatted_filesize($storage->free_space());
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				$free_space = $this->lang->lang('STORAGE_UNKNOWN');
+			}
+
+			$storage_stats[] = [
+				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
+				'files' => $storage->get_num_files(),
+				'size' => get_formatted_filesize($storage->get_size()),
+				'free_space' => $free_space,
+			];
+		}
+
 		$this->template->assign_vars(array(
 			'STORAGES' => $this->storage_collection,
+			'STORAGE_STATS' => $storage_stats,
 			'PROVIDERS' => $this->provider_collection,
 		));
 	}

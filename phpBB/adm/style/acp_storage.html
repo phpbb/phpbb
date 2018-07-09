@@ -16,21 +16,16 @@
 		</tr>
 	</thead>
 	<tbody>
-	{% for storage in STORAGES %}
+	{% for storage in STORAGE_STATS %}
 		<tr>
-			<td>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</td>
-			<td>{{ storage.get_num_files }}</td>
-			<td>{{ storage.get_size | format_bytes }}</td>
-			{% if storage.free_space !== false %}
-				<td>{{ storage.free_space | format_bytes }}</td>
-			{% else %}
-				<td>{L_STORAGE_UNKNOWN}</td>
-			{% endif %}
+			<td>{{ storage.name }}</td>
+			<td>{{ storage.files }}</td>
+			<td>{{ storage.size }}</td>
+			<td>{{ storage.free_space }}</td>
 		</tr>
 	{% endfor %}
 	</tbody>
 </table>
-
 
 <form id="acp_storage" method="post" action="{{ U_ACTION }}">
 
