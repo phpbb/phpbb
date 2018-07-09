@@ -15,6 +15,7 @@ namespace phpbb\storage;
 
 use phpbb\storage\exception\exception;
 use phpbb\storage\adapter\adapter_interface;
+use phpbb\db\driver\driver_interface;
 
 class file_info
 {
@@ -22,6 +23,21 @@ class file_info
 	 * @var \phpbb\storage\adapter\adapter_interface
 	 */
 	protected $adapter;
+
+	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $db;
+
+	/**
+	 * @var string
+	 */
+	protected $storage_name;
+
+	/**
+	 * @var string
+	 */
+	protected $storage_table;
 
 	/**
 	 * Path of the file
@@ -46,9 +62,12 @@ class file_info
 	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $adapter
 	 * @param string $path
 	 */
-	public function __construct(adapter_interface $adapter, $path)
+	public function __construct(adapter_interface $adapter, driver_interface $db, $storage_name, $storage_table, $path)
 	{
 		$this->adapter = $adapter;
+		$this->db = $db;
+		$this->storage_name = $storage_name;
+		$this->storage_table = $storage_table;
 		$this->path = $path;
 		$this->properties = [];
 	}
@@ -62,6 +81,25 @@ class file_info
 	 */
 	public function get($name)
 	{
+		// Try to read properties from db if isn't set
+		if (!isset($this->properties[$name]))
+		{
+			$sql = 'SELECT metadata
+				FROM ' .  $this->storage_table . "
+				WHERE storage = '" . $this->db->sql_escape($this->storage_name) . "'
+					AND file_path = '" . $this->db->sql_escape($this->path) . "'";
+			$result = $this->db->sql_query($sql);
+
+			$metadata =  json_decode($this->db->sql_fetchfield('metadata'), true);
+
+			if ($metadata !== null)
+			{
+				$this->properties = $metadata;
+			}
+
+			$this->db->sql_freeresult($result);
+		}
+
 		if (!isset($this->properties[$name]))
 		{
 			if (!method_exists($this->adapter, 'file_' . $name))
@@ -70,6 +108,13 @@ class file_info
 			}
 
 			$this->properties = array_merge($this->properties, call_user_func([$this->adapter, 'file_' . $name], $this->path));
+
+			// Save new property to db
+			$sql = 'UPDATE ' .  $this->storage_table . "
+				SET metadata = '" .  $this->db->sql_escape(json_encode($this->properties)) . "'
+				WHERE storage = '" . $this->db->sql_escape($this->storage_name) . "'
+					AND file_path = '" . $this->db->sql_escape($this->path) . "'";
+			$this->db->sql_query($sql);
 		}
 
 		return $this->properties[$name];

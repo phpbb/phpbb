@@ -415,7 +415,7 @@ class storage
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		return new file_info($this->get_adapter(), $path);
+		return new file_info($this->get_adapter(), $this->db, $this->get_name(), $this->storage_table, $path);
 	}
 
 	/**
