@@ -31,7 +31,7 @@ class usergroup extends base_group
 					'ON'   => 'g.group_id = ug.group_id'
 				]
 			],
-			'WHERE'     => 'ug.user_id = ' . (int) $this->user->data['user_id'],
+			'WHERE'     => 'ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'],
 		]);
 		return $query;
 	}

@@ -20,16 +20,20 @@ class team extends base_user
 	 */
 	protected function query($keyword, $topic_id)
 	{
+		/*
+		 * For optimization purposes all team members are returned regardless of the keyword
+		 * Names filtering is done on the frontend
+		 * Results will be cached in a single file
+		 */
 		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'u.username, u.user_id',
+			'SELECT'    => 'u.username_clean, u.username, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',
 				USER_GROUP_TABLE => 'ug',
 				TEAMPAGE_TABLE => 't',
 			],
 			'WHERE'     => 'ug.group_id = t.group_id AND ug.user_id = u.user_id AND ug.user_pending = 0
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
+				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 			'ORDER_BY'  => 'u.user_lastvisit DESC'
 		]);
 		return $query;

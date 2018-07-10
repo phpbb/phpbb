@@ -76,10 +76,27 @@ abstract class base_user implements source_interface
 	public function get(array &$names, $keyword, $topic_id)
 	{
 		$keyword = utf8_clean_string($keyword);
-		$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), self::NAMES_BATCH_SIZE);
 
-		while ($row = $this->db->sql_fetchrow($result))
+		// Do not query all possible users (just a moderate amount), cache results for 5 minutes
+		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
+
+		$i = 0;
+		while ($i < self::NAMES_BATCH_SIZE)
 		{
+			$row = $this->db->sql_fetchrow($result);
+
+			if (!$row)
+			{
+				break;
+			}
+
+			if (!empty($keyword) && strpos($row['username_clean'], $keyword) !== 0)
+			{
+				continue;
+			}
+
+			$i++;
+
 			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
 			array_push($names, [
 				'name'		=> $row['username'],
@@ -95,7 +112,5 @@ abstract class base_user implements source_interface
 		}
 
 		$this->db->sql_freeresult($result);
-
-		return $names;
 	}
 }
