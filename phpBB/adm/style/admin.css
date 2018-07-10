@@ -840,6 +840,7 @@ table.zebra-table tbody tr:nth-child(odd) {
 }
 
 .row2 {
+	word-break: break-all;
 	background-color: #DCEBFE;
 }
 

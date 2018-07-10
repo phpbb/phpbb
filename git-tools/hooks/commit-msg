@@ -147,6 +147,15 @@ then
 	quit $ERR_LENGTH;
 fi
 
+# Check for CR/LF line breaks
+if grep -q $'\r$' "$1"
+then
+	complain "The commit message uses CR/LF line breaks, which are not permitted." >&2
+	complain >&2
+
+	quit $ERR_EOF;
+fi
+
 lines=$(wc -l "$1" | awk '{ print $1; }');
 expecting=header;
 in_description=0;

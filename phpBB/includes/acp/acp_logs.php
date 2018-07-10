@@ -151,7 +151,7 @@ class acp_logs
 		{
 			$data = array();
 
-			$checks = array('viewtopic', 'viewlogs', 'viewforum');
+			$checks = array('viewpost', 'viewtopic', 'viewlogs', 'viewforum');
 			foreach ($checks as $check)
 			{
 				if (isset($row[$check]) && $row[$check])
