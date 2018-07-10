@@ -498,8 +498,8 @@
 	.column2,
 	.left-box.profile-details {
 		float: none;
-		width: auto;
 		clear: both;
+		width: auto;
 	}
 
 	/* Polls
