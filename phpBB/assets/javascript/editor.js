@@ -397,7 +397,8 @@ function getCaretPosition(txtarea) {
 		}
 
 		function getMatchedNames(query, items, searchKey) {
-			let i, len;
+			let i;
+			let len;
 			let _results = [];
 			for (i = 0, len = items.length; i < len; i++) {
 				let item = items[i];
@@ -468,7 +469,8 @@ function getCaretPosition(txtarea) {
 						});
 					},
 					sorter: function(query, items, searchKey) {
-						let i, len;
+						let i;
+						let len;
 						let highestPriority = 0;
 						let _unsorted = {u: {}, g: {}};
 						let _exactMatch = [];
@@ -543,7 +545,8 @@ function getCaretPosition(txtarea) {
 	phpbb.mentions = new Mentions();
 
 	$(document).ready(function() {
-		let doc, textarea;
+		let doc;
+		let textarea;
 
 		// find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
