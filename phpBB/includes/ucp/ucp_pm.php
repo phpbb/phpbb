@@ -107,7 +107,7 @@ class ucp_pm
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 				compose_pm($id, $mode, $action, $user_folders);
 
-				$tpl_file = 'ucp_pm_viewfolder';
+				$tpl_file = 'posting_body';
 			break;
 
 			case 'options':
@@ -394,6 +394,7 @@ class ucp_pm
 					}
 
 					$action = 'reply';
+					$user_folders = get_folder($user->data['user_id']);
 
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 					compose_pm($id, $mode, $action, $user_folders);
