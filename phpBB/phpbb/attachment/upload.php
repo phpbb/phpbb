@@ -336,21 +336,29 @@ class upload
 	 */
 	protected function check_disk_space()
 	{
-		$free_space = $this->storage->free_space();
-
-		if ($free_space !== false && $free_space <= $this->file->get('filesize'))
+		try
 		{
-			if ($this->auth->acl_get('a_'))
-			{
-				$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FULL');
-			}
-			else
-			{
-				$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
-			}
-			$this->file_data['post_attach'] = false;
+			$free_space = $this->storage->free_space();
 
-			return false;
+			if ($free_space <= $this->file->get('filesize'))
+			{
+				if ($this->auth->acl_get('a_'))
+				{
+					$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FULL');
+				}
+				else
+				{
+					$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
+				}
+
+				$this->file_data['post_attach'] = false;
+
+				return false;
+			}
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Do nothing
 		}
 
 		return true;
