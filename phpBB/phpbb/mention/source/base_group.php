@@ -68,14 +68,15 @@ abstract class base_group implements source_interface
 				'FROM'   => [
 					GROUPS_TABLE => 'g',
 				],
-				'LEFT_JOIN'	=> array(
-					array(
-						'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
+				'LEFT_JOIN'	=> [
+					[
+						'FROM'	=> [USER_GROUP_TABLE => 'ug'],
 						'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'],
-					),
-				),
+					],
+				],
 			]);
-			$result = $this->db->sql_query($query);
+			// Cache results for 5 minutes
+			$result = $this->db->sql_query($query, 600);
 
 			$this->groups = [];
 			while ($row = $this->db->sql_fetchrow($result))
@@ -111,8 +112,8 @@ abstract class base_group implements source_interface
 	 */
 	public function get(array &$names, $keyword, $topic_id)
 	{
-		// Grab all group IDs
-		$result = $this->db->sql_query($this->query($keyword, $topic_id));
+		// Grab all group IDs, cache for 5 minutes
+		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
 
 		$group_ids = [];
 		while ($row = $this->db->sql_fetchrow($result))
@@ -142,7 +143,5 @@ abstract class base_group implements source_interface
 				'rank'		=> $group_rank['title'],
 			]);
 		}
-
-		return $names;
 	}
 }

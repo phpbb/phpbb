@@ -20,6 +20,11 @@ class topic extends base_user
 	 */
 	protected function query($keyword, $topic_id)
 	{
+		/*
+		 * For optimization purposes all users are returned regardless of the keyword
+		 * Names filtering is done on the frontend
+		 * Results will be cached on a per-topic basis
+		 */
 		$query = $this->db->sql_build_query('SELECT', [
 			'SELECT'    => 'u.username, u.user_id',
 			'FROM'      => [
@@ -32,8 +37,7 @@ class topic extends base_user
 				]
 			],
 			'WHERE'     => 'p.topic_id = ' . $topic_id . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
+				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 			'ORDER_BY'  => 'p.post_time DESC'
 		]);
 		return $query;

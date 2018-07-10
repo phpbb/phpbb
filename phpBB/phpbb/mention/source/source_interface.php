@@ -17,12 +17,11 @@ interface source_interface
 {
 	/**
 	 * Searches database for names to mention
-	 * and returns and array of found items
+	 * and alters the passed array of found items
 	 *
 	 * @param array  $names    Array of already fetched data with names
 	 * @param string $keyword  Search string
 	 * @param int    $topic_id Current topic ID
-	 * @return array Array of names
 	 */
 	public function get(array &$names, $keyword, $topic_id);
 }

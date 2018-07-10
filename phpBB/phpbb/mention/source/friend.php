@@ -33,8 +33,13 @@ class friend extends base_user
 	 */
 	protected function query($keyword, $topic_id)
 	{
+		/*
+		 * For optimization purposes all friends are returned regardless of the keyword
+		 * Names filtering is done on the frontend
+		 * Results will be cached on a per-user basis
+		 */
 		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'u.username, u.user_id',
+			'SELECT'    => 'u.username_clean, u.username, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',
 			],
@@ -45,8 +50,7 @@ class friend extends base_user
 				]
 			],
 			'WHERE'     => 'z.friend = 1 AND z.user_id = ' . (int) $this->user->data['user_id'] . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
+				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 			'ORDER_BY'  => 'u.user_lastvisit DESC'
 		]);
 		return $query;
