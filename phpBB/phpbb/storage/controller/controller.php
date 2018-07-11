@@ -88,12 +88,14 @@ class controller
 		{
 			try
 			{
-				$this->response->headers->set('Content-Type', $file_info->mimetype);
+				$content_type = $file_info->mimetype;
 			}
 			catch (\phpbb\storage\exception\exception $e)
 			{
-				// Just don't send this header
+				$content_type = 'application/octet-stream';
 			}
+
+			$this->response->headers->set('Content-Type', $content_type);
 		}
 
 		if (!$this->response->headers->has('Content-Length'))
