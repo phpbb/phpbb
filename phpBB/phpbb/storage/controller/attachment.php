@@ -23,7 +23,9 @@ use phpbb\exception\http_exception;
 use phpbb\request\request;
 use phpbb\storage\storage;
 use phpbb\user;
+use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class attachment extends controller
@@ -43,24 +45,19 @@ class attachment extends controller
 	/** @var request */
 	protected $request;
 
-	/** @var storage */
-	protected $storage;
-
 	/** @var user */
 	protected $user;
 
-	public function __construct(auth $auth, service $cache, config $config, $content_visibility, driver_interface $db, dispatcher $dispatcher, request $request, storage $storage, user $user)
+	public function __construct(auth $auth, service $cache, config $config, $content_visibility, driver_interface $db, dispatcher $dispatcher, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
+		parent::__construct($cache, $db, $storage, $symfony_request);
+
 		$this->auth = $auth;
-		$this->cache = $cache;
 		$this->config = $config;
 		$this->content_visibility = $content_visibility;
-		$this->db = $db;
 		$this->dispatcher = $dispatcher;
 		$this->request = $request;
-		$this->storage = $storage;
 		$this->user = $user;
-		$this->response = new StreamedResponse();
 	}
 
 	public function handle($file)
@@ -205,14 +202,16 @@ class attachment extends controller
 
 		if (!empty($redirect))
 		{
-			$this->response = new RedirectResponse($redirect);
-		}
-		else
-		{
-			$this->send_file_to_browser($attachment, $display_cat);
+			return new RedirectResponse($redirect);
 		}
 
-		return $this->response->send();
+		$this->send_file_to_browser($attachment, $display_cat);
+
+		$time = new \Datetime();
+		$this->response->setExpires($time->modify('+1 year'));
+
+		$file = $attachment['physical_filename'];
+		return parent::handle($file);
 	}
 
 	/**
@@ -234,17 +233,6 @@ class attachment extends controller
 			$attachment['mimetype'] = (strpos(strtolower($this->user->browser), 'msie') !== false || strpos(strtolower($this->user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 		}
 
-		// Now send the File Contents to the Browser
-		try
-		{
-			$file_info = $this->storage->file_info($filename);
-			$size = $file_info->size;
-		}
-		catch (\Exception $e)
-		{
-			$size = 0;
-		}
-
 		/**
 		* Event to alter attachment before it is sent to browser.
 		*
@@ -252,85 +240,34 @@ class attachment extends controller
 		* @var	array	attachment	Attachment data
 		* @var	int		category	Attachment category
 		* @var	string	filename	Path to file, including filename
-		* @var	int		size		File size
 		* @since 3.1.11-RC1
 		*/
 		$vars = array(
 			'attachment',
 			'category',
 			'filename',
-			'size',
 		);
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
-
-		// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
-
-		// Check if headers already sent or not able to get the file contents.
-		if (headers_sent())
-		{
-			throw new http_exception(500, 'UNABLE_TO_DELIVER_FILE');
-		}
-
-		// Make sure the database record for the filesize is correct
-		if ($size > 0 && $size != $attachment['filesize'] && strpos($attachment['physical_filename'], 'thumb_') === false)
-		{
-			// Update database record
-			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-				SET filesize = ' . (int) $size . '
-				WHERE attach_id = ' . (int) $attachment['attach_id'];
-			$this->db->sql_query($sql);
-		}
-
-		// Now the tricky part... let's dance
-		$this->response->setPublic();
 
 		// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 		$this->response->headers->set('Content-Type', $attachment['mimetype']);
 
-		header('X-Content-Type-Options: nosniff');
-
-		if ($category == ATTACHMENT_CATEGORY_FLASH && $this->request->variable('view', 0) === 1)
+		if ($this->request->variable('view', 0) === 1 || strpos($attachment['mimetype'], 'image') !== false)
 		{
-			// We use content-disposition: inline for flash files and view=1 to let it correctly play with flash player 10 - any other disposition will fail to play inline
-			header('Content-Disposition: inline');
+			$disposition = $this->response->headers->makeDisposition(
+				ResponseHeaderBag::DISPOSITION_INLINE,
+				rawurlencode($filename)
+			);
 		}
 		else
 		{
-			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . "; filename*=UTF-8''" . rawurlencode(htmlspecialchars_decode($attachment['real_filename'])));
-
-			if (strpos($attachment['mimetype'], 'image') !== 0)
-			{
-				header('X-Download-Options: noopen');
-			}
+			$disposition = $this->response->headers->makeDisposition(
+				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+				rawurlencode($filename)
+			);
 		}
 
-		if (!$this->set_modified_headers($attachment['filetime'], $this->user->browser))
-		{
-			if ($size)
-			{
-				$this->response->headers->set('Content-Length', $size);
-			}
-
-			// Try to deliver in chunks
-			@set_time_limit(0);
-
-			$fp = $this->storage->read_stream($filename);
-
-			// Close the db connection before sending the file etc.
-			$this->file_gc();
-
-			if ($fp !== false)
-			{
-				$output = fopen('php://output', 'w+b');
-
-				$this->response->setCallback(function () use ($fp, $output) {
-					stream_copy_to_stream($fp, $output);
-					fclose($fp);
-					fclose($output);
-					flush();
-				});
-			}
-		}
+		$this->response->headers->set('Content-Disposition', $disposition);
 	}
 
 	/**
@@ -562,29 +499,5 @@ class attachment extends controller
 		}
 
 		return $allowed;
-	}
-
-	/**
-	* Check if the browser has the file already and set the appropriate headers-
-	* @returns false if a resend is in order.
-	*/
-	protected function set_modified_headers($stamp, $browser)
-	{
-		// let's see if we have to send the file at all
-		$last_load 	=  $this->request->header('If-Modified-Since') ? strtotime(trim($this->request->header('If-Modified-Since'))) : false;
-
-		if ($last_load !== false && $last_load >= $stamp)
-		{
-			send_status_line(304, 'Not Modified');
-			// seems that we need those too ... browsers
-			header('Cache-Control: public');
-			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
-			return true;
-		}
-		else
-		{
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $stamp) . ' GMT');
-		}
-		return false;
 	}
 }

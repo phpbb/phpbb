@@ -17,6 +17,7 @@ use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\storage\storage;
+use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -27,13 +28,11 @@ class avatar extends controller
 
 	protected $allowed_extensions = ['png', 'gif', 'jpg', 'jpeg'];
 
-	public function __construct(service $cache, config $config, driver_interface $db, storage $storage)
+	public function __construct(service $cache, config $config, driver_interface $db, storage $storage, symfony_request $symfony_request)
 	{
-		$this->cache = $cache;
+		parent::__construct($cache, $db, $storage, $symfony_request);
+
 		$this->config = $config;
-		$this->db = $db;
-		$this->storage = $storage;
-		$this->response = new StreamedResponse();
 	}
 
 	public function handle($file)
@@ -67,21 +66,18 @@ class avatar extends controller
 		return $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $file . '.' . $ext;
 	}
 
-	protected function send($file)
+	protected function prepare($file)
 	{
-		if (!headers_sent())
-		{
-			$disposition = $this->response->headers->makeDisposition(
-				ResponseHeaderBag::DISPOSITION_INLINE,
-				rawurlencode($file)
-			);
+		$disposition = $this->response->headers->makeDisposition(
+			ResponseHeaderBag::DISPOSITION_INLINE,
+			rawurlencode($file)
+		);
 
-			$this->response->headers->set('Content-Disposition', $disposition);
+		$this->response->headers->set('Content-Disposition', $disposition);
 
-			$time = new \Datetime();
-			$this->response->setExpires($time->modify('+1 year'));
-		}
+		$time = new \Datetime();
+		$this->response->setExpires($time->modify('+1 year'));
 
-		parent::send($file);
+		parent::prepare($file);
 	}
 }

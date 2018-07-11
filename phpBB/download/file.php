@@ -33,7 +33,7 @@ if (isset($_GET['avatar']))
 	$response = new RedirectResponse(
 		$controller_helper->route('phpbb_storage_avatar', array(
 			'file'	=> $request->variable('avatar', ''),
-		)),
+		), false),
 		301
 	);
 	$response->send();
@@ -50,7 +50,7 @@ $response = new RedirectResponse(
 		'file'	=> $attach_id,
 		'mode'	=> $mode,
 		't'		=> $thumbnail,
-	)),
+	), false),
 	301
 );
 $response->send();

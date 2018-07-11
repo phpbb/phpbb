@@ -91,6 +91,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@storage.avatar'
+            - '@symfony_request'
 
     storage.controller.attachment:
         class: phpbb\storage\controller\attachment
@@ -103,4 +104,5 @@ services:
             - '@dispatcher'
             - '@request'
             - '@storage.attachment'
+            - '@symfony_request'
             - '@user'

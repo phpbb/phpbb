@@ -17,6 +17,7 @@ use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\storage\storage;
+use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class controller
@@ -33,11 +34,15 @@ class controller
 	/** @var StreamedResponse */
 	protected $response;
 
-	public function __construct(service $cache, driver_interface $db, storage $storage)
+	/** @var symfony_request */
+	protected $symfony_request;
+
+	public function __construct(service $cache, driver_interface $db, storage $storage, symfony_request $symfony_request)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->storage = $storage;
+		$this->symfony_request = $symfony_request;
 		$this->response = new StreamedResponse();
 	}
 
@@ -53,7 +58,12 @@ class controller
 			throw new http_exception(404, 'Not Found');
 		}
 
-		$this->send($file);
+		$this->prepare($file);
+
+		if (headers_sent())
+		{
+			throw new http_exception(500, 'Headers already sent');
+		}
 
 		return $this->response->send();
 	}
@@ -68,28 +78,34 @@ class controller
 		return $this->storage->exists($file);
 	}
 
-	protected function send($file)
+	protected function prepare($file)
 	{
 		$this->response->setPublic();
 
 		$file_info = $this->storage->file_info($file);
 
-		try
+		if (!$this->response->headers->has('Content-Type'))
 		{
-			$this->response->headers->set('Content-Type', $file_info->mimetype);
-		}
-		catch (\phpbb\storage\exception\exception $e)
-		{
-			// Just don't send this header
+			try
+			{
+				$this->response->headers->set('Content-Type', $file_info->mimetype);
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				// Just don't send this header
+			}
 		}
 
-		try
+		if (!$this->response->headers->has('Content-Length'))
 		{
-			$this->response->headers->set('Content-Length', $file_info->size);
-		}
-		catch (\phpbb\storage\exception\exception $e)
-		{
-			// Just don't send this header
+			try
+			{
+				$this->response->headers->set('Content-Length', $file_info->size);
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				// Just don't send this header
+			}
 		}
 
 		@set_time_limit(0);
@@ -107,6 +123,8 @@ class controller
 			fclose($output);
 			flush();
 		});
+
+		$this->response->isNotModified($this->symfony_request);
 	}
 
 	/**
