@@ -186,7 +186,6 @@ class attachment extends controller
 		$vars = array(
 			'attach_id',
 			'attachment',
-			'display_cat',
 			'extensions',
 			'mode',
 			'thumbnail',
@@ -199,7 +198,7 @@ class attachment extends controller
 			return new RedirectResponse($redirect);
 		}
 
-		$this->send_file_to_browser($attachment, $display_cat);
+		$this->send_file_to_browser($attachment);
 
 		$time = new \Datetime();
 		$this->response->setExpires($time->modify('+1 year'));
@@ -211,20 +210,13 @@ class attachment extends controller
 	/**
 	* Send file to browser
 	*/
-	protected function send_file_to_browser($attachment, $category)
+	protected function send_file_to_browser($attachment)
 	{
 		$filename = $attachment['physical_filename'];
 
 		if (!$this->storage->exists($filename))
 		{
 			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
-		}
-
-		// Correct the mime type - we force application/octetstream for all files, except images
-		// Please do not change this, it is a security precaution
-		if ($category != ATTACHMENT_CATEGORY_IMAGE || strpos($attachment['mimetype'], 'image') !== 0)
-		{
-			$attachment['mimetype'] = (strpos(strtolower($this->user->browser), 'msie') !== false || strpos(strtolower($this->user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 		}
 
 		/**
@@ -238,7 +230,6 @@ class attachment extends controller
 		*/
 		$vars = array(
 			'attachment',
-			'category',
 			'filename',
 		);
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
