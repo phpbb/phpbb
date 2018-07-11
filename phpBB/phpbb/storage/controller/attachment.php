@@ -151,19 +151,17 @@ class attachment extends controller
 
 		$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-		if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg'))
-		{
-			$display_cat = ATTACHMENT_CATEGORY_NONE;
-		}
-
 		if ($thumbnail)
 		{
 			$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 		}
 		else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'])
 		{
-			// Update download count
-			$this->phpbb_increment_downloads($attachment['attach_id']);
+			if (!(($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg')))
+			{
+				// Update download count
+				$this->phpbb_increment_downloads($attachment['attach_id']);
+			}
 		}
 
 		$redirect = '';
