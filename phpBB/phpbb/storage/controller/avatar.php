@@ -19,7 +19,6 @@ use phpbb\db\driver\driver_interface;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class avatar extends controller
 {
