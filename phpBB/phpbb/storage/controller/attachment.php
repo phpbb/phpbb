@@ -172,7 +172,6 @@ class attachment extends controller
 		* @event core.download_file_send_to_browser_before
 		* @var	int		attach_id			The attachment ID
 		* @var	array	attachment			Array with attachment data
-		* @var	int		display_cat			Attachment category
 		* @var	array	extensions			Array with file extensions data
 		* @var	string	mode				Download mode
 		* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
@@ -222,7 +221,6 @@ class attachment extends controller
 		*
 		* @event core.send_file_to_browser_before
 		* @var	array	attachment	Attachment data
-		* @var	int		category	Attachment category
 		* @var	string	filename	Path to file, including filename
 		* @since 3.1.11-RC1
 		*/
