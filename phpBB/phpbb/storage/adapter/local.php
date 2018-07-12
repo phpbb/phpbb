@@ -340,7 +340,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Get file size.
+	 * Get file size
 	 *
 	 * @param string	$path	The file
 	 *
@@ -361,7 +361,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Get file mimetype.
+	 * Get file mimetype
 	 *
 	 * @param string	$path	The file
 	 *
@@ -373,7 +373,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Get image dimensions.
+	 * Get image dimensions
 	 *
 	 * @param string	$path	The file
 	 *
@@ -394,7 +394,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Get image width.
+	 * Get image width
 	 *
 	 * @param string	$path	The file
 	 *
@@ -406,7 +406,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Get image height.
+	 * Get image height
 	 *
 	 * @param string	$path	The file
 	 *
@@ -423,5 +423,20 @@ class local implements adapter_interface, stream_interface
 	public function get_link($path)
 	{
 		return generate_board_url() . $this->path . $path;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function free_space()
+	{
+		$free_space = @disk_free_space($this->root_path);
+
+		if ($free_space === false)
+		{
+			throw new exception('STORAGE_CANNOT_GET_FREE_SPACE');
+		}
+
+		return $free_space;
 	}
 }

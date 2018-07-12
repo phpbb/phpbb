@@ -34,7 +34,7 @@ class file_info
 	 * Stores the properties of $path file, so dont have to be consulted  multiple times.
 	 * For example, when you need the width of an image, using getimagesize() you get
 	 * both dimensions, so you store both here, and when you get the height, you dont have
-	 * to call getimagesize() again.
+	 * to call getimagesize() again
 	 *
 	 * @var array
 	 */
@@ -54,7 +54,7 @@ class file_info
 	}
 
 	/**
-	 * Load propertys lazily.
+	 * Load propertys lazily
 	 *
 	 * @param string	name		The property name.
 	 *

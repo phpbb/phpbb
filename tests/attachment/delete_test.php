@@ -44,9 +44,10 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 
 		parent::setUp();
 
+		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$this->config = new \phpbb\config\config(array());
 		$this->db = $this->new_dbal();
-		$db = $this->db;
+		$db_mock = $this->createMock('\phpbb\db\driver\driver_interface');
 		$this->resync = new \phpbb\attachment\resync($this->db);
 		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
 		$this->filesystem->expects($this->any())
@@ -61,7 +62,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$this->storage = new \phpbb\storage\storage($db_mock, $cache, $adapter_factory_mock, '', '');
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}

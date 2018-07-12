@@ -16,7 +16,7 @@ namespace phpbb\storage;
 interface stream_interface
 {
 	/**
-	 * Reads a file as a stream.
+	 * Reads a file as a stream
 	 *
 	 * @param string	$path	File to read
 	 *
@@ -27,7 +27,7 @@ interface stream_interface
 	public function read_stream($path);
 
 	/**
-	 * Writes a new file using a stream.
+	 * Writes a new file using a stream
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource

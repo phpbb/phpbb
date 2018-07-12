@@ -13,15 +13,29 @@
 
 namespace phpbb\storage;
 
+use phpbb\cache\driver\driver_interface as cache;
+use phpbb\db\driver\driver_interface as db;
+
 /**
  * @internal Experimental
  */
 class storage
 {
 	/**
-	 * @var string
+	 * @var \phpbb\storage\adapter\adapter_interface
 	 */
-	protected $storage_name;
+	protected $adapter;
+
+	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $db;
+
+	/**
+	 * Cache driver
+	 * @var \phpbb\cache\driver\driver_interface
+	 */
+	protected $cache;
 
 	/**
 	 * @var \phpbb\storage\adapter_factory
@@ -29,20 +43,31 @@ class storage
 	protected $factory;
 
 	/**
-	 * @var \phpbb\storage\adapter\adapter_interface
+	 * @var string
 	 */
-	protected $adapter;
+	protected $storage_name;
+
+	/**
+	 * @var string
+	 */
+	protected $storage_table;
 
 	/**
 	 * Constructor
 	 *
+	 * @param \phpbb\db\driver\driver_interface	$db
+	 * @param \phpbb\cache\driver\driver_interface	$cache
 	 * @param \phpbb\storage\adapter_factory	$factory
 	 * @param string							$storage_name
+	 * @param string							$storage_table
 	 */
-	public function __construct(adapter_factory $factory, $storage_name)
+	public function __construct(db $db, cache $cache, adapter_factory $factory, $storage_name, $storage_table)
 	{
+		$this->db = $db;
+		$this->cache = $cache;
 		$this->factory = $factory;
 		$this->storage_name = $storage_name;
+		$this->storage_table = $storage_table;
 	}
 
 	/**
@@ -71,7 +96,7 @@ class storage
 	}
 
 	/**
-	 * Dumps content into a file.
+	 * Dumps content into a file
 	 *
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
@@ -82,6 +107,7 @@ class storage
 	public function put_contents($path, $content)
 	{
 		$this->get_adapter()->put_contents($path, $content);
+		$this->track_file($path);
 	}
 
 	/**
@@ -101,7 +127,7 @@ class storage
 	}
 
 	/**
-	 * Checks the existence of files or directories.
+	 * Checks the existence of files or directories
 	 *
 	 * @param string	$path	file/directory to check
 	 *
@@ -113,7 +139,7 @@ class storage
 	}
 
 	/**
-	 * Removes files or directories.
+	 * Removes files or directories
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
@@ -122,10 +148,11 @@ class storage
 	public function delete($path)
 	{
 		$this->get_adapter()->delete($path);
+		$this->untrack_file($path);
 	}
 
 	/**
-	 * Rename a file or a directory.
+	 * Rename a file or a directory
 	 *
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
@@ -136,10 +163,11 @@ class storage
 	public function rename($path_orig, $path_dest)
 	{
 		$this->get_adapter()->rename($path_orig, $path_dest);
+		$this->track_rename($path_orig, $path_dest);
 	}
 
 	/**
-	 * Copies a file.
+	 * Copies a file
 	 *
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
@@ -150,15 +178,16 @@ class storage
 	public function copy($path_orig, $path_dest)
 	{
 		$this->get_adapter()->copy($path_orig, $path_dest);
+		$this->track_file($path_dest);
 	}
 
 	/**
-	 * Reads a file as a stream.
+	 * Reads a file as a stream
 	 *
 	 * @param string	$path	File to read
 	 *
 	 * @throws \phpbb\storage\exception\exception		When unable to open file
-
+	 *
 	 * @return resource	Returns a file pointer
 	 */
 	public function read_stream($path)
@@ -182,11 +211,13 @@ class storage
 	}
 
 	/**
-	 * Writes a new file using a stream.
+	 * Writes a new file using a stream
+	 * The file needs to be tracked after using this method
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
-	 *										When target file cannot be created
+	 *
+	 * @throws \phpbb\storage\exception\exception		When target file cannot be created
 	 */
 	public function write_stream($path, $resource)
 	{
@@ -204,7 +235,83 @@ class storage
 	}
 
 	/**
-	 * Get file info.
+	 * Track file in database
+	 *
+	 * @param string	$path		The target file
+	 * @param bool		$update		Update file size when already tracked
+	 */
+	public function track_file($path, $update = false)
+	{
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
+
+		// Get file, if exist update filesize, if not add new record
+		$sql = 'SELECT * FROM ' .  $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			$file = $this->file_info($path);
+			$sql_ary['filesize'] = $file->size;
+
+			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		else if ($update)
+		{
+			$file = $this->file_info($path);
+			$sql = 'UPDATE ' . $this->storage_table . '
+				SET filesize = ' . $file->size . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+
+		$this->cache->destroy('_storage_' . $this->get_name() . '_totalsize');
+		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
+	}
+
+	/**
+	 * Untrack file
+	 *
+	 * @param string	$path		The target file
+	 */
+	public function untrack_file($path)
+	{
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
+
+		$sql = 'DELETE FROM ' . $this->storage_table . '
+			WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
+		$this->db->sql_query($sql);
+
+		$this->cache->destroy('_storage_' . $this->get_name() . '_totalsize');
+		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
+	}
+
+	/**
+	 * Rename tracked file
+	 *
+	 * @param string	$path_orig	The original file/direcotry
+	 * @param string	$path_dest	The target file/directory
+	 */
+	protected function track_rename($path_orig, $path_dest)
+	{
+		$sql = 'UPDATE ' . $this->storage_table . "
+			SET file_path = '" . $this->db->sql_escape($path_dest) . "'
+			WHERE file_path = '" . $this->db->sql_escape($path_orig) . "'
+				AND storage = '" . $this->db->sql_escape($this->get_name()) . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	 * Get file info
 	 *
 	 * @param string	$path	The file
 	 *
@@ -214,7 +321,7 @@ class storage
 	 */
 	public function file_info($path)
 	{
-		return new file_info($this->adapter, $path);
+		return new file_info($this->get_adapter(), $path);
 	}
 
 	/**
@@ -228,5 +335,67 @@ class storage
 	public function get_link($path)
 	{
 		return $this->get_adapter()->get_link($path);
+	}
+
+	/**
+	 * Get total storage size
+	 *
+	 * @return int	Size in bytes
+	 */
+	public function get_size()
+	{
+		$total_size = $this->cache->get('_storage_' . $this->get_name() . '_totalsize');
+
+		if ($total_size === false)
+		{
+			$sql = 'SELECT SUM(filesize) AS totalsize
+				FROM ' .  $this->storage_table . "
+				WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'";
+			$result = $this->db->sql_query($sql);
+
+			$total_size = (int) $this->db->sql_fetchfield('totalsize');
+			$this->cache->put('_storage_' . $this->get_name() . '_totalsize', $total_size);
+
+			$this->db->sql_freeresult($result);
+		}
+
+		return (int) $total_size;
+	}
+
+	/**
+	 * Get number of storage files
+	 *
+	 * @return int	Number of files
+	 */
+	public function get_num_files()
+	{
+		$number_files = $this->cache->get('_storage_' . $this->get_name() . '_numfiles');
+
+		if ($number_files === false)
+		{
+			$sql = 'SELECT COUNT(file_id) AS numfiles
+				FROM ' .  $this->storage_table . "
+				WHERE storage = '" . $this->db->sql_escape($this->get_name()) . "'";
+			$result = $this->db->sql_query($sql);
+
+			$number_files = (int) $this->db->sql_fetchfield('numfiles');
+			$this->cache->put('_storage_' . $this->get_name() . '_numfiles', $number_files);
+
+			$this->db->sql_freeresult($result);
+		}
+
+		return (int) $number_files;
+	}
+
+	/**
+	 * Get space available in bytes
+	 *
+	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
+	 *
+	 * @return float	Returns available space
+	 */
+	public function free_space()
+	{
+		return $this->get_adapter()->free_space();
 	}
 }

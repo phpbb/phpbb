@@ -187,7 +187,12 @@ class acp_database
 
 								$storage->write_stream($file, $fp);
 
-								fclose($fp);
+								if (is_resource($fp))
+								{
+									fclose($fp);
+								}
+
+								$storage->track_file($file);
 
 								// Remove file from tmp
 								@unlink($temp_dir . '/' . $file);
