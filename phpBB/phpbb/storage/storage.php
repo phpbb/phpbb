@@ -96,7 +96,7 @@ class storage
 	}
 
 	/**
-	 * Dumps content into a file.
+	 * Dumps content into a file
 	 *
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
@@ -127,7 +127,7 @@ class storage
 	}
 
 	/**
-	 * Checks the existence of files or directories.
+	 * Checks the existence of files or directories
 	 *
 	 * @param string	$path	file/directory to check
 	 *
@@ -139,7 +139,7 @@ class storage
 	}
 
 	/**
-	 * Removes files or directories.
+	 * Removes files or directories
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
@@ -152,7 +152,7 @@ class storage
 	}
 
 	/**
-	 * Rename a file or a directory.
+	 * Rename a file or a directory
 	 *
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
@@ -167,7 +167,7 @@ class storage
 	}
 
 	/**
-	 * Copies a file.
+	 * Copies a file
 	 *
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
@@ -182,7 +182,7 @@ class storage
 	}
 
 	/**
-	 * Reads a file as a stream.
+	 * Reads a file as a stream
 	 *
 	 * @param string	$path	File to read
 	 *
@@ -211,8 +211,8 @@ class storage
 	}
 
 	/**
-	 * Writes a new file using a stream.
-	 * You have to track file after use this method
+	 * Writes a new file using a stream
+	 * The file needs to be tracked after using this method
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
@@ -235,7 +235,7 @@ class storage
 	}
 
 	/**
-	 * Track file into database.
+	 * Track file in database
 	 *
 	 * @param string	$path		The target file
 	 * @param bool		$update		Update file size when already tracked
@@ -276,7 +276,7 @@ class storage
 	}
 
 	/**
-	 * Untrack file.
+	 * Untrack file
 	 *
 	 * @param string	$path		The target file
 	 */
@@ -296,7 +296,7 @@ class storage
 	}
 
 	/**
-	 * Rename tracked file.
+	 * Rename tracked file
 	 *
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
@@ -311,7 +311,7 @@ class storage
 	}
 
 	/**
-	 * Get file info.
+	 * Get file info
 	 *
 	 * @param string	$path	The file
 	 *
@@ -338,7 +338,7 @@ class storage
 	}
 
 	/**
-	 * Get total storage size.
+	 * Get total storage size
 	 *
 	 * @return int	Size in bytes
 	 */
@@ -363,7 +363,7 @@ class storage
 	}
 
 	/**
-	 * Get number of storage files.
+	 * Get number of storage files
 	 *
 	 * @return int	Number of files
 	 */
@@ -388,7 +388,7 @@ class storage
 	}
 
 	/**
-	 * Get space available in bytes.
+	 * Get space available in bytes
 	 *
 	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
 	 *
