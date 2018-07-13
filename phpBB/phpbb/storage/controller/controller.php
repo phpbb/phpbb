@@ -17,8 +17,8 @@ use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\storage\storage;
+use phpbb\storage\streamed_response;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class controller
 {
@@ -31,7 +31,7 @@ class controller
 	/** @var storage */
 	protected $storage;
 
-	/** @var StreamedResponse */
+	/** @var streamed_response */
 	protected $response;
 
 	/** @var symfony_request */
@@ -43,7 +43,7 @@ class controller
 		$this->db = $db;
 		$this->storage = $storage;
 		$this->symfony_request = $symfony_request;
-		$this->response = new StreamedResponse();
+		$this->response = new streamed_response();
 	}
 
 	public function handle($file)
