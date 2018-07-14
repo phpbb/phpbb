@@ -62,7 +62,6 @@ class attachment extends controller
 	public function handle($id)
 	{
 		$attach_id = (int) $id;
-		$mode = $this->request->variable('mode', '');
 		$thumbnail = $this->request->variable('t', false);
 
 		// Start session management, do not update session page.
@@ -173,45 +172,31 @@ class attachment extends controller
 		* @var	int		attach_id			The attachment ID
 		* @var	array	attachment			Array with attachment data
 		* @var	array	extensions			Array with file extensions data
-		* @var	string	mode				Download mode
 		* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
 		* @var	string	redirect			Do a redirection instead of reading the file
 		* @since 3.1.6-RC1
 		* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
 		* @changed 3.3.0-a1		Add redirect variable
+		* @changed 3.3.0-a1		Remove display_cat variable
+		* @changed 3.3.0-a1		Remove mode variable
 		*/
 		$vars = array(
 			'attach_id',
 			'attachment',
 			'extensions',
-			'mode',
 			'thumbnail',
 			'redirect',
 		);
 		extract($this->dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
+		// If the redirect variable have been overwritten, do redirect there
 		if (!empty($redirect))
 		{
 			return new RedirectResponse($redirect);
 		}
 
-		$this->send_file_to_browser($attachment);
-
-		$time = new \Datetime();
-		$this->response->setExpires($time->modify('+1 year'));
-
-		$file = $attachment['physical_filename'];
-		return parent::handle($file);
-	}
-
-	/**
-	* Send file to browser
-	*/
-	protected function send_file_to_browser($attachment)
-	{
-		$filename = $attachment['physical_filename'];
-
-		if (!$this->storage->exists($filename))
+		// Check if the file exists in the storage table too
+		if (!$this->storage->exists($attachment['physical_filename']))
 		{
 			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 		}
@@ -221,34 +206,42 @@ class attachment extends controller
 		*
 		* @event core.send_file_to_browser_before
 		* @var	array	attachment	Attachment data
-		* @var	string	filename	Path to file, including filename
 		* @since 3.1.11-RC1
+		* @changed 3.3.0-a1		Removed category variable
+		* @changed 3.3.0-a1		Removed size variable
+		* @changed 3.3.0-a1		Removed filename variable
 		*/
 		$vars = array(
 			'attachment',
-			'filename',
 		);
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
-		// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
+		// Content-type header
 		$this->response->headers->set('Content-Type', $attachment['mimetype']);
 
-		if ($this->request->variable('view', 0) === 1 || strpos($attachment['mimetype'], 'image') !== false)
+		// Display images in browser and force download for other file types
+		if (strpos($attachment['mimetype'], 'image') !== false)
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
-				rawurlencode($filename)
+				rawurlencode($attachment['physical_filename'])
 			);
 		}
 		else
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-				rawurlencode($filename)
+				rawurlencode($attachment['physical_filename'])
 			);
 		}
 
 		$this->response->headers->set('Content-Disposition', $disposition);
+
+		// Set expires header for browser cache
+		$time = new \Datetime();
+		$this->response->setExpires($time->modify('+1 year'));
+
+		return parent::handle($attachment['physical_filename']);
 	}
 
 	/**
