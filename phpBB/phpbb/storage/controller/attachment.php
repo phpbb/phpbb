@@ -59,9 +59,9 @@ class attachment extends controller
 		$this->user = $user;
 	}
 
-	public function handle($file)
+	public function handle($id)
 	{
-		$attach_id = (int) $file;
+		$attach_id = (int) $id;
 		$mode = $this->request->variable('mode', '');
 		$thumbnail = $this->request->variable('t', false);
 
