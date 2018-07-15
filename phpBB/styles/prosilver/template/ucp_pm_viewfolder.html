@@ -111,9 +111,13 @@
 					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1 button button-form default-submit-action" />&nbsp;
 				</div>
 				<!-- IF S_DISPLAY_PREVIEW -->
-					<div class="pm-message-preview">
-						<h3>{L_PREVIEW}{L_COLON} {PREVIEW_SUBJECT}</h3>
-						<div class="pm-content">{PREVIEW_MESSAGE}</div>
+					<div class="pm-preview">
+						<div class="pm-preview-title">
+							{L_PREVIEW}{L_COLON} {PREVIEW_SUBJECT}
+						</div>
+						<div class="pm-preview-content">
+							{PREVIEW_MESSAGE}
+						</div>
 						<!-- IF PREVIEW_SIGNATURE --><div class="pm-signature">{PREVIEW_SIGNATURE}</div><!-- ENDIF -->
 					</div>
 				<!-- ENDIF -->

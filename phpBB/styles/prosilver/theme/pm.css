@@ -74,7 +74,7 @@
 }
 
 .pm-message-list {
-	border-radius: 20px;
+	border-radius: 5px;
 	flex: 1 auto;
 	width: 310px;
 	margin-left: 10px;
@@ -119,4 +119,17 @@
 .pm-message-primary-item,
 .pm-message-secondary {
 	display: block;
+}
+
+.pm-preview {
+	border-radius: 5px;
+	flex: 1 auto;
+	min-height: 100px;
+	height: auto;
+	margin: 10px;
+	background-color: white;
+}
+.pm-preview-title,
+.pm-preview-content {
+	padding: 10px;
 }
