@@ -99,16 +99,24 @@
 				<div class="pm-subject-box">
 					<input type="text" name="subject" id="subject" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="pm-inputbox autowidth" />
 				</div>
-
+				<!-- INCLUDE posting_buttons.html -->
 				<div id="pm-message-box" class="pm-message-box">
 					<textarea name="message" id="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="pm-inputbox">{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 				</div>
 
-				<div class="submit-buttons">
+				<div class="pm-message-buttons">
 					{S_HIDDEN_ADDRESS_FIELD}
 					{S_HIDDEN_FIELDS}
+					<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1 button button-form"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
 					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1 button button-form default-submit-action" />&nbsp;
 				</div>
+				<!-- IF S_DISPLAY_PREVIEW -->
+					<div class="pm-message-preview">
+						<h3>{L_PREVIEW}{L_COLON} {PREVIEW_SUBJECT}</h3>
+						<div class="pm-content">{PREVIEW_MESSAGE}</div>
+						<!-- IF PREVIEW_SIGNATURE --><div class="pm-signature">{PREVIEW_SIGNATURE}</div><!-- ENDIF -->
+					</div>
+				<!-- ENDIF -->
 			{% endif %}
 		</div>
 	</div>
