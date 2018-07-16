@@ -90,7 +90,7 @@ class file_info
 					AND file_path = '" . $this->db->sql_escape($this->path) . "'";
 			$result = $this->db->sql_query($sql);
 
-			$metadata =  json_decode($this->db->sql_fetchfield('metadata'), true);
+			$metadata = json_decode($this->db->sql_fetchfield('metadata'), true);
 
 			if ($metadata !== null)
 			{
