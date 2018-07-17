@@ -65,7 +65,7 @@ class controller
 			throw new http_exception(500, 'Headers already sent');
 		}
 
-		return $this->response->send();
+		return $this->response;
 	}
 
 	protected function is_allowed($file)
