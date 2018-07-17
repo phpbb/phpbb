@@ -97,7 +97,13 @@
 		<div class="pm-compose">
 			{% if S_TO_RECIPIENT %}
 				<div class="pm-subject-box">
-					<input type="text" name="subject" id="subject" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="pm-inputbox autowidth" />
+					<input type="text" name="subject" id="subject" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="pm-inputbox" />
+				</div>
+				<div class="pm-recipient-box">
+					<textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea>
+					<dd class="recipients">
+						<input type="submit" name="add_to" value="{L_ADD}" class="button1 button button-form-bold" tabindex="1" />
+						<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button1 button button-form-bold" tabindex="1" />
 				</div>
 				<!-- INCLUDE posting_buttons.html -->
 				<div id="pm-message-box" class="pm-message-box">

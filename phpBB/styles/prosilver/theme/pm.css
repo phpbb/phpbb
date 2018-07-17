@@ -129,7 +129,20 @@
 	margin: 10px;
 	background-color: white;
 }
+
 .pm-preview-title,
 .pm-preview-content {
 	padding: 10px;
+}
+
+.pm-inputbox {
+	width: 60%;
+	min-height: 40px;
+	margin-left: 10px;
+}
+
+.pm-recipient-box {
+	display:inline-block;
+	width: 30%;
+	margin-left: 10px;
 }
