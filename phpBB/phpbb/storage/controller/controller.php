@@ -85,7 +85,9 @@ class controller
 			throw new http_exception(500, 'Headers already sent');
 		}
 
-		return $this->response;
+		$this->response->send();
+
+		exit;
 	}
 
 	/**
