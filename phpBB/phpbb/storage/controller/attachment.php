@@ -27,6 +27,9 @@ use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
+/**
+ * Controller for /download/attachment/{id} routes
+ */
 class attachment extends controller
 {
 	/** @var auth */
@@ -47,7 +50,21 @@ class attachment extends controller
 	/** @var user */
 	protected $user;
 
-	public function __construct(auth $auth, service $cache, config $config, $content_visibility, driver_interface $db, dispatcher $dispatcher, request $request, storage $storage, symfony_request $symfony_request, user $user)
+	/**
+	 * Constructor
+	 *
+	 * @param auth					$auth
+	 * @param service				$cache
+	 * @param config				$config
+	 * @param content_visibility	$content_visibility
+	 * @param driver_interface		$db
+	 * @param dispatcher_interface	$dispatcher
+	 * @param request				$request
+	 * @param storage				$storage
+	 * @param symfony_request		$symfony_request
+	 * @param user					$user
+	 */
+	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher $dispatcher, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
 		parent::__construct($cache, $db, $storage, $symfony_request);
 
@@ -59,6 +76,9 @@ class attachment extends controller
 		$this->user = $user;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function handle($id)
 	{
 		$attach_id = (int) $id;

@@ -20,6 +20,9 @@ use phpbb\storage\storage;
 use phpbb\storage\streamed_response;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 
+/**
+ * Generic controller for storage
+ */
 class controller
 {
 	/** @var service */
@@ -37,6 +40,14 @@ class controller
 	/** @var symfony_request */
 	protected $symfony_request;
 
+	/**
+	 * Constructor
+	 *
+	 * @param service				$cache
+	 * @param driver_interfacd		$db
+	 * @param storage				$storage
+	 * @param symfony_request		$symfony_request
+	 */
 	public function __construct(service $cache, driver_interface $db, storage $storage, symfony_request $symfony_request)
 	{
 		$this->cache = $cache;
@@ -46,6 +57,15 @@ class controller
 		$this->response = new streamed_response();
 	}
 
+	/**
+	 * Handler
+	 *
+	 * @param string		$file		File path
+	 *
+	 * @throws \phpbb\exception\http_exception when can't access $file
+	 *
+	 * @return \Symfony\Component\HttpFoundation\StreamedResponse a Symfony response object
+	 */
 	public function handle($file)
 	{
 		if (!$this->is_allowed($file))
@@ -68,16 +88,35 @@ class controller
 		return $this->response;
 	}
 
+	/**
+	 * If the user is allowed to download the file
+	 *
+	 * @param string		$file		File path
+	 *
+	 * @return bool
+	 */
 	protected function is_allowed($file)
 	{
 		return true;
 	}
 
+	/**
+	 * Check if file exists
+	 *
+	 * @param string		$file		File path
+	 *
+	 * @return bool
+	 */
 	protected function file_exists($file)
 	{
 		return $this->storage->exists($file);
 	}
 
+	/**
+	 * Prepare response
+	 *
+	 * @param string		$file		File path
+	 */
 	protected function prepare($file)
 	{
 		$this->response->setPublic();
@@ -132,9 +171,7 @@ class controller
 	/**
 	* Garbage Collection
 	*
-	* @param bool $exit		Whether to die or not.
-	*
-	* @return null
+	* @param bool $exit		Whether to die or not
 	*/
 	protected function file_gc()
 	{

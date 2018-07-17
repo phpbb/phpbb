@@ -20,13 +20,26 @@ use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
+/**
+ * Controller for /download/avatar/{file} routes
+ */
 class avatar extends controller
 {
 	/** @var config */
 	protected $config;
 
+	/** @var array */
 	protected $allowed_extensions = ['png', 'gif', 'jpg', 'jpeg'];
 
+	/**
+	 * Constructor
+	 *
+	 * @param service				$cache
+	 * @param config				$config
+	 * @param driver_interface		$db
+	 * @param storage				$storage
+	 * @param symfony_request		$symfony_request
+	 */
 	public function __construct(service $cache, config $config, driver_interface $db, storage $storage, symfony_request $symfony_request)
 	{
 		parent::__construct($cache, $db, $storage, $symfony_request);
@@ -34,6 +47,9 @@ class avatar extends controller
 		$this->config = $config;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function handle($file)
 	{
 		$file = $this->decode_avatar_filename($file);
@@ -41,6 +57,9 @@ class avatar extends controller
 		return parent::handle($file);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function is_allowed($file)
 	{
 		$ext = substr(strrchr($file, '.'), 1);
@@ -49,6 +68,13 @@ class avatar extends controller
 		return strpos($file, '.') && in_array($ext, $this->allowed_extensions);
 	}
 
+	/**
+	 * Decode avatar filename
+	 *
+	 * @param string		$file		Filename
+	 *
+	 * @return string Filename in filesystem
+	 */
 	protected function decode_avatar_filename($file)
 	{
 		$avatar_group = false;
@@ -65,6 +91,9 @@ class avatar extends controller
 		return $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $file . '.' . $ext;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function prepare($file)
 	{
 		$disposition = $this->response->headers->makeDisposition(
