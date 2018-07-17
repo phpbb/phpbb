@@ -92,29 +92,32 @@ class file_info
 			$metadata = json_decode($this->db->sql_fetchfield('metadata'), true);
 			$this->db->sql_freeresult($result);
 
-			if ($metadata !== null)
+			// If is not a valid json (for example when the field is empty)
+			if (!is_array($metadata))
 			{
-				// If the attribute we are looking for isn't in the database,
-				// check with the adapter and update the database
-				if (!isset($metadata[$name]))
+				$metadata = [];
+			}
+
+			// If the attribute we are looking for isn't in the database,
+			// check with the adapter and update the database
+			if (!isset($metadata[$name]))
+			{
+				if (!method_exists($this->adapter, 'file_' . $name))
 				{
-					if (!method_exists($this->adapter, 'file_' . $name))
-					{
-						throw new exception('STORAGE_METHOD_NOT_IMPLEMENTED');
-					}
-
-					$metadata = array_merge($metadata, call_user_func([$this->adapter, 'file_' . $name], $this->path));
-
-					// Save new property to db
-					$sql = 'UPDATE ' .  $this->storage_table . "
-						SET metadata = '" .  $this->db->sql_escape(json_encode($metadata)) . "'
-						WHERE storage = '" . $this->db->sql_escape($this->storage_name) . "'
-							AND file_path = '" . $this->db->sql_escape($this->path) . "'";
-					$this->db->sql_query($sql);
+					throw new exception('STORAGE_METHOD_NOT_IMPLEMENTED');
 				}
 
-				$this->properties = $metadata;
+				$metadata = array_merge($metadata, call_user_func([$this->adapter, 'file_' . $name], $this->path));
+
+				// Save new property to db
+				$sql = 'UPDATE ' .  $this->storage_table . "
+					SET metadata = '" .  $this->db->sql_escape(json_encode($metadata)) . "'
+					WHERE storage = '" . $this->db->sql_escape($this->storage_name) . "'
+						AND file_path = '" . $this->db->sql_escape($this->path) . "'";
+				$this->db->sql_query($sql);
 			}
+
+			$this->properties = $metadata;
 		}
 
 		return $this->properties[$name];
