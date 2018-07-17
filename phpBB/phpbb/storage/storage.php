@@ -307,10 +307,11 @@ class storage
 		$sql_ary = array(
 			'file_path'		=> $path,
 			'storage'		=> $this->get_name(),
+			'metadata'		=> '',
 		);
 
 		// Get file, if exist update filesize, if not add new record
-		$sql = 'SELECT * FROM ' .  $this->storage_table . '
+		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);

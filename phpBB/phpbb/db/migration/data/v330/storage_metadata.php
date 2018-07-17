@@ -27,7 +27,7 @@ class storage_metadata extends \phpbb\db\migration\migration
 		return array(
 			'add_columns'	=> array(
 				$this->table_prefix . 'storage'			=> array(
-					'metadata'		=> array('VCHAR', ''),
+					'metadata'		=> array('MTEXT', ''),
 				),
 			),
 		);
