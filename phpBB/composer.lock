@@ -706,16 +706,16 @@
         },
         {
             "name": "lusitanian/oauth",
-            "version": "v0.8.10",
+            "version": "v0.8.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lusitanian/PHPoAuthLib.git",
-                "reference": "09f4af38f17db6938253f4d1b171d537913ac1ed"
+                "reference": "fc11a53db4b66da555a6a11fce294f574a8374f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/09f4af38f17db6938253f4d1b171d537913ac1ed",
-                "reference": "09f4af38f17db6938253f4d1b171d537913ac1ed",
+                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/fc11a53db4b66da555a6a11fce294f574a8374f9",
+                "reference": "fc11a53db4b66da555a6a11fce294f574a8374f9",
                 "shasum": ""
             },
             "require": {
@@ -888,16 +888,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v1.4.2",
+            "version": "v1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "965cdeb01fdcab7653253aa81d40441d261f1e66"
+                "reference": "9b3899e3c3ddde89016f576edb8c489708ad64cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/965cdeb01fdcab7653253aa81d40441d261f1e66",
-                "reference": "965cdeb01fdcab7653253aa81d40441d261f1e66",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/9b3899e3c3ddde89016f576edb8c489708ad64cd",
+                "reference": "9b3899e3c3ddde89016f576edb8c489708ad64cd",
                 "shasum": ""
             },
             "require": {
@@ -1439,7 +1439,7 @@
                 "symfony/process": "~3.3|~4.0"
             },
             "suggest": {
-                "psr/log": "For using the console logger",
+                "psr/log-implementation": "For using the console logger",
                 "symfony/event-dispatcher": "",
                 "symfony/lock": "",
                 "symfony/process": ""
@@ -1908,16 +1908,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.7.0",
+            "version": "v1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "78be803ce01e55d3491c1397cf1c64beb9c1b63b"
+                "reference": "3296adf6a6454a050679cde90f95350ad604b171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/78be803ce01e55d3491c1397cf1c64beb9c1b63b",
-                "reference": "78be803ce01e55d3491c1397cf1c64beb9c1b63b",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/3296adf6a6454a050679cde90f95350ad604b171",
+                "reference": "3296adf6a6454a050679cde90f95350ad604b171",
                 "shasum": ""
             },
             "require": {
@@ -1929,7 +1929,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7-dev"
+                    "dev-master": "1.8-dev"
                 }
             },
             "autoload": {
@@ -1986,7 +1986,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7-dev"
+                    "dev-master": "1.8-dev"
                 }
             },
             "autoload": {
@@ -2151,7 +2151,6 @@
             },
             "require-dev": {
                 "doctrine/annotations": "~1.0",
-                "doctrine/common": "~2.2",
                 "psr/log": "~1.0",
                 "symfony/config": "~2.8|~3.0|~4.0",
                 "symfony/dependency-injection": "~3.3|~4.0",
@@ -2355,16 +2354,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.35.0",
+            "version": "v1.35.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "daa657073e55b0a78cce8fdd22682fddecc6385f"
+                "reference": "b48680b6eb7d16b5025b9bfc4108d86f6b8af86f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/daa657073e55b0a78cce8fdd22682fddecc6385f",
-                "reference": "daa657073e55b0a78cce8fdd22682fddecc6385f",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/b48680b6eb7d16b5025b9bfc4108d86f6b8af86f",
+                "reference": "b48680b6eb7d16b5025b9bfc4108d86f6b8af86f",
                 "shasum": ""
             },
             "require": {
@@ -2372,8 +2371,8 @@
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "~2.7",
-                "symfony/phpunit-bridge": "~3.3@dev"
+                "symfony/debug": "^2.7",
+                "symfony/phpunit-bridge": "^3.3"
             },
             "type": "library",
             "extra": {
@@ -2985,23 +2984,23 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.7.5",
+            "version": "1.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401"
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/dfd6be44111a7c41c2e884a336cc4f461b3b2401",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
                 "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
-                "sebastian/comparator": "^1.1|^2.0",
+                "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
