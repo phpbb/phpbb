@@ -91,14 +91,17 @@ class acp_storage
 		 */
 		$phpbb_dispatcher->trigger_event('core.acp_storage_load');
 
-		$this->overview($id, $mode);
+		@ini_set('memory_limit', '128M');
+
+		switch ($mode)
+		{
+			case 'settings':
+				$this->settings($id, $mode);
+			break;
+		}
 	}
 
-	/**
-	 * @param string $id
-	 * @param string $mode
-	 */
-	public function overview($id, $mode)
+	public function settings($id, $mode)
 	{
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
