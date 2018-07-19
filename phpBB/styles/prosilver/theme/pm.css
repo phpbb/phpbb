@@ -122,12 +122,12 @@
 }
 
 .pm-preview {
+	background-color: #ffffff;
 	border-radius: 5px;
 	flex: 1 auto;
-	min-height: 100px;
 	height: auto;
+	min-height: 100px;
 	margin: 10px;
-	background-color: white;
 }
 
 .pm-preview-title,
@@ -142,7 +142,7 @@
 }
 
 .pm-recipient-box {
-	display:inline-block;
+	display: inline-block;
 	width: 30%;
 	margin-left: 10px;
 }
