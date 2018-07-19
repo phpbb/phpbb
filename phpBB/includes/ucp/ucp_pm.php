@@ -393,7 +393,7 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
-					$action = 'reply';
+					$action = $request->variable('action', 'post');
 					$user_folders = get_folder($user->data['user_id']);
 
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
