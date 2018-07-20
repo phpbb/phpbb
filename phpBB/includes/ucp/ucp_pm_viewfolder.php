@@ -173,7 +173,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
-			echo $row['message_time'];
 			unset($folder_info['rowset']);
 
 			$template->assign_vars(array(

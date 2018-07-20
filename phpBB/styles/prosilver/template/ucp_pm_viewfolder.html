@@ -59,8 +59,8 @@
 								</span>
 								<span class="pm-message-date">
 									<i class="fa fa-clock-o fa-fw" title="{{ message.SENT_TIME }}" aria-label="{{ message.SENT_TIME }}"></i>
-									<!--{{ history.SENT_DATE }}-->
-									<p id="pm-time"></p>
+									{{ history.SENT_DATE }}
+									<!--<p id="pm-time"></p>-->
 
 								</span>
 							</span>
@@ -129,6 +129,17 @@
 								<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 							<!-- END smiley -->
 						<!-- ENDIF -->
+						<!-- IF BBCODE_STATUS -->
+							<span class="pm-bbcode-status">
+								{BBCODE_STATUS}<br />
+								<!-- IF S_BBCODE_ALLOWED -->
+									{IMG_STATUS}<br />
+									{FLASH_STATUS}<br />
+									{URL_STATUS}<br />
+								<!-- ENDIF -->
+								{SMILIES_STATUS}
+							</span>
+						<!-- ENDIF -->
 					</div>
 				</div>
 
@@ -172,6 +183,7 @@
 {% include 'ucp_pm_message_footer.html' %}
 {% include 'ucp_footer.html' %}
 
+<!--WIP-->
 <!--<script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>-->
 <!--<script>-->
 	<!--var date = '2015-04-03';-->
