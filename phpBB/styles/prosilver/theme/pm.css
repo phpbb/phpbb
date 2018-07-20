@@ -136,7 +136,7 @@
 }
 
 .pm-inputbox {
-	width: 60%;
+	width: 85%;
 	min-height: 40px;
 	margin-left: 10px;
 }
@@ -145,4 +145,10 @@
 	display: inline-block;
 	width: 30%;
 	margin-left: 10px;
+}
+
+.pm-smiley-box {
+	float: right;
+	margin-right: 10px;
+	width: 10%;
 }
