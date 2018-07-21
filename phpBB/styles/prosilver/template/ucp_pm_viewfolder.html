@@ -23,7 +23,7 @@
 
 				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}">{{ message.SUBJECT }}</a>
 				<span class="pm-secondary">
-					<span class="pm-secondary-item pm-authour">
+					<span class="pm-secondary-item pm-author">
 						{% if message.S_AUTHOR_FOE %}
 							<i class="fa fa-ban fa-fw" title="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}" aria-label="{{ lang('PM_AUTHOR_FOE', message.MESSAGE_AUTHOR) }}"></i>
 						{% else %}
@@ -52,7 +52,7 @@
 					<li class="pm-message-item ">
 						<span class="pm-message-primary">
 							<span class="pm-message-primary-item">
-								<span class="pm-message-authour">
+								<span class="pm-message-author">
 									<i class="fa fa-user fa-fw" title="{{ message.MESSAGE_AUTHOR }}" aria-label="{{ message.MESSAGE_AUTHOR }}"></i>
 									{{ history.MESSAGE_AUTHOR_FULL }}
 									<!--Maybe add recipient here-->
@@ -86,80 +86,80 @@
 		<div class="pm-compose">
 			{% if S_TO_RECIPIENT %}
 				<div class="pm-subject-box">
-					<input type="text" name="subject" id="subject" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="pm-inputbox" />
+					<input type="text" name="subject" id="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" value="{{ SUBJECT }}{{ DRAFT_SUBJECT }}" class="pm-inputbox" />
 				</div>
 				<div class="pm-recipient-box">
 					<textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea>
 					<dd class="recipients">
-						<input type="submit" name="add_to" value="{L_ADD}" class="button1 button button-form-bold" tabindex="1" />
-						<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button1 button button-form-bold" tabindex="1" />
-						<!-- IF .to_recipient -->
+						<input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold" tabindex="1" />
+						<input type="submit" name="add_bcc" value="{{ lang('ADD_BCC') }}" class="button1 button button-form-bold" tabindex="1" />
+						{% if to_recipient %}
 						<div class="pm-recipient-cc">
-							{L_TO_MASS}{L_COLON}
+							{{ lang('TO_MASS') }} {{ lang('COLON') }}
 							<ul class="recipients">
-								<!-- BEGIN to_recipient -->
+								{% for recipient in to_recipient %}
 								<li>
-									<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button1 button button-form-bold" /><!-- ENDIF -->
-									<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}">{to_recipient.NAME}</a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->
+									{% if not S_EDIT_POST %}<input type="submit" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" value="x" class="button1 button button-form-bold" />{% endif %}
+									{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 								</li>
-								<!-- END to_recipient -->
+								{% endfor %}
 							</ul>
 						</div>
-						<!-- ENDIF -->
-						<!-- IF .bcc_recipient -->
+						{% endif %}
+						{% if bcc_recipient %}
 						<div class="pm-recipient-bcc">
-							{L_BCC}{L_COLON}
+							{{ lang('BCC') }} {{ lang('COLON') }}
 							<ul class="recipients">
-								<!-- BEGIN bcc_recipient -->
+								{% for recipient in bcc_recipient %}
 								<li>
-									<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button1 button button-form-bold" /><!-- ENDIF -->
-									<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}">{bcc_recipient.NAME}</a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->
+									{% if not S_EDIT_POST %}<input type="submit" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" value="x" class="button1 button button-form-bold" />{% endif %}
+									{% if bcc_recipient.IS_GROUP %}<a href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 								</li>
-								<!-- END bcc_recipient -->
+								{% endfor %}
 							</ul>
 						</div>
-						<!-- ENDIF -->
+						{% endif %}
 				</div>
-				<!-- INCLUDE posting_buttons.html -->
+				{% include 'posting_buttons.html' %}
 				<div id="pm-message-box" class="pm-message-box">
-					<textarea name="message" id="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="pm-inputbox">{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+					<textarea name="message" id="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="pm-inputbox">{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 					<div class="pm-smiley-box">
-						<!-- IF S_SMILIES_ALLOWED and .smiley -->
-							<!-- BEGIN smiley -->
-								<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-							<!-- END smiley -->
-						<!-- ENDIF -->
-						<!-- IF BBCODE_STATUS -->
+						{% if S_SMILIES_ALLOWED and smiley %}
+							{% for smile in smiley %}
+								<a href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" title="{smile.SMILEY_DESC}" /></a>
+							{% endfor %}
+						{% endif %}
+						{% if BBCODE_STATUS %}
 							<span class="pm-bbcode-status">
-								{BBCODE_STATUS}<br />
-								<!-- IF S_BBCODE_ALLOWED -->
-									{IMG_STATUS}<br />
-									{FLASH_STATUS}<br />
-									{URL_STATUS}<br />
-								<!-- ENDIF -->
-								{SMILIES_STATUS}
+								{{ BBCODE_STATUS }}<br />
+								{% if S_BBCODE_ALLOWED %}
+									{{ IMG_STATUS }}<br />
+									{{ FLASH_STATUS }}<br />
+									{{ URL_STATUS }}<br />
+								{% endif %}
+								{{ SMILIES_STATUS }}
 							</span>
-						<!-- ENDIF -->
+						{% endif %}
 					</div>
 				</div>
 
 				<div class="pm-message-buttons">
-					{S_HIDDEN_ADDRESS_FIELD}
-					{S_HIDDEN_FIELDS}
-					<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1 button button-form"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
-					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1 button button-form default-submit-action" />&nbsp;
+					{{ S_HIDDEN_ADDRESS_FIELD }}
+					{{ S_HIDDEN_FIELDS }}
+					<input type="submit" tabindex="5" name="preview" value="{{ lang('PREVIEW') }}" class="button1 button button-form"{% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} />&nbsp;
+					<input type="submit" accesskey="s" tabindex="6" name="post" value="{{ lang('SUBMIT') }}" class="button1 button button-form default-submit-action" />&nbsp;
 				</div>
-				<!-- IF S_DISPLAY_PREVIEW -->
+				{% if S_DISPLAY_PREVIEW %}
 					<div class="pm-preview">
 						<div class="pm-preview-title">
-							{L_PREVIEW}{L_COLON} {PREVIEW_SUBJECT}
+							{{ lang('PREVIEW') }} {{ lang('COLON') }} {{ PREVIEW_SUBJECT }}
 						</div>
 						<div class="pm-preview-content">
-							{PREVIEW_MESSAGE}
+							{{ PREVIEW_MESSAGE }}
 						</div>
-						<!-- IF PREVIEW_SIGNATURE --><div class="pm-signature">{PREVIEW_SIGNATURE}</div><!-- ENDIF -->
+						{% if PREVIEW_SIGNATURE %}<div class="pm-signature">{{ PREVIEW_SIGNATURE }}</div>{% endif %}
 					</div>
-				<!-- ENDIF -->
+				{% endif %}
 			{% endif %}
 		</div>
 	</div>
