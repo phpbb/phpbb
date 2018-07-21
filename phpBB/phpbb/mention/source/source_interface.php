@@ -24,4 +24,12 @@ interface source_interface
 	 * @param int    $topic_id Current topic ID
 	 */
 	public function get(array &$names, $keyword, $topic_id);
+
+	/**
+	 * Returns the priority of the currently selected name
+	 *
+	 * @param array $row Array of fetched data for the name type (e.g. user row)
+	 * @return int Priority (defaults to 1)
+	 */
+	public function get_priority($row);
 }
