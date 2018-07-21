@@ -110,6 +110,15 @@ abstract class base_group implements source_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_priority($row)
+	{
+		// By default every result from the source increases the priority by a fixed value
+		return 1;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get(array &$names, $keyword, $topic_id)
 	{
 		// Grab all group IDs, cache for 5 minutes
@@ -141,6 +150,7 @@ abstract class base_group implements source_interface
 					'img'	=> phpbb_get_group_avatar($groups[$group_id]),
 				],
 				'rank'		=> $group_rank['title'],
+				'priority'	=> $this->get_priority($groups[$group_id]),
 			]);
 		}
 	}

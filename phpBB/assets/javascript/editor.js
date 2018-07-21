@@ -493,7 +493,7 @@ function getCaretPosition(txtarea) {
 					sorter: function(query, items, searchKey) {
 						let i;
 						let len;
-						let highestPriority = 0;
+						let highestPriorities = {u: 0, g: 0};
 						let _unsorted = {u: {}, g: {}};
 						let _exactMatch = [];
 						let _results = [];
@@ -517,8 +517,7 @@ function getCaretPosition(txtarea) {
 							}
 
 							// If the item hasn't been added yet - add it
-							// Group names do not have priorities and are also handled here
-							if (!_unsorted[item.type][item.id] || item.type === 'g') {
+							if (!_unsorted[item.type][item.id]) {
 								_unsorted[item.type][item.id] = item;
 								continue;
 							}
@@ -527,26 +526,23 @@ function getCaretPosition(txtarea) {
 							_unsorted[item.type][item.id].priority += parseFloat(item.priority);
 
 							// Calculate the highest priority - we'll give it to group names
-							highestPriority = Math.max(highestPriority, _unsorted[item.type][item.id].priority);
+							highestPriorities[item.type] = Math.max(highestPriorities[item.type], _unsorted[item.type][item.id].priority);
 						}
 
-						// Push user names to the result array
-						if (_unsorted['u']) {
-							$.each(_unsorted['u'], function(name, value) {
-								_results.push(value);
-							});
-						}
+						// All types of names should come at the same level of importance,
+						// otherwise they will be unlikely to be shown
+						// That's why we normalize priorities and push names to a single results array
+						$.each(['u', 'g'], function(key, type) {
+							if (_unsorted[type]) {
+								$.each(_unsorted[type], function(name, value) {
+									// Normalize priority
+									value.priority /= highestPriorities[type];
 
-						// Push group names to the result array and give them the highest priority
-						// They will be sorted together with the usernames on top of the list
-						if (_unsorted['g']) {
-							$.each(_unsorted['g'], function(name, value) {
-								// Groups should come at the same level of importance
-								// as users, otherwise they will be unlikely to be shown
-								value.priority = highestPriority;
-								_results.push(value);
-							});
-						}
+									// Add item to all results
+									_results.push(value);
+								});
+							}
+						});
 
 						// Sort names by priorities - higher values come first
 						_results = _results.sort(function(a, b) {

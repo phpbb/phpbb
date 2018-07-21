@@ -60,13 +60,11 @@ abstract class base_user implements source_interface
 	abstract protected function query($keyword, $topic_id);
 
 	/**
-	 * Returns the priority of the currently selected name
-	 *
-	 * @param array $row Array of fetched user data
-	 * @return int Priority (defaults to 1)
+	 * {@inheritdoc}
 	 */
 	public function get_priority($row)
 	{
+		// By default every result from the source increases the priority by a fixed value
 		return 1;
 	}
 
