@@ -391,6 +391,7 @@ function getCaretPosition(txtarea) {
 		let mentionBatchSize = $mentionDataContainer.data('mentionBatchSize');
 		let mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit');
 		let mentionTopicId = $mentionDataContainer.data('topicId');
+		let mentionUserId = $mentionDataContainer.data('userId');
 		let queryInProgress = null;
 		let cachedNames = [];
 		let cachedSearchKey = 'name';
@@ -505,14 +506,20 @@ function getCaretPosition(txtarea) {
 						for (i = 0, len = items.length; i < len; i++) {
 							let item = items[i];
 
-							// Exact matches should not be prioritised - they always come first
-							if (item.name === query) {
-								_exactMatch.push(items[i]);
+							// Check for unsupported type - in general, this should never happen
+							if (!_unsorted[item.type]) {
 								continue;
 							}
 
-							// Check for unsupported type - in general, this should never happen
-							if (!_unsorted[item.type]) {
+							// Current user doesn't want to mention themselves with "@" in most cases -
+							// do not waste list space with their own name
+							if (item.type === 'u' && item.id === String(mentionUserId)) {
+								continue;
+							}
+
+							// Exact matches should not be prioritised - they always come first
+							if (item.name === query) {
+								_exactMatch.push(items[i]);
 								continue;
 							}
 

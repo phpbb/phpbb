@@ -116,6 +116,7 @@ function adm_page_header($page_title)
 		'ICON_SYNC'					=> '<i class="icon acp-icon acp-icon-resync fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
 		'ICON_SYNC_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
 
+		'S_USER_ID'				=> $user->data['user_id'],
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
