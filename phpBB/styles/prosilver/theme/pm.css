@@ -57,7 +57,7 @@
 	text-transform: inherit;
 }
 
-.pm-authour {
+.pm-author {
 	white-space: nowrap;
 	display: block;
 	overflow: hidden;
@@ -106,7 +106,7 @@
 	max-width: 500px;
 }
 
-.pm-message-authour,
+.pm-message-author,
 .pm-message-date {
 	font-size: 14px;
 	font-weight: 400;
