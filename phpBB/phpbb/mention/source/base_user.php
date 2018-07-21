@@ -81,6 +81,8 @@ abstract class base_user implements source_interface
 		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
 
 		$i = 0;
+		$users = [];
+		$user_ids = [];
 		while ($i < self::NAMES_BATCH_SIZE)
 		{
 			$row = $this->db->sql_fetchrow($result);
@@ -96,18 +98,26 @@ abstract class base_user implements source_interface
 			}
 
 			$i++;
+			$users[] = $row;
+			$user_ids[] = $row['user_id'];
+		}
 
-			$user_rank = $this->user_loader->get_rank($row['user_id'], true);
+		// Load all user data with a single SQL query, needed for ranks and avatars
+		$this->user_loader->load_users($user_ids);
+
+		foreach ($users as $user)
+		{
+			$user_rank = $this->user_loader->get_rank($user['user_id'], true);
 			array_push($names, [
-				'name'		=> $row['username'],
+				'name'		=> $user['username'],
 				'type'		=> 'u',
-				'id'		=> $row['user_id'],
+				'id'		=> $user['user_id'],
 				'avatar'	=> [
 					'type'	=> 'user',
-					'img'	=> $this->user_loader->get_avatar($row['user_id'], true),
+					'img'	=> $this->user_loader->get_avatar($user['user_id'], true),
 				],
 				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
-				'priority'	=> $this->get_priority($row),
+				'priority'	=> $this->get_priority($user),
 			]);
 		}
 
