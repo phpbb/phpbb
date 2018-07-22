@@ -76,6 +76,7 @@ class ucp_pm
 		if (!$folder_specified)
 		{
 			$mode = (!$mode) ? $request->variable('mode', 'view') : $mode;
+//			$mode = 'compose';
 		}
 		else
 		{
@@ -106,7 +107,7 @@ class ucp_pm
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 				compose_pm($id, $mode, $action, $user_folders);
-
+echo $mode;
 				$tpl_file = 'posting_body';
 			break;
 
@@ -377,6 +378,14 @@ class ucp_pm
 				{
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
 					view_folder($id, $mode, $folder_id, $folder);
+
+					//After displaying messages we set it up for composing
+					$action = $request->variable('action', 'post');
+					$mode = 'compose';
+					$user_folders = get_folder($user->data['user_id']);
+
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+					compose_pm($id, $mode, $action, $user_folders);
 
 					$tpl_file = 'ucp_pm_viewfolder';
 				}
