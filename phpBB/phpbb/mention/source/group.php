@@ -18,6 +18,20 @@ class group extends base_group
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_priority($row)
+	{
+		/*
+		 * Presence in array with all names for this type should not increase the priority
+		 * Otherwise names will not be properly sorted because we fetch them in batches
+		 * and the name from 'special' source can be absent from the array with all names
+		 * and therefore it will appear lower than needed
+		 */
+		return 0;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function query($keyword, $topic_id)
 	{
 		$query = $this->db->sql_build_query('SELECT', [

@@ -21,11 +21,14 @@ class team extends base_user
 	protected function query($keyword, $topic_id)
 	{
 		/*
+		 * Select unique names of team members: each name should be selected only once
+		 * regardless of the number of groups the certain user is a member of
+		 *
 		 * For optimization purposes all team members are returned regardless of the keyword
 		 * Names filtering is done on the frontend
 		 * Results will be cached in a single file
 		 */
-		$query = $this->db->sql_build_query('SELECT', [
+		$query = $this->db->sql_build_query('SELECT_DISTINCT', [
 			'SELECT'    => 'u.username_clean, u.username, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',

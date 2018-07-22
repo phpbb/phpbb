@@ -46,7 +46,7 @@ class mention
 	{
 		if (!$this->request->is_ajax())
 		{
-			new RedirectResponse(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
+			return new RedirectResponse(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
 		}
 
 		$keyword = $this->request->variable('keyword', '', true);

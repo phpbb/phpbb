@@ -27,6 +27,8 @@ interface source_interface
 
 	/**
 	 * Returns the priority of the currently selected name
+	 * Please note that simple inner priorities for a certain source
+	 * can be set with ORDER BY SQL clause
 	 *
 	 * @param array $row Array of fetched data for the name type (e.g. user row)
 	 * @return int Priority (defaults to 1)
