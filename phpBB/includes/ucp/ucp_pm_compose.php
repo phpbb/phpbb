@@ -80,7 +80,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$group_helper = $phpbb_container->get('group_helper');
 
 	// Was cancel pressed? If so then redirect to the appropriate page
-	if ($cancel || ($current_time - $lastclick < 2 && $submit))
+	if ($cancel)
 	{
 		if ($msg_id)
 		{
