@@ -138,6 +138,9 @@
 .pm-inputbox {
 	width: 85%;
 	min-height: 40px;
+}
+
+.pm-message-box {
 	margin-left: 10px;
 }
 
@@ -156,4 +159,12 @@
 .pm-bbcode-status {
 	font-size: 11px;
 	list-style-type: none;
+}
+
+.pm-recipient {
+	list-style-type: none;
+}
+
+.pm-subject-box {
+	margin-left: 10px;
 }
