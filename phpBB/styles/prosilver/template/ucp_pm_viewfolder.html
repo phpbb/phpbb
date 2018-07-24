@@ -21,7 +21,7 @@
 					<i class="fa fa-star fa-fw pm-marked" title="{{ lang('UCP_PM_MARKED') }}" aria-label="{{ lang('UCP_PM_MARKED') }}"></i>
 				{% endif %}
 
-				<a href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}">{{ message.SUBJECT }}</a>
+				<a class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}" href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" >{{ message.SUBJECT }}</a>
 				<span class="pm-secondary">
 					<span class="pm-secondary-item pm-author">
 						{% if message.S_AUTHOR_FOE %}
@@ -69,8 +69,8 @@
 									<!--Some way to indicate this is the message clicked, change of color isn't good enough-->
 									<!--<i class="fa fa-certificate fa-fw msg-unread" title="Unread message" aria-label="Unread message"></i>-->
 								{% endif %}
-								<a href="{{ history.U_VIEW_MESSAGE }}" class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}">{{ history.SUBJECT }}</a>
-								<br />
+								<a class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}" href="{{ history.U_VIEW_MESSAGE }}" >{{ history.SUBJECT }}</a>
+								<br>
 								{% if history.MESSAGE %}
 									{{ history.MESSAGE }}
 								{% else %}
@@ -85,20 +85,20 @@
 
 		<div class="pm-compose">
 			<div class="pm-subject-box">
-				<input type="text" name="subject" id="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" value="{{ SUBJECT }}{{ DRAFT_SUBJECT }}" class="pm-inputbox" />
+				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text"  value="{{ SUBJECT }}{{ DRAFT_SUBJECT }}" >
 			</div>
 			<div class="pm-recipient-box">
-				<textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea>
+				<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
 				<dd class="recipients">
-					<input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold" tabindex="1" />
-					<input type="submit" name="add_bcc" value="{{ lang('ADD_BCC') }}" class="button1 button button-form-bold" tabindex="1" />
+					<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
+					<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
 					{% if to_recipient %}
 					<div class="pm-recipient-cc">
 						{{ lang('TO_MASS') }} {{ lang('COLON') }}
 						<ul class="recipients">
 							{% for recipient in to_recipient %}
 							<li>
-								{% if not S_EDIT_POST %}<input type="submit" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" value="x" class="button1 button button-form-bold" />{% endif %}
+								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
 								{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 							</li>
 							{% endfor %}
@@ -108,10 +108,10 @@
 					{% if bcc_recipient %}
 					<div class="pm-recipient-bcc">
 						{{ lang('BCC') }} {{ lang('COLON') }}
-						<ul class="recipients">
+						<ul class="pm-recipient-list">
 							{% for recipient in bcc_recipient %}
-							<li>
-								{% if not S_EDIT_POST %}<input type="submit" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" value="x" class="button1 button button-form-bold" />{% endif %}
+							<li class="pm-recipient">
+								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
 								{% if bcc_recipient.IS_GROUP %}<a href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 							</li>
 							{% endfor %}
@@ -121,23 +121,23 @@
 			</div>
 			{% include 'posting_buttons.html' %}
 			<div id="pm-message-box" class="pm-message-box">
-				<textarea name="message" id="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="pm-inputbox">{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
 						{% for smile in smiley %}
-							<a href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" title="{smile.SMILEY_DESC}" /></a>
+							<a class="pm-smiley-code" href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img class="pm-smiley-img" title="{smile.SMILEY_DESC}" src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" ></a>
 						{% endfor %}
 					{% endif %}
 					{% if BBCODE_STATUS %}
-						<span class="pm-bbcode-status">
-							{{ BBCODE_STATUS }}<br />
+						<ul class="pm-bbcode-status">
+							<li><{{ BBCODE_STATUS }}</li>
 							{% if S_BBCODE_ALLOWED %}
-								{{ IMG_STATUS }}<br />
-								{{ FLASH_STATUS }}<br />
-								{{ URL_STATUS }}<br />
+								<li>{{ IMG_STATUS }}</li>
+								<li>{{ FLASH_STATUS }}</li>
+								<li>{{ URL_STATUS }}</li>
 							{% endif %}
-							{{ SMILIES_STATUS }}
-						</span>
+							<li>{{ SMILIES_STATUS }}</li>
+						</ul>
 					{% endif %}
 				</div>
 			</div>
@@ -145,8 +145,8 @@
 			<div class="pm-message-buttons">
 				{{ S_HIDDEN_ADDRESS_FIELD }}
 				{{ S_HIDDEN_FIELDS }}
-				<input type="submit" tabindex="5" name="preview" value="{{ lang('PREVIEW') }}" class="button1 button button-form"{% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} />&nbsp;
-				<input type="submit" accesskey="s" tabindex="6" name="post" value="{{ lang('SUBMIT') }}" class="button1 button button-form default-submit-action" />&nbsp;
+				<input class="button1 button button-form" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" >&nbsp;
+				<input class="button1 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >&nbsp;
 			</div>
 			{% if S_DISPLAY_PREVIEW %}
 				<div class="pm-preview">
@@ -165,7 +165,7 @@
 
 <div class="action-bar bottom">
 	{% include 'display_options.html' %}
-	<input type="hidden" name="cur_folder_id" value="{{ CUR_FOLDER_ID }}" />
+	<input name="cur_folder_id" type="hidden" value="{{ CUR_FOLDER_ID }}" >
 
 	<div class="pagination">
 		{{ TOTAL_MESSAGES }}
