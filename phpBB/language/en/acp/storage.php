@@ -50,6 +50,16 @@ $lang = array_merge($lang, array(
 	'STORAGE_UNKNOWN'						=> 'Unknown',
 	'STORAGE_REMOVE_OLD_FILES'				=> 'Remove old files',
 	'STORAGE_REMOVE_OLD_FILES_EXPLAIN'		=> 'Remove old files after they are copied to the new storage system.',
+	'START_UPDATING'						=> 'Start update process',
+	'START_UPDATING_EXPLAIN'				=> 'Start the storage update process',
+	'CONTINUE_UPDATING'						=> 'Continue previous update process',
+	'CONTINUE_UPDATING_EXPLAIN'				=> 'An update process has been started. In order to access the storage settings page you will have to complete it or cancel it.',
+	'SORAGE_UPDATE_REDIRECT'				=> 'Files of %s (%d/%d) are being moved.<br />',
+	'SORAGE_UPDATE_REMOVE_REDIRECT'			=> 'Files of old %s (%d/%d) are being removed.<br />',
+
+	// Template progress bar
+	'STORAGE_UPDATE_IN_PROGRESS'			=> 'Storage update in progress',
+	'STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'	=> 'Files are being moved between storages. This can take some minutes.',
 
 	// Storage names
 	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',

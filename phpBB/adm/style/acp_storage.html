@@ -4,59 +4,83 @@
 
 <h1>{{ lang('STORAGE_TITLE') }}</h1>
 
-<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
+<!-- IF S_CONTINUE_UPDATING -->
+	<script type="text/javascript">
+	// <![CDATA[
+		/**
+		* Popup storage update progress bar
+		*/
+		function popup_progress_bar()
+		{
+			close_waitscreen = 0;
+			// no scrollbars
+			popup('{UA_PROGRESS_BAR}', 400, 240, '_storage');
+		}
+	// ]]>
+	</script>
 
-<table class="table1 zebra-table">
-	<thead>
-		<tr>
-			<th>{{ lang('STORAGE_NAME') }}</th>
-			<th>{{ lang('STORAGE_NUM_FILES') }}</th>
-			<th>{{ lang('STORAGE_SIZE') }}</th>
-			<th>{{ lang('STORAGE_FREE') }}</th>
-		</tr>
-	</thead>
-	<tbody>
-	{% for storage in STORAGE_STATS %}
-		<tr>
-			<td>{{ storage.name }}</td>
-			<td>{{ storage.files }}</td>
-			<td>{{ storage.size }}</td>
-			<td>{{ storage.free_space }}</td>
-		</tr>
-	{% endfor %}
-	</tbody>
-</table>
+	<p>{L_CONTINUE_EXPLAIN}</p>
 
-{% if S_ERROR %}
+	<form id="acp_storage_continue" method="post" action="{U_CONTINUE_UPDATING}">
+		<fieldset class="submit-buttons">
+			<legend>{L_SUBMIT}</legend>
+			<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar();" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+<!-- ELSE -->
+
+	<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
+
+	<table class="table1 zebra-table">
+		<thead>
+			<tr>
+				<th>{{ lang('STORAGE_NAME') }}</th>
+				<th>{{ lang('STORAGE_NUM_FILES') }}</th>
+				<th>{{ lang('STORAGE_SIZE') }}</th>
+				<th>{{ lang('STORAGE_FREE') }}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for storage in STORAGE_STATS %}
+			<tr>
+				<td>{{ storage.name }}</td>
+				<td>{{ storage.files }}</td>
+				<td>{{ storage.size }}</td>
+				<td>{{ storage.free_space }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{% if S_ERROR %}
 	<div class="errorbox">
 		<h3>{{ lang('WARNING') }}</h3>
 		<p>{{ ERROR_MSG }}</p>
 	</div>
-{% endif %}
+	{% endif %}
 
-<form id="acp_storage" method="post" action="{{ U_ACTION }}">
+	<form id="acp_storage" method="post" action="{{ U_ACTION }}">
 
-	{% for storage in STORAGES %}
-		<fieldset>
-			<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
-			<dl>
-				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
-				<dd>
-					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
-						{% for provider in PROVIDERS %}
-							{% if provider.is_available %}
+		{% for storage in STORAGES %}
+			<fieldset>
+				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
+				<dl>
+					<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
+					<dd>
+						<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
+							{% for provider in PROVIDERS if provider.is_available %}
 								<option value="{{ get_class(provider) }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  get_class(provider) ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
 									{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
 								</option>
-							{% endif %}
-						{% endfor %}
-					</select>
-				</dd>
-			</dl>
-		</fieldset>
+							{% endfor %}
+						</select>
+					</dd>
+				</dl>
+			</fieldset>
 
-		{% for provider in PROVIDERS %}
-			{% if provider.is_available %}
+			{% for provider in PROVIDERS if provider.is_available %}
 				<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
 					<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
 					{% for name, options in provider.get_options %}
@@ -93,25 +117,25 @@
 						</dl>
 					{% endfor %}
 				</fieldset>
-			{% endif %}
+			{% endfor %}
 		{% endfor %}
-	{% endfor %}
 
-	<fieldset>
-		<dl>
-			<dt><label for="remove_old">{{ lang('STORAGE_REMOVE_OLD_FILES') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_REMOVE_OLD_FILES_EXPLAIN') }}</span></dt>
-			<dd>
-				<input type="checkbox" name="remove_old">
-			</dd>
-		</dl>
-	</fieldset>
+		<fieldset>
+			<dl>
+				<dt><label for="remove_old">{{ lang('STORAGE_REMOVE_OLD_FILES') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_REMOVE_OLD_FILES_EXPLAIN') }}</span></dt>
+				<dd>
+					<input type="checkbox" name="remove_old">
+				</dd>
+			</dl>
+		</fieldset>
 
-	<fieldset class="submit-buttons">
-		<legend>{{ lang('SUBMIT') }}</legend>
-		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
-		{{ S_FORM_TOKEN }}
-	</fieldset>
-</form>
+		<fieldset class="submit-buttons">
+			<legend>{{ lang('SUBMIT') }}</legend>
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+			{{ S_FORM_TOKEN }}
+		</fieldset>
+	</form>
+<!-- ENDIF -->
 
 {% include 'overall_footer.html' %}
