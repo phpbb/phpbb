@@ -573,8 +573,13 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), $sql_limit, $sql_start);
 
 	$pm_reported = array();
+	$pm_unread = array();
+
 	while ($row = $db->sql_fetchrow($result))
 	{
+		// Gets number of unread messages in each thread
+		$pm_unread[]  = $row['pm_unread'];
+
 		$rowset[$row['msg_id']] = $row;
 		$pm_list[] = $row['msg_id'];
 		if ($row['message_reported'])
