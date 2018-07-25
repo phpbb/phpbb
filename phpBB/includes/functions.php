@@ -66,23 +66,29 @@ function set_var(&$result, $var, $type, $multibyte = false)
 /**
 * Generates an alphanumeric random string of given length
 *
+* @param int $num_chars Length of random string, defaults to 8.
+* This number should be less or equal than 64.
+*
 * @return string
 */
 function gen_rand_string($num_chars = 8)
 {
 	// [a, z] + [0, 9] = 36
-	return substr(strtoupper(base_convert(unique_id(), 16, 36)), 0, $num_chars);
+	return substr(strtoupper(base_convert(bin2hex(random_bytes($num_chars + 1)), 16, 36)), 0, $num_chars);
 }
 
 /**
 * Generates a user-friendly alphanumeric random string of given length
 * We remove 0 and O so users cannot confuse those in passwords etc.
 *
+* @param int $num_chars Length of random string, defaults to 8.
+* This number should be less or equal than 64.
+*
 * @return string
 */
 function gen_rand_string_friendly($num_chars = 8)
 {
-	$rand_str = unique_id();
+	$rand_str = bin2hex(random_bytes($num_chars + 1));
 
 	// Remove Z and Y from the base_convert(), replace 0 with Z and O with Y
 	// [a, z] + [0, 9] - {z, y} = [a, z] + [0, 9] - {0, o} = 34
@@ -4424,7 +4430,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
 		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
 		'U_CONTACT_US'			=> ($config['contact_admin_form_enable'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
-		'U_TEAM'				=> ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
+		'U_TEAM'				=> (!$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),

@@ -123,11 +123,13 @@
 								<i class="icon fa-sliders fa-fw" aria-hidden="true"></i><span>{L_PROFILE}</span>
 							</a>
 						</li>
-						<li>
-							<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
-								<i class="icon fa-user fa-fw" aria-hidden="true"></i><span>{L_READ_PROFILE}</span>
-							</a>
-						</li>
+						<!-- IF U_USER_PROFILE -->
+							<li>
+								<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
+									<i class="icon fa-user fa-fw" aria-hidden="true"></i><span>{L_READ_PROFILE}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
 
 						<!-- EVENT navbar_header_profile_list_after -->
 

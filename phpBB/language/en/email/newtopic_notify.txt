@@ -6,6 +6,10 @@ You are receiving this notification because you are watching the forum "{FORUM_N
 
 {U_FORUM}
 
+To see new topic directly, visit the following link:
+
+{U_TOPIC}
+
 If you no longer wish to watch this forum you can either click the "Unsubscribe forum" link found in the forum above, or by clicking the following link:
 
 {U_STOP_WATCHING_FORUM}
