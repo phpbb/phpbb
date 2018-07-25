@@ -172,7 +172,7 @@ class extension extends \Twig_Extension
 
 		$context_vars = $this->context->get_root_ref();
 
-		if (isset($context_vars['L_' . $key]))
+		if (is_string($key) && isset($context_vars['L_' . $key]))
 		{
 			return $context_vars['L_' . $key];
 		}
