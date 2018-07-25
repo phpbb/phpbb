@@ -61,7 +61,7 @@ class phpbb_cache_apcu_driver_test extends phpbb_cache_common_test_case
 		$this->driver->purge();
 	}
 
-		public function test_purge()
+	public function test_purge()
 	{
 		/* add a cache entry which does not match our key */
 		$foreign_key = 'test_' . $this->driver->key_prefix . 'test';
