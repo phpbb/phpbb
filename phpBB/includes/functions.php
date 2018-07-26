@@ -1650,6 +1650,17 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 */
 function generate_board_url($without_script_path = false)
 {
+	// keys represent the state of $without_script_path
+	static $_result = array(
+		true	=> null,
+		false	=> null,
+	);
+
+	if ($_result[$without_script_path] !== null)
+	{
+		return $_result[$without_script_path];
+	}
+
 	global $config, $user, $request, $symfony_request;
 
 	$server_name = $user->host;
@@ -1702,7 +1713,7 @@ function generate_board_url($without_script_path = false)
 		$url = substr($url, 0, -1);
 	}
 
-	return $url;
+	return $_result[$without_script_path] = $url;
 }
 
 /**
