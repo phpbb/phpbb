@@ -64,8 +64,9 @@ class user_loader
 	* Load user helper
 	*
 	* @param array $user_ids
+	* @param array $ignore_types user types to ignore
 	*/
-	public function load_users(array $user_ids)
+	public function load_users(array $user_ids, array $ignore_types = array())
 	{
 		$user_ids[] = ANONYMOUS;
 
@@ -79,7 +80,8 @@ class user_loader
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->users_table . '
-				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+				WHERE ' . $this->db->sql_in_set('user_id', $user_ids) . '
+					AND ' . $this->db->sql_in_set('user_type', $ignore_types, true, true);
 			$result = $this->db->sql_query($sql);
 
 			while ($row = $this->db->sql_fetchrow($result))
