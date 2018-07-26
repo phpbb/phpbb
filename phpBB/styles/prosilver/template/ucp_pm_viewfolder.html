@@ -95,9 +95,9 @@
 					{% if to_recipient %}
 					<div class="pm-recipient-cc">
 						{{ lang('TO_MASS') }} {{ lang('COLON') }}
-						<ul class="recipients">
+						<ul class="pm-recipient-list">
 							{% for recipient in to_recipient %}
-							<li>
+							<li class=""pm-recipient"">
 								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
 								{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 							</li>
@@ -112,15 +112,15 @@
 							{% for recipient in bcc_recipient %}
 							<li class="pm-recipient">
 								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
-								{% if bcc_recipient.IS_GROUP %}<a href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
+								{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 							</li>
 							{% endfor %}
 						</ul>
 					</div>
 					{% endif %}
 			</div>
-			{% include 'posting_buttons.html' %}
-			<div id="pm-message-box" class="pm-message-box">
+			<div class="pm-message-box" id="pm-message-box" >
+				{% include 'posting_buttons.html' %}
 				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
@@ -140,13 +140,12 @@
 						</ul>
 					{% endif %}
 				</div>
-			</div>
-
-			<div class="pm-message-buttons">
-				{{ S_HIDDEN_ADDRESS_FIELD }}
-				{{ S_HIDDEN_FIELDS }}
-				<input class="button1 button button-form" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" >&nbsp;
-				<input class="button1 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >&nbsp;
+				<div class="pm-message-buttons">
+					{{ S_HIDDEN_ADDRESS_FIELD }}
+					{{ S_HIDDEN_FIELDS }}
+					<input class="button1 button button-form" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" >&nbsp;
+					<input class="button1 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >&nbsp;
+				</div>
 			</div>
 			{% if S_DISPLAY_PREVIEW %}
 				<div class="pm-preview">
