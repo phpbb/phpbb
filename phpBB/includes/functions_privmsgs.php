@@ -919,6 +919,19 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 			$user->data['user_unread_privmsg'] = 0;
 		}
 	}
+
+	$sql = 'SELECT msg_id 
+			FROM ' . PRIVMSGS_TABLE . ' 
+			WHERE root_level = (SELECT root_level
+							FROM ' . PRIVMSGS_TABLE . '
+							WHERE msg_id = ' . ((int) $msg_id) .')';
+
+	$result = $db->sql_query($sql);
+	while ($row = $db->sql_fetchrow($result))
+	{
+//		echo (int) $row['msg_id'];
+
+	}
 }
 
 function mark_folder_read($user_id, $folder_id)
