@@ -233,5 +233,10 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		// Attempt to enable invalid extension
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=barfoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_DIR_INVALID', $crawler->filter('.errorbox')->text());
+
+		// Test installing/uninstalling extension altogether
+		$this->logout();
+		$this->install_ext('vendor/moo');
+		$this->uninstall_ext('vendor/moo');
 	}
 }
