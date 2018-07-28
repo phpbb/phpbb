@@ -4,7 +4,7 @@
 
 <h1>{{ lang('STORAGE_TITLE') }}</h1>
 
-<!-- IF S_CONTINUE_UPDATING -->
+{% if S_CONTINUE_UPDATING %}
 	<script type="text/javascript">
 	// <![CDATA[
 		/**
@@ -14,23 +14,22 @@
 		{
 			close_waitscreen = 0;
 			// no scrollbars
-			popup('{UA_PROGRESS_BAR}', 400, 240, '_storage');
+			popup('{{ UA_PROGRESS_BAR }}', 400, 240, '_storage');
 		}
 	// ]]>
 	</script>
 
-	<p>{L_CONTINUE_EXPLAIN}</p>
+	<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
 
-	<form id="acp_storage_continue" method="post" action="{U_CONTINUE_UPDATING}">
+	<form id="acp_storage_continue" method="post" action="{{ U_CONTINUE_UPDATING }}">
 		<fieldset class="submit-buttons">
-			<legend>{L_SUBMIT}</legend>
-			<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar();" />&nbsp;
-			<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
-			{S_FORM_TOKEN}
+			<legend>{{ lang('SUBMIT }}</legend>
+			<input class="button1" type="submit" id="continue" name="continue" value="{{ lang('CONTINUE') }}" onclick="popup_progress_bar();" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+			{{ S_FORM_TOKEN }}
 		</fieldset>
 	</form>
-<!-- ELSE -->
-
+{% else %}
 	<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
 
 	<table class="table1 zebra-table">
@@ -136,6 +135,6 @@
 			{{ S_FORM_TOKEN }}
 		</fieldset>
 	</form>
-<!-- ENDIF -->
+{% endif %}
 
 {% include 'overall_footer.html' %}
