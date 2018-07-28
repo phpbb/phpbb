@@ -33,7 +33,6 @@ $post_id	= $request->variable('p', 0);
 $topic_id	= $request->variable('t', 0);
 $forum_id	= $request->variable('f', 0);
 $draft_id	= $request->variable('d', 0);
-$lastclick	= $request->variable('lastclick', 0);
 
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
@@ -68,7 +67,6 @@ $current_time = time();
 * @var	int		topic_id	ID of the topic
 * @var	int		forum_id	ID of the forum
 * @var	int		draft_id	ID of the draft
-* @var	int		lastclick	Timestamp of when the form was last loaded
 * @var	bool	submit		Whether or not the form has been submitted
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
@@ -91,7 +89,6 @@ $vars = array(
 	'topic_id',
 	'forum_id',
 	'draft_id',
-	'lastclick',
 	'submit',
 	'preview',
 	'save',
@@ -354,7 +351,6 @@ switch ($mode)
 * @var	int		topic_id	ID of the topic
 * @var	int		forum_id	ID of the forum
 * @var	int		draft_id	ID of the draft
-* @var	int		lastclick	Timestamp of when the form was last loaded
 * @var	bool	submit		Whether or not the form has been submitted
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
@@ -376,7 +372,6 @@ $vars = array(
 	'topic_id',
 	'forum_id',
 	'draft_id',
-	'lastclick',
 	'submit',
 	'preview',
 	'save',
@@ -1762,7 +1757,6 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($c
 }
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
-$s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . $request->variable('draft_loaded', $draft_id) . '" />' : '';
 
 if ($mode == 'edit')
