@@ -83,6 +83,7 @@ $current_time = time();
 *							language keys.
 * @since 3.1.0-a1
 * @changed 3.1.2-RC1			Removed 'delete' var as it does not exist
+* @changed 3.2.4			Remove unused 'lastclick' var
 */
 $vars = array(
 	'post_id',
@@ -366,6 +367,7 @@ switch ($mode)
 * @var	array	post_data	All post data from database
 * @since 3.1.3-RC1
 * @changed 3.1.10-RC1 Added post_data
+* @changed 3.2.4 			Remove unused 'lastclick' var
 */
 $vars = array(
 	'post_id',
