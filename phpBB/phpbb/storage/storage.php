@@ -307,7 +307,6 @@ class storage
 		$sql_ary = array(
 			'file_path'		=> $path,
 			'storage'		=> $this->get_name(),
-			'metadata'		=> '',
 		);
 
 		// Get file, if exist update filesize, if not add new record
@@ -317,6 +316,8 @@ class storage
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+
+		$sql_ary['metadata'] = '';
 		if (!$row)
 		{
 			// Don't call the file_info method, because it check's if the file is tracked
