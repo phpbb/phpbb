@@ -1714,6 +1714,13 @@ posting_preview_poll_after
 * Since: 3.1.7-RC1
 * Purpose: Add content after the poll preview block
 
+posting_topic_review_content_after
+===
+* Locations:
+    + styles/prosilver/template/posting_topic_review.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in topic review
+
 posting_topic_review_row_post_details_after
 ===
 * Locations:
