@@ -252,6 +252,25 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
 
+	$sql = 'SELECT COUNT(*) as pm_count
+			FROM ' . PRIVMSGS_TABLE . ' 
+			WHERE root_level = (SELECT root_level
+							FROM ' . PRIVMSGS_TABLE . '
+							WHERE msg_id = ' . ((int) $msg_id) .')';
+
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$pm_count = (int) $row[pm_count];
+	$messages_per_page = 10; //temporary
+
+	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p= " . $message_row['msg_id'] ."";
+
+	$start = $request->variable('start', 0);
+
+	/* @var $pagination \phpbb\pagination */
+	$pagination = $phpbb_container->get('pagination');
+	$pagination->generate_template_pagination($base_url, 'rococo', 'start', $pm_count, $messages_per_page, $start);
+
 	/**
 	* Modify pm and sender data before it is assigned to the template
 	*
