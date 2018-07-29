@@ -139,6 +139,8 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			'text_formatter.s9e.mention_helper',
 			new \phpbb\textformatter\s9e\mention_helper(
 				$this->db,
+				$auth,
+				$this->user,
 				$phpbb_root_path,
 				$phpEx
 			)

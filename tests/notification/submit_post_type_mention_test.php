@@ -31,16 +31,20 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 				$this->greaterThan(0))
 			->will($this->returnValueMap(array(
 				array(
-					array(3, 4, 5, 6, 7, 8),
+					array(3, 4, 5, 6, 7, 8, 10),
 					'f_read',
 					1,
 					array(
 						1 => array(
-							'f_read' => array(3, 5, 6, 7),
+							'f_read' => array(3, 5, 6, 7, 8),
 						),
 					),
 				),
 			)));
+		$auth->expects($this->any())
+			->method('acl_gets')
+			->with('a_group', 'a_groupadd', 'a_groupdel')
+			->will($this->returnValue(false));
 	}
 
 	/**
@@ -65,6 +69,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 			*	5	=> mentioned, but already notified, should STILL receive a new notification
 			*	6	=> mentioned, but option disabled, should NOT receive a notification
 			*	7	=> mentioned, option set to default, should receive a notification
+			*	8	=> mentioned as a member of group 1, should receive a notification
 			*/
 			array(
 				array(
@@ -75,7 +80,9 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 						'[mention=u:5]notified[/mention] already notified, should not receive a new notification',
 						'[mention=u:6]disabled[/mention] option disabled, should not receive a notification',
 						'[mention=u:7]default[/mention] option set to default, should receive a notification',
-						'[mention=u:8]doesn\'t exist[/mention] user does not exist, should not receive a notification',
+						'[mention=g:1]normal group[/mention] group members of a normal group shoud receive a notification',
+						'[mention=g:2]hidden group[/mention] group members of a hidden group shoud not receive a notification from a non-member',
+						'[mention=u:10]doesn\'t exist[/mention] user does not exist, should not receive a notification',
 					))),
 					'bbcode_uid'		=> 'uid',
 				),
@@ -87,6 +94,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
 					array('user_id' => 5, 'item_id' => 2, 'item_parent_id' => 1),
 					array('user_id' => 7, 'item_id' => 2, 'item_parent_id' => 1),
+					array('user_id' => 8, 'item_id' => 2, 'item_parent_id' => 1),
 				),
 			),
 

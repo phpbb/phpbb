@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license       GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\textformatter\s9e;
 
@@ -18,35 +18,54 @@ use s9e\TextFormatter\Utils as TextFormatterUtils;
 class mention_helper
 {
 	/**
-	* @var \phpbb\db\driver\driver_interface
-	*/
+	 * @var \phpbb\db\driver\driver_interface
+	 */
 	protected $db;
 
 	/**
-	* @var string Base URL for a user profile link, uses {ID} as placeholder
-	*/
+	 * @var \phpbb\auth\auth
+	 */
+	protected $auth;
+
+	/**
+	 * @var \phpbb\user
+	 */
+	protected $user;
+
+	/**
+	 * @var string Base URL for a user profile link, uses {ID} as placeholder
+	 */
 	protected $user_profile_url;
 
 	/**
-	* @var string Base URL for a group profile link, uses {ID} as placeholder
-	*/
+	 * @var string Base URL for a group profile link, uses {ID} as placeholder
+	 */
 	protected $group_profile_url;
 
 	/**
-	* @var array Array of users' and groups' colours for each cached ID
-	*/
+	 * @var array Array of users' and groups' colours for each cached ID
+	 */
 	protected $cached_colours = [];
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\db\driver\driver_interface $db
-	* @param string $root_path
-	* @param string $php_ext
-	*/
-	public function __construct($db, $root_path, $php_ext)
+	 * @var array Array of group IDs allowed to be mentioned by current user
+	 */
+	protected $mentionable_groups = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\auth\auth                  $auth
+	 * @param \phpbb\user                       $user
+	 * @param string                            $root_path
+	 * @param string                            $php_ext
+	 */
+	public function __construct($db, $auth, $user, $root_path, $php_ext)
 	{
 		$this->db = $db;
+		$this->auth = $auth;
+		$this->user = $user;
 		$this->user_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={ID}', false);
 		$this->group_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=group&g={ID}', false);
 	}
@@ -109,11 +128,11 @@ class mention_helper
 	}
 
 	/**
-	* Inject dynamic metadata into MENTION tags in given XML
-	*
-	* @param  string $xml Original XML
-	* @return string      Modified XML
-	*/
+	 * Inject dynamic metadata into MENTION tags in given XML
+	 *
+	 * @param  string $xml Original XML
+	 * @return string      Modified XML
+	 */
 	public function inject_metadata($xml)
 	{
 		$profile_urls = [
@@ -129,8 +148,7 @@ class mention_helper
 		return TextFormatterUtils::replaceAttributes(
 			$xml,
 			'MENTION',
-			function ($attributes) use ($profile_urls)
-			{
+			function ($attributes) use ($profile_urls) {
 				if (isset($attributes['type']) && isset($attributes['id']))
 				{
 					$type = $attributes['type'];
@@ -150,14 +168,90 @@ class mention_helper
 	}
 
 	/**
+	 * Get group IDs allowed to be mentioned by current user
+	 *
+	 * @return array
+	 */
+	protected function get_mentionable_groups()
+	{
+		if (is_array($this->mentionable_groups))
+		{
+			return $this->mentionable_groups;
+		}
+
+		$hidden_restriction = (!$this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND (g.group_type <> ' . GROUP_HIDDEN . ' OR (ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'] . '))' : '';
+
+		$query = $this->db->sql_build_query('SELECT', [
+			'SELECT'    => 'g.group_id',
+			'FROM'      => [
+				GROUPS_TABLE => 'g',
+			],
+			'LEFT_JOIN' => [[
+				'FROM' => [
+					USER_GROUP_TABLE => 'ug',
+				],
+				'ON'   => 'g.group_id = ug.group_id',
+			]],
+			'WHERE'     => '(g.group_type <> ' . GROUP_SPECIAL . ' OR ' . $this->db->sql_in_set('g.group_name', ['ADMINISTRATORS', 'GLOBAL_MODERATORS']) . ')' . $hidden_restriction,
+		]);
+		$result = $this->db->sql_query($query);
+
+		$this->mentionable_groups = [];
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$this->mentionable_groups[] = $row['group_id'];
+		}
+
+		$this->db->sql_freeresult($result);
+
+		return $this->mentionable_groups;
+	}
+
+	/**
+	 * Selects IDs of user members of a certain group
+	 *
+	 * @param array $user_ids Array of already selected user IDs
+	 * @param int   $group_id ID of the group to search members in
+	 */
+	protected function get_user_ids_for_group(&$user_ids, $group_id)
+	{
+		if (!in_array($group_id, $this->get_mentionable_groups()))
+		{
+			return;
+		}
+
+		$query = $this->db->sql_build_query('SELECT', [
+			'SELECT' => 'ug.user_id, ug.group_id',
+			'FROM'   => [
+				USER_GROUP_TABLE => 'ug',
+				GROUPS_TABLE     => 'g',
+			],
+			'WHERE'  => 'g.group_id = ug.group_id',
+		]);
+		// Cache results for 5 minutes
+		$result = $this->db->sql_query($query, 300);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if ($row['group_id'] == $group_id)
+			{
+				$user_ids[] = (int) $row['user_id'];
+			}
+		}
+
+		$this->db->sql_freeresult($result);
+	}
+
+	/**
 	 * Get a list of mentioned names
-	 * TODO: decide what to do with groups
 	 *
 	 * @param string $xml  Parsed text
-	 * @param string $type Name type ('u' for users, 'g' for groups)
+	 * @param string $type Name type ('u' for users, 'g' for groups,
+	 *                     'ug' for usernames mentioned separately or as group members)
 	 * @return int[]       List of IDs
 	 */
-	public function get_mentioned_ids($xml, $type = 'u')
+	public function get_mentioned_ids($xml, $type = 'ug')
 	{
 		$ids = array();
 		if (strpos($xml, '<MENTION ') === false)
@@ -168,12 +262,31 @@ class mention_helper
 		$dom = new \DOMDocument;
 		$dom->loadXML($xml);
 		$xpath = new \DOMXPath($dom);
-		/** @var \DOMElement $mention */
-		foreach ($xpath->query('//MENTION') as $mention)
+
+		if ($type === 'ug')
 		{
-			if ($mention->getAttribute('type') === $type)
+			/** @var \DOMElement $mention */
+			foreach ($xpath->query('//MENTION') as $mention)
 			{
-				$ids[] = (int) $mention->getAttribute('id');
+				if ($mention->getAttribute('type') === 'u')
+				{
+					$ids[] = (int) $mention->getAttribute('id');
+				}
+				else if ($mention->getAttribute('type') === 'g')
+				{
+					$this->get_user_ids_for_group($ids, (int) $mention->getAttribute('id'));
+				}
+			}
+		}
+		else
+		{
+			/** @var \DOMElement $mention */
+			foreach ($xpath->query('//MENTION') as $mention)
+			{
+				if ($mention->getAttribute('type') === $type)
+				{
+					$ids[] = (int) $mention->getAttribute('id');
+				}
 			}
 		}
 

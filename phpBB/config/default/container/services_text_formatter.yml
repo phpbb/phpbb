@@ -56,6 +56,8 @@ services:
         class: phpbb\textformatter\s9e\mention_helper
         arguments:
             - '@dbal.conn'
+            - '@auth'
+            - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
 
