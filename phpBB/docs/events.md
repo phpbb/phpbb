@@ -1889,6 +1889,13 @@ search_body_search_query_prepend
 * Since: 3.1.7-RC1
 * Purpose: Put content at the top of the search query fields set
 
+search_results_content_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in search results
+
 search_results_header_after
 ===
 * Locations:
