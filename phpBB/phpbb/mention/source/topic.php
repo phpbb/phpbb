@@ -46,7 +46,7 @@ class topic extends base_user
 		 * Results will be cached on a per-topic basis
 		 */
 		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'u.username, u.user_id, t.topic_poster',
+			'SELECT'    => 'u.username_clean, u.username, u.user_id, t.topic_poster',
 			'FROM'      => [
 				USERS_TABLE => 'u',
 			],

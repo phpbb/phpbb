@@ -430,10 +430,6 @@ function getCaretPosition(txtarea) {
 			return _results;
 		}
 
-		function getNumberOfMatchedCachedNames(query) {
-			return getMatchedNames(query, cachedNames, cachedSearchKey).length;
-		}
-
 		function remoteFilter(query, callback) {
 			/*
 			* Do not make a new request until the previous one for the same query is returned
@@ -456,7 +452,7 @@ function getCaretPosition(txtarea) {
 			*    all relevant names have been fetched from the server
 			*/
 			if (cachedNamesForQuery &&
-				(getNumberOfMatchedCachedNames(query) >= mentionNamesLimit ||
+				(getMatchedNames(query, cachedNamesForQuery, cachedSearchKey).length >= mentionNamesLimit ||
 					cachedNamesForQuery.length < mentionBatchSize)) {
 				callback(cachedNamesForQuery);
 				return;
@@ -494,7 +490,7 @@ function getCaretPosition(txtarea) {
 					sorter: function(query, items, searchKey) {
 						let i;
 						let len;
-						let highestPriorities = {u: 0, g: 0};
+						let highestPriorities = {u: 1, g: 1};
 						let _unsorted = {u: {}, g: {}};
 						let _exactMatch = [];
 						let _results = [];
@@ -530,7 +526,7 @@ function getCaretPosition(txtarea) {
 							}
 
 							// Priority is calculated as the sum of priorities from different sources
-							_unsorted[item.type][item.id].priority += parseFloat(item.priority);
+							_unsorted[item.type][item.id].priority += parseFloat(item.priority.toString());
 
 							// Calculate the highest priority - we'll give it to group names
 							highestPriorities[item.type] = Math.max(highestPriorities[item.type], _unsorted[item.type][item.id].priority);

@@ -100,6 +100,8 @@ abstract class base_user implements source_interface
 			$user_ids[] = $row['user_id'];
 		}
 
+		$this->db->sql_freeresult($result);
+
 		// Load all user data with a single SQL query, needed for ranks and avatars
 		$this->user_loader->load_users($user_ids);
 
