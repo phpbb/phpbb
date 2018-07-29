@@ -71,6 +71,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 			'allow_board_notifications'	=> true,
+			'allow_mentions'		=> true,
 		));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
