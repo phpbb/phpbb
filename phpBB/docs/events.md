@@ -1707,6 +1707,13 @@ posting_poll_body_options_after
 * Since: 3.1.4-RC1
 * Purpose: Add content after the poll options on creating a poll
 
+posting_preview_content_after
+===
+* Locations:
+    + styles/prosilver/template/posting_preview.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content preview
+
 posting_preview_poll_after
 ===
 * Locations:
