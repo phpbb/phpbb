@@ -59,6 +59,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		self::assertArrayHasKey('NOTIFICATION_GROUP_POSTING', $subscription_types);
 
 		self::assertArrayHasKey('notification.type.bookmark', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		self::assertArrayHasKey('notification.type.mention', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 		self::assertArrayHasKey('notification.type.post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 		self::assertArrayHasKey('notification.type.quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 		self::assertArrayHasKey('notification.type.topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
@@ -73,6 +74,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	{
 		$expected_subscriptions = array(
 			'notification.type.forum'		=> array('notification.method.board'),
+			'notification.type.mention'		=> array('notification.method.board'),
 			'notification.type.post'		=> array('notification.method.board'),
 			'notification.type.topic'		=> array('notification.method.board'),
 			'notification.type.quote'		=> array('notification.method.board'),

@@ -70,6 +70,8 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 				array('f_noapprove', 1, true),
 				array('f_postcount', 1, true),
 				array('m_edit', 1, false),
+				array('f_mention', 1, true),
+				array('u_mention', 0, true),
 			)));
 
 		// Config
@@ -77,6 +79,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			'num_topics' => 1,
 			'num_posts' => 1,
 			'allow_board_notifications'	=> true,
+			'allow_mentions' => true,
 		));
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
