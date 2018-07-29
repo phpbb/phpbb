@@ -2674,6 +2674,13 @@ viewtopic_body_postrow_back2top_prepend
 * Since: 3.1.8-RC1
 * Purpose: Add content to the post's bottom directly before the back to top link 
 
+viewtopic_body_postrow_content_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in topics views
+
 viewtopic_body_postrow_custom_fields_after
 ===
 * Locations:
