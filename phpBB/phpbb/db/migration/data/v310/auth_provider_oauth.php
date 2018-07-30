@@ -20,6 +20,11 @@ class auth_provider_oauth extends \phpbb\db\migration\migration
 		return $this->db_tools->sql_table_exists($this->table_prefix . 'auth_provider_oauth');
 	}
 
+	static public function depends_on()
+	{
+		return array('\phpbb\db\migration\data\v30x\release_3_0_0');
+	}
+
 	public function update_schema()
 	{
 		return array(
