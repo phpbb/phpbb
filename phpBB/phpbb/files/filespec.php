@@ -420,7 +420,7 @@ class filespec
 			return false;
 		}
 
-		$upload_mode = ($this->php_ini->getBool('open_basedir') || $this->php_ini->getBool('safe_mode')) ? 'move' : 'copy';
+		$upload_mode = ($this->php_ini->getBool('open_basedir')) ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
 		$this->destination_file = $this->destination_path . '/' . utf8_basename($this->realname);
 
