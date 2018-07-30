@@ -254,14 +254,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$sql = 'SELECT COUNT(*) as pm_count
 			FROM ' . PRIVMSGS_TABLE . ' 
-			WHERE root_level = (SELECT root_level
-							FROM ' . PRIVMSGS_TABLE . '
-							WHERE msg_id = ' . ((int) $msg_id) .')';
+			WHERE root_level = ' . (int) $msg_id;
 
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$pm_count = (int) $row[pm_count];
-	$messages_per_page = 10; //temporary
+	$messages_per_page = 2; //temporary
 
 	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p= " . $message_row['msg_id'] ."";
 
@@ -269,7 +267,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
-	$pagination->generate_template_pagination($base_url, 'rococo', 'start', $pm_count, $messages_per_page, $start);
+	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $messages_per_page, $start);
 
 	/**
 	* Modify pm and sender data before it is assigned to the template
