@@ -148,7 +148,8 @@ class mention_helper
 		return TextFormatterUtils::replaceAttributes(
 			$xml,
 			'MENTION',
-			function ($attributes) use ($profile_urls) {
+			function ($attributes) use ($profile_urls)
+			{
 				if (isset($attributes['type']) && isset($attributes['id']))
 				{
 					$type = $attributes['type'];
