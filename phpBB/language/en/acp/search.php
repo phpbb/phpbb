@@ -116,7 +116,10 @@ $lang = array_merge($lang, array(
 		2	=> 'The current rate of indexing is approximately %1$.1f posts per second.<br />Indexing in progress…',
 	),
 	'SEARCH_INDEX_DELETE_REDIRECT'			=> array(
-		2	=> 'All posts up to post id %2$d have been removed from the search index.<br />Deleting in progress…',
+		2	=> 'All posts up to post id %2$d have been removed from the search index, of which %1$d posts were within this step.<br />',
+	),
+	'SEARCH_INDEX_DELETE_REDIRECT_RATE'		=> array(
+		2	=> 'The current rate of deleting is approximately %1$.1f posts per second.<br />Deleting in progress…',
 	),
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
