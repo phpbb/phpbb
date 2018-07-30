@@ -16,6 +16,7 @@ namespace phpbb\storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 // Temporal fix for: https://github.com/symfony/symfony/issues/27924
+// Fixed 23/7/2018 in symfony v3.4.13
 class streamed_response extends StreamedResponse
 {
 	/**
