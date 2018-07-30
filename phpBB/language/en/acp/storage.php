@@ -50,10 +50,9 @@ $lang = array_merge($lang, array(
 	'STORAGE_BACKUP_TITLE'			=> 'Backup storage',
 
 	// Local adapter
-	'STORAGE_ADAPTER_LOCAL_NAME'					=> 'Local',
-	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'				=> 'Path',
-	'STORAGE_ADAPTER_LOCAL_OPTION_DEPTH'			=> 'Depth',
-	'STORAGE_ADAPTER_LOCAL_OPTION_SAFE_FILENAME'	=> 'Safe filenames',
+	'STORAGE_ADAPTER_LOCAL_NAME'			=> 'Local',
+	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
+	'STORAGE_ADAPTER_LOCAL_OPTION_DEPTH'	=> 'Depth',
 
 	// Form validation
 	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storage types were successfully updated.',
@@ -63,4 +62,5 @@ $lang = array_merge($lang, array(
 	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email for %s of %s.',
 	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long for %s of %s.',
 	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available for %s of %s.',
+	'STORAGE_ATTACHMENT_CHANGE_SAFE_FILENAME'	=>	'For security reasons, you can\'t disable safe filenames in attachments.',
 ));

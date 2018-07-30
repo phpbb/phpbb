@@ -127,6 +127,12 @@ class acp_storage
 					{
 						if ($this->get_new_definition($storage_name, $definition) != $this->get_current_definition($storage_name, $definition))
 						{
+							// Hardcoded check to don't allow to disable safe filenames in attachments
+							if ($storage_name == 'attachment' && $definition == 'safe_filename' && $this->get_new_definition($storage_name, $definition) == "0")
+							{
+								trigger_error($this->lang->lang('STORAGE_ATTACHMENT_CHANGE_SAFE_FILENAME') . adm_back_link($this->u_action), E_USER_WARNING);
+							}
+
 							$modified = true;
 							break;
 						}
