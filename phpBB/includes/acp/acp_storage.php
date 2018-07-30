@@ -158,9 +158,6 @@ class acp_storage
 				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// TODO: If both providers are the same, and remove
-			// old files is checked, the files could be only moved
-
 			// Copy files from the old to the new storage
 			$i = 0;
 			foreach ($this->state['storages'] as $storage_name => $storage_options)
