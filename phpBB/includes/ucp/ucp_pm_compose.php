@@ -974,30 +974,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text($message_parser->message),
-			$quote_attributes
-		);
-		if ($bbcode_status)
-		{
-			$message_parser->message = $message_link . $quote_text . "\n\n";
-		}
-		else
-		{
-			$offset = 0;
-			$quote_string = "&gt; ";
-			$message = censor_text(trim($message_parser->message));
-			// see if we are nesting. It's easily tricked but should work for one level of nesting
-			if (strpos($message, "&gt;") !== false)
-			{
-				$offset = 10;
-			}
-			$message = utf8_wordwrap($message, 75 + $offset, "\n");
 
-			$message = $quote_string . $message;
-			$message = str_replace("\n", "\n" . $quote_string, $message);
-			$message_parser->message =  $quote_username . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
-		}
+		format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)

@@ -1630,35 +1630,14 @@ if ($generate_quote)
 	// Remove attachment bbcode tags from the quoted message to avoid mixing with the new post attachments if any
 	$message_parser->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#uis', '\\2', $message_parser->message);
 
-	if ($config['allow_bbcode'])
-	{
-		$message_parser->message = $bbcode_utils->generate_quote(
-			censor_text($message_parser->message),
-			array(
-				'author'  => $post_data['quote_username'],
-				'post_id' => $post_data['post_id'],
-				'time'    => $post_data['post_time'],
-				'user_id' => $post_data['poster_id'],
-			)
-		);
-		$message_parser->message .= "\n\n";
-	}
-	else
-	{
-		$offset = 0;
-		$quote_string = "&gt; ";
-		$message = censor_text(trim($message_parser->message));
-		// see if we are nesting. It's easily tricked but should work for one level of nesting
-		if (strpos($message, "&gt;") !== false)
-		{
-			$offset = 10;
-		}
-		$message = utf8_wordwrap($message, 75 + $offset, "\n");
+	$quote_attributes = array(
+						'author'  => $post_data['quote_username'],
+						'post_id' => $post_data['post_id'],
+						'time'    => $post_data['post_time'],
+						'user_id' => $post_data['poster_id'],
+	);
 
-		$message = $quote_string . $message;
-		$message = str_replace("\n", "\n" . $quote_string, $message);
-		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
-	}
+	format_quote($config['allow_bbcode'], $quote_attributes, $bbcode_utils, $message_parser);
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
