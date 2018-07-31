@@ -1,5 +1,5 @@
 <ul>
-<!-- IF BASE_URL and TOTAL_PAGES > 6 -->
+{% if BASE_URL and TOTAL_PAGES > 6 %}
 	<li class="dropdown-container dropdown-button-control dropdown-page-jump page-jump">
 		<a class="button button-icon-only dropdown-trigger" href="#" title="{L_JUMP_TO_PAGE_CLICK}" role="button"><i class="icon fa-level-down fa-rotate-270" aria-hidden="true"></i><span class="sr-only">{PAGE_NUMBER}</span></a>
 		<div class="dropdown">
@@ -13,18 +13,18 @@
 			</ul>
 		</div>
 	</li>
-<!-- ENDIF -->
-<!-- BEGIN pagination -->
-	<!-- IF pagination.S_IS_PREV -->
+{% endif %}
+{% for pagination in pagination %}
+	{% if pagination.S_IS_PREV %}
 		<li class="arrow previous"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="prev" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_BEGIN} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_PREVIOUS}</span></a></li>
-	<!-- ELSEIF pagination.S_IS_CURRENT -->
-	<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
-	<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+	{% elseif pagination.S_IS_CURRENT %}
+	<li class="active"><span>{{ pagination.PAGE_NUMBER }}</span></li>
+	{% elseif pagination.S_IS_ELLIPSIS %}
 	<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
-	<!-- ELSEIF pagination.S_IS_NEXT -->
+	{% elseif pagination.S_IS_NEXT %}
 		<li class="arrow next"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="next" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_END} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_NEXT}</span></a></li>
-	<!-- ELSE -->
-		<li><a class="button" href="{pagination.PAGE_URL}" role="button">{pagination.PAGE_NUMBER}</a></li>
-	<!-- ENDIF -->
-<!-- END pagination -->
+	{% else %}
+		<li><a class="button" href="{pagination.PAGE_URL}" role="button">{{ pagination.PAGE_NUMBER }}</a></li>
+	{% endif %}
+{% endfor %}
 </ul>
