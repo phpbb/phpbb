@@ -258,16 +258,24 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
+
 	$pm_count = (int) $row[pm_count];
+
 	$messages_per_page = 2; //temporary
+	$start_message = $request->variable('start_message', 0);
 
-	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p= " . $message_row['msg_id'] ."";
-
-	$start = $request->variable('start', 0);
+	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p=$msg_id";
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
-	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $messages_per_page, $start);
+	$start_message = $pagination->validate_start($start_message, $messages_per_page, $pm_count);
+	$pagination->generate_template_pagination($base_url,
+		'message_pagination',
+		'start_message',
+		$pm_count,
+		$messages_per_page,
+		$start_message
+	);
 
 	/**
 	* Modify pm and sender data before it is assigned to the template
