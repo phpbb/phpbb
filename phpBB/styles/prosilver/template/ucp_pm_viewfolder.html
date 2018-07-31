@@ -165,7 +165,8 @@
 <div class="action-bar bottom">
 	{% include 'display_options.html' %}
 	<input name="cur_folder_id" type="hidden" value="{{ CUR_FOLDER_ID }}" >
-	{% if pagination %}
+	{% if message_pagination %}
+		{% set pagination = message_pagination %}
 		{% include 'pagination.html' %}
 	{% else %}
 		TEST
