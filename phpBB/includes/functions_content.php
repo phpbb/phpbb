@@ -1778,7 +1778,7 @@ function format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, 
 			$quote_attributes
 		);
 
-		if($message_link)
+		if ($message_link)
 		{
 			$message_parser->message = $message_link . $quote_text . "\n\n";
 		}
@@ -1804,7 +1804,7 @@ function format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, 
 
 		$message_parser->message = $quote_attributes['author'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
 
-		if($message_link)
+		if ($message_link)
 		{
 			$message_parser->message =  $message_link . $message_parser->message;
 		}
