@@ -316,7 +316,6 @@ class storage
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-
 		$sql_ary['metadata'] = '';
 		if (!$row)
 		{
