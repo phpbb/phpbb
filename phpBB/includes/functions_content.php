@@ -1778,14 +1778,7 @@ function format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, 
 			$quote_attributes
 		);
 
-		if ($message_link)
-		{
-			$message_parser->message = $message_link . $quote_text . "\n\n";
-		}
-		else
-		{
-			$message_parser->message = $quote_text . "\n\n";
-		}
+		$message_parser->message = $quote_text . "\n\n";
 	}
 	else
 	{
@@ -1803,10 +1796,10 @@ function format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, 
 		$message = str_replace("\n", "\n" . $quote_string, $message);
 
 		$message_parser->message = $quote_attributes['author'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
+	}
 
-		if ($message_link)
-		{
-			$message_parser->message =  $message_link . $message_parser->message;
-		}
+	if ($message_link)
+	{
+		$message_parser->message = $message_link . $message_parser->message;
 	}
 }
