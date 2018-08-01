@@ -23,7 +23,7 @@
 
 	<form id="acp_storage_continue" method="post" action="{{ U_CONTINUE_UPDATING }}">
 		<fieldset class="submit-buttons">
-			<legend>{{ lang('SUBMIT }}</legend>
+			<legend>{{ lang('SUBMIT') }}</legend>
 			<input class="button1" type="submit" id="continue" name="continue" value="{{ lang('CONTINUE') }}" onclick="popup_progress_bar();" />&nbsp;
 			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
 			{{ S_FORM_TOKEN }}
@@ -91,7 +91,7 @@
 						{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
 						<dl>
 							<dt>
-								<label for="{{ input_id }}}">{{ lang(title) }}{{ lang('COLON') }}</label>
+								<label for="{{ input_id }}">{{ lang(title) }}{{ lang('COLON') }}</label>
 								{% if lang_defined(description) %}
 									<br /><span>{{ lang(description) }}</span>
 								{% endif %}
