@@ -189,7 +189,11 @@ class acp_storage
 
 					$stream = $current_adapter->read_stream($row['file_path']);
 					$new_adapter->write_stream($row['file_path'], $stream);
-					fclose($stream);
+
+					if (is_resource($stream))
+					{
+						fclose($stream);
+					}
 
 					$this->state['file_index'] = $row['file_id']; // Set last uploaded file
 				}
