@@ -954,7 +954,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = $request->variable('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
+				$message_link = generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}";
+				$message_link_subject = "{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}";
+				if ($bbcode_status)
+				{
+					$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
+				}
+				else
+				{
+					$message_link = $message_link . " - " . $message_link_subject . "\n\n";
+				}
 			}
 			else
 			{
