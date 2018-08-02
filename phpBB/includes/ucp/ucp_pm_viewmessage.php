@@ -252,19 +252,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
 
+	$messages_per_page = 2; //temporary
+	$start_message = $request->variable('start_message', 0);
+	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p=$msg_id";
+
 	$sql = 'SELECT COUNT(*) as pm_count
 			FROM ' . PRIVMSGS_TABLE . ' 
 			WHERE root_level = ' . (int) $msg_id;
 
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query_limit($sql, $messages_per_page, $start_message);
 	$row = $db->sql_fetchrow($result);
-
 	$pm_count = (int) $row[pm_count];
-
-	$messages_per_page = 2; //temporary
-	$start_message = $request->variable('start_message', 0);
-
-	$base_url = $url . "&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p=$msg_id";
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
