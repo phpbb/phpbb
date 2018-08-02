@@ -38,7 +38,7 @@
 					</span>
 					<span class="pm-secondary-item pm-date">
 						<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
-						{{ message.SENT_TIME }}
+						{{ message.SENT_TIME }} {{ S_SOME_VARIABLE }}
 					</span>
 				</span>
 			</span>
@@ -102,7 +102,7 @@
 						{{ lang('TO_MASS') }} {{ lang('COLON') }}
 						<ul class="pm-recipient-list">
 							{% for recipient in to_recipient %}
-							<li class=""pm-recipient"">
+							<li class="pm-recipient">
 								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
 								{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 							</li>
@@ -126,7 +126,7 @@
 			</div>
 			<div class="pm-message-box" id="pm-message-box" >
 				{% include 'posting_buttons.html' %}
-				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" placeholder="Type your message" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
 						{% for smile in smiley %}
