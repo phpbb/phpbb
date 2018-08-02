@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-@define('PHPBB_VERSION', '3.2.3-RC2');
+@define('PHPBB_VERSION', '3.2.4-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
