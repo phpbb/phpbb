@@ -27,6 +27,7 @@
 	box-sizing: border-box;
 	height: 72px;
 	padding: 16px;
+	border: 1px solid rgba(14, 100, 247, 0.12);
 }
 
 .pm-title {
@@ -136,8 +137,13 @@
 }
 
 .pm-inputbox {
-	width: 85%;
-	min-height: 40px;
+	width: 97%;
+	min-height: 30px;
+	max-height: 40px;
+	font-size: 15px;
+	background-color: white;
+	padding: 5px;
+	border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .pm-message-box {
@@ -173,4 +179,5 @@
 	font-size: 20px;
 	background-color: white;
 	padding: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.125);
 }
