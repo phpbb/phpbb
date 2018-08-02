@@ -1,22 +1,22 @@
 services:
 # ----- Controller -----
-    phpbb.mention.controller:
+    mention.controller:
         class: phpbb\mention\controller\mention
         arguments:
-            - '@phpbb.mention.source_collection'
+            - '@mention.source_collection'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'
 
 # ----- Sources for mention -----
-    phpbb.mention.source_collection:
+    mention.source_collection:
         class: phpbb\di\service_collection
         arguments:
             - '@service_container'
         tags:
             - { name: service_collection, tag: mention.source }
 
-    phpbb.mention.source.base_group:
+    mention.source.base_group:
         abstract: true
         arguments:
             - '@dbal.conn'
@@ -26,7 +26,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    phpbb.mention.source.base_user:
+    mention.source.base_user:
         abstract: true
         arguments:
             - '@dbal.conn'
@@ -35,40 +35,40 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    phpbb.mention.source.friend:
+    mention.source.friend:
         class: phpbb\mention\source\friend
-        parent: phpbb.mention.source.base_user
+        parent: mention.source.base_user
         calls:
             - [set_user, ['@user']]
         tags:
             - { name: mention.source }
 
-    phpbb.mention.source.group:
+    mention.source.group:
         class: phpbb\mention\source\group
-        parent: phpbb.mention.source.base_group
+        parent: mention.source.base_group
         tags:
             - { name: mention.source }
 
-    phpbb.mention.source.team:
+    mention.source.team:
         class: phpbb\mention\source\team
-        parent: phpbb.mention.source.base_user
+        parent: mention.source.base_user
         tags:
             - { name: mention.source }
 
-    phpbb.mention.source.topic:
+    mention.source.topic:
         class: phpbb\mention\source\topic
-        parent: phpbb.mention.source.base_user
+        parent: mention.source.base_user
         tags:
             - { name: mention.source }
 
-    phpbb.mention.source.user:
+    mention.source.user:
         class: phpbb\mention\source\user
-        parent: phpbb.mention.source.base_user
+        parent: mention.source.base_user
         tags:
             - { name: mention.source }
 
-    phpbb.mention.source.usergroup:
+    mention.source.usergroup:
         class: phpbb\mention\source\usergroup
-        parent: phpbb.mention.source.base_group
+        parent: mention.source.base_group
         tags:
             - { name: mention.source }
