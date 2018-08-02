@@ -15,8 +15,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-
 class phpbb_mention_controller_test extends phpbb_database_test_case
 {
 	protected $db, $container, $user, $config, $auth, $cache;
@@ -109,6 +107,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('request', $request);
 		$phpbb_container->set('group_helper', new \phpbb\group\helper($lang));
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set(
