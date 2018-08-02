@@ -120,7 +120,5 @@ abstract class base_user implements source_interface
 				'priority'	=> $this->get_priority($user),
 			]);
 		}
-
-		$this->db->sql_freeresult($result);
 	}
 }
