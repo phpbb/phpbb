@@ -87,6 +87,8 @@ class controller
 
 		$this->response->send();
 
+		// Terminate script to avoid the execution of terminate events
+		// This avoid possible errors with db connection closed
 		exit;
 	}
 
