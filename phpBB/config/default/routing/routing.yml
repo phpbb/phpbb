@@ -27,7 +27,7 @@ phpbb_help_routing:
 phpbb_mention_controller:
     path: /mention
     methods: [GET, POST]
-    defaults: { _controller: phpbb.mention.controller:handle }
+    defaults: { _controller: mention.controller:handle }
 
 phpbb_report_routing:
     resource: report.yml
