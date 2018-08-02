@@ -168,3 +168,9 @@
 .pm-subject-box {
 	margin-left: 10px;
 }
+
+.pm-message-header {
+	font-size: 20px;
+	background-color: white;
+	padding: 10px;
+}

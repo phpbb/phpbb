@@ -46,6 +46,11 @@
 		{% endfor %}
 	</ul>
 	<div class="pm-viewer">
+		{% if history_row %}
+		<div class="pm-message-header">
+			{SUBJECT}
+		</div>
+		{% endif %}
 		<div class="pm-message">
 			{% for history in history_row %}
 				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
