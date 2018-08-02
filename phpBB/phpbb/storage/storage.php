@@ -201,7 +201,8 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
-		try {
+		try
+		{
 			$this->get_adapter()->rename($path_orig, $path_dest);
 			$this->track_rename($path_orig, $path_dest);
 		}
@@ -386,6 +387,13 @@ class storage
 		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
 	}
 
+	/**
+	 * Check if a file is tracked
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return bool	True if file is tracked
+	 */
 	public function is_tracked($path)
 	{
 		$sql_ary = array(
@@ -393,7 +401,7 @@ class storage
 			'storage'		=> $this->get_name(),
 		);
 
-		// Get file, if exist update filesize, if not add new record
+		// Get file
 		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 

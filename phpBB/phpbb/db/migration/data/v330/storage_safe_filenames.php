@@ -68,7 +68,7 @@ class storage_safe_filenames extends \phpbb\db\migration\migration
 	{
 		if (!function_exists('unique_id'))
 		{
-			include_once($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
+			require($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
 		}
 
 		$parts = pathinfo($filename);
@@ -105,7 +105,7 @@ class storage_safe_filenames extends \phpbb\db\migration\migration
 	{
 		if (!function_exists('unique_id'))
 		{
-			include_once($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
+			require($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
 		}
 
 		$sql = 'SELECT file_id

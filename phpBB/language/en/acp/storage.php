@@ -64,5 +64,5 @@ $lang = array_merge($lang, array(
 	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email for %s of %s.',
 	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long for %s of %s.',
 	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available for %s of %s.',
-	'STORAGE_ATTACHMENT_CHANGE_SAFE_FILENAME'	=>	'For security reasons, you can\'t disable safe filenames in attachments.',
+	'STORAGE_ATTACHMENT_CHANGE_SAFE_FILENAME'	=>	'For security reasons, you can’t disable safe filenames in attachments.',
 ));
