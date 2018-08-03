@@ -27,10 +27,10 @@ class acp_storage
 	/** @var \phpbb\db_text $config_text */
 	protected $config_text;
 
-	/** @var \db\driver\driver_interface $db */
+	/** @var \phpbb\db\driver\driver_interface $db */
 	protected $db;
 
-	/** @var \log\log_interface $log */
+	/** @var \phpbb\log\log_interface $log */
 	protected $log;
 
 	/** @var \phpbb\path_helper $path_helper */
