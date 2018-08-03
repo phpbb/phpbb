@@ -39,6 +39,7 @@ class group extends base_group
 			'FROM'      => [
 				GROUPS_TABLE => 'g',
 			],
+			'ORDER_BY'	=> 'g.group_name',
 		]);
 		return $query;
 	}

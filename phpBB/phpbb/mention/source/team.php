@@ -37,7 +37,7 @@ class team extends base_user
 			],
 			'WHERE'     => 'ug.group_id = t.group_id AND ug.user_id = u.user_id AND ug.user_pending = 0
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
-			'ORDER_BY'  => 'u.user_lastvisit DESC'
+			'ORDER_BY'  => 'u.username'
 		]);
 		return $query;
 	}
