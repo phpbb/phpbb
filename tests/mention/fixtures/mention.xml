@@ -49,9 +49,15 @@
         </row>
     </table>
     <table name="phpbb_teampage">
+        <column>teampage_id</column>
         <column>group_id</column>
         <row>
             <value>1</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>2</value>
         </row>
     </table>
     <table name="phpbb_topics">
