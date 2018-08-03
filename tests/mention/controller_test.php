@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license       GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -47,14 +47,15 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		// Auth
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
-			->method('acl_gets')
-			->with('a_group', 'a_groupadd', 'a_groupdel')
-			->willReturn(false);
+			 ->method('acl_gets')
+			 ->with('a_group', 'a_groupadd', 'a_groupdel')
+			 ->willReturn(false)
+		;
 
 		// Config
 		$config = new \phpbb\config\config(array(
-			'allow_mentions' => true,
-			'mention_names_limit'	=> 3,
+			'allow_mentions'      => true,
+			'mention_names_limit' => 3,
 		));
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
@@ -79,25 +80,26 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		));
 		$user->ip = '';
 		$user->data = array(
-			'user_id'		=> 2,
-			'username'		=> 'myself',
-			'is_registered'	=> true,
-			'user_colour'	=> '',
+			'user_id'       => 2,
+			'username'      => 'myself',
+			'is_registered' => true,
+			'user_colour'   => '',
 		);
 
 		// Request
 		$this->request = $request = $this->createMock('\phpbb\request\request');
 
 		$request->expects($this->any())
-			->method('is_ajax')
-			->willReturn(true);
+				->method('is_ajax')
+				->willReturn(true)
+		;
 
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Container
 		$phpbb_container = new ContainerBuilder();
 
-		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
+		$loader = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_mention.yml');
 		$phpbb_container->set('user_loader', $user_loader);
 		$phpbb_container->set('user', $user);
@@ -142,6 +144,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		 * NOTE:
 		 * 1) in production comparison with 'myself' is being done in JS
 		 * 2) mention_names_limit does not limit the number of returned items
+		 * 3) team members of hidden groups can also be mentioned (because they are shown on teampage)
 		 */
 		return [
 			['', 0, [
@@ -177,6 +180,17 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 					],
 					'rank'     => '',
 					'priority' => 0,
+				],
+				[
+					'name'     => 'team_member_hidden',
+					'type'     => 'u',
+					'id'       => 6,
+					'avatar'   => [
+						'type' => 'user',
+						'img'  => '',
+					],
+					'rank'     => '',
+					'priority' => 1,
 				],
 				[
 					'name'     => 'team_member_normal',
@@ -346,6 +360,17 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 					'priority' => 0,
 				],
 				[
+					'name'     => 'team_member_hidden',
+					'type'     => 'u',
+					'id'       => 6,
+					'avatar'   => [
+						'type' => 'user',
+						'img'  => '',
+					],
+					'rank'     => '',
+					'priority' => 1,
+				],
+				[
 					'name'     => 'team_member_normal',
 					'type'     => 'u',
 					'id'       => 5,
@@ -502,6 +527,17 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			]],
 			['t', 1, [
 				[
+					'name'     => 'team_member_hidden',
+					'type'     => 'u',
+					'id'       => 6,
+					'avatar'   => [
+						'type' => 'user',
+						'img'  => '',
+					],
+					'rank'     => '',
+					'priority' => 1,
+				],
+				[
 					'name'     => 'team_member_normal',
 					'type'     => 'u',
 					'id'       => 5,
@@ -626,32 +662,34 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 				],
 			]],
 			['test1', 1, [[
-				'name'		=> 'test1',
-				'type'		=> 'u',
-				'id'		=> 9,
-				'avatar'	=> [
-					'type'	=> 'user',
-					'img'	=> '',
+				'name'     => 'test1',
+				'type'     => 'u',
+				'id'       => 9,
+				'avatar'   => [
+					'type' => 'user',
+					'img'  => '',
 				],
-				'rank'		=> '',
-				'priority'	=> 0,
+				'rank'     => '',
+				'priority' => 0,
 			]]],
 		];
 	}
 
 	/**
-	* @dataProvider handle_data
-	*/
+	 * @dataProvider handle_data
+	 */
 	public function test_handle($keyword, $topic_id, $expected_result)
 	{
 		$this->request->expects($this->at(1))
-			->method('variable')
-			->with('keyword', '', true)
-			->willReturn($keyword);
+					  ->method('variable')
+					  ->with('keyword', '', true)
+					  ->willReturn($keyword)
+		;
 		$this->request->expects($this->at(2))
-			->method('variable')
-			->with('topic_id', 0)
-			->willReturn($topic_id);
+					  ->method('variable')
+					  ->with('topic_id', 0)
+					  ->willReturn($topic_id)
+		;
 		$data = json_decode($this->controller->handle()->getContent(), true);
 		$this->assertEquals($expected_result, $data);
 	}
