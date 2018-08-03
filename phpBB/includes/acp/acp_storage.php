@@ -30,6 +30,9 @@ class acp_storage
 	/** @var \db\driver\driver_interface $db */
 	protected $db;
 
+	/** @var \log\log_interface $log */
+	protected $log;
+
 	/** @var \phpbb\path_helper $path_helper */
 	protected $path_helper;
 
@@ -78,6 +81,7 @@ class acp_storage
 		$this->config_text = $phpbb_container->get('config_text');
 		$this->db = $phpbb_container->get('dbal.conn');
 		$this->filesystem = $phpbb_container->get('filesystem');
+		$this->log = $phpbb_container->get('log');
 		$this->path_helper = $phpbb_container->get('path_helper');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
@@ -254,7 +258,7 @@ class acp_storage
 			$this->state = false;
 			$this->save_state();
 
-			//$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false); // todo
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false); // todo
 			trigger_error($this->user->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
 		}
 
