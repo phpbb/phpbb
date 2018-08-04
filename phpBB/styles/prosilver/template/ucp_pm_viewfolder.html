@@ -51,6 +51,9 @@
 		{% endif %}
 		<div class="pm-message">
 			{% for history in history_row %}
+				<div class="pm-message-avatar{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
+					{{ AUTHOR_AVATAR }}
+				</div>
 				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
 					<li class="pm-message-item ">
 						<span class="pm-message-primary">
