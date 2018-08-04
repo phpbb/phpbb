@@ -31,9 +31,7 @@
 						{% endif %}
 
 						{% if S_SHOW_RECIPIENTS %}
-							{{ lang('MESSAGE_TO') }} {{ message.RECIPIENTS }}
-						{% else %}
-							{{ message.MESSAGE_AUTHOR_FULL }}
+							{{ message.RECIPIENTS }}
 						{% endif %}
 					</span>
 					<span class="pm-secondary-item pm-date">
