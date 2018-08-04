@@ -78,9 +78,15 @@
 	border-radius: 5px;
 	flex: 1 auto;
 	width: 310px;
-	margin-left: 10px;
+	margin-left: 50px;
 	padding-right: 0;
 	list-style-type: none;
+}
+
+.pm-message-avatar {
+	margin-left: 10px;
+	zoom: 0.4;
+	float: left;
 }
 
 .pm-not-self {
