@@ -91,43 +91,12 @@
 
 		<div class="pm-compose">
 			<div class="pm-subject-box">
-				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text"  value="{{ SUBJECT }}{{ DRAFT_SUBJECT }}" >
+				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}" >
 			</div>
-			<div class="pm-recipient-box">
-				<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
-				<dd class="recipients">
-					<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
-					<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
-					{% if to_recipient %}
-					<div class="pm-recipient-cc">
-						{{ lang('TO_MASS') }} {{ lang('COLON') }}
-						<ul class="pm-recipient-list">
-							{% for recipient in to_recipient %}
-							<li class="pm-recipient">
-								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
-								{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-					{% endif %}
-					{% if bcc_recipient %}
-					<div class="pm-recipient-bcc">
-						{{ lang('BCC') }} {{ lang('COLON') }}
-						<ul class="pm-recipient-list">
-							{% for recipient in bcc_recipient %}
-							<li class="pm-recipient">
-								{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
-								{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-					{% endif %}
-			</div>
+			
 			<div class="pm-message-box" id="pm-message-box" >
 				{% include 'posting_buttons.html' %}
-				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" placeholder="Type your message" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
 						{% for smile in smiley %}
