@@ -110,7 +110,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 			$address_list = array();
 
 			// Build Recipient List if in outbox/sentbox - max two additional queries
-			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
+			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX)
 			{
 				$address_list = get_recipient_strings($folder_info['rowset']);
 			}
@@ -170,13 +170,13 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_INBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
 
 			$template->assign_vars(array(
-				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
+				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX) ? true : false,
 
 				'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'PM_REPORTED'),
 				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
