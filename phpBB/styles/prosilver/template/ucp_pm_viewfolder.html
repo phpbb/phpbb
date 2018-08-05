@@ -49,11 +49,16 @@
 			{SUBJECT}
 		</div>
 		{% endif %}
+		{% EVENT ucp_pm_history_review_before %}
 		<div class="pm-message">
 			{% for history in history_row %}
-				<div class="pm-message-avatar{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
-					{{ AUTHOR_AVATAR }}
-				</div>
+				{% EVENT ucp_pm_viewmessage_avatar_before %}
+				{% if AUTHOR_AVATAR %}
+					<div class="pm-message-avatar{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
+						<a href="{U_MESSAGE_AUTHOR}" class="pm-avatar">{{ AUTHOR_AVATAR }}</a>
+					</div>
+				{% endif %}
+				{% EVENT ucp_pm_viewmessage_avatar_after %}
 				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
 					<li class="pm-message-item ">
 						<span class="pm-message-primary">
@@ -88,6 +93,7 @@
 				</ul>
 			{% endfor %}
 		</div>
+		{% EVENT ucp_pm_history_review_before %}
 
 		<div class="pm-compose">
 			<div class="pm-subject-box">
