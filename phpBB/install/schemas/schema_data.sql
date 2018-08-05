@@ -290,12 +290,15 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purg
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\safe_filename', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\path', 'images/avatars/upload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\safe_filename', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\path', 'store');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\safe_filename', '0');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);

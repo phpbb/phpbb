@@ -221,7 +221,16 @@ class filespec_storage
 			case 'avatar':
 				$this->extension = strtolower($this->extension);
 				$this->realname = $prefix . $user_id . '.' . $this->extension;
+			break;
 
+			case 'attachment':
+				// Replace any chars which may cause us problems with _
+				$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
+
+				$this->realname = rawurlencode(str_replace($bad_chars, '_', strtolower($this->realname)));
+				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
+
+				$this->realname = pathinfo($this->realname, PATHINFO_FILENAME) . '_' . md5(unique_id()) . '.' . $this->extension;
 			break;
 
 			case 'unique_ext':

@@ -23,10 +23,12 @@
 	{
 		parent::setUp();
 
+		$db = $this->createMock('\phpbb\db\driver\driver_interface');
+
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
-		$this->adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
+		$this->adapter = new \phpbb\storage\adapter\local($db, $this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path, '');
 		$this->adapter->configure(['path' => 'test_path', 'depth' => 2]);
 
 		$this->path = $phpbb_root_path . 'test_path/';
