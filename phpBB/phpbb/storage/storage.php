@@ -271,6 +271,11 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
+		if (!is_resource($resource))
+		{
+			throw new exception('STORAGE_INVALID_RESOURCE');
+		}
+
 		$adapter = $this->get_adapter();
 
 		if ($adapter instanceof stream_interface)
