@@ -242,14 +242,12 @@ class mention_helper
 	}
 
 	/**
-	 * Get a list of mentioned names
+	 * Get a list of mentioned user IDs
 	 *
 	 * @param string $xml  Parsed text
-	 * @param string $type Name type ('u' for users, 'g' for groups,
-	 *                     'ug' for usernames mentioned separately or as group members)
-	 * @return int[]       List of IDs
+	 * @return int[]       List of user IDs
 	 */
-	public function get_mentioned_ids($xml, $type = 'ug')
+	public function get_mentioned_user_ids($xml)
 	{
 		$ids = array();
 		if (strpos($xml, '<MENTION ') === false)
@@ -261,30 +259,16 @@ class mention_helper
 		$dom->loadXML($xml);
 		$xpath = new \DOMXPath($dom);
 
-		if ($type === 'ug')
+		/** @var \DOMElement $mention */
+		foreach ($xpath->query('//MENTION') as $mention)
 		{
-			/** @var \DOMElement $mention */
-			foreach ($xpath->query('//MENTION') as $mention)
+			if ($mention->getAttribute('type') === 'u')
 			{
-				if ($mention->getAttribute('type') === 'u')
-				{
-					$ids[] = (int) $mention->getAttribute('id');
-				}
-				else if ($mention->getAttribute('type') === 'g')
-				{
-					$this->get_user_ids_for_group($ids, (int) $mention->getAttribute('id'));
-				}
+				$ids[] = (int) $mention->getAttribute('id');
 			}
-		}
-		else
-		{
-			/** @var \DOMElement $mention */
-			foreach ($xpath->query('//MENTION') as $mention)
+			else if ($mention->getAttribute('type') === 'g')
 			{
-				if ($mention->getAttribute('type') === $type)
-				{
-					$ids[] = (int) $mention->getAttribute('id');
-				}
+				$this->get_user_ids_for_group($ids, (int) $mention->getAttribute('id'));
 			}
 		}
 
