@@ -74,10 +74,9 @@ class mention_helper
 	 * Returns SQL query data for colour SELECT request
 	 *
 	 * @param string $type Name type ('u' for users, 'g' for groups)
-	 * @param array  $ids  Array of IDs
 	 * @return array Array of SQL SELECT query data for extracting colours for names
 	 */
-	protected function get_colours_sql($type, $ids)
+	protected function get_colours_sql($type)
 	{
 		switch ($type)
 		{
@@ -88,9 +87,7 @@ class mention_helper
 					'FROM'   => [
 						USERS_TABLE => 'u',
 					],
-					'WHERE'  => 'u.user_id <> ' . ANONYMOUS . '
-						AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
-						AND ' . $this->db->sql_in_set('u.user_id', $ids),
+					'WHERE'  => $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 				];
 			case 'g':
 				return [
@@ -98,25 +95,28 @@ class mention_helper
 					'FROM'   => [
 						GROUPS_TABLE => 'g',
 					],
-					'WHERE'  => $this->db->sql_in_set('g.group_id', $ids),
 				];
 		}
 	}
 
 	/**
-	 * Caches colours for selected IDs of the specified type
-	 *
-	 * @param string $type Name type ('u' for users, 'g' for groups)
-	 * @param array  $ids  Array of IDs
+	 * Caches colours of users and groups
 	 */
-	protected function get_colours($type, $ids)
+	protected function cache_colours()
 	{
-		$this->cached_colours[$type] = [];
-
-		if (!empty($ids))
+		if (count($this->cached_colours) > 0)
 		{
-			$query = $this->db->sql_build_query('SELECT', $this->get_colours_sql($type, $ids));
-			$result = $this->db->sql_query($query);
+			return;
+		}
+
+		$types = ['u', 'g'];
+
+		foreach ($types as $type)
+		{
+			$this->cached_colours[$type] = [];
+
+			$query = $this->db->sql_build_query('SELECT', $this->get_colours_sql($type));
+			$result = $this->db->sql_query($query, 300);
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -140,10 +140,7 @@ class mention_helper
 			'g' => $this->group_profile_url,
 		];
 
-		// TODO: think about optimization for caching colors.
-		$this->cached_colours = [];
-		$this->get_colours('u', $this->get_mentioned_ids($xml, 'u'));
-		$this->get_colours('g', $this->get_mentioned_ids($xml, 'g'));
+		$this->cache_colours();
 
 		return TextFormatterUtils::replaceAttributes(
 			$xml,
