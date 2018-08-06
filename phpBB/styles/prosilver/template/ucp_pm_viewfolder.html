@@ -46,7 +46,12 @@
 	<div class="pm-viewer">
 		{% if history_row %}
 		<div class="pm-message-header">
-			{SUBJECT}
+			<div class="pm-subject">
+				{SUBJECT}
+			</div>
+			<span class="pm-header-button">
+				<button class="button-to"><i class="fa fa-user fa-fw" ></i></button>
+			</span>
 		</div>
 		{% endif %}
 		{% EVENT ucp_pm_history_review_before %}

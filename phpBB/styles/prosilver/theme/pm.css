@@ -181,8 +181,9 @@
 
 .pm-message-header {
 	font-size: 20px;
-	padding: 10px;
+	/*height: 50px;*/
 	border: 1px solid rgba(0, 0, 0, 0.125);
+	display: flex;
 }
 
 .pm-smile-model {
@@ -215,3 +216,26 @@
 	text-decoration: none;
 	cursor: pointer;
 }
+
+.pm-header-button {
+	display: flex;
+	flex: 0 0 50px;
+}
+
+.button-to {
+	flex-basis: 100%;
+	text-align: center
+}
+
+.pm-subject {
+	padding: 10px;
+	flex: 1;
+
+}
+
+.pm-header-button:hover,
+.pm-header-button:focus {
+	cursor: pointer;
+	background-color: #2d80d2;
+}
+
