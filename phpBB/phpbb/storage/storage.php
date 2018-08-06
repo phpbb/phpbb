@@ -112,17 +112,8 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
-		try
-		{
-			$this->get_adapter()->put_contents($path, $content);
-			$this->track_file($path);
-		}
-		catch (\Exception $e)
-		{
-			$this->get_adapter()->delete($path);
-			$this->untrack_file($path);
-			throw $e;
-		}
+		$this->get_adapter()->put_contents($path, $content);
+		$this->track_file($path);
 	}
 
 	/**
@@ -198,15 +189,8 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
-		try {
-			$this->get_adapter()->rename($path_orig, $path_dest);
-			$this->track_rename($path_orig, $path_dest);
-		}
-		catch (\Exception $e)
-		{
-			$this->untrack_file($path_dest);
-			throw $e;
-		}
+		$this->get_adapter()->rename($path_orig, $path_dest);
+		$this->track_rename($path_orig, $path_dest);
 	}
 
 	/**
@@ -231,16 +215,8 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
-		try
-		{
-			$this->get_adapter()->copy($path_orig, $path_dest);
-			$this->track_file($path_dest);
-		}
-		catch (\Exception $e)
-		{
-			$this->untrack_file($path_dest);
-			throw $e;
-		}
+		$this->get_adapter()->copy($path_orig, $path_dest);
+		$this->track_file($path_dest);
 	}
 
 	/**
@@ -299,15 +275,7 @@ class storage
 
 		if ($adapter instanceof stream_interface)
 		{
-			try
-			{
-				$adapter->write_stream($path, $resource);
-			}
-			catch (\Exception $e)
-			{
-				$adapter->delete($path);
-				$this->untrack_file($path);
-			}
+			$adapter->write_stream($path, $resource);
 		}
 		else
 		{
