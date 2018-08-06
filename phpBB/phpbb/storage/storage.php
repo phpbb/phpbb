@@ -142,7 +142,7 @@ class storage
 	 *
 	 * @param string	$path	file/directory to check
 	 *
-	 * @return bool	Returns true if the file/directory exist, false otherwise.
+	 * @return bool	Returns true if the file/directory exist, false otherwise
 	 */
 	public function exists($path, $full_check = false)
 	{
@@ -154,7 +154,8 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception		When removal fails.
+	 * @throws \phpbb\storage\exception\exception		When removal fails
+	 *													When the file doesn't exist
 	 */
 	public function delete($path)
 	{
@@ -355,6 +356,13 @@ class storage
 		$this->cache->destroy('_storage_' . $this->get_name() . '_numfiles');
 	}
 
+	/**
+	 * Check if a file is tracked
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return bool	True if file is tracked
+	 */
 	public function is_tracked($path)
 	{
 		$sql_ary = array(
@@ -393,6 +401,7 @@ class storage
 	 * @param string	$path	The file
 	 *
 	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
+	 *													When the file doesn't exist
 	 *
 	 * @return \phpbb\storage\file_info	Returns file_info object
 	 */
