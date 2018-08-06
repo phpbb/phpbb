@@ -129,7 +129,6 @@
 }
 
 .pm-preview {
-	background-color: #ffffff;
 	border-radius: 5px;
 	flex: 1 auto;
 	height: auto;
@@ -147,7 +146,6 @@
 	min-height: 30px;
 	max-height: 40px;
 	font-size: 15px;
-	background-color: white;
 	padding: 5px;
 	border: 1px solid rgba(0, 0, 0, 0.125);
 }
@@ -183,7 +181,37 @@
 
 .pm-message-header {
 	font-size: 20px;
-	background-color: white;
 	padding: 10px;
 	border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.pm-smile-model {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	padding-top: 100px;
+	left: 50px;
+	width: 50%;
+	height: 100%;
+}
+
+.pm-modal-content {
+	background-color: #e6f7ff;
+	margin: auto;
+	padding: 10px;
+	border: 1px solid #888;
+	width: 30%;
+}
+
+.pm-button-close {
+	color: #aaaaaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.pm-button-close:hover,
+.pm-button-close:focus {
+	text-decoration: none;
+	cursor: pointer;
 }

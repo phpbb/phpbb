@@ -1189,3 +1189,7 @@ input.disabled {
 .pm-message-unread {
 	color: #000000;
 }
+
+.pm-preview, .pm-inputbox, .pm-message-header {
+	background-color: #ffffff;
+}
