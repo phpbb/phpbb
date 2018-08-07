@@ -1,0 +1,5 @@
+<?php
+
+// eXtreme Styles mod cache. Generated on Tue, 07 Aug 2018 01:34:08 +0000 (time=1533605648)
+
+?><?php if ($this->vars['PAGINATION']) {  ?><b><a href="#" onclick="jumpto(); return false;" title="<?php echo isset($this->vars['L_JUMP_TO_PAGE']) ? $this->vars['L_JUMP_TO_PAGE'] : $this->lang('L_JUMP_TO_PAGE'); ?>"><?php echo isset($this->vars['L_GOTO_PAGE']) ? $this->vars['L_GOTO_PAGE'] : $this->lang('L_GOTO_PAGE'); ?></a> <?php if ($this->vars['PREVIOUS_PAGE']) {  ?><a href="<?php echo isset($this->vars['PREVIOUS_PAGE']) ? $this->vars['PREVIOUS_PAGE'] : $this->lang('PREVIOUS_PAGE'); ?>"><?php echo isset($this->vars['L_PREVIOUS']) ? $this->vars['L_PREVIOUS'] : $this->lang('L_PREVIOUS'); ?></a>&nbsp;&nbsp;<?php } ?><?php echo isset($this->vars['PAGINATION']) ? $this->vars['PAGINATION'] : $this->lang('PAGINATION'); ?><?php if ($this->vars['NEXT_PAGE']) {  ?> &nbsp;<a href="<?php echo isset($this->vars['NEXT_PAGE']) ? $this->vars['NEXT_PAGE'] : $this->lang('NEXT_PAGE'); ?>"><?php echo isset($this->vars['L_NEXT']) ? $this->vars['L_NEXT'] : $this->lang('L_NEXT'); ?></a><?php } ?></b><?php } ?>

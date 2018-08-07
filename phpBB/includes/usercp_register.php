@@ -497,7 +497,7 @@ if ( isset($_POST['submit']) )
 	{
 		if ( $avatar_sql == '' )
 		{
-			$avatar_sql = ( $mode == 'editprofile' ) ? '' : "'', " . USER_AVATAR_NONE;
+			$avatar_sql = ( $mode == 'editprofile' ) ? '' :  '' . USER_AVATAR_NONE;
 		}
 
 		if ( $mode == 'editprofile' )
@@ -538,7 +538,8 @@ if ( isset($_POST['submit']) )
 			}
 
 			if ( !$user_active )
-			{
+			{			
+				$user_active = 0;
 				//
 				// The users account has been deactivated, send them an email with a new activation key
 				//
@@ -623,12 +624,13 @@ if ( isset($_POST['submit']) )
 				message_die(GENERAL_ERROR, 'Could not obtain next user_id information', '', __LINE__, __FILE__, $sql);
 			}
 			$user_id = $row['total'] + 1;
-
+			$user_permissions = '';
+			$user_perm_from = '';				
+			$user_birthday = '';
+			
 			//
 			// Get current date
 			//
-			$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_avatar_type, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmile, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_popup_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-				VALUES ($user_id, '" . str_replace("\'", "''", $username) . "', " . time() . ", '" . str_replace("\'", "''", $new_password) . "', '" . str_replace("\'", "''", $email) . "', '" . str_replace("\'", "''", $icq) . "', '" . str_replace("\'", "''", $website) . "', '" . str_replace("\'", "''", $occupation) . "', '" . str_replace("\'", "''", $location) . "', '" . str_replace("\'", "''", $interests) . "', '" . str_replace("\'", "''", $signature) . "', '$signature_bbcode_uid', $avatar_sql, $viewemail, '" . str_replace("\'", "''", str_replace(' ', '+', $aim)) . "', '" . str_replace("\'", "''", $yim) . "', '" . str_replace("\'", "''", $msn) . "', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $popup_pm, $user_timezone, '" . str_replace("\'", "''", $user_dateformat) . "', '" . str_replace("\'", "''", $user_lang) . "', $user_style, 0, 1, ";
 			if ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN || $coppa )
 			{
 				$user_actkey = gen_rand_string(true);
@@ -640,9 +642,52 @@ if ( isset($_POST['submit']) )
 			else
 			{
 				$sql .= "1, '')";
+				$user_actkey = '';
 			}
-
-			if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+			
+			$sql_ary = array(
+				'user_id'				=>	$user_id,
+				'user_active'			=>	!empty($user_active) ? $user_active : 0,				
+				'username'				=>	str_replace("\'", "''", $username),
+				'user_regdate'			=>	time(),
+				'user_password'			=>	isset($new_password) ? $new_password : '',
+				'user_email'			=>	str_replace("\'", "''", $email), 
+				'user_icq'				=>	str_replace("\'", "''", $icq), 
+				'user_website'			=>	str_replace("\'", "''", $website), 
+				'user_occ'				=>	str_replace("\'", "''", $occupation), 
+				'user_from'				=>	str_replace("\'", "''", $location), 
+				'user_interests'		=>	str_replace("\'", "''", $interests), 
+				'user_sig'				=>	str_replace("\'", "''", $signature), 
+				'user_sig_bbcode_uid'	=>	$signature_bbcode_uid, 
+				'user_avatar'			=>	$avatar_sql, 
+				'user_avatar_type'		=>	!empty($user_avatar_type) ? $user_avatar_type : USER_AVATAR_NONE, 
+				'user_viewemail'		=>	$viewemail, 
+				'user_aim'				=>	str_replace("\'", "''", str_replace(' ', '+', $aim)), 
+				'user_yim'				=>	str_replace("\'", "''", $yim), 
+				'user_msnm'				=>	str_replace("\'", "''", $msn), 
+				'user_attachsig'		=>	$attachsig, 
+				'user_allowsmile'		=>	$allowsmilies, 
+				'user_allowhtml'		=>	$allowhtml, 
+				'user_allowbbcode'		=>	$allowbbcode, 
+				'user_allow_viewonline'	=>	$allowviewonline, 
+				'user_notify'			=>	$notifyreply, 
+				'user_notify_pm'		=>	$notifypm, 
+				'user_popup_pm'			=>	$popup_pm, 
+				'user_timezone'			=>	$user_timezone, 
+				'user_dateformat'		=>	str_replace("\'", "''", $user_dateformat), 
+				'user_lang'				=>	str_replace("\'", "''", $user_lang), 
+				'user_style'			=>	$user_style, 
+				'user_level'			=>	0, 
+				'user_allow_pm'			=>	1,  
+				'user_permissions' 		=>	$user_permissions,
+				'user_perm_from' 		=>	$user_perm_from,				
+				'user_birthday' 		=>	$user_birthday,
+				'user_actkey'			=>	$user_actkey,				
+			);
+			
+			$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into users table', '', __LINE__, __FILE__, $sql);
 			}
@@ -658,7 +703,7 @@ if ( isset($_POST['submit']) )
 
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 				VALUES ($user_id, $group_id, 0)";
-			if( !($result = $db->sql_query($sql, END_TRANSACTION)) )
+			if( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert data into user_group table', '', __LINE__, __FILE__, $sql);
 			}

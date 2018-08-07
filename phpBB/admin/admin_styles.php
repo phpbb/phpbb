@@ -206,7 +206,7 @@ switch( $mode )
 				$style_name = basename($style_name);														
 																					
 			}
-					 							
+			$working_data[0]['img_size_poll'] = isset($working_data[0]['img_size_poll']) ? $working_data[0]['img_size_poll'] : 0;		 							
 			$found = FALSE; 
 			$db_fields = array();
 			$db_values = array();			
@@ -235,7 +235,9 @@ switch( $mode )
 			}
 
 			$sql .= ") VALUES (";
-
+			$db_values[40] = !empty($db_values[40]) ? $db_values[40] : 0;
+			$db_values[41] = !empty($db_values[41]) ? $db_values[41] : 0;
+			print_r($db_values);
 			for($i = 0; $i < count($db_values); $i++)
 			{
 				$sql .= "'" . $db_values[$i] . "'";
@@ -1216,7 +1218,7 @@ switch( $mode )
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_style = " . $board_config['default_style'] . " 
 				WHERE user_style = $style_id";
-			if(!$result = $db->sql_query($sql, END_TRANSACTION))
+			if(!$result = $db->sql_query($sql))
 			{
 				message_die(GENERAL_ERROR, "Could not update user style information", "", __LINE__, __FILE__, $sql);
 			}					

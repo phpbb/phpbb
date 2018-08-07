@@ -593,14 +593,14 @@ else if ( $mode == 'vote' )
 					SET vote_result = vote_result + 1 
 					WHERE vote_id = $vote_id 
 						AND vote_option_id = $vote_option_id";
-				if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, 'Could not update poll result', '', __LINE__, __FILE__, $sql);
 				}
 
 				$sql = "INSERT INTO " . VOTE_USERS_TABLE . " (vote_id, vote_user_id, vote_user_ip) 
 					VALUES ($vote_id, " . $userdata['user_id'] . ", '$user_ip')";
-				if ( !$db->sql_query($sql, END_TRANSACTION) )
+				if ( !$db->sql_query($sql) )
 				{
 					message_die(GENERAL_ERROR, "Could not insert user_id for poll", "", __LINE__, __FILE__, $sql);
 				}

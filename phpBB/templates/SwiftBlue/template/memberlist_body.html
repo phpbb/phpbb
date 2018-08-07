@@ -1,0 +1,110 @@
+<!-- IF S_IN_SEARCH_POPUP -->
+	<!-- INCLUDE simple_header.html -->
+<!-- ELSE -->
+	<!-- INCLUDE overall_header.html -->
+<!-- ENDIF -->
+
+<!-- IF S_SEARCH_USER -->
+	<!-- INCLUDE memberlist_search.html -->	
+<!-- ENDIF -->
+
+<!-- IF S_SHOW_GROUP --><!-- INCLUDE memberlist_group.html --><!-- ENDIF -->
+
+<!-- IF not S_SHOW_GROUP -->
+<form method="post" name="charsearch" action="{S_MODE_ACTION}"><table cellspacing="0" width="100%"><tr>
+<td align="{S_CONTENT_FLOW_BEGIN}"><span class="genmed"><!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><b><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></b> | <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><b><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a></b> | <!-- ENDIF -->{L_USERNAME_BEGINS_WITH}{L_COLON} </span><select name="first_char" onchange="this.form.submit();"><!-- BEGIN first_char --><option value="{first_char.VALUE}"<!-- IF first_char.S_SELECTED --> selected="selected"<!-- ENDIF -->>{first_char.DESC}</option><!-- END first_char --></select><noscript>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></noscript></td>
+<td align="{S_CONTENT_FLOW_END}" class="gensmall"><!-- INCLUDE pagination.html --></td>
+</tr></table>{S_FORM_TOKEN}</form><!-- ENDIF -->
+
+<!-- IF S_IN_SEARCH_POPUP -->
+	<form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false">
+<!-- ELSE -->
+	<form method="post" action="{S_MODE_ACTION}">
+<!-- ENDIF -->
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}"><a href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
+	<th nowrap="nowrap" width="15%"><a href="{U_SORT_RANK}">{L_RANK}</a></th>
+	<th nowrap="nowrap"><a href="{U_SORT_POSTS}">{L_POSTS}</a></th>
+	<th style="white-space:normal !important" width="15%"><a href="{U_SORT_JOINED}">{L_JOINED}</a></th>
+	<!-- IF U_SORT_ACTIVE --><th style="white-space:normal !important" width="15%"><a href="{U_SORT_ACTIVE}">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+	<!-- IF .custom_fields --><th style="white-space:normal !important"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th><!-- ENDIF -->
+	<!-- IF S_EMAIL_SEARCH_ALLOWED --><th style="white-space:normal !important" width="5%"><a href="{U_SORT_EMAIL}">{L_EMAIL}</a></th><!-- ENDIF -->
+	<!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><th nowrap="nowrap" width="2%">{L_MARK}</th><!-- ENDIF -->
+</tr>
+<!-- BEGIN memberrow -->
+
+	<!-- IF S_SHOW_GROUP -->
+		<!-- IF memberrow.S_FIRST_ROW and memberrow.S_GROUP_LEADER -->
+			<tr class="row3">
+				<td colspan="7"><b class="genmed">{L_GROUP_LEADER}</b></td>
+			</tr>
+			<!-- DEFINE $S_MEMBER_HIERARCHY = 1 -->
+		<!-- ELSEIF $S_MEMBER_HIERARCHY and not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
+			<tr class="row3">
+				<td colspan="7"><b class="genmed">{L_GROUP_MEMBERS}</b></td>
+			</tr>
+				<!-- DEFINE $S_MEMBER_HEADER = 1 -->
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+
+	<tr class="<!-- IF memberrow.S_ROW_COUNT is even -->row2<!-- ELSE -->row1<!-- ENDIF -->" height="25">
+
+		<td class="genmed" align="{S_CONTENT_FLOW_BEGIN}" style="padding-{S_CONTENT_FLOW_BEGIN}: 5px"><!-- EVENT memberlist_body_username_prepend -->{memberrow.USERNAME_FULL}<!-- IF memberrow.S_INACTIVE --> <em>({L_INACTIVE})</em><!-- ENDIF --><!-- EVENT memberlist_body_username_append --><!-- IF S_SELECT_SINGLE --> [&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
+		<td class="gen" nowrap="nowrap" align="center"><!-- EVENT memberlist_body_rank_prepend --><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --><!-- EVENT memberlist_body_rank_append --></td>
+		<td class="gen" align="center"><!-- IF memberrow.POSTS and S_DISPLAY_SEARCH --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
+		<td class="genmed" align="center">{memberrow.JOINED}</td>
+		<!-- IF S_VIEWONLINE --><td class="genmed" align="center">{memberrow.LAST_ACTIVE}</td><!-- ENDIF -->
+		<!-- IF .custom_fields --><td class="genmed" align="center"><!-- BEGIN custom_fields --><div style="width:150px; overflow:hidden; word-wrap: break-word;">{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td><!-- ENDIF -->
+		<!-- IF S_EMAIL_SEARCH_ALLOWED --><td class="gen" align="center"><!-- IF memberrow.U_EMAIL --><a title="{memberrow.L_SEND_EMAIL_USER}" href="{memberrow.U_EMAIL}"><img src="{T_THEME_PATH}/{T_THEME_LANG_NAME}/icon_contact_email.gif" width="72" height="20" alt="[{L_EMAIL}]" title="{memberrow.L_SEND_EMAIL_USER}"></a><!-- ELSE -->&nbsp;<!-- ENDIF --></td><!-- ENDIF -->
+		<!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><td align="center"><input type="checkbox" class="radio" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
+	</tr>
+
+<!-- BEGINELSE -->
+
+	<tr>
+		<td class="row1" colspan="<!-- IF S_IN_SEARCH_POPUP -->9<!-- ELSE -->8<!-- ENDIF -->" align="center">
+			<span class="gen"><!-- IF S_SHOW_GROUP -->{L_NO_GROUP_MEMBERS}<!-- ELSE -->{L_NO_MEMBERS}<!-- ENDIF --></span>
+		</td>
+	</tr>
+
+<!-- END memberrow -->
+
+<!-- IF not S_SHOW_GROUP -->
+<tr>
+	<td class="cat" colspan="<!-- IF S_IN_SEARCH_POPUP -->9<!-- ELSE -->8<!-- ENDIF -->" align="center">
+		<!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE -->
+			<input class="btnlite" type="submit" value="{L_SELECT_MARKED}" />
+		<!-- ELSE -->
+			<!-- INCLUDE display_options.html -->
+		<!-- ENDIF -->
+	</td>
+</tr>
+<!-- ENDIF -->
+
+</table>
+{S_FORM_TOKEN}
+	
+</form>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+	<td class="gensmall"><b>{PAGE_NUMBER}</b> [ {TOTAL_USERS} ]</td>
+	<td align="{S_CONTENT_FLOW_END}" class="gensmall"><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><div<!-- IF .pagination --> style="padding-bottom:4px"<!-- ENDIF -->><b><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></b></div><!-- ENDIF --><!-- INCLUDE pagination.html --></td>
+</tr>
+</table>
+
+
+
+<!-- IF S_IN_SEARCH_POPUP -->
+	<!-- INCLUDE simple_footer.html -->	
+<!-- ELSE -->
+	<br clear="all" />
+	
+	<!-- INCLUDE breadcrumbs.html -->
+	
+	<br clear="all" />
+	
+	<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>	
+	<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

@@ -1,0 +1,824 @@
+/***********************************************/
+/* Main				                           */
+/***********************************************/
+
+/* Fix for centering the container in IE */
+body{
+	/* text-align: center; */
+	margin: 0px;
+	padding: 0px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #000;
+	line-height: 85%;
+	/*background: #ffffff url(/templates/mxp/images/theme/bg.gif) top left repeat-x;*/
+	background: #f0f0f0;
+
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #326030;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* TinyMCE specific rules */
+body.mceContentBody {
+	text-align: left;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #000;
+   	background: #FFF;
+}
+
+/* Main Containers */
+#container{
+	width: 750px;
+	min-width: 500px;
+	text-align: left; /* Fix for centering the container in IE */
+	margin: 0px auto 0px auto;
+	/*background-color: #ffffff;*/
+	border: 0px solid black;
+}
+
+/* Outer and Inner Container */
+#outer {
+	width: auto;
+	border-left-style: solid;
+	border-left-width: 190px;  /* left column width */
+	border-left-color: #ffffff;   /* left column colour */
+	/*border-right-style: solid;*/
+	/*border-right-width: 160px;*/ /* right column width */
+	/*border-right-color: #EEEEDD;*/  /* right column colour */
+	background-color: #fff; /* center column colour */
+}
+
+/* One-column */
+#outer_1_col {
+	width: auto;
+	/*border-left-style: solid;*/
+	/*border-left-width: 220px;*/  /* left column width */
+	/*border-left-color: #ffffff;*/   /* left column colour */
+	/*border-right-style: solid;*/
+	/*border-right-width: 160px;*/ /* right column width */
+	/*border-right-color: #EEEEDD;*/  /* right column colour */
+	background-color: #fff; /* center column colour */
+}
+
+#inner {
+	margin: 0px;
+	width: 100%;
+
+	/* background: url(/templates/mxp/images/theme/leftcol.gif) -195px repeat-y; */
+}
+
+/* Columns */
+#leftcol{
+	width: 190px;              /* left column width */
+	float: left;
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+	margin-left: -190px;       /* _negative_ left column width */
+
+	border-top: 1px solid #a1a1a1;
+	border-bottom: 1px solid #a1a1a1;
+
+	background: url(/templates/mxp/images/theme/leftcol.gif)  repeat-y;
+
+	overflow:hidden;
+	z-index: 10;
+}
+
+#rightcol{
+	width: 190px;              /* right column width */
+	float: right;
+	position: relative;
+	padding: 0px;
+	margin: 0px;
+	margin-right: -190px;      /* _negative_ right column width */
+
+	overflow:hidden;
+	z-index: 11;
+}
+
+#middlecol{
+	float: left;
+	width: 100%;
+	position: relative;
+	/*padding: 0px;*/
+	z-index: 12;
+}
+
+/* Block Container */
+div.blockcontainer{
+	height: 1%; /* IE6 Fix */
+	padding: 0px;
+}
+
+#leftcol div.blockcontainer{
+	margin: 10px;
+}
+
+#middlecol div.blockcontainer{
+	margin: 10px 10px 10px 20px;
+}
+
+#rightcol div.blockcontainer{
+	margin: 10px;
+}
+
+/***********************************************/
+/* Layout		                               */
+/***********************************************/
+
+#header{
+	/* background-color: #326030;
+	border-top: 1px solid gray;
+	border-bottom: 1px solid gray;
+	*/
+	margin: 0px;
+	padding: 0px;
+
+	height:35px;
+
+	/*background-image: url(more_col_base.jpg);*/
+	/*background-repeat: repeat-y;*/
+	/*background-position: right;*/
+}
+
+#header h1, #header h2, #header h3{
+	padding: 0px;
+	margin: 0px;
+}
+
+/* Top Navigation */
+#header .globalNav{
+	color: #00355C;
+	white-space: nowrap;
+	padding: 11px 0px;
+}
+/* 'nowrap' prevents links from line-wrapping if there are too many to fit in one line
+   this will force a horizontal scrollbar if there isn't enough room for all links
+   remove rule or change value to 'normal' if you want the links to line-wrap */
+
+#header .globalNav img{
+ 	/* display: block; */
+}
+
+/* Top header */
+#header .globalNav .cat-button, #header .globalNav .cat-button-current{
+	white-space: nowrap;
+	padding: 3px 3px;
+}
+
+#header .globalNav .cat-button{
+    /*background-color: #00355C;*/
+    /*border-bottom: 1px solid #f0f0f0;*/
+}
+
+#header .globalNav .cat-button a{
+    color:#f0f0f0;
+}
+
+#header .globalNav .cat-button-current{
+    /*background-color: #f0f0f0;*/
+    /*border-bottom: 1px solid #f0f0f0;*/
+}
+
+#header .globalNav .cat-button-current a{
+    color:#b0b0b0;
+}
+
+#header .globalNav .cat-button a, #header .globalNav .cat-button-current a {
+	font-size:11px; font-style:normal; font-weight:bold; text-decoration:none; text-transform:uppercase;
+}
+
+#header .globalNav .cat-button a:hover, #header .globalNav .cat-button-current a:hover {
+
+}
+
+/* Lower header */
+#header .globalNav .nav-button, #header .globalNav .nav-button-current{
+	padding: 3px 3px;
+}
+
+#header .globalNav .nav-button{
+    /*background-color: #00355C;*/
+}
+
+#header .globalNav .nav-button a{
+    color:#f0f0f0;
+}
+
+#header .globalNav .nav-button-current{
+    /*background-color: #00355C;*/
+}
+
+#header .globalNav .nav-button-current a{
+    color:#cccccc;
+}
+
+#header .globalNav .nav-button a, #header .globalNav .nav-button-current a {
+	font-size:10px; font-style:normal; font-weight:bold; text-decoration:none; text-transform:uppercase;
+}
+
+#header .globalNav .nav-button a:hover, #header .globalNav .nav-button-current a:hover {
+
+}
+
+#subheader{
+	/*background: transparent url('/templates/mxp/images/theme/leftcol.gif') repeat-y;*/
+	margin: 0px;
+	padding: 0px 10px 9px 10px;
+	font-size:10px; font-style:normal; font-weight:bold; text-decoration:none; color:#215A19;
+}
+
+#subheader a {
+  font-size:10px; font-style:normal; font-weight:bold; text-decoration:none; color:#215A19;
+}
+
+#subheader a:hover {
+  text-decoration:underline;
+  font-size:10px; font-style:normal; font-weight:bold; text-decoration:none; color:#999999;
+}
+
+#subheader .left .menu-button-current a{
+    color:#999999;
+}
+
+#subheader .left{
+	text-align: left;
+	float:right;
+
+	padding: 5px 5px 2px 20px;
+
+	border-right: 1px solid #CFD5CF;
+	border-bottom: 1px solid #CFD5CF;
+}
+
+#subheader .right{
+	text-align: left;
+
+	padding: 5px 5px 3px 5px;
+}
+
+/* Block title */
+div.blockheader{
+	margin: 0px;
+	padding: 2px 5px;
+
+	/* background: url(/templates/mxp/images/cornerr.gif) top right no-repeat; */
+}
+
+#leftcol div.blockheader{
+	/*
+	border-top: 1px solid #215A19;
+	border-right: 1px solid #215A19;
+	border-bottom: 0px solid #215A19;
+	border-left: 1px solid #215A19;
+	*/
+
+	color: #333;
+	/* background-color: #215A19; */
+	background: transparent url('/templates/mxp/images/theme/blockheader.gif') no-repeat;
+
+	padding: 6px 5px;
+}
+
+#middlecol div.blockheader{
+
+}
+
+#rightcol div.blockheader{
+
+}
+
+div.blockheader .blockhidden{
+	float: right;
+	margin: 0px;
+	padding: 0px;
+}
+
+div.blockheader .editCP_switch{
+	float: right;
+	margin: 0px;
+	padding: 0px;
+}
+
+div.blockheader .editCP_switch .trimform	{
+	margin: 0px;
+	padding: 0px;
+}
+
+div.block{
+	margin: 0px;
+	padding: 0px;
+}
+
+#leftcol div.block{
+	border-top: 1px solid #215A19;
+	border-right: 1px solid #215A19;
+	border-bottom: 1px solid #215A19;
+	border-left: 1px solid #215A19;
+
+	background-color: #ffffff;
+
+	padding: 5px;
+}
+
+#middlecol div.block{
+	/*
+	border-top: 1px solid #B0B0B0;
+	border-right: 1px solid #B0B0B0;
+	border-bottom: 1px solid #B0B0B0;
+	border-left: 1px solid #B0B0B0;
+
+	background-color: #ffffff;
+	*/
+
+	padding: 5px;
+}
+
+#rightcol div.block{
+
+}
+
+#footer{
+	clear: both;
+	margin: 5px 0px;
+	padding: 2px 5px;
+	color: #333;
+	background-color: #326030;
+	border: 1px solid #000;
+	font-size: 9px;
+}
+
+#footer .globalNav{
+	text-align: center;
+	color: #cccccc;
+	white-space: nowrap;
+}
+
+/* 'nowrap' prevents links from line-wrapping if there are too many to fit in one line
+   this will force a horizontal scrollbar if there isn't enough room for all links
+   remove rule or change value to 'normal' if you want the links to line-wrap */
+
+#footer .globalNav a {
+	padding: 0px 4px 0px 0px;
+}
+
+#footer a, #footer a:link, #footer a:visited { text-decoration: none; color: #CFD7D1; font-weight: bold;}
+#footer a:hover{ text-decoration: underline; color: #CFD7D1; font-weight: bold;}
+
+#footer a.copyright, #footer a.copyright:link, #footer a.copyright:visited { text-decoration: none; color: #CFD7D1; font-weight: normal;}
+#footer a.copyright:hover{ text-decoration: underline; color: #CFD7D1; font-weight: normal;}
+
+#footer p { margin: 0px 0px 1em 0px; }
+
+.pageStats {
+	padding: 0px 10px 5px 0px;
+}
+
+* html x {  /* This is the Tan hack */
+	width: 130px; /* For IE5 */
+	w\idth: 100px; } /* For IE6 */
+
+#clear { clear: both; }
+
+/***********************************************/
+/* Theme		                               */
+/***********************************************/
+/* General text */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; }
+#leftcol font, #leftcol th, #leftcol td, #leftcol p { color: #000000;  }
+#middlecol font, #middlecol th, #middlecol td, #middlecol p { color: #000000;  }
+#rightcol font, #rightcol th, #rightcol td, #rightcol p { color: #000000;  }
+
+.gen,.genmed,.gensmall { color : #000000; }
+a,a.gen,a.genmed,a.gensmall { color: #326030; text-decoration: none; }
+a:hover,a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+tr.oddrow a, tr.oddrow a.gen,tr.oddrow a.genmed, tr.oddrow a.gensmall { font-size:10px; color: #ffffff; text-decoration: none; }
+tr.oddrow a:hover, tr.oddrow a.gen:hover,tr.oddrow a.genmed:hover,tr.oddrow a.gensmall:hover	{ color: #215A19; text-decoration: underline; }
+
+/*
+#leftcol .gen, #leftcol .genmed, #leftcol .gensmall { color : #000000; }
+#leftcol a.gen, #leftcol a.genmed, #leftcol a.gensmall { color: #326030; text-decoration: none; }
+#leftcol a.gen:hover, #leftcol a.genmed:hover, #leftcol a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+#middlecol .gen, #middlecol .genmed, #middlecol .gensmall { color : #000000; }
+#middlecol a.gen, #middlecol a.genmed, #middlecol a.gensmall { color: #326030; text-decoration: none; }
+#middlecol a.gen:hover, #middlecol a.genmed:hover, #middlecol a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+#rightcol .gen, #rightcol .genmed, #rightcol .gensmall { color : #000000; }
+#rightcol a.gen, #rightcol a.genmed, #rightcol a.gensmall { color: #326030; text-decoration: none; }
+#rightcol a.gen:hover, #rightcol a.genmed:hover, #rightcol a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+*/
+
+.gen { font-size : 11px; }
+.genmed { font-size : 10px; }
+.gensmall { font-size : 9px; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ text-align: left; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{  }
+td.row2	{ background-color: #f0f0f0; }
+td.row3	{ background-color: #f0f0f0; }
+
+td.oddcell	{ background-color: #f0f0f0; }
+tr.oddrow	{ background-color: #f0f0f0; }
+
+/*
+#leftcol td.row1	{ background-color: #EFEFEF; }
+#leftcol td.row2	{ background-color: #DEE3E7; }
+#leftcol td.row3	{ background-color: #D1D7DC; }
+
+#middlecol td.row1	{ background-color: #EFEFEF; }
+#middlecol td.row2	{ background-color: #DEE3E7; }
+#middlecol td.row3	{ background-color: #D1D7DC; }
+
+#rightcol td.row1	{ background-color: #EFEFEF; }
+#rightcol td.row2	{ background-color: #DEE3E7; }
+#rightcol td.row3	{ background-color: #D1D7DC; }
+*/
+
+#middlecol div.block img { margin: 4px 10px 4px 4px; }
+#middlecol div.block .DynamicTree img { margin: 0px; } /* SimpleDoc Fix */
+#middlecol div.block .wrap2 img { margin: 0px; } /* tinyMCE Fix */
+.ImageFrame_image { margin: 0px; padding: 0px; } /* Gallery Fix */
+#middlecol div.block img.ImageFrame_image { margin: 0px; padding: 0px; } /* Gallery Fix */
+
+div.block p { margin: 0.7em 0px 0.7em 0px; }
+
+div.block h1 { margin: .2em 0px .5em 0px; }
+div.block h2 { margin: 1.5em 0px .5em 0px; }
+div.block h3, div.block h4 { margin: 1.5em 0px .4em 0px; }
+
+h1 {  font-family: Geneva, Arial, Helvetica, san-serif; font-size: 13px; font-weight: bold; color: #215A19; letter-spacing: 2px; }
+h2 {  font-family: Geneva, Arial, Helvetica, san-serif; font-size: 12px; font-weight: bold; color: #215A19; letter-spacing: 2px; }
+h3 {  font-family: Geneva, Arial, Helvetica, san-serif; font-size: 11px; font-weight: bold; font-variant: normal; color: #003300; text-transform: uppercase; }
+h4 {  font-size: 10px; font-variant: normal; color: #006600; text-transform: uppercase; line-height: 5px;}
+
+/* Block titles */
+.blocktitle		{ font-family: Verdana, Arial, Helvetica, sans-serif;font-weight: bold; font-size: 11px ; letter-spacing: 1px;}
+a.blocktitle		{ text-decoration: none;}
+a.blocktitle:hover{ text-decoration: underline;}
+
+/* Discreet text */
+.discreet		{ font-size : 9px; color : #879C6C }
+
+#leftcol .blocktitle, #leftcol a.blocktitle { color : #ffffff;}
+#middlecol .blocktitle, #middlecol a.blocktitle { color : #326030;}
+#rightcol .blocktitle, #rightcol a.blocktitle { color : #326030;}
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #326030;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #326030}
+a.cattitle		{ text-decoration: none; color : #215A19; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #215A19; }
+a.forumlink 	{ text-decoration: none; color : #215A19; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #215A19; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle			{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #215A19; }
+a.topictitle:visited { text-decoration: none; color : #215A19; }
+a.topictitle:hover	{ text-decoration: underline; color : #444444; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 10px;}
+a.postlink:link	{ text-decoration: none; color : #326030 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 10px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.code {
+	display: block;
+	padding: 5px;
+	margin: 5px 15px;
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	display: block;
+	padding: 5px;
+	margin: 5px 15px;
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 10px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+/* @import url("formIE.css"); */
+
+/* Fancy form styles for IE */
+
+input, textarea, select {
+	border-top-width : 1px;
+	border-right-width : 1px;
+	border-bottom-width : 1px;
+	border-left-width : 1px;
+}
+
+input { text-indent : 2px; }
+
+input.button {
+	border-top-width : 1px;
+	border-right-width : 1px;
+	border-bottom-width : 1px;
+	border-left-width : 1px;
+}
+
+.postbody { line-height: 18px}
+
+/* Form elements */
+form	{
+	margin: 0px;
+}
+
+/* Form elements */
+form.mx_editform	{
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+/* This is the border around numbers in pagination */
+.mx_pagination, .mx_pagination_sele, .mx_pagination_over	{
+	padding-left: 2px;
+	padding-right: 2px;
+	border-top: 1px solid #B0B0B0;
+	border-right: 1px solid #B0B0B0;
+	border-bottom: 1px solid #B0B0B0;
+	border-left: 1px solid #B0B0B0;
+	text-decoration: none;
+}
+
+.mx_pagination_sele	{
+	background-color: #E0E0E0;
+}
+.mx_pagination_over	{
+	background-color: #F0F0F0;
+}
+
+.shadow	{
+	color: #00AA00;
+	filter: DropShadow(Color=#660000, OffX=5, OffY=5, Positive=1);
+}
+img.shadow	{
+	color: #00AA00;
+	filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray', Positive='true');
+}
+
+/* This is the style used for the top page title. */
+.pagetitle	{
+	font-weight: bold;
+	font-size: 30px;
+	font-family: "Comic Sans MS", Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	line-height : 120%;
+	color : #000066;
+	font-variant: small-caps;
+	text-transform: capitalize;
+	letter-spacing: 5px;
+	vertical-align: 20%;
+}
+
+/* This is the style used for the top site title. */
+.sitetitle	{
+	font-family: Arial;
+	font-variant: small-caps;
+	font-weight: bolder;
+	font-size: 12pt;
+	color: #000066;
+}
+
+/* This is the style used for the top site description. */
+.sitetitle_desc	{
+	color: #326030;
+	font-size: 9px;
+}
+
+/* Block Navigation */
+#leftcol ul {
+	border: 1px solid #fff;
+	border-width: 0px 1px;
+	font-size: 11px;
+	/* font-size: 85%; */
+	list-style: none;
+	margin: 3px 0px 3px 0px;
+	padding: 0px;
+}
+
+#leftcol ul li {
+	border-bottom: 1px solid #fff;
+}
+
+#leftcol ul a {
+	/* background: #ffffff url(/modules/mx_navmenu/templates/samSkolan3/images/arrow_right.gif) 5px 50% no-repeat; */
+	background: #ffffff;
+	border: none;
+	color: #215A19;
+	display: block;
+	line-height: 1.4em;
+	/* padding-left: 20px; */
+	padding-left: 5px;
+	text-decoration: none;
+	font-size: 11px;
+}
+
+#leftcol ul a:hover {
+	/* background: #efefef url(/modules/mx_navmenu/templates/samSkolan3/images/arrow_right.gif) 5px 50% no-repeat; */
+	background: #efefef;
+	border: none;
+	color: #215A19;
+}
+
+#leftcol li#cattitle a {
+	/* background: #ffffff url(/modules/mx_navmenu/templates/samSkolan3/images/arrow_right.gif) 5px 50% no-repeat; */
+	background: #ffffff;
+	color: #215A19;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+#leftcol li#cat a {
+	/* background: #ffffff url(/modules/mx_navmenu/templates/samSkolan3/images/arrow_right.gif) 5px 50% no-repeat; */
+	background: #326B2A;
+	color: #ffffff;
+	font-weight: bold;
+	font-variant: small-caps;
+}
+
+/*
+*
+* Generic Button
+*
+*/
+a.genericbutton {
+    background: transparent url('/templates/mxp/images/buttons/createbutton_a.gif') no-repeat scroll top right;
+    color: #326030;
+    display: inline-block;
+    /*float: left;*/
+    font: bold 10px arial, sans-serif;
+    height: 20px;
+    margin: 10px 6px 10px 0px;
+    padding-right: 14px; /* sliding doors padding */
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+a.genericbutton span {
+    background: transparent url('/templates/mxp/images/buttons/createbutton_span.gif') no-repeat;
+    display: inline-block;
+    line-height: 12px;
+    padding: 4px 0 4px 14px;
+    cursor: pointer;
+}
+
+/* ForeFox Fix */
+a.genericbutton, a.genericbutton span {
+	display:-moz-inline-stack;
+}
+
+/* Hover */
+a.genericbutton:hover {
+	background-position: bottom right;
+}
+
+a.genericbutton:hover span {
+	background-position: bottom left;
+    color: #a51;
+}
+
+/* Click */
+a.genericbutton:active {
+    background-position: bottom right;
+    color: #000;
+    outline: none; /* hide dotted outline in Firefox */
+}
+
+a.genericbutton:active span {
+    background-position: bottom left;
+}
+
+/*
+*
+* Image Button
+*
+*/
+a.imagebutton {
+    text-decoration: none;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+a.imagebutton:hover {
+    text-decoration: none;
+    vertical-align: middle;
+    display: inline-block;
+
+    filter:alpha(opacity=40);
+    opacity:0.4;
+}
+
+/* ForeFox Fix */
+a.imagebutton{
+	display:-moz-inline-stack;
+}
+
+/*
+*
+* Text Button
+*
+*/
+a.textbutton {
+    text-decoration: none;
+    vertical-align: middle;
+    font-weight: bold;
+
+    margin: 10px 6px 10px 0px;
+    border: 1px double #326030;
+	border-width: 3px 1px;
+}
+
+a.textbutton:hover {
+    border: 1px double #326030;
+	border-width: 2px 1px;
+}
+
+a.textbutton:active {
+    border: 1px double #326030;
+	border-width: 2px 1px;
+}

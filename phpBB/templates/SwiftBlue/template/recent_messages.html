@@ -1,0 +1,198 @@
+<!-- BEGIN latest_news -->
+     <!-- IF latest_news.S_FIRST_ROW -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="cat" colspan="<!-- IF latest_news.SWITCH_RECENT_NEWS eq 2 -->7<!-- ELSE -->6<!-- ENDIF -->">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0">
+            	  <tr>
+			<td align="left">
+                    	<span class="nav">{L_RECENT_NEWS_HEAGING}</span>
+                	</td>
+			<!-- IF latest_news.SWITCH_RECENT_NEWS eq 1 -->
+			<td align="right">
+                    	{latest_news.PREV_URL}&nbsp;&nbsp;{latest_news.NEXT_URL}&nbsp;&nbsp;
+                	</td>
+			<!-- ENDIF -->
+            	  </tr>
+            	</table>
+                </td>
+	</tr>
+
+	<tr>
+		<!-- IF S_TOPIC_ICONS -->
+			<th colspan="3">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ELSE -->
+			<th colspan="2">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ENDIF -->
+		<!-- IF latest_news.SWITCH_RECENT_NEWS eq 2 -->
+		<th class="thTop" height="28" align="left">
+            	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+            	  <tr>
+			<th align="right">
+                    	{latest_news.PREV_URL}&nbsp;&nbsp;{latest_news.NEXT_URL}&nbsp;&nbsp;
+                	</th>
+            	  </tr>
+            	</table>
+        	</th>
+		<!-- ENDIF -->
+		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th>&nbsp;{L_REPLIES}&nbsp;</th>
+		<th>&nbsp;{L_VIEWS}&nbsp;</th>
+		<th>&nbsp;{L_LAST_POST}&nbsp;</th>
+	</tr>
+    <!-- ENDIF -->
+			<!-- IF latest_news.S_TOPIC_TYPE_SWITCH eq 1 -->
+				<tr>
+					<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_ANNOUNCEMENTS}</b></td>
+				</tr>
+			<!-- ELSEIF latest_news.S_TOPIC_TYPE_SWITCH eq 0 -->
+				<tr>
+					<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_TOPICS}</b></td>
+				</tr>
+			<!-- ENDIF -->
+
+			<tr>
+				<td class="row1" width="25" align="center">{latest_news.NEWEST_POST_IMG}</td>
+				<!-- IF S_TOPIC_ICONS -->
+					<td class="row1" width="25" align="center"><!-- IF latest_news.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{latest_news.TOPIC_ICON_IMG}" width="{latest_news.TOPIC_ICON_IMG_WIDTH}" height="{latest_news.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
+				<!-- ENDIF -->
+				<td class="row1">
+					<!-- IF latest_news.S_UNREAD_TOPIC --><a href="{latest_news.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+					{latest_news.ATTACH_ICON_IMG} <!-- IF latest_news.S_HAS_POLL or latest_news.S_TOPIC_MOVED --><b>{latest_news.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}: {latest_news.FIRST_POST_TIME}" href="{latest_news.U_VIEW_TOPIC}" class="topictitle">{latest_news.TOPIC_TITLE}</a>
+					<!-- IF latest_news.S_TOPIC_UNAPPROVED or latest_news.S_POSTS_UNAPPROVED -->
+						<a href="{latest_news.U_MCP_QUEUE}">{latest_news.UNAPPROVED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF latest_news.S_TOPIC_REPORTED -->
+						<a href="{latest_news.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF latest_news.PAGINATION -->
+						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {latest_news.PAGINATION} ] </p>
+					<!-- ENDIF -->
+				</td>
+				<td class="row2" width="130" align="center"><p class="topicauthor">{latest_news.TOPIC_AUTHOR_FULL}</p></td>
+				<td class="row1" width="50" align="center"><p class="topicdetails">{latest_news.TOPIC_REPLIES}</p></td>
+				<td class="row2" width="50" align="center"><p class="topicdetails">{latest_news.TOPIC_VIEWS}</p></td>
+				<td class="row1" width="140" align="center">
+					<p class="topicdetails" style="white-space: nowrap;">{latest_news.LAST_POST_TIME}</p>
+					<p class="topicdetails">{latest_news.LAST_POSTER_FULL}
+						<a href="{latest_news.U_LAST_POST}">{LAST_POST_IMG}</a>
+					</p>
+				</td>
+			</tr>
+
+		<!-- BEGINELSE -->
+
+			<tr>
+				<!-- IF S_TOPIC_ICONS -->
+					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
+				<!-- ELSE -->
+					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
+				<!-- ENDIF -->
+			</tr>
+    <!-- IF latest_news.S_LAST_ROW -->
+	<tr align="center">
+		<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->">&nbsp;</td>
+	</tr>
+	</table>
+    <!-- ENDIF -->
+<!-- END latest_news -->
+<br clear="all" />
+<!-- BEGIN latest_topics -->
+     <!-- IF latest_topics.S_FIRST_ROW -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="cat" colspan="<!-- IF latest_topics.SWITCH_RECENT_POSTS eq 2 -->7<!-- ELSE -->6<!-- ENDIF -->">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0">
+            	  <tr>
+			<td align="left">
+                    	<span class="nav">{L_RECENT_POSTS_HEAGING}</span>
+                	</td>
+			<!-- IF latest_topics.SWITCH_RECENT_POSTS eq 1 -->
+			<td align="right">
+                    	{latest_topics.PREV_URL}&nbsp;&nbsp;{latest_topics.NEXT_URL}&nbsp;&nbsp;
+                	</td>
+			<!-- ENDIF -->
+            	  </tr>
+            	</table>
+                </td>
+	</tr>
+
+	<tr>
+		<!-- IF S_TOPIC_ICONS -->
+			<th colspan="3">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ELSE -->
+			<th colspan="2">&nbsp;{L_TOPICS}&nbsp;</th>
+		<!-- ENDIF -->
+		<!-- IF latest_topics.SWITCH_RECENT_POSTS eq 2 -->
+		<th class="thTop" height="28" align="left">
+            	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+            	  <tr>
+			<th align="right">
+                    	{latest_topics.PREV_URL}&nbsp;&nbsp;{latest_topics.NEXT_URL}&nbsp;&nbsp;
+                	</th>
+            	  </tr>
+            	</table>
+        	</th>
+		<!-- ENDIF -->
+		<th>&nbsp;{L_AUTHOR}&nbsp;</th>
+		<th>&nbsp;{L_REPLIES}&nbsp;</th>
+		<th>&nbsp;{L_VIEWS}&nbsp;</th>
+		<th>&nbsp;{L_LAST_POST}&nbsp;</th>
+	</tr>
+    <!-- ENDIF -->
+			<!-- IF latest_topics.S_TOPIC_TYPE_SWITCH eq 1 -->
+				<tr>
+					<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_ANNOUNCEMENTS}</b></td>
+				</tr>
+			<!-- ELSEIF latest_topics.S_TOPIC_TYPE_SWITCH eq 0 -->
+				<tr>
+					<td class="row3" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->"><b class="gensmall">{L_TOPICS}</b></td>
+				</tr>
+			<!-- ENDIF -->
+
+			<tr>
+				<td class="row1" width="25" align="center">{latest_topics.NEWEST_POST_IMG}</td>
+				<!-- IF S_TOPIC_ICONS -->
+					<td class="row1" width="25" align="center"><!-- IF latest_topics.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{latest_topics.TOPIC_ICON_IMG}" width="{latest_topics.TOPIC_ICON_IMG_WIDTH}" height="{latest_topics.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
+				<!-- ENDIF -->
+				<td class="row1">
+					<!-- IF latest_topics.S_UNREAD_TOPIC --><a href="{latest_topics.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+					{latest_topics.ATTACH_ICON_IMG} <!-- IF latest_topics.S_HAS_POLL or latest_topics.S_TOPIC_MOVED --><b>{latest_topics.TOPIC_TYPE}</b> <!-- ENDIF --><a title="{L_POSTED}: {latest_topics.FIRST_POST_TIME}" href="{latest_topics.U_VIEW_TOPIC}" class="topictitle">{latest_topics.TOPIC_TITLE}</a>
+					<!-- IF latest_topics.S_TOPIC_UNAPPROVED or latest_topics.S_POSTS_UNAPPROVED -->
+						<a href="{latest_topics.U_MCP_QUEUE}">{latest_topics.UNAPPROVED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF latest_topics.S_TOPIC_REPORTED -->
+						<a href="{latest_topics.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<!-- ENDIF -->
+					<!-- IF latest_topics.PAGINATION -->
+						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {latest_topics.PAGINATION} ] </p>
+					<!-- ENDIF -->
+				</td>
+				<td class="row2" width="130" align="center"><p class="topicauthor">{latest_topics.TOPIC_AUTHOR_FULL}</p></td>
+				<td class="row1" width="50" align="center"><p class="topicdetails">{latest_topics.TOPIC_REPLIES}</p></td>
+				<td class="row2" width="50" align="center"><p class="topicdetails">{latest_topics.TOPIC_VIEWS}</p></td>
+				<td class="row1" width="140" align="center">
+					<p class="topicdetails" style="white-space: nowrap;">{latest_topics.LAST_POST_TIME}</p>
+					<p class="topicdetails">{latest_topics.LAST_POSTER_FULL}
+						<a href="{latest_topics.U_LAST_POST}">{LAST_POST_IMG}</a>
+					</p>
+				</td>
+			</tr>
+
+		<!-- BEGINELSE -->
+
+			<tr>
+				<!-- IF S_TOPIC_ICONS -->
+					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
+				<!-- ELSE -->
+					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
+				<!-- ENDIF -->
+			</tr>
+    <!-- IF latest_news.S_LAST_ROW -->
+	<tr align="center">
+		<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->">&nbsp;</td>
+	</tr>
+	</table>
+    <!-- ENDIF -->
+<!-- END latest_topics -->
+<br clear="all" />

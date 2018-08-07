@@ -1,10 +1,10 @@
 <?php
 
-// eXtreme Styles mod cache. Generated on Fri, 18 May 2018 18:18:03 +0000 (time=1526667483)
+// eXtreme Styles mod cache. Generated on Tue, 07 Aug 2018 01:38:03 +0000 (time=1533605883)
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" 
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html dir="ltr">
+<html dir="<?php echo isset($this->vars['S_CONTENT_DIRECTION']) ? $this->vars['S_CONTENT_DIRECTION'] : $this->lang('S_CONTENT_DIRECTION'); ?>">
 <head>
 <title>Administration Control Panel</title>
 <meta http-equiv="Content-Type" content="text/html;" />

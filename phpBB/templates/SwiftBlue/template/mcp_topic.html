@@ -1,0 +1,159 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form name="mcp" id="mcp" method="post" action="{S_MCP_ACTION}">
+
+<table class="tablebg" width="100%" cellspacing="1">
+<!-- IF S_CAN_SPLIT -->
+	<tr>
+		<th colspan="3" nowrap="nowrap">{L_SPLIT_TOPIC}</th>
+	</tr>
+	<tr>
+		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_SPLIT_TOPIC_EXPLAIN}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_SUBJECT}</span></td>
+		<td class="row2" colspan="2"><input class="post" style="width: 350px" type="text" size="35" maxlength="64" name="subject" value="{SPLIT_SUBJECT}" /></td>
+	</tr>
+	<tr>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
+		<td class="row2" colspan="2"><select name="to_forum_id">{S_FORUM_SELECT}</select></td>
+	</tr>
+
+	<!-- IF S_SHOW_TOPIC_ICONS -->
+		<tr>
+			<td class="row1"><span class="gen">{L_TOPIC_ICON}</span></td>
+			<td class="row2" colspan="2">
+				<table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<td><span class="genmed nowrap"><input type="radio" class="radio" name="icon" value="0"<!-- IF not S_TOPIC_ICON --> checked="checked"<!-- ENDIF --> />{L_NO_TOPIC_ICON}</span> <!-- BEGIN topic_icon --><span class="nowrap"><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"<!-- IF topic_icon.S_CHECKED --> checked="checked"<!-- ENDIF --> /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /></span> <!-- END topic_icon --></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- ENDIF -->
+<!-- ENDIF -->
+
+<!-- IF S_CAN_MERGE -->
+	<tr>
+		<th colspan="3" nowrap="nowrap">{L_MERGE_TOPIC}</th>
+	</tr>
+	<tr>
+		<td class="row2" colspan="3" align="center"><span class="gensmall">{L_MERGE_TOPIC_EXPLAIN}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
+		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <a href="{U_SELECT_TOPIC}">{L_SELECT_TOPIC}</a></td>
+	</tr>
+	<!-- IF TO_TOPIC_INFO -->
+		<tr>
+			<td class="row3" colspan="3" align="center"><b class="gen">{TO_TOPIC_INFO}</b></td>
+		</tr>
+	<!-- ENDIF -->
+<!-- ENDIF -->
+<tr>
+	<th colspan="3" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+</tr>
+<tr>
+	<td class="row1" nowrap="nowrap"><span class="gen">{L_POSTS_PER_PAGE}</span><br /><span class="gensmall">{L_POSTS_PER_PAGE_EXPLAIN}</span></td>
+	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></td>
+</tr>
+<tr>
+	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+</tr>
+<tr>
+	<th nowrap="nowrap">{L_AUTHOR}</th>
+	<th nowrap="nowrap">{L_MESSAGE}</th>
+	<th nowrap="nowrap">{L_SELECT}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="3" align="center"><span class="gensmall">{RETURN_TOPIC}</span></td>
+</tr>
+<!-- BEGIN postrow -->
+
+	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+		<td align="center"><b class="postauthor">{postrow.POST_AUTHOR_FULL}</b></td>
+		<td width="100%">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr valign="top">
+				<td class="gensmall" nowrap="nowrap">&nbsp;<b>{L_POST_SUBJECT}:</b>&nbsp;</td>
+				<td class="gensmall" width="100%">{postrow.POST_SUBJECT}</td>
+			</tr>
+			</table>
+		</td>
+		<td rowspan="2" width="5%" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}"<!-- IF postrow.S_CHECKED --> checked="checked"<!-- ENDIF --> /></td>
+	</tr>
+
+	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+		<td valign="bottom">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr valign="middle">
+				<td align="center"><span class="gensmall">[ <a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a> ]</span></td>
+			</tr>
+			</table>
+		</td>
+		<td width="100%" valign="top">
+			<table width="100%" cellspacing="0" cellpadding="2" border="0">
+			<tr>
+				<td valign="top">
+					<div class="postbody">{postrow.MESSAGE}</div>
+					<!-- IF postrow.S_HAS_ATTACHMENTS -->
+						<br clear="all" /><br />
+
+						<table class="tablebg" width="100%" cellspacing="1">
+						<tr>
+							<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+						</tr>
+						<!-- BEGIN attachment -->
+							<tr>
+								<!-- IF postrow.attachment.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{postrow.attachment.DISPLAY_ATTACHMENT}</td>
+							</tr>
+						<!-- END attachment -->
+						</table>
+					<!-- ENDIF -->
+
+				</td>
+			</tr>
+			<tr>
+				<td valign="bottom">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0">
+					<tr valign="middle">
+						<td width="100%">
+							<!-- IF postrow.S_POST_UNAPPROVED and postrow.U_MCP_APPROVE -->{UNAPPROVED_IMG} <span class="postapprove"><a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><!-- ENDIF -->
+							<!-- IF postrow.S_POST_REPORTED and postrow.U_MCP_REPORT -->{REPORTED_IMG}<span class="postreported"><a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
+						</td>
+						<td width="10" nowrap="nowrap">{postrow.MINI_POST_IMG}</td>
+						<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row3" colspan="3" height="1"><img src="images/spacer.gif" width="1" height="1" alt="" /></td>
+	</tr>
+<!-- END postrow -->
+<tr>
+	<td class="cat" colspan="3" align="center"><select name="action"><option value="" selected="selected">{L_SELECT_ACTION}</option>
+		<!-- IF S_CAN_APPROVE --><option value="approve">{L_APPROVE_POSTS}</option><!-- ENDIF -->
+		<!-- IF S_CAN_LOCK --><option value="lock_post">{L_LOCK_POST_POSTS} [ {L_LOCK_POST_EXPLAIN} ]</option><option value="unlock_post">{L_UNLOCK_POST_POSTS}</option><!-- ENDIF -->
+		<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->
+		<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF ACTION eq 'merge' --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
+		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF ACTION eq 'split' --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
+	</select>&nbsp;<input class="btnmain" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" /></td>
+</tr>
+</table>
+{S_HIDDEN_FIELDS}
+{S_FORM_TOKEN}
+</form>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<tr>
+	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></b></td>
+</tr>
+</table>
+
+<!-- INCLUDE mcp_footer.html -->

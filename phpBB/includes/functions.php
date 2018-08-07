@@ -2187,7 +2187,7 @@ function init_userprefs($userdata)
 
 		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)))
 		{
-			message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
+			message_die(CRITICAL_ERROR, 'Could not locate valid language pack in init_userprefs()');
 		}
 	}
 
@@ -2594,12 +2594,18 @@ function select_style($default_style, $select_name = "style", $all = "")
 	return $style_options;
 }
 
+//
+// Encode the IP from decimals into hexademicals
+//
 function encode_ip($dotquad_ip)
 {
 	$ip_sep = explode('.', $dotquad_ip);
 	return sprintf('%02x%02x%02x%02x', $ip_sep[0], $ip_sep[1], $ip_sep[2], $ip_sep[3]);
 }
 
+//
+// Decode the IP from hexademicals to decimals
+//
 function decode_ip($int_ip)
 {
 	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));

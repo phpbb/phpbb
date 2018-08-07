@@ -1,0 +1,39 @@
+<!-- INCLUDE overall_header.html -->
+
+<form action="{S_PROFILE_ACTION}" method="post">
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th>{L_UCP_RESEND}</th>
+</tr>
+<tr>
+	<td class="row2">
+		<table align="center" cellspacing="1" cellpadding="4" style="width: 100%">
+		<tr>
+			<td style="width: 50%"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
+			<td><input type="text" class="post" name="username" size="25" value="{USERNAME}" /></td>
+		</tr>
+		<tr>
+			<td style="width: 50%" valign="top"><b class="genmed">{L_EMAIL_ADDRESS}{L_COLON}</b></td>
+			<td rowspan="2" valign="top"><input type="email" class="post" name="email" size="25" maxlength="100" value="{EMAIL}" /></td>
+		</tr>
+		<tr>
+			<td class="genmed">{L_EMAIL_REMIND}</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td class="cat" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="btnmain" /> <input type="reset" value="{L_RESET}" name="reset" class="btnlite" /></td>
+</tr>
+</table>
+{S_FORM_TOKEN}
+</form>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->

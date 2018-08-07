@@ -1,0 +1,30 @@
+<form method="post" action="{U_QR_ACTION}">
+<!-- EVENT quickreply_editor_panel_before -->
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th align="center" colspan="2">{L_QUICKREPLY}</th>
+		</tr>
+		<!-- EVENT quickreply_editor_subject_before -->
+		<tr>
+			<td class="row1" width="150"><b class="genmed">{L_SUBJECT}{L_COLON}</b></td>
+			<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="124" tabindex="2" value="{SUBJECT}" /></td>
+		</tr>
+		<!-- EVENT quickreply_editor_message_before -->
+		<tr>
+		<td class="row1" width="150"><b class="genmed">{L_MESSAGE}{L_COLON}</b></td>
+			<td class="row2" valign="top"><textarea name="message" rows="7" cols="50" tabindex="3"  style="width: 500px; height: 130px"></textarea> </td>
+		</tr>
+		<!-- EVENT quickreply_editor_message_after -->
+		<tr>
+			<td class="cat" colspan="2" align="center">
+				<input class="btnlite" type="submit" accesskey="f" tabindex="6" name="preview" value="{L_FULL_EDITOR}" />&nbsp;
+				<input class="btnmain" type="submit" accesskey="s" tabindex="7" name="post" value="{L_SUBMIT}" />
+
+				{S_FORM_TOKEN}
+				{QR_HIDDEN_FIELDS}
+			</td>
+		</tr>
+	</table>
+<!-- EVENT quickreply_editor_panel_after -->
+</form>
+<br clear="all" />

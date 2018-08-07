@@ -1,0 +1,16 @@
+<tr>
+	<td class="row1" width="50%"><b class="genmed">{L_BOARD_TIMEZONE}{L_COLON}</b></td>
+	<td class="row2">
+	<select name="tz" id="timezone" class="tz_select" style="width:auto">
+			<option value="">{L_SELECT_TIMEZONE}</option>
+			<!-- BEGIN timezone_select -->
+			<optgroup label="{timezone_select.LABEL}" data-tz-value="{timezone_select.VALUE}">
+				<!-- BEGIN timezone_options -->
+				<option title="{timezone_select.timezone_options.TITLE}" value="{timezone_select.timezone_options.VALUE}"<!-- IF timezone_select.timezone_options.SELECTED --> selected="selected"<!-- ENDIF -->>{timezone_select.timezone_options.LABEL}</option>
+				<!-- END timezone_options -->
+			</optgroup>
+			<!-- END timezone_select -->
+		</select>
+
+	</td>
+</tr>

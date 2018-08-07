@@ -1,0 +1,5 @@
+<!-- IF S_MODE_SELECT or S_SORT_OPTIONS -->
+	<span class="genmed">{L_SORT_BY}{L_COLON}</span> <select name="sk" id="sk"><!-- IF S_MODE_SELECT -->{S_MODE_SELECT}<!-- ELSE -->{S_SORT_OPTIONS}<!-- ENDIF --></select> <span class="genmed">{L_SORT_DIRECTION}{L_COLON}</span> <select name="sd" id="sd">{S_ORDER_SELECT}</select> <input class="btnlite" type="submit" name="sort" value="{L_GO}" />
+<!-- ELSE -->
+	<span class="genmed">{L_DISPLAY}{L_COLON}</span> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY --> <span class="genmed">{L_SORT_BY}{L_COLON}</span> {S_SELECT_SORT_KEY} <span class="genmed">{L_SORT_DIRECTION}{L_COLON}</span> {S_SELECT_SORT_DIR}<!-- ENDIF --><!-- IF S_FORUM_OPTIONS and not S_PM --> <span class="genmed">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select><!-- IF TOPIC_ID --><br><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" /> <b class="genmed">{L_ONLY_TOPIC}</b><!-- ENDIF --><!-- ENDIF --> <input class="btnlite" type="submit" name="sort" value="{L_GO}" />
+<!-- ENDIF -->

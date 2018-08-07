@@ -7004,6 +7004,7 @@ class language extends language_file_loader
 		}		
 		$this->lang = array_merge($this->lang, $lang);
 	}	
+	
 	/**
 	 * Loads common language files
 	 */

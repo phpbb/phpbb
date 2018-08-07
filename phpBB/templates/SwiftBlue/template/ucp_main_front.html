@@ -1,0 +1,80 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="3">{L_UCP}</th>
+</tr>
+<tr>
+	<td class="row1" colspan="3" align="center"><p class="genmed">{L_UCP_WELCOME}</p></td>
+</tr>
+<tr>
+	<th colspan="3">{L_IMPORTANT_NEWS}</th>
+</tr>
+
+<!-- BEGIN topicrow -->
+
+	<!-- IF topicrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td class="row1" width="25" align="center"><!-- IF topicrow.S_UNREAD --><a title="{L_UNREAD_POSTS}" href="{topicrow.U_NEWEST_POST}"><!-- ENDIF --><img src="{T_THEME_PATH}/images/{topicrow.TOPIC_IMG_STYLE}.gif" width="19" height="18" alt="<!-- IF topicrow.S_UNREAD -->+<!-- ENDIF -->" title="<!-- IF topicrow.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->" class="normal"><!-- IF topicrow.S_UNREAD --></a><!-- ENDIF --></td>
+		<td class="row1" width="100%">
+			<p class="genmed"><!-- IF topicrow.S_UNREAD --><a title="{L_UNREAD_POSTS}" href="{topicrow.U_NEWEST_POST}"><img src="{T_THEME_PATH}/images/icon_topic_newest.gif" width="18" height="9" alt=">>>" class="normal" title="{L_UNREAD_POSTS}"></a> <!-- ENDIF --><b><a title="{L_POSTED}{L_COLON} {topicrow.FIRST_POST_TIME}" href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></b></p><p class="genmed">{topicrow.GOTO_PAGE}</p>
+		</td>
+		<td class="row1" width="120" align="center" nowrap="nowrap">
+			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
+			<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
+				<a title="{L_VIEW_LATEST_POST}" href="{topicrow.U_LAST_POST}"><img src="{T_THEME_PATH}/images/icon_topic_latest.gif" width="18" height="9" alt=">" title="{L_VIEW_LATEST_POST}"></a>
+			</p>
+		</td>
+	</tr>
+<!-- BEGINELSE -->
+	<tr class="row1">
+		<td align="center" colspan="3"><b class="gen">{L_NO_IMPORTANT_NEWS}</b></td>
+	</tr>
+<!-- END topicrow -->
+
+<tr>
+	<th colspan="3">{L_YOUR_DETAILS}</th>
+</tr>
+<tr>
+<!-- EVENT ucp_main_front_user_activity_before -->
+	<td class="row1" colspan="3">
+		<table width="100%" cellspacing="1" cellpadding="4">
+		<tr> 
+			<td class="genmed" colspan="2"><!-- EVENT ucp_main_front_user_activity_prepend --></td>
+		</tr>
+		<tr>
+			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_JOINED}{L_COLON} </b></td>
+			<td width="100%"><b class="gen">{JOINED}</b></td>
+		</tr>
+		<tr> 
+			<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_TOTAL_POSTS}{L_COLON} </b></td>
+			<td><!-- IF POSTS_PCT --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- IF S_DISPLAY_SEARCH --><br /><a href="{U_SEARCH_SELF}">{L_SEARCH_YOUR_POSTS}</a><!-- ENDIF --></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+		</tr>
+		<!-- IF S_SHOW_ACTIVITY -->
+			<tr>
+				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_FORUM}{L_COLON} </b></td>
+				<td><!-- IF ACTIVE_FORUM != '' --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+			</tr>
+			<tr>
+				<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="genmed">{L_ACTIVE_IN_TOPIC}{L_COLON} </b></td>
+				<td><!-- IF ACTIVE_TOPIC != '' --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF WARNINGS -->
+			<tr>
+				<td align="{S_CONTENT_FLOW_END}" valign="middle" nowrap="nowrap"><b class="genmed">{L_YOUR_WARNINGS}{L_COLON} </b></td>
+				<td class="genmed">[ <b>{WARNINGS}</b> ]</td>
+			</tr>
+		<!-- ENDIF -->
+		<tr> 
+			<td class="genmed" colspan="2"><!-- EVENT ucp_main_front_user_activity_append --></td>
+		</tr>
+		</table>
+	</td>
+<!-- EVENT ucp_main_front_user_activity_after -->
+</tr>
+<tr>
+	<td class="cat" colspan="3">&nbsp;</td>
+</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

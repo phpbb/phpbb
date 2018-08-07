@@ -333,7 +333,7 @@ switch( $mode )
 				FROM " . TOPICS_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql) 
 					OR topic_moved_id IN ($topic_id_sql)";
-			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topics', '', __LINE__, __FILE__, $sql);
 			}
@@ -389,7 +389,7 @@ switch( $mode )
 			$sql = "DELETE 
 				FROM " . TOPICS_WATCH_TABLE . " 
 				WHERE topic_id IN ($topic_id_sql)";
-			if ( !$db->sql_query($sql, END_TRANSACTION) )
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete watched post list', '', __LINE__, __FILE__, $sql);
 			}
@@ -503,7 +503,7 @@ switch( $mode )
 					WHERE topic_id IN ($topic_list)
 						AND forum_id = $old_forum_id
 						AND topic_status <> " . TOPIC_MOVED;
-				if ( !($result = $db->sql_query($sql, BEGIN_TRANSACTION)) )
+				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(GENERAL_ERROR, 'Could not select from topic table', '', __LINE__, __FILE__, $sql);
 				}
@@ -802,7 +802,7 @@ switch( $mode )
 
 				$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 					VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
-				if (!($db->sql_query($sql, BEGIN_TRANSACTION)))
+				if (!($db->sql_query($sql)))
 				{
 					message_die(GENERAL_ERROR, 'Could not insert new topic', '', __LINE__, __FILE__, $sql);
 				}
@@ -825,7 +825,7 @@ switch( $mode )
 				$sql = 	"UPDATE " . POSTS_TABLE . "
 					SET topic_id = $new_topic_id, forum_id = $new_forum_id 
 					WHERE $sql_where";
-				if (!$db->sql_query($sql, END_TRANSACTION))
+				if (!$db->sql_query($sql))
 				{
 					message_die(GENERAL_ERROR, 'Could not update posts table', '', __LINE__, __FILE__, $sql);
 				}

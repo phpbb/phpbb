@@ -1,0 +1,110 @@
+<!-- INCLUDE ucp_header.html -->
+
+<script type="text/javascript">
+// <![CDATA[
+	var form_name = 'ucp';
+	var text_name = 'signature';
+// ]]>
+</script>
+
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="2">{L_TITLE}</th>
+</tr>
+<!-- IF not S_SMILIES_ALLOWED -->
+<tr>
+	<td colspan="2" class="row1"><span class="genmed">{L_SIGNATURE_EXPLAIN}</span></td>
+</tr>
+<!-- ENDIF -->
+
+<!-- IF ERROR -->
+	<tr>
+		<td class="row2" colspan="2" align="center"><span class="genmed" style="color: #FF0000">{ERROR}</span></td>
+	</tr>
+<!-- ENDIF -->
+
+<tr>
+	<!-- IF S_SMILIES_ALLOWED -->
+	<td class="row1" width="22%" valign="top">
+		<span class="genmed">{L_SIGNATURE_EXPLAIN}</span>
+		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
+			<tr>
+				<td class="genmed" align="center"><b>{L_SMILIES}</b></td>
+			</tr>
+			<tr>
+				<td class="genmed" align="center">
+				<!-- BEGIN smiley -->
+					<a title="{smiley.SMILEY_DESC}" href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a>
+				<!-- END smiley -->
+				</td>
+			</tr>
+			<!-- IF S_SHOW_SMILEY_LINK -->
+			<tr>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a></td>
+			</tr>
+			<!-- ENDIF -->
+		</table>
+	</td>
+	<td class="row2" valign="top">
+	<!-- ELSE -->
+	<td class="row2" colspan="2" valign="top">
+	<!-- ENDIF -->
+
+		<table cellspacing="0" cellpadding="2" border="0" width="100%">
+		<!-- INCLUDE posting_buttons.html -->
+		<tr>
+			<td valign="top" style="width: 100%;"<!-- IF not S_BBCODE_ALLOWED --> colspan="2"<!-- ENDIF -->><textarea name="signature" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" style="width: 99%; height: 270px;">{SIGNATURE}</textarea><script>var textarea = document.forms[form_name].elements[text_name]; textarea.onkeydown = function(e) { if ((event.keyCode==9 || event.which==9) && inCodeTag() && !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey) { event.preventDefault ? event.preventDefault() : (event.returnValue = false); bbfontstyle("\t","");}}; if (!document.all) {	textarea.onkeypress = function(event) { if ((event.keyCode==9 || event.which==9) && inCodeTag() && !event.altKey && !event.ctrlKey && !event.shiftKey && !event.metaKey) { event.preventDefault ? event.preventDefault() : (event.returnValue = false); bbfontstyle("\t","");}}}; if (typeof TextareaFix !== 'undefined') {	var wwidth=document.documentElement.offsetWidth; var msg=(<!-- IF S_BBCODE_ALLOWED -->380<!-- ELSE -->445<!-- ENDIF -->+0.725*(wwidth-620))*0.8; textarea.style.width=msg;};</script></td>
+			<!-- IF S_BBCODE_ALLOWED -->
+	<td class="row2" valign="top"><script>colorPalette();</script></td>	<!-- ENDIF -->
+	 	</tr>
+				</table>
+	</td>
+</tr>
+<tr>
+	<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br />
+		<table cellspacing="2" cellpadding="0" border="0">
+		<tr>
+			<td class="genmed">{BBCODE_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="genmed">{IMG_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="genmed">{FLASH_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="genmed">{URL_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="genmed">{SMILIES_STATUS}</td>
+		</tr></table>
+	</td>
+	<td class="row2" valign="top">
+		<table cellspacing="0" cellpadding="1" border="0">
+		<!-- IF S_BBCODE_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_BBCODE}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF S_SMILIES_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_SMILIES}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF S_LINKS_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
+			</tr>
+		<!-- ENDIF -->
+		</table>
+	</td>
+</tr><tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="reset" value="{L_RESET}" name="reset" />&nbsp; <input class="btnlite" type="submit" name="preview" value="{L_PREVIEW}" />&nbsp; <input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" /></td>
+</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->

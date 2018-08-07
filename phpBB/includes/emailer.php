@@ -209,7 +209,7 @@ class emailer
 			$empty_to_header = ($to == '') ? TRUE : FALSE;
 			$to = ($to == '') ? (($board_config['sendmail_fix']) ? ' ' : 'Undisclosed-recipients:;') : $to;
 	
-			$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
+			$result = phpbb_mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers, PHP_EOL, '');
 			
 			if (!$result && !$board_config['sendmail_fix'] && $empty_to_header)
 			{
@@ -224,7 +224,7 @@ class emailer
 				}
 
 				$board_config['sendmail_fix'] = 1;
-				$result = @mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers);
+				$result = phpbb_mail($to, $this->subject, preg_replace("#(?<!\r)\n#s", "\n", $this->msg), $this->extra_headers, PHP_EOL, '');
 			}
 		}
 
@@ -369,5 +369,78 @@ class emailer
 	}
 
 } // class emailer
+
+/**
+* Encodes the given string for proper display in UTF-8.
+*
+* This version is using base64 encoded data. The downside of this
+* is if the mail client does not understand this encoding the user
+* is basically doomed with an unreadable subject.
+*
+* Please note that this version fully supports RFC 2045 section 6.8.
+*
+* @param string $eol End of line we are using (optional to be backwards compatible)
+*/
+function mail_encode($str, $eol = "\r\n")
+{
+	// define start delimimter, end delimiter and spacer
+	$start = "=?UTF-8?B?";
+	$end = "?=";
+	$delimiter = "$eol ";
+
+	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	$split_length = 60;
+	$encoded_str = base64_encode($str);
+
+	// If encoded string meets the limits, we just return with the correct data.
+	if (strlen($encoded_str) <= $split_length)
+	{
+		return $start . $encoded_str . $end;
+	}
+
+	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
+	if (strlen($str) === utf8_strlen($str))
+	{
+		return $start . implode($end . $delimiter . $start, str_split($encoded_str, $split_length)) . $end;
+	}
+
+	// UTF-8 data, compose encoded lines
+	$array = utf8_str_split($str);
+	$str = '';
+
+	while (count($array))
+	{
+		$text = '';
+
+		while (count($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
+		{
+			$text .= array_shift($array);
+		}
+
+		$str .= $start . base64_encode($text) . $end . $delimiter;
+	}
+
+	return substr($str, 0, - strlen($delimiter));
+}
+
+/**
+* Wrapper for sending out emails with the PHP's mail function
+*/
+function phpbb_mail($to, $subject, $msg, $headers, $eol = '\r\n', $err_msg = '')
+{
+	global $board_config, $phpbb_root_path, $phpEx;
+
+	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+	// Reference: http://bugs.php.net/bug.php?id=15841
+	$headers = implode($eol, $headers);
+
+	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
+	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
+	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
+	$additional_parameters = isset($board_config['email_force_sender']) ? '-f' . $board_config['board_email'] : '';
+	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
+
+	return $result;
+}
 
 ?>

@@ -1,0 +1,37 @@
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+	<!-- IF CUR_FOLDER_NAME --><h2>{L_TITLE}{L_COLON} {CUR_FOLDER_NAME}</h2><br><!-- ENDIF -->
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr class="gensmall">
+			<td align="{S_CONTENT_FLOW_BEGIN}">
+			<!-- IF TOTAL_MESSAGES -->
+					<b>{PAGE_NUMBER}</b>
+					&nbsp;
+					<!-- IF FOLDER_MAX_MESSAGES neq 0 -->
+						[ {FOLDER_CUR_MESSAGES}/{FOLDER_MAX_MESSAGES} {L_MESSAGES} ({FOLDER_PERCENT}%) ]
+					<!-- ELSE -->
+						[ {TOTAL_MESSAGES} ]
+					<!-- ENDIF -->
+					&nbsp;
+			<!-- ENDIF -->
+
+			<!-- IF S_VIEW_MESSAGE -->
+			<!-- EVENT ucp_pm_viewmessage_options_before -->
+				<!-- IF S_DISPLAY_HISTORY -->
+					<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}">{L_VIEW_PREVIOUS_HISTORY}</a> | <!-- ENDIF --><!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}">{L_VIEW_NEXT_HISTORY}</a> | <!-- ENDIF -->
+				<!-- ENDIF --><a href="{U_PREVIOUS_PM}">{L_VIEW_PREVIOUS_PM}</a> | <a href="{U_NEXT_PM}">{L_VIEW_NEXT_PM}</a>
+			<!-- ENDIF -->
+			</td>
+			<td align="{S_CONTENT_FLOW_END}">
+			<!-- IF S_VIEW_MESSAGE -->
+					<b><a href="{U_CURRENT_FOLDER}">{L_RETURN_TO_FOLDER}</a></b>
+			<!-- ELSEIF FOLDER_CUR_MESSAGES neq 0 -->
+					<!-- IF U_MARK_ALL --><b><a href="{U_MARK_ALL}">{L_PM_MARK_ALL_READ}</a></b><!-- IF .pagination --> | <!-- ENDIF --><!-- ENDIF --><!-- INCLUDE pagination.html -->
+			<!-- ENDIF -->
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>

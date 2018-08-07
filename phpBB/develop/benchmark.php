@@ -403,7 +403,7 @@ function make_user($username)
 	
 	$sql .= "1, '')";
 	
-	if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
+	if($result = $db->sql_query($sql))
 	{
 		$sql = "INSERT INTO " . GROUPS_TABLE . " (group_name, group_description, group_single_user, group_moderator)
 			VALUES ('', 'Personal User', 1, 0)";
@@ -413,7 +413,7 @@ function make_user($username)
 			
 			$sql = "INSERT INTO " . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
 				VALUES ($new_user_id, $group_id, 0)";
-			if($result = $db->sql_query($sql, END_TRANSACTION))
+			if($result = $db->sql_query($sql))
 			{
 				
 				// SUCCESS.

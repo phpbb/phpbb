@@ -1,0 +1,71 @@
+<!-- INCLUDE overall_header.html -->
+
+<form method="post" action="{S_MODE_ACTION}">
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th nowrap="nowrap" width="20%">{L_USERNAME}</th>
+	<th nowrap="nowrap" width="25%">{L_FORUMS}</th>
+	<th nowrap="nowrap" width="20%">{L_PRIMARY_GROUP}</th>
+	<th nowrap="nowrap" width="15%">{L_RANK}</th>
+	<th nowrap="nowrap" width="11%">{L_SEND_MESSAGE}</th>
+</tr>
+<tr class="row3">
+	<td colspan="5"><b class="gensmall">{L_ADMINISTRATORS}</b></td>
+</tr>
+<!-- BEGIN admin -->
+	<!-- IF admin.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
+
+	<td class="gen" align="center"><strong>{admin.USERNAME_FULL}</strong></td>
+	<td class="gensmall" align="center">&nbsp;</td>
+	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
+		<!-- IF admin.U_GROUP -->
+			<a<!-- IF admin.GROUP_COLOR --> style="font-weight: bold; color:#{admin.GROUP_COLOR}"<!-- ENDIF --> href="{admin.U_GROUP}">{admin.GROUP_NAME}</a>
+		<!-- ELSE -->
+			{admin.GROUP_NAME}
+		<!-- ENDIF -->
+	&nbsp;</td>
+	<td class="gen" align="center"><!-- IF admin.RANK_IMG -->{admin.RANK_IMG}<!-- ELSE -->{admin.RANK_TITLE}<!-- ENDIF --></td>
+	<td class="gen" align="center">&nbsp;<!-- IF admin.U_PM --><a href="{admin.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
+</tr>
+<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_ADMINISTRATORS}</span></td>
+	</tr>
+<!-- END admin -->
+<tr class="row3">
+	<td colspan="5"><b class="gensmall">{L_MODERATORS}</b></td>
+</tr>
+<!-- BEGIN mod -->
+	<!-- IF mod.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
+
+	<td class="gen" align="center"><strong>{mod.USERNAME_FULL}</strong></td>
+	<td align="center"><!-- IF not mod.FORUMS -->{L_ALL_FORUMS}<!-- ELSE --><select style="width: 200px;">{mod.FORUMS}</select><!-- ENDIF -->&nbsp;</td>
+	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
+		<!-- IF mod.U_GROUP -->
+			<a<!-- IF mod.GROUP_COLOR --> style="font-weight: bold; color:#{mod.GROUP_COLOR}"<!-- ENDIF --> href="{mod.U_GROUP}">{mod.GROUP_NAME}</a>
+		<!-- ELSE -->
+			{mod.GROUP_NAME}
+		<!-- ENDIF -->
+	&nbsp;</td>
+	<td class="gen" align="center"><!-- IF mod.RANK_IMG -->{mod.RANK_IMG}<!-- ELSE -->{mod.RANK_TITLE}<!-- ENDIF --></td>
+	<td class="gen" align="center">&nbsp;<!-- IF mod.U_PM --><a href="{mod.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
+</tr>
+<!-- BEGINELSE -->
+	<tr>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_MODERATORS}</span></td>
+	</tr>
+<!-- END mod -->
+</table>
+
+</form>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div style="float: {S_CONTENT_FLOW_END};"><!-- INCLUDE jumpbox.html --></div>
+
+<!-- INCLUDE overall_footer.html -->
