@@ -68,10 +68,11 @@ class mention_helper_test extends phpbb_database_test_case
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('user', $user);
 
-		$container = $this->get_test_case_helpers()->set_s9e_services($phpbb_container);
-		$this->mention_helper = $container->get('text_formatter.s9e.mention_helper');
+		$this->get_test_case_helpers()->set_s9e_services($phpbb_container);
 
 		$phpbb_container->compile();
+
+		$this->mention_helper = $phpbb_container->get('text_formatter.s9e.mention_helper');
 	}
 
 	public function inject_metadata_data()
