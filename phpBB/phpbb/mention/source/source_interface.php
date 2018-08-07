@@ -22,6 +22,7 @@ interface source_interface
 	 * @param array  $names    Array of already fetched data with names
 	 * @param string $keyword  Search string
 	 * @param int    $topic_id Current topic ID
+	 * @return bool Whether there are no more satisfying names left
 	 */
 	public function get(array &$names, $keyword, $topic_id);
 

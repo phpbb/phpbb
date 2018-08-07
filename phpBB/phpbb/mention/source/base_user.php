@@ -15,9 +15,6 @@ namespace phpbb\mention\source;
 
 abstract class base_user implements source_interface
 {
-	/** @var int */
-	const NAMES_BATCH_SIZE = 100;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -73,6 +70,7 @@ abstract class base_user implements source_interface
 	 */
 	public function get(array &$names, $keyword, $topic_id)
 	{
+		$fetched_all = false;
 		$keyword = utf8_clean_string($keyword);
 
 		// Do not query all possible users (just a moderate amount), cache results for 5 minutes
@@ -81,12 +79,13 @@ abstract class base_user implements source_interface
 		$i = 0;
 		$users = [];
 		$user_ids = [];
-		while ($i < self::NAMES_BATCH_SIZE)
+		while ($i < $this->config['mention_batch_size'])
 		{
 			$row = $this->db->sql_fetchrow($result);
 
 			if (!$row)
 			{
+				$fetched_all = true;
 				break;
 			}
 
@@ -98,6 +97,24 @@ abstract class base_user implements source_interface
 			$i++;
 			$users[] = $row;
 			$user_ids[] = $row['user_id'];
+		}
+
+		// Determine whether all usernames were fetched in current batch
+		if (!$fetched_all)
+		{
+			$fetched_all = true;
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if (!empty($keyword) && strpos($row['username_clean'], $keyword) !== 0)
+				{
+					continue;
+				}
+
+				// At least one username hasn't been fetched - exit loop
+				$fetched_all = false;
+				break;
+			}
 		}
 
 		$this->db->sql_freeresult($result);
@@ -120,5 +137,7 @@ abstract class base_user implements source_interface
 				'priority'	=> $this->get_priority($user),
 			]);
 		}
+
+		return $fetched_all;
 	}
 }

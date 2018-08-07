@@ -18,6 +18,9 @@ abstract class base_group implements source_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\group\helper */
 	protected $helper;
 
@@ -39,9 +42,10 @@ abstract class base_group implements source_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\group\helper $helper, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\group\helper $helper, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $phpEx)
 	{
 		$this->db = $db;
+		$this->config = $config;
 		$this->helper = $helper;
 		$this->user = $user;
 		$this->auth = $auth;
@@ -138,8 +142,15 @@ abstract class base_group implements source_interface
 		$matches = preg_grep('/^' . preg_quote($keyword) . '.*/i', $groups['names']);
 		$group_ids = array_intersect($group_ids, array_flip($matches));
 
+		$i = 0;
 		foreach ($group_ids as $group_id)
 		{
+			if ($i >= $this->config['mention_batch_size'])
+			{
+				// Do not exceed the names limit
+				return false;
+			}
+
 			$group_rank = phpbb_get_user_rank($groups[$group_id], false);
 			array_push($names, [
 				'name'		=> $groups[$group_id]['group_name'],
@@ -152,6 +163,10 @@ abstract class base_group implements source_interface
 				'rank'		=> (isset($group_rank['title'])) ? $group_rank['title'] : '',
 				'priority'	=> $this->get_priority($groups[$group_id]),
 			]);
+
+			$i++;
 		}
+
+		return true;
 	}
 }

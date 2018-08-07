@@ -235,6 +235,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_height
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('mention_batch_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mention_names_limit', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');

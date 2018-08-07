@@ -55,6 +55,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		// Config
 		$config = new \phpbb\config\config(array(
 			'allow_mentions'      => true,
+			'mention_batch_size'  => 8,
 			'mention_names_limit' => 3,
 		));
 
@@ -143,491 +144,493 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		/**
 		 * NOTE:
 		 * 1) in production comparison with 'myself' is being done in JS
-		 * 2) mention_names_limit does not limit the number of returned items
-		 * 3) team members of hidden groups can also be mentioned (because they are shown on teampage)
+		 * 2) team members of hidden groups can also be mentioned (because they are shown on teampage)
 		 */
 		return [
 			['', 0, [
-				[
-					'name'     => 'friend',
-					'type'     => 'u',
-					'id'       => 7,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+				'names' => [
+					[
+						'name'     => 'friend',
+						'type'     => 'u',
+						'id'       => 7,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'Group we are a member of',
-					'type'     => 'g',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
+					[
+						'name'     => 'Group we are a member of',
+						'type'     => 'g',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'Normal group',
-					'type'     => 'g',
-					'id'       => 1,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
+					[
+						'name'     => 'Normal group',
+						'type'     => 'g',
+						'id'       => 1,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'myself',
-					'type'     => 'u',
-					'id'       => 2,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'myself',
+						'type'     => 'u',
+						'id'       => 2,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'poster',
-					'type'     => 'u',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'poster',
+						'type'     => 'u',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'replier',
-					'type'     => 'u',
-					'id'       => 4,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'replier',
+						'type'     => 'u',
+						'id'       => 4,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'friend',
-					'type'     => 'u',
-					'id'       => 7,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'friend',
+						'type'     => 'u',
+						'id'       => 7,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test',
-					'type'     => 'u',
-					'id'       => 8,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test1',
-					'type'     => 'u',
-					'id'       => 9,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test1',
+						'type'     => 'u',
+						'id'       => 9,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test2',
-					'type'     => 'u',
-					'id'       => 10,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'Group we are a member of',
+						'type'     => 'g',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 0,
 				],
-				[
-					'name'     => 'test3',
-					'type'     => 'u',
-					'id'       => 11,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'Group we are a member of',
-					'type'     => 'g',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 1,
-				],
+				'all'   => false,
 			]],
 			['', 1, [
-				[
-					'name'     => 'friend',
-					'type'     => 'u',
-					'id'       => 7,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+				'names' => [
+					[
+						'name'     => 'friend',
+						'type'     => 'u',
+						'id'       => 7,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'Group we are a member of',
-					'type'     => 'g',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
+					[
+						'name'     => 'Group we are a member of',
+						'type'     => 'g',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'Normal group',
-					'type'     => 'g',
-					'id'       => 1,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
+					[
+						'name'     => 'Normal group',
+						'type'     => 'g',
+						'id'       => 1,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'replier',
-					'type'     => 'u',
-					'id'       => 4,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'replier',
+						'type'     => 'u',
+						'id'       => 4,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'poster',
-					'type'     => 'u',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'poster',
+						'type'     => 'u',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 5,
 					],
-					'rank'     => '',
-					'priority' => 5,
-				],
-				[
-					'name'     => 'myself',
-					'type'     => 'u',
-					'id'       => 2,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'myself',
+						'type'     => 'u',
+						'id'       => 2,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'poster',
-					'type'     => 'u',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'poster',
+						'type'     => 'u',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'replier',
-					'type'     => 'u',
-					'id'       => 4,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'replier',
+						'type'     => 'u',
+						'id'       => 4,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'friend',
-					'type'     => 'u',
-					'id'       => 7,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'friend',
+						'type'     => 'u',
+						'id'       => 7,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test',
-					'type'     => 'u',
-					'id'       => 8,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test1',
-					'type'     => 'u',
-					'id'       => 9,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test1',
+						'type'     => 'u',
+						'id'       => 9,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test2',
-					'type'     => 'u',
-					'id'       => 10,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'Group we are a member of',
+						'type'     => 'g',
+						'id'       => 3,
+						'avatar'   => [
+							'type' => 'group',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 0,
 				],
-				[
-					'name'     => 'test3',
-					'type'     => 'u',
-					'id'       => 11,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'Group we are a member of',
-					'type'     => 'g',
-					'id'       => 3,
-					'avatar'   => [
-						'type' => 'group',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 1,
-				],
+				'all'   => false,
 			]],
 			['t', 1, [
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+				'names' => [
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 1,
 					],
-					'rank'     => '',
-					'priority' => 1,
-				],
-				[
-					'name'     => 'team_member_normal',
-					'type'     => 'u',
-					'id'       => 5,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_normal',
+						'type'     => 'u',
+						'id'       => 5,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'team_member_hidden',
-					'type'     => 'u',
-					'id'       => 6,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'team_member_hidden',
+						'type'     => 'u',
+						'id'       => 6,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test',
-					'type'     => 'u',
-					'id'       => 8,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test1',
-					'type'     => 'u',
-					'id'       => 9,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test1',
+						'type'     => 'u',
+						'id'       => 9,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test2',
-					'type'     => 'u',
-					'id'       => 10,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test2',
+						'type'     => 'u',
+						'id'       => 10,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test3',
-					'type'     => 'u',
-					'id'       => 11,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+					[
+						'name'     => 'test3',
+						'type'     => 'u',
+						'id'       => 11,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
 				],
+				'all'   => true,
 			]],
 			['test', 1, [
-				[
-					'name'     => 'test',
-					'type'     => 'u',
-					'id'       => 8,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
+				'names' => [
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
 					],
-					'rank'     => '',
-					'priority' => 0,
+					[
+						'name'     => 'test1',
+						'type'     => 'u',
+						'id'       => 9,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
+					],
+					[
+						'name'     => 'test2',
+						'type'     => 'u',
+						'id'       => 10,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
+					],
+					[
+						'name'     => 'test3',
+						'type'     => 'u',
+						'id'       => 11,
+						'avatar'   => [
+							'type' => 'user',
+							'img'  => '',
+						],
+						'rank'     => '',
+						'priority' => 0,
+					],
 				],
-				[
+				'all'   => true,
+			]],
+			['test1', 1, [
+				'names' => [[
 					'name'     => 'test1',
 					'type'     => 'u',
 					'id'       => 9,
@@ -637,41 +640,9 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 					],
 					'rank'     => '',
 					'priority' => 0,
-				],
-				[
-					'name'     => 'test2',
-					'type'     => 'u',
-					'id'       => 10,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 0,
-				],
-				[
-					'name'     => 'test3',
-					'type'     => 'u',
-					'id'       => 11,
-					'avatar'   => [
-						'type' => 'user',
-						'img'  => '',
-					],
-					'rank'     => '',
-					'priority' => 0,
-				],
+				]],
+				'all'   => true,
 			]],
-			['test1', 1, [[
-				'name'     => 'test1',
-				'type'     => 'u',
-				'id'       => 9,
-				'avatar'   => [
-					'type' => 'user',
-					'img'  => '',
-				],
-				'rank'     => '',
-				'priority' => 0,
-			]]],
 		];
 	}
 

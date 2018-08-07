@@ -19,6 +19,7 @@ class add_mention_settings extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('allow_mentions', true)),
+			array('config.add', array('mention_batch_size', 50)),
 			array('config.add', array('mention_names_limit', 10)),
 
 			// Set up user permissions
