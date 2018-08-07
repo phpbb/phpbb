@@ -592,7 +592,7 @@ class phpbb_test_case_helpers
 
 		// Create and register a mention_helper
 		$mention_helper = new \phpbb\textformatter\s9e\mention_helper(
-			$db_driver,
+			($container->has('dbal.conn')) ? $container->get('dbal.conn') : $db_driver,
 			$auth,
 			$container->get('user'),
 			$phpbb_root_path,
