@@ -11,9 +11,7 @@
  *
  */
 
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class mention_helper_test extends phpbb_database_test_case
 {
