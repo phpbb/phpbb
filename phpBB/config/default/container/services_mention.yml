@@ -20,6 +20,7 @@ services:
         abstract: true
         arguments:
             - '@dbal.conn'
+            - '@config'
             - '@group_helper'
             - '@user'
             - '@auth'

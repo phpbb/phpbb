@@ -3935,7 +3935,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
 		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention') && (empty($forum_id) || $auth->acl_get('f_mention', $forum_id))) ? true : false,
-		'S_MENTION_BATCH_SIZE'	=> 100, // TODO: do not hardcode the value
 		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
 		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
 
