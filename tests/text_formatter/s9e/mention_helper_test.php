@@ -31,7 +31,10 @@ class mention_helper_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $auth, $db, $phpbb_container, $phpEx, $phpbb_root_path;
+		global $auth, $db, $cache, $phpbb_container, $phpEx, $phpbb_root_path;
+
+		// Disable caching for this test class
+		$cache = null;
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -68,17 +71,9 @@ class mention_helper_test extends phpbb_database_test_case
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('user', $user);
 
-		// Create and register a mention_helper
-		$mention_helper = new \phpbb\textformatter\s9e\mention_helper(
-			$db,
-			$auth,
-			$user,
-			$phpbb_root_path,
-			$phpEx
-		);
-		$phpbb_container->set('text_formatter.s9e.mention_helper', $mention_helper);
+		$this->get_test_case_helpers()->set_s9e_services($phpbb_container);
 
-		$this->mention_helper = $mention_helper;
+		$this->mention_helper = $phpbb_container->get('text_formatter.s9e.mention_helper');
 	}
 
 	public function inject_metadata_data()
