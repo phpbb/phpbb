@@ -62,15 +62,13 @@ class mention_helper_test extends phpbb_database_test_case
 		);
 
 		// Container
-		$phpbb_container = new ContainerBuilder();
+		$phpbb_container = new phpbb_mock_container_builder();
 
 		$phpbb_container->set('dbal.conn', $db);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('user', $user);
 
 		$this->get_test_case_helpers()->set_s9e_services($phpbb_container);
-
-		$phpbb_container->compile();
 
 		$this->mention_helper = $phpbb_container->get('text_formatter.s9e.mention_helper');
 	}
