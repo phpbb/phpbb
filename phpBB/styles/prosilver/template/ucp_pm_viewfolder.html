@@ -49,6 +49,10 @@
 			<div class="pm-subject">
 				{SUBJECT}
 			</div>
+			<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Edit Title">
+				<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
+				<span class="c-menu-text t-forum-text">PM to</span>
+			</a>
 			<span class="pm-header-button">
 				<button class="button-to"><i class="fa fa-user fa-fw" ></i></button>
 			</span>
@@ -114,7 +118,46 @@
 						{% include 'posting_buttons.html' %}
 					</div>
 				</div>
-				<textarea class="pm-inputbox" id="message"  name="message" rows="15" cols="76" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+				<button class="pm-to-button" id="pm-to-button" type="button">PM to</button>
+				<div class="pm-to-model" id="pm-to-model">
+					<div class="pm-modal-content">
+						<span class="pm-to-button-close">&times;</span>
+						<div class="pm-recipient-box">
+							<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
+							<dd class="recipients">
+								<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
+								<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
+								{% if to_recipient %}
+								<div class="pm-recipient-cc">
+									{{ lang('TO_MASS') }} {{ lang('COLON') }}
+									<ul class="pm-recipient-list">
+										{% for recipient in to_recipient %}
+										<li class="pm-recipient">
+											{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
+											{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
+										</li>
+										{% endfor %}
+									</ul>
+								</div>
+								{% endif %}
+								{% if bcc_recipient %}
+								<div class="pm-recipient-bcc">
+									{{ lang('BCC') }} {{ lang('COLON') }}
+									<ul class="pm-recipient-list">
+										{% for recipient in bcc_recipient %}
+										<li class="pm-recipient">
+											{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
+											{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
+										</li>
+										{% endfor %}
+									</ul>
+								</div>
+								{% endif %}
+							</dd>
+						</div>
+					</div>
+				</div>
+				<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="76" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
 						{% for smile in smiley %}
@@ -192,6 +235,10 @@
 	var btn = document.getElementById("pm-smile-button");
 	var span = document.getElementsByClassName("pm-button-close")[0];
 
+	var to_modal = document.getElementById('pm-to-model');
+	var to_btn = document.getElementById("pm-to-button");
+	var to_span = document.getElementsByClassName("pm-to-button-close")[0];
+
 	// When the user clicks the button, open the modal
 	btn.onclick = function() {
 		modal.style.display = "block";
@@ -206,6 +253,23 @@
 	window.onclick = function(event) {
 		if (event.target == modal) {
 			modal.style.display = "none";
+		}
+	}
+
+	// When the user clicks the button, open the modal
+	to_btn.onclick = function() {
+		to_modal.style.display = "block";
+	}
+
+	// When the user clicks on <span> (x), close the modal
+	to_span.onclick = function() {
+		to_modal.style.display = "none";
+	}
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) {
+		if (event.target == to_modal) {
+			to_modal.style.display = "none";
 		}
 	}
 </script>
