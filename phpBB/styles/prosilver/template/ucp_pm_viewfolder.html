@@ -49,76 +49,18 @@
 			<div class="pm-subject">
 				{SUBJECT}
 			</div>
-			<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Edit Title">
-				<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
-				<span class="c-menu-text t-forum-text">PM to</span>
-			</a>
+			<!--<svg xmlns="http://www.w3.org/2000/svg" class="post-icons" style="position: absolute; width: 0; height: 0;">-->
+				<!--<symbol id="edit-full" viewBox="0 0 24 24">-->
+					<!--<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"-->
+					<!--/>-->
+				<!--</symbol></svg>-->
+			<!--<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Edit Title">-->
+				<!--<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>-->
+			<!--</a>-->
 			<span class="pm-header-button">
-				<button class="button-to"><i class="fa fa-user fa-fw" ></i></button>
-			</span>
-		</div>
-		{% endif %}
-		{% EVENT ucp_pm_history_review_before %}
-		<div class="pm-message">
-			{% for history in history_row %}
-				{% EVENT ucp_pm_viewmessage_avatar_before %}
-				{% if AUTHOR_AVATAR %}
-					<div class="pm-message-avatar{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
-						<a href="{U_MESSAGE_AUTHOR}" class="pm-avatar">{{ AUTHOR_AVATAR }}</a>
-					</div>
-				{% endif %}
-				{% EVENT ucp_pm_viewmessage_avatar_after %}
-				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
-					<li class="pm-message-item ">
-						<span class="pm-message-primary">
-							<span class="pm-message-primary-item">
-								<span class="pm-message-author">
-									<i class="fa fa-user fa-fw" title="{{ message.MESSAGE_AUTHOR }}" aria-label="{{ message.MESSAGE_AUTHOR }}"></i>
-									{{ history.MESSAGE_AUTHOR_FULL }}
-									<!--Maybe add recipient here-->
-								</span>
-								<span class="pm-message-date">
-									<i class="fa fa-clock-o fa-fw" title="{{ message.SENT_TIME }}" aria-label="{{ message.SENT_TIME }}"></i>
-									{{ history.SENT_DATE }}
-									<!--<p id="pm-time"></p>-->
-
-								</span>
-							</span>
-							<span class="pm-message-secondary">
-								{% if history.S_CURRENT_MSG %}
-									<!--Some way to indicate this is the message clicked, change of color isn't good enough-->
-									<!--<i class="fa fa-certificate fa-fw msg-unread" title="Unread message" aria-label="Unread message"></i>-->
-								{% endif %}
-								<a class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}" href="{{ history.U_VIEW_MESSAGE }}" >{{ history.SUBJECT }}</a>
-								<br>
-								{% if history.MESSAGE %}
-									{{ history.MESSAGE }}
-								{% else %}
-									<span class="error">{{ lang('MESSAGE_REMOVED_FROM_OUTBOX') }}</span>
-								{% endif %}
-							</span>
-						</span>
-					</li>
-				</ul>
-			{% endfor %}
-		</div>
-		{% EVENT ucp_pm_history_review_before %}
-
-		<div class="pm-compose">
-			<div class="pm-subject-box">
-				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}" >
-			</div>
-			
-			<div class="pm-message-box" id="pm-message-box" >
-				{% include 'posting_buttons.html' %}
-				<button class="pm-smile-button" id="pm-smile-button" type="button">Smile Modal</button>
-				<div class="pm-smile-model" id="pm-smile-model">
-					<div class="pm-modal-content">
-						<span class="pm-button-close">&times;</span>
-						{% include 'posting_buttons.html' %}
-					</div>
-				</div>
-				<button class="pm-to-button" id="pm-to-button" type="button">PM to</button>
+				<button class="pm-to-button" id="pm-to-button" type="button">
+					<i class="fa fa-user fa-fw" ></i>
+				</button>
 				<div class="pm-to-model" id="pm-to-model">
 					<div class="pm-modal-content">
 						<span class="pm-to-button-close">&times;</span>
@@ -157,6 +99,63 @@
 						</div>
 					</div>
 				</div>
+			</span>
+		</div>
+		{% endif %}
+		{% EVENT ucp_pm_history_review_before %}
+		<div class="pm-message">
+			{% for history in history_row %}
+				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
+					<li class="pm-message-item ">
+						<span class="pm-message-primary">
+							<span class="pm-message-primary-item">
+								<div class="pm-message-author">
+									<i class="fa fa-user fa-fw" title="{{ message.MESSAGE_AUTHOR }}" aria-label="{{ message.MESSAGE_AUTHOR }}"></i>
+									{{ history.MESSAGE_AUTHOR_FULL }}
+									<!--Maybe add recipient here-->
+								</div>
+								<div class="pm-message-date">
+									<i class="fa fa-clock-o fa-fw" title="{{ message.SENT_TIME }}" aria-label="{{ message.SENT_TIME }}"></i>
+									{{ history.SENT_DATE }}
+									<!--<p id="pm-time"></p>-->
+
+								</div>
+							</span>
+							<span class="pm-message-secondary">
+								{% if history.S_CURRENT_MSG %}
+									<!--Some way to indicate this is the message clicked, change of color isn't good enough-->
+									<!--<i class="fa fa-certificate fa-fw msg-unread" title="Unread message" aria-label="Unread message"></i>-->
+								{% endif %}
+								<a class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}" href="{{ history.U_VIEW_MESSAGE }}" >{{ history.SUBJECT }}</a>
+								<br>
+								{% if history.MESSAGE %}
+									{{ history.MESSAGE }}
+								{% else %}
+									<span class="error">{{ lang('MESSAGE_REMOVED_FROM_OUTBOX') }}</span>
+								{% endif %}
+							</span>
+						</span>
+					</li>
+				</ul>
+			{% endfor %}
+		</div>
+		{% EVENT ucp_pm_history_review_before %}
+
+		<div class="pm-compose">
+			<div class="pm-subject-box">
+				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}" >
+			</div>
+			
+			<div class="pm-message-box" id="pm-message-box" >
+				{% include 'posting_buttons.html' %}
+				<button class="pm-smile-button" id="pm-smile-button" type="button">Smile Modal</button>
+				<div class="pm-smile-model" id="pm-smile-model">
+					<div class="pm-modal-content">
+						<span class="pm-button-close">&times;</span>
+						{% include 'posting_buttons.html' %}
+					</div>
+				</div>
+
 				<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="76" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
