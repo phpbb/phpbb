@@ -27,7 +27,7 @@
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
 		$this->adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
-		$this->adapter->configure(['path' => 'test_path', 'depth' => 2]);
+		$this->adapter->configure(['path' => 'test_path', 'subfolders' => true]);
 
 		$this->path = $phpbb_root_path . 'test_path/';
 		mkdir($this->path);
