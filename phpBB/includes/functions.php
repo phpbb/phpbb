@@ -115,7 +115,7 @@ function gen_rand_string_friendly($num_chars = 8)
 */
 function unique_id()
 {
-	return bin2hex(random_bytes(8));
+	return gen_rand_string(32);
 }
 
 /**
