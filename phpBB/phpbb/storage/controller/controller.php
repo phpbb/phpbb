@@ -17,8 +17,8 @@ use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\storage\storage;
-use phpbb\storage\streamed_response;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Generic controller for storage
@@ -34,7 +34,7 @@ class controller
 	/** @var storage */
 	protected $storage;
 
-	/** @var streamed_response */
+	/** @var StreamedResponse */
 	protected $response;
 
 	/** @var symfony_request */
@@ -54,7 +54,7 @@ class controller
 		$this->db = $db;
 		$this->storage = $storage;
 		$this->symfony_request = $symfony_request;
-		$this->response = new streamed_response();
+		$this->response = new StreamedResponse();
 	}
 
 	/**
