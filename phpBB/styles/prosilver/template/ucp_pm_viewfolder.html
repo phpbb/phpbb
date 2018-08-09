@@ -69,27 +69,27 @@
 				</symbol>
 			</svg>
 			<span class="pm-buttons">
-				<button class="pm-to-button" id="pm-topp-button" type="button" >
+				<button class="pm-button" id="pm-topp-button" type="button" >
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
 				</button>
-				<button class="pm-to-button" id="pm-topp-button" type="button">
+				<button class="pm-button" id="pm-topp-button" type="button">
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
 				</button>
-				<button class="pm-to-button" id="pm-topp-button" type="button">
+				<button class="pm-button" id="pm-topp-button" type="button">
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
 				</button>
-				<button class="pm-to-button" id="pm-topp-button" type="button">
+				<button class="pm-button" id="pm-topp-button" type="button">
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
 				</button>
-				<button class="pm-to-button" id="pm-to-button" type="button">
+				<button class="pm-button" id="pm-to-button" type="button">
 					<i class="fa fa-user fa-fw" ></i>
 				</button>
-				<a class="pm-to-button" title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" >
+				<a class="pm-button" title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" >
 					<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
 				</a>
 			</span>
 			<!--Model for pm to: box. Users can be added/Removed here-->
-			<div class="pm-to-model" id="pm-to-model">
+			<div class="o-model pm-to" id="pm-to-model">
 				<div class="pm-modal-content">
 					<span class="pm-to-button-close">&times;</span>
 					<div class="pm-recipient-box">
@@ -174,14 +174,14 @@
 			
 			<div class="pm-message-box" id="pm-message-box" >
 				<button class="pm-bbcode-button" id="pm-bbcode-button" type="button">BBcode Modal</button>
-				<div class="pm-bbcode-model" id="pm-bbcode-model">
+				<div class="o-model pm-bbcode" id="pm-bbcode-model">
 					<div class="pm-modal-content">
 						<span class="pm-button-close">&times;</span>
 						{% include 'posting_buttons.html' %}
 					</div>
 				</div>
 				<button class="pm-smile-button" id="pm-smile-button" type="button">Smile Modal</button>
-				<div class="pm-smile-model" id="pm-smile-model">
+				<div class="o-model pm-smile" id="pm-smile-model">
 					<div class="pm-modal-content">
 						<span class="pm-button-close">&times;</span>
 						{% if S_SMILIES_ALLOWED and smiley %}
