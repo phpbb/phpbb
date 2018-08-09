@@ -128,6 +128,10 @@
 	display: block;
 }
 
+.pm-message-primary-item {
+	padding-bottom: 10px;
+}
+
 .pm-preview {
 	border-radius: 5px;
 	flex: 1 auto;
@@ -227,10 +231,15 @@
 	display: flex;
 	flex: 0 0 50px;
 }
+.pm-buttons {
+	display: flex;
+	flex: 0 0 50px;
+}
 
 .pm-to-button {
 	flex-basis: 100%;
-	text-align: center
+	text-align: center;
+	width: 50px;
 }
 
 .pm-subject {
@@ -239,12 +248,18 @@
 
 }
 
-.pm-header-button:hover,
-.pm-header-button:focus {
+.pm-to-button:hover,
+.pm-to-button:focus{
 	cursor: pointer;
 	background-color: #2d80d2;
 }
+
 .c-pm-viewer-action, .o-icon {
-	width: 18px;
-	height: 18px;
+	/*width: 18px;*/
+	height: 1.28571429em;
+	/*background-size: 15px;*/
+	/*font-size: 0.73em !important;*/
+	width: 1.28571429em;
+	text-align: center;
+
 }

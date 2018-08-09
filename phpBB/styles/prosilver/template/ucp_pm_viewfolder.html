@@ -49,57 +49,82 @@
 			<div class="pm-subject">
 				{SUBJECT}
 			</div>
-			<!--<svg xmlns="http://www.w3.org/2000/svg" class="post-icons" style="position: absolute; width: 0; height: 0;">-->
-				<!--<symbol id="edit-full" viewBox="0 0 24 24">-->
-					<!--<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"-->
-					<!--/>-->
-				<!--</symbol></svg>-->
-			<!--<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Edit Title">-->
-				<!--<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>-->
-			<!--</a>-->
-			<span class="pm-header-button">
+			<svg xmlns="http://www.w3.org/2000/svg" class="post-icons" style="position: absolute; width: 0; height: 0;">
+				<symbol id="edit-full" viewBox="0 0 24 24">
+					<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+					/>
+				</symbol>
+				<symbol id="forward" viewBox="0 0 24 24">
+					<path fill-rule="evenodd" d="M12.707 2.293l9 9a.999.999 0 0 1 0 1.414l-9 9A1 1 0 0 1 11 21v-4H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h8V3a1.002 1.002 0 0 1 1.707-.707zM13 8a1 1 0 0 1-1 1H4v6h8a1 1 0 0 1 1 1v2.586L19.586 12 13 5.414V8z" />
+				</symbol>
+				<symbol id="trash" viewBox="0 0 24 24">
+					<path fill-rule="nonzero" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+				</symbol>
+				<symbol id="add" viewBox="0 0 24 24">
+					<path fill-rule="evenodd" d="M20 8h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v4H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2zm0 6h-6l-.003 6H10v-6H4v-4h6V4h4v6h6v4z" />
+				</symbol>
+				<symbol id="important" viewBox="0 0 24 24">
+					<path fill-rule="evenodd" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+				</symbol>
+			</svg>
+			<span class="pm-buttons">
+				<button class="pm-button" id="pm-topp-button" type="button">
+						<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
+				</button>
+				<button class="pm-to-button" id="pm-topp-button" type="button">
+						<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
+				</button>
+				<button class="pm-to-button" id="pm-topp-button" type="button">
+						<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
+				</button>
+				<button class="pm-to-button" id="pm-topp-button" type="button">
+						<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
+				</button>
+				<button class="pm-to-button" id="pm-topp-button" type="button">
+						<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
+				</button>
 				<button class="pm-to-button" id="pm-to-button" type="button">
 					<i class="fa fa-user fa-fw" ></i>
 				</button>
-				<div class="pm-to-model" id="pm-to-model">
-					<div class="pm-modal-content">
-						<span class="pm-to-button-close">&times;</span>
-						<div class="pm-recipient-box">
-							<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
-							<dd class="recipients">
-								<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
-								<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
-								{% if to_recipient %}
-								<div class="pm-recipient-cc">
-									{{ lang('TO_MASS') }} {{ lang('COLON') }}
-									<ul class="pm-recipient-list">
-										{% for recipient in to_recipient %}
-										<li class="pm-recipient">
-											{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
-											{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
-										</li>
-										{% endfor %}
-									</ul>
-								</div>
-								{% endif %}
-								{% if bcc_recipient %}
-								<div class="pm-recipient-bcc">
-									{{ lang('BCC') }} {{ lang('COLON') }}
-									<ul class="pm-recipient-list">
-										{% for recipient in bcc_recipient %}
-										<li class="pm-recipient">
-											{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
-											{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
-										</li>
-										{% endfor %}
-									</ul>
-								</div>
-								{% endif %}
-							</dd>
-						</div>
+			</span>
+			<div class="pm-to-model" id="pm-to-model">
+				<div class="pm-modal-content">
+					<span class="pm-to-button-close">&times;</span>
+					<div class="pm-recipient-box">
+						<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
+						<dd class="recipients">
+							<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
+							<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
+							{% if to_recipient %}
+							<div class="pm-recipient-cc">
+								{{ lang('TO_MASS') }} {{ lang('COLON') }}
+								<ul class="pm-recipient-list">
+									{% for recipient in to_recipient %}
+									<li class="pm-recipient">
+										{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
+										{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+							{% endif %}
+							{% if bcc_recipient %}
+							<div class="pm-recipient-bcc">
+								{{ lang('BCC') }} {{ lang('COLON') }}
+								<ul class="pm-recipient-list">
+									{% for recipient in bcc_recipient %}
+									<li class="pm-recipient">
+										{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
+										{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+							{% endif %}
+						</dd>
 					</div>
 				</div>
-			</span>
+			</div>
 		</div>
 		{% endif %}
 		{% EVENT ucp_pm_history_review_before %}
