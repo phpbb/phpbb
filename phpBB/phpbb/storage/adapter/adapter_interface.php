@@ -23,6 +23,13 @@ interface adapter_interface
 	public function configure($options);
 
 	/**
+	 * Set storage
+	 *
+	 * @param string	storage_name		The storage name
+	 */
+	public function set_storage($storage_name);
+
+	/**
 	 * Dumps content into a file
 	 *
 	 * @param string	path		The file to be written to.

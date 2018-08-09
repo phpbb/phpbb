@@ -159,7 +159,7 @@ class upload
 			$this->file->upload->set_max_filesize($allowed_filesize);
 		}
 
-		$this->file->clean_filename('unique', $this->user->data['user_id'] . '_');
+		$this->file->clean_filename('attachment');
 
 		// Do we have to create a thumbnail?
 		$this->file_data['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;

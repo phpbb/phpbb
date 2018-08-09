@@ -235,6 +235,10 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'plupload_salt'",
 
 			'UPDATE ' . $this->config_table . "
+				SET config_value = '" . md5(mt_rand()) . "'
+				WHERE config_name = 'storage_salt'",
+
+			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('board_name')) . "'
 				WHERE config_name = 'sitename'",
 

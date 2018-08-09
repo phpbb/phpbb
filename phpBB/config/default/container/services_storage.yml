@@ -69,6 +69,7 @@ services:
         class: phpbb\storage\adapter\local
         shared: false
         arguments:
+            - '@config'
             - '@filesystem'
             - '@upload_imagesize'
             - '@mimetype.guesser'

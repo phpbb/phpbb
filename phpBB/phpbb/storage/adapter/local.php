@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\config\config;
 use phpbb\storage\stream_interface;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
@@ -24,8 +25,13 @@ use FastImageSize\FastImageSize;
 /**
  * @internal Experimental
  */
-class local implements adapter_interface, stream_interface
+class local extends adapter implements stream_interface
 {
+	/**
+	 * @var \phpbb\config\config
+	 */
+	protected $config;
+
 	/**
 	 * Filesystem component
 	 *
@@ -88,8 +94,9 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
+	public function __construct(config $config, filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
 	{
+		$this->config = $config;
 		$this->filesystem = $filesystem;
 		$this->imagesize = $imagesize;
 		$this->mimetype_guesser = $mimetype_guesser;
@@ -290,13 +297,23 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * To be used in other PR
+	 * Get the file name
 	 *
 	 * @param string	$path	The file path
 	 */
 	protected function get_filename($path)
 	{
-		return basename($path);
+		$filename = basename($path);
+
+		// Array of storages in local that can contain unsafe files
+		$storages = ['attachment'];
+
+		if (in_array($this->storage, $storages))
+		{
+			$filename = $this->config['storage_salt'] . '_' . md5($filename);
+		}
+
+		return $filename;
 	}
 
 	/**

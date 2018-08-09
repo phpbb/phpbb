@@ -296,6 +296,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\con
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\path', 'store');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\subfolders', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage_salt', 'phpbb_storage');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);
