@@ -1,4 +1,3 @@
-
 {% include 'ucp_header.html' %}
 
 {% if not PROMPT %}
@@ -54,8 +53,7 @@
 			<!--Code for xmlns icons used in the header and textbox-->
 			<svg xmlns="http://www.w3.org/2000/svg" class="post-icons" style="position: absolute; width: 0; height: 0;">
 				<symbol id="edit-full" viewBox="0 0 24 24">
-					<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-					/>
+					<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
 				</symbol>
 				<symbol id="forward" viewBox="0 0 24 24">
 					<path fill-rule="evenodd" d="M12.707 2.293l9 9a.999.999 0 0 1 0 1.414l-9 9A1 1 0 0 1 11 21v-4H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h8V3a1.002 1.002 0 0 1 1.707-.707zM13 8a1 1 0 0 1-1 1H4v6h8a1 1 0 0 1 1 1v2.586L19.586 12 13 5.414V8z" />
@@ -71,7 +69,7 @@
 				</symbol>
 			</svg>
 			<span class="pm-buttons">
-				<button class="pm-button" id="pm-topp-button" type="button">
+				<button class="pm-to-button" id="pm-topp-button" type="button" >
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
 				</button>
 				<button class="pm-to-button" id="pm-topp-button" type="button">
@@ -83,14 +81,14 @@
 				<button class="pm-to-button" id="pm-topp-button" type="button">
 						<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
 				</button>
-				<button class="pm-to-button" id="pm-topp-button" type="button">
-						<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
-				</button>
 				<button class="pm-to-button" id="pm-to-button" type="button">
 					<i class="fa fa-user fa-fw" ></i>
 				</button>
+				<a class="pm-to-button" title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" >
+					<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
+				</a>
 			</span>
-			<!--Model for pm to: box. Users can be added/deleted here-->
+			<!--Model for pm to: box. Users can be added/Removed here-->
 			<div class="pm-to-model" id="pm-to-model">
 				<div class="pm-modal-content">
 					<span class="pm-to-button-close">&times;</span>
@@ -142,13 +140,11 @@
 								<div class="pm-message-author">
 									<i class="fa fa-user fa-fw" title="{{ message.MESSAGE_AUTHOR }}" aria-label="{{ message.MESSAGE_AUTHOR }}"></i>
 									{{ history.MESSAGE_AUTHOR_FULL }}
-									<!--Maybe add recipient here-->
 								</div>
 								<div class="pm-message-date">
 									<i class="fa fa-clock-o fa-fw" title="{{ message.SENT_TIME }}" aria-label="{{ message.SENT_TIME }}"></i>
 									{{ history.SENT_DATE }}
 									<!--<p id="pm-time"></p>-->
-
 								</div>
 							</span>
 							<span class="pm-message-secondary">
@@ -177,12 +173,22 @@
 			</div>
 			
 			<div class="pm-message-box" id="pm-message-box" >
-				{% include 'posting_buttons.html' %}
+				<button class="pm-bbcode-button" id="pm-bbcode-button" type="button">BBcode Modal</button>
+				<div class="pm-bbcode-model" id="pm-bbcode-model">
+					<div class="pm-modal-content">
+						<span class="pm-button-close">&times;</span>
+						{% include 'posting_buttons.html' %}
+					</div>
+				</div>
 				<button class="pm-smile-button" id="pm-smile-button" type="button">Smile Modal</button>
 				<div class="pm-smile-model" id="pm-smile-model">
 					<div class="pm-modal-content">
 						<span class="pm-button-close">&times;</span>
-						{% include 'posting_buttons.html' %}
+						{% if S_SMILIES_ALLOWED and smiley %}
+						{% for smile in smiley %}
+						<a class="pm-smiley-code" href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img class="pm-smiley-img" title="{smile.SMILEY_DESC}" src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" ></a>
+						{% endfor %}
+						{% endif %}
 					</div>
 				</div>
 				<div class="pm-text-box">
@@ -190,11 +196,6 @@
 					<input class="button10 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >
 				</div>
 				<div class="pm-smiley-box">
-					{% if S_SMILIES_ALLOWED and smiley %}
-						{% for smile in smiley %}
-							<a class="pm-smiley-code" href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img class="pm-smiley-img" title="{smile.SMILEY_DESC}" src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" ></a>
-						{% endfor %}
-					{% endif %}
 					{% if BBCODE_STATUS %}
 						<ul class="pm-bbcode-status">
 							<li><{{ BBCODE_STATUS }}</li>
