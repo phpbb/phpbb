@@ -122,8 +122,11 @@ class check_update extends task_base
 		// Check for a valid update directory
 		if (!$this->filesystem->exists($update_files) || !$this->filesystem->is_readable($update_files))
 		{
-			$this->iohandler->add_warning_message('UPDATE_FILES_NOT_FOUND');
-			$this->set_test_passed(false);
+			if ($this->iohandler->get_input('update_type', 'all') === 'all')
+			{
+				$this->iohandler->add_warning_message('UPDATE_FILES_NOT_FOUND');
+				$this->set_test_passed(false);
+			}
 
 			// If there are no update files, we can't check the version etc
 			// However, we can let the users run migrations if they really want to...
