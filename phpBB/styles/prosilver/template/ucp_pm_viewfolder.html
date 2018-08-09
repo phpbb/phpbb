@@ -1,3 +1,4 @@
+
 {% include 'ucp_header.html' %}
 
 {% if not PROMPT %}
@@ -10,6 +11,7 @@
 {% if messagerow %}
 <div class="pm">
 	<ul class="pm-list">
+		<!--Start displaying message titles along with recipients and date-->
 		{% for message in messagerow %}
 		<li class="pm-item">
 			<span class="pm-primary">
@@ -49,6 +51,7 @@
 			<div class="pm-subject">
 				{SUBJECT}
 			</div>
+			<!--Code for xmlns icons used in the header and textbox-->
 			<svg xmlns="http://www.w3.org/2000/svg" class="post-icons" style="position: absolute; width: 0; height: 0;">
 				<symbol id="edit-full" viewBox="0 0 24 24">
 					<path fill-rule="evenodd" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
@@ -87,6 +90,7 @@
 					<i class="fa fa-user fa-fw" ></i>
 				</button>
 			</span>
+			<!--Model for pm to: box. Users can be added/deleted here-->
 			<div class="pm-to-model" id="pm-to-model">
 				<div class="pm-modal-content">
 					<span class="pm-to-button-close">&times;</span>
@@ -129,6 +133,7 @@
 		{% endif %}
 		{% EVENT ucp_pm_history_review_before %}
 		<div class="pm-message">
+			<!--Start displaying complete messages-->
 			{% for history in history_row %}
 				<ul class="pm-message-list{% if not history.S_IS_SELF %} pm-not-self{% endif %}">
 					<li class="pm-message-item ">
@@ -165,7 +170,7 @@
 			{% endfor %}
 		</div>
 		{% EVENT ucp_pm_history_review_before %}
-
+		<!--Compose box, BBCode buttons, submit/preview buttons-->
 		<div class="pm-compose">
 			<div class="pm-subject-box">
 				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}" >
@@ -180,8 +185,10 @@
 						{% include 'posting_buttons.html' %}
 					</div>
 				</div>
-
-				<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="76" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+				<div class="pm-text-box">
+					<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="95" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+					<input class="button10 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >
+				</div>
 				<div class="pm-smiley-box">
 					{% if S_SMILIES_ALLOWED and smiley %}
 						{% for smile in smiley %}
@@ -254,46 +261,5 @@
 	<!--document.getElementById("pm-time").innerHTML = egg;-->
 	<!--alert(egg);-->
 <!--</script>-->
-<script>
-	var modal = document.getElementById('pm-smile-model');
-	var btn = document.getElementById("pm-smile-button");
-	var span = document.getElementsByClassName("pm-button-close")[0];
 
-	var to_modal = document.getElementById('pm-to-model');
-	var to_btn = document.getElementById("pm-to-button");
-	var to_span = document.getElementsByClassName("pm-to-button-close")[0];
-
-	// When the user clicks the button, open the modal
-	btn.onclick = function() {
-		modal.style.display = "block";
-	}
-
-	// When the user clicks on <span> (x), close the modal
-	span.onclick = function() {
-		modal.style.display = "none";
-	}
-
-	// When the user clicks anywhere outside of the modal, close it
-	window.onclick = function(event) {
-		if (event.target == modal) {
-			modal.style.display = "none";
-		}
-	}
-
-	// When the user clicks the button, open the modal
-	to_btn.onclick = function() {
-		to_modal.style.display = "block";
-	}
-
-	// When the user clicks on <span> (x), close the modal
-	to_span.onclick = function() {
-		to_modal.style.display = "none";
-	}
-
-	// When the user clicks anywhere outside of the modal, close it
-	window.onclick = function(event) {
-		if (event.target == to_modal) {
-			to_modal.style.display = "none";
-		}
-	}
-</script>
+<!-- INCLUDEJS pm.js -->
