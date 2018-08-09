@@ -27,7 +27,6 @@
 	box-sizing: border-box;
 	height: 72px;
 	padding: 16px;
-	border: 1px solid rgba(14, 100, 247, 0.12);
 }
 
 .pm-title {
@@ -78,12 +77,12 @@
 	border-radius: 5px;
 	flex: 1 auto;
 	width: 310px;
+	background-clip: content-box;
 	margin-left: 10px;
 	padding-right: 0;
-	list-style-type: none;
-	padding-bottom: 10px;
 	padding-top: 10px;
-	background-clip: content-box;
+	padding-bottom: 10px;
+	list-style-type: none;
 }
 
 .pm-not-self {
@@ -146,12 +145,11 @@
 }
 
 .pm-inputbox {
+	font-size: 15px;
 	width: 97%;
 	min-height: 30px;
 	max-height: 40px;
-	font-size: 15px;
 	padding: 5px;
-	border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .pm-message-box {
@@ -189,30 +187,28 @@
 	display: flex;
 }
 
-.pm-smile-model,
-.pm-to-model {
-	display: none;
+.pm-smile,
+.pm-to,
+.pm-bbcode {
 	position: absolute;
+	display: none;
 	z-index: 1;
-	padding-top: 100px;
 	left: 50px;
+	padding-top: 100px;
 	width: 50%;
 	height: 100%;
 }
 
 .pm-modal-content,
 .pm-to-modal-content {
-	background-color: #e6f7ff;
 	margin: auto;
 	padding: 10px;
-	border: 1px solid #888;
 	width: 30%;
 }
 
 .pm-to-button-close {
-	color: #aaaaaa;
-	float: right;
 	font-size: 28px;
+	float: right;
 	font-weight: bold;
 }
 
@@ -232,46 +228,43 @@
 	display: flex;
 	flex: 0 0 50px;
 }
+
 .pm-buttons {
 	display: flex;
 	flex: 0 0 50px;
 }
 
-.pm-to-button {
-	flex-basis: 100%;
+.pm-button {
 	text-align: center;
+	flex-basis: 100%;
 	width: 50px;
 }
 
 .pm-subject {
-	padding: 10px;
 	flex: 1;
+	padding: 10px;
 }
 
-.pm-to-button:hover,
-.pm-to-button:focus {
+.pm-button:hover,
+.pm-button:focus {
 	cursor: pointer;
 	background-color: #2d80d2;
 }
 
 .c-pm-viewer-action,
 .o-icon {
-	/*width: 18px;*/
-	height: 1.28571429em;
-	/*background-size: 15px;*/
-	/*font-size: 0.73em !important;*/
+	height: 2.285714em;
 	width: 1.28571429em;
 	text-align: center;
-
 }
 
 .pm-text-box {
-	display:inline-block;
-	position:relative;
+	position: relative;
+	display: inline-block;
 }
 
 .button10 {
-	position:absolute;
-	bottom:10px;
-	right:10px;
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
 }
