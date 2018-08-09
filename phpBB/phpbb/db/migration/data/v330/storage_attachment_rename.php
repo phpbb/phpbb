@@ -32,7 +32,7 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 		];
 	}
 
-	protected function clean_filename($filename)
+	protected function clean_filename($filename, $prefix = '')
 	{
 		// Replace any chars which may cause us problems with _
 		$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
@@ -40,7 +40,7 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 		$filename = rawurlencode(str_replace($bad_chars, '_', $filename));
 		$filename = preg_replace("/%(\w{2})/", '_', $filename);
 
-		$filename = pathinfo($filename, PATHINFO_FILENAME) . '_' . unique_id() . '.' . pathinfo($filename, PATHINFO_EXTENSION);
+		$filename = $prefix . pathinfo($filename, PATHINFO_FILENAME) . '_' . unique_id() . '.' . pathinfo($filename, PATHINFO_EXTENSION);
 
 		return $filename;
 	}
@@ -61,20 +61,34 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$clean_filename = $this->clean_filename($row['real_filename']);
-			$new_filename = $this->config['storage_salt'] . '_' . md5($clean_filename);
+			$old_filename = $row['physical_filename'];
+			$new_filename = $this->clean_filename($row['real_filename']);
+			$new_filesystem_filename = $this->config['storage_salt'] . '_' . md5($new_filename);
 
-			rename($phpbb_root_path . 'files/' . $row['physical_filename'], $phpbb_root_path . 'files/' . $new_filename);
+			rename($phpbb_root_path . 'files/' . $old_filename, $phpbb_root_path . 'files/' . $new_filesystem_filename);
 
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-				SET physical_filename = '" . $this->db->sql_escape($clean_filename) . "'
+				SET physical_filename = '" . $this->db->sql_escape($new_filename) . "'
 				WHERE attach_id = " . $row['attach_id'];
+			$this->db->sql_query($sql);
+
+			$sql = 'UPDATE ' . STORAGE_TABLE . "
+				SET file_path = '" . $this->db->sql_escape($new_filename) . "'
+				WHERE file_path = '" . $old_filename . "' AND storage = 'attachment'";
 			$this->db->sql_query($sql);
 
 			if ($row['thumbnail'] == 1)
 			{
-				$new_thumbnail_name = $this->config['storage_salt'] . '_' . md5('thumb_' . $clean_filename);
-				rename($phpbb_root_path . 'files/thumb_' . $row['physical_filename'], $phpbb_root_path . 'files/' . $new_thumbnail_name);
+				$old_filename = 'thumb_' . $row['physical_filename'];
+				$new_filename = 'thumb_' . $new_filename;
+				$new_filesystem_filename = $this->config['storage_salt'] . '_' . md5($new_filename);
+
+				rename($phpbb_root_path . 'files/' . $old_filename, $phpbb_root_path . 'files/' . $new_filesystem_filename);
+
+				$sql = 'UPDATE ' . STORAGE_TABLE . "
+					SET file_path = '" . $this->db->sql_escape($new_filename) . "'
+					WHERE file_path = '" . $this->db->sql_escape($old_filename) . "' AND storage = 'attachment'";
+				$this->db->sql_query($sql);
 			}
 		}
 
