@@ -185,12 +185,12 @@
 
 .pm-message-header {
 	font-size: 20px;
-	/*height: 50px;*/
 	border: 1px solid rgba(0, 0, 0, 0.125);
 	display: flex;
 }
 
-.pm-smile-model, .pm-to-model {
+.pm-smile-model,
+.pm-to-model {
 	display: none;
 	position: absolute;
 	z-index: 1;
@@ -200,7 +200,8 @@
 	height: 100%;
 }
 
-.pm-modal-content, .pm-to-modal-content {
+.pm-modal-content,
+.pm-to-modal-content {
 	background-color: #e6f7ff;
 	margin: auto;
 	padding: 10px;
@@ -245,16 +246,16 @@
 .pm-subject {
 	padding: 10px;
 	flex: 1;
-
 }
 
 .pm-to-button:hover,
-.pm-to-button:focus{
+.pm-to-button:focus {
 	cursor: pointer;
 	background-color: #2d80d2;
 }
 
-.c-pm-viewer-action, .o-icon {
+.c-pm-viewer-action,
+.o-icon {
 	/*width: 18px;*/
 	height: 1.28571429em;
 	/*background-size: 15px;*/
@@ -262,4 +263,15 @@
 	width: 1.28571429em;
 	text-align: center;
 
+}
+
+.pm-text-box {
+	display:inline-block;
+	position:relative;
+}
+
+.button10 {
+	position:absolute;
+	bottom:10px;
+	right:10px;
 }
