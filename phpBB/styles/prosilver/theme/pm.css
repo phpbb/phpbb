@@ -148,8 +148,9 @@
 	font-size: 15px;
 	width: 97%;
 	min-height: 30px;
-	max-height: 40px;
+	max-height: 30px;
 	padding: 5px;
+	line-height: 27px;
 }
 
 .pm-message-box {
@@ -261,14 +262,20 @@
 	display: inline-block;
 }
 
-.button10 {
+.pm-text-button {
 	position: absolute;
-	right: 10px;
-	bottom: 10px;
+	right: 17px;
+	bottom: 2px;
 }
 
 .o-bar-divider {
 	width: 1px;
 	height: 36px;
 	margin-top: 8px;
+}
+
+.pm-text-box-button {
+	width: 30px;
+	height: 30px;
+	color: whitesmoke;
 }
