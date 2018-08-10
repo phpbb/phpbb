@@ -1190,6 +1190,22 @@ input.disabled {
 	color: #000000;
 }
 
-.pm-preview, .pm-inputbox, .pm-message-header {
+.pm-preview,
+.pm-inputbox,
+.pm-message-header {
 	background-color: #ffffff;
+}
+
+.pm-inputbox {
+	border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.pm-modal-content,
+.pm-to-modal-content {
+	background-color: #e6f7ff;
+	border: 1px solid #888888;
+}
+
+.pm-to-button-close {
+	color: #aaaaaa;
 }
