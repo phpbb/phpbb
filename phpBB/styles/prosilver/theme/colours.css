@@ -1209,3 +1209,16 @@ input.disabled {
 .pm-to-button-close {
 	color: #aaaaaa;
 }
+
+.pm-button:hover,
+.pm-button:focus {
+	background-color: #2d80d2;
+}
+
+.o-bar-divider {
+	border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.pm-message-header {
+	border: 1px solid rgba(0, 0, 0, 0.125);
+}

@@ -183,7 +183,6 @@
 
 .pm-message-header {
 	font-size: 20px;
-	border: 1px solid rgba(0, 0, 0, 0.125);
 	display: flex;
 }
 
@@ -248,7 +247,6 @@
 .pm-button:hover,
 .pm-button:focus {
 	cursor: pointer;
-	background-color: #2d80d2;
 }
 
 .c-pm-viewer-action,
@@ -267,4 +265,10 @@
 	position: absolute;
 	right: 10px;
 	bottom: 10px;
+}
+
+.o-bar-divider {
+	width: 1px;
+	height: 36px;
+	margin-top: 8px;
 }
