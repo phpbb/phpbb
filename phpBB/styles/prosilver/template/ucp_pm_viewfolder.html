@@ -67,6 +67,9 @@
 				<symbol id="important" viewBox="0 0 24 24">
 					<path fill-rule="evenodd" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
 				</symbol>
+				<symbol id="send" viewBox="0 0 24 24">
+					<path fill-rule="evenodd" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+				</symbol>
 			</svg>
 			<span class="pm-buttons">
 				<button class="pm-button" id="pm-topp-button" type="button" >
@@ -179,6 +182,19 @@
 					<div class="pm-modal-content">
 						<span class="pm-button-close">&times;</span>
 						{% include 'posting_buttons.html' %}
+						<div class="pm-smiley-box">
+							{% if BBCODE_STATUS %}
+							<ul class="pm-bbcode-status">
+								<li><{{ BBCODE_STATUS }}</li>
+								{% if S_BBCODE_ALLOWED %}
+								<li>{{ IMG_STATUS }}</li>
+								<li>{{ FLASH_STATUS }}</li>
+								<li>{{ URL_STATUS }}</li>
+								{% endif %}
+								<li>{{ SMILIES_STATUS }}</li>
+							</ul>
+							{% endif %}
+						</div>
 					</div>
 				</div>
 				<button class="pm-smile-button" id="pm-smile-button" type="button">Smile Modal</button>
@@ -194,20 +210,10 @@
 				</div>
 				<div class="pm-text-box">
 					<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="95" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
-					<input class="button10 button button-form default-submit-action" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit" >
-				</div>
-				<div class="pm-smiley-box">
-					{% if BBCODE_STATUS %}
-						<ul class="pm-bbcode-status">
-							<li><{{ BBCODE_STATUS }}</li>
-							{% if S_BBCODE_ALLOWED %}
-								<li>{{ IMG_STATUS }}</li>
-								<li>{{ FLASH_STATUS }}</li>
-								<li>{{ URL_STATUS }}</li>
-							{% endif %}
-							<li>{{ SMILIES_STATUS }}</li>
-						</ul>
-					{% endif %}
+					<span class="pm-text-button">
+						<button class="pm-text-box-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="o-icon o-bar-search-action-icon c-pm-reply-action-icon"><use xlink:href="#send"></use></svg></button>
+						<button class="pm-text-box-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="o-icon o-bar-search-action-icon c-pm-reply-action-icon"><use xlink:href="#send"></use></svg></button>
+					</span>
 				</div>
 				<div class="pm-message-buttons">
 					{{ S_HIDDEN_ADDRESS_FIELD }}
