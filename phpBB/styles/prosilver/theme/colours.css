@@ -1222,3 +1222,7 @@ input.disabled {
 .pm-message-header {
 	border: 1px solid rgba(0, 0, 0, 0.125);
 }
+
+.pm-user-icon {
+	color: #2a2a2a;
+}
