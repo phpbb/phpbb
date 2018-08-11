@@ -1155,7 +1155,7 @@ input.disabled {
 /* pm.css */
 
 .pm-list {
-	background-color: #edf4f7;
+	background-color: #f5f5f5;
 }
 
 .pm-item {
@@ -1175,7 +1175,11 @@ input.disabled {
 }
 
 .pm-viewer {
-	background-color: #d3d3d3;
+	background-color: #ffffff;
+}
+
+.pm-message {
+	background-color: #ffffff;
 }
 
 .pm-message-item {
@@ -1183,7 +1187,7 @@ input.disabled {
 }
 
 .pm-message-list {
-	background-color: #ffffff;
+	background-color: #f5f5f5;
 }
 
 .pm-message-unread {
@@ -1193,7 +1197,7 @@ input.disabled {
 .pm-preview,
 .pm-inputbox,
 .pm-message-header {
-	background-color: #ffffff;
+	background-color: #f5f5f5;
 }
 
 .pm-inputbox {
@@ -1220,7 +1224,7 @@ input.disabled {
 }
 
 .pm-message-header {
-	border: 1px solid rgba(0, 0, 0, 0.125);
+	border-left: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .pm-user-icon {
