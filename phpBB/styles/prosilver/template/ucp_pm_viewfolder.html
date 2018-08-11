@@ -78,13 +78,13 @@
 				</symbol>
 			</svg>
 			<span class="pm-buttons">
-				<a class="pm-button" id="pm-topp-button" >
+				<a class="pm-button" id="" >
 						<svg class="icon-svg"><use xlink:href="#important"></use></svg>
 				</a>
-				<a class="pm-button" id="pm-topp-button" >
+				<a class="pm-button" id="" >
 						<svg class="icon-svg"><use xlink:href="#edit-full"></use></svg>
 				</a>
-				<a class="pm-button" id="pm-topp-button" >
+				<a class="pm-button" id="" >
 						<svg class="icon-svg"><use xlink:href="#trash"></use></svg>
 				</a>
 				<a class="pm-button" id="pm-to-button" >
@@ -186,10 +186,10 @@
 				<div class="pm-text-box">
 					<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="95" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 					<span class="pm-text-button">
-						<button class="pm-text-box-button" id="pm-smile-button" type="button"><svg class="icon-svg"><use xlink:href="#insert-emoticon"></use></svg></button>
-						<button class="pm-text-box-button" id="pm-bbcode-button" type="button"><svg class="icon-svg"><use xlink:href="#bbcode"></use></svg></button>
-						<button class="pm-text-box-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
-						<button class="pm-text-box-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
+						<button class="pm-text-box-button pm-smile-button" id="pm-smile-button" type="button"><svg class="icon-svg"><use xlink:href="#insert-emoticon"></use></svg></button>
+						<button class="pm-text-box-button pm-bbcode-button" id="pm-bbcode-button" type="button"><svg class="icon-svg"><use xlink:href="#bbcode"></use></svg></button>
+						<button class="pm-text-box-button pm-post-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
+						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
 						<div class="o-model pm-bbcode" id="pm-bbcode-model">
 							<div class="pm-modal-content">
 								<span class="pm-button-close">&times;</span>

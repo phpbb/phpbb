@@ -2,8 +2,8 @@
  * Open Pm smiley popup
  */
 $(document).ready(function(){
-	$('#pm-smile-button').click(function(){
-		var $alert = phpbb.alert("Pm To: Box", $('#pm-smile-model').html());
+	$('.pm-smile-button').click(function(){
+		var $alert = phpbb.alert("Smiley Box", $('.pm-smile').html());
 
 		$alert.on('click', '.pm-smiley-code', function() {
 			phpbb.alert.close($alert, true);
@@ -16,7 +16,7 @@ $(document).ready(function(){
  */
 $(document).ready(function(){
 	$('#pm-to-button').click(function(){
-		var $alert = phpbb.alert("Smiley Box", $('#pm-to-model').html());
+		var $alert = phpbb.alert("PM To:", $('#pm-to-model').html());
 
 	});
 });
