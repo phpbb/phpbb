@@ -251,7 +251,7 @@
 }
 
 .c-pm-viewer-action,
-.o-icon {
+.icon-svg {
 	height: 2.285714em;
 	width: 1.28571429em;
 	text-align: center;
@@ -278,4 +278,8 @@
 	width: 30px;
 	height: 30px;
 	color: whitesmoke;
+}
+
+.pm-user-icon {
+	padding-top: 14px;
 }
