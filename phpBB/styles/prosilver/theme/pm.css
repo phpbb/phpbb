@@ -151,6 +151,7 @@
 	max-height: 30px;
 	padding: 5px;
 	line-height: 27px;
+	resize: none;
 }
 
 .pm-message-box {
