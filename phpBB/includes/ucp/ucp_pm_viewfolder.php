@@ -137,6 +137,14 @@ function view_folder($id, $mode, $folder_id, $folder)
 						break;
 					}
 				}
+				// Get avatars
+				$sql = 'SELECT *
+					FROM ' . USERS_TABLE . '
+					WHERE user_id = ' . $row['author_id'];
+				$result = $db->sql_query($sql);
+				$user_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+//				echo ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
 
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
