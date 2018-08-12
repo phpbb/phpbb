@@ -77,6 +77,9 @@
 				<symbol id="bbcode" viewBox="0 0 24 24">
 					<path fill-rule="evenodd" d="M15,4V6H18V18H15V20H20V4M4,4V20H9V18H6V6H9V4H4Z"/>
 				</symbol>
+				<symbol id="views" viewBox="0 0 24 24">
+					<path fill-rule="nonzero" d="M12 8.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM12 4c5 0 9.27 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5s-9.27-3.11-11-7.5C2.73 7.11 7 4 12 4zm-8.82 7.5a9.821 9.821 0 0 0 17.64 0 9.821 9.821 0 0 0-17.64 0z"/>
+				</symbol>
 			</svg>
 			<span class="pm-buttons">
 				<a class="pm-button" id="" >
@@ -189,8 +192,8 @@
 					<span class="pm-text-button">
 						<button class="pm-text-box-button pm-smile-button" id="pm-smile-button" type="button"><svg class="icon-svg"><use xlink:href="#insert-emoticon"></use></svg></button>
 						<button class="pm-text-box-button pm-bbcode-button" id="pm-bbcode-button" type="button"><svg class="icon-svg"><use xlink:href="#bbcode"></use></svg></button>
+						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#views"></use></svg></button>
 						<button class="pm-text-box-button pm-post-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
-						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
 						<div class="o-model pm-bbcode" id="pm-bbcode-model">
 							<div class="pm-modal-content">
 								<span class="pm-button-close">&times;</span>

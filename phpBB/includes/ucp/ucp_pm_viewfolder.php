@@ -144,7 +144,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$result = $db->sql_query($sql);
 				$user_row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-//				echo ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
 
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
@@ -165,6 +164,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_STYLE'	=> $folder_img,
+					'PM_ICON'              => ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '',
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
