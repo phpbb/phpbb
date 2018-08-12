@@ -31,9 +31,7 @@
 							<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 						{% endif %}
 
-						{% if S_SHOW_RECIPIENTS %}
-							{{ message.RECIPIENTS }}
-						{% endif %}
+						{{ message.MESSAGE_AUTHOR_FULL }}
 					</span>
 					<span class="pm-secondary-item pm-date">
 						<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
