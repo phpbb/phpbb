@@ -284,3 +284,16 @@
 .pm-user-icon {
 	padding-top: 14px;
 }
+
+.avatar {
+	border: 3px solid #ffffff;
+	max-width: 45px;
+	max-height: 45px;
+	border-radius: 50%;
+	justify-content: center;
+	align-items: center;
+}
+
+.pm-avatar {
+	padding-right: 15px;
+}
