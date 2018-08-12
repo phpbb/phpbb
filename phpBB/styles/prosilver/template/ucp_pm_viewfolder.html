@@ -108,17 +108,14 @@
 				<div class="pm-modal-content">
 					<span class="pm-to-button-close">&times;</span>
 					<div class="pm-recipient-box">
-						<textarea class="inputbox" id="username_list" name="username_list"  cols="50" rows="2" tabindex="1"></textarea>
 						<dd class="recipients">
-							<input class="button1 button button-form-bold" name="add_to" tabindex="1" type="submit" value="{{ lang('ADD') }}" >
-							<input class="button1 button button-form-bold" name="add_bcc" tabindex="1" type="submit"  value="{{ lang('ADD_BCC') }}" >
 							{% if to_recipient %}
 							<div class="pm-recipient-cc">
-								{{ lang('TO_MASS') }} {{ lang('COLON') }}
+								{{ lang('CC') }}{{ lang('COLON') }}
 								<ul class="pm-recipient-list">
 									{% for recipient in to_recipient %}
 									<li class="pm-recipient">
-										{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]"  type="submit" value="x" >{% endif %}
+										<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 										{% if recipient.IS_GROUP %}<a href="{recipient.U_VIEW}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 									</li>
 									{% endfor %}
@@ -127,11 +124,11 @@
 							{% endif %}
 							{% if bcc_recipient %}
 							<div class="pm-recipient-bcc">
-								{{ lang('BCC') }} {{ lang('COLON') }}
+								{{ lang('BCC') }}{{ lang('COLON') }}
 								<ul class="pm-recipient-list">
 									{% for recipient in bcc_recipient %}
 									<li class="pm-recipient">
-										{% if not S_EDIT_POST %}<input class="button1 button button-form-bold" name="remove_{recipient.TYPE}[{recipient.UG_ID}]" type="submit" value="x" >{% endif %}
+										<i class="fa fa-user fa-fw" aria-hidden="true"></i>
 										{% if bcc_recipient.IS_GROUP %}<a class="pm-recipient-link" href="{{ recipient.U_VIEW }}">{{ recipient.NAME }}</a>{% else %}{{ recipient.NAME_FULL }}{% endif %}
 									</li>
 									{% endfor %}
