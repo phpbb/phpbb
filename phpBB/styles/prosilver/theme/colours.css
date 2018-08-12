@@ -1206,12 +1206,16 @@ input.disabled {
 
 .pm-modal-content,
 .pm-to-modal-content {
-	background-color: #e6f7ff;
+	background-color: #f5f5f5;
 	border: 1px solid #888888;
 }
 
 .pm-to-button-close {
 	color: #aaaaaa;
+}
+
+.pm-text-box-button {
+	color: #f5f5f5;
 }
 
 .pm-button:hover,

@@ -168,8 +168,14 @@
 
 .pm-recipient-box {
 	display: inline-block;
-	width: 30%;
 	margin-left: 10px;
+	width: 80%;
+	font-size: 18px;
+}
+
+.pm-recipient-list {
+	padding: 15px;
+	line-height: 22px;
 }
 
 .pm-smiley-box {
@@ -212,7 +218,7 @@
 .pm-to-modal-content {
 	margin: auto;
 	padding: 10px;
-	width: 30%;
+	width: 50%;
 }
 
 .pm-to-button-close {
@@ -286,7 +292,6 @@
 .pm-text-box-button {
 	width: 30px;
 	height: 30px;
-	color: whitesmoke;
 }
 
 .pm-user-icon {
