@@ -9,6 +9,10 @@
 	}
 }
 
+.pm {
+	min-height: 700px;
+}
+
 .pm-list {
 	flex: 1 auto;
 	margin: 0;
@@ -152,6 +156,10 @@
 	padding: 5px;
 	line-height: 27px;
 	resize: none;
+}
+
+.pm-compose {
+	padding-bottom: 15px;
 }
 
 .pm-message-box {
