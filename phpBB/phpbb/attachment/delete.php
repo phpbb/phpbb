@@ -104,6 +104,8 @@ class delete
 
 		$this->set_sql_constraints($mode);
 
+		$sql_id = $this->sql_id;
+
 		/**
 		 * Perform additional actions before collecting data for attachment(s) deletion
 		 *
@@ -122,11 +124,21 @@ class delete
 		);
 		extract($this->dispatcher->trigger_event('core.delete_attachments_collect_data_before', compact($vars)));
 
+		$this->sql_id = $sql_id;
+		unset($sql_id);
+
 		// Collect post and topic ids for later use if we need to touch remaining entries (if resync is enabled)
 		$this->collect_attachment_info($resync);
 
 		// Delete attachments from database
-		$this->delete_attachments_from_db();
+		$this->delete_attachments_from_db($mode, $ids, $resync);
+
+		$sql_id = $this->sql_id;
+		$post_ids = $this->post_ids;
+		$topic_ids = $this->topic_ids;
+		$message_ids = $this->message_ids;
+		$physical = $this->physical;
+		$num_deleted = $this->num_deleted;
 
 		/**
 		 * Perform additional actions after attachment(s) deletion from the database
@@ -156,13 +168,21 @@ class delete
 		);
 		extract($this->dispatcher->trigger_event('core.delete_attachments_from_database_after', compact($vars)));
 
+		$this->sql_id = $sql_id;
+		$this->post_ids = $post_ids;
+		$this->topic_ids = $topic_ids;
+		$this->message_ids = $message_ids;
+		$this->physical = $physical;
+		$this->num_deleted = $num_deleted;
+		unset($sql_id, $post_ids, $topic_ids, $message_ids, $physical, $num_deleted);
+
 		if (!$this->num_deleted)
 		{
 			return 0;
 		}
 
 		// Delete attachments from filesystem
-		$this->remove_from_filesystem();
+		$this->remove_from_filesystem($mode, $ids, $resync);
 
 		// If we do not resync, we do not need to adjust any message, post, topic or user entries
 		if (!$resync)
@@ -288,8 +308,14 @@ class delete
 	/**
 	 * Delete attachments from database table
 	 */
-	protected function delete_attachments_from_db()
+	protected function delete_attachments_from_db($mode, $ids, $resync)
 	{
+		$sql_id = $this->sql_id;
+		$post_ids = $this->post_ids;
+		$topic_ids = $this->topic_ids;
+		$message_ids = $this->message_ids;
+		$physical = $this->physical;
+
 		/**
 		 * Perform additional actions before attachment(s) deletion
 		 *
@@ -316,6 +342,13 @@ class delete
 		);
 		extract($this->dispatcher->trigger_event('core.delete_attachments_before', compact($vars)));
 
+		$this->sql_id = $sql_id;
+		$this->post_ids = $post_ids;
+		$this->topic_ids = $topic_ids;
+		$this->message_ids = $message_ids;
+		$this->physical = $physical;
+		unset($sql_id, $post_ids, $topic_ids, $message_ids, $physical);
+
 		// Delete attachments
 		$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $this->db->sql_in_set($this->sql_id, $this->ids);
@@ -329,7 +362,7 @@ class delete
 	/**
 	 * Delete attachments from filesystem
 	 */
-	protected function remove_from_filesystem()
+	protected function remove_from_filesystem($mode, $ids, $resync)
 	{
 		$space_removed = $files_removed = 0;
 
@@ -347,6 +380,13 @@ class delete
 				$this->unlink_attachment($file_ary['filename'], 'thumbnail', true);
 			}
 		}
+
+		$sql_id = $this->sql_id;
+		$post_ids = $this->post_ids;
+		$topic_ids = $this->topic_ids;
+		$message_ids = $this->message_ids;
+		$physical = $this->physical;
+		$num_deleted = $this->num_deleted;
 
 		/**
 		 * Perform additional actions after attachment(s) deletion from the filesystem
@@ -379,6 +419,14 @@ class delete
 			'files_removed',
 		);
 		extract($this->dispatcher->trigger_event('core.delete_attachments_from_filesystem_after', compact($vars)));
+
+		$this->sql_id = $sql_id;
+		$this->post_ids = $post_ids;
+		$this->topic_ids = $topic_ids;
+		$this->message_ids = $message_ids;
+		$this->physical = $physical;
+		$this->num_deleted = $num_deleted;
+		unset($sql_id, $post_ids, $topic_ids, $message_ids, $physical, $num_deleted);
 
 		if ($space_removed || $files_removed)
 		{
