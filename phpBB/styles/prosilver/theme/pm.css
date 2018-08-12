@@ -305,3 +305,10 @@
 .pm-avatar {
 	padding-right: 15px;
 }
+
+@media (max-width: 768px)
+{
+	.pm-preview-button {
+		display: none;
+	}
+}
