@@ -13,6 +13,9 @@
 		<!--Start displaying message titles along with recipients and date-->
 		{% for message in messagerow %}
 		<li class="pm-item">
+			<span class="pm-avatar">
+				{{ message.PM_ICON }}
+			</span>
 			<span class="pm-primary">
 				{% if message.S_PM_UNREAD %}
 					<i class="fa fa-certificate fa-fw pm-unread" title="{{ lang('UCP_PM_UNREAD') }}" aria-label="{{ lang('UCP_PM_UNREAD') }}"></i>
