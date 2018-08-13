@@ -2,15 +2,10 @@
     Styles for the PM Module
 /* -------------------------------------------------------------- */
 
-@media (min-width: 768px) {
-	.pm {
-		display: flex;
-		flex-flow: row wrap;
-	}
-}
-
 .pm {
 	min-height: 700px;
+	display: flex;
+	flex-flow: row wrap;
 }
 
 .pm-list {
@@ -178,9 +173,7 @@
 	line-height: 22px;
 }
 
-.pm-smiley-box {
-	float: right;
-	width: 10%;
+.pm-status-box {
 	margin-right: 10px;
 }
 
@@ -214,6 +207,10 @@
 	height: 100%;
 }
 
+.icon-svg:hover,
+.icon-svg:focus {
+	color: whitesmoke !important;
+}
 .pm-modal-content,
 .pm-to-modal-content {
 	margin: auto;
@@ -315,5 +312,15 @@
 {
 	.pm-preview-button {
 		display: none;
+	}
+}
+
+@media (max-width: 800px)
+{
+	.pm-primary {
+		display: none;
+	}
+	.pm-avatar {
+		padding-right: 0;
 	}
 }
