@@ -13,6 +13,7 @@
 
 namespace phpbb\storage;
 
+use phpbb\event\dispatcher_interface;
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\db\driver\driver_interface as db;
 use phpbb\storage\exception\exception;
@@ -39,6 +40,12 @@ class storage
 	protected $cache;
 
 	/**
+	 * Dispatcher
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $dispatcher;
+
+	/**
 	 * @var \phpbb\storage\adapter_factory
 	 */
 	protected $factory;
@@ -58,14 +65,16 @@ class storage
 	 *
 	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\cache\driver\driver_interface	$cache
+	 * @param \phpbb\event\dispatcher_interface $dispatcher
 	 * @param \phpbb\storage\adapter_factory	$factory
 	 * @param string							$storage_name
 	 * @param string							$storage_table
 	 */
-	public function __construct(db $db, cache $cache, adapter_factory $factory, $storage_name, $storage_table)
+	public function __construct(db $db, cache $cache, dispatcher_interface $dispatcher, adapter_factory $factory, $storage_name, $storage_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->dispatcher = $dispatcher;
 		$this->factory = $factory;
 		$this->storage_name = $storage_name;
 		$this->storage_table = $storage_table;
@@ -112,7 +121,28 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
-		$this->get_adapter()->put_contents($path, $content);
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before writing in the file
+		*
+		* @event core.storage_put_contents_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @var	array	content										Data
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+			'content',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_put_contents_before', compact($vars)));
+
+		$adapter->put_contents($path, $content);
 		$this->track_file($path);
 	}
 
@@ -134,7 +164,26 @@ class storage
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		return $this->get_adapter()->get_contents($path);
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before read the file
+		*
+		* @event core.storage_get_contents_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_get_contents_before', compact($vars)));
+
+		return $adapter->get_contents($path);
 	}
 
 	/**
@@ -147,7 +196,26 @@ class storage
 	 */
 	public function exists($path, $full_check = false)
 	{
-		return ($this->is_tracked($path) && (!$full_check || $this->get_adapter()->exists($path)));
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before check if file exist
+		*
+		* @event core.storage_exists_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_exists_before', compact($vars)));
+
+		return ($this->is_tracked($path) && (!$full_check || $adapter()->exists($path)));
 	}
 
 	/**
@@ -165,7 +233,26 @@ class storage
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		$this->get_adapter()->delete($path);
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before delete the file
+		*
+		* @event core.storage_delete_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_delete_before', compact($vars)));
+
+		$adapter->delete($path);
 		$this->untrack_file($path);
 	}
 
@@ -191,7 +278,28 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
-		$this->get_adapter()->rename($path_orig, $path_dest);
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before rename the file
+		*
+		* @event core.storage_rename_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path_orig									Original file
+		* @var	string	path_dest									Target file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path_orig',
+			'path_dest',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_rename_before', compact($vars)));
+
+		$adapter->rename($path_orig, $path_dest);
 		$this->track_rename($path_orig, $path_dest);
 	}
 
@@ -217,7 +325,28 @@ class storage
 			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
-		$this->get_adapter()->copy($path_orig, $path_dest);
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before copy the file
+		*
+		* @event core.storage_copy_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path_orig									Original file
+		* @var	string	path_dest									Target file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path_orig',
+			'path_dest',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_copy_before', compact($vars)));
+
+		$adapter->copy($path_orig, $path_dest);
 		$this->track_file($path_dest);
 	}
 
@@ -238,8 +367,24 @@ class storage
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		$stream = null;
 		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before read the stream
+		*
+		* @event core.storage_read_stream_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_read_stream_before', compact($vars)));
 
 		if ($adapter instanceof stream_interface)
 		{
@@ -278,6 +423,23 @@ class storage
 		}
 
 		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before write into the stream
+		*
+		* @event core.storage_write_stream_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_write_stream_before', compact($vars)));
 
 		if ($adapter instanceof stream_interface)
 		{
@@ -303,6 +465,25 @@ class storage
 		{
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
+
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before track file
+		*
+		* @event core.storage_track_file_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_track_file_before', compact($vars)));
 
 		$sql_ary = array(
 			'file_path'		=> $path,
@@ -347,6 +528,25 @@ class storage
 	 */
 	public function untrack_file($path)
 	{
+		$adapter = $this->get_adapter();
+		$storage = $this->get_name();
+
+		/**
+		* Before untrack file
+		*
+		* @event core.storage_untrack_file_before
+		* @var	\phpbb\storage\adapter\adapter_interface	adapter	Adapter
+		* @var	string	storage										Storage name
+		* @var	string	path										Path to file
+		* @since 3.3.0-a1
+		*/
+		$vars = array(
+			'adapter',
+			'storage',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_untrack_file_before', compact($vars)));
+
 		$sql_ary = array(
 			'file_path'		=> $path,
 			'storage'		=> $this->get_name(),

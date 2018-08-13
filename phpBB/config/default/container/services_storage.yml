@@ -6,6 +6,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@cache.driver'
+            - '@dispatcher'
             - '@storage.adapter.factory'
             - 'attachment'
             - '%tables.storage%'
@@ -17,6 +18,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@cache.driver'
+            - '@dispatcher'
             - '@storage.adapter.factory'
             - 'avatar'
             - '%tables.storage%'
@@ -28,6 +30,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@cache.driver'
+            - '@dispatcher'
             - '@storage.adapter.factory'
             - 'backup'
             - '%tables.storage%'
