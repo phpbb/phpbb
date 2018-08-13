@@ -443,7 +443,7 @@ function getCaretPosition(txtarea) {
 			}
 
 			let cachedKeyword = getCachedKeyword(query),
-				cachedNamesForQuery = (cachedKeyword) ? cachedNames[cachedKeyword] : null;
+				cachedNamesForQuery = (cachedKeyword != null) ? cachedNames[cachedKeyword] : null;
 
 			/*
 			* Use cached values when we can:
@@ -465,7 +465,7 @@ function getCaretPosition(txtarea) {
 			$.getJSON(mentionURL, params, function(data) {
 				cachedNames[query] = data.names;
 				cachedAll[query] = data.all;
-				callback(data);
+				callback(data.names);
 			}).always(function() {
 				queryInProgress = null;
 			});
