@@ -91,7 +91,6 @@ class mention extends \phpbb\notification\type\post
 
 	/**
 	* Update a notification
-	* TODO: decide what to do with this stuff
 	*
 	* @param array $post Data specific for this type that will be updated
 	* @return true

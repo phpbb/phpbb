@@ -1721,7 +1721,7 @@ fieldset.submit-buttons legend {
 	height: 40px;
 }
 
-svg.mention-media-avatar { /* TODO: remove it after general normalization */
+svg { /* TODO: remove it after general normalization */
 	fill: currentColor;
 }
 
