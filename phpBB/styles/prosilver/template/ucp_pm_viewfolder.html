@@ -196,10 +196,10 @@
 							<div class="pm-modal-content">
 								<span class="pm-button-close">&times;</span>
 								{% include 'posting_buttons.html' %}
-								<div class="pm-smiley-box">
+								<div class="pm-status-box">
 									{% if BBCODE_STATUS %}
 									<ul class="pm-bbcode-status">
-										<li><{{ BBCODE_STATUS }}</li>
+										<li>{{ BBCODE_STATUS }}</li>
 										{% if S_BBCODE_ALLOWED %}
 										<li>{{ IMG_STATUS }}</li>
 										<li>{{ FLASH_STATUS }}</li>
