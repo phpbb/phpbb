@@ -85,11 +85,7 @@ class controller
 			throw new http_exception(500, 'Headers already sent');
 		}
 
-		$this->response->send();
-
-		// Terminate script to avoid the execution of terminate events
-		// This avoid possible errors with db connection closed
-		exit;
+		return $this->response;
 	}
 
 	/**
@@ -167,6 +163,10 @@ class controller
 			fclose($fp);
 			fclose($output);
 			flush();
+
+			// Terminate script to avoid the execution of terminate events
+			// This avoid possible errors with db connection closed
+			exit;
 		});
 
 		$this->response->isNotModified($this->symfony_request);
