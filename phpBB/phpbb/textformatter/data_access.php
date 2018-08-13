@@ -138,7 +138,6 @@ class data_access
 			'email' => 10,
 			'flash' => 11,
 			'attachment' => 12,
-			'mention' => 13, // TODO: change ID/remove?
 		);
 
 		$styles = array();

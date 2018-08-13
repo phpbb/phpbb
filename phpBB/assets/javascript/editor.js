@@ -480,7 +480,6 @@ function getCaretPosition(txtarea) {
 				at: "@",
 				acceptSpaceBar: true,
 				displayTpl: function(data) {
-					// TODO: handle image scaling
 					let avatar = (data.avatar.img) ? "<span class='mention-media-avatar'>" + data.avatar.img + "</span>" : defaultAvatar(data.avatar.type),
 						rank = (data.rank) ? "<span class='mention-rank'>" + data.rank + "</span>" : '';
 					return "<li class='mention-item'><span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + data.name + rank + "</span></li>";
