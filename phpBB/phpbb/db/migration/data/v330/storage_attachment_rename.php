@@ -13,8 +13,6 @@
 
 namespace phpbb\db\migration\data\v330;
 
-use phpbb\storage\storage;
-
 class storage_attachment_rename extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
@@ -47,8 +45,6 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 
 	public function rename_attachments()
 	{
-		global $phpbb_root_path;
-
 		if (!function_exists('unique_id'))
 		{
 			require($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
@@ -65,7 +61,7 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 			$new_filename = $this->clean_filename($row['real_filename']);
 			$new_filesystem_filename = $this->config['storage_salt'] . '_' . md5($new_filename);
 
-			rename($phpbb_root_path . 'files/' . $old_filename, $phpbb_root_path . 'files/' . $new_filesystem_filename);
+			rename($this->phpbb_root_path . 'files/' . $old_filename, $this->phpbb_root_path . 'files/' . $new_filesystem_filename);
 
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
 				SET physical_filename = '" . $this->db->sql_escape($new_filename) . "'
@@ -83,7 +79,7 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 				$new_filename = 'thumb_' . $new_filename;
 				$new_filesystem_filename = $this->config['storage_salt'] . '_' . md5($new_filename);
 
-				rename($phpbb_root_path . 'files/' . $old_filename, $phpbb_root_path . 'files/' . $new_filesystem_filename);
+				rename($this->phpbb_root_path . 'files/' . $old_filename, $this->phpbb_root_path . 'files/' . $new_filesystem_filename);
 
 				$sql = 'UPDATE ' . STORAGE_TABLE . "
 					SET file_path = '" . $this->db->sql_escape($new_filename) . "'
