@@ -8,6 +8,9 @@ $(document).ready(function(){
 		$alert.on('click', '.pm-smiley-code', function() {
 			phpbb.alert.close($alert, true);
 		});
+		$alert.on('click', '.pm-smile-button-close', function() {
+			phpbb.alert.close($alert, true);
+		});
 	});
 });
 
@@ -18,6 +21,9 @@ $(document).ready(function(){
 	$('#pm-to-button').click(function(){
 		var $alert = phpbb.alert("PM To:", $('#pm-to-model').html());
 
+		$alert.on('click', '.pm-to-button-close', function() {
+			phpbb.alert.close($alert, true);
+		});
 	});
 });
 
@@ -26,6 +32,10 @@ $(document).ready(function(){
  */
 $(document).ready(function(){
 	$('#pm-bbcode-button').click(function(){
-		phpbb.alert("BBCode Box", $('#pm-bbcode-model').html());
+		var $alert = phpbb.alert("BBCode Box", $('#pm-bbcode-model').html());
+
+		$alert.on('click', '.pm-bbcode-button-close', function() {
+			phpbb.alert.close($alert, true);
+		});
 	});
 });

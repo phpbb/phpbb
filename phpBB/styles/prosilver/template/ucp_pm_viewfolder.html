@@ -105,7 +105,7 @@
 			</span>
 			<!--Model for pm to: box. Users can be added/Removed here-->
 			<div class="o-model pm-to" id="pm-to-model">
-				<div class="pm-modal-content">
+				<div class="modal-content">
 					<span class="pm-to-button-close">&times;</span>
 					<div class="pm-recipient-box">
 						<dd class="recipients">
@@ -193,9 +193,11 @@
 						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#views"></use></svg></button>
 						<button class="pm-text-box-button pm-post-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
 						<div class="o-model pm-bbcode" id="pm-bbcode-model">
-							<div class="pm-modal-content">
-								<span class="pm-button-close">&times;</span>
-								{% include 'posting_buttons.html' %}
+							<div class="modal-content">
+								<span class="pm-bbcode-button-close">&times;</span>
+								<span class="pm-bbcode-list">
+									{% include 'posting_buttons.html' %}
+								</span>
 								<div class="pm-status-box">
 									{% if BBCODE_STATUS %}
 									<ul class="pm-bbcode-status">
@@ -212,13 +214,15 @@
 							</div>
 						</div>
 						<div class="o-model pm-smile" id="pm-smile-model">
-							<div class="pm-modal-content">
-								<span class="pm-button-close">&times;</span>
-								{% if S_SMILIES_ALLOWED and smiley %}
-								{% for smile in smiley %}
-								<a class="pm-smiley-code" href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img class="pm-smiley-img" title="{smile.SMILEY_DESC}" src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}" ></a>
-								{% endfor %}
-								{% endif %}
+							<div class="modal-content">
+								<span class="pm-smile-button-close">&times;</span>
+								<span class="pm-smile-list">
+									{% if S_SMILIES_ALLOWED and smiley %}
+										{% for smile in smiley %}
+									<a class="pm-smiley-code" href="#" onclick="insert_text('{smile.A_SMILEY_CODE}', true); return false;"><img class="pm-smiley-img" title="{smile.SMILEY_DESC}" src="{smile.SMILEY_IMG}" width="{smile.SMILEY_WIDTH}" height="{smile.SMILEY_HEIGHT}" alt="{smile.SMILEY_CODE}"></a>
+										{% endfor %}
+									{% endif %}
+								</span>
 							</div>
 						</div>
 					</span>

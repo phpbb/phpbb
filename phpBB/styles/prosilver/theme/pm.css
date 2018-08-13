@@ -195,9 +195,7 @@
 	display: flex;
 }
 
-.pm-smile,
-.pm-to,
-.pm-bbcode {
+.o-model {
 	position: absolute;
 	display: none;
 	z-index: 1;
@@ -207,18 +205,18 @@
 	height: 100%;
 }
 
-.icon-svg:hover,
-.icon-svg:focus {
-	color: whitesmoke !important;
-}
-.pm-modal-content,
+.modal-content,
 .pm-to-modal-content {
 	margin: auto;
 	padding: 10px;
 	width: 50%;
+	background-color: #f5f5f5;
+	/*display: flex;*/
 }
 
-.pm-to-button-close {
+.pm-to-button-close,
+.pm-bbcode-button-close,
+.pm-smile-button-close {
 	font-size: 28px;
 	float: right;
 	font-weight: bold;
