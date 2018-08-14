@@ -56,7 +56,7 @@
 					<i class="fa fa-star fa-fw pm-marked" title="{{ lang('UCP_PM_MARKED') }}" aria-label="{{ lang('UCP_PM_MARKED') }}"></i>
 				{% endif %}
 
-				<a class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}" href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}" >{{ message.SUBJECT }}</a>
+				<a class="pm-title{% if message.S_PM_UNREAD %} pm-unread{% endif %}" href="{{ message.U_VIEW_PM }}" title="{{ message.SUBJECT }}">{{ message.SUBJECT }}</a>
 				<span class="pm-secondary">
 					<span class="pm-secondary-item pm-author">
 						{% if message.S_AUTHOR_FOE %}
@@ -69,7 +69,7 @@
 					</span>
 					<span class="pm-secondary-item pm-date">
 						<i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>
-						{{ message.SENT_TIME }} {{ S_SOME_VARIABLE }}
+						{{ message.SENT_TIME }}
 					</span>
 				</span>
 			</span>
@@ -83,23 +83,23 @@
 				{SUBJECT}
 			</div>
 			<span class="pm-buttons">
-				<a class="pm-button" id="" >
+				<a class="pm-button">
 						<svg class="icon-svg"><use xlink:href="#important"></use></svg>
 				</a>
-				<a class="pm-button" id="" >
+				<a class="pm-button">
 						<svg class="icon-svg"><use xlink:href="#edit-full"></use></svg>
 				</a>
-				<a class="pm-button" id="" >
+				<a class="pm-button">
 						<svg class="icon-svg"><use xlink:href="#trash"></use></svg>
 				</a>
-				<a class="pm-button" id="pm-to-button" >
-					<i class="fa fa-user fa-fw pm-user-icon" ></i>
+				<a class="pm-button" id="pm-to-button">
+					<i class="fa fa-user fa-fw pm-user-icon"></i>
 				</a>
 				<span class="o-bar-divider"></span>
 				<a class="pm-button" accesskey="n" href="{U_POST_NEW_TOPIC}" title="{L_UCP_PM_COMPOSE}">
 					<svg class="icon-svg"><use xlink:href="#add"></use></svg>
 				</a>
-				<a class="pm-button" title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" >
+				<a class="pm-button" title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}">
 					<svg class="icon-svg"><use xlink:href="#forward"></use></svg>
 				</a>
 			</span>
@@ -156,15 +156,12 @@
 								<div class="pm-message-date">
 									<i class="fa fa-clock-o fa-fw" title="{{ message.SENT_TIME }}" aria-label="{{ message.SENT_TIME }}"></i>
 									{{ history.SENT_DATE }}
-									<!--<p id="pm-time"></p>-->
 								</div>
 							</span>
 							<span class="pm-message-secondary">
 								{% if history.S_CURRENT_MSG %}
-									<!--Some way to indicate this is the message clicked, change of color isn't good enough-->
-									<!--<i class="fa fa-certificate fa-fw msg-unread" title="Unread message" aria-label="Unread message"></i>-->
 								{% endif %}
-								<a class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}" href="{{ history.U_VIEW_MESSAGE }}" >{{ history.SUBJECT }}</a>
+								<a class="pm-message-title{% if history.S_CURRENT_MSG %} pm-message-unread{% endif %}" href="{{ history.U_VIEW_MESSAGE }}">{{ history.SUBJECT }}</a>
 								<br>
 								{% if history.MESSAGE %}
 									{{ history.MESSAGE }}
@@ -181,16 +178,15 @@
 		<!--Compose box, BBCode buttons, submit/preview buttons-->
 		<div class="pm-compose">
 			<div class="pm-subject-box">
-				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}" >
+				<input class="pm-inputbox" id="subject" name="subject" maxlength="{% if S_NEW_MESSAGE %}120{% else %}124{% endif %}" tabindex="2" type="text" placeholder="{{ lang('PM_TITLE') }}">
 			</div>
-			
-			<div class="pm-message-box" id="pm-message-box" >
+			<div class="pm-message-box" id="pm-message-box">
 				<div class="pm-text-box">
-					<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="95" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" >{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
+					<textarea class="pm-inputbox" id="message" name="message" rows="15" cols="95" tabindex="4" placeholder="{{ lang('PM_MESSAGE') }}" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();">{{ DRAFT_MESSAGE }}{{ SIGNATURE }}</textarea>
 					<span class="pm-text-button">
 						<button class="pm-text-box-button pm-smile-button" id="pm-smile-button" type="button"><svg class="icon-svg"><use xlink:href="#insert-emoticon"></use></svg></button>
 						<button class="pm-text-box-button pm-bbcode-button" id="pm-bbcode-button" type="button"><svg class="icon-svg"><use xlink:href="#bbcode"></use></svg></button>
-						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"  {% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit" ><svg class="icon-svg"><use xlink:href="#views"></use></svg></button>
+						<button class="pm-text-box-button pm-preview-button" name="preview" tabindex="5"{% if not S_PRIVMSGS %} onclick="document.getElementById('postform').action += '#preview';"{% endif %} value="{{ lang('PREVIEW') }}" type="submit"><svg class="icon-svg"><use xlink:href="#views"></use></svg></button>
 						<button class="pm-text-box-button pm-post-button" name="post" accesskey="s" tabindex="6" value="{{ lang('SUBMIT') }}" type="submit"><svg class="icon-svg"><use xlink:href="#send"></use></svg></button>
 						<div class="o-model pm-bbcode" id="pm-bbcode-model">
 							<div class="modal-content">
@@ -248,17 +244,17 @@
 </div>
 
 <div class="action-bar bottom">
+	<div class="pagination pagination-view-folder">
 	{% include 'display_options.html' %}
 	<input name="cur_folder_id" type="hidden" value="{{ CUR_FOLDER_ID }}" >
-	{% if message_pagination %}
-		{% set pagination = message_pagination %}
+	{% if pagination %}
 		{% include 'pagination.html' %}
-	{% else %}
-		TEST
 	{% endif %}
-	<div class="pagination">
+	</div>
+	<div class="pagination pagination-view-message">
 		{{ TOTAL_MESSAGES }}
-		{% if pagination %}
+		{% if pagination_messages %}
+			{% set pagination = pagination_messages %}
 			{% include 'pagination.html' %}
 		{% else %}
 			&bull; {{ PAGE_NUMBER }}
@@ -269,15 +265,5 @@
 
 {% include 'ucp_pm_message_footer.html' %}
 {% include 'ucp_footer.html' %}
-
-<!--WIP-->
-<!--<script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>-->
-<!--<script>-->
-	<!--var date = '2015-04-03';-->
-	<!--var format = 'LLLL';-->
-	<!--var egg = moment(date).format(format);-->
-	<!--document.getElementById("pm-time").innerHTML = egg;-->
-	<!--alert(egg);-->
-<!--</script>-->
 
 <!-- INCLUDEJS pm.js -->
