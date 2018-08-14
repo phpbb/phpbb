@@ -559,6 +559,7 @@ $lang = array_merge($lang, array(
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'					=> 'Send password',
 	'UCP_RESEND'					=> 'Send activation email',
+	'UCP_USERNAME'					=> 'Send username reminder',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_ZEBRA'						=> 'Friends &amp; Foes',
 	'UCP_ZEBRA_FOES'				=> 'Manage foes',
