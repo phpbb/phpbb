@@ -4,8 +4,8 @@
 
 .pm {
 	display: flex;
-	min-height: 700px;
 	flex-flow: row wrap;
+	min-height: 700px;
 }
 
 .pm-list {
@@ -69,19 +69,19 @@
 }
 
 .pm-viewer {
+	overflow-y: auto;
 	flex: 120 0;
 	max-height: 720px;
-	overflow-y: auto;
 }
 
 .pm-message-list {
+	background-clip: content-box;
 	border-radius: 5px;
 	flex: 1 auto;
-	background-clip: content-box;
 	width: 310px;
 	margin-left: 10px;
-	padding-right: 0;
 	padding-top: 10px;
+	padding-right: 0;
 	padding-bottom: 10px;
 	list-style-type: none;
 }
@@ -148,10 +148,10 @@
 .pm-inputbox {
 	font-size: 15px;
 	width: 97%;
+	line-height: 27px;
 	min-height: 30px;
 	max-height: 30px;
 	padding: 5px;
-	line-height: 27px;
 	resize: none;
 }
 
@@ -164,8 +164,8 @@
 }
 
 .pm-recipient-box {
-	display: inline-block;
 	font-size: 18px;
+	display: inline-block;
 	width: 80%;
 	margin-left: 10px;
 }
@@ -199,11 +199,11 @@
 
 .o-model {
 	position: absolute;
+	z-index: 1;
 	display: none;
+	left: 50px;
 	width: 50%;
 	height: 100%;
-	z-index: 1;
-	left: 50px;
 	padding-top: 100px;
 }
 
@@ -300,10 +300,10 @@
 .avatar {
 	border: 3px solid #ffffff;
 	border-radius: 50%;
-	max-width: 45px;
-	max-height: 45px;
 	justify-content: center;
 	align-items: center;
+	max-width: 45px;
+	max-height: 45px;
 }
 
 .pm-avatar {
