@@ -1982,7 +1982,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 /**
 * Display Message History
 */
-function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
+function message_history($msg_id, $user_id, $message_row, $folder,$sql_limit,$sql_start, $in_post_mode = false)
 {
 	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth;
 

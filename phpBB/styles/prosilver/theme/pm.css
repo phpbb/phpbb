@@ -147,8 +147,8 @@
 
 .pm-inputbox {
 	font-size: 15px;
-	width: 97%;
 	line-height: 27px;
+	width: 97%;
 	min-height: 30px;
 	max-height: 30px;
 	padding: 5px;
@@ -200,8 +200,8 @@
 .o-model {
 	position: absolute;
 	z-index: 1;
-	display: none;
 	left: 50px;
+	display: none;
 	width: 50%;
 	height: 100%;
 	padding-top: 100px;
