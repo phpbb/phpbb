@@ -638,7 +638,7 @@ $lang = array_merge($lang, array(
 		1	=> '%d registered',
 		2	=> '%d registered',
 	),
-	'REMIND_USERNAME'			=> 'Reqest Username Reminder',
+	'REMIND_USERNAME'			=> 'Request Username Reminder',
 	'REMOVE'					=> 'Remove',
 	'REMOVE_INSTALL'			=> 'Please delete, move or rename the install directory before you use your board. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.',
 	'REPLIES'					=> 'Replies',
