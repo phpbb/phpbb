@@ -96,7 +96,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		{
 			$friend[$row['zebra_id']] = $row['friend'];
 			$foe[$row['zebra_id']] = $row['foe'];
-			($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : 'jjj';
+			($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : '';
 		}
 		$db->sql_freeresult($result);
 
@@ -107,7 +107,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		// Get avatars
 		$avatars = array();
-		$sql = 'SELECT *
+		$sql = 'SELECT user_avatar,user_avatar_type, user_avatar_width, user_avatar_height, user_id
 					FROM ' . USERS_TABLE ;
 		$result = $db->sql_query($sql);
 
