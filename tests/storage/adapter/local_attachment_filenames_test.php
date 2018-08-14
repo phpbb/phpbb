@@ -1,0 +1,126 @@
+<?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+ class phpbb_storage_adapter_local_attachment_filenames_test extends phpbb_test_case
+ {
+	protected $adapter;
+
+	protected $config;
+
+	protected $path;
+
+	protected $filesystem;
+
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->config = new \phpbb\config\config(['storage_salt' => 'salt']);
+		$dispatcher = new phpbb_mock_event_dispatcher();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
+
+		$this->adapter = new \phpbb\storage\adapter\local($this->config, $dispatcher, $this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
+		$this->adapter->configure(['path' => 'test_path', 'depth' => 0]); //  todo: change depth with subfolders
+		$this->adapter->set_storage('attachment');
+
+		$this->path = $phpbb_root_path . 'test_path/';
+		mkdir($this->path);
+	}
+
+	public function tearDown()
+	{
+		$this->adapter = null;
+		rmdir($this->path);
+	}
+
+	public function test_put_contents()
+	{
+		$this->adapter->put_contents('file.txt', 'abc');
+		$this->assertTrue(file_exists($this->path . 'salt_' . md5('file.txt')));
+		$this->assertEquals(file_get_contents($this->path . 'salt_' . md5('file.txt')), 'abc');
+		unlink($this->path . 'salt_' . md5('file.txt'));
+	}
+
+	public function test_put_contents_subfolder()
+	{
+		$this->adapter->put_contents('subfolder/file.txt', 'abc');
+		$this->assertTrue(file_exists($this->path . 'subfolder/salt_' . md5('file.txt')));
+		$this->assertEquals(file_get_contents($this->path . 'subfolder/salt_' . md5('file.txt')), 'abc');
+		unlink($this->path . 'subfolder/salt_' . md5('file.txt'));
+		rmdir($this->path . 'subfolder');
+	}
+
+	public function test_get_contents()
+	{
+		file_put_contents($this->path . 'salt_' . md5('file.txt'), 'abc');
+		$this->assertEquals($this->adapter->get_contents('file.txt'), 'abc');
+		unlink($this->path . 'salt_' . md5('file.txt'));
+	}
+
+	public function test_exists()
+	{
+		touch($this->path . 'salt_' . md5('file.txt'));
+		$this->assertTrue($this->adapter->exists('file.txt'));
+		$this->assertFalse($this->adapter->exists('noexist.txt'));
+		unlink($this->path . 'salt_' . md5('file.txt'));
+	}
+
+	public function test_delete_file()
+	{
+		touch($this->path . 'salt_' . md5('file.txt'));
+		$this->assertTrue(file_exists($this->path . 'salt_' . md5('file.txt')));
+		$this->adapter->delete('file.txt');
+		$this->assertFalse(file_exists($this->path . 'salt_' . md5('file.txt')));
+	}
+
+	public function test_rename()
+	{
+		touch($this->path . 'salt_' . md5('file.txt'));
+		$this->adapter->rename('file.txt', 'file2.txt');
+		$this->assertFalse(file_exists($this->path . 'salt_' . md5('file.txt')));
+		$this->assertTrue(file_exists($this->path . 'salt_' . md5('file2.txt')));
+		unlink($this->path . 'salt_' . md5('file2.txt'));
+	}
+
+	public function test_copy()
+	{
+		file_put_contents($this->path . 'salt_' . md5('file.txt'), 'abc');
+		$this->adapter->copy('file.txt', 'file2.txt');
+		$this->assertEquals(file_get_contents($this->path . 'salt_' . md5('file.txt')), 'abc');
+		$this->assertEquals(file_get_contents($this->path . 'salt_' . md5('file2.txt')), 'abc');
+		unlink($this->path . 'salt_' . md5('file.txt'));
+		unlink($this->path . 'salt_' . md5('file2.txt'));
+	}
+
+	public function test_read_stream()
+	{
+		touch($this->path . 'salt_' . md5('file.txt'));
+		$stream = $this->adapter->read_stream('file.txt');
+		$this->assertTrue(is_resource($stream));
+		fclose($stream);
+		unlink($this->path . 'salt_' . md5('file.txt'));
+	}
+
+	public function test_write_stream()
+	{
+		file_put_contents($this->path . 'file.txt', 'abc');
+		$stream = fopen($this->path . 'file.txt', 'rb');
+		$this->adapter->write_stream('file2.txt', $stream);
+		fclose($stream);
+		$this->assertEquals(file_get_contents($this->path . 'salt_' . md5('file2.txt')), 'abc');
+		unlink($this->path . 'file.txt');
+		unlink($this->path . 'salt_' . md5('file2.txt'));
+	}
+
+ }
