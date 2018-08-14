@@ -41,7 +41,6 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 
 		parent::setUp();
 
-		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$this->config = new \phpbb\config\config(array());
 		$this->db = $this->new_dbal();
 		$this->resync = new \phpbb\attachment\resync($this->db);

@@ -405,6 +405,11 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 				->with(104, 'ATTACHED_IMAGE_NOT_IMAGE')
 				->willReturn(false);
 		}
+
+		$this->storage->expects($this->any())
+			->method('free_space')
+			->willReturn(1024*10); // 10 Mb
+
 		$this->upload = new \phpbb\attachment\upload(
 			$this->auth,
 			$this->cache,

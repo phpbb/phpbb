@@ -92,7 +92,7 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
-		$storage =  $this->createMock('\phpbb\storage\storage');
+		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete(new \phpbb\config\config(array()), $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage));
