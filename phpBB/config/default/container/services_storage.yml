@@ -70,6 +70,7 @@ services:
         shared: false
         arguments:
             - '@config'
+            - '@dispatcher'
             - '@filesystem'
             - '@upload_imagesize'
             - '@mimetype.guesser'

@@ -14,6 +14,7 @@
 namespace phpbb\storage\adapter;
 
 use phpbb\config\config;
+use phpbb\event\dispatcher_interface;
 use phpbb\storage\stream_interface;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
@@ -31,6 +32,13 @@ class local extends adapter implements stream_interface
 	 * @var \phpbb\config\config
 	 */
 	protected $config;
+
+	/**
+	 * Dispatcher
+	 *
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $dispatcher;
 
 	/**
 	 * Filesystem component
@@ -93,10 +101,18 @@ class local extends adapter implements stream_interface
 
 	/**
 	 * Constructor
+	 *
+	 * @param \phpbb\config\config					$config
+	 * @param \phpbb\event\dispatcher_interface		$dispatcher
+	 * @param \phpbb\filesystem\filesystem			$filesystem
+	 * @param \FastImageSize\FastImageSize			$imagesize
+	 * @param \phpbb\mimetype\guesser				$mimetype_guesser
+	 * @param string								$phpbb_root_path
 	 */
-	public function __construct(config $config, filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
+	public function __construct(config $config, dispatcher_interface $dispatcher, filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
 	{
 		$this->config = $config;
+		$this->dispatcher = $dispatcher;
 		$this->filesystem = $filesystem;
 		$this->imagesize = $imagesize;
 		$this->mimetype_guesser = $mimetype_guesser;
@@ -307,6 +323,20 @@ class local extends adapter implements stream_interface
 
 		// Array of storages in local that can contain unsafe files
 		$storages = ['attachment'];
+
+		/**
+		 * Get filename
+		 *
+		 * @event core.storage_local_get_filename
+		 * @var	array	storages		Array of storage names with unsafe files to encode
+		 * @var	string	path			Path to file
+		 * @since 3.3.0-a1
+		 */
+		$vars = array(
+			'storages',
+			'path',
+		);
+		extract($this->dispatcher->trigger_event('core.storage_local_get_filename', compact($vars)));
 
 		if (in_array($this->storage, $storages))
 		{
