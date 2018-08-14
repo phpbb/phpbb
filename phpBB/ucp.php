@@ -56,6 +56,11 @@ switch ($mode)
 		$module->display($user->lang['UCP_RESEND']);
 	break;
 
+	case 'remind_username':
+		$module->load('ucp', 'username');
+		$module->display($user->lang['UCP_USERNAME']);
+	break;
+
 	case 'sendpassword':
 		$module->load('ucp', 'remind');
 		$module->display($user->lang['UCP_REMIND']);
