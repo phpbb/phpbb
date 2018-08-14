@@ -923,20 +923,17 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	$sql = 'SELECT msg_id 
 			FROM ' . PRIVMSGS_TABLE . ' 
 			WHERE root_level = ' . (int) $msg_id;
-
 	$result = $db->sql_query($sql);
-
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$unread_message_child = (int) $row['msg_id'];
 
 		// Recursively call same function to mark any other child messages as read
-		if($unread_message_child)
+		if ($unread_message_child)
 		{
-			update_unread_status(True, $unread_message_child, $user_id, $folder_id);
+			update_unread_status(true, $unread_message_child, $user_id, $folder_id);
 		}
 	}
-
 	$db->sql_freeresult($result);
 }
 
