@@ -379,12 +379,10 @@ class ucp_pm
 					view_folder($id, $mode, $folder_id, $folder);
 
 					//After displaying messages on the left we set it up for composing a new message on the right
-					$action = 'post';
-					$mode = 'compose';
 					$user_folders = get_folder($user->data['user_id']);
 
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
-					compose_pm($id, $mode, $action, $user_folders);
+					compose_pm($id, 'compose', 'post', $user_folders);
 
 					$tpl_file = 'ucp_pm_viewfolder';
 				}

@@ -1,8 +1,8 @@
 /**
  * Open Pm smiley popup
  */
-$(document).ready(function(){
-	$('.pm-smile-button').click(function(){
+$(document).ready(function() {
+	$('.pm-smile-button').click(function() {
 		var $alert = phpbb.alert("Smiley Box", $('.pm-smile').html());
 
 		$alert.on('click', '.pm-smiley-code', function() {
@@ -17,8 +17,8 @@ $(document).ready(function(){
 /**
  * Open PM:To popup
  */
-$(document).ready(function(){
-	$('#pm-to-button').click(function(){
+$(document).ready(function() {
+	$('#pm-to-button').click(function() {
 		var $alert = phpbb.alert("PM To:", $('#pm-to-model').html());
 
 		$alert.on('click', '.pm-to-button-close', function() {
@@ -30,8 +30,8 @@ $(document).ready(function(){
 /**
  * Open BBCode popup
  */
-$(document).ready(function(){
-	$('#pm-bbcode-button').click(function(){
+$(document).ready(function() {
+	$('#pm-bbcode-button').click(function() {
 		var $alert = phpbb.alert("BBCode Box", $('#pm-bbcode-model').html());
 
 		$alert.on('click', '.pm-bbcode-button-close', function() {

@@ -96,6 +96,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		{
 			$friend[$row['zebra_id']] = $row['friend'];
 			$foe[$row['zebra_id']] = $row['foe'];
+			($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : 'jjj';
 		}
 		$db->sql_freeresult($result);
 
@@ -103,6 +104,20 @@ function view_folder($id, $mode, $folder_id, $folder)
 			'S_MARK_OPTIONS'		=> $s_mark_options,
 			'S_MOVE_MARKED_OPTIONS'	=> $s_folder_move_options)
 		);
+
+		// Get avatars
+		$avatars = array();
+		$sql = 'SELECT *
+					FROM ' . USERS_TABLE ;
+		$result = $db->sql_query($sql);
+
+		while ($user_row = $db->sql_fetchrow($result))
+		{
+			$friend[$row['zebra_id']] = $row['friend'];
+			$foe[$row['zebra_id']] = $row['foe'];
+			$avatars[$user_row['user_id']] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
+		}
+		$db->sql_freeresult($result);
 
 		// Okay, lets dump out the page ...
 		if (count($folder_info['pm_list']))
@@ -137,13 +152,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 						break;
 					}
 				}
-				// Get avatars
-				$sql = 'SELECT *
-					FROM ' . USERS_TABLE . '
-					WHERE user_id = ' . $row['author_id'];
-				$result = $db->sql_query($sql);
-				$user_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
 
 				// Send vars to template
 				$template->assign_block_vars('messagerow', array(
@@ -164,7 +172,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_STYLE'	=> $folder_img,
-					'PM_ICON'              => ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '',
+					'PM_ICON'           => $avatars[$row['author_id']],
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
@@ -581,13 +589,12 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), $sql_limit, $sql_start);
 
 	$pm_reported = array();
-	$pm_unread = array();
 
 	while ($row = $db->sql_fetchrow($result))
 	{
 		// Gets number of unread messages in each thread
 		$pm_unread[$row['msg_id']]  = $row['pm_unread'];
-//		echo '<pre>'; print_r($pm_unread); echo '</pre>';
+
 		$rowset[$row['msg_id']] = $row;
 		$pm_list[] = $row['msg_id'];
 		if ($row['message_reported'])
@@ -595,8 +602,6 @@ function get_pm_from($folder_id, $folder, $user_id)
 			$pm_reported[] = $row['msg_id'];
 		}
 	}
-	
-	$template->assign_var('S_SOME_VARIABLE', $pm_unread[$row['msg_id']]);
 
 	$db->sql_freeresult($result);
 
