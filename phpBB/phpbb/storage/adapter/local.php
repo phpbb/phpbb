@@ -256,17 +256,20 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function remove_empty_dirs($path)
 	{
-		$dirpath = dirname($this->root_path . $path);
-		$filepath = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
-		$path = filesystem_helper::make_path_relative($filepath, $dirpath);
-
-		do
+		if ($this->subfolders)
 		{
-			$parts = explode('/', $path);
-			$parts = array_slice($parts, 0, -1);
-			$path = implode('/', $parts);
+			$dirpath = dirname($this->root_path . $path);
+			$filepath = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
+			$path = filesystem_helper::make_path_relative($filepath, $dirpath);
+
+			do
+			{
+				$parts = explode('/', $path);
+				$parts = array_slice($parts, 0, -1);
+				$path = implode('/', $parts);
+			}
+			while ($path && @rmdir($dirpath . '/' . $path));
 		}
-		while ($path && @rmdir($dirpath . '/' . $path));
 	}
 
 	/**
@@ -277,6 +280,9 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function get_path($path)
 	{
+		$dirname = dirname($path);
+		$dirname = ($dirname != '.') ? $dirname . DIRECTORY_SEPARATOR : '';
+
 		if ($this->subfolders)
 		{
 			$hash = md5(basename($path));
@@ -284,17 +290,13 @@ class local implements adapter_interface, stream_interface
 			$parts = str_split($hash, 2);
 			$parts = array_slice($parts, 0, $this->dir_depth);
 
-			// Create path
-			$dirname = dirname($path);
-			$path = $dirname . DIRECTORY_SEPARATOR;
-
 			if (!empty($parts))
 			{
-				$path .= implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
+				$dirname .= implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
 			}
 		}
 
-		return $path;
+		return $dirname;
 	}
 
 	/**
