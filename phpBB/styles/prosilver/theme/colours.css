@@ -1234,3 +1234,8 @@ input.disabled {
 .pm-user-icon {
 	color: #2a2a2a;
 }
+
+.modal-content,
+.pm-to-modal-content {
+	background-color: #f5f5f5;
+}

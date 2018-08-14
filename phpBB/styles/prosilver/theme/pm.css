@@ -3,8 +3,8 @@
 /* -------------------------------------------------------------- */
 
 .pm {
-	min-height: 700px;
 	display: flex;
+	min-height: 700px;
 	flex-flow: row wrap;
 }
 
@@ -70,13 +70,15 @@
 
 .pm-viewer {
 	flex: 120 0;
+	max-height: 720px;
+	overflow-y: auto;
 }
 
 .pm-message-list {
 	border-radius: 5px;
 	flex: 1 auto;
-	width: 310px;
 	background-clip: content-box;
+	width: 310px;
 	margin-left: 10px;
 	padding-right: 0;
 	padding-top: 10px;
@@ -163,14 +165,14 @@
 
 .pm-recipient-box {
 	display: inline-block;
-	margin-left: 10px;
-	width: 80%;
 	font-size: 18px;
+	width: 80%;
+	margin-left: 10px;
 }
 
 .pm-recipient-list {
-	padding: 15px;
 	line-height: 22px;
+	padding: 15px;
 }
 
 .pm-status-box {
@@ -198,28 +200,26 @@
 .o-model {
 	position: absolute;
 	display: none;
+	width: 50%;
+	height: 100%;
 	z-index: 1;
 	left: 50px;
 	padding-top: 100px;
-	width: 50%;
-	height: 100%;
 }
 
 .modal-content,
 .pm-to-modal-content {
+	width: 50%;
 	margin: auto;
 	padding: 10px;
-	width: 50%;
-	background-color: #f5f5f5;
-	/*display: flex;*/
 }
 
 .pm-to-button-close,
 .pm-bbcode-button-close,
 .pm-smile-button-close {
 	font-size: 28px;
-	float: right;
 	font-weight: bold;
+	float: right;
 }
 
 .pm-button-close:hover,
@@ -237,6 +237,10 @@
 .pm-header-button {
 	display: flex;
 	flex: 0 0 50px;
+}
+
+.format-buttons {
+	margin: 0;
 }
 
 .pm-buttons {
@@ -262,9 +266,9 @@
 
 .c-pm-viewer-action,
 .icon-svg {
-	height: 2.285714em;
-	width: 1.28571429em;
 	text-align: center;
+	width: 1.28571429em;
+	height: 2.285714em;
 }
 
 .pm-text-box {
@@ -295,9 +299,9 @@
 
 .avatar {
 	border: 3px solid #ffffff;
+	border-radius: 50%;
 	max-width: 45px;
 	max-height: 45px;
-	border-radius: 50%;
 	justify-content: center;
 	align-items: center;
 }
@@ -306,19 +310,22 @@
 	padding-right: 15px;
 }
 
-@media (max-width: 768px)
-{
+@media (max-width: 768px) {
 	.pm-preview-button {
 		display: none;
 	}
 }
 
-@media (max-width: 800px)
-{
+@media (max-width: 800px) {
 	.pm-primary {
 		display: none;
 	}
+
 	.pm-avatar {
 		padding-right: 0;
 	}
+}
+
+.pagination-view-message {
+	float: left !important;
 }
