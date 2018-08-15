@@ -57,7 +57,7 @@ class ucp_username
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 			$count = 0;
-			while($user_row = $db->sql_fetchrow($result))
+			while ($user_row = $db->sql_fetchrow($result))
 			{
 				$count++;
 				$messenger = new messenger(false);
