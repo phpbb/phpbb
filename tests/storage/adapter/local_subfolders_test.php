@@ -23,10 +23,12 @@
 	{
 		parent::setUp();
 
+		$config = new \phpbb\config\config(array());
+		$dispatcher = new phpbb_mock_event_dispatcher();
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
-		$this->adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
+		$this->adapter = new \phpbb\storage\adapter\local($config, $dispatcher, $this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
 		$this->adapter->configure(['path' => 'test_path', 'subfolders' => true]);
 
 		$this->path = $phpbb_root_path . 'test_path/';

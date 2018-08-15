@@ -15,8 +15,6 @@
  {
 	protected $adapter;
 
-	protected $config;
-
 	protected $path;
 
 	protected $filesystem;
@@ -25,13 +23,13 @@
 	{
 		parent::setUp();
 
-		$this->config = new \phpbb\config\config(['storage_salt' => 'salt']);
+		$config = new \phpbb\config\config(['storage_salt' => 'salt']);
 		$dispatcher = new phpbb_mock_event_dispatcher();
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
-		$this->adapter = new \phpbb\storage\adapter\local($this->config, $dispatcher, $this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
-		$this->adapter->configure(['path' => 'test_path', 'depth' => 0]); //  todo: change depth with subfolders
+		$this->adapter = new \phpbb\storage\adapter\local($config, $dispatcher, $this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
+		$this->adapter->configure(['path' => 'test_path', 'subfolders' => false]);
 		$this->adapter->set_storage('attachment');
 
 		$this->path = $phpbb_root_path . 'test_path/';
