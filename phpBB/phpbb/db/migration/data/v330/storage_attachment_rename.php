@@ -38,14 +38,14 @@ class storage_attachment_rename extends \phpbb\db\migration\migration
 		$filename = rawurlencode(str_replace($bad_chars, '_', $filename));
 		$filename = preg_replace("/%(\w{2})/", '_', $filename);
 
-		$filename = $prefix . pathinfo($filename, PATHINFO_FILENAME) . '_' . unique_id() . '.' . pathinfo($filename, PATHINFO_EXTENSION);
+		$filename = $prefix . pathinfo($filename, PATHINFO_FILENAME) . '_' . gen_rand_string() . '.' . pathinfo($filename, PATHINFO_EXTENSION);
 
 		return $filename;
 	}
 
 	public function rename_attachments()
 	{
-		if (!function_exists('unique_id'))
+		if (!function_exists('gen_rand_string'))
 		{
 			require($this->phpbb_root_path . 'includes/functions.' . $this->php_ext);
 		}
