@@ -4,7 +4,7 @@ Hello {USERNAME},
 
 Somebody (perhaps you) has requested a reminder of the username for your account at "{SITENAME}". Your Username is: {USERNAME}
 
-You can login to "{SITENAME}"at {U_LOGIN}, or use the 'login' link on the forum home page: .  Note that the username and password are case-sensitive.
+You can login to "{SITENAME}" at {U_LOGIN}, or use the 'login' link on the forum home page.  Note that the username and password are case-sensitive.
 
 If you have forgotten your password, you may request a new one at: {U_FORGOT_PASS} or by using the 'I forgot my password' link on the login page.
 
