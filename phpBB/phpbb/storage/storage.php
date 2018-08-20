@@ -322,7 +322,7 @@ class storage
 			// Don't call the file_info method, because it check's if the file is tracked
 			// and is not (for now). This method check if the file exists using the adapter
 			// at the beginning.
-			$file = new file_info($this->get_adapter(), $path);
+			$file = new file_info($this->get_adapter(), $this->db, $this->get_name(), $this->storage_table, $path);
 			$sql_ary['filesize'] = $file->size;
 
 			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
