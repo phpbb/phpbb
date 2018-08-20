@@ -317,6 +317,9 @@ class storage
 
 		if (!$row)
 		{
+			// Don't call the method, because it check's if the file is tracked
+			// and is not (for now). This method check if the file exists using the adapter
+			// at the beginning.
 			$file = new file_info($this->get_adapter(), $path);
 			$sql_ary['filesize'] = $file->size;
 
