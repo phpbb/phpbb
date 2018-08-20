@@ -630,6 +630,7 @@ class acp_storage
 		}
 
 		$adapter->configure($options);
+		$adapter->set_storage($storage_name);
 
 		return $adapter;
 	}
@@ -649,6 +650,7 @@ class acp_storage
 		}
 
 		$adapter->configure($options);
+		$adapter->set_storage($storage_name);
 
 		return $adapter;
 	}
