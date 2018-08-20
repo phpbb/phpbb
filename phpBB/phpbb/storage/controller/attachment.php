@@ -186,20 +186,20 @@ class attachment extends controller
 		$redirect = '';
 
 		/**
-		* Event to modify data before sending file to browser
-		*
-		* @event core.download_file_send_to_browser_before
-		* @var	int		attach_id			The attachment ID
-		* @var	array	attachment			Array with attachment data
-		* @var	array	extensions			Array with file extensions data
-		* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
-		* @var	string	redirect			Do a redirection instead of reading the file
-		* @since 3.1.6-RC1
-		* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
-		* @changed 3.3.0-a1		Add redirect variable
-		* @changed 3.3.0-a1		Remove display_cat variable
-		* @changed 3.3.0-a1		Remove mode variable
-		*/
+		 * Event to modify data before sending file to browser
+		 *
+		 * @event core.download_file_send_to_browser_before
+		 * @var	int		attach_id			The attachment ID
+		 * @var	array	attachment			Array with attachment data
+		 * @var	array	extensions			Array with file extensions data
+		 * @var	bool	thumbnail			Flag indicating if the file is a thumbnail
+		 * @var	string	redirect			Do a redirection instead of reading the file
+		 * @since 3.1.6-RC1
+		 * @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
+		 * @changed 3.3.0-a1		Add redirect variable
+		 * @changed 3.3.0-a1		Remove display_cat variable
+		 * @changed 3.3.0-a1		Remove mode variable
+		 */
 		$vars = array(
 			'attach_id',
 			'attachment',
@@ -222,15 +222,15 @@ class attachment extends controller
 		}
 
 		/**
-		* Event to alter attachment before it is sent to browser.
-		*
-		* @event core.send_file_to_browser_before
-		* @var	array	attachment	Attachment data
-		* @since 3.1.11-RC1
-		* @changed 3.3.0-a1		Removed category variable
-		* @changed 3.3.0-a1		Removed size variable
-		* @changed 3.3.0-a1		Removed filename variable
-		*/
+		 * Event to alter attachment before it is sent to browser.
+		 *
+		 * @event core.send_file_to_browser_before
+		 * @var	array	attachment	Attachment data
+		 * @since 3.1.11-RC1
+		 * @changed 3.3.0-a1		Removed category variable
+		 * @changed 3.3.0-a1		Removed size variable
+		 * @changed 3.3.0-a1		Removed filename variable
+		 */
 		$vars = array(
 			'attachment',
 		);
@@ -244,14 +244,14 @@ class attachment extends controller
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
-				rawurlencode($attachment['physical_filename'])
+				rawurlencode(htmlspecialchars_decode($attachment['real_filename']))
 			);
 		}
 		else
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-				rawurlencode($attachment['physical_filename'])
+				rawurlencode(htmlspecialchars_decode($attachment['real_filename']))
 			);
 		}
 
@@ -265,12 +265,12 @@ class attachment extends controller
 	}
 
 	/**
-	* Handles authentication when downloading attachments from a post or topic
-	*
-	* @param int $topic_id The id of the topic that we are downloading from
-	*
-	* @return null
-	*/
+	 * Handles authentication when downloading attachments from a post or topic
+	 *
+	 * @param int $topic_id The id of the topic that we are downloading from
+	 *
+	 * @return null
+	 */
 	protected function phpbb_download_handle_forum_auth($topic_id)
 	{
 		$sql_array = array(
@@ -307,12 +307,12 @@ class attachment extends controller
 	}
 
 	/**
-	* Handles authentication when downloading attachments from PMs
-	*
-	* @param int $msg_id The id of the PM that we are downloading from
-	*
-	* @return null
-	*/
+	 * Handles authentication when downloading attachments from PMs
+	 *
+	 * @param int $msg_id The id of the PM that we are downloading from
+	 *
+	 * @return null
+	 */
 	protected function phpbb_download_handle_pm_auth($msg_id)
 	{
 		if (!$this->auth->acl_get('u_pm_download'))
@@ -323,14 +323,14 @@ class attachment extends controller
 		$allowed = $this->phpbb_download_check_pm_auth($msg_id);
 
 		/**
-		* Event to modify PM attachments download auth
-		*
-		* @event core.modify_pm_attach_download_auth
-		* @var	bool	allowed		Whether the user is allowed to download from that PM or not
-		* @var	int		msg_id		The id of the PM to download from
-		* @var	int		user_id		The user id for auth check
-		* @since 3.1.11-RC1
-		*/
+		 * Event to modify PM attachments download auth
+		 *
+		 * @event core.modify_pm_attach_download_auth
+		 * @var	bool	allowed		Whether the user is allowed to download from that PM or not
+		 * @var	int		msg_id		The id of the PM to download from
+		 * @var	int		user_id		The user id for auth check
+		 * @since 3.1.11-RC1
+		 */
 		$vars = array('allowed', 'msg_id', 'user_id');
 		extract($this->dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
 
@@ -341,12 +341,12 @@ class attachment extends controller
 	}
 
 	/**
-	* Checks whether a user can download from a particular PM
-	*
-	* @param int $msg_id The id of the PM that we are downloading from
-	*
-	* @return bool Whether the user is allowed to download from that PM or not
-	*/
+	 * Checks whether a user can download from a particular PM
+	 *
+	 * @param int $msg_id The id of the PM that we are downloading from
+	 *
+	 * @return bool Whether the user is allowed to download from that PM or not
+	 */
 	protected function phpbb_download_check_pm_auth($msg_id)
 	{
 		$user_id = $this->user->data['user_id'];
@@ -367,12 +367,12 @@ class attachment extends controller
 	}
 
 	/**
-	* Increments the download count of all provided attachments
-	*
-	* @param array|int $ids The attach_id of each attachment
-	*
-	* @return null
-	*/
+	 * Increments the download count of all provided attachments
+	 *
+	 * @param array|int $ids The attach_id of each attachment
+	 *
+	 * @return null
+	 */
 	protected function phpbb_increment_downloads($ids)
 	{
 		if (!is_array($ids))
@@ -387,8 +387,8 @@ class attachment extends controller
 	}
 
 	/**
-	* Check if downloading item is allowed
-	*/
+	 * Check if downloading item is allowed
+	 */
 	protected function download_allowed()
 	{
 		if (!$this->config['secure_downloads'])
