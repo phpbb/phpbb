@@ -212,7 +212,6 @@ class storage
 
 	/**
 	 * Writes a new file using a stream
-	 * The file needs to be tracked after using this method
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
