@@ -259,10 +259,11 @@ class acp_storage
 				$this->update_storage_config($storage_name);
 			}
 
+			$storages = array_keys($this->state['storages']);
 			$this->state = false;
 			$this->save_state();
 
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false); // todo
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false, $storages);
 			trigger_error($this->user->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
 		}
 
