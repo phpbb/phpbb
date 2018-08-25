@@ -768,7 +768,7 @@ $lang = array_merge($lang, array(
 	'LOG_STYLE_EDIT_DETAILS'	=> '<strong>Edited style</strong><br />» %s',
 	'LOG_STYLE_EXPORT'			=> '<strong>Exported style</strong><br />» %s',
 
-	'LOG_STORAGE_UPDATE'		=> '<strong>Storage updated</strong>',
+	'LOG_STORAGE_UPDATE'		=> '<strong>Storage updated</strong><br />» %s',
 
 	'LOG_UPDATE_DATABASE'	=> '<strong>Updated Database from version %1$s to version %2$s</strong>',
 	'LOG_UPDATE_PHPBB'		=> '<strong>Updated phpBB from version %1$s to version %2$s</strong>',
