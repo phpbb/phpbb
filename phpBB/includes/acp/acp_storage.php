@@ -622,41 +622,55 @@ class acp_storage
 
 	protected function get_current_adapter($storage_name)
 	{
-		$provider = $this->get_current_provider($storage_name);
-		$provider_class = $this->provider_collection->get_by_class($provider);
+		static $adapters = [];
 
-		$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
-		$definitions = $this->get_provider_options($provider);
-
-		$options = [];
-		foreach (array_keys($definitions) as $definition)
+		if(!isset($adapters[$storage_name]))
 		{
-			$options[$definition] = $this->get_current_definition($storage_name, $definition);
+			$provider = $this->get_current_provider($storage_name);
+			$provider_class = $this->provider_collection->get_by_class($provider);
+
+			$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
+			$definitions = $this->get_provider_options($provider);
+
+			$options = [];
+			foreach (array_keys($definitions) as $definition)
+			{
+				$options[$definition] = $this->get_current_definition($storage_name, $definition);
+			}
+
+			$adapter->configure($options);
+			//$adapter->set_storage($storage_name);
+
+			$adapters[$storage_name] = $adapter;
 		}
 
-		$adapter->configure($options);
-		$adapter->set_storage($storage_name);
-
-		return $adapter;
+		return $adapters[$storage_name];
 	}
 
 	protected function get_new_adapter($storage_name)
 	{
-		$provider = $this->state['storages'][$storage_name]['provider'];
-		$provider_class = $this->provider_collection->get_by_class($provider);
+		static $adapters = [];
 
-		$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
-		$definitions = $this->get_provider_options($provider);
-
-		$options = [];
-		foreach (array_keys($definitions) as $definition)
+		if(!isset($adapters[$storage_name]))
 		{
-			$options[$definition] = $this->state['storages'][$storage_name]['config'][$definition];
+			$provider = $this->state['storages'][$storage_name]['provider'];
+			$provider_class = $this->provider_collection->get_by_class($provider);
+
+			$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
+			$definitions = $this->get_provider_options($provider);
+
+			$options = [];
+			foreach (array_keys($definitions) as $definition)
+			{
+				$options[$definition] = $this->state['storages'][$storage_name]['config'][$definition];
+			}
+
+			$adapter->configure($options);
+			//$adapter->set_storage($storage_name);
+
+			$adapters[$storage_name] = $adapter;
 		}
 
-		$adapter->configure($options);
-		$adapter->set_storage($storage_name);
-
-		return $adapter;
+		return $adapters[$storage_name];
 	}
 }
