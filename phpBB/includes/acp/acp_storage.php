@@ -162,65 +162,21 @@ class acp_storage
 				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// Copy files from the old to the new storage
-			$i = 0;
-			foreach ($this->state['storages'] as $storage_name => $storage_options)
-			{
-				// Skip storages that have already moved files
-				if ($this->state['storage_index'] > $i)
-				{
-					$i++;
-					continue;
-				}
-
-				$current_adapter = $this->get_current_adapter($storage_name);
-				$new_adapter = $this->get_new_adapter($storage_name);
-
-				$sql = 'SELECT file_id, file_path
-					FROM ' . STORAGE_TABLE . "
-					WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
-						AND file_id > " . $this->state['file_index'];
-				$result = $this->db->sql_query($sql);
-
-				$starttime = microtime(true);
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					if (!still_on_time())
-					{
-						$this->save_state();
-						meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-						trigger_error($this->user->lang('STORAGE_UPDATE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
-					}
-
-					$stream = $current_adapter->read_stream($row['file_path']);
-					$new_adapter->write_stream($row['file_path'], $stream);
-
-					if (is_resource($stream))
-					{
-						fclose($stream);
-					}
-
-					$this->state['file_index'] = $row['file_id']; // Set last uploaded file
-				}
-
-				// Copied all files of a storage, increase storage index and reset file index
-				$this->state['storage_index']++;
-				$this->state['file_index'] = 0;
-			}
-
-			if ($this->state['remove_old'])
+			// If update_type is copy or move, copy files from the old to the new storage
+			if ($this->state['update_type'] >= 1)
 			{
 				$i = 0;
 				foreach ($this->state['storages'] as $storage_name => $storage_options)
 				{
 					// Skip storages that have already moved files
-					if ($this->state['remove_storage_index'] > $i)
+					if ($this->state['storage_index'] > $i)
 					{
 						$i++;
 						continue;
 					}
 
 					$current_adapter = $this->get_current_adapter($storage_name);
+					$new_adapter = $this->get_new_adapter($storage_name);
 
 					$sql = 'SELECT file_id, file_path
 						FROM ' . STORAGE_TABLE . "
@@ -235,17 +191,65 @@ class acp_storage
 						{
 							$this->save_state();
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-							trigger_error($this->user->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+							trigger_error($this->user->lang('STORAGE_UPDATE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
 						}
 
-						$current_adapter->delete($row['file_path']);
+						$stream = $current_adapter->read_stream($row['file_path']);
+						$new_adapter->write_stream($row['file_path'], $stream);
+
+						if (is_resource($stream))
+						{
+							fclose($stream);
+						}
 
 						$this->state['file_index'] = $row['file_id']; // Set last uploaded file
 					}
 
-					// Remove all files of a storage, increase storage index and reset file index
-					$this->state['remove_storage_index']++;
+					// Copied all files of a storage, increase storage index and reset file index
+					$this->state['storage_index']++;
 					$this->state['file_index'] = 0;
+				}
+
+				// If update_type is move files, remove the old files
+				if ($this->state['update_type'] == 2)
+				{
+					$i = 0;
+					foreach ($this->state['storages'] as $storage_name => $storage_options)
+					{
+						// Skip storages that have already moved files
+						if ($this->state['remove_storage_index'] > $i)
+						{
+							$i++;
+							continue;
+						}
+
+						$current_adapter = $this->get_current_adapter($storage_name);
+
+						$sql = 'SELECT file_id, file_path
+							FROM ' . STORAGE_TABLE . "
+							WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
+								AND file_id > " . $this->state['file_index'];
+						$result = $this->db->sql_query($sql);
+
+						$starttime = microtime(true);
+						while ($row = $this->db->sql_fetchrow($result))
+						{
+							if (!still_on_time())
+							{
+								$this->save_state();
+								meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
+								trigger_error($this->user->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+							}
+
+							$current_adapter->delete($row['file_path']);
+
+							$this->state['file_index'] = $row['file_id']; // Set last uploaded file
+						}
+
+						// Remove all files of a storage, increase storage index and reset file index
+						$this->state['remove_storage_index']++;
+						$this->state['file_index'] = 0;
+					}
 				}
 			}
 
@@ -339,7 +343,7 @@ class acp_storage
 					$this->state = [
 						// Save the value of the checkbox, to remove all files from the
 						// old storage once they have been successfully moved
-						'remove_old' => $this->request->variable('remove_old', false),
+						'update_type' => $this->request->variable('update_type', 0),
 						'storage_index' => 0,
 						'file_index' => 0,
 						'remove_storage_index' => 0,

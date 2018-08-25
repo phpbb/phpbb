@@ -121,9 +121,11 @@
 
 		<fieldset>
 			<dl>
-				<dt><label for="remove_old">{{ lang('STORAGE_REMOVE_OLD_FILES') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_REMOVE_OLD_FILES_EXPLAIN') }}</span></dt>
+				<dt><label for="update_type">{{ lang('STORAGE_UPDATE_TYPE') }}{{ lang('COLON') }}</label></dt>
 				<dd>
-					<input type="checkbox" name="remove_old">
+					<label><input id="update_type" class="radio" name="update_type" value="0" checked="checked" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_CONFIG') }}</label>
+					<label><input class="radio" name="update_type" value="1" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_COPY') }}</label>
+					<label><input class="radio" name="update_type" value="2" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_MOVE') }}</label>
 				</dd>
 			</dl>
 		</fieldset>
