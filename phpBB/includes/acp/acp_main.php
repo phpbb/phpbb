@@ -28,6 +28,9 @@ class acp_main
 		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher, $phpbb_filesystem;
 
+		/* @var $db_tools \phpbb\db\tools\tools_interface */
+		$db_tools = $phpbb_container->get('dbal.tools');
+
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
 		{
@@ -273,16 +276,7 @@ class acp_main
 					break;
 
 					case 'db_track':
-						switch ($db->get_sql_layer())
-						{
-							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-							break;
-						}
+						$db_tools->sql_table_truncate(TOPICS_POSTED_TABLE);
 
 						// This can get really nasty... therefore we only do the last six months
 						$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -383,16 +377,7 @@ class acp_main
 
 						foreach ($tables as $table)
 						{
-							switch ($db->get_sql_layer())
-							{
-								case 'sqlite3':
-									$db->sql_query("DELETE FROM $table");
-								break;
-
-								default:
-									$db->sql_query("TRUNCATE TABLE $table");
-								break;
-							}
+							$db_tools->sql_table_truncate($table);
 						}
 
 						// let's restore the admin session
@@ -649,7 +634,7 @@ class acp_main
 		{
 			$error = false;
 			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 			if (!$search->index_created())
 			{

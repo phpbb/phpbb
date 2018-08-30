@@ -27,7 +27,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 
@@ -42,6 +42,9 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		$this->cache = new \phpbb\cache\driver\file($this->cache_dir);
 
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
+
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('dbal.tools', $this->createMock('\phpbb\db\tools\tools'));
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));
 		$this->user = $this->createMock('\phpbb\user', array(), array(

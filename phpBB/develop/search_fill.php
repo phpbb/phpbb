@@ -27,6 +27,9 @@ $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
+$factory = new \phpbb\db\tools\factory();
+$db_tools = $factory->get($db);
+
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
@@ -40,7 +43,7 @@ if (!class_exists($search_type))
 }
 
 $error = false;
-$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 if ($error)
 {
@@ -74,7 +77,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchstart = $postcounter + 1;
 	$batchend = $postcounter + $batchsize;
 	$batchcount++;
-	
+
 	$sql = "SELECT *
 		FROM " . POSTS_TABLE . "
 		WHERE post_id
@@ -90,7 +93,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$db->sql_freeresult($result);
 
 	$post_rows = count($rowset);
-	
+
 	if( $post_rows )
 	{
 

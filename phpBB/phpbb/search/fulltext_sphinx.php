@@ -130,10 +130,11 @@ class fulltext_sphinx
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\db\tools\tools_interface Database tools
 	 * @param \phpbb\user $user User object
 	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -141,11 +142,8 @@ class fulltext_sphinx
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->auth = $auth;
-
-		// Initialize \phpbb\db\tools\tools object
-		global $phpbb_container; // TODO inject into object
-		$this->db_tools = $phpbb_container->get('dbal.tools');
 
 		if (!$this->config['fulltext_sphinx_id'])
 		{
@@ -855,8 +853,7 @@ class fulltext_sphinx
 			);
 			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
 
-			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
-			$this->db->sql_query($sql);
+			$this->db_tools->sql_table_truncate(SPHINX_TABLE);
 
 			$data = array(
 				'counter_id'	=> '1',

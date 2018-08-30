@@ -320,6 +320,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', $attachment_delete);
+		$phpbb_container->set('dbal.tools', $this->createMock('\phpbb\db\tools\tools'));
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 

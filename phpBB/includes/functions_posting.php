@@ -1444,6 +1444,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 	$attachment_storage = $phpbb_container->get('storage.attachment');
 
+	/* @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
+
 	$poll = $poll_ary;
 	$data = $data_ary;
 	/**
@@ -2174,7 +2177,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		}
 
 		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{

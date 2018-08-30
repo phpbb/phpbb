@@ -78,6 +78,10 @@ class convertor
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
+		/** @var $db_tools \phpbb\db\tools\tools_interface */
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
+
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
@@ -235,7 +239,7 @@ class convertor
 		}
 
 		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{

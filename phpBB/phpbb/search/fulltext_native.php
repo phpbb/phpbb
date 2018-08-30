@@ -94,6 +94,12 @@ class fulltext_native extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * Database tools
+	 * @var \phpbb\db\tools\tools_interface
+	 */
+	protected $db_tools;
+
+	/**
 	 * phpBB event dispatcher object
 	 * @var \phpbb\event\dispatcher_interface
 	 */
@@ -111,12 +117,13 @@ class fulltext_native extends \phpbb\search\base
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
 	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
@@ -1696,43 +1703,24 @@ class fulltext_native extends \phpbb\search\base
 	*/
 	public function delete_index($acp_module, $u_action)
 	{
-		$sql_queries = [];
-
-		switch ($this->db->get_sql_layer())
-		{
-			case 'sqlite3':
-				$sql_queries[] = 'DELETE FROM ' . SEARCH_WORDLIST_TABLE;
-				$sql_queries[] = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE;
-				$sql_queries[] = 'DELETE FROM ' . SEARCH_RESULTS_TABLE;
-			break;
-
-			default:
-				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE;
-				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE;
-				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE;
-			break;
-		}
-
 		$stats = $this->stats;
 
 		/**
-		* Event to modify SQL queries before the native search index is deleted
+		* Event executed before the native search index is deleted
 		*
 		* @event core.search_native_delete_index_before
-		* @var array	sql_queries			Array with queries for deleting the search index
 		* @var array	stats				Array with statistics of the current index (read only)
 		* @since 3.2.3-RC1
+		* @changed 3.2.4			Removed 'sql_queries'
 		*/
 		$vars = array(
-			'sql_queries',
 			'stats',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_native_delete_index_before', compact($vars)));
 
-		foreach ($sql_queries as $sql_query)
-		{
-			$this->db->sql_query($sql_query);
-		}
+		$this->db_tools->sql_table_truncate(SEARCH_WORDLIST_TABLE);
+		$this->db_tools->sql_table_truncate(SEARCH_WORDMATCH_TABLE);
+		$this->db_tools->sql_table_truncate(SEARCH_RESULTS_TABLE);
 	}
 
 	/**

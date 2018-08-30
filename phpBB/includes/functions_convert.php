@@ -2035,18 +2035,12 @@ function update_dynamic_config()
 */
 function update_topics_posted()
 {
-	global $db;
+	global $db, $phpbb_container;
 
-	switch ($db->get_sql_layer())
-	{
-		case 'sqlite3':
-			$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-		break;
+	/* @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
 
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-		break;
-	}
+	$db_tools->sql_table_truncate(TOPICS_POSTED_TABLE);
 
 	// This can get really nasty... therefore we only do the last six months
 	$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);

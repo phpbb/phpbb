@@ -876,6 +876,9 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 {
 	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container, $phpbb_dispatcher;
 
+	/* @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
+
 	// Notifications types to delete
 	$delete_notifications_types = array(
 		'notification.type.quote',
@@ -1064,7 +1067,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 	if ($error)
 	{
@@ -2390,20 +2393,16 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 */
 function phpbb_cache_moderators($db, $cache, $auth)
 {
+	global $phpbb_container;
+
+	/* @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
+
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	switch ($db->get_sql_layer())
-	{
-		case 'sqlite3':
-			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
-		break;
-
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
-		break;
-	}
+	$db_tools->sql_table_truncate(MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$sql_ary = array();

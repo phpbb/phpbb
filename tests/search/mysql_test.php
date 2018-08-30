@@ -37,9 +37,11 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 		$config['fulltext_mysql_max_word_len'] = 254;
 
 		$this->db = $this->new_dbal();
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($this->db);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$error = null;
 		$class = self::get_search_wrapper('\phpbb\search\fulltext_mysql');
-		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user, $phpbb_dispatcher);
+		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $db_tools, $user, $phpbb_dispatcher);
 	}
 }

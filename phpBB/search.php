@@ -134,6 +134,9 @@ $template->assign_block_vars('navlinks', array(
 	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}search.$phpEx"),
 ));
 
+/* @var $db_tools \phpbb\db\tools\tools_interface */
+$db_tools = $phpbb_container->get('dbal.tools');
+
 /**
 * This event allows you to alter the above parameters, such as keywords and submit
 *
@@ -302,7 +305,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 	if ($error)
 	{

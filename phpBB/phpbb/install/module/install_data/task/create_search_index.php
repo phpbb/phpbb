@@ -15,6 +15,7 @@ namespace phpbb\install\module\install_data\task;
 
 use phpbb\auth\auth;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher;
 use phpbb\config\config;
 use phpbb\install\helper\container_factory;
@@ -38,6 +39,11 @@ class create_search_index extends \phpbb\install\task_base
 	 * @var driver_interface
 	 */
 	protected $db;
+
+	/**
+	 * @var tools_interface
+	 */
+	protected $db_tools;
 
 	/**
 	 * @var dispatcher
@@ -78,6 +84,7 @@ class create_search_index extends \phpbb\install\task_base
 		$this->auth				= $container->get('auth');
 		$this->config			= $config;
 		$this->db				= $container->get('dbal.conn');
+		$this->db_tools			= $container->get('dbal.tools');
 		$this->language			= $container->get('language');
 		$this->phpbb_dispatcher = $container->get('dispatcher');
 		$this->user 			= $container->get('user');
@@ -101,6 +108,7 @@ class create_search_index extends \phpbb\install\task_base
 			$this->auth,
 			$this->config,
 			$this->db,
+			$this->db_tools,
 			$this->user,
 			$this->phpbb_dispatcher
 		);

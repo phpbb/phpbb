@@ -135,6 +135,7 @@ services:
             - '@auth'
             - '@config'
             - '@dbal.conn'
+            - '@dbal.tools'
             - '@user'
             - '@dispatcher'
         calls:

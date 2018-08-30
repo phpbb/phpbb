@@ -558,7 +558,10 @@ function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $po
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log, $phpbb_dispatcher;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
+
+	/* @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -635,7 +638,7 @@ function change_poster(&$post_info, $userdata)
 	{
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 		if (!$error && method_exists($search, 'destroy_cache'))
 		{

@@ -523,6 +523,8 @@ class acp_icons
 			break;
 
 			case 'import':
+				/* @var $db_tools \phpbb\db\tools\tools_interface */
+				$db_tools = $phpbb_container->get('dbal.tools');
 
 				$pak = $request->variable('pak', '');
 				$current = $request->variable('current', '');
@@ -561,16 +563,7 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						switch ($db->get_sql_layer())
-						{
-							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . $table);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . $table);
-							break;
-						}
+						$db_tools->sql_table_truncate($table);
 
 						switch ($mode)
 						{

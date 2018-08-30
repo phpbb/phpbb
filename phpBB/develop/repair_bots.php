@@ -2,7 +2,7 @@
 /**
 * Rebuild BOTS
 *
-* You should make a backup from your whole database. Things can and will go wrong. 
+* You should make a backup from your whole database. Things can and will go wrong.
 * This will only work if no BOTs were added.
 *
 */
@@ -74,7 +74,7 @@ $bots = array(
 	'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
 	'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 );
-	
+
 $bot_ids = array();
 user_get_id_name($bot_ids, array_keys($bots), USER_IGNORE);
 foreach($bot_ids as $bot)
@@ -100,7 +100,10 @@ function add_bots($bots)
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 	$db->sql_freeresult($result);
-	$db->sql_query('TRUNCATE TABLE ' . BOTS_TABLE);
+
+	$factory = new \phpbb\db\tools\factory();
+	$db_tools = $factory->get($db);
+	$db->sql_table_truncate(BOTS_TABLE);
 
 	if (!$group_id)
 	{
@@ -112,9 +115,6 @@ function add_bots($bots)
 		$db->sql_freeresult($result);
 
 	}
-
-
-
 
 	foreach ($bots as $bot_name => $bot_ary)
 	{

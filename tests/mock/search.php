@@ -16,7 +16,7 @@
 class phpbb_mock_search
 {
 
-	public function __construct($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
+	public function __construct($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher)
 	{
 	}
 
@@ -24,4 +24,3 @@ class phpbb_mock_search
 	{
 	}
 }
-

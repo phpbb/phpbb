@@ -402,7 +402,10 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_dispatcher;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_dispatcher, $phpbb_container;
+
+	/** @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
 
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$forum_id		= $request->variable('forum_id', 0);
@@ -601,7 +604,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			}
 
 			$error = false;
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 
 			if ($error)
 			{

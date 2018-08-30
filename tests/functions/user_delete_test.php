@@ -82,6 +82,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$phpbb_container->set('auth.provider.oauth.service.google', $oauth_provider_google);
 		$phpbb_container->set('auth.provider_collection', $provider_collection);
 		$phpbb_container->set('notification_manager', $notification_manager);
+                $phpbb_container->set('dbal.tools', $this->createMock('\phpbb\db\tools\tools'));
 
 		$phpbb_container->setParameter('tables.auth_provider_oauth_token_storage', 'phpbb_oauth_tokens');
 		$phpbb_container->setParameter('tables.auth_provider_oauth_states', 'phpbb_oauth_states');

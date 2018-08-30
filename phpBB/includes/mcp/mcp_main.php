@@ -1222,8 +1222,11 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 */
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $config;
+	global $auth, $user, $db, $template, $config, $phpbb_container;
 	global $phpEx, $phpbb_root_path, $phpbb_log, $request, $phpbb_dispatcher;
+
+	/** @var $db_tools \phpbb\db\tools\tools_interface */
+	$db_tools = $phpbb_container->get('dbal.tools');
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
@@ -1301,7 +1304,7 @@ function mcp_fork_topic($topic_ids)
 				}
 
 				$error = false;
-				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher);
 				$search_mode = 'post';
 
 				if ($error)

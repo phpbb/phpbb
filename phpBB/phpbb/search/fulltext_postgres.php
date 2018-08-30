@@ -56,6 +56,12 @@ class fulltext_postgres extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * Database tools
+	 * @var \phpbb\db\tools\tools_interface
+	 */
+	protected $db_tools;
+
+	/**
 	 * phpBB event dispatcher object
 	 * @var \phpbb\event\dispatcher_interface
 	 */
@@ -97,13 +103,15 @@ class fulltext_postgres extends \phpbb\search\base
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\db\tools\tools_interface Database tools
 	 * @param \phpbb\user $user User object
 	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $db_tools, $user, $phpbb_dispatcher)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
@@ -996,7 +1004,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query($sql_query);
 		}
 
-		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db_tools->sql_table_truncate(SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -1052,7 +1060,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query($sql_query);
 		}
 
-		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		$this->db_tools->sql_table_truncate(SEARCH_RESULTS_TABLE);
 
 		return false;
 	}

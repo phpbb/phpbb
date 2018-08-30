@@ -57,6 +57,9 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$this->db = $this->new_dbal();
 		$db = $this->db;
 
+		// Database tools
+		$db_tools = $this->createMock('\phpbb\db\tools\tools');
+
 		// Auth
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
@@ -123,6 +126,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('config', $config);
 		$phpbb_container->set('dbal.conn', $db);
+		$phpbb_container->set('dbal.tools', $db_tools);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);

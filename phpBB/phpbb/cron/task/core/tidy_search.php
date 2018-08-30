@@ -51,6 +51,12 @@ class tidy_search extends \phpbb\cron\task\base
 	protected $db;
 
 	/**
+	* Database tools
+	* @var \phpbb\db\tools\tools_interface
+	*/
+	protected $db_tools;
+
+	/**
 	* User object
 	* @var \phpbb\user
 	*/
@@ -70,16 +76,18 @@ class tidy_search extends \phpbb\cron\task\base
 	* @param \phpbb\auth\auth $auth The auth object
 	* @param \phpbb\config\config $config The config object
 	* @param \phpbb\db\driver\driver_interface $db The database object
+	* @param \phpbb\db\tools\tools_interface $db_tools Database tools
 	* @param \phpbb\user $user The user object
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher The event dispatcher object
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->user = $user;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
