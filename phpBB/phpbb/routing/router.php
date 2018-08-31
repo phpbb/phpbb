@@ -255,7 +255,7 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", defined('DEBUG'));
+			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->container->getParameter('debug.url_generator'));
 			if (!$cache->isFresh())
 			{
 				$dumper = new PhpGeneratorDumper($this->get_routes());
