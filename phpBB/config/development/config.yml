@@ -3,6 +3,7 @@ imports:
 
 core:
     require_dev_dependencies: true
+    allow_install_dir: true
 
     debug:
         exceptions: true
