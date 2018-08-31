@@ -207,7 +207,7 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", defined('DEBUG'));
+			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->container->getParameter('debug.url_matcher'));
 			if (!$cache->isFresh())
 			{
 				$dumper = new PhpMatcherDumper($this->get_routes());
