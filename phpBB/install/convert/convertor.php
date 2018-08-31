@@ -1258,7 +1258,7 @@ class convertor
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->get_sql_layer(), 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
+		$sql_ignore = (strpos($db->get_sql_layer(), 'mysql') === 0 && !$phpbb_container->getParameter('convert.strict_mode')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();

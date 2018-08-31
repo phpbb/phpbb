@@ -54,6 +54,12 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('composer_verbose')->defaultValue(false)->end()
 					->end()
 				->end()
+				->arrayNode('convert')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('strict_mode')->defaultValue(false)->end()
+					->end()
+				->end()
 			->end()
 		;
 		return $treeBuilder;

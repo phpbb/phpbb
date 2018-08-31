@@ -17,3 +17,6 @@ core:
     extensions:
         composer_debug: true
         composer_verbose: true
+
+    convert:
+        strict_mode: true
