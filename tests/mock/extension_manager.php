@@ -19,11 +19,11 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = 'php';
 		$this->extensions = $extensions;
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->container = $container;
 		$this->config = new \phpbb\config\config(array());
 		$this->user = new \phpbb\user($lang,'\phpbb\datetime');
+		$this->finder_factory = new \phpbb\finder\factory(null, true, $this->phpbb_root_path, $phpEx);
 	}
 }

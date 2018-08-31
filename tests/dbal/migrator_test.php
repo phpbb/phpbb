@@ -54,6 +54,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 
+		$finder_factory = $this->createMock('\phpbb\finder\factory');
+
 		$tools = array(
 			new \phpbb\db\migration\tool\config($this->config),
 		);
@@ -80,9 +82,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
+			$finder_factory,
 			'phpbb_ext',
 			__DIR__ . '/../../phpBB/',
-			'php',
 			null
 		);
 	}

@@ -1,0 +1,8 @@
+services:
+    finder.factory:
+        class: phpbb\finder\factory
+        arguments:
+            - '@cache'
+            - '%finder.not_use_cache%'
+            - '%core.root_path%'
+            - '%core.php_ext%'

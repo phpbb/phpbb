@@ -8,6 +8,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables%'
+            - '%finder.not_use_cache%'
         tags:
             - { name: install_database_install, order: 1 }
 
