@@ -110,6 +110,12 @@ class core extends Extension
 		{
 			$container->setParameter('debug.' . $name, $value);
 		}
+
+		// Set the log options
+		foreach ($config['log'] as $name => $value)
+		{
+			$container->setParameter('log.' . $name, $value);
+		}
 	}
 
 	/**
