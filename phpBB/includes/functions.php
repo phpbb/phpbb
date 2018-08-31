@@ -3320,6 +3320,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
+	global $phpbb_container;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
@@ -3340,7 +3341,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG')) ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($phpbb_container->getParameter('debug.errors_show') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -3398,7 +3399,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || defined('DEBUG') || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || $phpbb_container->getParameter('debug.errors_show') || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 
