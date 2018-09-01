@@ -15,6 +15,11 @@
 * @ignore
 */
 define('IN_PHPBB', true);
+/**
+* First Characters Limit
+* @ignore
+*/
+define('FIRST_CHARACTERS_LIMIT', 50);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
@@ -1159,9 +1164,46 @@ switch ($mode)
 			}
 		}
 
+		$users_first_characters = $cache->get('users_first_characters');
+		// Setting sunstring SQL function
+		$substring_function = 'substring';
+		if ($db->get_sql_layer() === 'sqlite3')
+		{
+			$substring_function = 'substr';
+		}
+		// Rebuild $users_first_characters
+		if ($users_first_characters === false)
+		{
+			$substring_function = 'substring';
+			if ($db->get_sql_layer() === 'sqlite3')
+			{
+				$substring_function = 'substr';
+			}
+
+			$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) first_char, count(*) count_users
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
+				GROUP BY first_char
+				ORDER BY count_users DESC, first_char';
+
+			$result = $db-> sql_query_limit($sql, FIRST_CHARACTERS_LIMIT);
+			$users_first_characters = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$users_first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
+			}
+			$db->sql_freeresult($result);
+			ksort($users_first_characters);
+			$cache->put('users_first_characters',$users_first_characters);
+		}
+
 		$first_char = $request->variable('first_char', '', true);
 
-		if ($first_char)
+		if ($first_char == 'other')
+		{
+			$sql_where .= ' AND ' . $db->sql_in_set($substring_function . '(u.username_clean,1,1) ', array_keys($users_first_characters), true);
+		}
+		else if ($first_char)
 		{
 			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(mb_substr($first_char, 0, 1) . $db->get_any_char());
 		}
@@ -1381,33 +1423,13 @@ switch ($mode)
 		$u_first_char_params = implode('&amp;', $u_first_char_params);
 		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
 
-		$first_characters = array();
-		$first_characters[''] = $user->lang['ALL'];
-
-		if ($db->get_sql_layer() === 'sqlite3')
+		$first_characters = array('' => $user->lang['ALL']) + $users_first_characters;
+		if (count($first_characters) > FIRST_CHARACTERS_LIMIT)
 		{
-			$sql = 'SELECT DISTINCT substr(username_clean,1,1) first_char
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
-				ORDER BY first_char';
+			$first_characters['other'] =  $user->lang['OTHER'];
 		}
-		else
-		{
-			$sql = 'SELECT DISTINCT substring(username_clean,1,1) first_char
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
-				ORDER BY first_char';
-		}
-
-		$result = $db->sql_query($sql);
 
 		$first_char_block_vars = [];
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
-		}
-		$db->sql_freeresult($result);
 
 		foreach ($first_characters as $char => $desc)
 		{
