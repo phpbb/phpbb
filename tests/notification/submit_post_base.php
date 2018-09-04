@@ -130,6 +130,11 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
+		$phpbb_container->setParameter('tables.topics_watch', 'phpbb_topics_watch');
+		$phpbb_container->setParameter('tables.topics_track', 'phpbb_topics_track');
+		$phpbb_container->setParameter('tables.posts', 'phpbb_posts');
+		$phpbb_container->setParameter('tables.forums_watch', 'phpbb_forums_watch');
+		$phpbb_container->setParameter('tables.forums_track', 'phpbb_forums_track');
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 		$phpbb_container->compile();
 
