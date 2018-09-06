@@ -150,8 +150,6 @@ class request implements \phpbb\request\request_interface
 			return;
 		}
 
-		$this->type_cast_helper->add_magic_quotes($value);
-
 		// setting to null means unsetting
 		if ($value === null)
 		{
