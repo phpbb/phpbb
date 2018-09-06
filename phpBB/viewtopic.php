@@ -2249,7 +2249,6 @@ if ($s_can_vote || $s_quick_reply)
 
 		$qr_hidden_fields = array(
 			'topic_cur_post_id'		=> (int) $topic_data['topic_last_post_id'],
-			'lastclick'				=> (int) time(),
 			'topic_id'				=> (int) $topic_data['topic_id'],
 			'forum_id'				=> (int) $forum_id,
 		);
