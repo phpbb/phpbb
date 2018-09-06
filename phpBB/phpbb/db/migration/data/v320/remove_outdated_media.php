@@ -85,13 +85,11 @@ class remove_outdated_media extends \phpbb\db\migration\migration
 				WHERE ' . $this->db->sql_in_set('group_id', $group_ids);
 		}
 
-		$result = $this->db->sql_query($sql);
-		$this->db->sql_freeresult($result);
+		$this->db->sql_query($sql);
 
 		// delete the now empty, outdated media extension groups
 		$sql = 'DELETE FROM ' . EXTENSION_GROUPS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('group_id', $group_ids);
-		$result = $this->db->sql_query($sql);
-		$this->db->sql_freeresult($result);
+		$this->db->sql_query($sql);
 	}
 }
