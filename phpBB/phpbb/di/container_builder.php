@@ -481,7 +481,7 @@ class container_builder
 
 			$cached_container_dump = $dumper->dump(array(
 				'class'      => 'phpbb_cache_container',
-				'base_class' => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
+				'base_class' => 'Symfony\\Component\\DependencyInjection\\Container',
 			));
 
 			$cache->write($cached_container_dump, $this->container->getResources());
