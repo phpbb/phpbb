@@ -31,6 +31,7 @@ class container_configuration implements ConfigurationInterface
 		$rootNode
 			->children()
 				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()
+				->booleanNode('allow_install_dir')->defaultValue(false)->end()
 				->arrayNode('debug')
 					->addDefaultsIfNotSet()
 					->children()
