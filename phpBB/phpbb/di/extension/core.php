@@ -112,9 +112,9 @@ class core extends Extension
 		}
 
 		// Set the log options
-		foreach ($config['log'] as $name => $value)
+		foreach ($config['session'] as $name => $value)
 		{
-			$container->setParameter('log.' . $name, $value);
+			$container->setParameter('session.' . $name, $value);
 		}
 	}
 

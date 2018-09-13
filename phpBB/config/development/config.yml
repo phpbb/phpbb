@@ -18,5 +18,5 @@ core:
         composer_debug: true
         composer_verbose: true
 
-    log:
-        session_errors: true
+    session:
+        log_errors: true
