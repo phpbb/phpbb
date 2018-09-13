@@ -216,7 +216,7 @@ class add_config_settings extends \phpbb\install\task_base
 
 			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('script_path')) . "'
-				WHERE config_name = 'script_path'",
+				WHERE config_name = 'script_path' OR config_name = 'cookie_path'",
 
 			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('server_protocol')) . "'
