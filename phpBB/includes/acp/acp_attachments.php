@@ -1237,7 +1237,7 @@ class acp_attachments
 
 					$row['extension'] = strtolower(trim((string) $row['extension']));
 					$comment = ($row['attach_comment'] && !$row['in_message']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
-					$display_cat = isset($extensions[$row['extension']]['display_cat']) ? extensions[$row['extension']]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
+					$display_cat = isset($extensions[$row['extension']]['display_cat']) ? $extensions[$row['extension']]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
 
 					$template->assign_block_vars('attachments', array(
