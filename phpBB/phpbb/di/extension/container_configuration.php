@@ -37,7 +37,7 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('exceptions')->defaultValue(false)->end()
 						->booleanNode('load_time')->defaultValue(false)->end()
 						->booleanNode('sql_explain')->defaultValue(false)->end()
-						->booleanNode('errors_show')->defaultValue(false)->end()
+						->booleanNode('show_errors')->defaultValue(false)->end()
 					->end()
 				->end()
 				->arrayNode('twig')

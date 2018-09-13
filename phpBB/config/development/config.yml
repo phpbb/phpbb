@@ -8,7 +8,7 @@ core:
         exceptions: true
         load_time: true
         sql_explain: true
-        errors_show: true
+        show_errors: true
 
     twig:
         debug: true

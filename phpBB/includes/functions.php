@@ -3273,7 +3273,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ($phpbb_container->getParameter('debug.errors_show') ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -3331,7 +3331,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || $phpbb_container->getParameter('debug.errors_show') || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || $phpbb_container->getParameter('debug.show_errors') || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 
