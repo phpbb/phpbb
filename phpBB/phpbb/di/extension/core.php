@@ -110,6 +110,12 @@ class core extends Extension
 		{
 			$container->setParameter('debug.' . $name, $value);
 		}
+
+		// Set the convert options
+		foreach ($config['convert'] as $name => $value)
+		{
+			$container->setParameter('convert.' . $name, $value);
+		}
 	}
 
 	/**
