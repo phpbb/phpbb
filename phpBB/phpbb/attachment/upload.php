@@ -254,8 +254,6 @@ class upload
 				{
 					fclose($fp);
 				}
-
-				$this->storage->track_file($destination_name);
 			}
 			else
 			{

@@ -212,7 +212,6 @@ class storage
 
 	/**
 	 * Writes a new file using a stream
-	 * The file needs to be tracked after using this method
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
@@ -226,6 +225,7 @@ class storage
 		if ($adapter instanceof stream_interface)
 		{
 			$adapter->write_stream($path, $resource);
+			$this->track_file($path);
 		}
 		else
 		{

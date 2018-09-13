@@ -456,8 +456,6 @@ class filespec_storage
 			{
 				fclose($fp);
 			}
-
-			$storage->track_file($this->destination_file);
 		}
 		catch (\phpbb\storage\exception\exception $e)
 		{

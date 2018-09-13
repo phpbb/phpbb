@@ -348,6 +348,8 @@ class local implements adapter_interface, stream_interface
 			fclose($stream);
 			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
+
+		fclose($stream);
 	}
 
 	/**
