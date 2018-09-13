@@ -19,13 +19,6 @@ namespace phpbb\request;
 interface type_cast_helper_interface
 {
 	/**
-	* Recursively applies addslashes to a variable.
-	*
-	* @param	mixed	&$var	Variable passed by reference to which slashes will be added.
-	*/
-	public function addslashes_recursively(&$var);
-
-	/**
 	* Set variable $result to a particular type.
 	*
 	* @param mixed	&$result	The variable to fill

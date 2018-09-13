@@ -19,34 +19,6 @@ namespace phpbb\request;
 class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 {
 	/**
-	* Recursively applies addslashes to a variable.
-	*
-	* @param	mixed	&$var	Variable passed by reference to which slashes will be added.
-	*/
-	public function addslashes_recursively(&$var)
-	{
-		if (is_string($var))
-		{
-			$var = addslashes($var);
-		}
-		else if (is_array($var))
-		{
-			$var_copy = $var;
-			$var = array();
-			foreach ($var_copy as $key => $value)
-			{
-				if (is_string($key))
-				{
-					$key = addslashes($key);
-				}
-				$var[$key] = $value;
-
-				$this->addslashes_recursively($var[$key]);
-			}
-		}
-	}
-
-	/**
 	* Set variable $result to a particular type.
 	*
 	* @param mixed	&$result		The variable to fill
