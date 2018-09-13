@@ -81,6 +81,11 @@ class router implements RouterInterface
 	protected $cache_dir;
 
 	/**
+	 * @var string
+	 */
+	protected $debug_url_generator;
+
+	/**
 	 * Construct method
 	 *
 	 * @param ContainerInterface			$container				DI container
