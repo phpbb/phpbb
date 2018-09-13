@@ -262,7 +262,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
-	$pm_count = $row['pm_count'];
+	$pm_count = (int) $row['pm_count'];
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
