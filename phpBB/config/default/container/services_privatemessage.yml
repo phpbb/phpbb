@@ -1,0 +1,16 @@
+services:
+    phpbb.privatemessage.view:
+        class: phpbb\privatemessage\view
+        arguments:
+            - '@controller.helper'
+            - '@user'
+            - '@config'
+            - '@request'
+            - '@auth'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '%tables.privmsgs%'
+            - '%tables.privmsgs_to%'
+            - '%tables.privmsgs_folder%'
+            - '%tables.users%'

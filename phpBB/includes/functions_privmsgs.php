@@ -115,112 +115,6 @@ $global_rule_conditions = array(
 );
 
 /**
-* Get all folder
-*/
-function get_folder($user_id, $folder_id = false)
-{
-	global $db, $user, $template;
-	global $phpbb_root_path, $phpEx;
-
-	$folder = array();
-
-	// Get folder information
-	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(pm_unread) as num_unread
-		FROM ' . PRIVMSGS_TO_TABLE . "
-		WHERE user_id = $user_id
-			AND folder_id <> " . PRIVMSGS_NO_BOX . '
-		GROUP BY folder_id';
-	$result = $db->sql_query($sql);
-
-	$num_messages = $num_unread = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$num_messages[(int) $row['folder_id']] = $row['num_messages'];
-		$num_unread[(int) $row['folder_id']] = $row['num_unread'];
-	}
-	$db->sql_freeresult($result);
-
-	// Make sure the default boxes are defined
-	$available_folder = array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX);
-
-	foreach ($available_folder as $default_folder)
-	{
-		if (!isset($num_messages[$default_folder]))
-		{
-			$num_messages[$default_folder] = 0;
-		}
-
-		if (!isset($num_unread[$default_folder]))
-		{
-			$num_unread[$default_folder] = 0;
-		}
-	}
-
-	// Adjust unread status for outbox
-	$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
-
-	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'		=> $user->lang['PM_INBOX'],
-		'num_messages'		=> $num_messages[PRIVMSGS_INBOX],
-		'unread_messages'	=> $num_unread[PRIVMSGS_INBOX]
-	);
-
-	// Custom Folder
-	$sql = 'SELECT folder_id, folder_name, pm_count
-		FROM ' . PRIVMSGS_FOLDER_TABLE . "
-			WHERE user_id = $user_id";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$folder[$row['folder_id']] = array(
-			'folder_name'		=> $row['folder_name'],
-			'num_messages'		=> $row['pm_count'],
-			'unread_messages'	=> ((isset($num_unread[$row['folder_id']])) ? $num_unread[$row['folder_id']] : 0)
-		);
-	}
-	$db->sql_freeresult($result);
-
-	$folder[PRIVMSGS_OUTBOX] = array(
-		'folder_name'		=> $user->lang['PM_OUTBOX'],
-		'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
-		'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
-	);
-
-	$folder[PRIVMSGS_SENTBOX] = array(
-		'folder_name'		=> $user->lang['PM_SENTBOX'],
-		'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
-		'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
-	);
-
-	// Define Folder Array for template designers (and for making custom folders usable by the template too)
-	foreach ($folder as $f_id => $folder_ary)
-	{
-		$folder_id_name = ($f_id == PRIVMSGS_INBOX) ? 'inbox' : (($f_id == PRIVMSGS_OUTBOX) ? 'outbox' : 'sentbox');
-
-		$template->assign_block_vars('folder', array(
-			'FOLDER_ID'			=> $f_id,
-			'FOLDER_NAME'		=> $folder_ary['folder_name'],
-			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
-			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
-
-			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id_name),
-
-			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
-			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
-			'S_CUSTOM_FOLDER'	=> ($f_id > 0) ? true : false)
-		);
-	}
-
-	if ($folder_id !== false && $folder_id !== PRIVMSGS_HOLD_BOX && !isset($folder[$folder_id]))
-	{
-		trigger_error('UNKNOWN_FOLDER');
-	}
-
-	return $folder;
-}
-
-/**
 * Delete Messages From Sentbox
 * we are doing this here because this saves us a bunch of checks and queries
 */
@@ -920,8 +814,8 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		}
 	}
 
-	$sql = 'SELECT msg_id 
-			FROM ' . PRIVMSGS_TABLE . ' 
+	$sql = 'SELECT msg_id
+			FROM ' . PRIVMSGS_TABLE . '
 			WHERE root_level = ' . (int) $msg_id;
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
@@ -2143,51 +2037,6 @@ function message_history($msg_id, $user_id, $message_row, $folder,$sql_limit,$sq
 	));
 
 	return true;
-}
-
-/**
-* Set correct users max messages in PM folder.
-* If several group memberships define different amount of messages, the highest will be chosen.
-*/
-function set_user_message_limit()
-{
-	global $user, $db, $config;
-
-	// Get maximum about from user memberships
-	$message_limit = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'message_limit');
-
-	// If it is 0, there is no limit set and we use the maximum value within the config.
-	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
-}
-
-/**
- * Get the maximum PM setting for the groups of the user
- *
- * @param \phpbb\db\driver\driver_interface $db
- * @param int $user_id
- * @param string $setting Only 'max_recipients' and 'message_limit' are supported
- * @return int The maximum setting for all groups of the user, unless one group has '0'
- * @throws \InvalidArgumentException If selected group setting is not supported
- */
-function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db, $user_id, $setting)
-{
-	if ($setting !== 'max_recipients' && $setting !== 'message_limit')
-	{
-		throw new InvalidArgumentException('Setting "' . $setting . '" is not supported');
-	}
-
-	// Get maximum number of allowed recipients
-	$sql = 'SELECT MAX(g.group_' . $setting . ') as max_setting
-		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . (int) $user_id . '
-			AND ug.user_pending = 0
-			AND ug.group_id = g.group_id';
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-	$max_setting = (int) $row['max_setting'];
-
-	return $max_setting;
 }
 
 /**

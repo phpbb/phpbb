@@ -1,0 +1,7 @@
+phpbb_privatemessage_view:
+    path: /{mode}
+    defaults:
+        _controller: phpbb.privatemessage.view:handle
+        mode: 'index'
+    requirements:
+        mode: 'index|folder|thread'

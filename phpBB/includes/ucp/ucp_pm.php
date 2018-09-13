@@ -47,19 +47,18 @@ class ucp_pm
 	{
 		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config, $request;
 
-		if (!$user->data['is_registered'])
-		{
-			trigger_error('NO_MESSAGE');
-		}
-
-		// Is PM disabled?
-		if (!$config['allow_privmsg'])
-		{
-			trigger_error('PM_DISABLED');
-		}
-
 		$user->add_lang('posting');
 		$template->assign_var('S_PRIVMSGS', true);
+
+
+
+
+
+
+
+
+
+
 
 		// Folder directly specified?
 		$folder_specified = $request->variable('folder', '');
@@ -141,41 +140,6 @@ class ucp_pm
 			break;
 
 			case 'view':
-
-				set_user_message_limit();
-
-				if ($folder_specified)
-				{
-					$folder_id = $folder_specified;
-					$action = 'view_folder';
-				}
-				else
-				{
-					$folder_id = $request->variable('f', PRIVMSGS_NO_BOX);
-					$action = $request->variable('action', 'view_folder');
-				}
-
-				$msg_id = $request->variable('p', 0);
-				$view	= $request->variable('view', '');
-
-				// View message if specified
-				if ($msg_id)
-				{
-					$action = 'view_message';
-				}
-
-				if (!$auth->acl_get('u_readpm'))
-				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_READ_MESSAGE');
-				}
-
-				if ($view == 'print' && (!$config['print_pm'] || !$auth->acl_get('u_pm_printpm')))
-				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_PRINT_MESSAGE');
-				}
-
 				// Do not allow hold messages to be seen
 				if ($folder_id == PRIVMSGS_HOLD_BOX)
 				{
@@ -234,23 +198,6 @@ class ucp_pm
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)
 				{
 					$folder_id = PRIVMSGS_INBOX;
-				}
-				else if ($msg_id && $folder_id == PRIVMSGS_NO_BOX)
-				{
-					$sql = 'SELECT folder_id
-						FROM ' . PRIVMSGS_TO_TABLE . "
-						WHERE msg_id = $msg_id
-							AND folder_id <> " . PRIVMSGS_NO_BOX . '
-							AND user_id = ' . $user->data['user_id'];
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if (!$row)
-					{
-						trigger_error('NO_MESSAGE');
-					}
-					$folder_id = (int) $row['folder_id'];
 				}
 
 				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_pms_read'))

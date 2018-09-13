@@ -22,6 +22,7 @@ imports:
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
     - { resource: services_php.yml }
+    - { resource: services_privatemessage.yml }
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
