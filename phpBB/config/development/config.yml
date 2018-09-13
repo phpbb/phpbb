@@ -10,7 +10,7 @@ core:
         load_time: true
         sql_explain: true
         memory: true
-        errors_show: true
+        show_errors: true
 
     twig:
         debug: true
