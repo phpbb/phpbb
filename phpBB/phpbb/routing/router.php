@@ -83,13 +83,14 @@ class router implements RouterInterface
 	/**
 	 * Construct method
 	 *
-	 * @param ContainerInterface			$container			DI container
-	 * @param resources_locator_interface	$resources_locator	Resources locator
-	 * @param LoaderInterface				$loader				Resources loader
-	 * @param string						$php_ext			PHP file extension
-	 * @param string						$cache_dir			phpBB cache directory
+	 * @param ContainerInterface			$container				DI container
+	 * @param resources_locator_interface	$resources_locator		Resources locator
+	 * @param LoaderInterface				$loader					Resources loader
+	 * @param string						$php_ext				PHP file extension
+	 * @param string						$cache_dir				phpBB cache directory
+	 * @param string						$debug_url_generator	Debug url generator
 	 */
-	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, $php_ext, $cache_dir)
+	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, $php_ext, $cache_dir, $debug_url_generator)
 	{
 		$this->container			= $container;
 		$this->resources_locator	= $resources_locator;
@@ -97,6 +98,7 @@ class router implements RouterInterface
 		$this->php_ext				= $php_ext;
 		$this->context				= new RequestContext();
 		$this->cache_dir			= $cache_dir;
+		$this->debug_url_generator	= $debug_url_generator;
 	}
 
 	/**
@@ -255,7 +257,7 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->container->getParameter('debug.url_generator'));
+			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->debug_url_generator);
 			if (!$cache->isFresh())
 			{
 				$dumper = new PhpGeneratorDumper($this->get_routes());
