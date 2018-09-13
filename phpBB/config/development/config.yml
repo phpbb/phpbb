@@ -16,5 +16,5 @@ core:
         auto_reload: true
         enable_debug_extension: true
 
-    log:
-        session_errors: true
+    session:
+        log_errors: true

@@ -479,7 +479,7 @@ class session
 				else
 				{
 					// Added logging temporarily to help debug bugs...
-					if ($phpbb_container->getParameter('log.session_errors') && $this->data['user_id'] != ANONYMOUS)
+					if ($phpbb_container->getParameter('session.log_errors') && $this->data['user_id'] != ANONYMOUS)
 					{
 						if ($referer_valid)
 						{

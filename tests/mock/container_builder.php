@@ -21,7 +21,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	public function __construct()
 	{
 		$this->setParameter('debug.load_time', false);
-		$this->setParameter('log.session_errors', false);
+		$this->setParameter('session.log_errors', false);
 	}
 
 	/**
