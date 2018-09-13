@@ -52,16 +52,16 @@ class mention
 		$keyword = $this->request->variable('keyword', '', true);
 		$topic_id = $this->request->variable('topic_id', 0);
 		$names = [];
-		$hasNamesRemaining = false;
+		$has_names_remaining = false;
 
 		foreach ($this->mention_sources as $source)
 		{
-			$hasNamesRemaining = !$source->get($names, $keyword, $topic_id) || $hasNamesRemaining;
+			$has_names_remaining = !$source->get($names, $keyword, $topic_id) || $has_names_remaining;
 		}
 
 		return new JsonResponse([
 			'names' => array_values($names),
-			'all' => !$hasNamesRemaining,
+			'all' => !$has_names_remaining,
 		]);
 	}
 }
