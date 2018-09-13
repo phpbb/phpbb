@@ -22,7 +22,7 @@
 }
 
 .atwho-view-ul { /* mention-list */
-	overflow: auto;
+	overflow: auto; /* placed here for list to scroll with arrow key press */
 	max-height: 200px;
 	margin: 0;
 	padding: 0;
@@ -73,6 +73,7 @@ svg { /* TODO: remove it after general normalization */
 
 .mention-name {
 	line-height: 1.25;
+	margin-right: 20px; /* needed to account for scrollbar bug on Firefox for Windows */
 }
 
 .mention-rank {
