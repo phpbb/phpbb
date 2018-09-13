@@ -140,7 +140,8 @@ class storage
 	/**
 	 * Checks the existence of files or directories
 	 *
-	 * @param string	$path	file/directory to check
+	 * @param string	$path		file/directory to check
+	 * @param bool		$full_check	check in the filesystem too
 	 *
 	 * @return bool	Returns true if the file/directory exist, false otherwise
 	 */
@@ -317,7 +318,7 @@ class storage
 
 		if (!$row)
 		{
-			// Don't call the method, because it check's if the file is tracked
+			// Don't call the file_info method, because it check's if the file is tracked
 			// and is not (for now). This method check if the file exists using the adapter
 			// at the beginning.
 			$file = new file_info($this->get_adapter(), $path);
@@ -373,7 +374,6 @@ class storage
 			'storage'		=> $this->get_name(),
 		);
 
-		// Get file, if exist update filesize, if not add new record
 		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
