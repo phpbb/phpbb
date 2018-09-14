@@ -39,7 +39,7 @@ class friend extends base_user
 		 * Results will be cached on a per-user basis
 		 */
 		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'u.username_clean, u.username, u.user_id',
+			'SELECT'    => 'u.username_clean, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',
 			],
