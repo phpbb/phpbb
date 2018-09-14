@@ -30,6 +30,9 @@ class acp_storage
 	/** @var \phpbb\db\driver\driver_interface $db */
 	protected $db;
 
+	/** @var \phpbb\language\language $log */
+	protected $lang;
+
 	/** @var \phpbb\log\log_interface $log */
 	protected $log;
 
@@ -81,6 +84,7 @@ class acp_storage
 		$this->config_text = $phpbb_container->get('config_text');
 		$this->db = $phpbb_container->get('dbal.conn');
 		$this->filesystem = $phpbb_container->get('filesystem');
+		$this->lang = $phpbb_container->get('language');
 		$this->log = $phpbb_container->get('log');
 		$this->path_helper = $phpbb_container->get('path_helper');
 		$this->request = $phpbb_container->get('request');
@@ -92,7 +96,7 @@ class acp_storage
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		// Add necesary language files
-		$this->user->add_lang(['acp/storage']);
+		$this->lang->add_lang(['acp/storage']);
 
 		/**
 		 * Add language strings
@@ -131,7 +135,7 @@ class acp_storage
 		{
 			if (!check_form_key($form_key) || !check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
 			{
-				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			if ($this->request->variable('cancel', false))
@@ -159,7 +163,7 @@ class acp_storage
 
 			if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
 			{
-				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			// If update_type is copy or move, copy files from the old to the new storage
@@ -191,7 +195,7 @@ class acp_storage
 						{
 							$this->save_state();
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-							trigger_error($this->user->lang('STORAGE_UPDATE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+							trigger_error($this->lang->lang('STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
 						}
 
 						$stream = $current_adapter->read_stream($row['file_path']);
@@ -238,7 +242,7 @@ class acp_storage
 							{
 								$this->save_state();
 								meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-								trigger_error($this->user->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+								trigger_error($this->lang->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
 							}
 
 							$current_adapter->delete($row['file_path']);
@@ -264,7 +268,7 @@ class acp_storage
 			$this->save_state();
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false, $storages);
-			trigger_error($this->user->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
+			trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
 		}
 
 		// There is an updating in progress, show the form to continue or cancel
@@ -274,8 +278,8 @@ class acp_storage
 				'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->path_helper->get_phpbb_root_path() . $this->path_helper->get_adm_relative_path() . "index." . $this->path_helper->get_php_ext(), "i=$id&amp;mode=$mode&amp;action=progress_bar")),
 				'S_CONTINUE_UPDATING'	=> true,
 				'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-				'L_CONTINUE'			=> $this->user->lang('CONTINUE_UPDATING'),
-				'L_CONTINUE_EXPLAIN'	=> $this->user->lang('CONTINUE_UPDATING_EXPLAIN'),
+				'L_CONTINUE'			=> $this->lang->lang('CONTINUE_UPDATING'),
+				'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('CONTINUE_UPDATING_EXPLAIN'),
 			));
 
 			return;
@@ -289,14 +293,14 @@ class acp_storage
 		{
 			if (!check_form_key($form_key) || !check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
 			{
-				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$modified_storages = [];
 
 			if (!check_form_key($form_key))
 			{
-				$messages[] = $this->user->lang('FORM_INVALID');
+				$messages[] = $this->lang->lang('FORM_INVALID');
 			}
 
 			foreach ($this->storage_collection as $storage)
@@ -370,8 +374,8 @@ class acp_storage
 						'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->path_helper->get_phpbb_root_path() . $this->path_helper->get_adm_relative_path() . "index." . $this->path_helper->get_php_ext(), "i=$id&amp;mode=$mode&amp;action=progress_bar")), // same
 						'S_CONTINUE_UPDATING'	=> true,
 						'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-						'L_CONTINUE'			=> $this->user->lang('START_UPDATING'),
-						'L_CONTINUE_EXPLAIN'	=> $this->user->lang('START_UPDATING_EXPLAIN'),
+						'L_CONTINUE'			=> $this->lang->lang('START_UPDATING'),
+						'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('START_UPDATING_EXPLAIN'),
 					));
 
 					return;
@@ -383,7 +387,7 @@ class acp_storage
 			}
 
 			// If there is no changes
-			trigger_error($this->user->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Top table with stats of each storage
@@ -401,11 +405,11 @@ class acp_storage
 			}
 			catch (\phpbb\storage\exception\exception $e)
 			{
-				$free_space = $this->user->lang('STORAGE_UNKNOWN');
+				$free_space = $this->lang->lang('STORAGE_UNKNOWN');
 			}
 
 			$storage_stats[] = [
-				'name' => $this->user->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
+				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
 				'files' => $storage->get_num_files(),
 				'size' => get_formatted_filesize($storage->get_size()),
 				'free_space' => $free_space,
@@ -426,13 +430,13 @@ class acp_storage
 
 	protected function display_progress_bar()
 	{
-		adm_page_header($this->user->lang('STORAGE_UPDATE_IN_PROGRESS'));
+		adm_page_header($this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'));
 		$this->template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
 		);
 		$this->template->assign_vars(array(
-			'L_PROGRESS'			=> $this->user->lang('STORAGE_UPDATE_IN_PROGRESS'),
-			'L_PROGRESS_EXPLAIN'	=> $this->user->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'))
+			'L_PROGRESS'			=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'),
+			'L_PROGRESS_EXPLAIN'	=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'))
 		);
 		adm_page_footer();
 	}
@@ -512,7 +516,7 @@ class acp_storage
 	 */
 	protected function validate_data($storage_name, &$messages)
 	{
-		$storage_title = $this->user->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
+		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
 
 		// Check if provider exists
 		try
@@ -521,14 +525,14 @@ class acp_storage
 		}
 		catch (\Exception $e)
 		{
-			$messages[] = $this->user->lang('STORAGE_PROVIDER_NOT_EXISTS', $storage_title);
+			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_EXISTS', $storage_title);
 			return;
 		}
 
 		// Check if provider is available
 		if (!$new_provider->is_available())
 		{
-			$messages[] = $this->user->lang('STORAGE_PROVIDER_NOT_AVAILABLE', $storage_title);
+			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_AVAILABLE', $storage_title);
 			return;
 		}
 
@@ -538,7 +542,7 @@ class acp_storage
 		foreach ($new_options as $definition_key => $definition_value)
 		{
 			$provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
-			$definition_title = $this->user->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
+			$definition_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
 
 			$value = $this->request->variable([$storage_name, $definition_key], '');
 
@@ -547,21 +551,21 @@ class acp_storage
 				case 'email':
 					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
-						$messages[] = $this->user->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 				case 'text':
 				case 'password':
 					$maxlength = isset($definition_value['maxlength']) ? $definition_value['maxlength'] : 255;
 					if (strlen($value) > $maxlength)
 					{
-						$messages[] = $this->user->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
 					break;
 				case 'radio':
 				case 'select':
 					if (!in_array($value, array_values($definition_value['options'])))
 					{
-						$messages[] = $this->user->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
 					}
 					break;
 			}
