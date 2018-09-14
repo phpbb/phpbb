@@ -87,6 +87,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'mention' =>
 			"[MENTION={PARSE=/^(?<type>[ug]):(?<id>\d+)$/}
 				profile_url={URL;optional;postFilter=#false}
+				color={COLOR;optional}
 			]{TEXT}[/MENTION]",
 		'quote' =>
 			"[QUOTE
