@@ -64,6 +64,7 @@
 	background-color: #f5f5f5;
 	padding: 1rem;
 	border-radius: 2px;
+	width: 100%;
   }
   .c-pm-msg-list {
 	box-shadow: none;
@@ -162,8 +163,4 @@
 	border-radius: 50%;
 	width: 100% !important;
 	height: 100% !important;
-}
-
-.cp-menu {
-	display: none;
 }

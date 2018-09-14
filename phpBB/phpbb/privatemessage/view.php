@@ -31,11 +31,6 @@ class view
 	protected $config;
 
 	/**
-	 * @var \phpbb\request\request
-	 */
-	protected $request;
-
-	/**
 	 * @var \phpbb\auth\auth
 	 */
 	protected $auth;
@@ -68,114 +63,63 @@ class view
 	/**
 	 * @var string
 	 */
-	protected $privmsgs_folder_table;
-
-	/**
-	 * @var string
-	 */
 	protected $users_table;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, $privmsgs_table, $privmsgs_to_table, $privmsgs_folder_table, $users_table)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, $privmsgs_table, $privmsgs_to_table, $users_table)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
 		$this->config = $config;
-		$this->request = $request;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->language = $language;
 		$this->template = $template;
 		$this->privmsgs_table = $privmsgs_table;
 		$this->privmsgs_to_table = $privmsgs_to_table;
-		$this->privmsgs_folder_table = $privmsgs_folder_table;
 		$this->users_table = $users_table;
 	}
 
-	public function handle($mode)
+	public function thread($id)
 	{
-		if (!$this->user->data['is_registered'])
+		$this->check_permissions();
+
+		// select message folder and double-check it's root message of the thread
+		$sql = 'SELECT pt.folder_id, p.root_level
+			FROM ' . $this->privmsgs_to_table . ' pt
+			LEFT JOIN ' . $this->privmsgs_table . ' p
+				ON (p.msg_id = pt.msg_id)
+			WHERE pt.msg_id = ' . (int) $id . '
+				AND pt.folder_id <> ' . PRIVMSGS_NO_BOX . '
+				AND pt.user_id = ' . $this->user->data['user_id'];
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
 		{
-			return $this->helper->error('NO_MESSAGE', 401);
+			return $this->helper->error('NO_MESSAGE', 404);
 		}
 
-		if (!$this->config['allow_privmsg'])
-		{
-			return $this->helper->error('PM_DISABLED', 403);
-		}
+		$folder_id = (int) $row['folder_id'];
+		$root_msg_id = $row['root_level'] ?: $id;
 
-		$this->language->add_lang('privatemessage');
+		$this->template->assign_vars(array(
+			'THREAD_SUBJECT'	=> $this->get_message_subject($root_msg_id),
+		));
 
-		$folder_id = null;
-		$msg_id = null;
+		$this->get_threads($folder_id, $id);
+		$this->get_messages($root_msg_id);
 
-		switch ($mode)
-		{
-			case 'thread':
+		return $this->helper->render('ucp_pm_view.html', '');
+	}
 
-				if (!$this->auth->acl_get('u_readpm'))
-				{
-					return $this->helper->error('NO_AUTH_READ_MESSAGE', 403);
-				}
+	public function folder($id)
+	{
+		$this->check_permissions();
 
-				$msg_id = $this->request->variable('id', 0);
+		$this->set_user_message_limit();
 
-				$sql = 'SELECT pt.folder_id, p.root_level
-					FROM ' . $this->privmsgs_to_table . ' pt
-					LEFT JOIN ' . $this->privmsgs_table . ' p
-						ON (p.msg_id = pt.msg_id)
-					WHERE pt.msg_id = ' . (int) $msg_id . '
-						AND pt.folder_id <> ' . PRIVMSGS_NO_BOX . '
-						AND pt.user_id = ' . $this->user->data['user_id'];
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				if (!$row)
-				{
-					return $this->helper->error('NO_MESSAGE', 404);
-				}
-				$folder_id = (int) $row['folder_id'];
-
-				$root_msg_id = $row['root_level'] ?: $msg_id;
-
-				$sql = 'SELECT message_subject
-					FROM ' . $this->privmsgs_table . '
-					WHERE msg_id = ' . (int) $root_msg_id;
-				$result = $this->db->sql_query($sql);
-				$message_subject = $this->db->sql_fetchfield('message_subject', $result);
-				$this->db->sql_freeresult($result);
-
-				$this->template->assign_vars(array(
-					'THREAD_SUBJECT'	=> $message_subject,
-				));
-
-				$this->get_messages($root_msg_id);
-
-			// no break; we need to display the folder as well
-
-			case 'folder':
-
-				$this->set_user_message_limit();
-
-				if ($folder_id === null)
-				{
-					$folder_id = $this->request->variable('id', PRIVMSGS_NO_BOX);
-				}
-
-				$this->get_threads($folder_id, $msg_id);
-
-				$this->template->assign_vars(array(
-					'U_BACK_TO_FOLDERS'	=> $this->helper->route('phpbb_privatemessage_view', array('mode' => 'index')),
-				));
-
-			break;
-
-			default:
-
-				$this->get_folders();
-
-			break;
-		}
+		$this->get_threads($id);
 
 		return $this->helper->render('ucp_pm_view.html', '');
 	}
@@ -201,109 +145,7 @@ class view
 		$this->user->data['message_limit'] = (!$message_limit) ? $this->config['pm_max_msgs'] : $message_limit;
 	}
 
-	/**
-	* Get all folders
-	*/
-	public function get_folders($folder_id = false)
-	{
-		$folder = array();
-	
-		// Get folder information
-		$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(pm_unread) as num_unread
-			FROM ' . $this->privmsgs_to_table . '
-			WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
-			GROUP BY folder_id';
-		$result = $this->db->sql_query($sql);
-	
-		$num_messages = $num_unread = array();
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$num_messages[(int) $row['folder_id']] = $row['num_messages'];
-			$num_unread[(int) $row['folder_id']] = $row['num_unread'];
-		}
-		$this->db->sql_freeresult($result);
-	
-		// Make sure the default boxes are defined
-		$available_folders = array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX);
-	
-		foreach ($available_folders as $default_folder)
-		{
-			if (!isset($num_messages[$default_folder]))
-			{
-				$num_messages[$default_folder] = 0;
-			}
-	
-			if (!isset($num_unread[$default_folder]))
-			{
-				$num_unread[$default_folder] = 0;
-			}
-		}
-	
-		// Adjust unread status for outbox
-		$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
-	
-		$folder[PRIVMSGS_INBOX] = array(
-			'folder_name'		=> $this->language->lang('PM_INBOX'),
-			'num_messages'		=> $num_messages[PRIVMSGS_INBOX],
-			'unread_messages'	=> $num_unread[PRIVMSGS_INBOX]
-		);
-	
-		// Custom Folder
-		$sql = 'SELECT folder_id, folder_name, pm_count
-			FROM ' . $this->privmsgs_folder_table . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-	
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$folder[$row['folder_id']] = array(
-				'folder_name'		=> $row['folder_name'],
-				'num_messages'		=> $row['pm_count'],
-				'unread_messages'	=> ((isset($num_unread[$row['folder_id']])) ? $num_unread[$row['folder_id']] : 0)
-			);
-		}
-		$this->db->sql_freeresult($result);
-	
-		$folder[PRIVMSGS_OUTBOX] = array(
-			'folder_name'		=> $this->language->lang('PM_OUTBOX'),
-			'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
-			'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
-		);
-	
-		$folder[PRIVMSGS_SENTBOX] = array(
-			'folder_name'		=> $this->language->lang('PM_SENTBOX'),
-			'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
-			'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
-		);
-	
-		// Define Folder Array for template designers (and for making custom folders usable by the template too)
-		foreach ($folder as $f_id => $folder_ary)
-		{
-			$this->template->assign_block_vars('folders', array(
-				'FOLDER_ID'			=> $f_id,
-				'FOLDER_NAME'		=> $folder_ary['folder_name'],
-				'NUM_MESSAGES'		=> $folder_ary['num_messages'],
-				'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
-	
-				// TODO: use route
-				'U_FOLDER'			=> $this->helper->route('phpbb_privatemessage_view', array('mode' => 'folder', 'id' => $f_id)),
-	
-				'S_CUR_FOLDER'		=> $f_id === $folder_id,
-				'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
-				'S_CUSTOM_FOLDER'	=> $f_id > 0
-			));
-		}
-	
-		if ($folder_id !== false && $folder_id !== PRIVMSGS_HOLD_BOX && !isset($folder[$folder_id]))
-		{
-			return $this->helper->error('UNKNOWN_FOLDER', 404);
-		}
-	
-		return $folder;
-	}
-
-	public function get_threads($folder_id, $msg_id)
+	public function get_threads($folder_id, $msg_id = null)
 	{
 		$sql_ary = array(
 			'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.message_reported, (
@@ -342,7 +184,7 @@ class view
 				'S_PM_UNREAD'			=> $row['pm_unread'] > 0,
 				'PM_UNREAD_COUNT'		=> $row['pm_unread'],
 				'S_PM_MARKED'			=> $row['pm_marked'],
-				'U_VIEW_PM'				=> $this->helper->route('phpbb_privatemessage_view', array('mode' => 'thread', 'id' => $row['msg_id'])),
+				'U_VIEW_PM'				=> $this->helper->route('phpbb_privatemessage_thread', array('id' => $row['msg_id'])),
 				'SUBJECT'				=> censor_text($row['message_subject']),
 				'S_AUTHOR_FOE'			=> false, // TODO: calculate this
 				'MESSAGE_AUTHOR'		=> get_username_string('username', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
@@ -354,6 +196,10 @@ class view
 			));
 		}
 		$this->db->sql_freeresult($result);
+
+		$this->template->assign_vars(array(
+			'U_BACK_TO_FOLDERS'	=> $this->helper->route('phpbb_privatemessage_index'),
+		));
 	}
 
 	public function get_messages($root_msg_id)
@@ -389,5 +235,37 @@ class view
 			));
 		}
 		$this->db->sql_freeresult($result);
+	}
+
+	public function check_permissions()
+	{
+		if (!$this->user->data['is_registered'])
+		{
+			return $this->helper->error('NO_MESSAGE', 401);
+		}
+
+		if (!$this->config['allow_privmsg'])
+		{
+			return $this->helper->error('PM_DISABLED', 403);
+		}
+
+		if (!$this->auth->acl_get('u_readpm'))
+		{
+			return $this->helper->error('NO_AUTH_READ_MESSAGE', 403);
+		}
+
+		$this->language->add_lang('privatemessage');
+	}
+
+	public function get_message_subject($msg_id)
+	{
+		$sql = 'SELECT message_subject
+			FROM ' . $this->privmsgs_table . '
+			WHERE msg_id = ' . (int) $msg_id;
+		$result = $this->db->sql_query($sql);
+		$message_subject = $this->db->sql_fetchfield('message_subject', $result);
+		$this->db->sql_freeresult($result);
+
+		return $message_subject;
 	}
 }

@@ -1,7 +1,18 @@
-phpbb_privatemessage_view:
-    path: /{mode}
+phpbb_privatemessage_index:
+    path: /index
     defaults:
-        _controller: phpbb.privatemessage.view:handle
-        mode: 'index'
+        _controller: phpbb.privatemessage.index:handle
+
+phpbb_privatemessage_folder:
+    path: /folder/{id}
+    defaults:
+        _controller: phpbb.privatemessage.view:folder
     requirements:
-        mode: 'index|folder|thread'
+        id: '-?\d+'
+
+phpbb_privatemessage_thread:
+    path: /thread/{id}
+    defaults:
+        _controller: phpbb.privatemessage.view:thread
+    requirements:
+        id: '\d+'
