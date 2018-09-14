@@ -73,7 +73,7 @@ abstract class base_user implements source_interface
 		$fetched_all = false;
 		$keyword = utf8_clean_string($keyword);
 
-		// Do not query all possible users (just a moderate amount), cache results for 5 minutes
+		// Grab all necessary user IDs, cache results for 5 minutes
 		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
 
 		$i = 0;
