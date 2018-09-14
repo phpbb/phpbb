@@ -30,6 +30,12 @@ if (in_array($mode, array('login', 'login_link', 'logout', 'confirm', 'sendpassw
 	define('IN_LOGIN', true);
 }
 
+if ($mode === 'delete_cookies')
+{
+	define('SKIP_CHECK_BAN', true);
+	define('SKIP_CHECK_DISABLED', true);
+}
+
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
