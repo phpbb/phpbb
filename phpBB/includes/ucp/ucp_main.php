@@ -502,6 +502,9 @@ class ucp_main
 				$draft_subject = $draft_message = '';
 				add_form_key('ucp_draft');
 
+				include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+				$message_parser = new parse_message();
+
 				if ($delete)
 				{
 					if (check_form_key('ucp_draft'))
@@ -535,9 +538,19 @@ class ucp_main
 					{
 						if ($draft_message && $draft_subject)
 						{
+							// $auth->acl_gets can't be used here because it will check for global forum permissions in this case
+							// In general we don't need too harsh checking here for permissions, as this will be handled later when submitting
+							$bbcode_status = $auth->acl_get('u_pm_bbcode') || $auth->acl_getf_global('f_bbcode');
+							$smilies_status = $auth->acl_get('u_pm_smilies') || $auth->acl_getf_global('f_smilies');
+							$img_status = $auth->acl_get('u_pm_img') || $auth->acl_getf_global('f_img');
+							$flash_status = $auth->acl_get('u_pm_flash') || $auth->acl_getf_global('f_flash');
+
+							$message_parser->message = $draft_message;
+							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, $flash_status, true, $config['allow_post_links']);
+
 							$draft_row = array(
 								'draft_subject' => $draft_subject,
-								'draft_message' => $draft_message
+								'draft_message' => $message_parser->message,
 							);
 
 							$sql = 'UPDATE ' . DRAFTS_TABLE . '
@@ -639,9 +652,16 @@ class ucp_main
 						$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d=" . $draft['draft_id']);
 					}
 
+					if (!$submit)
+					{
+						$message_parser->message = $draft['draft_message'];
+						$message_parser->decode_message();
+						$draft_message = $message_parser->message;
+					}
+
 					$template_row = array(
 						'DATE'			=> $user->format_date($draft['save_time']),
-						'DRAFT_MESSAGE'	=> ($submit) ? $draft_message : $draft['draft_message'],
+						'DRAFT_MESSAGE'	=> $draft_message,
 						'DRAFT_SUBJECT'	=> ($submit) ? $draft_subject : $draft['draft_subject'],
 						'TITLE'			=> $title,
 
