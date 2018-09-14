@@ -29,7 +29,7 @@ class team extends base_user
 		 * Results will be cached in a single file
 		 */
 		$query = $this->db->sql_build_query('SELECT_DISTINCT', [
-			'SELECT'    => 'u.username_clean, u.username, u.user_id',
+			'SELECT'    => 'u.username_clean, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',
 				USER_GROUP_TABLE => 'ug',

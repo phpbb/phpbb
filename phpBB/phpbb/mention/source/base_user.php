@@ -124,14 +124,14 @@ abstract class base_user implements source_interface
 
 		foreach ($users as $user)
 		{
-			$user_rank = $this->user_loader->get_rank($user['user_id'], true);
+			$user_rank = $this->user_loader->get_rank($user['user_id']);
 			array_push($names, [
-				'name'		=> $user['username'],
+				'name'		=> $this->user_loader->get_username($user['user_id'], 'username'),
 				'type'		=> 'u',
 				'id'		=> $user['user_id'],
 				'avatar'	=> [
 					'type'	=> 'user',
-					'img'	=> $this->user_loader->get_avatar($user['user_id'], true),
+					'img'	=> $this->user_loader->get_avatar($user['user_id']),
 				],
 				'rank'		=> (isset($user_rank['rank_title'])) ? $user_rank['rank_title'] : '',
 				'priority'	=> $this->get_priority($user),
