@@ -138,7 +138,7 @@ switch ($mode)
 			'AGREEMENT_TITLE'		=> $user->lang[$title],
 			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], $config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
-			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'],
+			'L_BACK'				=> $user->lang['BACK_TO_PREV'],
 		));
 
 		page_footer();
