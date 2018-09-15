@@ -110,8 +110,12 @@ class ucp_pm
 			break;
 
 			case 'options':
-				set_user_message_limit();
-				get_folder($user->data['user_id']);
+				// TODO: reenable
+				//set_user_message_limit();
+				$user->data['message_limit'] = 99999;
+				//get_folder($user->data['user_id']);
+
+				$user->add_lang('privatemessage');
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);

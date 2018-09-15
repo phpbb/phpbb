@@ -82,37 +82,37 @@
 					</ul>
 					<ul class="o-bar-right">
 						<li class="o-bar-item c-menu-toggle u-hidden-lg-up">
-							<a class="o-bar-action c-menu-button" href="#" data-toggle="menu" title="Post Actions">
+							<a class="o-bar-action c-menu-button" href="#" data-toggle="menu" title="{{ lang('CONVERSATION_ACTIONS') }}">
 								<svg class="o-icon o-bar-action-icon"><use xlink:href="#more-v"></use></svg>
 							</a>
 							<div class="c-menu-container t-menu-container" data-container="menu">
 								<ul class="c-menu t-menu">
 									{% if S_PM_CONVERSATION %}
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important" data-ajax="true">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="{{ lang('MAKE_IMPORTANT') }}" data-ajax="true">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
-												<span class="c-menu-text t-forum-text">Make Important</span>
+												<span class="c-menu-text t-forum-text">{{ lang('MAKE_IMPORTANT') }}</span>
 											</a>
 										</li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="Edit Title">
+											<a class="c-menu-link c-pm-menu-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="{{ lang('EDIT_TITLE') }}">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
-												<span class="c-menu-text t-forum-text">Edit Title</span>
+												<span class="c-menu-text t-forum-text">{{ lang('EDIT_TITLE') }}</span>
 											</a>
 										</li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="{{ U_DELETE }}" data-toggle="tooltip" title="Delete Conversation" data-ajax="true">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_DELETE }}" data-toggle="tooltip" title="{{ lang('DELETE_CONVERSATION') }}" data-ajax="true">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#trash"></use></svg>
-												<span class="c-menu-text t-forum-text">Delete Conversation</span>
+												<span class="c-menu-text t-forum-text">{{ lang('DELETE_CONVERSATION') }}</span>
 											</a>
 										</li>
 									{% endif %}
 									{% if not S_PM_COMPOSE %}
 										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="New Conversation">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
 												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#add"></use></svg>
-												<span class="c-menu-text t-forum-text">New Conversation</span>
+												<span class="c-menu-text t-forum-text">{{ lang('NEW_CONVERSATION') }}</span>
 											</a>
 										</li>
 									{% endif %}
@@ -122,7 +122,7 @@
 						
 						{% if not S_PM_COMPOSE %}
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="Start New Conversation">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
 								</a>
 							</li>
@@ -130,17 +130,17 @@
 						{% endif %}
 						{% if S_PM_CONVERSATION %}
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="{{ U_DELETE }}" data-toggle="tooltip" data-placement="top" title="Delete Conversation" data-ajax="true">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_DELETE }}" data-toggle="tooltip" data-placement="top" title="{{ lang('DELETE_CONVERSATION') }}" data-ajax="true">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
 								</a>
 							</li>
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="Edit Title">
+								<a class="o-bar-action c-pm-viewer-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="{{ lang('EDIT_TITLE') }}">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
 								</a>
 							</li>
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important" data-ajax="true">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="{{ lang('MAKE_IMPORTANT') }}" data-ajax="true">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
 								</a>
 							</li>

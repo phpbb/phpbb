@@ -1043,15 +1043,8 @@ function compose_pm($action, $user_folders = array())
 
 	// MAIN PM PAGE BEGINS HERE
 
-	// Generate smiley listing
-	generate_smilies('inline', 0);
-
 	// Generate PM Icons
 	$s_pm_icons = false;
-	if ($config['enable_pm_icons'])
-	{
-		$s_pm_icons = posting_gen_topic_icons($action, $icon_id);
-	}
 
 	// Generate inline attachment select box
 	posting_gen_inline_attachments($attachment_data);

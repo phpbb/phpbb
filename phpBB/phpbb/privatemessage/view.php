@@ -275,11 +275,23 @@ class view
 		$this->db->sql_freeresult($result);
 
 		// grab all the addresses
-		$addresses = array();
+		$addresses = array(
+			'u'	=> array(),
+			'g'	=> array(),
+		);
 		foreach ($rowset as &$item)
 		{
 			$item['addresses'] = \rebuild_header(array('to' => $item['to_address']));
-			$addresses = array_merge($addresses, $item['addresses']);
+
+			if (!empty($item['addresses']['u']))
+			{
+				$addresses['u'] = $addresses['u'] + $item['addresses']['u'];
+			}
+
+			if (!empty($item['addresses']['g']))
+			{
+				$addresses['g'] = $addresses['g'] + $item['addresses']['g'];
+			}
 		}
 
 		// get user info

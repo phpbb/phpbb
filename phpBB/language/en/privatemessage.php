@@ -62,4 +62,18 @@ $lang = array_merge($lang, array(
 	'LOAD_OLDER_CONVERSATIONS'			=> 'Load older conversations',
 	'LOAD_NEWER_CONVERSATIONS'			=> 'Load newer conversations',
 	'NO_CONVERSATIONS'					=> 'There are no conversations. Create a new one now by clicking on the + in the top-left corner.',
+
+	'CONVERSATION_ACTIONS'				=> 'Conversation actions',
+	'MAKE_IMPORTANT'					=> 'Make Important',
+	'EDIT_TITLE'						=> 'Edit Title',
+	'DELETE_CONVERSATION'				=> 'Delete Conversation',
+	'NEW_CONVERSATION'					=> 'New Conversation',
+
+	'MESSAGE_ACTIONS'					=> 'Message Actions',
+	'QUOTE'								=> 'Quote',
+	'FORWARD'							=> 'Forward',
+
+	'REPLY'				=> 'Reply',
+	'TYPE_PLACEHOLDER'	=> 'Type…',
+	'SEND'				=> 'Send',
 ));

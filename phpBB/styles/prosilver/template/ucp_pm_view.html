@@ -33,7 +33,7 @@
 						</span>
 					</div>
 					<div class="c-pm-msg-actions">
-						<a class="c-pm-msg-action c-menu-button u-hidden-md-up" href="#" data-toggle="menu" data-tooltip="Message Actions" title="Message Actions">
+						<a class="c-pm-msg-action c-menu-button u-hidden-md-up" href="#" data-toggle="menu" data-tooltip="{{ lang('MESSAGE_ACTIONS') }}" title="{{ lang('MESSAGE_ACTIONS') }}">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#more-v"></use></svg>
 						</a>
 						<div class="c-menu-container t-menu-container" data-container="menu">
@@ -41,39 +41,39 @@
 								<li class="c-menu-item t-menu-item">
 									<a class="c-menu-link t-menu-item" href="{{ message.U_EDIT }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#edit"></use></svg>
-										<span class="c-menu-text t-forum-text">Edit</span>
+										<span class="c-menu-text t-forum-text">{{ lang('EDIT') }}</span>
 									</a>
 								</li>
 								<li class="c-menu-item t-menu-item">
 									<a class="c-menu-link t-menu-item" href="{{ message.U_QUOTE }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#quote"></use></svg>
-										<span class="c-menu-text t-forum-text">Quote</span>
+										<span class="c-menu-text t-forum-text">{{ lang('QUOTE') }}</span>
 									</a>
 								</li>
 								<li class="c-menu-item t-menu-item">
 									<a class="c-menu-link t-menu-item" href="{{ message.U_DELETE }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#delete"></use></svg>
-										<span class="c-menu-text t-forum-text">Delete</span>
+										<span class="c-menu-text t-forum-text">{{ lang('DELETE') }}</span>
 									</a>
 								</li>
 								<li class="c-menu-item t-menu-item">
 									<a class="c-menu-link t-menu-item" href="{{ message.U_FORWARD }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#forward"></use></svg>
-										<span class="c-menu-text t-forum-text">Forward Conversation</span>
+										<span class="c-menu-text t-forum-text">{{ lang('FORWARD') }}</span>
 									</a>
 								</li>
 							</ul>
 						</div>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_EDIT }}" data-tooltip="Edit" title="Edit">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_EDIT }}" data-tooltip="{{ lang('EDIT') }}" title="{{ lang('EDIT') }}">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#edit"></use></svg>
 						</a>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_QUOTE }}" data-tooltip="Quote" title="Quote">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_QUOTE }}" data-tooltip="{{ lang('QUOTE') }}" title="{{ lang('QUOTE') }}">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#quote"></use></svg>
 						</a>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_DELETE }}" data-tooltip="Delete" title="Delete">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_DELETE }}" data-tooltip="{{ lang('DELETE') }}" title="{{ lang('DELETE') }}">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#delete"></use></svg>
 						</a>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_FORWARD }}" data-tooltip="Forward Conversation" title="Forward Conversation">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_FORWARD }}" data-tooltip="{{ lang('FORWARD') }}" title="{{ lang('FORWARD') }}">
 								<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#forward"></use></svg>
 							</a>
 					</div>
@@ -94,40 +94,13 @@
 {% if messages %}
 <div class="o-bar c-pm-reply-container">
 	<form class="o-bar-search-form c-pm-reply-form" action="{{ U_COMPOSE }}" method="POST" id="Type">
-		<textarea class="o-bar-search-feild c-pm-reply-feild" name="message" id="message" type="text" title="Reply" value="" placeholder="Type…"></textarea>
-		<button name="post" class="o-bar-search-action c-pm-reply-action" title="Send" data-tooltip="Send">
+		<textarea class="o-bar-search-feild c-pm-reply-feild" name="message" id="message" type="text" title="{{ lang('REPLY') }}" value="" placeholder="{{ lang('TYPE_PLACEHOLDER') }}"></textarea>
+		<button name="post" class="o-bar-search-action c-pm-reply-action" title="{{ lang('SEND') }}" data-tooltip="{{ lang('SEND') }}">
 			<svg class="o-icon o-bar-search-action-icon c-pm-reply-action-icon"><use xlink:href="#send"></use></svg>
 		</button>
-		<button name="preview" class="o-bar-search-action c-pm-reply-action u-hidden-sm-down" title="Send" data-tooltip="Send">
+		<button name="preview" class="o-bar-search-action c-pm-reply-action" title="{{ lang('PREVIEW') }}" data-tooltip="{{ lang('PREVIEW') }}">
 			<svg class="o-icon o-bar-search-action-icon c-pm-reply-action-icon"><use xlink:href="#views"></use></svg>
 		</button>
-		<div class="c-menu-toggle u-hidden-md-up">
-			<a class="o-bar-search-action c-pm-reply-action c-menu-button" href="#" data-toggle="menu" title="Post Actions">
-				<svg class="o-icon o-bar-search-action-icon c-pm-reply-action-icon"><use xlink:href="#more-v"></use></svg>
-			</a>
-			<div class="c-menu-container t-menu-container" data-container="menu">
-				<ul class="c-menu t-menu">
-					<li class="c-menu-item t-menu-item">
-						<a class="c-menu-link c-pm-menu-action" href="#" title="Attachment">
-							<svg class="o-icon c-menu-link-icon"><use xlink:href="#attach"></use></svg>
-							<span class="c-menu-text">Attachment</span>
-						</a>
-					</li>
-					<li class="c-menu-item t-menu-item">
-						<a class="c-menu-link c-pm-menu-action" href="#" title="Smiles">
-							<svg class="o-icon c-menu-link-icon"><use xlink:href="#insert-emoticon"></use></svg>
-							<span class="c-menu-text">Smiles</span>
-						</a>
-					</li>
-					<li class="c-menu-item t-menu-item">
-						<a class="c-menu-link c-pm-menu-action" href="#" title="BBCode">
-							<svg class="o-icon c-menu-link-icon"><use xlink:href="#bbcode"></use></svg>
-							<span class="c-menu-text">BBCode</span>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
 		<input type="hidden" name="action" value="reply" />
 		<input type="hidden" name="reply_to_all" value="true" />
 		<input type="hidden" name="p" value="{{ ROOT_MSG_ID }}" />
