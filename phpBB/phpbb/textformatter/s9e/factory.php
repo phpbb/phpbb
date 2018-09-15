@@ -87,7 +87,6 @@ class factory implements \phpbb\textformatter\cache_interface
 		'mention' =>
 			"[MENTION={PARSE=/^(?<type>[ug]):(?<id>\d+)$/}
 				profile_url={URL;optional;postFilter=#false}
-				color={COLOR;optional}
 			]{TEXT}[/MENTION]",
 		'quote' =>
 			"[QUOTE
@@ -136,9 +135,6 @@ class factory implements \phpbb\textformatter\cache_interface
 			<xsl:when test="@profile_url">
 				<a class="mention">
 					<xsl:attribute name="href"><xsl:value-of select="@profile_url"/></xsl:attribute>
-					<xsl:if test="@color">
-						<xsl:attribute name="style">color: #<xsl:value-of select="@color"/>;</xsl:attribute>
-					</xsl:if>
 					<xsl:apply-templates/>
 				</a>
 			</xsl:when>

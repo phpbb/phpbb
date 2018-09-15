@@ -24,7 +24,7 @@
 			<value>3</value>
 			<value>Hidden group we are a member of</value>
 			<value>2</value>
-			<value>FF0000</value>
+			<value></value>
 			<value></value>
 		</row>
 	</table>
@@ -53,7 +53,7 @@
 			<value>test</value>
 			<value>0</value>
 			<value>0</value>
-			<value>00FF00</value>
+			<value></value>
 			<value></value>
 			<value></value>
 		</row>

@@ -82,12 +82,10 @@ class mention_helper_test extends phpbb_database_test_case
 			[
 				'<r><MENTION id="3" type="u"><s>[mention=u:3]</s>test<e>[/mention]</e></MENTION></r>',
 				'mode=viewprofile&amp;u=3',
-				'color="00FF00"',
 			],
 			[
 				'<r><MENTION id="3" type="g"><s>[mention=g:3]</s>test<e>[/mention]</e></MENTION></r>',
 				'mode=group&amp;g=3',
-				'color="FF0000"',
 			],
 		];
 	}
@@ -95,11 +93,10 @@ class mention_helper_test extends phpbb_database_test_case
 	/**
 	 * @dataProvider inject_metadata_data
 	 */
-	public function test_inject_metadata($incoming_xml, $expected_profile_substring, $expected_colour)
+	public function test_inject_metadata($incoming_xml, $expected_profile_substring)
 	{
 		$result = $this->mention_helper->inject_metadata($incoming_xml);
 		$this->assertContains($expected_profile_substring, $result);
-		$this->assertContains($expected_colour, $result);
 	}
 
 	public function get_mentioned_user_ids_data()
