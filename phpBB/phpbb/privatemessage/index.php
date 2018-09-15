@@ -164,7 +164,8 @@ class index
 		}
 
 		$this->template->assign_vars(array(
-			'U_COMPOSE'	=> $this->helper->route('phpbb_privatemessage_compose'),
+			'U_COMPOSE'		=> $this->helper->route('phpbb_privatemessage_compose'),
+			'U_SETTINGS'	=> '', // TODO
 		));
 
 		return $this->helper->render('ucp_pm_view.html', '');

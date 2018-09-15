@@ -17,11 +17,19 @@
 
 <div class="c-pm-container">
 	<ul id="pm-conversations-list" class="o-list c-pm-list">
-		{% for folder in folders %}
+		{% if folders %}
+			{% for folder in folders %}
+				<li class="o-list-item c-pm-item">
+					<a class="c-pm-item-url" href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
+				</li>
+			{% endfor %}
 			<li class="o-list-item c-pm-item">
-				<a class="c-pm-item-url" href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
+				<a class="c-pm-item-url" href="{{ U_SETTINGS }}">
+					<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#settings"></use></svg>
+					{{ lang('PM_SETTINGS') }}
+				</a>
 			</li>
-		{% endfor %}
+		{% endif %}
 		{% if U_BACK_TO_FOLDERS %}
 			<li class="o-list-item c-pm-item">
 				<a class="c-pm-item-url" href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
