@@ -43,11 +43,6 @@ class mention_helper
 	protected $group_profile_url;
 
 	/**
-	 * @var array Array of users' and groups' colours for each cached ID
-	 */
-	protected $cached_colours = [];
-
-	/**
 	 * @var array Array of group IDs allowed to be mentioned by current user
 	 */
 	protected $mentionable_groups = null;
@@ -71,63 +66,6 @@ class mention_helper
 	}
 
 	/**
-	 * Returns SQL query data for colour SELECT request
-	 *
-	 * @param string $type Name type ('u' for users, 'g' for groups)
-	 * @return array Array of SQL SELECT query data for extracting colours for names
-	 */
-	protected function get_colours_sql($type)
-	{
-		switch ($type)
-		{
-			default:
-			case 'u':
-				return [
-					'SELECT' => 'u.user_colour as colour, u.user_id as id',
-					'FROM'   => [
-						USERS_TABLE => 'u',
-					],
-					'WHERE'  => $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
-				];
-			case 'g':
-				return [
-					'SELECT' => 'g.group_colour as colour, g.group_id as id',
-					'FROM'   => [
-						GROUPS_TABLE => 'g',
-					],
-				];
-		}
-	}
-
-	/**
-	 * Caches colours of users and groups
-	 */
-	protected function cache_colours()
-	{
-		if (count($this->cached_colours) > 0)
-		{
-			return;
-		}
-
-		$types = ['u', 'g'];
-
-		foreach ($types as $type)
-		{
-			$this->cached_colours[$type] = [];
-
-			$query = $this->db->sql_build_query('SELECT', $this->get_colours_sql($type));
-			$result = $this->db->sql_query($query, 300);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$this->cached_colours[$type][$row['id']] = $row['colour'];
-			}
-
-			$this->db->sql_freeresult($result);
-		}
-	}
-
-	/**
 	 * Inject dynamic metadata into MENTION tags in given XML
 	 *
 	 * @param  string $xml Original XML
@@ -140,8 +78,6 @@ class mention_helper
 			'g' => $this->group_profile_url,
 		];
 
-		$this->cache_colours();
-
 		return TextFormatterUtils::replaceAttributes(
 			$xml,
 			'MENTION',
@@ -153,11 +89,6 @@ class mention_helper
 					$id = $attributes['id'];
 
 					$attributes['profile_url'] = str_replace('{ID}', $id, $profile_urls[$type]);
-
-					if (!empty($this->cached_colours[$type][$id]))
-					{
-						$attributes['color'] = $this->cached_colours[$type][$id];
-					}
 				}
 
 				return $attributes;
