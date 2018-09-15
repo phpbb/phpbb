@@ -56,9 +56,9 @@ $lang = array_merge($lang, array(
 	'AVATAR'							=> 'Avatar',
 	'BACK_TO_FOLDERS'					=> '&lt; Back to folders',
 	'SELECT_FOLDER'						=> 'To see messages, select folder on the left.',
-	'SELECT_THREAD'						=> 'To see messages, select thread on the left.',
+	'SELECT_CONVERSATION'				=> 'To see messages, select conversation on the left.',
 	'LOAD_OLDER_MESSAGES'				=> 'Load older messages',
 	'LOAD_NEWER_MESSAGES'				=> 'Load newer messages',
-	'LOAD_OLDER_THREADS'				=> 'Load older threads',
-	'LOAD_NEWER_THREADS'				=> 'Load newer threads',
+	'LOAD_OLDER_CONVERSATIONS'			=> 'Load older conversations',
+	'LOAD_NEWER_CONVERSATIONS'			=> 'Load newer conversations',
 ));

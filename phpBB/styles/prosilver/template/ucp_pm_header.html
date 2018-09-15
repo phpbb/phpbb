@@ -16,39 +16,39 @@
 </style>
 
 <div class="c-pm-container">
-	<ul id="pm-threads-list" class="o-list c-pm-list">
+	<ul id="pm-conversations-list" class="o-list c-pm-list">
 		{% for folder in folders %}
 			<li class="o-list-item c-pm-item">
 				<a href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
 			</li>
 		{% endfor %}
-		{% if threads %}
+		{% if conversations %}
 			{% if U_BACK_TO_FOLDERS %}
 			<li class="o-list-item c-pm-item">
 				<a href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
 			</li>
 			{% endif %}
-			{% if U_NEWER_THREADS %}
+			{% if U_NEWER_CONVERSATIONS %}
 				<li class="o-list-item c-pm-pagination-item">
-					<a id="pm-thread-pagination-newer" href="{{ U_NEWER_THREADS }}">{{ lang('LOAD_NEWER_THREADS') }}</a>
+					<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
-			{% for thread in threads %}
-				<li class="o-list-item c-pm-item{% if thread.S_CURRENT_THREAD %} is-active{% endif %}">
-					<a class="o-list-media c-pm-media" href="{{ thread.U_MESSAGE_AUTHOR }}">
+			{% for conversation in conversations %}
+				<li class="o-list-item c-pm-item{% if conversation.S_CURRENT_CONVERSATION %} is-active{% endif %}">
+					<a class="o-list-media c-pm-media" href="{{ conversation.U_MESSAGE_AUTHOR }}">
 						<span class="o-avatar-wrap o-list-avatar">
-							{{ thread.MESSAGE_AVATAR }}
-							{% if thread.S_AUTHOR_ONLINE %}<span class="o-avatar-online o-action-bar-avatar-online"></span>{% endif %}
-							{% if thread.S_PM_UNREAD %}<span class="o-tag c-pm-badge">{{ thread.PM_UNREAD_COUNT }}</span>{% endif %}
+							{{ conversation.MESSAGE_AVATAR }}
+							{% if conversation.S_AUTHOR_ONLINE %}<span class="o-avatar-online o-action-bar-avatar-online"></span>{% endif %}
+							{% if conversation.S_PM_UNREAD %}<span class="o-tag c-pm-badge">{{ conversation.PM_UNREAD_COUNT }}</span>{% endif %}
 						</span>
 					</a>
 					<span class="o-list-primary c-pm-primary">
 						<span class="o-list-secondary c-pm-secondary">
-								{% if thread.S_PM_MARKED %}<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#important"></use></svg>{% endif %}
-							<a class="o-list-title c-pm-item-url" href="{{ thread.U_VIEW_PM }}"><strong>{{ thread.SUBJECT }}</strong></a>
+								{% if conversation.S_PM_MARKED %}<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#important"></use></svg>{% endif %}
+							<a class="o-list-title c-pm-item-url" href="{{ conversation.U_VIEW_PM }}"><strong>{{ conversation.SUBJECT }}</strong></a>
 						</span>
 						<span class="o-list-secondary c-pm-secondary">
-							{% for item in thread.to %}
+							{% for item in conversation.to %}
 								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#{{ item.TYPE }}"></use></svg>
 								<a class="o-list-secondary-item-link" href="{{ item.U_LINK }}">{{ item.NAME }}</a>
 							{% endfor %}
@@ -56,15 +56,15 @@
 						<span class="o-list-secondary c-pm-secondary">
 							<span class="o-list-secondary-item">
 								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#time"></use></svg>
-								<time datetime="" title="" data-short="">{{ thread.SENT_TIME }}</time>
+								<time datetime="" title="" data-short="">{{ conversation.SENT_TIME }}</time>
 							</span>
 						</span>
 					</span>
 				</li>
 			{% endfor %}
-			{% if U_OLDER_THREADS %}
+			{% if U_OLDER_CONVERSATIONS %}
 				<li class="o-list-item c-pm-pagination-item">
-					<a id="pm-thread-pagination-older" href="{{ U_OLDER_THREADS }}">{{ lang('LOAD_OLDER_THREADS') }}</a>
+					<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
 		{% endif %}
@@ -73,7 +73,7 @@
 			<div class="o-bar c-pm-viewer-header">
 					<ul class="o-bar-left">
 						<li class="o-bar-item">
-							<h2 class="o-bar-title c-pm-title">{{ THREAD_SUBJECT }}</h2>
+							<h2 class="o-bar-title c-pm-title">{{ CONVERSATION_SUBJECT }}</h2>
 						</li>
 					</ul>
 					<ul class="o-bar-right">
@@ -83,7 +83,7 @@
 							</a>
 							<div class="c-menu-container t-menu-container" data-container="menu">
 								<ul class="c-menu t-menu">
-									{% if S_PM_THREAD %}
+									{% if S_PM_CONVERSATION %}
 										<li class="c-menu-item t-menu-item">
 											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
@@ -124,7 +124,7 @@
 							</li>
 							<li class="o-bar-item o-bar-divider u-hidden-md-down"></li>
 						{% endif %}
-						{% if S_PM_THREAD %}
+						{% if S_PM_CONVERSATION %}
 							<li class="o-bar-item u-hidden-md-down">
 								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" data-placement="top" title="Delete Message">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>

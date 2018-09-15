@@ -592,7 +592,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		// Gets number of unread messages in each thread
+		// Gets number of unread messages in each conversation
 		$pm_unread[$row['msg_id']]  = $row['pm_unread'];
 
 		$rowset[$row['msg_id']] = $row;

@@ -1,25 +1,25 @@
 $(function() {
-	// scroll to the very bottom of the thread
+	// scroll to the very bottom of the conversation
 	$('.c-pm-msg-list').scrollTop(99999);
 
-	// make whole thread clickable
+	// make whole conversation clickable
 	$('.c-pm-item').click(function() {
 		window.location.href = $(this).find('.c-pm-item-url').attr('href');
 	});
 
-	// threads pagination
-	$(document).on('click', '#pm-thread-pagination-newer', function(e) {
-		handle_thread_pagination(e, $(this).attr('href'));
+	// conversations pagination
+	$(document).on('click', '#pm-conversation-pagination-newer', function(e) {
+		handle_conversation_pagination(e, $(this).attr('href'));
 	});
-	$(document).on('click', '#pm-thread-pagination-older', function(e) {
-		handle_thread_pagination(e, $(this).attr('href'));
+	$(document).on('click', '#pm-conversation-pagination-older', function(e) {
+		handle_conversation_pagination(e, $(this).attr('href'));
 	});
 
-	function handle_thread_pagination(e, url) {
+	function handle_conversation_pagination(e, url) {
 		e.preventDefault();
 
 		$.get(url, function(source) {
-			$('#pm-threads-list').replaceWith($('#pm-threads-list', source));
+			$('#pm-conversations-list').replaceWith($('#pm-conversations-list', source));
 			replace_ajax_links(source);
 			history.pushState({}, '', url);
 		});
@@ -44,8 +44,8 @@ $(function() {
 	}
 
 	function replace_ajax_links(source) {
-		$('#pm-thread-pagination-newer').replaceWith($('#pm-thread-pagination-newer', source));
-		$('#pm-thread-pagination-older').replaceWith($('#pm-thread-pagination-older', source));
+		$('#pm-conversation-pagination-newer').replaceWith($('#pm-conversation-pagination-newer', source));
+		$('#pm-conversation-pagination-older').replaceWith($('#pm-conversation-pagination-older', source));
 		$('#pm-message-pagination-older').replaceWith($('#pm-message-pagination-older', source));
 		$('#pm-message-pagination-newer').replaceWith($('#pm-message-pagination-newer', source));
 	}

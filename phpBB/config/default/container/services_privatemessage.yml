@@ -24,8 +24,8 @@ services:
             - '%tables.privmsgs_to%'
             - '%tables.privmsgs_folder%'
 
-    phpbb.privatemessage.thread_action:
-        class: phpbb\privatemessage\thread_action
+    phpbb.privatemessage.conversation_action:
+        class: phpbb\privatemessage\conversation_action
         arguments:
             - '@controller.helper'
             - '@user'

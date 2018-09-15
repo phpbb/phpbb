@@ -121,11 +121,11 @@ class view
 		$this->php_ext = $php_ext;
 	}
 
-	public function thread($id)
+	public function conversation($id)
 	{
 		$this->check_permissions();
 
-		// select message folder and double-check it's root message of the thread
+		// select message folder and double-check it's root message of the conversation
 		$sql = 'SELECT pt.folder_id, p.root_level
 			FROM ' . $this->privmsgs_to_table . ' pt
 			LEFT JOIN ' . $this->privmsgs_table . ' p
@@ -147,17 +147,17 @@ class view
 
 		add_form_key('ucp_pm_compose');
 		$this->template->assign_vars(array(
-			'U_COMPOSE'			=> $this->helper->route('phpbb_privatemessage_compose'),
-			'S_PM_THREAD'		=> true,
-			'THREAD_SUBJECT'	=> $this->get_message_subject($root_msg_id),
-			'ROOT_MSG_ID'		=> $root_msg_id,
-			'CURRENT_TIME'		=> time(),
-			'U_MARK_IMPORTANT'	=> $this->helper->route('phpbb_privatemessage_thread_action_important', array('id' => $root_msg_id)),
-			'U_EDIT_TITLE'		=> $this->helper->route('phpbb_privatemessage_thread_action_edit_title', array('id' => $root_msg_id)),
+			'U_COMPOSE'				=> $this->helper->route('phpbb_privatemessage_compose'),
+			'S_PM_CONVERSATION'		=> true,
+			'CONVERSATION_SUBJECT'	=> $this->get_message_subject($root_msg_id),
+			'ROOT_MSG_ID'			=> $root_msg_id,
+			'CURRENT_TIME'			=> time(),
+			'U_MARK_IMPORTANT'		=> $this->helper->route('phpbb_privatemessage_conversation_action_important', array('id' => $root_msg_id)),
+			'U_EDIT_TITLE'			=> $this->helper->route('phpbb_privatemessage_conversation_action_edit_title', array('id' => $root_msg_id)),
 		));
 
 		$this->update_unread_status($root_msg_id);
-		$this->get_threads($folder_id, true, $id);
+		$this->get_conversations($folder_id, true, $id);
 		$this->get_messages($root_msg_id);
 
 		return $this->helper->render('ucp_pm_view.html', '');
@@ -169,7 +169,7 @@ class view
 
 		$this->set_user_message_limit();
 
-		$this->get_threads($id);
+		$this->get_conversations($id);
 
 		return $this->helper->render('ucp_pm_view.html', '');
 	}
@@ -195,14 +195,14 @@ class view
 		$this->user->data['message_limit'] = (!$message_limit) ? $this->config['pm_max_msgs'] : $message_limit;
 	}
 
-	public function get_threads($folder_id, $in_thread = false, $msg_id = null)
+	public function get_conversations($folder_id, $in_conversation = false, $msg_id = null)
 	{
 		if (!function_exists('rebuild_header'))
 		{
 			include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
 		}
 
-		$start = $this->request->variable('tstart', 0);
+		$start = $this->request->variable('cstart', 0);
 		$mstart = $this->request->variable('mstart', 0);
 
 		if ($folder_id > 0)
@@ -215,7 +215,7 @@ class view
 			$where_folder_id = 'AND ' . $this->db->sql_in_set('t.folder_id', array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX));
 		}
 
-		$sql = 'SELECT COUNT(msg_id) as num_threads
+		$sql = 'SELECT COUNT(msg_id) as num_conversations
 			FROM (
 				SELECT t.msg_id
 				FROM ' . $this->privmsgs_to_table . ' t
@@ -227,7 +227,7 @@ class view
 				GROUP BY t.msg_id
 			) nt';
 		$result = $this->db->sql_query_limit($sql, 1);
-		$num_threads = $this->db->sql_fetchfield('num_threads', $result);
+		$num_conversations = $this->db->sql_fetchfield('num_conversations', $result);
 		$this->db->sql_freeresult($result);
 
 		$sql_ary = array(
@@ -300,24 +300,24 @@ class view
 
 		foreach ($rowset as $row)
 		{
-			$this->template->assign_block_vars('threads', array(
-				'MESSAGE_AVATAR'		=> phpbb_get_user_avatar($row),
-				'S_PM_UNREAD'			=> $row['pm_unread'] > 0,
-				'PM_UNREAD_COUNT'		=> $row['pm_unread'],
-				'S_PM_MARKED'			=> $row['pm_marked'],
-				'U_VIEW_PM'				=> $this->helper->route('phpbb_privatemessage_thread', array('id' => $row['msg_id'])),
-				'SUBJECT'				=> censor_text($row['message_subject']),
-				'S_AUTHOR_FOE'			=> false, // TODO: calculate this
-				'MESSAGE_AUTHOR'		=> get_username_string('username', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
-				'MESSAGE_AUTHOR_FULL'	=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
-				'U_MESSAGE_AUTHOR'		=> get_username_string('profile', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
-				'SENT_TIME'				=> $this->user->format_date($row['message_time']),
-				'S_CURRENT_THREAD'		=> $row['msg_id'] == $msg_id,
-				'S_AUTHOR_ONLINE'		=> true, // TODO: really fetch the info
+			$this->template->assign_block_vars('conversations', array(
+				'MESSAGE_AVATAR'			=> phpbb_get_user_avatar($row),
+				'S_PM_UNREAD'				=> $row['pm_unread'] > 0,
+				'PM_UNREAD_COUNT'			=> $row['pm_unread'],
+				'S_PM_MARKED'				=> $row['pm_marked'],
+				'U_VIEW_PM'					=> $this->helper->route('phpbb_privatemessage_conversation', array('id' => $row['msg_id'])),
+				'SUBJECT'					=> censor_text($row['message_subject']),
+				'S_AUTHOR_FOE'				=> false, // TODO: calculate this
+				'MESSAGE_AUTHOR'			=> get_username_string('username', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+				'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+				'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
+				'SENT_TIME'					=> $this->user->format_date($row['message_time']),
+				'S_CURRENT_CONVERSATION'	=> $row['msg_id'] == $msg_id,
+				'S_AUTHOR_ONLINE'			=> true, // TODO: really fetch the info
 			));
 
 			// include author to the list of recipients
-			$this->template->assign_block_vars('threads.to', array(
+			$this->template->assign_block_vars('conversations.to', array(
 				'TYPE'		=> 'user',
 				'U_LINK'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour'], $row['username']),
 				'NAME'		=> '<span style="color: #' . $row['user_colour'] . '">' . get_username_string('username', $row['user_id'], $row['username'], $row['user_colour'], $row['username']) . '</span>',
@@ -334,7 +334,7 @@ class view
 					}
 
 					$user_info = $this->user_loader->get_user($user_id);
-					$this->template->assign_block_vars('threads.to', array(
+					$this->template->assign_block_vars('conversations.to', array(
 						'TYPE'		=> 'user',
 						'U_LINK'	=> get_username_string('profile', $user_info['user_id'], $user_info['username'], $user_info['user_colour'], $user_info['username']),
 						'NAME'		=> '<span style="color: #' . $user_info['user_colour'] . '">' . get_username_string('username', $user_info['user_id'], $user_info['username'], $user_info['user_colour'], $user_info['username']) . '</span>',
@@ -347,7 +347,7 @@ class view
 				foreach ($row['addresses']['g'] as $group_id => $type)
 				{
 					$group_info = $to_groups[$group_id];
-					$this->template->assign_block_vars('threads.to', array(
+					$this->template->assign_block_vars('conversations.to', array(
 						'TYPE'		=> 'group',
 						'U_LINK'	=> append_sid($this->root_path . 'memberlist.' . $this->php_ext, 'mode=group&g=' . $group_id),
 						'NAME'		=> '<span style="color: #' . $group_info['group_colour'] . '">' . $this->group_helper->get_name($group_info['group_name']) . '</span>',
@@ -358,8 +358,8 @@ class view
 
 		$newest_start = $start - $this->config['topics_per_page'] < 0 ? 0 : $start - $this->config['topics_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_THREADS'	=> $start + $this->config['topics_per_page'] > $num_threads ? false : $this->get_patination_url($in_thread ? 'thread' : 'folder', $in_thread ? $msg_id : $folder_id, $start + $this->config['topics_per_page'], $mstart),
-			'U_NEWER_THREADS'	=> $start == 0 ? false : $this->get_patination_url($in_thread ? 'thread' : 'folder', $in_thread ? $msg_id : $folder_id, $newest_start, $mstart),
+			'U_OLDER_CONVERSATIONS'	=> $start + $this->config['topics_per_page'] >= $num_conversations ? false : $this->get_patination_url($in_conversation ? 'conversation' : 'folder', $in_conversation ? $msg_id : $folder_id, $start + $this->config['topics_per_page'], $mstart),
+			'U_NEWER_CONVERSATIONS'	=> $start == 0 ? false : $this->get_patination_url($in_conversation ? 'conversation' : 'folder', $in_conversation ? $msg_id : $folder_id, $newest_start, $mstart),
 		));
 
 		// does the user have custom folders? If yes, we will display a link to the list of folders.
@@ -380,13 +380,14 @@ class view
 
 	public function get_messages($root_msg_id)
 	{
-		$tstart = $this->request->variable('tstart', 0);
+		$cstart = $this->request->variable('cstart', 0);
 		$start = $this->request->variable('mstart', 0);
 
 		// get the newest message ID (will be used to hide or display pagination to newer messages)
 		$sql = 'SELECT msg_id
 			FROM ' . $this->privmsgs_table . '
 			WHERE root_level = ' . (int) $root_msg_id . '
+				OR msg_id = ' . (int) $root_msg_id . '
 			ORDER BY msg_id DESC';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$newest_msg_id = $this->db->sql_fetchfield('msg_id', $result);
@@ -436,8 +437,8 @@ class view
 
 		$newest_start = $start - $this->config['posts_per_page'] < 0 ? 0 : $start - $this->config['posts_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_patination_url('thread', $root_msg_id, $tstart, $start + $this->config['posts_per_page']),
-			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_patination_url('thread', $root_msg_id, $tstart, $newest_start),
+			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_patination_url('conversation', $root_msg_id, $cstart, $start + $this->config['posts_per_page']),
+			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_patination_url('conversation', $root_msg_id, $cstart, $newest_start),
 		));
 	}
 
@@ -500,8 +501,8 @@ class view
 		$this->db->sql_query($sql);
 	}
 
-	public function get_patination_url($route, $id, $tstart, $mstart)
+	public function get_patination_url($route, $id, $cstart, $mstart)
 	{
-		return $this->helper->route('phpbb_privatemessage_' . $route, array('id' => $id, 'tstart' => $tstart, 'mstart' => $mstart));
+		return $this->helper->route('phpbb_privatemessage_' . $route, array('id' => $id, 'cstart' => $cstart, 'mstart' => $mstart));
 	}
 }

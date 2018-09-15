@@ -90,7 +90,7 @@ function compose_pm($action, $user_folders = array())
 	{
 		if ($msg_id)
 		{
-			redirect($controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id)));
+			redirect($controller_helper->route('phpbb_privatemessage_conversation', array('id' => $msg_id)));
 		}
 		redirect($controller_helper->route('phpbb_privatemessage_index'));
 	}
@@ -545,7 +545,7 @@ function compose_pm($action, $user_folders = array())
 			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
 
-		redirect($controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id)));
+		redirect($controller_helper->route('phpbb_privatemessage_conversation', array('id' => $msg_id)));
 	}
 
 	// Get maximum number of allowed recipients
@@ -871,7 +871,7 @@ function compose_pm($action, $user_folders = array())
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
-			$return_message_url = $controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id, '#' => 'pm-msg-' . $msg_id));
+			$return_message_url = $controller_helper->route('phpbb_privatemessage_conversation', array('id' => $msg_id, '#' => 'pm-msg-' . $msg_id));
 			$inbox_folder_url = $controller_helper->route('phpbb_privatemessage_folder', array('id' => PRIVMSGS_INBOX));
 			$outbox_folder_url = $controller_helper->route('phpbb_privatemessage_folder', array('id' => PRIVMSGS_OUTBOX));
 

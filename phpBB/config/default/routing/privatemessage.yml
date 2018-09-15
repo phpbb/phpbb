@@ -8,17 +8,17 @@ phpbb_privatemessage_index:
     defaults:
         _controller: phpbb.privatemessage.index:handle
 
-phpbb_privatemessage_thread_action_important:
-    path: /thread_action/important/{id}
+phpbb_privatemessage_conversation_action_important:
+    path: /conversation_action/important/{id}
     defaults:
-        _controller: phpbb.privatemessage.thread_action:important
+        _controller: phpbb.privatemessage.conversation_action:important
     requirements:
         id: '\d+'
 
-phpbb_privatemessage_thread_action_edit_title:
-    path: /thread_action/edit_title/{id}
+phpbb_privatemessage_conversation_action_edit_title:
+    path: /conversation_action/edit_title/{id}
     defaults:
-        _controller: phpbb.privatemessage.thread_action:edit_title
+        _controller: phpbb.privatemessage.conversation_action:edit_title
     requirements:
         id: '\d+'
 
@@ -29,9 +29,9 @@ phpbb_privatemessage_folder:
     requirements:
         id: '-?\d+'
 
-phpbb_privatemessage_thread:
-    path: /thread/{id}
+phpbb_privatemessage_conversation:
+    path: /conversation/{id}
     defaults:
-        _controller: phpbb.privatemessage.view:thread
+        _controller: phpbb.privatemessage.view:conversation
     requirements:
         id: '\d+'

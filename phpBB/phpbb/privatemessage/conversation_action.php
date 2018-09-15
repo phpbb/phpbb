@@ -13,7 +13,7 @@
 
 namespace phpbb\privatemessage;
 
-class thread_action
+class conversation_action
 {
 	/**
 	 * @var \phpbb\controller\helper
@@ -64,7 +64,7 @@ class thread_action
 				AND user_id = ' . (int) $this->user->data['user_id'];
 		$this->db->sql_query($sql);
 
-		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_thread', array('id' => $id)));
+		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_conversation', array('id' => $id)));
 	}
 
 	public function edit_title($id)
@@ -76,6 +76,6 @@ class thread_action
 			WHERE msg_id = " . (int) $id;
 		$this->db->sql_query($sql);
 
-		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_thread', array('id' => $id)));
+		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_conversation', array('id' => $id)));
 	}
 }
