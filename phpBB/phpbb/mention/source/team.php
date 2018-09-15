@@ -15,6 +15,9 @@ namespace phpbb\mention\source;
 
 class team extends base_user
 {
+	/** @var string|false */
+	protected $cache_ttl = 300;
+
 	/**
 	 * {@inheritdoc}
 	 */

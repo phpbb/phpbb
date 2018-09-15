@@ -30,6 +30,9 @@ abstract class base_user implements source_interface
 	/** @var string */
 	protected $php_ext;
 
+	/** @var string|false */
+	protected $cache_ttl = false;
+
 	/**
 	 * Constructor
 	 */
@@ -73,47 +76,67 @@ abstract class base_user implements source_interface
 		$fetched_all = false;
 		$keyword = utf8_clean_string($keyword);
 
-		// Grab all necessary user IDs, cache results for 5 minutes
-		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
-
 		$i = 0;
 		$users = [];
 		$user_ids = [];
-		while ($i < $this->config['mention_batch_size'])
+
+		// Grab all necessary user IDs and cache them if needed
+		if ($this->cache_ttl)
 		{
-			$row = $this->db->sql_fetchrow($result);
+			$result = $this->db->sql_query($this->query($keyword, $topic_id), $this->cache_ttl);
 
-			if (!$row)
+			while ($i < $this->config['mention_batch_size'])
 			{
-				$fetched_all = true;
-				break;
-			}
+				$row = $this->db->sql_fetchrow($result);
 
-			if (!empty($keyword) && strpos($row['username_clean'], $keyword) !== 0)
-			{
-				continue;
-			}
+				if (!$row)
+				{
+					$fetched_all = true;
+					break;
+				}
 
-			$i++;
-			$users[] = $row;
-			$user_ids[] = $row['user_id'];
-		}
-
-		// Determine whether all usernames were fetched in current batch
-		if (!$fetched_all)
-		{
-			$fetched_all = true;
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
 				if (!empty($keyword) && strpos($row['username_clean'], $keyword) !== 0)
 				{
 					continue;
 				}
 
-				// At least one username hasn't been fetched - exit loop
-				$fetched_all = false;
-				break;
+				$i++;
+				$users[] = $row;
+				$user_ids[] = $row['user_id'];
+			}
+
+			// Determine whether all usernames were fetched in current batch
+			if (!$fetched_all)
+			{
+				$fetched_all = true;
+
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					if (!empty($keyword) && strpos($row['username_clean'], $keyword) !== 0)
+					{
+						continue;
+					}
+
+					// At least one username hasn't been fetched - exit loop
+					$fetched_all = false;
+					break;
+				}
+			}
+		}
+		else
+		{
+			$result = $this->db->sql_query_limit($this->query($keyword, $topic_id), $this->config['mention_batch_size'], 0);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$users[] = $row;
+				$user_ids[] = $row['user_id'];
+			}
+
+			// Determine whether all usernames were fetched in current batch
+			if (count($user_ids) < $this->config['mention_batch_size'])
+			{
+				$fetched_all = true;
 			}
 		}
 

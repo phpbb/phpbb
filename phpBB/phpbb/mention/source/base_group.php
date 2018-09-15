@@ -36,6 +36,9 @@ abstract class base_group implements source_interface
 	/** @var string */
 	protected $php_ext;
 
+	/** @var string|false */
+	protected $cache_ttl = false;
+
 	/** @var array Fetched groups' data */
 	protected $groups = null;
 
@@ -125,8 +128,8 @@ abstract class base_group implements source_interface
 	 */
 	public function get(array &$names, $keyword, $topic_id)
 	{
-		// Grab all group IDs, cache for 5 minutes
-		$result = $this->db->sql_query($this->query($keyword, $topic_id), 300);
+		// Grab all group IDs and cache them if needed
+		$result = $this->db->sql_query($this->query($keyword, $topic_id), $this->cache_ttl);
 
 		$group_ids = [];
 		while ($row = $this->db->sql_fetchrow($result))

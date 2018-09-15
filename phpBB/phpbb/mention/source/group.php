@@ -15,6 +15,9 @@ namespace phpbb\mention\source;
 
 class group extends base_group
 {
+	/** @var string|false */
+	protected $cache_ttl = 300;
+
 	/**
 	 * {@inheritdoc}
 	 */

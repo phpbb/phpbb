@@ -61,7 +61,8 @@ class topic extends base_user
 				],
 			],
 			'WHERE'     => 'p.topic_id = ' . (int) $topic_id . '
-				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
+				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]) . '
+				AND u.username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char()),
 			'ORDER_BY'  => 'p.post_time DESC'
 		]);
 		return $query;
