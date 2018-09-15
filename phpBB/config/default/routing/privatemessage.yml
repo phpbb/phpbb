@@ -8,6 +8,20 @@ phpbb_privatemessage_index:
     defaults:
         _controller: phpbb.privatemessage.index:handle
 
+phpbb_privatemessage_thread_action_important:
+    path: /thread_action/important/{id}
+    defaults:
+        _controller: phpbb.privatemessage.thread_action:important
+    requirements:
+        id: '\d+'
+
+phpbb_privatemessage_thread_action_edit_title:
+    path: /thread_action/edit_title/{id}
+    defaults:
+        _controller: phpbb.privatemessage.thread_action:edit_title
+    requirements:
+        id: '\d+'
+
 phpbb_privatemessage_folder:
     path: /folder/{id}
     defaults:

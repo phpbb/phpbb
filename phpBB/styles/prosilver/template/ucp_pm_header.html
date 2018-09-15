@@ -16,7 +16,7 @@
 </style>
 
 <div class="c-pm-container">
-	<ul class="o-list c-pm-list">
+	<ul id="pm-threads-list" class="o-list c-pm-list">
 		{% for folder in folders %}
 			<li class="o-list-item c-pm-item">
 				<a href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
@@ -27,6 +27,11 @@
 			<li class="o-list-item c-pm-item">
 				<a href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
 			</li>
+			{% endif %}
+			{% if U_NEWER_THREADS %}
+				<li class="o-list-item c-pm-pagination-item">
+					<a id="pm-thread-pagination-newer" href="{{ U_NEWER_THREADS }}">{{ lang('LOAD_NEWER_THREADS') }}</a>
+				</li>
 			{% endif %}
 			{% for thread in threads %}
 				<li class="o-list-item c-pm-item{% if thread.S_CURRENT_THREAD %} is-active{% endif %}">
@@ -43,8 +48,10 @@
 							<a class="o-list-title c-pm-item-url" href="{{ thread.U_VIEW_PM }}"><strong>{{ thread.SUBJECT }}</strong></a>
 						</span>
 						<span class="o-list-secondary c-pm-secondary">
-							<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#user"></use></svg>
-							<a class="o-list-secondary-item-link" href="{{ thread.U_MESSAGE_AUTHOR }}">{{ thread.MESSAGE_AUTHOR_FULL }}</a>
+							{% for item in thread.to %}
+								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#{{ item.TYPE }}"></use></svg>
+								<a class="o-list-secondary-item-link" href="{{ item.U_LINK }}">{{ item.NAME }}</a>
+							{% endfor %}
 						</span>
 						<span class="o-list-secondary c-pm-secondary">
 							<span class="o-list-secondary-item">
@@ -55,6 +62,11 @@
 					</span>
 				</li>
 			{% endfor %}
+			{% if U_OLDER_THREADS %}
+				<li class="o-list-item c-pm-pagination-item">
+					<a id="pm-thread-pagination-older" href="{{ U_OLDER_THREADS }}">{{ lang('LOAD_OLDER_THREADS') }}</a>
+				</li>
+			{% endif %}
 		{% endif %}
 	</ul>
 	<div class="c-pm-viewer">
@@ -73,13 +85,13 @@
 								<ul class="c-menu t-menu">
 									{% if S_PM_THREAD %}
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Make Important">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
 												<span class="c-menu-text t-forum-text">Make Important</span>
 											</a>
 										</li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Edit Title">
+											<a class="c-menu-link c-pm-menu-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="Edit Title">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
 												<span class="c-menu-text t-forum-text">Edit Title</span>
 											</a>
@@ -90,15 +102,9 @@
 												<span class="c-menu-text t-forum-text">Delete Conversation</span>
 											</a>
 										</li>
-										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
-										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Forward Conversation">
-												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#forward"></use></svg>
-												<span class="c-menu-text t-forum-text">Forward Conversation</span>
-											</a>
-										</li>
 									{% endif %}
 									{% if not S_PM_COMPOSE %}
+										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
 										<li class="c-menu-item t-menu-item">
 											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="New Conversation">
 												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#add"></use></svg>
@@ -116,26 +122,21 @@
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
 								</a>
 							</li>
+							<li class="o-bar-item o-bar-divider u-hidden-md-down"></li>
 						{% endif %}
 						{% if S_PM_THREAD %}
-							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="Forward Conversation" title="Forward Conversation">
-									<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
-								</a>
-							</li>
-							<li class="o-bar-item o-bar-divider u-hidden-md-down"></li>
 							<li class="o-bar-item u-hidden-md-down">
 								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" data-placement="top" title="Delete Message">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
 								</a>
 							</li>
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Edit Title">
+								<a class="o-bar-action c-pm-viewer-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="Edit Title">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
 								</a>
 							</li>
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Make Important">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
 								</a>
 							</li>

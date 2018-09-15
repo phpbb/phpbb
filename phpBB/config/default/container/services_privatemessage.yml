@@ -24,6 +24,16 @@ services:
             - '%tables.privmsgs_to%'
             - '%tables.privmsgs_folder%'
 
+    phpbb.privatemessage.thread_action:
+        class: phpbb\privatemessage\thread_action
+        arguments:
+            - '@controller.helper'
+            - '@user'
+            - '@dbal.conn'
+            - '@request'
+            - '%tables.privmsgs%'
+            - '%tables.privmsgs_to%'
+
     phpbb.privatemessage.view:
         class: phpbb\privatemessage\view
         arguments:
@@ -34,9 +44,13 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@template'
+            - '@request'
+            - '@user_loader'
+            - '@group_helper'
             - '%tables.privmsgs%'
             - '%tables.privmsgs_to%'
             - '%tables.privmsgs_folder%'
             - '%tables.users%'
+            - '%tables.groups%'
             - '%core.root_path%'
             - '%core.php_ext%'

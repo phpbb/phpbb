@@ -509,8 +509,10 @@ function compose_pm($action, $user_folders = array())
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = $controller_helper->route('phpbb_privatemessage_compose');
-	$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
+	$s_action = $controller_helper->route('phpbb_privatemessage_compose', array(
+		'f'	=> $folder_id,
+		'p'	=> $msg_id,
+	));
 
 	// Delete triggered ?
 	if ($action == 'delete')

@@ -6,7 +6,12 @@
 	<p class="">{{ lang('SELECT_THREAD') }}</p>
 {% endif %}
 
-<ul class="o-list c-pm-msg-list">
+<ul id="pm-messages-list" class="o-list c-pm-msg-list">
+	{% if U_OLDER_MESSAGES %}
+		<li class="o-list-item pm-pagination-item">
+			<a id="pm-message-pagination-older" href="{{ U_OLDER_MESSAGES }}">{{ lang('LOAD_OLDER_MESSAGES') }}</a>
+		</li>
+	{% endif %}
 	{% for message in messages %}
 		<li class="o-list-item pm-msg-item" id="pm-msg-{{ message.MSG_ID }}">
 			<a class="o-list-media c-pm-msg-media" href="{{ message.U_MESSAGE_AUTHOR }}">
@@ -34,34 +39,43 @@
 						<div class="c-menu-container t-menu-container" data-container="menu">
 							<ul class="c-menu t-menu">
 								<li class="c-menu-item t-menu-item">
-									<a class="c-menu-link t-menu-item" href="">
+									<a class="c-menu-link t-menu-item" href="{{ message.U_EDIT }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#edit"></use></svg>
 										<span class="c-menu-text t-forum-text">Edit</span>
 									</a>
 								</li>
 								<li class="c-menu-item t-menu-item">
-									<a class="c-menu-link t-menu-item" href="">
+									<a class="c-menu-link t-menu-item" href="{{ message.U_QUOTE }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#quote"></use></svg>
 										<span class="c-menu-text t-forum-text">Quote</span>
 									</a>
 								</li>
 								<li class="c-menu-item t-menu-item">
-									<a class="c-menu-link t-menu-item" href="">
+									<a class="c-menu-link t-menu-item" href="{{ message.U_DELETE }}">
 										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#delete"></use></svg>
 										<span class="c-menu-text t-forum-text">Delete</span>
 									</a>
 								</li>
+								<li class="c-menu-item t-menu-item">
+									<a class="c-menu-link t-menu-item" href="{{ message.U_FORWARD }}">
+										<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#forward"></use></svg>
+										<span class="c-menu-text t-forum-text">Forward Conversation</span>
+									</a>
+								</li>
 							</ul>
 						</div>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="" data-tooltip="Edit" title="Edit">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_EDIT }}" data-tooltip="Edit" title="Edit">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#edit"></use></svg>
 						</a>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="" data-tooltip="Quote" title="Quote">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_QUOTE }}" data-tooltip="Quote" title="Quote">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#quote"></use></svg>
 						</a>
-						<a class="c-pm-msg-action u-hidden-sm-down" href="" data-tooltip="Delete" title="Delete">
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_DELETE }}" data-tooltip="Delete" title="Delete">
 							<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#delete"></use></svg>
 						</a>
+						<a class="c-pm-msg-action u-hidden-sm-down" href="{{ message.U_FORWARD }}" data-tooltip="Forward Conversation" title="Forward Conversation">
+								<svg class="o-icon c-pm-msg-action-icon"><use xlink:href="#forward"></use></svg>
+							</a>
 					</div>
 				</div>
 				<div class="pm-msg-copy">
@@ -70,7 +84,13 @@
 			</article>
 		</li>
 	{% endfor %}
+	{% if U_NEWER_MESSAGES %}
+		<li class="o-list-item pm-pagination-item">
+			<a id="pm-message-pagination-newer" href="{{ U_NEWER_MESSAGES }}">{{ lang('LOAD_NEWER_MESSAGES') }}</a>
+		</li>
+	{% endif %}
 </ul>
+
 {% if messages %}
 <div class="o-bar c-pm-reply-container">
 	<form class="o-bar-search-form c-pm-reply-form" action="{{ U_COMPOSE }}" method="POST" id="Type">
@@ -115,18 +135,6 @@
 		{{ S_HIDDEN_FIELDS }}
 	</form>	
 </div>
-
-
-
-
-
-
-
-
-<form method="POST" action="">
-	
-	
-</form>
 {% endif %}
 	
 {% include 'ucp_pm_footer.html' %}
