@@ -60,7 +60,7 @@ class topic extends base_user
 					'ON'   => 't.topic_id = p.topic_id'
 				],
 			],
-			'WHERE'     => 'p.topic_id = ' . $topic_id . '
+			'WHERE'     => 'p.topic_id = ' . (int) $topic_id . '
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 			'ORDER_BY'  => 'p.post_time DESC'
 		]);
