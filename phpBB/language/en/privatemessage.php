@@ -61,4 +61,5 @@ $lang = array_merge($lang, array(
 	'LOAD_NEWER_MESSAGES'				=> 'Load newer messages',
 	'LOAD_OLDER_CONVERSATIONS'			=> 'Load older conversations',
 	'LOAD_NEWER_CONVERSATIONS'			=> 'Load newer conversations',
+	'NO_CONVERSATIONS'					=> 'There are no conversations. Create a new one now by clicking on the + in the top-left corner.',
 ));

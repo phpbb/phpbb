@@ -19,15 +19,15 @@
 	<ul id="pm-conversations-list" class="o-list c-pm-list">
 		{% for folder in folders %}
 			<li class="o-list-item c-pm-item">
-				<a href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
+				<a class="c-pm-item-url" href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
 			</li>
 		{% endfor %}
-		{% if conversations %}
-			{% if U_BACK_TO_FOLDERS %}
+		{% if U_BACK_TO_FOLDERS %}
 			<li class="o-list-item c-pm-item">
-				<a href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
+				<a class="c-pm-item-url" href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
 			</li>
-			{% endif %}
+		{% endif %}
+		{% if conversations %}
 			{% if U_NEWER_CONVERSATIONS %}
 				<li class="o-list-item c-pm-pagination-item">
 					<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
@@ -67,6 +67,10 @@
 					<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
+		{% elseif not folders %}
+			<li class="o-list-item">
+				{{ lang('NO_CONVERSATIONS') }}
+			</li>
 		{% endif %}
 	</ul>
 	<div class="c-pm-viewer">
@@ -85,7 +89,7 @@
 								<ul class="c-menu t-menu">
 									{% if S_PM_CONVERSATION %}
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important" data-ajax="true">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
 												<span class="c-menu-text t-forum-text">Make Important</span>
 											</a>
@@ -97,7 +101,7 @@
 											</a>
 										</li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Delete Conversation">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_DELETE }}" data-toggle="tooltip" title="Delete Conversation" data-ajax="true">
 												<svg class="o-icon c-menu-link-icon"><use xlink:href="#trash"></use></svg>
 												<span class="c-menu-text t-forum-text">Delete Conversation</span>
 											</a>
@@ -106,7 +110,7 @@
 									{% if not S_PM_COMPOSE %}
 										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
 										<li class="c-menu-item t-menu-item">
-											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="New Conversation">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="New Conversation">
 												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#add"></use></svg>
 												<span class="c-menu-text t-forum-text">New Conversation</span>
 											</a>
@@ -126,7 +130,7 @@
 						{% endif %}
 						{% if S_PM_CONVERSATION %}
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" data-placement="top" title="Delete Message">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_DELETE }}" data-toggle="tooltip" data-placement="top" title="Delete Conversation" data-ajax="true">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
 								</a>
 							</li>
@@ -136,7 +140,7 @@
 								</a>
 							</li>
 							<li class="o-bar-item u-hidden-md-down">
-								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="Make Important" data-ajax="true">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
 								</a>
 							</li>

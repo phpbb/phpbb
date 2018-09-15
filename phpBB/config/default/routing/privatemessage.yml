@@ -22,6 +22,13 @@ phpbb_privatemessage_conversation_action_edit_title:
     requirements:
         id: '\d+'
 
+phpbb_privatemessage_conversation_action_delete:
+    path: /conversation_action/delete/{id}
+    defaults:
+        _controller: phpbb.privatemessage.conversation_action:delete
+    requirements:
+        id: '\d+'
+
 phpbb_privatemessage_folder:
     path: /folder/{id}
     defaults:

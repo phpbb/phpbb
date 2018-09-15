@@ -147,13 +147,14 @@ class view
 
 		add_form_key('ucp_pm_compose');
 		$this->template->assign_vars(array(
-			'U_COMPOSE'				=> $this->helper->route('phpbb_privatemessage_compose'),
 			'S_PM_CONVERSATION'		=> true,
 			'CONVERSATION_SUBJECT'	=> $this->get_message_subject($root_msg_id),
 			'ROOT_MSG_ID'			=> $root_msg_id,
 			'CURRENT_TIME'			=> time(),
 			'U_MARK_IMPORTANT'		=> $this->helper->route('phpbb_privatemessage_conversation_action_important', array('id' => $root_msg_id)),
 			'U_EDIT_TITLE'			=> $this->helper->route('phpbb_privatemessage_conversation_action_edit_title', array('id' => $root_msg_id)),
+			'U_DELETE'				=> $this->helper->route('phpbb_privatemessage_conversation_action_delete', array('id' => $root_msg_id)),
+			'U_COMPOSE'				=> $this->helper->route('phpbb_privatemessage_compose'),
 		));
 
 		$this->update_unread_status($root_msg_id);
@@ -168,6 +169,10 @@ class view
 		$this->check_permissions();
 
 		$this->set_user_message_limit();
+
+		$this->template->assign_vars(array(
+			'U_COMPOSE'				=> $this->helper->route('phpbb_privatemessage_compose'),
+		));
 
 		$this->get_conversations($id);
 

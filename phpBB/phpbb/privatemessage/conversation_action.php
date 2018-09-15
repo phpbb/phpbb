@@ -78,4 +78,55 @@ class conversation_action
 
 		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_conversation', array('id' => $id)));
 	}
+
+	public function delete($id)
+	{
+		// TODO: big todo here - sync user unread messages
+
+		if (confirm_box(true))
+		{
+			// get IDs of all messages in the conversation
+			$sql = 'SELECT msg_id
+				FROM ' . $this->privmsgs_table . '
+				WHERE msg_id = ' . (int) $id . '
+					OR root_level = ' . (int) $id;
+			$result = $this->db->sql_query($sql);
+			$msg_ids = array_column($this->db->sql_fetchrowset($result), 'msg_id');
+			$this->db->sql_freeresult($result);
+
+			// delete the user messages
+			$sql = 'DELETE FROM ' . $this->privmsgs_to_table . '
+				WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+				AND ' . $this->db->sql_in_set('msg_id', $msg_ids);
+			$this->db->sql_query($sql);
+
+			// check if there are any messages without user to read it
+			$sql = 'SELECT pt.msg_id
+				FROM (
+					SELECT msg_id, COUNT(msg_id) as count
+					FROM ' . $this->privmsgs_to_table . '
+					WHERE ' . $this->db->sql_in_set('msg_id', $msg_ids) . '
+					GROUP BY msg_id
+				) pt
+				WHERE pt.count > 0';
+			$result = $this->db->sql_query($sql);
+			$accessible_msg_ids = array_column($this->db->sql_fetchrowset($result), 'msg_id');
+			$this->db->sql_freeresult($result);
+
+			// delete messages that aren't used by anyone else
+			$dead_msg_ids = array_diff($msg_ids, $accessible_msg_ids);
+			if (!empty($dead_msg_ids))
+			{
+				$sql = 'DELETE FROM ' . $this->privmsgs_table . '
+					WHERE ' . $this->db->sql_in_set('msg_id', $dead_msg_ids);
+				$this->db->sql_query($sql);
+			}
+		}
+		else
+		{
+			confirm_box(false, $this->user->lang('CONFIRM_OPERATION'));
+		}
+
+		return new \Symfony\Component\HttpFoundation\RedirectResponse($this->helper->route('phpbb_privatemessage_index'));
+	}
 }
