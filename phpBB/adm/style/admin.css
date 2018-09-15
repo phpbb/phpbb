@@ -1721,6 +1721,11 @@ fieldset.submit-buttons legend {
 	height: 40px;
 }
 
+.mention-media-avatar img { /* TODO: reconsider for the future design */
+	max-width: 100%;
+	max-height: 100%;
+}
+
 svg { /* TODO: remove it after general normalization */
 	fill: currentColor;
 }
