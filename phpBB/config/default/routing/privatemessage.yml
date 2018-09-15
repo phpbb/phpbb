@@ -1,3 +1,8 @@
+phpbb_privatemessage_compose:
+    path: /compose
+    defaults:
+        _controller: phpbb.privatemessage.compose:handle
+
 phpbb_privatemessage_index:
     path: /index
     defaults:

@@ -90,7 +90,7 @@ class index
 				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
 			GROUP BY folder_id';
 		$result = $this->db->sql_query($sql);
-	
+
 		$num_messages = $num_unread = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -117,7 +117,7 @@ class index
 	
 		// Adjust unread status for outbox
 		$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
-	
+
 		$folder[PRIVMSGS_INBOX] = array(
 			'folder_name'		=> $this->language->lang('PM_INBOX'),
 			'num_messages'		=> $num_messages[PRIVMSGS_INBOX],
@@ -129,6 +129,12 @@ class index
 			FROM ' . $this->privmsgs_folder_table . '
 				WHERE user_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
+
+		// don't even continue if use doesn't have custom folders, redirect to Inbox directly
+		if (!$this->db->sql_affectedrows())
+		{
+			redirect($this->helper->route('phpbb_privatemessage_folder', array('id' => PRIVMSGS_INBOX)));
+		}
 	
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -139,19 +145,7 @@ class index
 			);
 		}
 		$this->db->sql_freeresult($result);
-	
-		$folder[PRIVMSGS_OUTBOX] = array(
-			'folder_name'		=> $this->language->lang('PM_OUTBOX'),
-			'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
-			'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
-		);
-	
-		$folder[PRIVMSGS_SENTBOX] = array(
-			'folder_name'		=> $this->language->lang('PM_SENTBOX'),
-			'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
-			'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
-		);
-	
+
 		// Define Folder Array for template designers (and for making custom folders usable by the template too)
 		foreach ($folder as $f_id => $folder_ary)
 		{
@@ -168,6 +162,10 @@ class index
 				'S_CUSTOM_FOLDER'	=> $f_id > 0
 			));
 		}
+
+		$this->template->assign_vars(array(
+			'U_COMPOSE'	=> $this->helper->route('phpbb_privatemessage_compose'),
+		));
 
 		return $this->helper->render('ucp_pm_view.html', '');
 	}

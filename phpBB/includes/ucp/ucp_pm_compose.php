@@ -23,8 +23,11 @@ if (!defined('IN_PHPBB'))
 * Compose private message
 * Called from ucp_pm with mode == 'compose'
 */
-function compose_pm($id, $mode, $action, $user_folders = array())
+function compose_pm($action, $user_folders = array())
 {
+	$id = '';
+	$mode = 'compose';
+
 	global $template, $db, $auth, $user, $cache;
 	global $phpbb_root_path, $phpEx, $config;
 	global $request, $phpbb_dispatcher, $phpbb_container;
@@ -35,6 +38,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 	if (!$action)
@@ -78,14 +82,17 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	/** @var \phpbb\group\helper $group_helper */
 	$group_helper = $phpbb_container->get('group_helper');
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel)
 	{
 		if ($msg_id)
 		{
-			redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+			redirect($controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id)));
 		}
-		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm'));
+		redirect($controller_helper->route('phpbb_privatemessage_index'));
 	}
 
 	// Since viewtopic.php language entries are used in several modes,
@@ -502,7 +509,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
+	$s_action = $controller_helper->route('phpbb_privatemessage_compose');
 	$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
 
 	// Delete triggered ?
@@ -517,7 +524,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
 			// jump to next message in "history"? nope, not for the moment. But able to be included later.
-			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
+			$meta_info = $controller_helper->route('phpbb_privatemessage_folder', array('id' => $folder_id));
 			$message = $user->lang['MESSAGE_DELETED'];
 
 			meta_refresh(3, $meta_info);
@@ -536,14 +543,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
 
-		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+		redirect($controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id)));
 	}
 
 	// Get maximum number of allowed recipients
-	$max_recipients = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'max_recipients');
+	//$max_recipients = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'max_recipients');
+	// TODO: should be checked somehow
 
 	// If it is 0, there is no limit set and we use the maximum value within the config.
-	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
+	//$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
+	$max_recipients = $config['pm_max_recipients'];
 
 	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
 	if (($action == 'reply' || $action == 'quote') && $max_recipients && $reply_to_all)
@@ -672,7 +681,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				);
 				$db->sql_query($sql);
 
-				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
+				$redirect_url = $controller_helper->route('phpbb_privatemessage_index');
 
 				meta_refresh(3, $redirect_url);
 				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
@@ -822,14 +831,15 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Subject defined
 		if ($submit)
 		{
-			if (utf8_clean_string($subject) === '')
+			if ($action != 'reply' && utf8_clean_string($subject) === '')
 			{
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
 			if (!count($address_list))
 			{
-				$error[] = $user->lang['NO_RECIPIENT'];
+				$address_list = rebuild_header(array('to' => $post['to_address']));
+				//$error[] = $user->lang['NO_RECIPIENT'];
 			}
 		}
 
@@ -859,14 +869,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
-			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
-			$inbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
-			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
+			$return_message_url = $controller_helper->route('phpbb_privatemessage_thread', array('id' => $msg_id, '#' => 'pm-msg-' . $msg_id));
+			$inbox_folder_url = $controller_helper->route('phpbb_privatemessage_folder', array('id' => PRIVMSGS_INBOX));
+			$outbox_folder_url = $controller_helper->route('phpbb_privatemessage_folder', array('id' => PRIVMSGS_OUTBOX));
 
 			$folder_url = '';
 			if (($folder_id > 0) && isset($user_folders[$folder_id]))
 			{
-				$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
+				$folder_url = $controller_helper->route('phpbb_privatemessage_folder', array('id' => $folder_id));
 			}
 
 			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
@@ -883,8 +893,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			}
 			$message .= '<br /><br />' . sprintf($user->lang[$last_click_type], '<a href="' . $return_box_url . '">', '</a>', $user->lang[$return_box_lang]);
 
-			meta_refresh(3, $return_message_url);
-			trigger_error($message);
+			redirect($return_message_url);
 		}
 
 		$message_subject = $subject;
@@ -1278,6 +1287,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 {
 	global $auth, $db, $user;
 	global $request, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx;
 
 	// Delete User [TO/BCC]
 	if ($remove_u && $request->variable('remove_u', array(0 => '')))
@@ -1351,6 +1361,10 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		if (count($usernames))
 		{
 			$user_id_ary = array();
+			if (!function_exists('user_get_id_name'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
 			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
 
 			// If there are users not existing, we will at least print a notice...
@@ -1443,6 +1457,10 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Check if users are banned
+		if (!function_exists('phpbb_get_banned_user_ids'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 		$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
 		if (!empty($banned_user_list))
 		{

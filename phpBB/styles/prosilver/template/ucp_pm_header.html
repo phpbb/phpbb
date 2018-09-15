@@ -1,0 +1,144 @@
+{% include 'ucp_header.html' %}
+
+<link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_color.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_default.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/dist/assets/css/core.0.15.0.css" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/phpbb/dist/assets/css/theme.0.15.0.css" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/dist/assets/css/utilities.0.15.0.css" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_type.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_center.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_shadows.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_rtl.scss" rel="stylesheet">
+<style>
+.cp-menu {
+	display: none;
+}
+</style>
+
+<div class="c-pm-container">
+	<ul class="o-list c-pm-list">
+		{% for folder in folders %}
+			<li class="o-list-item c-pm-item">
+				<a href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
+			</li>
+		{% endfor %}
+		{% if threads %}
+			{% if U_BACK_TO_FOLDERS %}
+			<li class="o-list-item c-pm-item">
+				<a href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
+			</li>
+			{% endif %}
+			{% for thread in threads %}
+				<li class="o-list-item c-pm-item{% if thread.S_CURRENT_THREAD %} is-active{% endif %}">
+					<a class="o-list-media c-pm-media" href="{{ thread.U_MESSAGE_AUTHOR }}">
+						<span class="o-avatar-wrap o-list-avatar">
+							{{ thread.MESSAGE_AVATAR }}
+							{% if thread.S_AUTHOR_ONLINE %}<span class="o-avatar-online o-action-bar-avatar-online"></span>{% endif %}
+							{% if thread.S_PM_UNREAD %}<span class="o-tag c-pm-badge">{{ thread.PM_UNREAD_COUNT }}</span>{% endif %}
+						</span>
+					</a>
+					<span class="o-list-primary c-pm-primary">
+						<span class="o-list-secondary c-pm-secondary">
+								{% if thread.S_PM_MARKED %}<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#important"></use></svg>{% endif %}
+							<a class="o-list-title c-pm-item-url" href="{{ thread.U_VIEW_PM }}"><strong>{{ thread.SUBJECT }}</strong></a>
+						</span>
+						<span class="o-list-secondary c-pm-secondary">
+							<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#user"></use></svg>
+							<a class="o-list-secondary-item-link" href="{{ thread.U_MESSAGE_AUTHOR }}">{{ thread.MESSAGE_AUTHOR_FULL }}</a>
+						</span>
+						<span class="o-list-secondary c-pm-secondary">
+							<span class="o-list-secondary-item">
+								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#time"></use></svg>
+								<time datetime="" title="" data-short="">{{ thread.SENT_TIME }}</time>
+							</span>
+						</span>
+					</span>
+				</li>
+			{% endfor %}
+		{% endif %}
+	</ul>
+	<div class="c-pm-viewer">
+			<div class="o-bar c-pm-viewer-header">
+					<ul class="o-bar-left">
+						<li class="o-bar-item">
+							<h2 class="o-bar-title c-pm-title">{{ THREAD_SUBJECT }}</h2>
+						</li>
+					</ul>
+					<ul class="o-bar-right">
+						<li class="o-bar-item c-menu-toggle u-hidden-lg-up">
+							<a class="o-bar-action c-menu-button" href="#" data-toggle="menu" title="Post Actions">
+								<svg class="o-icon o-bar-action-icon"><use xlink:href="#more-v"></use></svg>
+							</a>
+							<div class="c-menu-container t-menu-container" data-container="menu">
+								<ul class="c-menu t-menu">
+									{% if S_PM_THREAD %}
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Make Important">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
+												<span class="c-menu-text t-forum-text">Make Important</span>
+											</a>
+										</li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Edit Title">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
+												<span class="c-menu-text t-forum-text">Edit Title</span>
+											</a>
+										</li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Delete Conversation">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#trash"></use></svg>
+												<span class="c-menu-text t-forum-text">Delete Conversation</span>
+											</a>
+										</li>
+										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="Forward Conversation">
+												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#forward"></use></svg>
+												<span class="c-menu-text t-forum-text">Forward Conversation</span>
+											</a>
+										</li>
+									{% endif %}
+									{% if not S_PM_COMPOSE %}
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="#" data-toggle="tooltip" title="New Conversation">
+												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#add"></use></svg>
+												<span class="c-menu-text t-forum-text">New Conversation</span>
+											</a>
+										</li>
+									{% endif %}
+								</ul>
+							</div>	
+						</li>
+						
+						{% if not S_PM_COMPOSE %}
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="Start New Conversation">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
+								</a>
+							</li>
+						{% endif %}
+						{% if S_PM_THREAD %}
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="Forward Conversation" title="Forward Conversation">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#forward"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item o-bar-divider u-hidden-md-down"></li>
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" data-placement="top" title="Delete Message">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Edit Title">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="#" data-toggle="tooltip" title="Make Important">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
+								</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>

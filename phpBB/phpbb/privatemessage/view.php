@@ -63,9 +63,24 @@ class view
 	/**
 	 * @var string
 	 */
+	protected $privmsgs_folder_table;
+
+	/**
+	 * @var string
+	 */
 	protected $users_table;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, $privmsgs_table, $privmsgs_to_table, $users_table)
+	/**
+	 * @var string
+	 */
+	protected $root_path;
+
+	/**
+	 * @var string
+	 */
+	protected $php_ext;
+
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, $privmsgs_table, $privmsgs_to_table, $privmsgs_folder_table, $users_table, $root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
@@ -76,7 +91,10 @@ class view
 		$this->template = $template;
 		$this->privmsgs_table = $privmsgs_table;
 		$this->privmsgs_to_table = $privmsgs_to_table;
+		$this->privmsgs_folder_table = $privmsgs_folder_table;
 		$this->users_table = $users_table;
+		$this->root_path = $root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	public function thread($id)
@@ -103,10 +121,16 @@ class view
 		$folder_id = (int) $row['folder_id'];
 		$root_msg_id = $row['root_level'] ?: $id;
 
+		add_form_key('ucp_pm_compose');
 		$this->template->assign_vars(array(
+			'U_COMPOSE'			=> $this->helper->route('phpbb_privatemessage_compose'),
+			'S_PM_THREAD'		=> true,
 			'THREAD_SUBJECT'	=> $this->get_message_subject($root_msg_id),
+			'ROOT_MSG_ID'		=> $root_msg_id,
+			'CURRENT_TIME'		=> time(),
 		));
 
+		$this->update_unread_status($root_msg_id);
 		$this->get_threads($folder_id, $id);
 		$this->get_messages($root_msg_id);
 
@@ -147,6 +171,21 @@ class view
 
 	public function get_threads($folder_id, $msg_id = null)
 	{
+		if (!function_exists('rebuild_header'))
+		{
+			include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
+		}
+
+		if ($folder_id > 0)
+		{
+			$where_folder_id = 'AND t.folder_id = ' . (int) $folder_id;
+		}
+		else
+		{
+			// combine inbox, outbox and sent messages
+			$where_folder_id = 'AND ' . $this->db->sql_in_set('t.folder_id', array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX));
+		}
+
 		$sql_ary = array(
 			'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.message_reported, (
 				SELECT SUM(tu.pm_unread)
@@ -170,8 +209,9 @@ class view
 				),
 			),
 			'WHERE'		=> 't.user_id = ' . $this->user->data['user_id'] . '
-				AND t.folder_id = ' . (int) $folder_id . '
+				' . $where_folder_id . '
 				AND p.root_level = 0',
+			'GROUP_BY'	=> 't.msg_id',
 			//'ORDER_BY'	=> $sql_sort_order,
 		);
 
@@ -179,6 +219,7 @@ class view
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+			print_r(\rebuild_header(array('to' => $row['to_address'])));
 			$this->template->assign_block_vars('threads', array(
 				'MESSAGE_AVATAR'		=> phpbb_get_user_avatar($row),
 				'S_PM_UNREAD'			=> $row['pm_unread'] > 0,
@@ -197,9 +238,20 @@ class view
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->template->assign_vars(array(
-			'U_BACK_TO_FOLDERS'	=> $this->helper->route('phpbb_privatemessage_index'),
-		));
+		// does the user have custom folders? If yes, we will display a link to the list of folders.
+		$sql = 'SELECT COUNT(folder_id) as num_folders
+			FROM ' . $this->privmsgs_folder_table . '
+				WHERE user_id = ' . (int) $this->user->data['user_id'];
+		$result = $this->db->sql_query($sql);
+		$num_folders = (int) $this->db->sql_fetchfield('num_folders', $result);
+		$this->db->sql_freeresult($result);
+
+		if ($num_folders)
+		{
+			$this->template->assign_vars(array(
+				'U_BACK_TO_FOLDERS'	=> $this->helper->route('phpbb_privatemessage_index'),
+			));
+		}
 	}
 
 	public function get_messages($root_msg_id)
@@ -225,6 +277,7 @@ class view
 			$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
 
 			$this->template->assign_block_vars('messages', array(
+				'MSG_ID'				=> $row['msg_id'],
 				'MESSAGE_AVATAR'		=> phpbb_get_user_avatar($row),
 				'S_IS_SELF'				=> $row['author_id'] == $this->user->data['user_id'],
 				'MESSAGE_AUTHOR'		=> get_username_string('username', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
@@ -267,5 +320,32 @@ class view
 		$this->db->sql_freeresult($result);
 
 		return $message_subject;
+	}
+
+	public function update_unread_status($root_msg_id)
+	{
+		$sql = 'SELECT pt.msg_id
+			FROM ' . $this->privmsgs_table . ' p
+			LEFT JOIN ' . $this->privmsgs_to_table . ' pt
+				ON (pt.msg_id = p.msg_id AND pt.user_id = ' . (int) $this->user->data['user_id'] . ')
+			WHERE (p.msg_id = ' . (int) $root_msg_id . '
+				OR p.root_level = ' . (int) $root_msg_id . ')
+				AND pt.pm_unread = 1';
+		$result = $this->db->sql_query($sql);
+		$unread_messages = array_column($this->db->sql_fetchrowset($result), 'msg_id');
+		$this->db->sql_freeresult($result);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_unread_privmsg = user_unread_privmsg - ' . count($unread_messages) . '
+			WHERE user_id = ' . (int) $this->user->data['user_id'];
+		$this->db->sql_query($sql);
+
+		$this->user->data['user_unread_privmsg'] -= count($unread_messages);
+
+		$sql = 'UPDATE ' . $this->privmsgs_to_table . '
+			SET pm_unread = 0
+			WHERE ' . $this->db->sql_in_set('msg_id', $unread_messages, false, true) . '
+				AND user_id = ' . (int) $this->user->data['user_id'];
+		$this->db->sql_query($sql);
 	}
 }

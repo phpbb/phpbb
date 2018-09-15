@@ -3,6 +3,7 @@
   }
   .c-pm-list {
 	background-color: #f5f5f5;
+	overflow-y: scroll;
   }
   @media (min-width: 992px) {
 	.c-pm-list {
@@ -68,6 +69,8 @@
   }
   .c-pm-msg-list {
 	box-shadow: none;
+	height: 70vh;
+	overflow: scroll;
   }
   .c-pm-msg-header {
 	display: flex;
@@ -143,7 +146,10 @@
 	margin: 1rem;
 	border-radius: 2px;
 	margin-top: 32px;
-  }
+	}
+	.c-pm-reply-action {
+		border: none;
+	}
   
   .is-mine .c-pm-msg {
 	background-color: rgba(170, 185, 192, 0.3);

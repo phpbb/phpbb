@@ -1,4 +1,17 @@
 services:
+    phpbb.privatemessage.compose:
+        class: phpbb\privatemessage\compose
+        arguments:
+            - '@controller.helper'
+            - '@user'
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '@request'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     phpbb.privatemessage.index:
         class: phpbb\privatemessage\index
         arguments:
@@ -23,4 +36,7 @@ services:
             - '@template'
             - '%tables.privmsgs%'
             - '%tables.privmsgs_to%'
+            - '%tables.privmsgs_folder%'
             - '%tables.users%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
