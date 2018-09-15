@@ -931,9 +931,9 @@ phpbb.addAjaxCallback('alt_text', function() {
 	$anchor.each(function() {
 		var $this = $(this);
 		altText = $this.attr('data-alt-text');
-		$this.attr('data-alt-text', $this.text());
-		$this.attr('title', $.trim(altText));
-		$this.text(altText);
+		$this.attr('data-alt-text', $.trim($this.text()));
+		$this.attr('title', altText);
+		$this.children('span').text(altText);
 	});
 });
 
