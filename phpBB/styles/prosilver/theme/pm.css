@@ -150,6 +150,10 @@
 	.c-pm-reply-action {
 		border: none;
 	}
+
+	.pm-pagination-item {
+		justify-content: center !important;
+	}
   
   .is-mine .c-pm-msg {
 	background-color: rgba(170, 185, 192, 0.3);

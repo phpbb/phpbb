@@ -17,24 +17,6 @@
 
 <div class="c-pm-container">
 	<ul id="pm-conversations-list" class="o-list c-pm-list">
-		{% if folders %}
-			{% for folder in folders %}
-				<li class="o-list-item c-pm-item">
-					<a class="c-pm-item-url" href="{{ folder.U_FOLDER }}">{{ folder.FOLDER_NAME }}</a>
-				</li>
-			{% endfor %}
-			<li class="o-list-item c-pm-item">
-				<a class="c-pm-item-url" href="{{ U_SETTINGS }}">
-					<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#settings"></use></svg>
-					{{ lang('PM_SETTINGS') }}
-				</a>
-			</li>
-		{% endif %}
-		{% if U_BACK_TO_FOLDERS %}
-			<li class="o-list-item c-pm-item">
-				<a class="c-pm-item-url" href="{{ U_BACK_TO_FOLDERS }}">{{ lang('BACK_TO_FOLDERS') }}</a>
-			</li>
-		{% endif %}
 		{% if conversations %}
 			{% if U_NEWER_CONVERSATIONS %}
 				<li class="o-list-item c-pm-pagination-item">
@@ -75,7 +57,7 @@
 					<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
-		{% elseif not folders %}
+		{% else %}
 			<li class="o-list-item">
 				{{ lang('NO_CONVERSATIONS') }}
 			</li>
@@ -115,7 +97,7 @@
 											</a>
 										</li>
 									{% endif %}
-									{% if not S_PM_COMPOSE %}
+									{% if not S_COMPOSE_PM %}
 										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
 										<li class="c-menu-item t-menu-item">
 											<a class="c-menu-link c-pm-menu-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
@@ -128,7 +110,7 @@
 							</div>	
 						</li>
 						
-						{% if not S_PM_COMPOSE %}
+						{% if not S_COMPOSE_PM %}
 							<li class="o-bar-item u-hidden-md-down">
 								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
 									<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>

@@ -37,7 +37,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_img', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_links', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify', '1');
@@ -45,10 +44,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allowed_schemes_li
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('assets_version', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_flash_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method', 'db');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize', '6144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path', 'images/avatars/gallery');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height', '90');
@@ -109,7 +106,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_accurate_pm
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_board_notifications', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
@@ -129,7 +125,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_mintime
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_sid_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_check', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_common_thres', '5');
@@ -232,8 +227,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_styl
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('plupload_salt', 'phpbb_plupload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_recipients', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');

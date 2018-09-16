@@ -231,8 +231,6 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		'user_new_privmsg'		=> 0,
 		'user_unread_privmsg'	=> 0,
 		'user_last_privmsg'		=> 0,
-		'user_message_rules'	=> 0,
-		'user_full_folder'		=> PRIVMSGS_NO_BOX,
 		'user_emailtime'		=> 0,
 
 		'user_notify'			=> 0,

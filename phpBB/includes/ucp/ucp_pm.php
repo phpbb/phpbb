@@ -109,20 +109,6 @@ class ucp_pm
 				$tpl_file = 'posting_body';
 			break;
 
-			case 'options':
-				// TODO: reenable
-				//set_user_message_limit();
-				$user->data['message_limit'] = 99999;
-				//get_folder($user->data['user_id']);
-
-				$user->add_lang('privatemessage');
-
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
-				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
-
-				$tpl_file = 'ucp_pm_options';
-			break;
-
 			case 'drafts':
 
 				get_folder($user->data['user_id']);
@@ -152,34 +138,14 @@ class ucp_pm
 
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
-				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
 				$mark_option	= $request->variable('mark_option', '');
 				$dest_folder	= $request->variable('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
 				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
 				{
-					$move_pm = true;
 					$dest_folder = (int) $mark_option;
 					$submit_mark = false;
-				}
-
-				// Move PM
-				if ($move_pm)
-				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
-					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
-
-					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
-					{
-						// Return to folder view if single message moved
-						if ($action == 'view_message')
-						{
-							$msg_id		= 0;
-							$folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
-							$action		= 'view_folder';
-						}
-					}
 				}
 
 				// Message Mark Options
@@ -287,7 +253,6 @@ class ucp_pm
 					$s_to_folder_options .= ($f_id != PRIVMSGS_OUTBOX && $f_id != PRIVMSGS_SENTBOX) ? $option : '';
 					$s_folder_options .= $option;
 				}
-				clean_sentbox($folder[PRIVMSGS_SENTBOX]['num_messages']);
 
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);

@@ -6,7 +6,7 @@ phpbb_privatemessage_compose:
 phpbb_privatemessage_index:
     path: /index
     defaults:
-        _controller: phpbb.privatemessage.index:handle
+        _controller: phpbb.privatemessage.view:index
 
 phpbb_privatemessage_conversation_action_important:
     path: /conversation_action/important/{id}
@@ -28,13 +28,6 @@ phpbb_privatemessage_conversation_action_delete:
         _controller: phpbb.privatemessage.conversation_action:delete
     requirements:
         id: '\d+'
-
-phpbb_privatemessage_folder:
-    path: /folder/{id}
-    defaults:
-        _controller: phpbb.privatemessage.view:folder
-    requirements:
-        id: '-?\d+'
 
 phpbb_privatemessage_conversation:
     path: /conversation/{id}

@@ -130,7 +130,6 @@ $config_schema = array(
 		'hot_threshold'			=> 'hot_threshold',
 		'max_poll_options'		=> 'max_poll_options',
 		'max_sig_chars'			=> 'max_sig_chars',
-		'pm_max_msgs'			=> 'max_inbox_privmsgs',
 		'smtp_delivery'			=> 'smtp_delivery',
 		'smtp_host'				=> 'smtp_host',
 		'smtp_username'			=> 'smtp_username',

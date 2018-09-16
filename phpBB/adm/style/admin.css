@@ -1399,8 +1399,7 @@ select option.disabled {
 }
 
 /* Special case inputs */
-select#board_timezone,
-select#full_folder_action {
+select#board_timezone {
 	width: 95%;
 }
 

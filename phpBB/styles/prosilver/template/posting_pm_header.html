@@ -4,7 +4,11 @@
 		<!-- IF S_GROUP_OPTIONS -->
 			<div class="column2">
 				<label for="group_list"><strong>{L_TO_ADD_GROUPS}{L_COLON}</strong></label><br />
-				<select name="group_list[]" id="group_list" multiple="multiple" size="3" class="inputbox">{S_GROUP_OPTIONS}</select><br />
+				<select name="group_list[]" id="group_list" multiple="multiple" size="3" class="inputbox">
+					{% for option in group_options %}
+						<option value="{{ option.VALUE }}"{% if option.CLASS %} class="{{ option.CLASS }}"{% endif %}>{{ option.TEXT }}</option>
+					{% endfor %}
+				</select><br />
 			</div>
 		<!-- ENDIF -->
 		<!-- IF S_ALLOW_MASS_PM -->

@@ -249,7 +249,6 @@ $lang = array_merge($lang, array(
 	'FRIENDS_OFFLINE'			=> 'Offline',
 	'FRIENDS_ONLINE'			=> 'Online',
 	'FRIENDS_UPDATED'			=> 'Your friends list has been updated successfully.',
-	'FULL_FOLDER_OPTION_CHANGED'=> 'The action to take when a folder is full has been changed successfully.',
 	'FWD_ORIGINAL_MESSAGE'		=> '-------- Original Message --------',
 	'FWD_SUBJECT'				=> 'Subject: %s',
 	'FWD_DATE'					=> 'Date: %s',

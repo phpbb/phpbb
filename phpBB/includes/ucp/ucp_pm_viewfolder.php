@@ -195,8 +195,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX) ? true : false,
 
 				'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'PM_REPORTED'),
-				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
-			);
+			));
 		}
 	}
 	else
@@ -477,7 +476,6 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
 		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose') : '',
 		'S_PM_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')),

@@ -61,7 +61,7 @@ class view
 	protected $user_loader;
 
 	/**
-	 * @var \phpbb\group\helper 
+	 * @var \phpbb\group\helper
 	 */
 	protected $group_helper;
 
@@ -74,11 +74,6 @@ class view
 	 * @var string
 	 */
 	protected $privmsgs_to_table;
-
-	/**
-	 * @var string
-	 */
-	protected $privmsgs_folder_table;
 
 	/**
 	 * @var string
@@ -100,7 +95,7 @@ class view
 	 */
 	protected $php_ext;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user_loader $user_loader, \phpbb\group\helper  $group_helper, $privmsgs_table, $privmsgs_to_table, $privmsgs_folder_table, $users_table, $groups_table, $root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user_loader $user_loader, \phpbb\group\helper  $group_helper, $privmsgs_table, $privmsgs_to_table, $users_table, $groups_table, $root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
@@ -114,7 +109,6 @@ class view
 		$this->group_helper = $group_helper;
 		$this->privmsgs_table = $privmsgs_table;
 		$this->privmsgs_to_table = $privmsgs_to_table;
-		$this->privmsgs_folder_table = $privmsgs_folder_table;
 		$this->users_table = $users_table;
 		$this->groups_table = $groups_table;
 		$this->root_path = $root_path;
@@ -125,14 +119,10 @@ class view
 	{
 		$this->check_permissions();
 
-		// select message folder and double-check it's root message of the conversation
-		$sql = 'SELECT pt.folder_id, p.root_level
-			FROM ' . $this->privmsgs_to_table . ' pt
-			LEFT JOIN ' . $this->privmsgs_table . ' p
-				ON (p.msg_id = pt.msg_id)
-			WHERE pt.msg_id = ' . (int) $id . '
-				AND pt.folder_id <> ' . PRIVMSGS_NO_BOX . '
-				AND pt.user_id = ' . $this->user->data['user_id'];
+		// double-check root message of the conversation
+		$sql = 'SELECT root_level
+			FROM ' . $this->privmsgs_table . '
+			WHERE msg_id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -141,9 +131,7 @@ class view
 		{
 			return $this->helper->error('NO_MESSAGE', 404);
 		}
-
-		$folder_id = (int) $row['folder_id'];
-		$root_msg_id = $row['root_level'] ?: $id;
+		$root_msg_id = (int) $row['root_level'] ?: $id;
 
 		add_form_key('ucp_pm_compose');
 		$this->template->assign_vars(array(
@@ -158,49 +146,26 @@ class view
 		));
 
 		$this->update_unread_status($root_msg_id);
-		$this->get_conversations($folder_id, true, $id);
+		$this->get_conversations($id);
 		$this->get_messages($root_msg_id);
 
 		return $this->helper->render('ucp_pm_view.html', '');
 	}
 
-	public function folder($id)
+	public function index()
 	{
 		$this->check_permissions();
-
-		$this->set_user_message_limit();
 
 		$this->template->assign_vars(array(
 			'U_COMPOSE'				=> $this->helper->route('phpbb_privatemessage_compose'),
 		));
 
-		$this->get_conversations($id);
+		$this->get_conversations();
 
 		return $this->helper->render('ucp_pm_view.html', '');
 	}
 
-	/**
-	* Set correct users max messages in PM folder.
-	* If several group memberships define different amount of messages, the highest will be chosen.
-	*/
-	public function set_user_message_limit()
-	{
-		// Get maximum number of allowed recipients
-		$sql = 'SELECT MAX(g.group_message_limit) as max_setting
-			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-			WHERE ug.user_id = ' . (int) $this->user->data['user_id'] . '
-				AND ug.user_pending = 0
-				AND ug.group_id = g.group_id';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-		$message_limit = (int) $row['max_setting'];
-
-		// If it is 0, there is no limit set and we use the maximum value within the config.
-		$this->user->data['message_limit'] = (!$message_limit) ? $this->config['pm_max_msgs'] : $message_limit;
-	}
-
-	public function get_conversations($folder_id, $in_conversation = false, $msg_id = null)
+	public function get_conversations($msg_id = 0)
 	{
 		if (!function_exists('rebuild_header'))
 		{
@@ -210,16 +175,6 @@ class view
 		$start = $this->request->variable('cstart', 0);
 		$mstart = $this->request->variable('mstart', 0);
 
-		if ($folder_id > 0)
-		{
-			$where_folder_id = 'AND t.folder_id = ' . (int) $folder_id;
-		}
-		else
-		{
-			// combine inbox, outbox and sent messages
-			$where_folder_id = 'AND ' . $this->db->sql_in_set('t.folder_id', array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX));
-		}
-
 		$sql = 'SELECT COUNT(msg_id) as num_conversations
 			FROM (
 				SELECT t.msg_id
@@ -227,7 +182,6 @@ class view
 				LEFT JOIN ' . $this->privmsgs_table . ' p
 					ON (p.msg_id = t.msg_id)
 				WHERE t.user_id = ' . $this->user->data['user_id'] . '
-					' . $where_folder_id . '
 					AND p.root_level = 0
 				GROUP BY t.msg_id
 			) nt';
@@ -236,7 +190,7 @@ class view
 		$this->db->sql_freeresult($result);
 
 		$sql_ary = array(
-			'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.message_reported, (
+			'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.to_address, p.message_attachment, u.username, u.username_clean, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, p.message_reported, (
 				SELECT SUM(tu.pm_unread)
 				FROM ' . $this->privmsgs_to_table . ' tu
 				LEFT JOIN ' . $this->privmsgs_table . ' pu
@@ -263,7 +217,6 @@ class view
 				),
 			),
 			'WHERE'		=> 't.user_id = ' . $this->user->data['user_id'] . '
-				' . $where_folder_id . '
 				AND p.root_level = 0',
 			'GROUP_BY'	=> 't.msg_id',
 			'ORDER_BY'	=> 'newest_message DESC',
@@ -375,24 +328,9 @@ class view
 
 		$newest_start = $start - $this->config['topics_per_page'] < 0 ? 0 : $start - $this->config['topics_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_CONVERSATIONS'	=> $start + $this->config['topics_per_page'] >= $num_conversations ? false : $this->get_patination_url($in_conversation ? 'conversation' : 'folder', $in_conversation ? $msg_id : $folder_id, $start + $this->config['topics_per_page'], $mstart),
-			'U_NEWER_CONVERSATIONS'	=> $start == 0 ? false : $this->get_patination_url($in_conversation ? 'conversation' : 'folder', $in_conversation ? $msg_id : $folder_id, $newest_start, $mstart),
+			'U_OLDER_CONVERSATIONS'	=> $start + $this->config['topics_per_page'] >= $num_conversations ? false : $this->get_patination_url($msg_id, $start + $this->config['topics_per_page'], $mstart),
+			'U_NEWER_CONVERSATIONS'	=> $start == 0 ? false : $this->get_patination_url($msg_id, $newest_start, $mstart),
 		));
-
-		// does the user have custom folders? If yes, we will display a link to the list of folders.
-		$sql = 'SELECT COUNT(folder_id) as num_folders
-			FROM ' . $this->privmsgs_folder_table . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'];
-		$result = $this->db->sql_query($sql);
-		$num_folders = (int) $this->db->sql_fetchfield('num_folders', $result);
-		$this->db->sql_freeresult($result);
-
-		if ($num_folders)
-		{
-			$this->template->assign_vars(array(
-				'U_BACK_TO_FOLDERS'	=> $this->helper->route('phpbb_privatemessage_index'),
-			));
-		}
 	}
 
 	public function get_messages($root_msg_id)
@@ -433,8 +371,7 @@ class view
 		
 		foreach ($rowset as $row)
 		{
-			$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
-			$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
+			$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 
 			$this->template->assign_block_vars('messages', array(
 				'MSG_ID'				=> $row['msg_id'],
@@ -454,8 +391,8 @@ class view
 
 		$newest_start = $start - $this->config['posts_per_page'] < 0 ? 0 : $start - $this->config['posts_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_patination_url('conversation', $root_msg_id, $cstart, $start + $this->config['posts_per_page']),
-			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_patination_url('conversation', $root_msg_id, $cstart, $newest_start),
+			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_patination_url($root_msg_id, $cstart, $start + $this->config['posts_per_page']),
+			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_patination_url($root_msg_id, $cstart, $newest_start),
 		));
 	}
 
@@ -518,8 +455,8 @@ class view
 		$this->db->sql_query($sql);
 	}
 
-	public function get_patination_url($route, $id, $cstart, $mstart)
+	public function get_patination_url($id, $cstart, $mstart)
 	{
-		return $this->helper->route('phpbb_privatemessage_' . $route, array('id' => $id, 'cstart' => $cstart, 'mstart' => $mstart));
+		return $this->helper->route('phpbb_privatemessage_conversation', array('id' => $id, 'cstart' => $cstart, 'mstart' => $mstart));
 	}
 }

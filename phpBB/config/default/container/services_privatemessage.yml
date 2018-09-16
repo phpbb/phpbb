@@ -9,20 +9,13 @@ services:
             - '@language'
             - '@template'
             - '@request'
+            - '@auth'
+            - '@group_helper'
+            - '@text_formatter.utils'
+            - '@plupload'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
-
-    phpbb.privatemessage.index:
-        class: phpbb\privatemessage\index
-        arguments:
-            - '@controller.helper'
-            - '@user'
-            - '@config'
-            - '@dbal.conn'
-            - '@language'
-            - '@template'
-            - '%tables.privmsgs_to%'
-            - '%tables.privmsgs_folder%'
 
     phpbb.privatemessage.conversation_action:
         class: phpbb\privatemessage\conversation_action
@@ -49,7 +42,6 @@ services:
             - '@group_helper'
             - '%tables.privmsgs%'
             - '%tables.privmsgs_to%'
-            - '%tables.privmsgs_folder%'
             - '%tables.users%'
             - '%tables.groups%'
             - '%core.root_path%'
