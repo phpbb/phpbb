@@ -48,7 +48,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$to_group_id	= $request->variable('g', 0);
 	$msg_id			= $request->variable('p', 0);
 	$draft_id		= $request->variable('d', 0);
-	$lastclick		= $request->variable('lastclick', 0);
 
 	// Reply to all triggered (quote/reply)
 	$reply_to_all	= $request->variable('reply_to_all', 0);
@@ -80,7 +79,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$group_helper = $phpbb_container->get('group_helper');
 
 	// Was cancel pressed? If so then redirect to the appropriate page
-	if ($cancel || ($current_time - $lastclick < 2 && $submit))
+	if ($cancel)
 	{
 		if ($msg_id)
 		{
@@ -1174,8 +1173,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		break;
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
-	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
+	$s_hidden_fields = (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
