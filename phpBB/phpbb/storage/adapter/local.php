@@ -118,11 +118,6 @@ class local implements adapter_interface, stream_interface
 	{
 		$this->ensure_directory_exists($path);
 
-		if ($this->exists($path))
-		{
-			throw new exception('STORAGE_FILE_EXISTS', $path);
-		}
-
 		try
 		{
 			$this->filesystem->dump_file($this->root_path . $this->get_path($path) . $this->get_filename($path), $content);
@@ -138,11 +133,6 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function get_contents($path)
 	{
-		if (!$this->exists($path))
-		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
-		}
-
 		$content = @file_get_contents($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		if ($content === false)
@@ -331,11 +321,6 @@ class local implements adapter_interface, stream_interface
 	{
 		$this->ensure_directory_exists($path);
 
-		if ($this->exists($path))
-		{
-			throw new exception('STORAGE_FILE_EXISTS', $path);
-		}
-
 		$stream = @fopen($this->root_path . $this->get_path($path) . $this->get_filename($path), 'w+b');
 
 		if (!$stream)
@@ -363,7 +348,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_size($path)
 	{
-		$size = filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
+		$size = @filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
 		if ($size === null)
 		{
@@ -435,7 +420,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function get_link($path)
 	{
-		return generate_board_url() . $this->path . $path;
+		return generate_board_url() . '/' . $this->path . $path;
 	}
 
 	/**

@@ -745,6 +745,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_CANNOT_CREATE_DIR'		=> 'Can not create directory.',
 	'STORAGE_CANNOT_OPEN_FILE'		=> 'Can not open file.',
 	'STORAGE_CANNOT_CREATE_FILE'	=> 'Can not create file.',
+	'STORAGE_INVALID_RESOURCE'		=> 'Resource is invalid.',
 
 	'TB'				=> 'TB',
 	'TERMS_LINK'		=> 'Terms',
