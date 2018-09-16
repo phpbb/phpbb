@@ -31,7 +31,7 @@ $get_params_array = $request->get_super_global(\phpbb\request\request_interface:
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
 $response = new RedirectResponse(
-	$controller_helper->route('phpbb_cron_run', $get_params_array),
+	$controller_helper->route('phpbb_cron_run', $get_params_array, false),
 	301
 );
 $response->send();
