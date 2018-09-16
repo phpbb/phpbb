@@ -30,6 +30,7 @@ services:
     phpbb.privatemessage.view:
         class: phpbb\privatemessage\view
         arguments:
+            - '@phpbb.privatemessage.helper'
             - '@controller.helper'
             - '@user'
             - '@config'
@@ -46,3 +47,6 @@ services:
             - '%tables.groups%'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    phpbb.privatemessage.helper:
+        class: phpbb\privatemessage\helper

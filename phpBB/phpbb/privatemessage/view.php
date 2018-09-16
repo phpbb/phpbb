@@ -16,6 +16,11 @@ namespace phpbb\privatemessage;
 class view
 {
 	/**
+	 * @var \phpbb\privatemessage\helper
+	 */
+	protected $pm_helper;
+
+	/**
 	 * @var \phpbb\controller\helper
 	 */
 	protected $helper;
@@ -95,8 +100,9 @@ class view
 	 */
 	protected $php_ext;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user_loader $user_loader, \phpbb\group\helper  $group_helper, $privmsgs_table, $privmsgs_to_table, $users_table, $groups_table, $root_path, $php_ext)
+	public function __construct(\phpbb\privatemessage\helper $pm_helper, \phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user_loader $user_loader, \phpbb\group\helper  $group_helper, $privmsgs_table, $privmsgs_to_table, $users_table, $groups_table, $root_path, $php_ext)
 	{
+		$this->pm_helper = $pm_helper;
 		$this->helper = $helper;
 		$this->user = $user;
 		$this->config = $config;
@@ -167,11 +173,6 @@ class view
 
 	public function get_conversations($msg_id = 0)
 	{
-		if (!function_exists('rebuild_header'))
-		{
-			include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
-		}
-
 		$start = $this->request->variable('cstart', 0);
 		$mstart = $this->request->variable('mstart', 0);
 
@@ -234,7 +235,7 @@ class view
 		);
 		foreach ($rowset as &$item)
 		{
-			$item['addresses'] = \rebuild_header(array('to' => $item['to_address']));
+			$item['addresses'] = $this->pm_helper->rebuild_header(array('to' => $item['to_address']));
 
 			if (!empty($item['addresses']['u']))
 			{
