@@ -1768,7 +1768,7 @@ class bitfield
  * @param parse_message 			$message_parser Message parser class
  * @param string 					$message_link Link of the original quoted post
  */
-function format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, $message_parser, $message_link = '')
+function phpbb_format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, $message_parser, $message_link = '')
 {
 	if ($bbcode_status)
 	{

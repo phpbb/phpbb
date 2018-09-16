@@ -984,7 +984,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
 
-		format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
+		phpbb_format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)

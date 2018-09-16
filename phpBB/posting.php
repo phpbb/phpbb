@@ -1637,7 +1637,7 @@ if ($generate_quote)
 						'user_id' => $post_data['poster_id'],
 	);
 
-	format_quote($config['allow_bbcode'], $quote_attributes, $bbcode_utils, $message_parser);
+	phpbb_format_quote($config['allow_bbcode'], $quote_attributes, $bbcode_utils, $message_parser);
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
