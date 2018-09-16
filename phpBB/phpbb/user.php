@@ -189,6 +189,9 @@ class user extends \phpbb\session
 		/**
 		* Event to load language files and modify user data on every page
 		*
+		* Note: To load language file with this event, see description
+		* of lang_set_ext variable.
+		*
 		* @event core.user_setup
 		* @var	array	user_data			Array with user's data row
 		* @var	string	user_lang_name		Basename of the user's langauge
