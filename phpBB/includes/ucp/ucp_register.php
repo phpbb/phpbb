@@ -552,6 +552,31 @@ class ucp_register
 			break;
 		}
 
+		/* @var $provider_collection \phpbb\auth\provider_collection */
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$auth_provider = $provider_collection->get_provider();
+
+		$auth_provider_data = $auth_provider->get_login_data();
+		if ($auth_provider_data)
+		{
+			if (isset($auth_provider_data['VARS']))
+			{
+				$template->assign_vars($auth_provider_data['VARS']);
+			}
+
+			if (isset($auth_provider_data['BLOCK_VAR_NAME']))
+			{
+				foreach ($auth_provider_data['BLOCK_VARS'] as $block_vars)
+				{
+					$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $block_vars);
+				}
+			}
+
+			$template->assign_vars(array(
+				'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
+			));
+		}
+
 		// Assign template vars for timezone select
 		phpbb_timezone_select($template, $user, $data['tz'], true);
 
