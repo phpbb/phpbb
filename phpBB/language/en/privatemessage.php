@@ -77,4 +77,5 @@ $lang = array_merge($lang, array(
 	'REPLY'				=> 'Reply',
 	'TYPE_PLACEHOLDER'	=> 'Type…',
 	'SEND'				=> 'Send',
+	'EXPAND'			=> 'Expand',
 ));
