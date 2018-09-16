@@ -1180,7 +1180,7 @@ switch ($mode)
 				$substring_function = 'substr';
 			}
 
-			$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) first_char, count(*) count_users
+			$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) AS first_char, count(*) AS count_users
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
 				GROUP BY first_char
