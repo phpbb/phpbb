@@ -1707,12 +1707,26 @@ posting_poll_body_options_after
 * Since: 3.1.4-RC1
 * Purpose: Add content after the poll options on creating a poll
 
+posting_preview_content_after
+===
+* Locations:
+    + styles/prosilver/template/posting_preview.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content preview
+
 posting_preview_poll_after
 ===
 * Locations:
     + styles/prosilver/template/posting_preview.html
 * Since: 3.1.7-RC1
 * Purpose: Add content after the poll preview block
+
+posting_topic_review_row_content_after
+===
+* Locations:
+    + styles/prosilver/template/posting_topic_review.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in topic review
 
 posting_topic_review_row_post_details_after
 ===
@@ -1874,6 +1888,13 @@ search_body_search_query_prepend
     + styles/prosilver/template/search_body.html
 * Since: 3.1.7-RC1
 * Purpose: Put content at the top of the search query fields set
+
+search_results_content_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in search results
 
 search_results_header_after
 ===
@@ -2652,6 +2673,13 @@ viewtopic_body_postrow_back2top_prepend
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.1.8-RC1
 * Purpose: Add content to the post's bottom directly before the back to top link 
+
+viewtopic_body_postrow_content_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after the message content in topics views
 
 viewtopic_body_postrow_custom_fields_after
 ===
