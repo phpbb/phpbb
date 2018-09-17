@@ -61,8 +61,17 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 */
 function gen_rand_string($num_chars = 8)
 {
-	// [a, z] + [0, 9] = 36
-	return substr(strtoupper(base_convert(bin2hex(random_bytes($num_chars + 1)), 16, 36)), 0, $num_chars);
+	$range = array_merge(range('A', 'Z'), range(0, 9));
+	$size = count($range);
+
+	$output = '';
+	for ($i = 0; $i < $num_chars; $i++)
+	{
+		$rand = random_int(0, $size-1);
+		$output .= $range[$rand];
+	}
+
+	return $output;
 }
 
 /**
@@ -76,13 +85,17 @@ function gen_rand_string($num_chars = 8)
 */
 function gen_rand_string_friendly($num_chars = 8)
 {
-	$rand_str = bin2hex(random_bytes($num_chars + 1));
+	$range = array_merge(range('A', 'N'), range('P', 'Z'), range(1, 9));
+	$size = count($range);
 
-	// Remove Z and Y from the base_convert(), replace 0 with Z and O with Y
-	// [a, z] + [0, 9] - {z, y} = [a, z] + [0, 9] - {0, o} = 34
-	$rand_str = str_replace(array('0', 'O'), array('Z', 'Y'), strtoupper(base_convert($rand_str, 16, 34)));
+	$output = '';
+	for ($i = 0; $i < $num_chars; $i++)
+	{
+		$rand = random_int(0, $size-1);
+		$output .= $range[$rand];
+	}
 
-	return substr($rand_str, 0, $num_chars);
+	return $output;
 }
 
 /**
@@ -90,7 +103,7 @@ function gen_rand_string_friendly($num_chars = 8)
 */
 function unique_id()
 {
-	return bin2hex(random_bytes(8));
+	return gen_rand_string(32);
 }
 
 /**
