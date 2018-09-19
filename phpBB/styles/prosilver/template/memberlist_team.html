@@ -1,47 +1,47 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<h2 class="solo">{PAGE_TITLE}</h2>
+<h2 class="solo">{{ PAGE_TITLE }}</h2>
 
-<form method="post" action="{S_MODE_ACTION}">
+<form method="post" action="{{ S_MODE_ACTION }}">
 
-<!-- BEGIN group -->
+{% for group in loops.group %}
 <div class="forumbg forumbg-table">
 	<div class="inner">
 
 	<table class="table1 team" id="team">
 	<thead>
 	<tr>
-		<th class="name" data-dfn="{L_RANK}{L_COMMA_SEPARATOR}{L_USERNAME}"><span class="rank-img">{L_RANK}&nbsp;</span><!-- IF group.U_GROUP --><a href="{group.U_GROUP}">{group.GROUP_NAME}</a><!-- ELSE -->{group.GROUP_NAME}<!-- ENDIF --></th>
-		<th class="info">{L_PRIMARY_GROUP}</th>
-		<!-- IF S_DISPLAY_MODERATOR_FORUMS --><th class="info">{L_MODERATOR}</th><!-- ENDIF -->
+		<th class="name" data-dfn="{{ lang('RANK') }}{{ lang('COMMA_SEPARATOR') }}{{ lang('USERNAME') }}"><span class="rank-img">{{ lang('RANK') }}&nbsp;</span>{% if group.U_GROUP %}<a href="{{ group.U_GROUP }}">{{ group.GROUP_NAME }}</a>{% else %}{{ group.GROUP_NAME }}{% endif %}</th>
+		<th class="info">{{ lang('PRIMARY_GROUP') }}</th>
+		{% if S_DISPLAY_MODERATOR_FORUMS %}<th class="info">{{ lang('MODERATOR') }}</th>{% endif %}
 	</tr>
 	</thead>
 	<tbody>
-<!-- BEGIN user -->
-	<tr class="<!-- IF group.user.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF group.user.S_INACTIVE --> inactive<!-- ENDIF -->">
-		<td><!-- IF group.user.RANK_IMG --><span class="rank-img">{group.user.RANK_IMG}</span><!-- ELSE --><span class="rank-img">{group.user.RANK_TITLE}</span><!-- ENDIF --><!-- EVENT memberlist_team_username_prepend -->{group.user.USERNAME_FULL}<!-- IF group.user.S_INACTIVE --> ({L_INACTIVE})<!-- ENDIF --><!-- EVENT memberlist_team_username_append --></td>
-		<td class="info"><!-- IF group.user.U_GROUP -->
-			<a<!-- IF group.user.GROUP_COLOR --> style="font-weight: bold; color: #{group.user.GROUP_COLOR}"<!-- ENDIF --> href="{group.user.U_GROUP}">{group.user.GROUP_NAME}</a>
-			<!-- ELSE -->
-				{group.user.GROUP_NAME}
-			<!-- ENDIF --></td>
-		<!-- IF S_DISPLAY_MODERATOR_FORUMS -->
-			<td class="info"><!-- IF group.user.FORUM_OPTIONS --><select style="width: 100%;">{group.user.FORUMS}</select><!-- ELSEIF group.user.FORUMS -->{group.user.FORUMS}<!-- ELSE -->-<!-- ENDIF --></td>
-		<!-- ENDIF -->
+{% for user in group.user %}
+	<tr class="{% if user.S_ROW_COUNT is even %}bg1{% else %}bg2{% endif %}{% if user.S_INACTIVE %} inactive{% endif %}">
+		<td>{% if user.RANK_IMG %}<span class="rank-img">{{ user.RANK_IMG }}</span>{% else %}<span class="rank-img">{{ user.RANK_TITLE }}</span>{% endif %}{% EVENT memberlist_team_username_prepend %}{{ user.USERNAME_FULL }}{% if user.S_INACTIVE %} ({{ lang('INACTIVE') }}){% endif %}{% EVENT memberlist_team_username_append %}</td>
+		<td class="info">{% if user.U_GROUP %}
+			<a{% if user.GROUP_COLOR %} style="font-weight: bold; color: #{{ user.GROUP_COLOR }}"{% endif %} href="{{ user.U_GROUP }}">{{ user.GROUP_NAME }}</a>
+			{% else %}
+				{{ user.GROUP_NAME }}
+			{% endif %}</td>
+		{% if S_DISPLAY_MODERATOR_FORUMS %}
+			<td class="info">{% if user.FORUM_OPTIONS %}<select style="width: 100%;">{{ user.FORUMS }}</select>{% elseif user.FORUMS %}{{ user.FORUMS }}{% else %}-{% endif %}</td>
+		{% endif %}
 	</tr>
-<!-- BEGINELSE -->
+{% else %}
 	<tr class="bg1">
-		<td colspan="3"><strong>{L_NO_MEMBERS}</strong></td>
+		<td colspan="3"><strong>{{ lang('NO_MEMBERS') }}</strong></td>
 	</tr>
-<!-- END user -->
+{% endfor %}
 	</tbody>
 	</table>
 
 	</div>
 </div>
-<!-- END group -->
+{% endfor %}
 
 </form>
 
-<!-- INCLUDE jumpbox.html -->
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'jumpbox.html' %}
+{% INCLUDE 'overall_footer.html' %}

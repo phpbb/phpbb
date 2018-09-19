@@ -1,35 +1,35 @@
-<!-- IF S_AJAX_REQUEST -->
-	<form action="{S_CONFIRM_ACTION}" method="post">
-		<h3>{MESSAGE_TITLE}</h3>
-		<p>{MESSAGE_TEXT}</p>
+{% if S_AJAX_REQUEST %}
+	<form action="{{ S_CONFIRM_ACTION }}" method="post">
+		<h3>{{ MESSAGE_TITLE }}</h3>
+		<p>{{ MESSAGE_TEXT }}</p>
 
 		<fieldset class="submit-buttons">
-			<input type="button" name="confirm" value="{L_YES}" class="button1 button button-form-bold" />&nbsp;
-			<input type="button" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+			<input type="button" name="confirm" value="{{ lang('YES') }}" class="button1 button button-form-bold" />&nbsp;
+			<input type="button" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 		</fieldset>
 	</form>
 
-<!-- ELSE -->
+{% else %}
 
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+<form id="confirm" action="{{ S_CONFIRM_ACTION }}" method="post">
 <div class="panel">
 	<div class="inner">
 
-	<h2 class="message-title">{MESSAGE_TITLE}</h2>
-	<p>{MESSAGE_TEXT}</p>
+	<h2 class="message-title">{{ MESSAGE_TITLE }}</h2>
+	<p>{{ MESSAGE_TEXT }}</p>
 
 	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}
-		<input type="submit" name="confirm" value="{L_YES}" class="button1 button button-form-bold" />&nbsp;
-		<input type="submit" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+		{{ S_HIDDEN_FIELDS }}
+		<input type="submit" name="confirm" value="{{ lang('YES') }}" class="button1 button button-form-bold" />&nbsp;
+		<input type="submit" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 	</fieldset>
 
 	</div>
 </div>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}
 
-<!-- ENDIF -->
+{% endif %}

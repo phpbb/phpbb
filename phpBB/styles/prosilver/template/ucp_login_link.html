@@ -1,52 +1,52 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
 <div class="panel">
 	<div class="inner">
 
-	<h2>{SITENAME} - {L_LOGIN_LINK}</h2>
+	<h2>{{ SITENAME }} - {{ lang('LOGIN_LINK') }}</h2>
 
-	<p>{L_LOGIN_LINK_EXPLAIN}</p>
+	<p>{{ lang('LOGIN_LINK_EXPLAIN') }}</p>
 
-	<!-- IF LOGIN_LINK_ERROR --><div class="content">
-		<div class="error">{LOGIN_LINK_ERROR}</div>
-	</div><!-- ENDIF -->
+	{% if LOGIN_LINK_ERROR %}<div class="content">
+		<div class="error">{{ LOGIN_LINK_ERROR }}</div>
+	</div>{% endif %}
 
 	<div class="content">
-		<h2>{L_REGISTER}</h2>
+		<h2>{{ lang('REGISTER') }}</h2>
 
-		<form action="{REGISTER_ACTION}" method="post" id="register">
+		<form action="{{ REGISTER_ACTION }}" method="post" id="register">
 			<fieldset class="fields1">
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd>{S_HIDDEN_FIELDS}<input type="submit" name="register" tabindex="1" value="{L_REGISTER}" class="button1 button button-form" /></dd>
+					<dd>{{ S_HIDDEN_FIELDS }}<input type="submit" name="register" tabindex="1" value="{{ lang('REGISTER') }}" class="button1 button button-form" /></dd>
 				</dl>
 			</fieldset>
 		</form>
 	</div>
 
 	<div class="content">
-		<h2>{L_LOGIN}</h2>
+		<h2>{{ lang('LOGIN') }}</h2>
 
-		<form action="{LOGIN_ACTION}" method="post" id="login">
+		<form action="{{ LOGIN_ACTION }}" method="post" id="login">
 			<fieldset class="fields1">
-				<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
+				{% if LOGIN_ERROR %}<div class="error">{{ LOGIN_ERROR }}</div>{% endif %}
 				<dl>
-					<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></dt>
-					<dd><input type="text" tabindex="2" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></dd>
+					<dt><label for="{{ USERNAME_CREDENTIAL }}">{{ lang('USERNAME') }}{{ lang('COLON') }}</label></dt>
+					<dd><input type="text" tabindex="2" name="{{ USERNAME_CREDENTIAL }}" id="{{ USERNAME_CREDENTIAL }}" size="25" value="{{ LOGIN_USERNAME }}" class="inputbox autowidth" /></dd>
 				</dl>
 				<dl>
-					<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></dt>
-					<dd><input type="password" tabindex="3" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" autocomplete="off" /></dd>
+					<dt><label for="{{ PASSWORD_CREDENTIAL }}">{{ lang('PASSWORD') }}{{ lang('COLON') }}</label></dt>
+					<dd><input type="password" tabindex="3" id="{{ PASSWORD_CREDENTIAL }}" name="{{ PASSWORD_CREDENTIAL }}" size="25" class="inputbox autowidth" autocomplete="off" /></dd>
 				</dl>
-				<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
-					<!-- DEFINE $CAPTCHA_TAB_INDEX = 4 -->
-					<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
-				<!-- ENDIF -->
+				{% if CAPTCHA_TEMPLATE and S_CONFIRM_CODE %}
+					{% DEFINE CAPTCHA_TAB_INDEX = 4 %}
+					{% INCLUDE ''~ CAPTCHA_TEMPLATE ~'' %}
+				{% endif %}
 
-				{S_LOGIN_REDIRECT}
+				{{ S_LOGIN_REDIRECT }}
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button1 button button-form" /></dd>
+					<dd>{{ S_HIDDEN_FIELDS }}<input type="submit" name="login" tabindex="5" value="{{ lang('LOGIN') }}" class="button1 button button-form" /></dd>
 				</dl>
 			</fieldset>
 		</form>
@@ -55,4 +55,4 @@
 	</div>
 </div>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}

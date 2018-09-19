@@ -1,24 +1,24 @@
-<!-- IF S_TYPE == 1 -->
+{% if S_TYPE == 1 %}
 <div class="panel captcha-panel">
 	<div class="inner">
 
-	<h3 class="captcha-title">{L_CONFIRMATION}</h3>
-	<p>{L_CONFIRM_EXPLAIN}</p>
+	<h3 class="captcha-title">{{ lang('CONFIRMATION') }}</h3>
+	<p>{{ lang('CONFIRM_EXPLAIN') }}</p>
 
 	<fieldset class="fields2">
-<!-- ENDIF -->
+{% endif %}
 
 	<dl>
-		<dt><label for="confirm_code">{L_CONFIRM_CODE}{L_COLON}</label></dt>
-		<dd class="captcha captcha-image"><img src="{CONFIRM_IMAGE_LINK}" alt="{L_CONFIRM_CODE}" /></dd>
-		<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" tabindex="{$CAPTCHA_TAB_INDEX}" class="inputbox narrow" title="{L_CONFIRM_CODE}" />
-		<!-- IF S_CONFIRM_REFRESH --><input type="submit" name="refresh_vc" id="refresh_vc" class="button1 button button-form-bold" value="{L_VC_REFRESH}" /><!-- ENDIF -->
-		<input type="hidden" name="confirm_id" id="confirm_id" value="{CONFIRM_ID}" /></dd>
-		<dd>{L_CONFIRM_CODE_EXPLAIN}</dd>
+		<dt><label for="confirm_code">{{ lang('CONFIRM_CODE') }}{{ lang('COLON') }}</label></dt>
+		<dd class="captcha captcha-image"><img src="{{ CONFIRM_IMAGE_LINK }}" alt="{{ lang('CONFIRM_CODE') }}" /></dd>
+		<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" tabindex="{{ definition.CAPTCHA_TAB_INDEX }}" class="inputbox narrow" title="{{ lang('CONFIRM_CODE') }}" />
+		{% if S_CONFIRM_REFRESH %}<input type="submit" name="refresh_vc" id="refresh_vc" class="button1 button button-form-bold" value="{{ lang('VC_REFRESH') }}" />{% endif %}
+		<input type="hidden" name="confirm_id" id="confirm_id" value="{{ CONFIRM_ID }}" /></dd>
+		<dd>{{ lang('CONFIRM_CODE_EXPLAIN') }}</dd>
 	</dl>
 
-<!-- IF S_TYPE == 1 -->
+{% if S_TYPE == 1 %}
 	</fieldset>
 	</div>
 </div>
-<!-- ENDIF -->
+{% endif %}

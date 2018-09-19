@@ -1,49 +1,49 @@
 
 
-<!-- IF .draftrow -->
+{% if loops.draftrow|length %}
 <div class="panel">
 	<div class="inner">
 
-	<h3 class="draft-title">{L_LOAD_DRAFT}</h3>
-	<p>{L_LOAD_DRAFT_EXPLAIN}</p>
+	<h3 class="draft-title">{{ lang('LOAD_DRAFT') }}</h3>
+	<p>{{ lang('LOAD_DRAFT_EXPLAIN') }}</p>
 
 	</div>
 </div>
 
-<div class="<!-- IF not S_PRIVMSGS -->forumbg<!-- ELSE -->panel<!-- ENDIF -->">
+<div class="{% if not S_PRIVMSGS %}forumbg{% else %}panel{% endif %}">
 	<div class="inner">
 
 	<ul class="topiclist two-long-columns">
 		<li class="header">
 			<dl>
-				<dt>{L_LOAD_DRAFT}</dt>
-				<dd class="info">{L_SAVE_DATE}</dd>
+				<dt>{{ lang('LOAD_DRAFT') }}</dt>
+				<dd class="info">{{ lang('SAVE_DATE') }}</dd>
 			</dl>
 		</li>
 	</ul>
-	<ul class="topiclist two-long-columns<!-- IF not S_PRIVMSGS --> topics<!-- ELSE --> cplist<!-- ENDIF -->">
+	<ul class="topiclist two-long-columns{% if not S_PRIVMSGS %} topics{% else %} cplist{% endif %}">
 
-	<!-- BEGIN draftrow -->
-	<li class="row<!-- IF draftrow.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+	{% for draftrow in loops.draftrow %}
+	<li class="row{% if draftrow.S_ROW_COUNT is even %} bg1{% else %} bg2{% endif %}">
 		<dl>
 			<dt>
 				<div class="list-inner">
-					<a href="{draftrow.U_INSERT}" title="{L_LOAD_DRAFT}" class="topictitle">{draftrow.DRAFT_SUBJECT}</a><br />
-					<!-- IF not S_PRIVMSGS --><!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-					<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
-					<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF --><!-- ENDIF -->
+					<a href="{{ draftrow.U_INSERT }}" title="{{ lang('LOAD_DRAFT') }}" class="topictitle">{{ draftrow.DRAFT_SUBJECT }}</a><br />
+					{% if not S_PRIVMSGS %}{% if draftrow.S_LINK_TOPIC %}{{ lang('TOPIC') }}{{ lang('COLON') }} <a href="{{ draftrow.U_VIEW }}">{{ draftrow.TITLE }}</a>
+					{% elseif draftrow.S_LINK_FORUM %}{{ lang('FORUM') }}{{ lang('COLON') }} <a href="{{ draftrow.U_VIEW }}">{{ draftrow.TITLE }}</a>
+					{% else %}{{ lang('NO_TOPIC_FORUM') }}{% endif %}{% endif %}
 					<div class="responsive-show" style="display: none;">
-						{L_SAVE_DATE}{L_COLON} <strong>{draftrow.DATE}</strong>
+						{{ lang('SAVE_DATE') }}{{ lang('COLON') }} <strong>{{ draftrow.DATE }}</strong>
 					</div>
 				</div>
 			</dt>
-			<dd class="info"><span>{draftrow.DATE}</span></dd>
+			<dd class="info"><span>{{ draftrow.DATE }}</span></dd>
 		</dl>
 	</li>
-	<!-- END draftrow -->
+	{% endfor %}
 
 	</ul>
 
 	</div>
 </div>
-<!-- ENDIF -->
+{% endif %}

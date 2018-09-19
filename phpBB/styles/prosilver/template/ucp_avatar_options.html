@@ -1,47 +1,47 @@
 <div class="panel">
 	<div class="inner">
-	<!-- IF not S_AVATARS_ENABLED -->
-		<p>{L_AVATAR_FEATURES_DISABLED}</p>
-	<!-- ENDIF -->
+	{% if not S_AVATARS_ENABLED %}
+		<p>{{ lang('AVATAR_FEATURES_DISABLED') }}</p>
+	{% endif %}
 
 	<fieldset>
-	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	{% if ERROR %}<p class="error">{{ ERROR }}</p>{% endif %}
 		<dl>
-			<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
-			<dd><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></dd>
-			<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {L_DELETE_AVATAR}</label></dd>
+			<dt><label>{{ lang('CURRENT_IMAGE') }}{{ lang('COLON') }}</label><br /><span>{{ lang('AVATAR_EXPLAIN') }}</span></dt>
+			<dd>{% if AVATAR %}{{ AVATAR }}{% else %}<img src="{{ T_THEME_PATH }}/images/no_avatar.gif" alt="" />{% endif %}</dd>
+			<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {{ lang('DELETE_AVATAR') }}</label></dd>
 		</dl>
 	</fieldset>
-	<h3>{L_AVATAR_SELECT}</h3>
+	<h3>{{ lang('AVATAR_SELECT') }}</h3>
 	<fieldset>
 		<dl>
-			<dt><label>{L_AVATAR_TYPE}{L_COLON}</label></dt>
+			<dt><label>{{ lang('AVATAR_TYPE') }}{{ lang('COLON') }}</label></dt>
 			<dd><select name="avatar_driver" id="avatar_driver" data-togglable-settings="true">
-				<!-- BEGIN avatar_drivers -->
-				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF --> data-toggle-setting="#avatar_option_{avatar_drivers.DRIVER}">{avatar_drivers.L_TITLE}</option>
-				<!-- END avatar_drivers -->
+				{% for avatar_drivers in loops.avatar_drivers %}
+				<option value="{{ avatar_drivers.DRIVER }}"{% if avatar_drivers.SELECTED %} selected="selected"{% endif %} data-toggle-setting="#avatar_option_{{ avatar_drivers.DRIVER }}">{{ avatar_drivers.L_TITLE }}</option>
+				{% endfor %}
 			</select></dd>
 		</dl>
 	</fieldset>
 	<div id="avatar_options">
-<!-- BEGIN avatar_drivers -->
-	<div id="avatar_option_{avatar_drivers.DRIVER}">
+{% for avatar_drivers in loops.avatar_drivers %}
+	<div id="avatar_option_{{ avatar_drivers.DRIVER }}">
 	<noscript>
-	<h3 class="avatar_section_header">{avatar_drivers.L_TITLE}</h3>
+	<h3 class="avatar_section_header">{{ avatar_drivers.L_TITLE }}</h3>
 	</noscript>
-	<p>{avatar_drivers.L_EXPLAIN}</p>
+	<p>{{ avatar_drivers.L_EXPLAIN }}</p>
 
 	<fieldset>
-	{avatar_drivers.OUTPUT}
+	{{ avatar_drivers.OUTPUT }}
 	</fieldset>
 	</div>
-<!-- END avatar_drivers -->
+{% endfor %}
 	</div>
-<!-- IF not S_GROUP_MANAGE -->
+{% if not S_GROUP_MANAGE %}
 	<fieldset class="submit-buttons">
-		<input type="reset" value="{L_RESET}" name="reset" class="button1 button button-form-bold" /> &nbsp;
-		<input type="submit" name="submit" value="{L_SUBMIT}" class="button1 button button-form" />
+		<input type="reset" value="{{ lang('RESET') }}" name="reset" class="button1 button button-form-bold" /> &nbsp;
+		<input type="submit" name="submit" value="{{ lang('SUBMIT') }}" class="button1 button button-form" />
 	</fieldset>
-<!-- ENDIF -->
+{% endif %}
 	</div>
 </div>

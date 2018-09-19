@@ -1,174 +1,174 @@
-<!-- INCLUDE ucp_header.html -->
+{% INCLUDE 'ucp_header.html' %}
 
-<h2>{L_USERGROUPS}</h2>
+<h2>{{ lang('USERGROUPS') }}</h2>
 
-<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+<form id="ucp" method="post" action="{{ S_UCP_ACTION }}"{{ S_FORM_ENCTYPE }}>
 
 <div class="panel">
 	<div class="inner">
 
-	<p>{L_GROUPS_EXPLAIN}</p>
-	<!-- DEFINE $SHOW_BUTTONS = 0 -->
-	<!-- IF .leader -->
+	<p>{{ lang('GROUPS_EXPLAIN') }}</p>
+	{% DEFINE SHOW_BUTTONS = 0 %}
+	{% if loops.leader|length %}
 		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
-					<dt><div class="list-inner">{L_GROUP_LEADER}</div></dt>
-					<dd class="mark">{L_SELECT}</dd>
+					<dt><div class="list-inner">{{ lang('GROUP_LEADER') }}</div></dt>
+					<dd class="mark">{{ lang('SELECT') }}</dd>
 				</dl>
 			</li>
 		</ul>
 		<ul class="topiclist cplist two-columns">
 
-		<!-- BEGIN leader -->
-		<!-- IF not leader.GROUP_SPECIAL -->
-			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->
-		<li class="row<!-- IF leader.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		{% for leader in loops.leader %}
+		{% if not leader.GROUP_SPECIAL %}
+			{% DEFINE SHOW_BUTTONS = 1 %}
+		{% endif %}
+		<li class="row{% if leader.S_ROW_COUNT is odd %} bg1{% else %} bg2{% endif %}">
 			<dl>
 				<dt>
 					<div class="list-inner">
-						<!-- IF S_CHANGE_DEFAULT --><input title="{L_CHANGE_DEFAULT_GROUP}" type="radio" name="default"<!-- IF leader.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{leader.GROUP_ID}" /> <!-- ENDIF -->
-						<a href="{leader.U_VIEW_GROUP}" class="forumtitle"<!-- IF leader.GROUP_COLOUR --> style="color:#{leader.GROUP_COLOUR}"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
-						<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF -->
-						<!-- IF not leader.GROUP_SPECIAL --><br /><i>{leader.GROUP_STATUS}</i><!-- ENDIF -->
+						{% if S_CHANGE_DEFAULT %}<input title="{{ lang('CHANGE_DEFAULT_GROUP') }}" type="radio" name="default"{% if leader.S_GROUP_DEFAULT %} checked="checked"{% endif %} value="{{ leader.GROUP_ID }}" /> {% endif %}
+						<a href="{{ leader.U_VIEW_GROUP }}" class="forumtitle"{% if leader.GROUP_COLOUR %} style="color:#{{ leader.GROUP_COLOUR }}"{% endif %}>{{ leader.GROUP_NAME }}</a>
+						{% if leader.GROUP_DESC %}<br />{{ leader.GROUP_DESC }}{% endif %}
+						{% if not leader.GROUP_SPECIAL %}<br /><i>{{ leader.GROUP_STATUS }}</i>{% endif %}
 					</div>
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{leader.GROUP_ID}" <!-- IF leader.GROUP_SPECIAL -->disabled="disabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{{ leader.GROUP_ID }}" {% if leader.GROUP_SPECIAL %}disabled="disabled"{% endif %} /></dd>
 			</dl>
 		</li>
-		<!-- END leader -->
+		{% endfor %}
 		</ul>
-	<!-- ENDIF -->
+	{% endif %}
 
-	<!-- IF .member -->
+	{% if loops.member|length %}
 		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
-					<dt><div class="list-inner">{L_GROUP_MEMBER}</div></dt>
-					<dd class="mark">{L_SELECT}</dd>
+					<dt><div class="list-inner">{{ lang('GROUP_MEMBER') }}</div></dt>
+					<dd class="mark">{{ lang('SELECT') }}</dd>
 				</dl>
 			</li>
 		</ul>
 		<ul class="topiclist cplist two-columns">
 
-		<!-- BEGIN member -->
-		<!-- IF not member.GROUP_SPECIAL -->
-			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->
-		<li class="row<!-- IF member.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		{% for member in loops.member %}
+		{% if not member.GROUP_SPECIAL %}
+			{% DEFINE SHOW_BUTTONS = 1 %}
+		{% endif %}
+		<li class="row{% if member.S_ROW_COUNT is odd %} bg1{% else %} bg2{% endif %}">
 			<dl>
 				<dt>
 					<div class="list-inner">
-						<!-- IF S_CHANGE_DEFAULT --><input title="{L_CHANGE_DEFAULT_GROUP}" type="radio" name="default"<!-- IF member.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{member.GROUP_ID}" /> <!-- ENDIF -->
-						<a href="{member.U_VIEW_GROUP}" class="forumtitle"<!-- IF member.GROUP_COLOUR --> style="color:#{member.GROUP_COLOUR}"<!-- ENDIF -->>{member.GROUP_NAME}</a>
-						<!-- IF member.GROUP_DESC --><br />{member.GROUP_DESC}<!-- ENDIF -->
-						<!-- IF not member.GROUP_SPECIAL --><br /><i>{member.GROUP_STATUS}</i><!-- ENDIF -->
+						{% if S_CHANGE_DEFAULT %}<input title="{{ lang('CHANGE_DEFAULT_GROUP') }}" type="radio" name="default"{% if member.S_GROUP_DEFAULT %} checked="checked"{% endif %} value="{{ member.GROUP_ID }}" /> {% endif %}
+						<a href="{{ member.U_VIEW_GROUP }}" class="forumtitle"{% if member.GROUP_COLOUR %} style="color:#{{ member.GROUP_COLOUR }}"{% endif %}>{{ member.GROUP_NAME }}</a>
+						{% if member.GROUP_DESC %}<br />{{ member.GROUP_DESC }}{% endif %}
+						{% if not member.GROUP_SPECIAL %}<br /><i>{{ member.GROUP_STATUS }}</i>{% endif %}
 					</div>
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{member.GROUP_ID}" <!-- IF member.GROUP_SPECIAL -->disabled="disabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{{ member.GROUP_ID }}" {% if member.GROUP_SPECIAL %}disabled="disabled"{% endif %} /></dd>
 			</dl>
 		</li>
-		<!-- END member -->
+		{% endfor %}
 		</ul>
-	<!-- ENDIF -->
+	{% endif %}
 	</div>
 </div>
 
-<!-- IF .pending -->
+{% if loops.pending|length %}
 <div class="panel">
 	<div class="inner">
 		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
-					<dt><div class="list-inner">{L_GROUP_PENDING}</div></dt>
-					<dd class="mark">{L_SELECT}</dd>
+					<dt><div class="list-inner">{{ lang('GROUP_PENDING') }}</div></dt>
+					<dd class="mark">{{ lang('SELECT') }}</dd>
 				</dl>
 			</li>
 		</ul>
 		<ul class="topiclist cplist two-columns">
 
-		<!-- BEGIN pending -->
-		<!-- IF not pending.GROUP_SPECIAL -->
-			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->
-		<li class="row<!-- IF pending.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		{% for pending in loops.pending %}
+		{% if not pending.GROUP_SPECIAL %}
+			{% DEFINE SHOW_BUTTONS = 1 %}
+		{% endif %}
+		<li class="row{% if pending.S_ROW_COUNT is odd %} bg1{% else %} bg2{% endif %}">
 			<dl>
 				<dt>
 					<div class="list-inner">
-						<a href="{pending.U_VIEW_GROUP}" class="forumtitle"<!-- IF pending.GROUP_COLOUR --> style="color:#{pending.GROUP_COLOUR}"<!-- ENDIF -->>{pending.GROUP_NAME}</a>
-						<!-- IF pending.GROUP_DESC --><br />{pending.GROUP_DESC}<!-- ENDIF -->
-						<!-- IF not pending.GROUP_SPECIAL --><br /><i>{pending.GROUP_STATUS}</i><!-- ENDIF -->
+						<a href="{{ pending.U_VIEW_GROUP }}" class="forumtitle"{% if pending.GROUP_COLOUR %} style="color:#{{ pending.GROUP_COLOUR }}"{% endif %}>{{ pending.GROUP_NAME }}</a>
+						{% if pending.GROUP_DESC %}<br />{{ pending.GROUP_DESC }}{% endif %}
+						{% if not pending.GROUP_SPECIAL %}<br /><i>{{ pending.GROUP_STATUS }}</i>{% endif %}
 					</div>
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{pending.GROUP_ID}" <!-- IF pending.GROUP_SPECIAL -->disabled="disabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{{ pending.GROUP_ID }}" {% if pending.GROUP_SPECIAL %}disabled="disabled"{% endif %} /></dd>
 			</dl>
 		</li>
-		<!-- END pending -->
+		{% endfor %}
 		</ul>
 	</div>
 </div>
-<!-- ENDIF -->
-<!-- IF .nonmember -->
+{% endif %}
+{% if loops.nonmember|length %}
 <div class="panel">
 	<div class="inner">
 		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
-					<dt><div class="list-inner">{L_GROUP_NONMEMBER}</div></dt>
-					<dd class="mark">{L_SELECT}</dd>
+					<dt><div class="list-inner">{{ lang('GROUP_NONMEMBER') }}</div></dt>
+					<dd class="mark">{{ lang('SELECT') }}</dd>
 				</dl>
 			</li>
 		</ul>
 		<ul class="topiclist cplist two-columns">
 
-		<!-- BEGIN nonmember -->
-		<!-- IF nonmember.S_CAN_JOIN -->
-			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->
-		<li class="row<!-- IF nonmember.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		{% for nonmember in loops.nonmember %}
+		{% if nonmember.S_CAN_JOIN %}
+			{% DEFINE SHOW_BUTTONS = 1 %}
+		{% endif %}
+		<li class="row{% if nonmember.S_ROW_COUNT is odd %} bg1{% else %} bg2{% endif %}">
 			<dl>
 				<dt>
 					<div class="list-inner">
-						<a href="{nonmember.U_VIEW_GROUP}" class="forumtitle"<!-- IF nonmember.GROUP_COLOUR --> style="color:#{nonmember.GROUP_COLOUR}"<!-- ENDIF -->>{nonmember.GROUP_NAME}</a>
-						<!-- IF nonmember.GROUP_DESC --><br />{nonmember.GROUP_DESC}<!-- ENDIF -->
-						<!-- IF not nonmember.GROUP_SPECIAL --><br /><i>{nonmember.GROUP_STATUS}</i><!-- ENDIF -->
+						<a href="{{ nonmember.U_VIEW_GROUP }}" class="forumtitle"{% if nonmember.GROUP_COLOUR %} style="color:#{{ nonmember.GROUP_COLOUR }}"{% endif %}>{{ nonmember.GROUP_NAME }}</a>
+						{% if nonmember.GROUP_DESC %}<br />{{ nonmember.GROUP_DESC }}{% endif %}
+						{% if not nonmember.GROUP_SPECIAL %}<br /><i>{{ nonmember.GROUP_STATUS }}</i>{% endif %}
 					</div>
 				</dt>
-				<dd class="mark"><input type="radio" name="selected" value="{nonmember.GROUP_ID}" <!-- IF not nonmember.S_CAN_JOIN -->disabled="disabled"<!-- ENDIF --> /></dd>
+				<dd class="mark"><input type="radio" name="selected" value="{{ nonmember.GROUP_ID }}" {% if not nonmember.S_CAN_JOIN %}disabled="disabled"{% endif %} /></dd>
 			</dl>
 		</li>
-		<!-- END nonmember -->
+		{% endfor %}
 		</ul>
 		</div>
 	</div>
-<!-- ENDIF -->
+{% endif %}
 
 
-	<!-- IF S_CHANGE_DEFAULT or $SHOW_BUTTONS eq 1 -->
+	{% if S_CHANGE_DEFAULT or definition.SHOW_BUTTONS eq 1 %}
 	<fieldset>
-		<!-- IF S_CHANGE_DEFAULT -->
+		{% if S_CHANGE_DEFAULT %}
 		<div class="left-box">
-			<input class="button1 button button-form-bold" type="submit" name="change_default" value="{L_CHANGE_DEFAULT_GROUP}" />
-			{S_FORM_TOKEN}
+			<input class="button1 button button-form-bold" type="submit" name="change_default" value="{{ lang('CHANGE_DEFAULT_GROUP') }}" />
+			{{ S_FORM_TOKEN }}
 		</div>
-		<!-- ENDIF -->
+		{% endif %}
 
-		<!-- IF $SHOW_BUTTONS eq 1 -->
+		{% if definition.SHOW_BUTTONS eq 1 %}
 		<div class="right-box">
-			<label for="action">{L_SELECT}{L_COLON}</label>
+			<label for="action">{{ lang('SELECT') }}{{ lang('COLON') }}</label>
 			<select name="action" id="action">
-				<option value="join">{L_JOIN_SELECTED}</option>
-				<option value="resign">{L_RESIGN_SELECTED}</option>
-				<option value="demote">{L_DEMOTE_SELECTED}</option>
+				<option value="join">{{ lang('JOIN_SELECTED') }}</option>
+				<option value="resign">{{ lang('RESIGN_SELECTED') }}</option>
+				<option value="demote">{{ lang('DEMOTE_SELECTED') }}</option>
 			</select>&nbsp;
-			<input class="button1 button button-form-bold" type="submit" name="submit" value="{L_SUBMIT}" />
-			{S_FORM_TOKEN}
+			<input class="button1 button button-form-bold" type="submit" name="submit" value="{{ lang('SUBMIT') }}" />
+			{{ S_FORM_TOKEN }}
 		</div>
-		<!-- ENDIF -->
+		{% endif %}
 	</fieldset>
-	<!-- ENDIF -->
+	{% endif %}
 
 </form>
 
-<!-- INCLUDE ucp_footer.html -->
+{% INCLUDE 'ucp_footer.html' %}

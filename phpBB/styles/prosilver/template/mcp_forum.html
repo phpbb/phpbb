@@ -1,153 +1,153 @@
-<!-- INCLUDE mcp_header.html -->
+{% INCLUDE 'mcp_header.html' %}
 
-<!-- DEFINE $CUSTOM_FIELDSET_CLASS = 'forum-selection2' -->
-<!-- INCLUDE jumpbox.html -->
+{% DEFINE CUSTOM_FIELDSET_CLASS = 'forum-selection2' %}
+{% INCLUDE 'jumpbox.html' %}
 
-<h2><a href="{U_VIEW_FORUM}">{L_FORUM}{L_COLON} {FORUM_NAME}</a></h2>
+<h2><a href="{{ U_VIEW_FORUM }}">{{ lang('FORUM') }}{{ lang('COLON') }} {{ FORUM_NAME }}</a></h2>
 
-<form method="post" id="mcp" action="{S_MCP_ACTION}">
+<form method="post" id="mcp" action="{{ S_MCP_ACTION }}">
 
 <div class="panel">
 	<div class="inner">
 
 	<div class="action-bar bar-top">
 		<div class="pagination">
-			{TOTAL_TOPICS}
-			<!-- IF .pagination -->
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				 &bull; {PAGE_NUMBER}
-			<!-- ENDIF -->
+			{{ TOTAL_TOPICS }}
+			{% if loops.pagination|length %}
+				{% INCLUDE 'pagination.html' %}
+			{% else %}
+				 &bull; {{ PAGE_NUMBER }}
+			{% endif %}
 		</div>
 	</div>
 
-	<!-- IF .topicrow -->
-		<ul class="topiclist<!-- IF S_MERGE_SELECT --> missing-column<!-- ENDIF -->">
+	{% if loops.topicrow|length %}
+		<ul class="topiclist{% if S_MERGE_SELECT %} missing-column{% endif %}">
 			<li class="header">
 				<dl class="row-item">
-					<dt><div class="list-inner">{L_TOPICS}</div></dt>
-					<dd class="posts">{L_REPLIES}</dd>
-					<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
-					<!-- IF not S_MERGE_SELECT --><dd class="mark">{L_MARK}</dd><!-- ENDIF -->
+					<dt><div class="list-inner">{{ lang('TOPICS') }}</div></dt>
+					<dd class="posts">{{ lang('REPLIES') }}</dd>
+					<dd class="lastpost"><span>{{ lang('LAST_POST') }}</span></dd>
+					{% if not S_MERGE_SELECT %}<dd class="mark">{{ lang('MARK') }}</dd>{% endif %}
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist<!-- IF S_MERGE_SELECT --> missing-column<!-- ENDIF -->">
+		<ul class="topiclist cplist{% if S_MERGE_SELECT %} missing-column{% endif %}">
 
-		<!-- BEGIN topicrow -->
-		<li class="row<!-- IF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ENDIF -->">
-			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
-				<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
-					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+		{% for topicrow in loops.topicrow %}
+		<li class="row{% if topicrow.S_ROW_COUNT is odd %} bg1{% else %} bg2{% endif %}{% if topicrow.S_TOPIC_REPORTED %} reported{% endif %}">
+			<dl class="row-item {{ topicrow.TOPIC_IMG_STYLE }}">
+				<dt {% if topicrow.TOPIC_ICON_IMG %}style="background-image: url({{ T_ICONS_PATH }}{{ topicrow.TOPIC_ICON_IMG }}); background-repeat: no-repeat;"{% endif %}>
+					{% if topicrow.S_UNREAD_TOPIC %}<a href="{{ topicrow.U_NEWEST_POST }}" class="row-item-link"></a>{% endif %}
 					<div class="list-inner">
-					<!-- EVENT topiclist_row_prepend -->
-					<!-- IF topicrow.S_SELECT_TOPIC --><a href="{topicrow.U_SELECT_TOPIC}" class="topictitle">[ {L_SELECT_MERGE} ]</a>&nbsp;&nbsp; <!-- ENDIF -->
-					<!-- EVENT mcp_forum_topic_title_before -->
-					<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-					<!-- EVENT mcp_forum_topic_title_after -->
-					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-							<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+					{% EVENT topiclist_row_prepend %}
+					{% if topicrow.S_SELECT_TOPIC %}<a href="{{ topicrow.U_SELECT_TOPIC }}" class="topictitle">[ {{ lang('SELECT_MERGE') }} ]</a>&nbsp;&nbsp; {% endif %}
+					{% EVENT mcp_forum_topic_title_before %}
+					<a href="{{ topicrow.U_VIEW_TOPIC }}" class="topictitle">{{ topicrow.TOPIC_TITLE }}</a>
+					{% EVENT mcp_forum_topic_title_after %}
+					{% if topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED %}
+						<a href="{{ topicrow.U_MCP_QUEUE }}" title="{{ lang('TOPIC_UNAPPROVED') }}">
+							<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPIC_UNAPPROVED') }}</span>
 						</a>
-					<!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED -->
-						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-							<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_DELETED}</span>
+					{% endif %}
+					{% if topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED %}
+						<a href="{{ topicrow.U_MCP_QUEUE }}" title="{{ lang('TOPIC_DELETED') }}">
+							<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPIC_DELETED') }}</span>
 						</a>
-					<!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_REPORTED -->
-						<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-							<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
+					{% endif %}
+					{% if topicrow.S_TOPIC_REPORTED %}
+						<a href="{{ topicrow.U_MCP_REPORT }}" title="{{ lang('TOPIC_REPORTED') }}">
+							<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPIC_REPORTED') }}</span>
 						</a>
-					<!-- ENDIF -->
-					<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->&nbsp;<a href="{topicrow.U_DELETE_TOPIC}" class="topictitle">[ {L_DELETE_SHADOW_TOPIC} ]</a><!-- ENDIF -->
+					{% endif %}
+					{% if topicrow.S_MOVED_TOPIC and S_CAN_DELETE %}&nbsp;<a href="{{ topicrow.U_DELETE_TOPIC }}" class="topictitle">[ {{ lang('DELETE_SHADOW_TOPIC') }} ]</a>{% endif %}
 					<br />
-					<!-- EVENT topiclist_row_topic_title_after -->
+					{% EVENT topiclist_row_topic_title_after %}
 					<div class="responsive-show" style="display: none;">
-						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
-						{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; {topicrow.LAST_POST_TIME}<br />
+						{% if topicrow.ATTACH_ICON_IMG %}<i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> {% endif %}
+						{{ lang('LAST_POST') }} {{ lang('POST_BY_AUTHOR') }} {{ topicrow.LAST_POST_AUTHOR_FULL }} &laquo; {{ topicrow.LAST_POST_TIME }}<br />
 					</div>
-					<span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span>
+					<span class="responsive-show left-box" style="display: none;">{{ lang('REPLIES') }}{{ lang('COLON') }} <strong>{{ topicrow.REPLIES }}</strong></span>
 
-					<!-- IF .topicrow.pagination -->
+					{% if topicrow.pagination|length %}
 					<div class="pagination">
 						<ul>
-						<!-- BEGIN pagination -->
-							<!-- IF topicrow.pagination.S_IS_PREV -->
-							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
-							<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-							<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-							<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
-							<!-- ENDIF -->
-						<!-- END pagination -->
+						{% for pagination in topicrow.pagination %}
+							{% if pagination.S_IS_PREV %}
+							{% elseif pagination.S_IS_CURRENT %}<li class="active"><span>{{ pagination.PAGE_NUMBER }}</span></li>
+							{% elseif pagination.S_IS_ELLIPSIS %}<li class="ellipsis"><span>{{ lang('ELLIPSIS') }}</span></li>
+							{% elseif pagination.S_IS_NEXT %}
+							{% else %}<li><a href="{{ pagination.PAGE_URL }}">{{ pagination.PAGE_NUMBER }}</a></li>
+							{% endif %}
+						{% endfor %}
 						</ul>
 					</div>
-					<!-- ENDIF -->
+					{% endif %}
 
 					<div class="responsive-hide">
-						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
-						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+						{% if topicrow.ATTACH_ICON_IMG %}<i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> {% endif %}
+						{{ lang('POST_BY_AUTHOR') }} {{ topicrow.TOPIC_AUTHOR_FULL }} &raquo; {{ topicrow.FIRST_POST_TIME }}
 					</div>
-					<!-- EVENT topiclist_row_append -->
+					{% EVENT topiclist_row_append %}
 					</div>
 				</dt>
-				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
-				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}<br />{topicrow.LAST_POST_TIME}</span></dd>
-				<!-- IF not S_MERGE_SELECT -->
+				<dd class="posts">{{ topicrow.REPLIES }} <dfn>{{ lang('REPLIES') }}</dfn></dd>
+				<dd class="lastpost"><span><dfn>{{ lang('LAST_POST') }} </dfn>{{ lang('POST_BY_AUTHOR') }} {{ topicrow.LAST_POST_AUTHOR_FULL }}<br />{{ topicrow.LAST_POST_TIME }}</span></dd>
+				{% if not S_MERGE_SELECT %}
 				<dd class="mark">
-					<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
+					{% if not topicrow.S_MOVED_TOPIC %}<input type="checkbox" name="topic_id_list[]" value="{{ topicrow.TOPIC_ID }}"{% if topicrow.S_TOPIC_CHECKED %} checked="checked"{% endif %} />{% else %}&nbsp;{% endif %}
 				</dd>
-				<!-- ENDIF -->
+				{% endif %}
 			</dl>
 		</li>
-		<!-- END topicrow -->
+		{% endfor %}
 		</ul>
-	<!-- ELSE -->
+	{% else %}
 		<ul class="topiclist">
-			<li><p class="notopics">{L_NO_TOPICS}</p></li>
+			<li><p class="notopics">{{ lang('NO_TOPICS') }}</p></li>
 		</ul>
-	<!-- ENDIF -->
+	{% endif %}
 
 	<div class="action-bar bottom">
-		<!-- INCLUDE display_options.html -->
+		{% INCLUDE 'display_options.html' %}
 
 		<div class="pagination">
-			{TOTAL_TOPICS}
-			<!-- IF .pagination -->
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				 &bull; {PAGE_NUMBER}
-			<!-- ENDIF -->
+			{{ TOTAL_TOPICS }}
+			{% if loops.pagination|length %}
+				{% INCLUDE 'pagination.html' %}
+			{% else %}
+				 &bull; {{ PAGE_NUMBER }}
+			{% endif %}
 		</div>
 	</div>
 
 	</div>
 </div>
 
-<!-- EVENT mcp_forum_actions_before -->
+{% EVENT mcp_forum_actions_before %}
 <fieldset class="display-actions">
-	<!-- IF not S_MERGE_SELECT -->
+	{% if not S_MERGE_SELECT %}
 	<select name="action">
-		<option value="" selected="selected">{L_SELECT_ACTION}</option>
-		<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
-		<!-- IF S_CAN_RESTORE --><option value="restore_topic">{L_RESTORE}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MERGE --><option value="merge_topics">{L_MERGE}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
-		<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
-		<!-- IF S_CAN_LOCK --><option value="lock">{L_LOCK}</option><option value="unlock">{L_UNLOCK}</option><!-- ENDIF -->
-		<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MAKE_NORMAL --><option value="make_normal">{L_MAKE_NORMAL}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MAKE_STICKY --><option value="make_sticky">{L_MAKE_STICKY}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MAKE_ANNOUNCE --><option value="make_announce">{L_MAKE_ANNOUNCE}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MAKE_ANNOUNCE_GLOBAL --><option value="make_global">{L_MAKE_GLOBAL}</option><!-- ENDIF -->
-		<!-- EVENT mcp_forum_actions_append -->
+		<option value="" selected="selected">{{ lang('SELECT_ACTION') }}</option>
+		{% if S_CAN_DELETE %}<option value="delete_topic">{{ lang('DELETE') }}</option>{% endif %}
+		{% if S_CAN_RESTORE %}<option value="restore_topic">{{ lang('RESTORE') }}</option>{% endif %}
+		{% if S_CAN_MERGE %}<option value="merge_topics">{{ lang('MERGE') }}</option>{% endif %}
+		{% if S_CAN_MOVE %}<option value="move">{{ lang('MOVE') }}</option>{% endif %}
+		{% if S_CAN_FORK %}<option value="fork">{{ lang('FORK') }}</option>{% endif %}
+		{% if S_CAN_LOCK %}<option value="lock">{{ lang('LOCK') }}</option><option value="unlock">{{ lang('UNLOCK') }}</option>{% endif %}
+		{% if S_CAN_SYNC %}<option value="resync">{{ lang('RESYNC') }}</option>{% endif %}
+		{% if S_CAN_MAKE_NORMAL %}<option value="make_normal">{{ lang('MAKE_NORMAL') }}</option>{% endif %}
+		{% if S_CAN_MAKE_STICKY %}<option value="make_sticky">{{ lang('MAKE_STICKY') }}</option>{% endif %}
+		{% if S_CAN_MAKE_ANNOUNCE %}<option value="make_announce">{{ lang('MAKE_ANNOUNCE') }}</option>{% endif %}
+		{% if S_CAN_MAKE_ANNOUNCE_GLOBAL %}<option value="make_global">{{ lang('MAKE_GLOBAL') }}</option>{% endif %}
+		{% EVENT mcp_forum_actions_append %}
 	</select>
-	<input class="button1 button button-form-bold" type="submit" value="{L_SUBMIT}" />
-	<div><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
-	<!-- ENDIF -->
-	{S_FORM_TOKEN}
+	<input class="button1 button button-form-bold" type="submit" value="{{ lang('SUBMIT') }}" />
+	<div><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{{ lang('MARK_ALL') }}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{{ lang('UNMARK_ALL') }}</a></div>
+	{% endif %}
+	{{ S_FORM_TOKEN }}
 </fieldset>
-<!-- EVENT mcp_forum_actions_after -->
+{% EVENT mcp_forum_actions_after %}
 </form>
 
-<!-- INCLUDE mcp_footer.html -->
+{% INCLUDE 'mcp_footer.html' %}

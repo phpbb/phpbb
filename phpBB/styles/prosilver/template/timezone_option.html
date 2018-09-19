@@ -1,28 +1,28 @@
 <dl>
-	<dt><label for="timezone">{L_BOARD_TIMEZONE}{L_COLON}</label></dt>
-	<!-- IF .timezone_date -->
+	<dt><label for="timezone">{{ lang('BOARD_TIMEZONE') }}{{ lang('COLON') }}</label></dt>
+	{% if loops.timezone_date|length %}
 	<dd id="tz_select_date" style="display: none;">
 		<select name="tz_date" id="tz_date" class="autowidth tz_select">
-			<option value="">{L_SELECT_CURRENT_TIME}</option>
-			<!-- BEGIN timezone_date -->
-				<option value="{timezone_date.VALUE}"<!-- IF timezone_date.SELECTED --> selected="selected"<!-- ENDIF -->>{timezone_date.TITLE}</option>
-			<!-- END timezone_date -->
+			<option value="">{{ lang('SELECT_CURRENT_TIME') }}</option>
+			{% for timezone_date in loops.timezone_date %}
+				<option value="{{ timezone_date.VALUE }}"{% if timezone_date.SELECTED %} selected="selected"{% endif %}>{{ timezone_date.TITLE }}</option>
+			{% endfor %}
 		</select>
-		<input type="button" id="tz_select_date_suggest" class="button1 button button-form-bold" style="display: none;" timezone-preselect="<!-- IF S_TZ_PRESELECT -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
+		<input type="button" id="tz_select_date_suggest" class="button1 button button-form-bold" style="display: none;" timezone-preselect="{% if S_TZ_PRESELECT %}true{% else %}false{% endif %}" data-l-suggestion="{{ lang('TIMEZONE_DATE_SUGGESTION') }}" value="{{ lang('TIMEZONE_DATE_SUGGESTION') }}" />
 	</dd>
-	<!-- ENDIF -->
+	{% endif %}
 	<dd>
 		<select name="tz" id="timezone" class="autowidth tz_select timezone">
-			<option value="">{L_SELECT_TIMEZONE}</option>
-			<!-- BEGIN timezone_select -->
-			<optgroup label="{timezone_select.LABEL}" data-tz-value="{timezone_select.VALUE}">
-				<!-- BEGIN timezone_options -->
-				<option title="{timezone_select.timezone_options.TITLE}" value="{timezone_select.timezone_options.VALUE}"<!-- IF timezone_select.timezone_options.SELECTED --> selected="selected"<!-- ENDIF -->>{timezone_select.timezone_options.LABEL}</option>
-				<!-- END timezone_options -->
+			<option value="">{{ lang('SELECT_TIMEZONE') }}</option>
+			{% for timezone_select in loops.timezone_select %}
+			<optgroup label="{{ timezone_select.LABEL }}" data-tz-value="{{ timezone_select.VALUE }}">
+				{% for timezone_options in timezone_select.timezone_options %}
+				<option title="{{ timezone_options.TITLE }}" value="{{ timezone_options.VALUE }}"{% if timezone_options.SELECTED %} selected="selected"{% endif %}>{{ timezone_options.LABEL }}</option>
+				{% endfor %}
 			</optgroup>
-			<!-- END timezone_select -->
+			{% endfor %}
 		</select>
 
-		<!-- INCLUDEJS timezone.js -->
+		{% INCLUDEJS 'timezone.js' %}
 	</dd>
 </dl>

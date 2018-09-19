@@ -1,15 +1,15 @@
-<!-- INCLUDE ucp_header.html -->
+{% INCLUDE 'ucp_header.html' %}
 
-<h2>{L_UCP_AUTH_LINK_TITLE}</h2>
+<h2>{{ lang('UCP_AUTH_LINK_TITLE') }}</h2>
 
 <div class="panel">
 	<div class="inner">
-		<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
+		{% if ERROR %}<dl><dd class="error">{{ ERROR }}</dd></dl>{% endif %}
 
-		<!-- IF PROVIDER_TEMPLATE_FILE -->
-			<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
-		<!-- ENDIF -->
+		{% if PROVIDER_TEMPLATE_FILE %}
+			{% INCLUDE ''~ PROVIDER_TEMPLATE_FILE ~'' %}
+		{% endif %}
 	</div>
 </div>
 
-<!-- INCLUDE ucp_footer.html -->
+{% INCLUDE 'ucp_footer.html' %}

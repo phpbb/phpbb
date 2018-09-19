@@ -1,26 +1,26 @@
-<!-- INCLUDE mcp_header.html -->
+{% INCLUDE 'mcp_header.html' %}
 
-<form method="post" id="mcp" action="{U_POST_ACTION}">
+<form method="post" id="mcp" action="{{ U_POST_ACTION }}">
 
-<h2>{L_TITLE}</h2>
+<h2>{{ lang('TITLE') }}</h2>
 
 <div class="panel">
 	<div class="inner">
 
-	<h3>{USERNAME_FULL}</h3>
+	<h3>{{ USERNAME_FULL }}</h3>
 
 	<div>
 		<div class="column1">
-			<!-- IF AVATAR_IMG --><div>{AVATAR_IMG}</div><!-- ENDIF -->
+			{% if AVATAR_IMG %}<div>{{ AVATAR_IMG }}</div>{% endif %}
 		</div>
 
 		<div class="column2">
 			<dl class="details">
-				<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
-				<dt>{L_JOINED}{L_COLON}</dt><dd>{JOINED}</dd>
-				<dt>{L_TOTAL_POSTS}{L_COLON}</dt><dd>{POSTS}</dd>
-				<dt>{L_WARNINGS}{L_COLON} </dt><dd>{WARNINGS}</dd>
+				{% if RANK_TITLE %}<dt>{{ lang('RANK') }}{{ lang('COLON') }}</dt><dd>{{ RANK_TITLE }}</dd>{% endif %}
+				{% if RANK_IMG %}<dt>{% if RANK_TITLE %}&nbsp;{% else %}{{ lang('RANK') }}{{ lang('COLON') }}{% endif %}</dt><dd>{{ RANK_IMG }}</dd>{% endif %}
+				<dt>{{ lang('JOINED') }}{{ lang('COLON') }}</dt><dd>{{ JOINED }}</dd>
+				<dt>{{ lang('TOTAL_POSTS') }}{{ lang('COLON') }}</dt><dd>{{ POSTS }}</dd>
+				<dt>{{ lang('WARNINGS') }}{{ lang('COLON') }} </dt><dd>{{ WARNINGS }}</dd>
 			</dl>
 		</div>
 	</div>
@@ -31,8 +31,8 @@
 <div class="panel">
 	<div class="inner">
 
-	<h3>{L_ADD_FEEDBACK}</h3>
-	<p>{L_ADD_FEEDBACK_EXPLAIN}</p>
+	<h3>{{ lang('ADD_FEEDBACK') }}</h3>
+	<p>{{ lang('ADD_FEEDBACK_EXPLAIN') }}</p>
 
 	<fieldset>
 		<textarea name="usernote" id="usernote" class="inputbox" cols="40" rows="3"></textarea>
@@ -42,80 +42,80 @@
 </div>
 
 <fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button1 button button-form-bold" />&nbsp;
-	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1 button button-form" />
-	{S_FORM_TOKEN}
+	{{ S_HIDDEN_FIELDS }}<input type="reset" value="{{ lang('RESET') }}" name="reset" class="button1 button button-form-bold" />&nbsp;
+	<input type="submit" name="action[add_feedback]" value="{{ lang('SUBMIT') }}" class="button1 button button-form" />
+	{{ S_FORM_TOKEN }}
 </fieldset>
 
 <div class="panel">
 	<div class="inner">
 
 	<div class="action-bar bar-top">
-		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button1 button button-form-bold" name="filter" value="{L_SEARCH}" />
+		{{ lang('SEARCH_KEYWORDS') }}{{ lang('COLON') }} <input type="search" class="inputbox autowidth" name="keywords" value="{{ S_KEYWORDS }}" />&nbsp;<input type="submit" class="button1 button button-form-bold" name="filter" value="{{ lang('SEARCH') }}" />
 		<div class="pagination">
-			{TOTAL_REPORTS}
-			<!-- IF .pagination -->
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				 &bull; {PAGE_NUMBER}
-			<!-- ENDIF -->
+			{{ TOTAL_REPORTS }}
+			{% if loops.pagination|length %}
+				{% INCLUDE 'pagination.html' %}
+			{% else %}
+				 &bull; {{ PAGE_NUMBER }}
+			{% endif %}
 		</div>
 	</div>
 
 	<table class="table1">
 	<thead>
 	<tr>
-		<th class="name reportby">{L_REPORT_BY}</th>
-		<th class="center">{L_IP}</th>
-		<th class="center">{L_TIME}</th>
-		<th>{L_ACTION_NOTE}</th>
-		<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
+		<th class="name reportby">{{ lang('REPORT_BY') }}</th>
+		<th class="center">{{ lang('IP') }}</th>
+		<th class="center">{{ lang('TIME') }}</th>
+		<th>{{ lang('ACTION_NOTE') }}</th>
+		{% if S_CLEAR_ALLOWED %}<th>{{ lang('MARK') }}</th>{% endif %}
 	</tr>
 	</thead>
 	<tbody>
-	<!-- BEGIN usernotes -->
-	<!-- IF usernotes.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
-		<td>{usernotes.REPORT_BY}</td>
-		<td class="center">{usernotes.IP}</td>
-		<td class="center">{usernotes.REPORT_AT}</td>
-		<td>{usernotes.ACTION}</td>
+	{% for usernotes in loops.usernotes %}
+	{% if usernotes.S_ROW_COUNT is even %}<tr class="bg1">{% else %}<tr class="bg2">{% endif %}
+		<td>{{ usernotes.REPORT_BY }}</td>
+		<td class="center">{{ usernotes.IP }}</td>
+		<td class="center">{{ usernotes.REPORT_AT }}</td>
+		<td>{{ usernotes.ACTION }}</td>
 
-		<!-- IF S_CLEAR_ALLOWED --><td class="center" style="width: 5%;"><input type="checkbox" name="marknote[]" id="note-{usernotes.ID}" value="{usernotes.ID}" /></td><!-- ENDIF -->
+		{% if S_CLEAR_ALLOWED %}<td class="center" style="width: 5%;"><input type="checkbox" name="marknote[]" id="note-{{ usernotes.ID }}" value="{{ usernotes.ID }}" /></td>{% endif %}
 	</tr>
-	<!-- BEGINELSE -->
+	{% else %}
 	<tr>
-		<td class="bg1" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+		<td class="bg1" colspan="{% if S_CLEAR_ALLOWED %}5{% else %}4{% endif %}" align="center"><span class="gen">{{ lang('NO_ENTRIES') }}</span></td>
 	</tr>
-	<!-- END usernotes -->
+	{% endfor %}
 	</tbody>
 	</table>
 
 	<div class="action-bar bottom">
-		<!-- INCLUDE display_options.html -->
+		{% INCLUDE 'display_options.html' %}
 
 		<div class="pagination">
-			{TOTAL_REPORTS}
-			<!-- IF .pagination -->
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				 &bull; {PAGE_NUMBER}
-			<!-- ENDIF -->
+			{{ TOTAL_REPORTS }}
+			{% if loops.pagination|length %}
+				{% INCLUDE 'pagination.html' %}
+			{% else %}
+				 &bull; {{ PAGE_NUMBER }}
+			{% endif %}
 		</div>
 	</div>
 
 	</div>
 </div>
 
-<!-- IF S_CLEAR_ALLOWED -->
+{% if S_CLEAR_ALLOWED %}
 <fieldset class="display-actions">
-	<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
-	&nbsp;<input class="button1 button button-form" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+	<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{{ lang('DELETE_ALL') }}" />
+	&nbsp;<input class="button1 button button-form" type="submit" name="action[del_marked]" value="{{ lang('DELETE_MARKED') }}" />
 </fieldset>
 
 <fieldset class="display-actions">
-	<div><a href="#" onclick="marklist('mcp', 'marknote', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('mcp', 'marknote', false); return false;">{L_UNMARK_ALL}</a></div>
+	<div><a href="#" onclick="marklist('mcp', 'marknote', true); return false;">{{ lang('MARK_ALL') }}</a> &bull; <a href="#" onclick="marklist('mcp', 'marknote', false); return false;">{{ lang('UNMARK_ALL') }}</a></div>
 </fieldset>
-<!-- ENDIF -->
+{% endif %}
 </form>
 
-<!-- INCLUDE mcp_footer.html -->
+{% INCLUDE 'mcp_footer.html' %}

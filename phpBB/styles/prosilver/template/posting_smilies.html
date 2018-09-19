@@ -1,25 +1,25 @@
-<!-- INCLUDE simple_header.html -->
+{% INCLUDE 'simple_header.html' %}
 
 <script>
 	var form_name = opener.form_name;
 	var text_name = opener.text_name;
 </script>
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
+{% INCLUDEJS ''~ T_ASSETS_PATH ~'/javascript/editor.js' %}
 
-<h2>{L_SMILIES}</h2>
+<h2>{{ lang('SMILIES') }}</h2>
 <div class="panel">
 	<div class="inner">
-		<!-- BEGIN smiley -->
-			<a href="#" onclick="initInsertions(); insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-		<!-- END smiley -->
+		{% for smiley in loops.smiley %}
+			<a href="#" onclick="initInsertions(); insert_text('{{ smiley.A_SMILEY_CODE }}', true, true); return false;"><img src="{{ smiley.SMILEY_IMG }}" width="{{ smiley.SMILEY_WIDTH }}" height="{{ smiley.SMILEY_HEIGHT }}" alt="{{ smiley.SMILEY_CODE }}" title="{{ smiley.SMILEY_DESC }}" /></a>
+		{% endfor %}
 
 	</div>
 </div>
-<!-- IF .pagination -->
+{% if loops.pagination|length %}
 	<div class="pagination">
-		<!-- INCLUDE pagination.html -->
+		{% INCLUDE 'pagination.html' %}
 	</div>
-<!-- ENDIF -->
-<a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
+{% endif %}
+<a href="#" onclick="window.close(); return false;">{{ lang('CLOSE_WINDOW') }}</a>
 
-<!-- INCLUDE simple_footer.html -->
+{% INCLUDE 'simple_footer.html' %}

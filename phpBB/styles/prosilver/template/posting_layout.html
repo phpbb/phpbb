@@ -1,86 +1,86 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<!-- IF TOPIC_TITLE -->
-	<h2 class="posting-title"><!-- EVENT posting_topic_title_before --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT posting_topic_title_after --></h2>
-<!-- ELSE -->
-	<h2 class="posting-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
- <!-- ENDIF -->
+{% if TOPIC_TITLE %}
+	<h2 class="posting-title">{% EVENT posting_topic_title_before %}<a href="{{ U_VIEW_TOPIC }}">{{ TOPIC_TITLE }}</a>{% EVENT posting_topic_title_after %}</h2>
+{% else %}
+	<h2 class="posting-title"><a href="{{ U_VIEW_FORUM }}">{{ FORUM_NAME }}</a></h2>
+ {% endif %}
 
-<!-- IF S_FORUM_RULES -->
-	<div class="rules<!-- IF U_FORUM_RULES --> rules-link<!-- ENDIF -->">
+{% if S_FORUM_RULES %}
+	<div class="rules{% if U_FORUM_RULES %} rules-link{% endif %}">
 		<div class="inner">
 
-		<!-- IF U_FORUM_RULES -->
-			<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
-		<!-- ELSE -->
-			<strong>{L_FORUM_RULES}</strong><br />
-			{FORUM_RULES}
-		<!-- ENDIF -->
+		{% if U_FORUM_RULES %}
+			<a href="{{ U_FORUM_RULES }}">{{ lang('FORUM_RULES') }}</a>
+		{% else %}
+			<strong>{{ lang('FORUM_RULES') }}</strong><br />
+			{{ FORUM_RULES }}
+		{% endif %}
 
 		</div>
 	</div>
-<!-- ENDIF -->
+{% endif %}
 
-<form id="postform" method="post" action="{S_POST_ACTION}"{S_FORM_ENCTYPE}>
+<form id="postform" method="post" action="{{ S_POST_ACTION }}"{{ S_FORM_ENCTYPE }}>
 
-<!-- IF S_DRAFT_LOADED -->
+{% if S_DRAFT_LOADED %}
 	<div class="panel">
 		<div class="inner">
 
-		<h3>{L_INFORMATION}</h3>
-		<p>{L_DRAFT_LOADED}</p>
+		<h3>{{ lang('INFORMATION') }}</h3>
+		<p>{{ lang('DRAFT_LOADED') }}</p>
 
 		</div>
 	</div>
-<!-- ENDIF -->
+{% endif %}
 
-<!-- IF S_SHOW_DRAFTS --><!-- INCLUDE drafts.html --><!-- ENDIF -->
+{% if S_SHOW_DRAFTS %}{% INCLUDE 'drafts.html' %}{% endif %}
 
-<!-- IF S_POST_REVIEW --><!-- INCLUDE posting_review.html --><!-- ENDIF -->
+{% if S_POST_REVIEW %}{% INCLUDE 'posting_review.html' %}{% endif %}
 
-<!-- IF S_UNGLOBALISE -->
+{% if S_UNGLOBALISE %}
 	<div class="panel bg3">
 		<div class="inner">
 		<fieldset class="fields1">
-			<h2>{L_SELECT_DESTINATION_FORUM}</h2>
-			<p>{L_UNGLOBALISE_EXPLAIN}</p>
+			<h2>{{ lang('SELECT_DESTINATION_FORUM') }}</h2>
+			<p>{{ lang('UNGLOBALISE_EXPLAIN') }}</p>
 			<dl>
-				<dt><label for="to_forum_id">{L_MOVE}{L_COLON}</label></dt>
-				<dd><select id="to_forum_id" name="to_forum_id">{S_FORUM_SELECT}</select></dd>
+				<dt><label for="to_forum_id">{{ lang('MOVE') }}{{ lang('COLON') }}</label></dt>
+				<dd><select id="to_forum_id" name="to_forum_id">{{ S_FORUM_SELECT }}</select></dd>
 			</dl>
 
 			<dl>
 				<dt>&nbsp;</dt>
-				<dd><input class="button1 button button-form" type="submit" name="post" value="{L_CONFIRM}" /> <input class="button1 button button-form-bold" type="submit" name="cancel_unglobalise" value="{L_CANCEL}" /></dd>
+				<dd><input class="button1 button button-form" type="submit" name="post" value="{{ lang('CONFIRM') }}" /> <input class="button1 button button-form-bold" type="submit" name="cancel_unglobalise" value="{{ lang('CANCEL') }}" /></dd>
 			</dl>
 		</fieldset>
 
 		</div>
 	</div>
-<!-- ENDIF -->
+{% endif %}
 
-<!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
+{% if S_DISPLAY_PREVIEW %}{% INCLUDE 'posting_preview.html' %}{% endif %}
 
 <div class="panel" id="postingbox">
 	<div class="inner">
 
-	<h3>{L_POST_A}</h3>
+	<h3>{{ lang('POST_A') }}</h3>
 
-	<!-- DEFINE $EXTRA_POSTING_OPTIONS = 1 -->
-	<!-- INCLUDE posting_editor.html -->
+	{% DEFINE EXTRA_POSTING_OPTIONS = 1 %}
+	{% INCLUDE 'posting_editor.html' %}
 	<input type="hidden" name="show_panel" value="options-panel" />
-	{S_FORM_TOKEN}
+	{{ S_FORM_TOKEN }}
 	</div>
 </div>
 
-<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
+{% if S_SHOW_ATTACH_BOX %}{% INCLUDE 'posting_attach_body.html' %}{% endif %}
 
-<!-- IF S_SHOW_POLL_BOX or S_POLL_DELETE --><!-- INCLUDE posting_poll_body.html --><!-- ENDIF -->
+{% if S_SHOW_POLL_BOX or S_POLL_DELETE %}{% INCLUDE 'posting_poll_body.html' %}{% endif %}
 
-<!-- EVENT posting_layout_include_panel_body -->
+{% EVENT posting_layout_include_panel_body %}
 
-<!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
+{% if S_DISPLAY_REVIEW %}{% INCLUDE 'posting_topic_review.html' %}{% endif %}
 
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}

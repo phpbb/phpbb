@@ -1,73 +1,73 @@
-<!-- IF S_AJAX_REQUEST -->
+{% if S_AJAX_REQUEST %}
 
-	<h3>{MESSAGE_TITLE}</h3>
-	<p>{MESSAGE_TEXT}</p>
+	<h3>{{ MESSAGE_TITLE }}</h3>
+	<p>{{ MESSAGE_TEXT }}</p>
 
-	<!-- IF S_NOTIFY_POSTER -->
-		<label><input type="checkbox" name="notify_poster" checked="checked" /> <!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></label>
-	<!-- ENDIF -->
+	{% if S_NOTIFY_POSTER %}
+		<label><input type="checkbox" name="notify_poster" checked="checked" /> {% if S_APPROVE %}{{ lang('NOTIFY_POSTER_APPROVAL') }}{% else %}{{ lang('NOTIFY_POSTER_DISAPPROVAL') }}{% endif %}</label>
+	{% endif %}
 
-	<!-- IF not S_APPROVE and not S_RESTORE and .reason -->
-		<label><strong>{L_DISAPPROVE_REASON}{L_COLON}</strong>
+	{% if not S_APPROVE and not S_RESTORE and loops.reason|length %}
+		<label><strong>{{ lang('DISAPPROVE_REASON') }}{{ lang('COLON') }}</strong>
 		<select name="reason_id">
-			<!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason -->
+			{% for reason in loops.reason %}<option value="{{ reason.ID }}"{% if reason.S_SELECTED %} selected="selected"{% endif %}>{{ reason.DESCRIPTION }}</option>{% endfor %}
 		</select></label>
 
-		<label><strong>{L_MORE_INFO}{L_COLON}</strong><br /><span>{L_CAN_LEAVE_BLANK}</span>
-			<textarea class="inputbox" name="reason" id="reason" rows="4" cols="40">{REASON}</textarea>
+		<label><strong>{{ lang('MORE_INFO') }}{{ lang('COLON') }}</strong><br /><span>{{ lang('CAN_LEAVE_BLANK') }}</span>
+			<textarea class="inputbox" name="reason" id="reason" rows="4" cols="40">{{ REASON }}</textarea>
 		</label>
-	<!-- ENDIF -->
+	{% endif %}
 
 	<fieldset class="submit-buttons">
-		<input type="button" name="confirm" value="{YES_VALUE}" class="button1 button button-form" />&nbsp;
-		<input type="button" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+		<input type="button" name="confirm" value="{{ YES_VALUE }}" class="button1 button button-form" />&nbsp;
+		<input type="button" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 	</fieldset>
 
-<!-- ELSE -->
+{% else %}
 
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+<form id="confirm" action="{{ S_CONFIRM_ACTION }}" method="post">
 <div class="panel">
-	{S_FORM_TOKEN}
+	{{ S_FORM_TOKEN }}
 	<div class="inner">
 
 	<div class="content">
 
-		<h2 class="message-title">{MESSAGE_TITLE}</h2>
-		<!-- IF ADDITIONAL_MSG --><p class="error">{ADDITIONAL_MSG}</p><!-- ENDIF -->
+		<h2 class="message-title">{{ MESSAGE_TITLE }}</h2>
+		{% if ADDITIONAL_MSG %}<p class="error">{{ ADDITIONAL_MSG }}</p>{% endif %}
 
 		<fieldset>
-		<!-- IF S_NOTIFY_POSTER -->
+		{% if S_NOTIFY_POSTER %}
 			<dl class="fields2 nobg">
 				<dt>&nbsp;</dt>
-				<dd><label><input type="checkbox" name="notify_poster" checked="checked" /> <!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></label></dd>
+				<dd><label><input type="checkbox" name="notify_poster" checked="checked" /> {% if S_APPROVE %}{{ lang('NOTIFY_POSTER_APPROVAL') }}{% else %}{{ lang('NOTIFY_POSTER_DISAPPROVAL') }}{% endif %}</label></dd>
 			</dl>
-		<!-- ENDIF -->
+		{% endif %}
 
-		<!-- IF not S_APPROVE and not S_RESTORE and .reason -->
+		{% if not S_APPROVE and not S_RESTORE and loops.reason|length %}
 			<dl class="fields2 nobg">
-				<dt><label>{L_DISAPPROVE_REASON}{L_COLON}</label></dt>
+				<dt><label>{{ lang('DISAPPROVE_REASON') }}{{ lang('COLON') }}</label></dt>
 				<dd><select name="reason_id">
-					<!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason -->
+					{% for reason in loops.reason %}<option value="{{ reason.ID }}"{% if reason.S_SELECTED %} selected="selected"{% endif %}>{{ reason.DESCRIPTION }}</option>{% endfor %}
 					</select>
 				</dd>
 			</dl>
 			<dl class="fields2 nobg">
-				<dt><label for="reason">{L_MORE_INFO}{L_COLON}</label><br /><span>{L_CAN_LEAVE_BLANK}</span></dt>
-				<dd><textarea class="inputbox" name="reason" id="reason" rows="4" cols="40">{REASON}</textarea></dd>
+				<dt><label for="reason">{{ lang('MORE_INFO') }}{{ lang('COLON') }}</label><br /><span>{{ lang('CAN_LEAVE_BLANK') }}</span></dt>
+				<dd><textarea class="inputbox" name="reason" id="reason" rows="4" cols="40">{{ REASON }}</textarea></dd>
 			</dl>
-		<!-- ENDIF -->
+		{% endif %}
 
 		<dl class="fields2 nobg">
 			<dt>&nbsp;</dt>
-			<dd><strong>{MESSAGE_TEXT}</strong></dd>
+			<dd><strong>{{ MESSAGE_TEXT }}</strong></dd>
 		</dl>
 		</fieldset>
 
 		<fieldset class="submit-buttons">
-			{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="button1 button button-form" />&nbsp;
-			<input type="submit" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+			{{ S_HIDDEN_FIELDS }}<input type="submit" name="confirm" value="{{ YES_VALUE }}" class="button1 button button-form" />&nbsp;
+			<input type="submit" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 		</fieldset>
 
 	</div>
@@ -77,5 +77,5 @@
 
 </form>
 
-<!-- INCLUDE overall_footer.html -->
-<!-- ENDIF -->
+{% INCLUDE 'overall_footer.html' %}
+{% endif %}

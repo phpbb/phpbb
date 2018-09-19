@@ -1,33 +1,33 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<!-- IF FORUM_NAME --><h2 class="forum-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2><!-- ENDIF -->
+{% if FORUM_NAME %}<h2 class="forum-title"><a href="{{ U_VIEW_FORUM }}">{{ FORUM_NAME }}</a></h2>{% endif %}
 
-<form id="login_forum" method="post" action="{S_LOGIN_ACTION}">
-{S_FORM_TOKEN}
+<form id="login_forum" method="post" action="{{ S_LOGIN_ACTION }}">
+{{ S_FORM_TOKEN }}
 <div class="panel">
 	<div class="inner">
 
 	<div class="content">
-		<h2 class="login-title">{L_LOGIN}</h2>
+		<h2 class="login-title">{{ lang('LOGIN') }}</h2>
 
-		<p>{L_LOGIN_FORUM}</p>
+		<p>{{ lang('LOGIN_FORUM') }}</p>
 
 		<fieldset class="fields1">
-			<!-- IF LOGIN_ERROR -->
+			{% if LOGIN_ERROR %}
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd class="error">{LOGIN_ERROR}</dd>
+					<dd class="error">{{ LOGIN_ERROR }}</dd>
 				</dl>
-			<!-- ENDIF -->
+			{% endif %}
 
 			<dl>
-				<dt><label for="password">{L_PASSWORD}{L_COLON}</label></dt>
+				<dt><label for="password">{{ lang('PASSWORD') }}{{ lang('COLON') }}</label></dt>
 				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" autocomplete="off" /></dd>
 			</dl>
-			{S_LOGIN_REDIRECT}
+			{{ S_LOGIN_REDIRECT }}
 			<dl>
 				<dt>&nbsp;</dt>
-				<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" id="login" class="button1 button button-form" value="{L_LOGIN}" tabindex="2" /></dd>
+				<dd>{{ S_HIDDEN_FIELDS }}<input type="submit" name="login" id="login" class="button1 button button-form" value="{{ lang('LOGIN') }}" tabindex="2" /></dd>
 			</dl>
 		</fieldset>
 	</div>
@@ -37,5 +37,5 @@
 
 </form>
 
-<!-- INCLUDE jumpbox.html -->
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'jumpbox.html' %}
+{% INCLUDE 'overall_footer.html' %}

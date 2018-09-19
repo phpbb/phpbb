@@ -1,46 +1,46 @@
-<!-- INCLUDE simple_header.html -->
+{% INCLUDE 'simple_header.html' %}
 
-<h2>{L_SEND_IM}</h2>
+<h2>{{ lang('SEND_IM') }}</h2>
 
-<form method="post" action="{S_IM_ACTION}">
+<form method="post" action="{{ S_IM_ACTION }}">
 
 <div class="panel bg2">
 	<div class="inner">
 
-	<p>{L_SEND_IM_EXPLAIN}</p>
+	<p>{{ lang('SEND_IM_EXPLAIN') }}</p>
 
-	<!-- IF S_SENT_JABBER -->
-		<p>{L_IM_SENT_JABBER}</p>
-	<!-- ENDIF -->
+	{% if S_SENT_JABBER %}
+		<p>{{ lang('IM_SENT_JABBER') }}</p>
+	{% endif %}
 
 	<fieldset>
 	<dl class="fields2">
-		<dt><label>{L_IM_RECIPIENT}{L_COLON}</label></dt>
-		<dd><strong>{USERNAME}</strong><!-- IF S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
+		<dt><label>{{ lang('IM_RECIPIENT') }}{{ lang('COLON') }}</label></dt>
+		<dd><strong>{{ USERNAME }}</strong>{% if S_NO_SEND_JABBER %} [ {{ IM_CONTACT }} ]{% endif %}{% if PRESENCE_IMG %} {{ PRESENCE_IMG }}{% endif %}</dd>
 	</dl>
 
-	<!-- IF S_SEND_JABBER -->
+	{% if S_SEND_JABBER %}
 		<dl class="fields2">
-			<dt><label for="message">{L_IM_MESSAGE}{L_COLON}</label></dt>
+			<dt><label for="message">{{ lang('IM_MESSAGE') }}{{ lang('COLON') }}</label></dt>
 			<dd><textarea class="inputbox autowidth" name="message" id="message" rows="5" cols="45"></textarea></dd>
 		</dl>
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
-			<dd><input class="button1 button button-form" name="submit" type="submit" value="{L_IM_SEND}" /></dd>
+			<dd><input class="button1 button button-form" name="submit" type="submit" value="{{ lang('IM_SEND') }}" /></dd>
 		</dl>
-	<!-- ELSE IF S_NO_SEND_JABBER -->
+	{% elseif S_NO_SEND_JABBER %}
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
-			<dd>{L_IM_NO_JABBER}</dd>
+			<dd>{{ lang('IM_NO_JABBER') }}</dd>
 		</dl>
-	<!-- ENDIF -->
-	{S_FORM_TOKEN}
+	{% endif %}
+	{{ S_FORM_TOKEN }}
 	</fieldset>
 
 	</div>
 </div>
 </form>
 
-<a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
+<a href="#" onclick="window.close(); return false;">{{ lang('CLOSE_WINDOW') }}</a>
 
-<!-- INCLUDE simple_footer.html -->
+{% INCLUDE 'simple_footer.html' %}

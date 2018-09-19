@@ -1,70 +1,70 @@
-<!-- IF S_AJAX_REQUEST -->
-	<form action="{S_CONFIRM_ACTION}" method="post">
-		<p>{MESSAGE_TEXT}</p>
+{% if S_AJAX_REQUEST %}
+	<form action="{{ S_CONFIRM_ACTION }}" method="post">
+		<p>{{ MESSAGE_TEXT }}</p>
 
-		<!-- IF not S_SHADOW_TOPICS -->
-		<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+		{% if not S_SHADOW_TOPICS %}
+		{% if not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE %}
 			<label>
-				<strong>{L_DELETE_PERMANENTLY}{L_COLON}</strong>
-				<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
-				<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
+				<strong>{{ lang('DELETE_PERMANENTLY') }}{{ lang('COLON') }}</strong>
+				<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {{ S_CHECKED_PERMANENT }} />
+				{% if S_TOPIC_MODE %}{{ DELETE_TOPIC_PERMANENTLY_EXPLAIN }}{% else %}{{ DELETE_POST_PERMANENTLY_EXPLAIN }}{% endif %}
 			</label>
-		<!-- ENDIF -->
+		{% endif %}
 
 		<label for="delete_reason">
-			<strong>{L_DELETE_REASON}{L_COLON}</strong><br /><span>{L_DELETE_REASON_EXPLAIN}</span><br />
+			<strong>{{ lang('DELETE_REASON') }}{{ lang('COLON') }}</strong><br /><span>{{ lang('DELETE_REASON_EXPLAIN') }}</span><br />
 			<input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />
 		</label>
-		<!-- ENDIF -->
+		{% endif %}
 
 		<fieldset class="submit-buttons">
-			<input type="button" name="confirm" value="{L_YES}" class="button1 button button-form" />&nbsp;
-			<input type="button" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+			<input type="button" name="confirm" value="{{ lang('YES') }}" class="button1 button button-form" />&nbsp;
+			<input type="button" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 		</fieldset>
 	</form>
 
-<!-- ELSE -->
+{% else %}
 
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+<form id="confirm" action="{{ S_CONFIRM_ACTION }}" method="post">
 <div class="panel">
 	<div class="inner">
 
-	<h2 class="message-title">{MESSAGE_TITLE}</h2>
+	<h2 class="message-title">{{ MESSAGE_TITLE }}</h2>
 
-	<p>{MESSAGE_TEXT}</p>
+	<p>{{ MESSAGE_TEXT }}</p>
 
-	<!-- IF not S_SHADOW_TOPICS -->
+	{% if not S_SHADOW_TOPICS %}
 	<fieldset class="fields1">
-		<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+		{% if not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE %}
 			<dl>
-				<dt><label for="delete_permanent">{L_DELETE_PERMANENTLY}{L_COLON}</label></dt>
+				<dt><label for="delete_permanent">{{ lang('DELETE_PERMANENTLY') }}{{ lang('COLON') }}</label></dt>
 				<dd>
 					<label for="delete_permanent">
-						<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
-						<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
+						<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {{ S_CHECKED_PERMANENT }} />
+						{% if S_TOPIC_MODE %}{{ DELETE_TOPIC_PERMANENTLY_EXPLAIN }}{% else %}{{ DELETE_POST_PERMANENTLY_EXPLAIN }}{% endif %}
 					</label>
 				</dd>
 			</dl>
-		<!-- ENDIF -->
+		{% endif %}
 
 		<dl>
-			<dt><label for="delete_reason">{L_DELETE_REASON}{L_COLON}</label><br /><span>{L_DELETE_REASON_EXPLAIN}</span></dt>
+			<dt><label for="delete_reason">{{ lang('DELETE_REASON') }}{{ lang('COLON') }}</label><br /><span>{{ lang('DELETE_REASON_EXPLAIN') }}</span></dt>
 			<dd><input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
 		</dl>
 	</fieldset>
-	<!-- ENDIF -->
+	{% endif %}
 
 	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}
-		<input type="submit" name="confirm" value="{L_YES}" class="button1 button button-form" />&nbsp;
-		<input type="submit" name="cancel" value="{L_NO}" class="button1 button button-form-bold" />
+		{{ S_HIDDEN_FIELDS }}
+		<input type="submit" name="confirm" value="{{ lang('YES') }}" class="button1 button button-form" />&nbsp;
+		<input type="submit" name="cancel" value="{{ lang('NO') }}" class="button1 button button-form-bold" />
 	</fieldset>
 
 	</div>
 </div>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
-<!-- ENDIF -->
+{% INCLUDE 'overall_footer.html' %}
+{% endif %}

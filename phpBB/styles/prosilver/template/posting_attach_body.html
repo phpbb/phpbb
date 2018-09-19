@@ -1,35 +1,35 @@
 <div class="panel bg3 panel-container" id="attach-panel">
 	<div class="inner">
 
-	<p>{L_ADD_ATTACHMENT_EXPLAIN} <span class="hidden" id="drag-n-drop-message">{L_PLUPLOAD_DRAG_TEXTAREA}</span></p>
+	<p>{{ lang('ADD_ATTACHMENT_EXPLAIN') }} <span class="hidden" id="drag-n-drop-message">{{ lang('PLUPLOAD_DRAG_TEXTAREA') }}</span></p>
 
 	<fieldset class="fields2" id="attach-panel-basic">
 	<dl>
-		<dt><label for="fileupload">{L_FILENAME}{L_COLON}</label></dt>
+		<dt><label for="fileupload">{{ lang('FILENAME') }}{{ lang('COLON') }}</label></dt>
 		<dd>
 			<input type="file" name="fileupload" id="fileupload" class="inputbox autowidth" />
-			<input type="submit" name="add_file" value="{L_ADD_FILE}" class="button1 button button-form-bold" onclick="upload = true;" />
+			<input type="submit" name="add_file" value="{{ lang('ADD_FILE') }}" class="button1 button button-form-bold" onclick="upload = true;" />
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="filecomment">{L_FILE_COMMENT}{L_COLON}</label></dt>
-		<dd><textarea name="filecomment" id="filecomment" rows="1" cols="40" class="inputbox autowidth">{FILE_COMMENT}</textarea></dd>
+		<dt><label for="filecomment">{{ lang('FILE_COMMENT') }}{{ lang('COLON') }}</label></dt>
+		<dd><textarea name="filecomment" id="filecomment" rows="1" cols="40" class="inputbox autowidth">{{ FILE_COMMENT }}</textarea></dd>
 	</dl>
 	</fieldset>
 
 	<div id="attach-panel-multi" class="attach-panel-multi">
-		<input type="button" class="button1 button button-form-bold" value="{L_PLUPLOAD_ADD_FILES}" id="add_files" />
+		<input type="button" class="button1 button button-form-bold" value="{{ lang('PLUPLOAD_ADD_FILES') }}" id="add_files" />
 	</div>
 
-	<div class="panel<!-- IF not .attach_row --> hidden<!-- ENDIF --> file-list-container" id="file-list-container">
+	<div class="panel{% if not loops.attach_row|length %} hidden{% endif %} file-list-container" id="file-list-container">
 		<div class="inner">
 			<table class="table1 zebra-list fixed-width-table">
 				<thead>
 					<tr>
-						<th class="attach-name">{L_PLUPLOAD_FILENAME}</th>
-						<th class="attach-comment">{L_FILE_COMMENT}</th>
-						<th class="attach-filesize">{L_PLUPLOAD_SIZE}</th>
-						<th class="attach-status">{L_PLUPLOAD_STATUS}</th>
+						<th class="attach-name">{{ lang('PLUPLOAD_FILENAME') }}</th>
+						<th class="attach-comment">{{ lang('FILE_COMMENT') }}</th>
+						<th class="attach-filesize">{{ lang('PLUPLOAD_SIZE') }}</th>
+						<th class="attach-status">{{ lang('PLUPLOAD_STATUS') }}</th>
 					</tr>
 				</thead>
 				<tbody class="responsive-skip-empty file-list" id="file-list">
@@ -37,8 +37,8 @@
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"></span>
 								<span class="attach-controls">
-									<input type="button" value="{L_PLACE_INLINE}" class="button1 button button-form-bold hidden file-inline-bbcode" />&nbsp;
-									<input type="button" value="{L_DELETE_FILE}" class="button1 button button-form-bold file-delete" />
+									<input type="button" value="{{ lang('PLACE_INLINE') }}" class="button1 button button-form-bold hidden file-inline-bbcode" />&nbsp;
+									<input type="button" value="{{ lang('DELETE_FILE') }}" class="button1 button button-form-bold file-delete" />
 								</span>
 								<span class="clear"></span>
 							</td>
@@ -55,30 +55,30 @@
 								<span class="file-status"></span>
 							</td>
 					</tr>
-					<!-- BEGIN attach_row -->
-						<tr class="attach-row" data-attach-id="{attach_row.ATTACH_ID}">
+					{% for attach_row in loops.attach_row %}
+						<tr class="attach-row" data-attach-id="{{ attach_row.ATTACH_ID }}">
 							<td class="attach-name">
-								<span class="file-name ellipsis-text"><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></span>
-								<!-- EVENT posting_attach_body_attach_row_controls_prepend -->
+								<span class="file-name ellipsis-text"><a href="{{ attach_row.U_VIEW_ATTACHMENT }}">{{ attach_row.FILENAME }}</a></span>
+								{% EVENT posting_attach_body_attach_row_controls_prepend %}
 								<span class="attach-controls">
-									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" class="button1 button button-form-bold file-inline-bbcode" />&nbsp; <!-- ENDIF -->
-									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button1 button button-form-bold file-delete" />
+									{% if S_INLINE_ATTACHMENT_OPTIONS %}<input type="button" value="{{ lang('PLACE_INLINE') }}" class="button1 button button-form-bold file-inline-bbcode" />&nbsp; {% endif %}
+									<input type="submit" name="delete_file[{{ attach_row.ASSOC_INDEX }}]" value="{{ lang('DELETE_FILE') }}" class="button1 button button-form-bold file-delete" />
 								</span>
-								<!-- EVENT posting_attach_body_attach_row_controls_append -->
+								{% EVENT posting_attach_body_attach_row_controls_append %}
 								<span class="clear"></span>
 							</td>
 							<td class="attach-comment">
-								<textarea name="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="30" class="inputbox">{attach_row.FILE_COMMENT}</textarea>
-								{attach_row.S_HIDDEN}
+								<textarea name="comment_list[{{ attach_row.ASSOC_INDEX }}]" rows="1" cols="30" class="inputbox">{{ attach_row.FILE_COMMENT }}</textarea>
+								{{ attach_row.S_HIDDEN }}
 							</td>
 							<td class="attach-filesize">
-								<span class="file-size">{attach_row.FILESIZE}</span>
+								<span class="file-size">{{ attach_row.FILESIZE }}</span>
 							</td>
 							<td class="attach-status">
 								<span class="file-status file-uploaded"></span>
 							</td>
 						</tr>
-					<!-- END attach_row -->
+					{% endfor %}
 				</tbody>
 			</table>
 		</div>

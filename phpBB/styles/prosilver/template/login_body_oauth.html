@@ -1,8 +1,8 @@
 <div class="content">
-	<!-- BEGIN oauth -->
+	{% for oauth in loops.oauth %}
 	<dl>
 		<dt>&nbsp;</dt>
-		<dd><a href="{oauth.REDIRECT_URL}" class="button1 button button-form-bold">{oauth.SERVICE_NAME}</a></dd>
+		<dd><a href="{{ oauth.REDIRECT_URL }}" class="button1 button button-form-bold">{{ oauth.SERVICE_NAME }}</a></dd>
 	</dl>
-	<!-- END oauth -->
+	{% endfor %}
 </div>

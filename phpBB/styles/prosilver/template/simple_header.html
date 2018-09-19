@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<html dir="{{ S_CONTENT_DIRECTION }}" lang="{{ S_USER_LANG }}">
 <head>
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-{META}
-<title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
+{{ META }}
+<title>{{ SITENAME }} &bull; {% if S_IN_MCP %}{{ lang('MCP') }} &bull; {% elseif S_IN_UCP %}{{ lang('UCP') }} &bull; {% endif %}{{ PAGE_TITLE }}</title>
 
-<!-- IF S_ALLOW_CDN -->
+{% if S_ALLOW_CDN %}
 <script>
 	WebFontConfig = {
 		google: {
@@ -22,28 +22,28 @@
 		s.parentNode.insertBefore(wf, s);
 	})(document);
 </script>
-<!-- ENDIF -->
-<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet">
-<link href="{T_STYLESHEET_LINK}" rel="stylesheet">
-<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet">
+{% endif %}
+<link href="{{ T_FONT_AWESOME_LINK }}" rel="stylesheet">
+<link href="{{ T_STYLESHEET_LINK }}" rel="stylesheet">
+<link href="{{ T_STYLESHEET_LANG_LINK }}" rel="stylesheet">
 
-<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
-<!-- ENDIF -->
+{% if S_CONTENT_DIRECTION eq 'rtl' %}
+	<link href="{{ T_THEME_PATH }}/bidi.css?assets_version={{ T_ASSETS_VERSION }}" rel="stylesheet">
+{% endif %}
 
-<!-- DEFINE $POPUP = 1 -->
+{% DEFINE POPUP = 1 %}
 
-<!-- EVENT simple_header_head_append -->
+{% EVENT simple_header_head_append %}
 
-{$STYLESHEETS}
+{{ definition.STYLESHEETS }}
 
-<!-- EVENT simple_header_stylesheets_after -->
+{% EVENT simple_header_stylesheets_after %}
 
 </head>
 
-<body id="phpbb" class="nojs {S_CONTENT_DIRECTION} {BODY_CLASS}">
+<body id="phpbb" class="nojs {{ S_CONTENT_DIRECTION }} {{ BODY_CLASS }}">
 
-<!-- EVENT simple_header_body_before -->
+{% EVENT simple_header_body_before %}
 
 <div id="wrap" class="wrap">
 	<a id="top" class="top-anchor" accesskey="t"></a>

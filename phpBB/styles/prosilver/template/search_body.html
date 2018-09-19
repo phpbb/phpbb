@@ -1,30 +1,30 @@
-<!-- INCLUDE overall_header.html -->
+{% INCLUDE 'overall_header.html' %}
 
-<h2 class="solo">{L_SEARCH}</h2>
+<h2 class="solo">{{ lang('SEARCH') }}</h2>
 
-<!-- EVENT search_body_form_before -->
-<form method="get" action="{S_SEARCH_ACTION}" data-focus="keywords">
+{% EVENT search_body_form_before %}
+<form method="get" action="{{ S_SEARCH_ACTION }}" data-focus="keywords">
 
 <div class="panel">
 	<div class="inner">
-	<h3>{L_SEARCH_QUERY}</h3>
+	<h3>{{ lang('SEARCH_QUERY') }}</h3>
 
-	<!-- EVENT search_body_search_query_before -->
+	{% EVENT search_body_search_query_before %}
 	<fieldset>
-	<!-- EVENT search_body_search_query_prepend -->
+	{% EVENT search_body_search_query_prepend %}
 	<dl>
-		<dt><label for="keywords">{L_SEARCH_KEYWORDS}{L_COLON}</label><br /><span>{L_SEARCH_KEYWORDS_EXPLAIN}</span></dt>
-		<dd><input type="search" class="inputbox" name="keywords" id="keywords" size="40" title="{L_SEARCH_KEYWORDS}" /></dd>
-		<dd><label for="terms1"><input type="radio" name="terms" id="terms1" value="all" checked="checked" /> {L_SEARCH_ALL_TERMS}</label></dd>
-		<dd><label for="terms2"><input type="radio" name="terms" id="terms2" value="any" /> {L_SEARCH_ANY_TERMS}</label></dd>
+		<dt><label for="keywords">{{ lang('SEARCH_KEYWORDS') }}{{ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_KEYWORDS_EXPLAIN') }}</span></dt>
+		<dd><input type="search" class="inputbox" name="keywords" id="keywords" size="40" title="{{ lang('SEARCH_KEYWORDS') }}" /></dd>
+		<dd><label for="terms1"><input type="radio" name="terms" id="terms1" value="all" checked="checked" /> {{ lang('SEARCH_ALL_TERMS') }}</label></dd>
+		<dd><label for="terms2"><input type="radio" name="terms" id="terms2" value="any" /> {{ lang('SEARCH_ANY_TERMS') }}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="author">{L_SEARCH_AUTHOR}{L_COLON}</label><br /><span>{L_SEARCH_AUTHOR_EXPLAIN}</span></dt>
-		<dd><input type="search" class="inputbox" name="author" id="author" size="40" title="{L_SEARCH_AUTHOR}" /></dd>
+		<dt><label for="author">{{ lang('SEARCH_AUTHOR') }}{{ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_AUTHOR_EXPLAIN') }}</span></dt>
+		<dd><input type="search" class="inputbox" name="author" id="author" size="40" title="{{ lang('SEARCH_AUTHOR') }}" /></dd>
 	</dl>
-	<!-- EVENT search_body_search_query_append -->
+	{% EVENT search_body_search_query_append %}
 	</fieldset>
-	<!-- EVENT search_body_search_query_after -->
+	{% EVENT search_body_search_query_after %}
 
 	</div>
 </div>
@@ -32,59 +32,59 @@
 <div class="panel bg2">
 	<div class="inner">
 
-	<h3>{L_SEARCH_OPTIONS}</h3>
+	<h3>{{ lang('SEARCH_OPTIONS') }}</h3>
 
-	<!-- EVENT search_body_search_options_before -->
+	{% EVENT search_body_search_options_before %}
 	<fieldset>
-	<!-- EVENT search_body_search_options_prepend -->
+	{% EVENT search_body_search_options_prepend %}
 	<dl>
-		<dt><label for="search_forum">{L_SEARCH_FORUMS}{L_COLON}</label><br /><span>{L_SEARCH_FORUMS_EXPLAIN}</span></dt>
-		<dd><select name="fid[]" id="search_forum" multiple="multiple" size="8" title="{L_SEARCH_FORUMS}">{S_FORUM_OPTIONS}</select></dd>
+		<dt><label for="search_forum">{{ lang('SEARCH_FORUMS') }}{{ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_FORUMS_EXPLAIN') }}</span></dt>
+		<dd><select name="fid[]" id="search_forum" multiple="multiple" size="8" title="{{ lang('SEARCH_FORUMS') }}">{{ S_FORUM_OPTIONS }}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="search_child1">{L_SEARCH_SUBFORUMS}{L_COLON}</label></dt>
+		<dt><label for="search_child1">{{ lang('SEARCH_SUBFORUMS') }}{{ lang('COLON') }}</label></dt>
 		<dd>
-			<label for="search_child1"><input type="radio" name="sc" id="search_child1" value="1" checked="checked" /> {L_YES}</label>
-			<label for="search_child2"><input type="radio" name="sc" id="search_child2" value="0" /> {L_NO}</label>
+			<label for="search_child1"><input type="radio" name="sc" id="search_child1" value="1" checked="checked" /> {{ lang('YES') }}</label>
+			<label for="search_child2"><input type="radio" name="sc" id="search_child2" value="0" /> {{ lang('NO') }}</label>
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="sf1">{L_SEARCH_WITHIN}{L_COLON}</label></dt>
-		<dd><label for="sf1"><input type="radio" name="sf" id="sf1" value="all" checked="checked" /> {L_SEARCH_TITLE_MSG}</label></dd>
-		<dd><label for="sf2"><input type="radio" name="sf" id="sf2" value="msgonly" /> {L_SEARCH_MSG_ONLY}</label></dd>
-		<dd><label for="sf3"><input type="radio" name="sf" id="sf3" value="titleonly" /> {L_SEARCH_TITLE_ONLY}</label></dd>
-		<dd><label for="sf4"><input type="radio" name="sf" id="sf4" value="firstpost" /> {L_SEARCH_FIRST_POST}</label></dd>
+		<dt><label for="sf1">{{ lang('SEARCH_WITHIN') }}{{ lang('COLON') }}</label></dt>
+		<dd><label for="sf1"><input type="radio" name="sf" id="sf1" value="all" checked="checked" /> {{ lang('SEARCH_TITLE_MSG') }}</label></dd>
+		<dd><label for="sf2"><input type="radio" name="sf" id="sf2" value="msgonly" /> {{ lang('SEARCH_MSG_ONLY') }}</label></dd>
+		<dd><label for="sf3"><input type="radio" name="sf" id="sf3" value="titleonly" /> {{ lang('SEARCH_TITLE_ONLY') }}</label></dd>
+		<dd><label for="sf4"><input type="radio" name="sf" id="sf4" value="firstpost" /> {{ lang('SEARCH_FIRST_POST') }}</label></dd>
 	</dl>
-	<!-- EVENT search_body_search_options_append -->
+	{% EVENT search_body_search_options_append %}
 
 	<hr class="dashed" />
 
-	<!-- EVENT search_body_search_display_options_prepend -->
+	{% EVENT search_body_search_display_options_prepend %}
 	<dl>
-		<dt><label for="show_results1">{L_DISPLAY_RESULTS}{L_COLON}</label></dt>
+		<dt><label for="show_results1">{{ lang('DISPLAY_RESULTS') }}{{ lang('COLON') }}</label></dt>
 		<dd>
-			<label for="show_results1"><input type="radio" name="sr" id="show_results1" value="posts" checked="checked" /> {L_POSTS}</label>
-			<label for="show_results2"><input type="radio" name="sr" id="show_results2" value="topics" /> {L_TOPICS}</label>
+			<label for="show_results1"><input type="radio" name="sr" id="show_results1" value="posts" checked="checked" /> {{ lang('POSTS') }}</label>
+			<label for="show_results2"><input type="radio" name="sr" id="show_results2" value="topics" /> {{ lang('TOPICS') }}</label>
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="sd">{L_RESULT_SORT}{L_COLON}</label></dt>
-		<dd>{S_SELECT_SORT_KEY}&nbsp;
-			<label for="sa"><input type="radio" name="sd" id="sa" value="a" /> {L_SORT_ASCENDING}</label>
-			<label for="sd"><input type="radio" name="sd" id="sd" value="d" checked="checked" /> {L_SORT_DESCENDING}</label>
+		<dt><label for="sd">{{ lang('RESULT_SORT') }}{{ lang('COLON') }}</label></dt>
+		<dd>{{ S_SELECT_SORT_KEY }}&nbsp;
+			<label for="sa"><input type="radio" name="sd" id="sa" value="a" /> {{ lang('SORT_ASCENDING') }}</label>
+			<label for="sd"><input type="radio" name="sd" id="sd" value="d" checked="checked" /> {{ lang('SORT_DESCENDING') }}</label>
 		</dd>
 	</dl>
 	<dl>
-		<dt><label>{L_RESULT_DAYS}{L_COLON}</label></dt>
-		<dd>{S_SELECT_SORT_DAYS}</dd>
+		<dt><label>{{ lang('RESULT_DAYS') }}{{ lang('COLON') }}</label></dt>
+		<dd>{{ S_SELECT_SORT_DAYS }}</dd>
 	</dl>
 	<dl>
-		<dt><label>{L_RETURN_FIRST}{L_COLON}</label></dt>
-		<dd><select name="ch" title="{L_RETURN_FIRST}">{S_CHARACTER_OPTIONS}</select> {L_POST_CHARACTERS}</dd>
+		<dt><label>{{ lang('RETURN_FIRST') }}{{ lang('COLON') }}</label></dt>
+		<dd><select name="ch" title="{{ lang('RETURN_FIRST') }}">{{ S_CHARACTER_OPTIONS }}</select> {{ lang('POST_CHARACTERS') }}</dd>
 	</dl>
-	<!-- EVENT search_body_search_display_options_append -->
+	{% EVENT search_body_search_display_options_append %}
 	</fieldset>
-	<!-- EVENT search_body_search_options_after -->
+	{% EVENT search_body_search_options_after %}
 
 	</div>
 </div>
@@ -93,44 +93,44 @@
 	<div class="inner">
 
 	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button1 button button-form-bold" />&nbsp;
-		<input type="submit" name="submit" value="{L_SEARCH}" class="button1 button button-form" />
+		{{ S_HIDDEN_FIELDS }}<input type="reset" value="{{ lang('RESET') }}" name="reset" class="button1 button button-form-bold" />&nbsp;
+		<input type="submit" name="submit" value="{{ lang('SEARCH') }}" class="button1 button button-form" />
 	</fieldset>
 
 	</div>
 </div>
 
 </form>
-<!-- EVENT search_body_form_after -->
+{% EVENT search_body_form_after %}
 
-<!-- EVENT search_body_recent_search_before -->
-<!-- IF .recentsearch -->
+{% EVENT search_body_recent_search_before %}
+{% if loops.recentsearch|length %}
 <div class="forumbg forumbg-table">
 	<div class="inner">
 
 	<table class="table1">
 	<thead>
 	<tr>
-		<th colspan="2" class="name">{L_RECENT_SEARCHES}</th>
+		<th colspan="2" class="name">{{ lang('RECENT_SEARCHES') }}</th>
 	</tr>
 	</thead>
 	<tbody>
-	<!-- BEGIN recentsearch -->
-		<tr class="<!-- IF recentsearch.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-			<td><a href="{recentsearch.U_KEYWORDS}">{recentsearch.KEYWORDS}</a></td>
-			<td class="active">{recentsearch.TIME}</td>
+	{% for recentsearch in loops.recentsearch %}
+		<tr class="{% if recentsearch.S_ROW_COUNT is even %}bg1{% else %}bg2{% endif %}">
+			<td><a href="{{ recentsearch.U_KEYWORDS }}">{{ recentsearch.KEYWORDS }}</a></td>
+			<td class="active">{{ recentsearch.TIME }}</td>
 		</tr>
-	<!-- BEGINELSE -->
+	{% else %}
 		<tr class="bg1">
-			<td colspan="2">{L_NO_RECENT_SEARCHES}</td>
+			<td colspan="2">{{ lang('NO_RECENT_SEARCHES') }}</td>
 		</tr>
-	<!-- END recentsearch -->
+	{% endfor %}
 	</tbody>
 	</table>
 
 	</div>
 </div>
-<!-- ENDIF -->
-<!-- EVENT search_body_recent_search_after -->
+{% endif %}
+{% EVENT search_body_recent_search_after %}
 
-<!-- INCLUDE overall_footer.html -->
+{% INCLUDE 'overall_footer.html' %}
