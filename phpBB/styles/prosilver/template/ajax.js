@@ -199,7 +199,7 @@ phpbb.addAjaxCallback('zebra', function(res) {
  */
 phpbb.addAjaxCallback('vote_poll', function(res) {
 	if (typeof res.success !== 'undefined') {
-		var poll = $('.topic_poll');
+		var poll = $(this).closest('.topic_poll');
 		var panel = poll.find('.panel');
 		var resultsVisible = poll.find('dl:first-child .resultbar').is(':visible');
 		var mostVotes = 0;
