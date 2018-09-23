@@ -84,10 +84,7 @@ class attachment extends controller
 		$attach_id = (int) $id;
 		$thumbnail = $this->request->variable('t', false);
 
-		// Start session management, do not update session page.
-		$this->user->session_begin(false);
-		$this->auth->acl($this->user->data);
-		$this->user->setup('viewtopic');
+		$this->user->add_lang('viewtopic');
 
 		if (!$this->config['allow_attachments'] && !$this->config['allow_pm_attach'])
 		{
