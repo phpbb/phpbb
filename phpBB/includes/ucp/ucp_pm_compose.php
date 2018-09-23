@@ -1437,6 +1437,21 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
+
+	/**
+	* Event for additional message list actions
+	*
+	* @event core.message_list_actions
+	* @var	array	address_list		The assoc array with the recipient user/group ids
+	* @var	array	error				The array containing error data
+	* @var	object	remove_u			The variable for removing a user
+	* @var	object	remove_g			The variable for removing a group
+	* @var	object	add_to				The variable for adding a user to the [TO] field
+	* @var	object	add_bcc				The variable for adding a user to the [BCC] field
+	* @since 3.1.7-RC1
+	*/
+	$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
+	extract($phpbb_dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 }
 
 /**
