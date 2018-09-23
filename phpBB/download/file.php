@@ -28,7 +28,7 @@ $auth->acl($user->data);
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
 
-if (isset($_GET['avatar']))
+if ($request->is_set('avatar'))
 {
 	$response = new RedirectResponse(
 		$controller_helper->route('phpbb_storage_avatar', array(
