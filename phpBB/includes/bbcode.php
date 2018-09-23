@@ -24,7 +24,7 @@ if ( !defined('IN_PHPBB') )
 	die("Hacking attempt");
 }
 
-define("BBCODE_UID_LEN", 10);
+@define("BBCODE_UID_LEN", 10);
 
 
 /**

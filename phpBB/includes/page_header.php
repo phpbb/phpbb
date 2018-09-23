@@ -598,7 +598,51 @@ $s_watching_forum = array(
 	'is_watching'	=> false,
 );
 
- 
+$cfg = parse_cfg_file($phpbb_root_path. "templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/style.cfg');
+
+//Check if is a phpBB3 style or if is a Icy-Phoenix Style
+$style_name = isset($cfg['name']) ? $cfg['name'] : basename($theme['template_name']);
+
+//If it's a Icy-Phoenix Style
+if (empty($cfg['parent']))
+{						
+	$cfg_filename = file($phpbb_root_path. "templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/style.cfg');
+				
+	//Check for Icy-Phoenix Main Template Configuration File i.e. subSilver.cfg
+	$cfg_filename = basename(print_r($cfg_filename, true), '.cfg');
+								
+	if (strpos($cfg_filename, '.') !== false)
+	{
+		// Nested block.
+		$cfg_filename = explode('.', $cfg_filename);
+		$cfg_filename = $cfg_filename[0];
+	}								
+								
+	$cfg['parent'] = basename($cfg_filename, 'cfg');
+							
+	if(!empty($cfg['parent']))
+	{
+		$sub_dir2 = $cfg['parent'];
+									
+		//Include parentn template configuration file i.e. subSilver.cfg
+		if( @file_exists(@phpbb_realpath($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg")) )
+		{
+			include($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg");
+																				
+			$working_data = $$sub_dir2;																					
+																														
+			$cfg['name'] = basename($style_name);
+			$cfg['phpbb_version'] = defined('PHPBB_VERSION') ? PHPBB_VERSION : '2'.$board_config['version'];										
+			$cfg['copyright'] = 'Powered by phpBB ' . $cfg['phpbb_version'] . ' &copy; 2000, 2002, 2005, 2007 <a href="https://www.phpbb.com/">phpBB Group</a>'; 
+			$cfg['style_version'] = $cfg['phpbb_version'];  
+			$cfg['parent'] = $sub_dir2; 																	
+		}							
+	}																															
+}																				
+//Check if is a phpBB3 style or if is a Icy-Phoenix Style
+$style_name = isset($cfg['name']) ? $cfg['name'] : basename($theme['template_name']);
+$imageset_backend = (@version_compare($cfg['style_version'], '3.0.0', '>=')) ? 'phpbb3' : 'phpbb2';
+	 
 //
 // The following assigns all _common_ variables that may be used at any point
 // in a template.
@@ -688,7 +732,7 @@ $template->assign_vars(array(
 	'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx?search_id=active_topics"),
 	
 	'U_INDEX' 				=> append_sid("{$phpbb_root_path}index.$phpEx"),
-	'U_CANONICAL' 			=> generate_board_url() . '/' . append_sid("index.$phpEx"),		
+	'U_CANONICAL' 			=> generate_board_url() . '/' . 'index'.$phpEx,		
 	'U_SITE_HOME'			=> (!empty($board_config['site_home_url'])) ? $board_config['site_home_url'] : append_sid('./../index.'.$phpEx),	
 	'U_REGISTER' 			=> append_sid('profile.'.$phpEx.'?mode=register'),
 	'U_PROFILE' 			=> append_sid('profile.'.$phpEx.'?mode=editprofile'),
@@ -771,18 +815,18 @@ $template->assign_vars(array(
 	'PHPBB_MAJOR'		=> $phpbb_major,
 	'S_COOKIE_NOTICE'	=> !empty($board_config['cookie_name']),
 	
-	'T_ASSETS_VERSION'		=> $phpbb_major,
-	'T_ASSETS_PATH'			=> "{$web_path}assets",	
-	'T_THEME_PATH'			=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme',
-	'T_TEMPLATE_PATH'		=> "{$web_path}templates/" . rawurlencode($theme['template_name']) . '',
+	'T_ASSETS_VERSION'				=> $phpbb_major,
+	'T_ASSETS_PATH'					=> "{$web_path}assets",	
+	'T_THEME_PATH'					=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme',
+	'T_TEMPLATE_PATH'				=> "{$web_path}templates/" . rawurlencode($theme['template_name']) . '',
 	'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}templates/" . rawurlencode($theme['template_name']) . '/template',
 		
-	'T_IMAGES_PATH'			=> "{$web_path}images/",
-	'T_SMILIES_PATH'		=> "{$web_path}{$board_config['smilies_path']}/",
+	'T_IMAGES_PATH'					=> "{$web_path}images/",
+	'T_SMILIES_PATH'					=> "{$web_path}{$board_config['smilies_path']}/",
 	'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$board_config['avatar_gallery_path']}/",
 	
-	'T_ICONS_PATH'			=> !empty($board_config['icons_path']) ? "{$web_path}{$board_config['icons_path']}/" : '', //$web_path.'/images/icons/',
-	'T_RANKS_PATH'			=> !empty($board_config['ranks_path']) ? "{$web_path}{$board_config['ranks_path']}/" : $web_path.'/images/ranks/',
+	'T_ICONS_PATH'				=> !empty($board_config['icons_path']) ? "{$web_path}{$board_config['icons_path']}/" : '', //$web_path.'/images/icons/',
+	'T_RANKS_PATH'				=> !empty($board_config['ranks_path']) ? "{$web_path}{$board_config['ranks_path']}/" : $web_path.'/images/ranks/',
 	'T_UPLOAD_PATH'			=> !empty($board_config['upload_path']) ? "{$web_path}{$board_config['upload_path']}/" : $web_path.'/cache/',	
 	
 	'T_STYLESHEET_LINK'		=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/stylesheet.css',
@@ -792,19 +836,19 @@ $template->assign_vars(array(
 	'T_JQUERY_LINK'			=> !empty($board_config['allow_cdn']) && !empty($board_config['load_jquery_url']) ? $board_config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $phpbb_major,
 	'S_ALLOW_CDN'			=> !empty($board_config['allow_cdn']),		
 	
-	'T_THEME_NAME'			=> rawurlencode($theme['template_name']),
+	'T_THEME_NAME'				=> rawurlencode($theme['template_name']),
 	'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
-	'T_TEMPLATE_NAME'		=> $theme['template_name'],
+	'T_TEMPLATE_NAME'			=> $theme['template_name'],
 	'T_SUPER_TEMPLATE_NAME'	=> rawurlencode($theme['template_name']),
-	'T_IMAGES'				=> 'images',
-	'T_SMILIES'				=> $board_config['smilies_path'],
+	'T_IMAGES'						=> 'images',
+	'T_SMILIES'						=> $board_config['smilies_path'],
 	'T_AVATAR_GALLERY'		=> $board_config['avatar_gallery_path'],
 	
 	//'T_ICONS_PATH'		=> !empty($board_config['icons_path']) ? $board_config['icons_path'] : '/images/icons/',
 	//'T_RANKS_PATH'		=> !empty($board_config['ranks_path']) ? $board_config['ranks_path'] : '/images/ranks/',
 	//'T_UPLOAD_PATH'		=> !empty($board_config['upload_path']) ? $board_config['upload_path'] : '/cache/',
 
-	'SITE_LOGO_IMG'		=> ($user->imageset_backend == 'phpbb2') ? 'logo_phpBB.gif' : $user->img('site_logo.gif', '', '27', '', 'code'),	
+	'SITE_LOGO_IMG'		=> ($imageset_backend == 'phpbb2') ? 'logo_phpBB.gif' : $user->img('site_logo.gif', '', '27', '', 'code'),	
 	
 	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],
 	'T_BODY_BACKGROUND' => $theme['body_background'],

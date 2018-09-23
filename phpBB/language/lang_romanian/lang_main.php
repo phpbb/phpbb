@@ -170,11 +170,15 @@ $lang['Usergroups'] = 'Grupuri';
 $lang['Last_Post'] = 'Ultimul mesaj';
 $lang['Moderator'] = 'Moderator';
 $lang['Moderators'] = 'Moderatori';
-
+$lang['Post_by_author'] = 'de ';
+$lang['Posted_on_date'] = 'pe';
+$lang['In'] = 'in';
 
 //
 // Stats block text
 //
+$lang['Statistics'] = 'Statistice';
+$lang['Legend'] = 'Legendă: ';
 $lang['Posted_articles_zero_total'] = 'Utilizatorii noştri au scris un număr de <b>0</b> articole'; // Number of posts
 $lang['Posted_articles_total'] = 'Utilizatorii noştri au scris un număr de <b>%d</b> articole'; // Number of posts
 $lang['Posted_article_total'] = 'Utilizatorii noştri au scris un număr de <b>%d</b> articol'; // Number of posts

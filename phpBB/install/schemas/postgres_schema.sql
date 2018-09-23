@@ -248,7 +248,7 @@ CREATE TABLE phpbb_ranks (
 -------------------------------------------------------- */
 CREATE TABLE phpbb_search_results (
   search_id int4 NOT NULL default '0',
-  session_id char(32) NOT NULL default '',
+  session_id char(32) DEFAULT '' NOT NULL,
   search_time int4 DEFAULT '0' NOT NULL,
   search_array text NOT NULL,
   CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (search_id)
@@ -261,7 +261,7 @@ CREATE  INDEX session_id_phpbb_search_results_index ON phpbb_search_results (ses
 -------------------------------------------------------- */
 CREATE TABLE phpbb_search_wordlist (
   word_id int4 DEFAULT nextval('phpbb_search_wordlist_id_seq'::text) NOT NULL,
-  word_text varchar(50) NOT NULL DEFAULT '',
+  word_text varchar(50) DEFAULT '' NOT NULL,
   word_common int2 NOT NULL DEFAULT '0',
   CONSTRAINT phpbb_search_wordlist_pkey PRIMARY KEY (word_text)
 );
@@ -327,7 +327,7 @@ CREATE TABLE phpbb_smilies (
 CREATE TABLE phpbb_themes (
    themes_id int4 DEFAULT nextval('phpbb_themes_id_seq'::text) NOT NULL,
    style_name varchar(30),
-   template_name varchar(30) NOT NULL DEFAULT '',
+   template_name varchar(30) DEFAULT '' NOT NULL,
    head_stylesheet varchar(100),
    body_background varchar(100),
    body_bgcolor char(6),
@@ -466,15 +466,20 @@ CREATE  INDEX user_id_phpbb_user_group_index ON phpbb_user_group (user_id);
   Table structure for table phpbb_users
 -------------------------------------------------------- */
 CREATE TABLE phpbb_users (
-   user_id int4 DEFAULT nextval('phpbb_users_id_seq'::text) NOT NULL,
-   user_active int2,
-   username varchar(25) DEFAULT '' NOT NULL,
-   user_regdate int4 DEFAULT '0' NOT NULL,
-   user_password varchar(32) DEFAULT '' NOT NULL,
-   user_session_time int4 DEFAULT '0' NOT NULL,
-   user_session_page int2 DEFAULT '0' NOT NULL,
-   user_lastvisit int4 DEFAULT '0' NOT NULL,
+   user_id mediumint(8) NOT NULL,
+   user_active tinyint(1) DEFAULT '1',
+   username varchar(25) NOT NULL,
+   user_password varchar(32) NOT NULL,
+   user_session_time int(11) DEFAULT '0' NOT NULL,
+   user_session_page smallint(5) DEFAULT '0' NOT NULL,
+   user_lastvisit int(11) DEFAULT '0' NOT NULL,
+   user_regdate int(11) DEFAULT '0' NOT NULL,
    user_email varchar(255),
+   user_facebook_id VARCHAR(40) DEFAULT '' NOT NULL,
+   user_facebook VARCHAR(255) DEFAULT '' NOT NULL,
+   user_flickr VARCHAR(255) DEFAULT '' NOT NULL,
+   user_github VARCHAR(255) DEFAULT '' NOT NULL,
+   user_googleplus VARCHAR(255) DEFAULT '' NOT NULL, 
    user_icq varchar(15),
    user_website varchar(100),
    user_occ varchar(100),
@@ -504,6 +509,14 @@ CREATE TABLE phpbb_users (
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_avatar_type int2 DEFAULT '0' NOT NULL,
+   user_instagram VARCHAR(255) DEFAULT '' NOT NULL,
+   user_jabber VARCHAR(255) DEFAULT '' NOT NULL,
+   user_linkedin VARCHAR(255) DEFAULT '' NOT NULL,
+   user_pinterest VARCHAR(255) DEFAULT '' NOT NULL,
+   user_twitter VARCHAR(255) DEFAULT '' NOT NULL,
+   user_skype VARCHAR(255) DEFAULT '' NOT NULL,
+   user_vimeo VARCHAR(255) DEFAULT '' NOT NULL,
+   user_youtube VARCHAR(255) DEFAULT '' NOT NULL,   
    user_level int4 DEFAULT '0',
    user_lang varchar(255),
    user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,

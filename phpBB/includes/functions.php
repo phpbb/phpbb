@@ -997,6 +997,201 @@ function phpbb_chmod($files, $perms = null, $recursive = false, $force_chmod_lin
 	}
 }
 
+
+/**
+* Meta refresh assignment
+*/
+function meta_refresh($time, $url)
+{
+	global $template;
+
+	$url = redirect($url, true);
+	// For XHTML compatibility we change back & to &amp;
+	$url = str_replace('&', '&amp;', $url);
+
+	$template->assign_vars(array('META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />'));
+
+	return $url;
+}
+
+/**
+* Outputs correct status line header.
+*
+* Depending on php sapi one of the two following forms is used:
+*
+* Status: 404 Not Found
+*
+* HTTP/1.x 404 Not Found
+*
+* HTTP version is taken from HTTP_VERSION environment variable,
+* and defaults to 1.0.
+*
+* Sample usage:
+*
+* send_status_line(404, 'Not Found');
+*
+* @param int $code HTTP status code
+* @param string $message Message for the status code
+* @return void
+*/
+function send_status_line($code, $message)
+{
+	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
+	{
+		// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
+		@header("Status: $code $message", true, $code);
+	}
+	else
+	{
+		if (!empty($_SERVER['SERVER_PROTOCOL']))
+		{
+			$version = $_SERVER['SERVER_PROTOCOL'];
+		}
+		else
+		{
+			$version = 'HTTP/1.0';
+		}
+		@header("$version $code $message", true, $code);
+	}
+}
+
+/**
+* Setup basic lang
+*/
+function setup_basic_lang()
+{
+	global $cache, $config, $lang;
+
+	if (empty($lang))
+	{
+		if(!file_exists(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/lang_main.' . PHP_EXT))
+		{
+			$config['default_lang'] = 'english';
+		}
+
+		$lang_files = array(
+			'lang_main',
+			'lang_bbcb_mg',
+			'lang_main_upi2db',
+			'lang_news',
+			'lang_main_attach',
+			'lang_main_cback_ctracker',
+		);
+
+		if (!empty($config['plugins']['cash']['enabled']) && defined('IN_CASHMOD'))
+		{
+			$lang_files = array_merge($lang_files, array('lang_cash'));
+		}
+
+		$lang_extend_admin = false;
+		if (defined('IN_ADMIN'))
+		{
+			$lang_extend_admin = true;
+			$lang_files_admin = array(
+				'lang_admin',
+				'lang_admin_cback_ctracker',
+				'lang_admin_upi2db',
+				'lang_admin_attach',
+				'lang_jr_admin',
+			);
+			$lang_files = array_merge($lang_files, $lang_files_admin);
+		}
+
+		if (defined('IN_CMS'))
+		{
+			$lang_files_cms = array(
+				'lang_admin',
+				'lang_cms',
+				'lang_blocks',
+				'lang_permissions',
+			);
+			$lang_files = array_merge($lang_files, $lang_files_cms);
+		}
+
+		$lang_files = array_merge($lang_files, $cache->obtain_lang_files());
+		// Make sure we keep these files as last inclusion... to be sure they override what is needed to be overridden!!!
+		$lang_files = array_merge($lang_files, array('lang_dyn_menu', 'lang_main_settings', 'lang_user_created'));
+
+		foreach ($lang_files as $lang_file)
+		{
+			// Do not suppress error if in DEBUG_EXTRA mode
+			$include_result = (defined('DEBUG_EXTRA')) ? (include(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT)) : (@include(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT));
+
+			if ($include_result === false)
+			{
+				die('Language file ' . PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT . ' couldn\'t be opened.');
+			}
+		}
+	}
+	return true;
+}
+
+/**
+* Setup extra lang
+*/
+function setup_extra_lang($lang_files_array, $lang_base_path = '', $lang_override = '')
+{
+	global $config, $lang, $images, $faq, $mtnc;
+
+	if (empty($lang_files_array))
+	{
+		return false;
+	}
+
+	if (!is_array($lang_files_array))
+	{
+		$lang_files_array = array($lang_files_array);
+	}
+
+	$lang_base_path = (empty($lang_base_path) ? (PHPBB_ROOT_PATH . 'language/') : $lang_base_path);
+	for ($i = 0; $i < sizeof($lang_files_array); $i++)
+	{
+		$lang_override = !empty($lang_override) ? $lang_override : $config['default_lang'];
+		$user_lang_file = $lang_base_path . 'lang_' . $lang_override . '/' . $lang_files_array[$i] . '.' . PHP_EXT;
+		$default_lang_file = $lang_base_path . 'lang_english/' . $lang_files_array[$i] . '.' . PHP_EXT;
+		if (@file_exists($user_lang_file))
+		{
+			@include($user_lang_file);
+		}
+		elseif (@file_exists($default_lang_file))
+		{
+			@include($default_lang_file);
+		}
+	}
+
+	return true;
+}
+
+/**
+* Merge $lang with $user->lang
+*/
+function merge_user_lang()
+{
+	global $user, $lang;
+
+	$user->lang = array_merge($user->lang, $lang);
+
+	return true;
+}
+
+/**
+* Stopwords, Synonyms, INIT
+*/
+function stopwords_synonyms_init()
+{
+	global $config, $stopwords_array, $synonyms_array;
+
+	if (empty($stopwords_array))
+	{
+		$stopwords_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/search_stopwords.txt');
+	}
+
+	if (empty($synonyms_array))
+	{
+		$synonyms_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/search_synonyms.txt');
+	}
+}
+
 /**
  * Enter description here...
  *
@@ -1582,6 +1777,108 @@ function phpbb_get_user_rank($user_data, $user_posts, &$rank_title = null, &$ran
 	return $user_rank_data;		
 }
 
+/*
+* Gets all social networks and instant messaging (SN/IM) fields feeded only from profile table (doesn't get chat id...)
+* This function should simplify adding/removing SN/IM fields to user profile
+*/
+function get_user_sn_im_array()
+{
+	$user_sn_im_array = array(
+		'500px' => array('field' => 'user_500px', 'lang' => '500PX', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => '500px', 'form' => '500px'),
+		'aim' => array('field' => 'user_aim', 'lang' => 'AIM', 'icon_tpl' => 'icon_aim', 'icon_tpl_vt' => 'icon_aim2', 'url' => 'aim:goim?screenname={REF}&amp;message=Hello', 'alt_name' => 'aim', 'form' => 'aim'),
+		'facebook' => array('field' => 'user_facebook', 'lang' => 'FACEBOOK', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'facebook', 'form' => 'facebook'),
+		'flickr' => array('field' => 'user_flickr', 'lang' => 'FLICKR', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'flickr', 'form' => 'flickr'),
+		'github' => array('field' => 'user_github', 'lang' => 'GITHUB', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'github', 'form' => 'github'),
+		'googleplus' => array('field' => 'user_googleplus', 'lang' => 'GOOGLEPLUS', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'googleplus', 'form' => 'googleplus'),
+		'icq' => array('field' => 'user_icq', 'lang' => 'ICQ', 'icon_tpl' => 'icon_icq', 'icon_tpl_vt' => 'icon_icq2', 'url' => 'http://www.icq.com/people/webmsg.php?to={REF}', 'alt_name' => 'icq', 'form' => 'icq'),
+		'instagram' => array('field' => 'user_instagram', 'lang' => 'INSTAGRAM', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'instagram', 'form' => 'instagram'),
+		'jabber' => array('field' => 'user_jabber', 'lang' => 'JABBER', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'jabber', 'form' => 'jabber'),
+		'linkedin' => array('field' => 'user_linkedin', 'lang' => 'LINKEDIN', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'linkedin', 'form' => 'linkedin'),
+		'msn' => array('field' => 'user_msnm', 'lang' => 'MSNM', 'icon_tpl' => 'icon_msnm', 'icon_tpl_vt' => 'icon_msnm2', 'url' => 'http://spaces.live.com/{REF}', 'alt_name' => 'msnm', 'form' => 'msn'),
+		'pinterest' => array('field' => 'user_pinterest', 'lang' => 'PINTEREST', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'pinterest', 'form' => 'pinterest'),
+		'skype' => array('field' => 'user_skype', 'lang' => 'SKYPE', 'icon_tpl' => 'icon_skype', 'icon_tpl_vt' => 'icon_skype2', 'url' => 'callto://{REF}', 'alt_name' => 'skype', 'form' => 'skype'),
+		'twitter' => array('field' => 'user_twitter', 'lang' => 'TWITTER', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'twitter', 'form' => 'twitter'),
+		'vimeo' => array('field' => 'user_vimeo', 'lang' => 'VIMEO', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'vimeo', 'form' => 'vimeo'),
+		'yahoo' => array('field' => 'user_yim', 'lang' => 'YIM', 'icon_tpl' => 'icon_yim', 'icon_tpl_vt' => 'icon_yim2', 'url' => 'http://edit.yahoo.com/config/send_webmesg?.target={REF}&amp;.src=pg', 'alt_name' => 'yim', 'form' => 'yim'),
+		'youtube' => array('field' => 'user_youtube', 'lang' => 'YOUTUBE', 'icon_tpl' => '', 'icon_tpl_vt' => '', 'url' => '{REF}', 'alt_name' => 'youtube', 'form' => 'youtube'),
+	);
+
+	return $user_sn_im_array;
+}
+
+/*
+* This function will build a complete IM link with image and lang
+*/
+function build_im_link($im_type, $user_data, $im_icon_type = false, $im_img = false, $im_url = false, $im_status = false, $im_lang = false)
+{
+	global $config, $user, $lang, $images;
+
+	$available_im = get_user_sn_im_array();
+	$extra_im = array(
+		'chat' => array('field' => 'user_id', 'lang' => 'AJAX_SHOUTBOX_PVT_LINK', 'icon_tpl' => 'icon_im_chat', 'icon_tpl_vt' => 'icon_im_chat', 'url' => '{REF}')
+	);
+	$available_im = array_merge($available_im, $extra_im);
+
+	// Default values
+	$im_icon = '';
+	$im_icon_append = '';
+	if (!empty($user_data[$available_im[$im_type]['field']]))
+	{
+		$im_id = $user_data[$available_im[$im_type]['field']];
+		$im_ref = $im_id;
+	}
+	else
+	{
+		return '';
+	}
+
+	if (!empty($im_status) && in_array($im_type, array('chat')) && in_array($im_status, array('online', 'offline', 'hidden')))
+	{
+		$im_icon_append = '_' . $im_status;
+	}
+
+	if (!empty($available_im[$im_type]))
+	{
+		if (!empty($im_icon_type) && in_array($im_icon_type, array('icon', 'icon_tpl', 'icon_tpl_vt')))
+		{
+			if ($im_icon_type == 'icon')
+			{
+				$im_icon = $images['icon_im_' . $im_type . $im_icon_append];
+			}
+			else
+			{
+				$im_icon = $images[$available_im[$im_type][$im_icon_type]];
+			}
+		}
+
+		$im_ref = str_replace('{REF}', $im_ref, $available_im[$im_type]['url']);
+		if ($im_type == 'chat')
+		{
+			// JHL: No chat icon if the user is anonymous, or the profiled user is offline
+			if (empty($user->data['session_logged_in']) || empty($user_data['user_session_time']) || ($user_data['user_session_time'] < (time() - $config['online_time'])))
+			{
+				return '';
+			}
+
+			$ajax_chat_page = !empty($config['ajax_chat_link_type']) ? CMS_PAGE_AJAX_CHAT : CMS_PAGE_AJAX_SHOUTBOX;
+			$ajax_chat_room = 'chat_room=' . (min($user->data['user_id'], $user_data['user_id']) . '|' . max($user->data['user_id'], $user_data['user_id']));
+			$ajax_chat_link = append_sid($ajax_chat_page . '?' . $ajax_chat_room);
+
+			$im_ref = !empty($config['ajax_chat_link_type']) ? ($ajax_chat_link . '" target="_chat') : ('#" onclick="window.open(\'' . $ajax_chat_link . '\', \'_chat\', \'width=720,height=600,resizable=yes\'); return false;');
+		}
+
+		$im_img = (!empty($im_img) && !empty($im_icon)) ? $im_icon : false;
+		$im_lang = !empty($im_lang) ? $im_lang : (!empty($available_im[$im_type]['lang']) ? $lang[$available_im[$im_type]['lang']] : '');
+	}
+
+	$link_title = ($im_type == 'chat') ? '' : (' - ' . $im_id);
+	$link_title = $im_lang . $link_title;
+	$link_content = !empty($im_img) ? ('<img src="' . $im_img . '" alt="' . $im_lang . '"' . (empty($im_url) ? '' : (' title="' . $im_id . '"')) . ' />') : $im_lang;
+	$im_link = !empty($im_url) ? $im_ref : ('<a href="' . $im_ref . '" title="' . $link_title . '">' . $link_content . '</a>');
+
+	return $im_link;
+}
+
 /**
 * Generate sort selection fields
 */
@@ -2147,12 +2444,12 @@ function init_userprefs($userdata)
 	global $user, $cache, $board_config, $theme, $images;
 	global $template, $lang, $phpEx, $phpbb_root_path, $db;
 	global $nav_links;
-
+	
 	if ($userdata['user_id'] != ANONYMOUS)
 	{
 		if (!empty($userdata['user_lang']))
 		{
-			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
+			$language = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
 		}
 
 		if (!empty($userdata['user_dateformat']))
@@ -2167,25 +2464,25 @@ function init_userprefs($userdata)
 	}
 	else
 	{
-		$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+		$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
 	}
 
-	if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)))
+	if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)))
 	{
 		if ($userdata['user_id'] != ANONYMOUS)
 		{
 			// For logged in users, try the board default language next
-			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+			$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
 		}
 		else
 		{
 			// For guests it means the default language is not present, try english
 			// This is a long shot since it means serious errors in the setup to reach here,
 			// but english is part of a new install so it's worth us trying
-			$default_lang = 'english';
+			$language = 'english';
 		}
 
-		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)))
+		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)))
 		{
 			message_die(CRITICAL_ERROR, 'Could not locate valid language pack in init_userprefs()');
 		}
@@ -2193,10 +2490,10 @@ function init_userprefs($userdata)
 
 	// If we've had to change the value in any way then let's write it back to the database
 	// before we go any further since it means there is something wrong with it
-	if ($userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $default_lang)
+	if ($userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $language)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_lang = '" . $default_lang . "'
+			SET user_lang = '" . $language . "'
 			WHERE user_lang = '" . $userdata['user_lang'] . "'";
 
 		if (!($result = $db->sql_query($sql)))
@@ -2204,12 +2501,12 @@ function init_userprefs($userdata)
 			message_die(CRITICAL_ERROR, 'Could not update user language info');
 		}
 
-		$userdata['user_lang'] = $default_lang;
+		$userdata['user_lang'] = $language;
 	}
-	elseif ($userdata['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $default_lang)
+	elseif ($userdata['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $language)
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
-			SET config_value = '" . $default_lang . "'
+			SET config_value = '" . $language . "'
 			WHERE config_name = 'default_lang'";
 
 		if (!($result = $db->sql_query($sql)))
@@ -2218,18 +2515,24 @@ function init_userprefs($userdata)
 		}
 	}
 
-	$board_config['default_lang'] = $default_lang;
+	$board_config['default_lang'] = $language;
 
-	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
-
-	if (defined('IN_ADMIN'))
+	include($phpbb_root_path . 'language/lang_' . $language . '/lang_main.' . $phpEx); // Also include phpBB lang keys
+	if ((@include $phpbb_root_path . "language/lang_" . $language . "/common.$phpEx") === false)
 	{
-		if(!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx)))
+		// 
+	}		
+	if ( defined('IN_ADMIN') )
+	{
+		if ((@include $phpbb_root_path . "language/lang_" . $language . "/lang_main.$phpEx") === false)
 		{
-			$board_config['default_lang'] = 'english';
-		}
-
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+			$board_config['default_lang'] = 'english'; 
+		}					
+		// Also include phpBB lang keys
+		elseif ((@include $phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.$phpEx") === false)
+		{
+			message_die(CRITICAL_ERROR, 'Language file ' . $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . ' & Language file ' . $phpbb_root_path . 'language/lang_' . $language . '/lang_main.$phpEx' . ' couldn\'t be opened.');
+		}		
 	}
 
 	//
@@ -2421,7 +2724,7 @@ function setup_style($style)
 	}
 	
 	$template = new phpbb_Template($phpbb_root_path . $template_path . $template_name);
-	@define('IP_ROOT_PATH', $phpbb_root_path); //for ICY-PHOENIX Styles
+	@define('PHPBB_ROOT_PATH', $phpbb_root_path); //for ICY-PHOENIX Styles
 		
 	if (is_object($template))
 	{
@@ -2692,8 +2995,7 @@ function create_date($format, $gmepoch, $tz)
 			$translate[$match] = $replace;
 		}
 	}
-
-	return (is_array($translate)) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $date_cache[$format]['lang']);
+	return (!is_array($translate)) ? @strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $date_cache[$format]['lang']);
 }
 
 //Form validation
@@ -2979,6 +3281,608 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	}
 
 	return true;
+}
+
+
+/**
+* Closing the cache object and the database
+*/
+function garbage_collection()
+{
+	global $db, $cache;
+
+	// If we are in ACP it is better to clear some files in cache to make sure all options are updated
+	if (defined('IN_ADMIN') && !defined('ACP_MODULES'))
+	{
+		empty_cache_folders_admin();
+	}
+
+	// If we are in ACP it is better to clear some files in cache to make sure all options are updated
+	if (defined('IN_CMS'))
+	{
+		empty_cache_folders_cms();
+	}
+
+	// Unload cache, must be done before the DB connection if closed
+	if (!empty($cache))
+	{
+		$cache->unload();
+	}
+
+	// Close our DB connection.
+	if (!empty($db))
+	{
+		$db->sql_close();
+	}
+}
+
+/**
+* Handler for exit calls in phpBB.
+*
+* Note: This function is called after the template has been outputted.
+*/
+function exit_handler()
+{
+	global $phpbb_hook, $config;
+
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	{
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
+	}
+
+	// URL Rewrite - BEGIN
+	// Compress buffered output if required and send to browser
+	if (!empty($config['url_rw_runtime']))
+	{
+		$contents = rewrite_urls(ob_get_contents());
+		ob_end_clean();
+		(@extension_loaded('zlib') && !empty($config['gzip_compress_runtime'])) ? ob_start('ob_gzhandler') : ob_start();
+		echo $contents;
+	}
+	// URL Rewrite - END
+
+	// As a pre-caution... some setups display a blank page if the flush() is not there.
+	(empty($config['gzip_compress_runtime']) && empty($config['url_rw_runtime'])) ? @flush() : @ob_flush();
+
+	exit;
+}
+
+/**
+* Full page generation
+*/
+function full_page_generation($page_template, $page_title = '', $page_description = '', $page_keywords = '')
+{
+	global $template, $meta_content, $phpbb_root_path, $phpEx;
+
+	global $db, $cache, $config, $user, $images, $theme, $lang, $tree;
+	global $table_prefix, $SID, $_SID;
+	global $starttime, $base_memory_usage, $do_gzip_compress, $start;
+	global $gen_simple_header, $meta_content, $nav_separator, $nav_links, $nav_pgm, $nav_add_page_title, $skip_nav_cat;
+	global $breadcrumbs;
+	global $forum_id, $topic_id;	
+	
+	$meta_content['page_title'] = (!empty($page_title) ? $page_title : (!empty($meta_content['page_title']) ? $meta_content['page_title'] : ''));
+	$meta_content['description'] = (!empty($page_description) ? $page_description : (!empty($meta_content['description']) ? $meta_content['description'] : ''));
+	$meta_content['keywords'] = (!empty($page_keywords) ? $page_keywords : (!empty($meta_content['keywords']) ? $meta_content['keywords'] : ''));
+	//include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+	$template->set_filenames(array('body' => $page_template));
+	//include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
+}
+
+/**
+* Add log event
+*/
+function add_log()
+{
+	global $db, $user;
+
+	// In phpBB 3.1.x i want to have logging in a class to be able to control it
+	// For now, we need a quite hakish approach to circumvent logging for some actions
+	// @todo implement cleanly
+	if (!empty($GLOBALS['skip_add_log']))
+	{
+		return false;
+	}
+
+	$args = func_get_args();
+
+	$mode = array_shift($args);
+	$reportee_id = ($mode == 'user') ? intval(array_shift($args)) : '';
+	$forum_id = ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$topic_id = ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$action = array_shift($args);
+	$data = (!sizeof($args)) ? '' : serialize($args);
+
+	$sql_ary = array(
+		'user_id' => (empty($user->data)) ? ANONYMOUS : $user->data['user_id'],
+		'log_ip' => $user->ip,
+		'log_time' => time(),
+		'log_operation' => $action,
+		'log_data' => $data,
+	);
+
+	switch ($mode)
+	{
+		case 'admin':
+			$sql_ary['log_type'] = LOG_ADMIN;
+		break;
+
+		case 'mod':
+			$sql_ary += array(
+				'log_type' => LOG_MOD,
+				'forum_id' => $forum_id,
+				'topic_id' => $topic_id
+			);
+		break;
+
+		case 'user':
+			$sql_ary += array(
+				'log_type' => LOG_USERS,
+				'reportee_id' => $reportee_id
+			);
+		break;
+
+		case 'critical':
+			$sql_ary['log_type'] = LOG_CRITICAL;
+		break;
+
+		default:
+			return false;
+	}
+
+	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+	return $db->sql_nextid();
+}
+
+/**
+* Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
+*/
+function get_backtrace()
+{
+	$output = '<div style="font-family: monospace;">';
+	$backtrace = debug_backtrace();
+	$path = phpbb_realpath(IP_ROOT_PATH);
+
+	foreach ($backtrace as $number => $trace)
+	{
+		// We skip the first one, because it only shows this file/function
+		if ($number == 0)
+		{
+			continue;
+		}
+
+		// Strip the current directory from path
+		if (empty($trace['file']))
+		{
+			$trace['file'] = '';
+		}
+		else
+		{
+			$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
+			$trace['file'] = substr($trace['file'], 1);
+		}
+		$args = array();
+
+		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
+		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
+		{
+			unset($trace['args']);
+		}
+		else
+		{
+			// Path...
+			if (!empty($trace['args'][0]))
+			{
+				$argument = htmlspecialchars($trace['args'][0]);
+				$argument = str_replace(array($path, '\\'), array('', '/'), $argument);
+				$argument = substr($argument, 1);
+				$args[] = "'{$argument}'";
+			}
+		}
+
+		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
+		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
+
+		$output .= '<br />';
+		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
+		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
+
+		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
+	}
+	$output .= '</div>';
+	return $output;
+}
+
+/**
+* This function returns a regular expression pattern for commonly used expressions
+* Use with / as delimiter for email mode and # for url modes
+* mode can be: ipv4|ipv6
+*/
+function get_preg_expression($mode)
+{
+	switch ($mode)
+	{
+		// Whoa these look impressive!
+		// The code to generate the following two regular expressions which match valid IPv4/IPv6 addresses can be found in the develop directory
+		case 'ipv4':
+			return '#^(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$#';
+		break;
+
+		case 'ipv6':
+			return '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){5}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:))$#i';
+		break;
+	}
+
+	return '';
+}
+
+/**
+* Returns the first block of the specified IPv6 address and as many additional
+* ones as specified in the length paramater.
+* If length is zero, then an empty string is returned.
+* If length is greater than 3 the complete IP will be returned
+*/
+function short_ipv6($ip, $length)
+{
+	if ($length < 1)
+	{
+		return '';
+	}
+
+	// extend IPv6 addresses
+	$blocks = substr_count($ip, ':') + 1;
+	if ($blocks < 9)
+	{
+		$ip = str_replace('::', ':' . str_repeat('0000:', 9 - $blocks), $ip);
+	}
+	if ($ip[0] == ':')
+	{
+		$ip = '0000' . $ip;
+	}
+	if ($length < 4)
+	{
+		$ip = implode(':', array_slice(explode(':', $ip), 0, 1 + $length));
+	}
+
+	return $ip;
+}
+
+/**
+* Wrapper for php's checkdnsrr function.
+*
+* @param string $host:Fully-Qualified Domain Name
+* @param string $type: Resource record type to lookup
+*						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
+*						Other types may work or may not work
+*
+* @return mixed: true if entry found,
+*					false if entry not found,
+*					null if this function is not supported by this environment
+*
+* Since null can also be returned, you probably want to compare the result
+* with === true or === false,
+*
+* @author bantu
+*/
+function phpbb_checkdnsrr($host, $type = 'MX')
+{
+	// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+	if (substr($host, -1) == '.')
+	{
+		$host_fqdn = $host;
+		$host = substr($host, 0, -1);
+	}
+	else
+	{
+		$host_fqdn = $host . '.';
+	}
+	// $host: has format some.host.example.com
+	// $host_fqdn: has format some.host.example.com.
+
+	// If we're looking for an A record we can use gethostbyname()
+	if (($type == 'A') && function_exists('gethostbyname'))
+	{
+		return (@gethostbyname($host_fqdn) == $host_fqdn) ? false : true;
+	}
+
+	// checkdnsrr() is available on Windows since PHP 5.3,
+	// but until 5.3.3 it only works for MX records
+	// See: http://bugs.php.net/bug.php?id=51844
+
+	// Call checkdnsrr() if
+	// we're looking for an MX record or
+	// we're not on Windows or
+	// we're running a PHP version where #51844 has been fixed
+
+	// checkdnsrr() supports AAAA since 5.0.0
+	// checkdnsrr() supports TXT since 5.2.4
+	if ((($type == 'MX') || (DIRECTORY_SEPARATOR != '\\') || version_compare(PHP_VERSION, '5.3.3', '>=')) && (($type != 'AAAA') || version_compare(PHP_VERSION, '5.0.0', '>=')) && (($type != 'TXT') || version_compare(PHP_VERSION, '5.2.4', '>=')) && function_exists('checkdnsrr')
+	)
+	{
+		return checkdnsrr($host_fqdn, $type);
+	}
+
+	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
+	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
+
+	// Call dns_get_record() if
+	// we're not looking for an AAAA record or
+	// we're not on Windows or
+	// we're running a PHP version where AAAA lookups work reliable
+	if ((($type != 'AAAA') || (DIRECTORY_SEPARATOR != '\\') || version_compare(PHP_VERSION, '5.3.1', '>=')) && function_exists('dns_get_record'))
+	{
+		// dns_get_record() expects an integer as second parameter
+		// We have to convert the string $type to the corresponding integer constant.
+		$type_constant = 'DNS_' . $type;
+		$type_param = (defined($type_constant)) ? constant($type_constant) : DNS_ANY;
+
+		// dns_get_record() might throw E_WARNING and return false for records that do not exist
+		$resultset = @dns_get_record($host_fqdn, $type_param);
+
+		if (empty($resultset) || !is_array($resultset))
+		{
+			return false;
+		}
+		elseif ($type_param == DNS_ANY)
+		{
+			// $resultset is a non-empty array
+			return true;
+		}
+
+		foreach ($resultset as $result)
+		{
+			if (isset($result['host']) && ($result['host'] == $host) && isset($result['type']) && ($result['type'] == $type))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// If we're on Windows we can still try to call nslookup via exec() as a last resort
+	if ((DIRECTORY_SEPARATOR == '\\') && function_exists('exec'))
+	{
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host_fqdn), $output);
+
+		// If output is empty, the nslookup failed
+		if (empty($output))
+		{
+			return NULL;
+		}
+
+		foreach ($output as $line)
+		{
+			$line = trim($line);
+
+			if (empty($line))
+			{
+				continue;
+			}
+
+			// Squash tabs and multiple whitespaces to a single whitespace.
+			$line = preg_replace('/\s+/', ' ', $line);
+
+			switch ($type)
+			{
+				case 'MX':
+					if (stripos($line, "$host MX") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'NS':
+					if (stripos($line, "$host nameserver") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'TXT':
+					if (stripos($line, "$host text") === 0)
+					{
+						return true;
+					}
+				break;
+
+				case 'CNAME':
+					if (stripos($line, "$host canonical name") === 0)
+					{
+						return true;
+					}
+
+				default:
+				case 'A':
+				case 'AAAA':
+					if (!empty($host_matches))
+					{
+						// Second line
+						if (stripos($line, "Address: ") === 0)
+						{
+							return true;
+						}
+						else
+						{
+							$host_matches = false;
+						}
+					}
+					else if (stripos($line, "Name: $host") === 0)
+					{
+						// First line
+						$host_matches = true;
+					}
+				break;
+			}
+		}
+
+		return false;
+	}
+
+	return NULL;
+}
+
+/**
+* Handler for init calls in phpBB. This function is called in user::setup();
+* This function supports hooks.
+*/
+function phpbb_user_session_handler()
+{
+	global $phpbb_hook;
+
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	{
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
+	}
+
+	return;
+}
+
+/**
+* Error and message handler, call with trigger_error if reqd
+*/
+function msg_handler($errno, $msg_text, $errfile, $errline)
+{
+	global $config, $lang;
+	global $msg_code, $msg_title, $msg_long_text;
+
+	// Do not display notices if we suppress them via @
+	if (error_reporting() == 0)
+	{
+		return;
+	}
+
+	// Message handler is stripping text. In case we need it, we are possible to define long text...
+	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
+	{
+		$msg_text = $msg_long_text;
+	}
+
+	$msg_code = empty($msg_code) ? GENERAL_MESSAGE : $msg_code;
+
+	switch ($errno)
+	{
+		case E_NOTICE:
+			// Mighty Gorgon: if you want to report uninitialized variables, comment the "BREAK" below...
+		break;
+		case E_WARNING:
+			// Check the error reporting level and return if the error level does not match
+
+			// If DEBUG is defined to FALSE then return
+			if (defined('DEBUG') && !DEBUG)
+			{
+				return;
+			}
+
+			// If DEBUG is defined the default level is E_ALL
+			if (($errno & ((defined('DEBUG')) ? E_ALL : error_reporting())) == 0)
+			{
+				return;
+			}
+
+			if ((strpos($errfile, 'cache') === false) && (strpos($errfile, 'template.') === false))
+			{
+				// flush the content, else we get a white page if output buffering is on
+				if ((int) @ini_get('output_buffering') === 1 || strtolower(@ini_get('output_buffering')) === 'on')
+				{
+					@ob_flush();
+				}
+
+				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
+				$config['gzip_compress_runtime'] = (isset($config['gzip_compress_runtime']) ? $config['gzip_compress_runtime'] : $config['gzip_compress']);
+				if (!empty($config['gzip_compress_runtime']))
+				{
+					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
+					{
+						@ob_flush();
+					}
+				}
+
+				// remove complete path to installation, with the risk of changing backslashes meant to be there
+				$errfile = str_replace(array(phpbb_realpath(IP_ROOT_PATH), '\\'), array('', '/'), $errfile);
+				$msg_text = str_replace(array(phpbb_realpath(IP_ROOT_PATH), '\\'), array('', '/'), $msg_text);
+
+				echo '<b>[Icy Phoenix Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
+			}
+
+			return;
+
+		break;
+
+		case E_USER_ERROR:
+
+			$msg_text = (!empty($lang[$msg_text])) ? $lang[$msg_text] : $msg_text;
+			$msg_title_default = (!empty($lang['General_Error'])) ? $lang['General_Error'] : 'General Error';
+			$msg_title = (!empty($lang[$msg_title])) ? $lang[$msg_title] : $msg_title_default;
+			$return_url = (!empty($lang['CLICK_RETURN_HOME'])) ? sprintf($lang['CLICK_RETURN_HOME'], '<a href="' . IP_ROOT_PATH . '">', '</a>') : ('<a href="' . IP_ROOT_PATH . '">Return to home page</a>');
+			garbage_collection();
+			html_message($msg_title, $msg_text, $return_url);
+			exit_handler();
+
+			// On a fatal error (and E_USER_ERROR *is* fatal) we never want other scripts to continue and force an exit here.
+			exit;
+		break;
+
+		case E_USER_WARNING:
+		case E_USER_NOTICE:
+			define('IN_ERROR_HANDLER', true);
+			$status_not_found_array = array('ERROR_NO_ATTACHMENT', 'NO_FORUM', 'NO_TOPIC', 'NO_USER');
+			if (in_array($msg_text, $status_not_found_array))
+			{
+				if (!defined('STATUS_404')) define('STATUS_404', true);
+			}
+			message_die($msg_code, $msg_text, $msg_title, $errline, $errfile, '');
+	}
+}
+
+/**
+* HTML Message
+*/
+function html_message($msg_title, $msg_text, $return_url)
+{
+	global $lang;
+	$encoding_charset = !empty($lang['ENCODING']) ? $lang['ENCODING'] : 'UTF-8';
+
+	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+	echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+	echo '<head>';
+	echo '<meta http-equiv="content-type" content="text/html; charset=' . $encoding_charset . '" />';
+	echo '<title>' . $msg_title . '</title>';
+	echo '<style type="text/css">';
+	echo "\n" . '/* <![CDATA[ */' . "\n";
+	echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #e8eef8; } body { font-family: "Trebuchet MS", "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #225599; background: #e8eef8; font-size: 62.5%; margin: 0; } ';
+	echo 'a:link, a:active, a:visited { color: #336699; text-decoration: none; } a:hover { color: #dd2222; text-decoration: underline; } ';
+	echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
+	echo '.panel { margin: 4px 0; background-color: #ffffff; border: solid 1px #dde8ee; } ';
+	echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #dd2222; } ';
+	echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #dddddd; padding-bottom: 5px; color: #333333; font: bold 1.2em "Trebuchet MS", "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
+	echo "\n" . '/* ]]> */' . "\n";
+	echo '</style>';
+	echo '</head>';
+	echo '<body id="errorpage">';
+	echo '<div id="wrap">';
+	echo '	<div id="page-header">';
+	echo '		' . $return_url;
+	echo '	</div>';
+	echo '	<div class="panel">';
+	echo '		<div id="content">';
+	echo '			<h1>' . $msg_title . '</h1>';
+	echo '			<div>' . $msg_text . '</div>';
+	echo '		</div>';
+	echo '	</div>';
+	echo '	<div id="page-footer">';
+	echo '		Powered by <a href="http://www.icyphoenix.com/" target="_blank">Icy Phoenix</a> based on <a href="http://www.phpbb.com/" target="_blank">phpBB</a>';
+	echo '	</div>';
+	echo '</div>';
+	echo '</body>';
+	echo '</html>';
 }
 
 //
@@ -3386,6 +4290,14 @@ function phpbb_realpath($path)
 	return (!@function_exists('realpath') || !@realpath($phpbb_root_path . 'includes/functions.'.$phpEx)) ? $path : @realpath($path);
 }
 
+/**
+* Redirects the user to another page then exits the script nicely
+* This function is intended for urls within the board. It's not meant to redirect to cross-domains.
+*
+* @param string $url The url to redirect to
+* @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
+* @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
+*/
 function redirect($url)
 {
 	global $db, $board_config;
@@ -3406,12 +4318,219 @@ function redirect($url)
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
 	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
+	
+	$encoding_charset = !empty($lang['ENCODING']) ? $lang['ENCODING'] : 'UTF-8';
+	$lang_dir = !empty($lang['DIRECTION']) ? $lang['DIRECTION'] : 'ltr';
+	$header_lang = !empty($lang['HEADER_LANG']) ? $lang['HEADER_LANG'] : 'en-gb';
+	$xml_header_lang = !empty($lang['HEADER_LANG_XML']) ? $lang['HEADER_LANG_XML'] : 'en-gb';	
+	
+	// Redirect via an HTML form for PITA webservers
+	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
+	{
+		header('Refresh: 0; URL=' . PHPBB_URL . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+		<html>
+		<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=' . $encoding_charset . '/>
+		<meta http-equiv="refresh" content="0; url=' . PHPBB_URL . $url . '"/>
+		<title>Redirect</title>
+		</head>
+		<body>
+		<div align="center">If your browser does not support meta redirection please click <a href="' . PHPBB_URL . $url . '">HERE</a> to be redirected</div>
+		</body>
+		</html>';
+		exit;		
+	}
+
+	// Behave as per HTTP/1.1 spec for others
+	header('Location: ' . PHPBB_URL . $url);
+	exit;
+}
+
+/**
+* Redirects the user to another page then exits the script nicely
+* This function is intended for urls within the board. It's not meant to redirect to cross-domains.
+*
+* @param string $url The url to redirect to
+* @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
+* @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
+*/
+function phpbb_redirect($url, $return = false, $disable_cd_check = false)
+{
+	global $db, $cache, $config, $user, $lang;
+
+	$failover_flag = false;
+
+	if (empty($lang))
+	{
+		setup_basic_lang();
+	}
+
+	if (!$return)
+	{
+		garbage_collection();
+	}
+
+	$server_url = create_server_url();
+
+	// Make sure no &amp;'s are in, this will break the redirect
+	$url = str_replace('&amp;', '&', $url);
+	// Determine which type of redirect we need to handle...
+	$url_parts = @parse_url($url);
+
+	if ($url_parts === false)
+	{
+		// Malformed url, redirect to current page...
+		$url = $server_url . $user->page['page'];
+	}
+	elseif (!empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
+		if (!$disable_cd_check && ($url_parts['host'] !== $user->host))
+		{
+			$url = $server_url;
+		}
+	}
+	elseif ($url[0] == '/')
+	{
+		// Absolute uri, prepend direct url...
+		$url = create_server_url(true) . $url;
+	}
+	else
+	{
+		// Relative uri
+		$pathinfo = pathinfo($url);
+
+		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
+		{
+			$url = str_replace('../', '', $url);
+			$pathinfo = pathinfo($url);
+
+			if (!file_exists($pathinfo['dirname'] . '/'))
+			{
+				// fallback to "last known user page"
+				// at least this way we know the user does not leave the phpBB root
+				$url = $server_url . $user->page['page'];
+				$failover_flag = true;
+			}
+		}
+
+		if (!$failover_flag)
+		{
+			// Is the uri pointing to the current directory?
+			if ($pathinfo['dirname'] == '.')
+			{
+				$url = str_replace('./', '', $url);
+
+				// Strip / from the beginning
+				if ($url && (substr($url, 0, 1) == '/'))
+				{
+					$url = substr($url, 1);
+				}
+
+				if ($user->page['page_dir'])
+				{
+					$url = $server_url . $user->page['page_dir'] . '/' . $url;
+				}
+				else
+				{
+					$url = $server_url . $url;
+				}
+			}
+			else
+			{
+				// Used ./ before, but IP_ROOT_PATH is working better with urls within another root path
+				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath(IP_ROOT_PATH)));
+				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
+				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
+
+				$root_dirs = array_diff_assoc($root_dirs, $intersection);
+				$page_dirs = array_diff_assoc($page_dirs, $intersection);
+
+				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+
+				// Strip / from the end
+				if ($dir && substr($dir, -1, 1) == '/')
+				{
+					$dir = substr($dir, 0, -1);
+				}
+
+				// Strip / from the beginning
+				if ($dir && substr($dir, 0, 1) == '/')
+				{
+					$dir = substr($dir, 1);
+				}
+
+				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+				// Strip / from the beginning
+				if (substr($url, 0, 1) == '/')
+				{
+					$url = substr($url, 1);
+				}
+
+				$url = (!empty($dir) ? $dir . '/' : '') . $url;
+				$url = $server_url . $url;
+			}
+		}
+	}
+
+	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
+	if ((strpos(urldecode($url), "\n") !== false) || (strpos(urldecode($url), "\r") !== false) || (strpos($url, ';') !== false))
+	{
+		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url');
+		//trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
+	// Now, also check the protocol and for a valid url the last time...
+	$allowed_protocols = array('http', 'https', 'ftp', 'ftps');
+	$url_parts = parse_url($url);
+
+	if (($url_parts === false) || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
+	{
+		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url');
+		//trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
+	if ($return)
+	{
+		return $url;
+	}
+
+	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r") || strstr(urldecode($url), ';url'))
+	{
+		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+	}
+
+	$server_protocol = ($board_config['cookie_secure']) ? 'https://' : 'http://';
+	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
+	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
+	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
+	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
 	{
 		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		
+		$encoding_charset = !empty($lang['ENCODING']) ? $lang['ENCODING'] : 'UTF-8';
+		$lang_dir = !empty($lang['DIRECTION']) ? $lang['DIRECTION'] : 'ltr';
+		$header_lang = !empty($lang['HEADER_LANG']) ? $lang['HEADER_LANG'] : 'en-gb';
+		$xml_header_lang = !empty($lang['HEADER_LANG_XML']) ? $lang['HEADER_LANG_XML'] : 'en-gb';
+		
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $lang_dir . '" lang="' . $header_lang . '" xml:lang="' . $xml_header_lang . '">';
+		echo '<head>';
+		echo '<meta http-equiv="content-type" content="text/html; charset=' . $encoding_charset . '" />';
+		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
+		echo '<title>' . $lang['Redirect'] . '</title>';
+		echo '</head>';
+		echo '<body>';
+		echo '<div style="text-align: center;">' . sprintf($lang['Redirect_to'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
+		echo '</body>';
+		echo '</html>';
+
 		exit;
 	}
 

@@ -646,43 +646,44 @@ if ( isset($_POST['submit']) )
 			}
 			
 			$sql_ary = array(
-				'user_id'				=>	$user_id,
-				'user_active'			=>	!empty($user_active) ? $user_active : 0,				
+				'user_id'					=>	$user_id,
+				'user_active'				=>	!empty($user_active) ? $user_active : 0,				
 				'username'				=>	str_replace("\'", "''", $username),
 				'user_regdate'			=>	time(),
 				'user_password'			=>	isset($new_password) ? $new_password : '',
-				'user_email'			=>	str_replace("\'", "''", $email), 
-				'user_icq'				=>	str_replace("\'", "''", $icq), 
+				'user_email'				=>	str_replace("\'", "''", $email), 
+				'user_icq'					=>	str_replace("\'", "''", $icq), 
 				'user_website'			=>	str_replace("\'", "''", $website), 
-				'user_occ'				=>	str_replace("\'", "''", $occupation), 
+				'user_occ'					=>	str_replace("\'", "''", $occupation), 
 				'user_from'				=>	str_replace("\'", "''", $location), 
-				'user_interests'		=>	str_replace("\'", "''", $interests), 
-				'user_sig'				=>	str_replace("\'", "''", $signature), 
+				'user_interests'			=>	str_replace("\'", "''", $interests), 
+				'user_sig'					=>	str_replace("\'", "''", $signature), 
 				'user_sig_bbcode_uid'	=>	$signature_bbcode_uid, 
-				'user_avatar'			=>	$avatar_sql, 
+				'user_avatar'				=>	$avatar_sql, 
 				'user_avatar_type'		=>	!empty($user_avatar_type) ? $user_avatar_type : USER_AVATAR_NONE, 
-				'user_viewemail'		=>	$viewemail, 
-				'user_aim'				=>	str_replace("\'", "''", str_replace(' ', '+', $aim)), 
-				'user_yim'				=>	str_replace("\'", "''", $yim), 
+				'user_viewemail'			=>	$viewemail, 
+				'user_aim'					=>	str_replace("\'", "''", str_replace(' ', '+', $aim)), 
+				'user_yim'					=>	str_replace("\'", "''", $yim), 
 				'user_msnm'				=>	str_replace("\'", "''", $msn), 
-				'user_attachsig'		=>	$attachsig, 
-				'user_allowsmile'		=>	$allowsmilies, 
-				'user_allowhtml'		=>	$allowhtml, 
+				'user_attachsig'			=>	$attachsig, 
+				'user_allowsmile'			=>	$allowsmilies, 
+				'user_allowhtml'			=>	$allowhtml, 
 				'user_allowbbcode'		=>	$allowbbcode, 
 				'user_allow_viewonline'	=>	$allowviewonline, 
-				'user_notify'			=>	$notifyreply, 
-				'user_notify_pm'		=>	$notifypm, 
+				'user_notify'				=>	$notifyreply, 
+				'user_notify_pm'			=>	$notifypm, 
 				'user_popup_pm'			=>	$popup_pm, 
 				'user_timezone'			=>	$user_timezone, 
 				'user_dateformat'		=>	str_replace("\'", "''", $user_dateformat), 
 				'user_lang'				=>	str_replace("\'", "''", $user_lang), 
-				'user_style'			=>	$user_style, 
-				'user_level'			=>	0, 
+				'user_style'				=>	$user_style, 
+				'user_level'				=>	0, 
 				'user_allow_pm'			=>	1,  
 				'user_permissions' 		=>	$user_permissions,
 				'user_perm_from' 		=>	$user_perm_from,				
-				'user_birthday' 		=>	$user_birthday,
-				'user_actkey'			=>	$user_actkey,				
+				'user_birthday' 			=>	$user_birthday,
+				'user_actkey'				=>	$user_actkey,
+				'user_facebook_id'		=>	$user_facebook_id,				
 			);
 			
 			$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -911,8 +912,15 @@ if( isset($_POST['avatargallery']) && !$error )
 	);
 
 	$allowviewonline = !$allowviewonline;
+	
+	// Replaced: $aim, $facebook, $flickr, $googleplus, $icq, $jabber, $linkedin, $msn, $skype, $twitter, $yim, $youtube,
+	$user_sn_im_array = get_user_sn_im_array();
+	foreach ($user_sn_im_array as $k => $v)
+	{
+		$this_user_im[$v['form']] = $$v['form'];
+	}	
 
-	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
+	display_avatar_gallery($mode, $avatar_category, $user_id, $email, $current_email, $coppa, $username, $email, $new_password, $cur_password, $password_confirm, $this_user_im, $icq, $aim, $msn, $yim, $website, $location, $occupation, $interests, $signature, $viewemail, $notifypm, $popup_pm, $notifyreply, $attachsig, $allowhtml, $allowbbcode, $allowsmilies, $allowviewonline, $user_style, $user_lang, $user_timezone, $user_dateformat, $userdata['session_id']);
 }
 else
 {
@@ -1071,7 +1079,13 @@ else
 	//
 	$ini_val = ( phpversion() >= '4.0.0' ) ? 'ini_get' : 'get_cfg_var';
 	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
-
+	
+	$user_sn_im_array = get_user_sn_im_array();
+	foreach ($user_sn_im_array as $k => $v)
+	{
+		$template->assign_var(strtoupper($v['form']), $$v['form']);
+	}
+	
 	$template->assign_vars(array(
 		'USERNAME' => isset($username) ? $username : '',
 		'CUR_PASSWORD' => isset($cur_password) ? $cur_password : '',

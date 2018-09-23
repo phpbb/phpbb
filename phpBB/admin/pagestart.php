@@ -32,8 +32,11 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = session_pagestart($user_ip, PAGE_INDEX);
-init_userprefs($userdata);
+$userdata = $user->session_pagestart($user_ip, PAGE_SEARCH);
+$user->set_lang($user->lang, $user->help, 'common');
+$lang = &$user->lang;
+//$user->_init_userprefs($user->data);
+init_userprefs($user->data);
 //
 // End session management
 //

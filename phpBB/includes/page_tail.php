@@ -25,7 +25,7 @@ if ( !defined('IN_PHPBB') )
 	die('Hacking attempt');
 }
 
-global $do_gzip_compress;
+global $auth, $user, $cache, $db, $do_gzip_compress;
 
 //
 // Show the overall footer.
@@ -35,8 +35,10 @@ $admin_link = ($user->data['user_level'] == ADMIN) ? '<a href="admin/index.' . $
 $template->set_filenames(array(
 	'overall_footer' => ( empty($gen_simple_header) ) ? 'overall_footer.tpl' : 'simple_footer.tpl')
 );
+
 //Temp fix for page tail
 $lang['POWERED_BY'] = !empty($lang['POWERED_BY']) ? $lang['POWERED_BY'] : 'Powered by %s';
+
 $template->assign_vars(array(
 	'TRANSLATION_INFO' => (isset($lang['TRANSLATION_INFO'])) ? $lang['TRANSLATION_INFO'] : ((isset($lang['TRANSLATION'])) ? $lang['TRANSLATION'] : ''),
 	'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $board_config, $auth, $user, $cache),

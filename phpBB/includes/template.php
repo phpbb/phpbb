@@ -135,7 +135,10 @@ class Template
 	// Default template directory.
 	// If file for default template isn't found file from this template is used.
 	var $tpldef = 'subSilver';
-
+	
+	var $default_template_name = 'all';
+	var $default_template_path = '';
+	
 	// this will hash handle names to the compiled code for that handle.
 	var $compiled_code = array();
 
@@ -349,6 +352,7 @@ class Template
 		$this->cache_replace = array('_', XS_SEPARATOR, XS_SEPARATOR, '.'.$this->php);
 		$old_root = $this->root;
 		$this->set_rootdir($root);
+		
 		// Mighty Gorgon - Common TPL - BEGIN
 		$cfg_path = $this->tpl;
 		if ((defined('IN_PHPBB') || defined('IN_ADMIN')))
@@ -356,6 +360,7 @@ class Template
 			$cfg_path = 'all';
 		}
 		// Mighty Gorgon - Common TPL - END
+		
 		if(!empty($this->tpl))
 		{
 			if($this->tpldef != $cfg_path)
@@ -897,15 +902,52 @@ class Template
 	 */
 	function make_filename($filename, $xs_include = false)
 	{
+		global $theme, $phpbb_root_path;
+		
+		//?
 		if($this->subtemplates)
 		{
 			$filename = $this->subtemplates_make_filename($filename);
 		}
+		
 		// Check replacements list
 		if(!$xs_include && isset($this->replace[$filename]))
 		{
 			$filename = $this->replace[$filename];
 		}
+				
+		//
+		// Also search for "the other" file extension
+		//
+		$filename = substr_count($filename, 'tpl') ? str_replace(".tpl", ".html", $filename) : str_replace(".html", ".tpl", $filename);
+		$filename2 = substr_count($filename, 'html') ? str_replace(".html", ".tpl", $filename) : str_replace(".tpl", ".html", $filename);		
+
+		$style_path = $theme['template_name'];
+		$this->styles_path = $phpbb_root_path . $this->template_path;
+		
+		//
+		// Look at Root folder
+		//		
+		if (!empty($phpbb_root_path))
+		{				
+			$moduleDefault = $this->default_template_name;		
+			
+			$this->debug_paths .= '<br>xs_mod';
+			$fileSearch = array();
+			$fileSearch[] = 'tpl';
+			$fileSearch[] = $this->tpldir;			
+			$fileSearch[] = $style_path; // First check current template
+			//$fileSearch[] = $this->cloned_template_name; // Then check Cloned template
+			$fileSearch[] = $moduleDefault; // Finally check Default template
+			$fileSearch[] = './'; // Compatibility with primitive modules
+
+			$filename = $this->doFileSearch($fileSearch, $filename, $filename2, 'xs_mod/', $phpbb_root_path);
+			if (!empty($this->module_template_path))
+			{
+				return $filename;
+			}
+		}	
+		
 		// Check if it's an absolute or relative path.
 		if ((substr($filename, 0, 1) !== '/') && (substr($filename, 1, 1) !== ':'))
 		{
@@ -934,7 +976,67 @@ class Template
 		$file = substr($file, $this->tpldir_len, strlen($file)) .'.'. $phpEx;
 		// creating filename
 		return $this->cachedir . XS_TPL_PREFIX . str_replace($this->cache_search, $this->cache_replace, $file) .'.'. $phpEx;
-	}
+	}	
+
+	/**
+	 * Help function
+	 *
+	 * @param unknown_type $fileSearch
+	 * @param unknown_type $filename
+	 * @param unknown_type $filename2
+	 * @param unknown_type $module_root_path
+	 * @return unknown
+	 */
+	function doFileSearch($fileSearch, $filename, $filename2, $root, $root_path = '', $check_file2 = true)
+	{
+		$this->module_template_path = '';
+		foreach ($fileSearch as $key => $path)
+		{
+			if (!empty($path) && ($path !== './'))
+			{
+				$this->debug_paths .= '<br>' . $root_path . $root . $path . '/' . $filename;
+
+				if( file_exists($root_path . $root . $path . '/' . $filename) )
+				{
+					$this->module_template_path = $root . $path . '/';
+					return $root_path . $root . $path . '/' . $filename;
+				}
+				else if( file_exists($root . '/' . $filename) )
+				{
+					$this->module_template_path = $root . '/';
+					return $root . '/' . $filename;
+				}
+				
+				if ($check_file2 && @file_exists($root_path . $root . $path . '/' . $filename2))
+				{
+					$this->module_template_path = $root . $path . '/';
+					return $root_path . $root . $path . '/' . $filename2;
+				}
+				else if ($check_file2 && file_exists($root . '/' . $filename2))
+				{
+					$this->module_template_path = $root . '/';
+					return $root . '/' . $filename2;
+				}				
+			}
+			else if ($path == './')
+			{
+				if( file_exists($root_path . $root . $filename) )
+				{
+					$this->module_template_path = $root;
+					return $root_path . $root . $filename;
+				}
+				if ($check_file2)
+				{
+					if( file_exists($root_path . $root . $filename2) )
+					{
+						$this->module_template_path = $root;
+						return $root_path . $root . $filename2;
+					}
+				}
+			}
+		}
+	}	
+	
 	/**
 	* Set template location
 	* @access public
@@ -1075,9 +1177,11 @@ class Template
 		{
 			$can_cache = false;
 		}
+		
 		$this->files[$handle] = $this->make_filename($filename, $xs_include);
 		$this->files_cache[$handle] = '';
 		$this->files_cache2[$handle] = '';
+		
 		// check if we are in admin control panel and override extreme styles mod controls if needed
 		if(defined('XS_ADMIN_OVERRIDE') && XS_ADMIN_OVERRIDE === true && @function_exists('xs_admin_override'))
 		{

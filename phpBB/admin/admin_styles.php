@@ -172,7 +172,7 @@ switch( $mode )
 				{						
 					$cfg_filename = file($phpbb_root_path. $user->template_path . basename($install_to) . "/style.cfg");
 								
-					//Check for Icy-Phoenix Main Template Configuration File i.e. subSilver.cfg
+					//Check for Icy-Phoenix Main Template Configuration File i.e. prosilver.cfg
 					$cfg_filename = basename(print_r($cfg_filename, true), '.cfg');
 								
 					if (strpos($cfg_filename, '.') !== false)
@@ -188,7 +188,7 @@ switch( $mode )
 					{
 						$sub_dir2 = $cfg['parent'];
 									
-						//Include parentn template configuration file i.e. subSilver.cfg
+						//Include parentn template configuration file i.e. prosilver.cfg
 						if( @file_exists(@phpbb_realpath($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg")) )
 						{
 							include($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg");
@@ -360,7 +360,7 @@ switch( $mode )
 							{						
 								$cfg_filename = file($phpbb_root_path. $user->template_path . $sub_dir. "/style.cfg");
 								
-								//Check for Icy-Phoenix Main Template Configuration File i.e. subSilver.cfg
+								//Check for Icy-Phoenix Main Template Configuration File i.e. prosilver.cfg
 								$cfg_filename = basename(print_r($cfg_filename, true), '.cfg');
 								
 								if (strpos($cfg_filename, '.') !== false)
@@ -376,7 +376,7 @@ switch( $mode )
 								{
 									$sub_dir2 = $cfg['parent'];
 									
-									//Include parentn template configuration file i.e. subSilver.cfg
+									//Include parentn template configuration file i.e. prosilver.cfg
 									if( @file_exists(@phpbb_realpath($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg")) )
 									{
 										include($phpbb_root_path. $user->template_path . $sub_dir2 . "/theme_info.cfg");
@@ -430,12 +430,12 @@ switch( $mode )
 				);
 				
 				$template->assign_vars(array(
-					"L_STYLES_TITLE" => $lang['Styles_admin'],
-					"L_STYLES_ADD_TEXT" => $lang['Styles_addnew_explain'],
-					"L_STYLE" => $lang['Style'],
-					"L_TEMPLATE" => $lang['Template'],
-					"L_INSTALL" => $lang['Install'],
-					"L_ACTION" => $lang['Action'])
+					"L_STYLES_TITLE" => $user->lang['Styles_admin'],
+					"L_STYLES_ADD_TEXT" => $user->lang['Styles_addnew_explain'],
+					"L_STYLE" => $user->lang['Style'],
+					"L_TEMPLATE" => $user->lang['Template'],
+					"L_INSTALL" => $user->lang['Install'],
+					"L_ACTION" => $user->lang['Action'])
 				);
 					
 				for($i = 0; $i < count($installable_themes); $i++)

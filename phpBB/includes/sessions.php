@@ -38,10 +38,11 @@ class phpbb_Template extends Template
 	var $css_include = array();
 	var $js_include = array();		
 	var $module_template_path = '';
-	var	$cloned_template_name = 'subSilver';
-	var	$default_template_name = 'subsilver2';
+	var $cloned_template_name = 'subSilver';
+	var $default_template_name = 'subsilver2';
 	var $template_path = 'templates/';
 	var $debug_paths;
+	var $phpbb_root_path	= '/';
 	
 	/**
 	 * Constructor.
@@ -54,7 +55,9 @@ class phpbb_Template extends Template
 	function phpbb_Template($root = '.')
 	{
 		parent::Template($root);
-
+		
+		global $phpbb_root_path;
+		
 		//
 		// Temp solution when the rootdir is not created
 		//
@@ -62,6 +65,8 @@ class phpbb_Template extends Template
 		{
 			$this->root = $root;
 		}
+		
+		$this->phpbb_root_path = $phpbb_root_path;
 		
 		if (empty($this->template_path))
 		{
@@ -1071,6 +1076,7 @@ class user
 	 */
 	protected $user_language;
 	protected $user_language_name;
+	protected $phpbb_root_path;
 	
 	var $lang;		
 	var $lang_iso = 'en';		
@@ -1081,8 +1087,8 @@ class user
 	var $lang_local_name = 'English United Kingdom';	
 	var $language_list = array();	
 	
-	var	$cloned_template_name = 'subSilver';
-	var	$default_template_name = 'subsilver2';
+	var $cloned_template_name = 'subSilver';
+	var $default_template_name = 'subsilver2';
 	
 	var $cloned_current_template_name = 'prosilver';
 	var $default_current_template_name = '';	
@@ -1288,7 +1294,7 @@ class user
 		{
 			if ( !empty($userdata['user_lang']))
 			{
-				$default_lang = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
+				$language = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
 			}
 
 			if ( !empty($userdata['user_dateformat']) )
@@ -1306,25 +1312,25 @@ class user
 		//
 		else
 		{
-			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+			$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
 		}
 
-		if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)) )
+		if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)) )
 		{
 			if ( $userdata['user_id'] != ANONYMOUS )
 			{
 				// For logged in users, try the board default language next
-				$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+				$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
 			}
 			else
 			{
 				// For guests it means the default language is not present, try english
 				// This is a long shot since it means serious errors in the setup to reach here,
 				// but english is part of a new install so it's worth us trying
-				$default_lang = 'english';
+				$language = 'english';
 			}
 
-			if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)) )
+			if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)) )
 			{
 				mx_message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
 			}
@@ -1332,10 +1338,10 @@ class user
 
 		// If we've had to change the value in any way then let's write it back to the database
 		// before we go any further since it means there is something wrong with it
-		if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $default_lang )
+		if ( $userdata['user_id'] != ANONYMOUS && $userdata['user_lang'] !== $language )
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_lang = '" . $default_lang . "'
+				SET user_lang = '" . $language . "'
 				WHERE user_lang = '" . $userdata['user_lang'] . "'";
 
 			if ( !($result = $db->sql_query($sql)) )
@@ -1343,12 +1349,12 @@ class user
 				message_die(CRITICAL_ERROR, 'Could not update user language info');
 			}
 
-			$userdata['user_lang'] = $default_lang;
+			$userdata['user_lang'] = $language;
 		}
-		elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang )
+		elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $language )
 		{
 			$sql = 'UPDATE ' . CONFIG_TABLE . "
-				SET config_value = '" . $default_lang . "'
+				SET config_value = '" . $language . "'
 				WHERE config_name = 'default_lang'";
 
 			if ( !($result = $db->sql_query($sql)) )
@@ -1357,20 +1363,21 @@ class user
 			}
 		}
 
-		$board_config['default_lang'] = $default_lang;
+		$board_config['default_lang'] = $language;
 
-		include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx); // Also include phpBB lang keys
-		include($root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
+		include($phpbb_root_path . 'language/lang_' . $language . '/lang_main.' . $phpEx); // Also include phpBB lang keys
 
 		if ( defined('IN_ADMIN') )
 		{
-			if( !file_exists(@phpbb_realpath($root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx)) )
+			if ((@include $phpbb_root_path . "language/lang_" . $language . "/lang_main.$phpEx") === false)
 			{
-				$board_config['default_lang'] = 'english';
-			}
-
-			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx); // Also include phpBB lang keys
-			include($root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+				$board_config['default_lang'] = 'english'; 
+			}					
+			// Also include phpBB lang keys
+			elseif ((@include $phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.$phpEx") === false)
+			{
+				message_die(CRITICAL_ERROR, 'Language file ' . $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . ' & Language file ' . $phpbb_root_path . 'language/lang_' . $language . '/lang_main.$phpEx' . ' couldn\'t be opened.');
+			}			
 		}
 
 		//
@@ -1380,19 +1387,19 @@ class user
 		// and be able to change the variables within code.
 		//
 		$nav_links['top'] = array (
-			'url' => mx_append_sid($phpbb_root_path . 'index.' . $phpEx),
+			'url' => append_sid($phpbb_root_path . 'index.' . $phpEx),
 			'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
 		);
 		$nav_links['search'] = array (
-			'url' => mx_append_sid($phpbb_root_path . 'search.' . $phpEx),
+			'url' => append_sid($phpbb_root_path . 'search.' . $phpEx),
 			'title' => $lang['Search']
 		);
 		$nav_links['help'] = array (
-			'url' => mx_append_sid($phpbb_root_path . 'faq.' . $phpEx),
+			'url' => append_sid($phpbb_root_path . 'faq.' . $phpEx),
 			'title' => $lang['FAQ']
 		);
 		$nav_links['author'] = array (
-			'url' => mx_append_sid($phpbb_root_path . 'memberlist.' . $phpEx),
+			'url' => append_sid($phpbb_root_path . 'memberlist.' . $phpEx),
 			'title' => $lang['Memberlist']
 		);
 	}	
@@ -2831,11 +2838,47 @@ class user
 			//fix for mxp
 			if ((@include $language_filename) === false)
 			{
+				//
+				//this will fix the path for shared language files
+				//				
+				$language_phpbb2_filename = substr_count($language_filename, 'phpbb3') ? str_replace("phpbb3", "phpbb2", $language_filename) : str_replace("phpbb3", "phpbb2", $language_filename);
+				$language_phpbb3_filename = substr_count($language_filename, 'phpbb2') ? str_replace("phpbb2", "phpbb3", $language_filename) : str_replace("phpb2", "phpbb3", $language_filename);				
+											
+				//
 				//this will fix the path for anonymouse users
-				if ((@include $phpbb_root_path . $language_filename) === false)
+				//				
+				$shared_phpbb2_path = substr_count($phpbb_root_path, 'phpbb3') ? str_replace("phpbb3", "phpbb2", $phpbb_root_path) : str_replace("phpbb3", "phpbb2", $phpbb_root_path);
+				$shared_phpbb3_path = substr_count($phpbb_root_path, 'phpbb2') ? str_replace("phpbb2", "phpbb3", $phpbb_root_path) : str_replace("phpb2", "phpbb3", $phpbb_root_path);				
+							
+				if ((@include $language_phpbb3_filename) !== false)
 				{
-					die('Language file ' . $language_filename . ' couldn\'t be opened by set_lang().');
+					//continue;
 				}
+				elseif ((@include $language_phpbb2_filename) !== false)
+				{
+					//continue;
+				}				
+				elseif ((@include $phpbb_root_path . $language_filename) !== false)
+				{
+					//continue;
+				}
+				elseif ((@include $phpbb_root_path . $language_filename) !== false)
+				{
+					//continue;
+				}				
+				elseif ((@include str_replace("phpbb3", "phpbb2", $language_filename)) !== false)
+				{
+					//continue;
+				}
+				elseif ((@include str_replace("phpbb2", "phpbb3", $language_filename)) === false)
+				{
+					$language_filename = $phpbb_root_path . '/language/' .$this->lang_english_name . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+					
+					if ((@include str_replace("phpbb3", "phpbb2", $language_filename)) !== false)
+					{
+						die('Language file (set_lang) ' . str_replace("phpbb2", "phpbb3", $language_filename) . ' couldn\'t be opened by set_lang().');
+					}					
+				}				
 			}
 		}
 		else
@@ -2843,7 +2886,7 @@ class user
 			// Get Database Language Strings
 			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
 			// For example: help:faq, posting
-			die("You should not use db!");
+			die("You should not use db with phpbb2!");
 		}
 
 		// We include common language file here to not load it every time a custom language file is included
@@ -3147,7 +3190,7 @@ class user
 		
 		if (!class_exists('bitfield'))
 		{		
-			global $phpEx;
+			global $phpbb_root_path, $phpEx;
 			include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 		}			
 		
@@ -6970,23 +7013,53 @@ class language extends language_file_loader
 	{         
 		return preg_match('/' . $pattern . '/i', $string, $matches);	
 	}
+	
 	/**
 	 * Enter description here...
 	 *
 	 * @access private
 	 * @param unknown_type $lang_mode
 	 */	
-	function _load_lang($path, $filename, $require = true, $user_lang = '')
+	function _load_lang($path, $filename, $require = true)
 	{
+		$lang = array();
+		
 		$board_config = $this->config;		
 		$php_ext = $this->php_ext;
+		
 		// Now only the root for mxp blocks
+		$user_path = $path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
 		$board_path = $path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
 		$default_path = $path . 'language/lang_english/' . $filename . '.' . $php_ext;
-		$user_path = !empty($user_lang) ? $path . 'language/lang_' . $user_lang . '/' . $filename . '.' . $php_ext : $board_path;
+				
+		// phpBB		
+		if (($path != 'phpbb2') && ($path != 'phpbb3'))	
+		{
+			$phpbb_user_path = $path . 'language/' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $path . 'language/' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_default_path = $path . 'language/en/' . $filename . '.' . $php_ext;		
+		}		
 		
-	
-		$lang = array();
+		// Shared phpBB2		
+		if ($path = 'phpbb2')	
+		{
+			$phpbb2_shared_path = $this->phpbb_root_path . '';
+			
+			$phpbb_user_path = $phpbb2_shared_path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $phpbb2_shared_path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_default_path = $phpbb2_shared_path . 'language/lang_english/' . $filename . '.' . $php_ext;			
+		}							
+		
+		// Shared phpBB3		
+		if ($path = 'phpbb3')	
+		{
+			$phpbb3_shared_path = $this->phpbb_root_path . '';
+
+			$phpbb_user_path = $phpbb3_shared_path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $phpbb3_shared_path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_default_path = $phpbb3_shared_path . 'language/lang_english/' . $filename . '.' . $php_ext;				
+		}	
+		
 		if (file_exists($user_path))
 		{
 			include_once($user_path);
@@ -7001,8 +7074,36 @@ class language extends language_file_loader
 			{
 				include_once($default_path);
 			}
+		}
+		else if (is_file($phpbb_user_path))
+		{
+			include_once($phpbb_user_path);
+		}
+		if ((@include $phpbb_user_path) === false)
+		{
+			if ($require)
+			{
+				if ((@include $phpbb_board_path) === false)
+				{
+					if ((@include $phpbb_default_path) === false)
+					{
+						continue;
+					}
+				}			
+			}
+		}			
+	
+		if (count($lang) == 0)
+		{
+			// If the language entry is an empty array, we just return the language key $this->lang = $this->lang;	
+			// The language file is not exist throw new language_file_not_found(
+			print_r('Language file ' . $path . '|' . $filename . '.' . $php_ext . '|' . ($require ? $phpbb_user_path : $phpbb_board_path) . ' couldn\'t be opened.');			
+		}					
+		else
+		{
+			// If the language entry is not an empty array, we merge the language keys
+			$this->lang = array_merge($this->lang, $lang);		
 		}		
-		$this->lang = array_merge($this->lang, $lang);
 	}	
 	
 	/**

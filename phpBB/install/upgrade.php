@@ -55,7 +55,7 @@ if ( !defined('INSTALLING') )
 //
 $dbms = 'mysql';
 
-//include($phpbb_root_path . 'includes/db.'.$phpEx);
+
 include($phpbb_root_path.'includes/db/'.$dbms.'.'.$phpEx); // Load dbal and initiate class
 include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
@@ -1538,30 +1538,30 @@ if ( !empty($next) )
 						$auth_post			= AUTH_REG;
 						$auth_reply			= AUTH_REG;
 						$auth_edit			= AUTH_REG;
-						$auth_delete		= AUTH_REG;
+						$auth_delete			= AUTH_REG;
 						$auth_vote			= AUTH_REG;
-						$auth_pollcreate	= AUTH_REG;
-						$auth_sticky		= AUTH_MOD;
+						$auth_pollcreate		= AUTH_REG;
+						$auth_sticky			= AUTH_MOD;
 						$auth_announce		= AUTH_MOD;
 						break;
 					case 2:
 						$auth_post			= AUTH_ALL;
 						$auth_reply			= AUTH_ALL;
 						$auth_edit			= AUTH_REG;
-						$auth_delete		= AUTH_REG;
+						$auth_delete			= AUTH_REG;
 						$auth_vote			= AUTH_ALL;
-						$auth_pollcreate	= AUTH_ALL;
-						$auth_sticky		= AUTH_MOD;
+						$auth_pollcreate		= AUTH_ALL;
+						$auth_sticky			= AUTH_MOD;
 						$auth_announce		= AUTH_MOD;
 						break;
 					default:
 						$auth_post			= AUTH_MOD;
 						$auth_reply			= AUTH_MOD;
 						$auth_edit			= AUTH_MOD;
-						$auth_delete		= AUTH_MOD;
+						$auth_delete			= AUTH_MOD;
 						$auth_vote			= AUTH_MOD;
-						$auth_pollcreate	= AUTH_MOD;
-						$auth_sticky		= AUTH_MOD;
+						$auth_pollcreate		= AUTH_MOD;
+						$auth_sticky			= AUTH_MOD;
 						$auth_announce		= AUTH_MOD;
 						break;
 				}
@@ -1585,10 +1585,10 @@ if ( !empty($next) )
 						$auth_post			= AUTH_ACL;
 						$auth_reply			= AUTH_ACL;
 						$auth_edit			= AUTH_ACL;
-						$auth_delete		= AUTH_ACL;
+						$auth_delete			= AUTH_ACL;
 						$auth_vote			= AUTH_ACL;
-						$auth_pollcreate	= AUTH_ACL;
-						$auth_sticky		= AUTH_ACL;
+						$auth_pollcreate		= AUTH_ACL;
+						$auth_sticky			= AUTH_ACL;
 						$auth_announce		= AUTH_MOD;
 						break;
 				}
@@ -1780,11 +1780,26 @@ if ( !empty($next) )
 			$result = query($sql, "Couldn't obtain oldest post time");
 
 			$row = $db->sql_fetchrow($result);
-
+			
+			$sql = "ALTER TABLE `" . $table_prefix . "users` ADD `user_facebook_id` VARCHAR(40) NOT NULL DEFAULT '' AFTER `user_email_hash`";
+			query($sql, "Couldn't ALTER TABLE users to add user_facebook_id");
+			
 			$sql = "INSERT INTO " . $table_prefix . "config (config_name, config_value) 
 				VALUES ('board_startdate', " . $row['oldest_time']  . ")";
 			query($sql, "Couldn't insert board_startdate");
-
+				
+			$sql[] = "INSERT INTO `" . $table_prefix . "config` (`config_name`, `config_value`) VALUES ('enable_social_connect', '0')";
+			query($sql, "Couldn't insert enable_social_connect");			
+			
+			$sql[] = "INSERT INTO `" . $table_prefix . "config` (`config_name`, `config_value`) VALUES ('enable_facebook_login', '0')";
+			query($sql, "Couldn't insert enable_facebook_login");			
+			
+			$sql[] = "INSERT INTO `" . $table_prefix . "config` (`config_name`, `config_value`) VALUES ('facebook_app_id', '')";
+			query($sql, "Couldn't insert facebook_app_id");			
+			
+			$sql[] = "INSERT INTO `" . $table_prefix . "config` (`config_name`, `config_value`) VALUES ('facebook_app_secret', '')";			
+			query($sql, "Couldn't insert facebook_app_secret");
+			
 			$sql = "UPDATE " . $table_prefix . "config 
 				SET config_value = '" . $server_name . "' 
 				WHERE config_name = 'server_name' 

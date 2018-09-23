@@ -1,7 +1,7 @@
 #
 # phpBB2 - MySQL schema
 #
-# $Id: mysql_41_schema.sql,v 1.1 2010/10/10 15:10:39 orynider Exp $
+# $Id: mysql_41_schema.sql,v 1.2 2018/09/22 23:32:39 orynider Exp $
 #
 
 #
@@ -536,8 +536,21 @@ CREATE TABLE phpbb_users (
    user_popup_pm tinyint(1) DEFAULT '0' NOT NULL,
    user_rank int(11) DEFAULT '0',
    user_avatar varchar(100),
-   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL,
+   user_avatar_type tinyint(4) DEFAULT '0' NOT NULL,   
+   user_instagram VARCHAR(255) DEFAULT '' NOT NULL,
+   user_jabber VARCHAR(255) DEFAULT '' NOT NULL,
+   user_linkedin VARCHAR(255) DEFAULT '' NOT NULL,
+   user_pinterest VARCHAR(255) DEFAULT '' NOT NULL,
+   user_twitter VARCHAR(255) DEFAULT '' NOT NULL,
+   user_skype VARCHAR(255) DEFAULT '' NOT NULL,
+   user_vimeo VARCHAR(255) DEFAULT '' NOT NULL,
+   user_youtube VARCHAR(255) DEFAULT '' NOT NULL, 
    user_email varchar(255),
+   user_facebook_id VARCHAR(40) NOT NULL DEFAULT '',
+   user_facebook VARCHAR(255) DEFAULT '' NOT NULL,
+   user_flickr VARCHAR(255) DEFAULT '' NOT NULL,
+   user_github VARCHAR(255) DEFAULT '' NOT NULL,
+   user_googleplus VARCHAR(255) DEFAULT '' NOT NULL,   
    user_icq varchar(15),
    user_website varchar(100),
    user_from varchar(100),

@@ -25,9 +25,8 @@ if ( !defined('IN_PHPBB') )
 }
 
 //error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-//
-error_reporting(E_ALL ^ E_NOTICE); // Report all errors, except notices
-//error_reporting(E_ALL);
+//error_reporting(E_ALL ^ E_NOTICE); // Report all errors, except notices
+error_reporting(E_ALL);
 
 // If we are on PHP >= 6.0.0 we do not need some code
 if (version_compare(PHP_VERSION, '5.3.0', '>='))
@@ -219,22 +218,5 @@ if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN
 */
 @define('IP_ROOT_PATH', $phpbb_root_path);
 
-/*
- +mxbb_portal
-*/
-if( !defined('IN_ADMIN') )
-{
-	$mx_root_path = './../';
-	$mx_table_prefix = 'mx_';
-	if (file_exists($mx_root_path.'modules/mx_phpbb/includes/forum_hack.'.$phpEx))
-	{
-		include_once($mx_root_path.'modules/mx_phpbb/includes/forum_hack.'.$phpEx);
-	}
-	@define('PORTAL_BACKEND', 'phpbb2');
-	@define('CMS_ROOT_PATH', $mx_root_path);	
-}
-/*
--mxbb_portal
-*/
 
 ?>

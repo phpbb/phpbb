@@ -28,14 +28,17 @@ define("IN_INDEX", true);
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
+define('PHP_EXT', $phpEx);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 
 //
 // Start session management
 //
-$userdata = $user->session_pagestart($user_ip, PAGE_INDEX);
-$auth->acl($user->data);
+$userdata = $user->session_pagestart($user_ip, PAGE_SEARCH);
+$user->set_lang($user->lang, $user->help, 'common');
+$lang = &$user->lang;
+//$user->_init_userprefs($user->data);
 init_userprefs($user->data);
 //
 // End session management
@@ -335,9 +338,9 @@ if( ( $total_categories = count($category_rows) ) )
 	);
 	
 	$template->assign_vars(array(
-		'L_STATISTICS' 		=> $lang['Statistics'],
+		'L_STATISTICS' 		=> $user->lang['Statistics'],
 		
-		'L_LEGEND' 			=> $lang['Legend'],			
+		'L_LEGEND' 			=> $user->lang['Legend'],			
 		'LEGEND'			=> $legend,	
 		
 		'TOTAL_POSTS' 		=> sprintf($l_total_post_s, $total_posts),
@@ -354,24 +357,24 @@ if( ( $total_categories = count($category_rows) ) )
 		
 		'S_IS_LINK'		=> false,		
 		
-		'L_FORUM' 			=> $lang['Forum'],
+		'L_FORUM' 			=> $user->lang['Forum'],
 		// Begin Simple Subforums MOD
-		'L_SUBFORUMS' 		=> $lang['Subforums'],
+		'L_SUBFORUMS' 		=> $user->lang['Subforums'],
 		// End Simple Subforums MOD		
-		'L_TOPICS' 			=> $lang['Topics'],
-		'L_REPLIES' 		=> $lang['Replies'],
-		'L_VIEWS' 			=> $lang['Views'],
-		'L_POSTS' 			=> $lang['Posts'],
-		'L_LASTPOST' 		=> $lang['Last_Post'], 
-		'L_NO_NEW_POSTS' 	=> $lang['No_new_posts'],
-		'L_NEW_POSTS' 		=> $lang['New_posts'],
-		'L_NO_NEW_POSTS_LOCKED' => $lang['No_new_posts_locked'], 
-		'L_NEW_POSTS_LOCKED' => $lang['New_posts_locked'], 
-		'L_ONLINE_EXPLAIN' 	=> $lang['Online_explain'], 
+		'L_TOPICS' 			=> $user->lang['Topics'],
+		'L_REPLIES' 		=> $user->lang['Replies'],
+		'L_VIEWS' 			=> $user->lang['Views'],
+		'L_POSTS' 			=> $user->lang['Posts'],
+		'L_LASTPOST' 		=> $user->lang['Last_Post'], 
+		'L_NO_NEW_POSTS' 	=> $user->lang['No_new_posts'],
+		'L_NEW_POSTS' 		=> $user->lang['New_posts'],
+		'L_NO_NEW_POSTS_LOCKED' => $user->lang['No_new_posts_locked'], 
+		'L_NEW_POSTS_LOCKED' => $user->lang['New_posts_locked'], 
+		'L_ONLINE_EXPLAIN' 	=> $user->lang['Online_explain'], 
 
-		'L_MODERATOR' 		=> $lang['Moderators'], 
-		'L_FORUM_LOCKED' 	=> $lang['Forum_is_locked'],
-		'L_MARK_FORUMS_READ' => $lang['Mark_all_forums'],
+		'L_MODERATOR' 		=> $user->lang['Moderators'], 
+		'L_FORUM_LOCKED' 	=> $user->lang['Forum_is_locked'],
+		'L_MARK_FORUMS_READ' => $user->lang['Mark_all_forums'],
 		
 		'U_TEAM'			=> ($user->data['user_id'] != ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
 		'U_TERMS_USE'		=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),		
