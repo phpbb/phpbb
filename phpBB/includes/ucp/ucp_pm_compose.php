@@ -1260,7 +1260,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	// Delete User [TO/BCC]
 	if ($remove_u && $request->variable('remove_u', array(0 => '')))
