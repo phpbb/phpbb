@@ -1332,7 +1332,7 @@ class user
 
 			if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)) )
 			{
-				mx_message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
+				message_die(CRITICAL_ERROR, 'Could not locate valid language pack');
 			}
 		}
 
@@ -1449,7 +1449,8 @@ class user
 		//
 		if (isset($board_config['allow_autologin']) && !$board_config['allow_autologin'])
 		{
-			$enable_autologin = $sessiondata['autologinid'] = false;
+			$enable_autologin = $persist_login = $sessiondata['autologinid'] = false;
+			$this->cookie_data['k'] = false;			
 		}
 
 		//
@@ -1457,7 +1458,38 @@ class user
 		// If not, just use the user_id value
 		//
 		$userdata = array();
+		$user_logged_in = false;
+		
+		// If we're presented with an autologin key we'll join against it.
+		// Else if we've been passed a user_id we'll grab data based on that
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
+		{
+			$sql = "SELECT u.*
+				FROM " . USERS_TABLE . " u, " . SESSIONS_KEYS_TABLE . " k
+				WHERE u.user_id = " . (int) $this->cookie_data['u'] . "
+					AND u.user_active = 1
+					AND k.user_id = u.user_id
+					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
+			$result = $db->sql_query($sql);
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$user_logged_in = true;
+		}
+		elseif (($user_id !== false) && !sizeof($this->data))
+		{
+			$this->cookie_data['k'] = '';
+			$this->cookie_data['u'] = $user_id;
 
+			$sql = "SELECT *
+				FROM " . USERS_TABLE . "
+				WHERE user_id = " . (int) $this->cookie_data['u'] . "
+					AND user_active = 1";
+			$result = $db->sql_query($sql);
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$user_logged_in = true;
+		}		
+		
 		if ($user_id != ANONYMOUS)
 		{
 			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '' && $user_id)
@@ -1470,7 +1502,7 @@ class user
 						AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
 				if (!($result = $db->sql_query($sql)))
 				{
-					mx_message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
+					message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 				}
 
 				$userdata = $db->sql_fetchrow($result);
@@ -1489,7 +1521,7 @@ class user
 						AND user_active = 1';
 				if (!($result = $db->sql_query($sql)))
 				{
-					mx_message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
+					message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 				}
 
 				$userdata = $db->sql_fetchrow($result);
@@ -1498,18 +1530,27 @@ class user
 				$login = 1;
 			}
 		}
-
-		//
-		// At this point either $userdata should be populated or
-		// one of the below is true
+		else
+		{
+			// Bot user, if they have a SID in the Request URI we need to get rid of it otherwise they'll index this page with the SID, duplicate content oh my!
+			if (isset($_GET['sid']) && !empty($this->data['is_bot']))
+			{
+				send_status_line(301, 'Moved Permanently');
+				redirect(build_url(array('sid')));
+			}
+			$this->data['session_last_visit'] = $this->time_now;
+		}
+		
+		// If no data was returned one or more of the following occurred:
 		// * Key didn't match one in the DB
 		// * User does not exist
 		// * User is inactive
 		//
 		if (!sizeof($userdata) || !is_array($userdata) || !$userdata)
 		{
-			$sessiondata['autologinid'] = '';
-			$sessiondata['userid'] = $user_id = ANONYMOUS;
+			$this->cookie_data['k'] = $sessiondata['autologinid'] = '';
+			$this->cookie_data['u'] = $sessiondata['userid'] = $user_id = ANONYMOUS;		
+			
 			$enable_autologin = $login = 0;
 
 			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
@@ -1517,7 +1558,7 @@ class user
 				WHERE user_id = ' . (int) $user_id;
 			if (!($result = $db->sql_query($sql)))
 			{
-				mx_message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error doing DB query ANONYMOUS user userdata row fetch', '', __LINE__, __FILE__, $sql);
 			}
 
 			$userdata = $db->sql_fetchrow($result);
@@ -1541,14 +1582,14 @@ class user
 		}
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Could not obtain ban information', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Could not obtain ban information', '', __LINE__, __FILE__, $sql);
 		}
 
 		if ( $ban_info = $db->sql_fetchrow($result) )
 		{
 			if ( $ban_info['ban_ip'] || $ban_info['ban_userid'] || $ban_info['ban_email'] )
 			{
-				mx_message_die(CRITICAL_MESSAGE, 'You_been_banned');
+				message_die(CRITICAL_MESSAGE, 'You_been_banned');
 			}
 		}
 
@@ -1568,7 +1609,7 @@ class user
 				VALUES ('$session_id', $user_id, $current_time, $current_time, '$user_ip', $page_id, $login, $admin)";
 			if ( !$db->sql_query($sql) )
 			{
-				mx_message_die(CRITICAL_ERROR, 'Error creating new session', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error creating new session', '', __LINE__, __FILE__, $sql);
 			}
 		}
 
@@ -1583,7 +1624,7 @@ class user
 					WHERE user_id = $user_id";
 				if ( !$db->sql_query($sql) )
 				{
-					mx_message_die(CRITICAL_ERROR, 'Error updating last visit time', '', __LINE__, __FILE__, $sql);
+					message_die(CRITICAL_ERROR, 'Error updating last visit time', '', __LINE__, __FILE__, $sql);
 				}
 			}
 
@@ -1615,7 +1656,7 @@ class user
 						WHERE key_id = '" . md5($sessiondata['autologinid']) . "'";
 					if ( !$db->sql_query($sql2) )
 					{
-						mx_message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
+						message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
 					}
 				}
 				$sessiondata['autologinid'] = $auto_login_key;
@@ -1701,7 +1742,7 @@ class user
 					AND u.user_id = s.session_user_id";
 			if ( !($result = $db->sql_query($sql)) )
 			{
-				mx_message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 			}
 			$userdata = $db->sql_fetchrow($result);
 			
@@ -1735,7 +1776,7 @@ class user
 							WHERE session_id = '" . $userdata['session_id'] . "'";
 						if ( !$db->sql_query($sql) )
 						{
-							mx_message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
+							message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
 						}
 
 						if ( $userdata['user_id'] != ANONYMOUS )
@@ -1745,7 +1786,7 @@ class user
 								WHERE user_id = " . $userdata['user_id'];
 							if ( !$db->sql_query($sql) )
 							{
-								mx_message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
+								message_die(CRITICAL_ERROR, 'Error updating sessions table', '', __LINE__, __FILE__, $sql);
 							}
 						}
 
@@ -1774,7 +1815,7 @@ class user
 
 		if ( !($userdata = $this->session_begin($user_id, $user_ip, $thispage_id, TRUE)) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error creating user session', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error creating user session', '', __LINE__, __FILE__, $sql);
 		}
 
 		return $userdata;
@@ -1811,7 +1852,7 @@ class user
 				AND session_user_id = $user_id";
 		if ( !$db->sql_query($sql) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error removing user session', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error removing user session', '', __LINE__, __FILE__, $sql);
 		}
 
 		//
@@ -1825,7 +1866,7 @@ class user
 					AND key_id = '$autologin_key'";
 			if ( !$db->sql_query($sql) )
 			{
-				mx_message_die(CRITICAL_ERROR, 'Error removing auto-login key', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error removing auto-login key', '', __LINE__, __FILE__, $sql);
 			}
 		}
 
@@ -1838,11 +1879,11 @@ class user
 			WHERE user_id = ' . ANONYMOUS;
 		if ( !($result = $db->sql_query($sql)) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
 		}
 		if ( !($userdata = $db->sql_fetchrow($result)) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
 		}
 		$db->sql_freeresult($result);
 
@@ -1853,6 +1894,98 @@ class user
 		return true;
 	}
 
+	/**
+	* Kills a session
+	*
+	* This method does what it says on the tin. It will delete a pre-existing session.
+	* It resets cookie information (destroying any autologin key within that cookie data)
+	* and update the users information from the relevant session data. It will then
+	* grab guest user information.
+	*/
+	function session_kill($new_session = true)
+	{
+		global $SID, $_SID, $db, $config;
+
+		$sql = "DELETE FROM " . SESSIONS_TABLE . "
+			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
+				AND session_user_id = " . (int) $this->data['user_id'];
+		$db->sql_query($sql);
+
+		if ($this->data['user_id'] != ANONYMOUS)
+		{
+			// Delete existing session, update last visit info first!
+			if (!isset($this->data['session_time']))
+			{
+				$this->data['session_time'] = time();
+			}
+
+			$sql = "UPDATE " . USERS_TABLE . "
+				SET user_lastvisit = " . (int) $this->data['session_time'] . ", user_private_chat_alert = ''
+				WHERE user_id = " . (int) $this->data['user_id'];
+			$db->sql_query($sql);
+
+			if ($this->cookie_data['k'])
+			{
+				$sql = "DELETE FROM " . SESSIONS_KEYS_TABLE . "
+					WHERE user_id = " . (int) $this->data['user_id'] . "
+						AND key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
+				$db->sql_query($sql);
+			}
+
+			// Reset the data array
+			$this->data = array();
+
+			$sql = "SELECT *
+				FROM " . USERS_TABLE . "
+				WHERE user_id = " . ANONYMOUS;
+			$result = $db->sql_query($sql);
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		$cookie_expire = $this->time_now - 31536000;
+		$this->set_cookie('u', '', $cookie_expire);
+		$this->set_cookie('k', '', $cookie_expire);
+		$this->set_cookie('sid', '', $cookie_expire);
+		unset($cookie_expire);
+
+		// Mighty Gorgon: I'm still not sure if I want to keep 'sid=' in Icy Phoenix as well... maybe better removing it!!!
+		//$SID = 'sid=';
+		$SID = '';
+		$_SID = '';
+		$this->session_id = '';
+
+		// To make sure a valid session is created we create one for the anonymous user
+		// We expect that message_die will be called after this function,
+		// but just in case it isn't, reset $userdata to the details for a guest
+		//
+		$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+			FROM ' . USERS_TABLE . ' u
+			WHERE user_id = ' . ANONYMOUS;
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
+		}
+		if ( !($userdata = $db->sql_fetchrow($result)) )
+		{
+			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
+		}
+		$db->sql_freeresult($result);
+
+		// Bot user, if they have a SID in the Request URI we need to get rid of it otherwise they'll index this page with the SID, duplicate content oh my!
+		if (isset($_GET['sid']) && !empty($this->data['is_bot']))
+		{
+			send_status_line(301, 'Moved Permanently');
+			redirect(build_url(array('sid')));
+		}
+		$this->data['session_last_visit'] = $this->time_now;
+			
+		setcookie($cookiename . '_data', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+		setcookie($cookiename . '_sid', '', $current_time - 31536000, $cookiepath, $cookiedomain, $cookiesecure);
+
+		return true;
+	}	
+	
 	/**
 	* Removes expired sessions and auto-login keys from the database
 	*/
@@ -1868,7 +2001,7 @@ class user
 				AND session_id <> '$session_id'";
 		if ( !$db->sql_query($sql) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error clearing sessions table', '', __LINE__, __FILE__, $sql);
 		}
 
 		//
@@ -1902,7 +2035,7 @@ class user
 
 		if ( !$db->sql_query($sql) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error removing auto-login keys', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error removing auto-login keys', '', __LINE__, __FILE__, $sql);
 		}
 
 		$where_sql = 'session_user_id = ' . (int) $user_id;
@@ -1911,7 +2044,7 @@ class user
 			WHERE $where_sql";
 		if ( !$db->sql_query($sql) )
 		{
-			mx_message_die(CRITICAL_ERROR, 'Error removing user session(s)', '', __LINE__, __FILE__, $sql);
+			message_die(CRITICAL_ERROR, 'Error removing user session(s)', '', __LINE__, __FILE__, $sql);
 		}
 
 		if ( !empty($key_sql) )
@@ -1926,7 +2059,7 @@ class user
 
 			if ( !$db->sql_query($sql) )
 			{
-				mx_message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
+				message_die(CRITICAL_ERROR, 'Error updating session key', '', __LINE__, __FILE__, $sql);
 			}
 
 			// And now rebuild the cookie

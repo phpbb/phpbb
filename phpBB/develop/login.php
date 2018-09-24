@@ -27,7 +27,7 @@
 define("IN_LOGIN", true);
 define('IN_PHPBB', true);
 
-$phpbb_root_path = './';
+$phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 define('PHP_EXT', $phpEx);
 
@@ -39,7 +39,7 @@ define('LOGIN_REDIRECT_PAGE', $phpbb_root_path . 'index.' . $phpEx);
 
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/auth_db_phpbb2.' . $phpEx);
-$config['enable_social_connect'] = true;
+$config['enable_social_connect'] = false;
 //
 // Start session management
 //
@@ -162,140 +162,141 @@ if (strstr($redirect_url, "\n") || strstr($redirect_url, "\r") || strstr($redire
 	message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 }
 
-if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout']) )
+if(isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) || isset($_GET['logout']))
 {
-	if( ( isset($_POST['login']) || isset($_GET['login']) ) && (!$userdata['session_logged_in'] || isset($_POST['admin'])) )
+	if((isset($_POST['login']) || isset($_GET['login'])) && (!$user->data['session_logged_in'] || isset($_POST['admin'])))
 	{
 		$username = isset($_POST['username']) ? phpbb_clean_username($_POST['username']) : '';
 		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
-		$sql = "SELECT user_id, username, user_password, user_active, user_level, user_login_tries, user_last_login_try
-			FROM " . USERS_TABLE . "
-			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
-		if ( !($result = $db->sql_query($sql)) )
+		$login_result = login_db($username, $password, false, true);
+
+		if ($login_result['status'] === LOGIN_ERROR_ATTEMPTS)
 		{
-			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
+			message_die(GENERAL_MESSAGE, sprintf($lang['LOGIN_ATTEMPTS_EXCEEDED'], $config['max_login_attempts'], $config['login_reset_time']));
 		}
 
-		if( $row = $db->sql_fetchrow($result) )
+		if ($login_result['status'] === LOGIN_SUCCESS)
 		{
-			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
+			// Is user linking a social network account?
+			if ($config['enable_social_connect'])
 			{
-				redirect(append_sid("index.$phpEx", true));
+				$available_networks = SocialConnect::get_available_networks();
+
+				$social_network_link = request_var('social_network_link', '');
+				if (!empty($social_network_link) && !empty($available_networks[$social_network_link]))
+				{
+					$social_network = $available_networks[$social_network_link];
+					$field_name = "user_" . $social_network->get_name_clean() . "_id";
+					$user_data_social = $social_network->get_user_data();
+
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $field_name . " = '" . $user_data_social[$field_name] . "' WHERE user_id = " . $login_result['user_row']['user_id'];
+					$db->sql_query($sql);
+				}
+			}
+
+			if(($login_result['user_row']['user_level'] != ADMIN) && !empty($config['board_disable']))
+			{
+				redirect(append_sid(PHPBB_PAGE_FORUM, true));
 			}
 			else
 			{
-				// If the last login is more than x minutes ago, then reset the login tries/time
-				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60)))
+				// CrackerTracker v5.x
+				if ($config['ctracker_login_history'] == 1)
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
-					$row['user_last_login_try'] = $row['user_login_tries'] = 0;
-				}
-				
-				// Check to see if user is allowed to login again... if his tries are exceeded
-				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $board_config['max_login_attempts'] && 
-					$row['user_last_login_try'] >= (time() - ($board_config['login_reset_time'] * 60)) && $row['user_login_tries'] >= $board_config['max_login_attempts'] && $userdata['user_level'] != ADMIN)
-				{
-					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
+					$ctracker_config->update_login_history($login_result['user_row']['user_id']);
 				}
 
-				if( md5($password) == $row['user_password'] && $row['user_active'] )
+				if ($config['ctracker_login_ip_check'] == 1)
 				{
-					$autologin = ( isset($_POST['autologin']) ) ? TRUE : 0;
-
-					$admin = (isset($_POST['admin'])) ? 1 : 0;
-					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
-
-					// Reset login tries
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
-
-					if( $session_id )
-					{
-						$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.$phpEx";
-						redirect(append_sid($url, true));
-					}
-					else
-					{
-						message_die(CRITICAL_ERROR, "Couldn't start session : login", "", __LINE__, __FILE__);
-					}
+					$ctracker_config->set_user_ip($login_result['user_row']['user_id']);
 				}
-				// Only store a failed login attempt for an active user - inactive users can't login even with a correct password
-				elseif ($row['user_active'])
+				// CrackerTracker v5.x
+
+				$set_admin = (isset($_POST['admin'])) ? 1 : 0;
+				$persist_login = (isset($_POST['autologin'])) ? 1 : 0;
+				$viewonline = (($_POST['online_status'] == 'hidden') ? 0 : 1);
+
+				if (isset($_POST['online_status']) && (($_POST['online_status'] == 'hidden') || ($_POST['online_status'] == 'visible')))
 				{
-					// Save login tries and last login
-					if ($row['user_id'] != ANONYMOUS)
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_login_tries = user_login_tries + 1, user_last_login_try = ' . time() . '
-							WHERE user_id = ' . $row['user_id'];
-						$db->sql_query($sql);
-					}
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_allow_viewonline = ' . $viewonline . ' WHERE user_id = ' . $login_result['user_row']['user_id'];
+					$db->sql_return_on_error(true);
+					$db->sql_query($sql);
+					$db->sql_return_on_error(false);
 				}
 
-				$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : '';
-				$redirect = str_replace('?', '&', $redirect);
+				$user->session_create($login_result['user_row']['user_id'], $set_admin, $persist_login, $viewonline);
 
-				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
+				if(!empty($user->session_id))
 				{
-					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+					$redirect_url = empty($redirect_url) ? LOGIN_REDIRECT_PAGE : $redirect_url;
+					redirect(append_sid($redirect_url, true));
 				}
-
-				$template->assign_vars(array(
-					'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
-				);
-
-				$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
-
-				message_die(GENERAL_MESSAGE, $message);
+				else
+				{
+					message_die(CRITICAL_ERROR, "Couldn't start session: login", "", __LINE__, __FILE__);
+				}
 			}
 		}
 		else
 		{
-			$redirect = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "";
-			$redirect = str_replace("?", "&", $redirect);
-
-			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
+			if (($login_result['status'] === LOGIN_ERROR_USERNAME) || ($login_result['status'] === LOGIN_ERROR_PASSWORD) || ($login_result['status'] === LOGIN_ERROR_ACTIVE))
 			{
-				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+				if ($login_result['error_msg'] === 'LOGIN_ERROR_PASSWORD')
+				{
+					// CrackerTracker v5.x
+					if (!class_exists('log_manager'))
+					{
+						include(PHPBB_ROOT_PATH . 'includes/ctracker/classes/class_log_manager.' . PHP_EXT);
+					}
+					$logfile = new log_manager();
+					$logfile->prepare_log($login_result['user_row']['username']);
+					$logfile->write_general_logfile($config['ctracker_logsize_logins'], 4);
+					unset($logfile);
+					// CrackerTracker v5.x
+				}
+				$error_message = ($login_result['error_msg'] === 'NO_PASSWORD_SUPPLIED') ? $lang[$login_result['error_msg']] : sprintf($lang[$login_result['error_msg']], '<a href="' . append_sid(CMS_PAGE_CONTACT_US) . '">', '</a>');
+				message_die(GENERAL_MESSAGE, $error_message);
 			}
 
-			$template->assign_vars(array(
-				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
-			);
+			meta_refresh(3, (PHPBB_PAGE_LOGIN . '?redirect=' . htmlspecialchars($redirect_url)));
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . PHPBB_PAGE_LOGIN . '?redirect=' . htmlspecialchars($redirect_url) . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_index'], '<a href="' . append_sid(PHPBB_PAGE_FORUM) . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 	}
-	else if( ( isset($_GET['logout']) || isset($_POST['logout']) ) && $userdata['session_logged_in'] )
+	elseif (is_request('logout') && $userdata['session_logged_in'] )
 	{
 		// session id check
 		if ($sid == '' || $sid != $userdata['session_id'])
 		{
 			message_die(GENERAL_ERROR, 'Invalid_session');
+			//trigger_error('INVALID_SESSION');			
 		}
 
-		if( $userdata['session_logged_in'] )
+		if ( $userdata['session_logged_in'] )
 		{
-			session_end($userdata['session_id'], $userdata['user_id']);
+			$user->session_end($userdata['session_id'], $userdata['user_id']);
+			//$user->session_kill();			
 		}
 
-		if (!empty($_POST['redirect']) || !empty($_GET['redirect']))
+		if (!is_empty_request('redirect'))
 		{
-			$url = (!empty($_POST['redirect'])) ? htmlspecialchars($_POST['redirect']) : htmlspecialchars($_GET['redirect']);
-			$url = str_replace('&amp;', '&', $url);
-			redirect(append_sid($url, true));
+			$fromurl = ( !empty($HTTP_REFERER) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_REFERER)) : "index.$phpEx";
+			$redirect_url = !is_empty_post('redirect') ? str_replace('&amp;', '&', request_post_var('redirect', "index.$phpEx", false)) : $fromurl;
+			redirect(append_sid($redirect_url, false, false, $session_id));
 		}
 		else
 		{
-			redirect(append_sid("index.$phpEx", true));
+			redirect(append_sid("index.$phpEx", false));
 		}
 	}
 	else
 	{
-		$url = ( !empty($_POST['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($_POST['redirect'])) : "index.$phpEx";
-		redirect(append_sid($url, true));
+		$redirect_url = !is_empty_post('redirect') ? str_replace('&amp;', '&', request_post_var('redirect', "index.$phpEx", false)) : "index.$phpEx";
+		//$redirect_url = empty($redirect_url) ? LOGIN_REDIRECT_PAGE : $redirect_url;
+		redirect(append_sid($redirect_url, true));
 	}
 }
 else

@@ -355,7 +355,8 @@ define('SMILEY_LIMIT', 1000);
 @define('AUTH_NEWS', 20);
 @define('AUTH_GLOBALANNOUNCE', 21);
 
-
+/**#@+
+/**#@-*/
 
 // Table names
 define('CONFIRM_TABLE', $table_prefix.'confirm');

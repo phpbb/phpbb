@@ -57,6 +57,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 		$result = (STRIP) ? stripslashes($result) : $result;
 	}
 }
+
 /**
  * Function: _read() from class mx_request_vars
  * autor John Olson 
@@ -176,6 +177,7 @@ function read_var($var, $dflt = '', $type = 0, $not_null = false)
 	}
 	return $not_null && empty($val) ? $dflt : $val;
 }
+
 /**
 * request_var
 *
@@ -255,6 +257,82 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 	}
 
 	return $var;
+}
+
+/**
+* Request the var value but returns only true of false, useful for forms validations
+*/
+function request_boolean_var($var_name, $default, $multibyte = false, $post_only = false)
+{
+	if ($post_only)
+	{
+		$return = request_post_var($var_name, $default, $multibyte);
+	}
+	else
+	{
+		$return = request_var($var_name, $default, $multibyte);
+	}
+	$return = !empty($return) ? true : false;
+	return $return;
+}
+
+/**
+* Gets only POST vars
+*/
+function request_post_var($var_name, $default, $multibyte = false)
+{
+	$return = $default;
+	if (isset($_POST[$var_name]))
+	{
+		$return = request_var($var_name, $default, $multibyte);
+	}
+	return $return;
+}
+
+/**
+* Get only GET vars
+*/
+function request_get_var($var_name, $default, $multibyte = false)
+{
+	$return = $default;
+	if (isset($_GET[$var_name]))
+	{
+		$temp_post_var = isset($_POST[$var_name]) ? $_POST[$var_name] : '';
+		$_POST[$var_name] = $_GET[$var_name];
+		$return = request_var($var_name, $default, $multibyte);
+		$_POST[$var_name] = $temp_post_var;
+	}
+	return $return;
+}
+
+/**
+* Check GET POST vars exists
+*/
+function check_http_var_exists($var_name, $empty_var = false)
+{
+	if ($empty_var)
+	{
+		if (isset($_GET[$var_name]) || isset($_POST[$var_name]))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!empty($_GET[$var_name]) || !empty($_POST[$var_name]))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return false;
 }
 
 /**
