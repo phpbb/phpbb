@@ -926,6 +926,8 @@ class compose
 					includes($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
 				}
 
+				$subject = \utf8_clean_string($subject);
+
 				// ((!$message_subject) ? $subject : $message_subject)
 				$msg_id = \submit_pm($action, $subject, $pm_data);
 
