@@ -31,10 +31,12 @@
 	<form method="post" id="mcp_report" action="{S_CLOSE_ACTION}">
 
 	<fieldset class="submit-buttons">
+		{% EVENT mcp_post_report_buttons_top_before %}
 		<!-- IF not S_REPORT_CLOSED -->
 			<input class="button1" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
 		<!-- ENDIF -->
 		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
+		{% EVENT mcp_post_report_buttons_top_after %}
 		<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
 		{S_FORM_TOKEN}
 	</fieldset>
