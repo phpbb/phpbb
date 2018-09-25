@@ -213,6 +213,10 @@ function mcp_post_details($id, $mode, $action)
 		$l_deleted_by = '';
 	}
 
+	// parse signature
+	$parse_flags = ($post_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
+
 	$mcp_post_template_data = array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
@@ -262,6 +266,7 @@ function mcp_post_details($id, $mode, $action)
 		'POST_IP'				=> $post_info['poster_ip'],
 		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
+		'SIGNATURE'				=> $post_info['user_sig'],
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
 		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
