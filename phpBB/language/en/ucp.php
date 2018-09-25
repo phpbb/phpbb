@@ -111,7 +111,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_TYPE_NOT_ALLOWED'		=> 'Your current avatar cannot be displayed because its type has been disallowed.',
 
 	'BACK_TO_DRAFTS'			=> 'Back to saved drafts',
-	'BACK_TO_LOGIN'				=> 'Back to login screen',
+	'BACK_TO_PREVIOUS'			=> 'Back to previous page',
 	'BIRTHDAY'					=> 'Birthday',
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
