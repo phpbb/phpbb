@@ -124,7 +124,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Add groups to PM box
 		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 				FROM ' . GROUPS_TABLE . ' g';
 
 			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -147,7 +147,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}

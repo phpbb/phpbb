@@ -32,7 +32,7 @@
 						<!-- BEGIN to_recipient -->
 						<li>
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}" style="color: {{ to_recipient.COLOUR }}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->
 						</li>
 						<!-- END to_recipient -->
 					</ul>
@@ -49,7 +49,7 @@
 						<!-- BEGIN bcc_recipient -->
 						<li>
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
-							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->
+							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}" style="color: {{ bcc_recipient.COLOUR }}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->
 						</li>
 						<!-- END bcc_recipient -->
 					</ul>
