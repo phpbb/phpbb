@@ -341,7 +341,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		}
 
 		// Clear the Modules Cache
-		$this->cache->destroy("_modules_$class");
+		$this->module_manager->remove_cache_file($class);
 	}
 
 	/**
@@ -425,7 +425,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				$this->module_manager->delete_module($module_id, $class);
 			}
 
-			$this->cache->destroy("_modules_$class");
+			$this->module_manager->remove_cache_file($class);
 		}
 	}
 
