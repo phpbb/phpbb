@@ -331,7 +331,7 @@ function get_context($text, $words, $length = 400)
 	$text_length = utf8_strlen($text);
 
 	// Replace all spaces/invisible characters with single spaces
-	$text = preg_replace("/[[:^print:] ]+/", ' ', $text);
+	$text = preg_replace("/\s+/", ' ', $text);
 
 	// we need to turn the entities back into their original form, to not cut the message in between them
 	$text = html_entity_decode($text);
@@ -362,9 +362,11 @@ function get_context($text, $words, $length = 400)
 			$start = $end = 0;
 			foreach ($word_indizes as $indize => $word)
 			{
-				if ($end+$characters_per_word+utf8_strlen($word) < $indize)
+				// Check if the next word can be inside the current fragment of text
+				if ($end + $characters_per_word + utf8_strlen($word) < $indize)
 				{
 					$fragment = utf8_substr($text, $start, $end-$start);
+
 					if ($start != 0)
 					{
 						$fragment = '... ' . $fragment;
@@ -372,16 +374,16 @@ function get_context($text, $words, $length = 400)
 
 					$fragments[] = $fragment;
 
-					$start = $indize-($characters_per_word/2);
+					$start = $indize - ($characters_per_word / 2);
 					// Start fragment at the begining of a word
-					$end = $start = ($start > 0) ? (utf8_strpos($text, ' ', $start-1)+1) : 0;
+					$end = $start = ($start > 0) ? (utf8_strpos($text, ' ', $start - 1) + 1) : 0;
 				}
 
 				$end += $characters_per_word;
 
 				// End fragment at the end of a word
 				$substring = utf8_substr($text, $start, $end-$start);
-				$end = $start+utf8_strrpos($substring, ' ');
+				$end = $start + utf8_strrpos($substring, ' ');
 			}
 
 			$fragment = utf8_substr($text, $start, $end-$start);
