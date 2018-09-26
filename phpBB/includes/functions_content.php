@@ -326,119 +326,80 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 */
 function get_context(string $text, array $words, int $length = 400)
 {
-	// first replace all whitespaces with single spaces
-	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
+	$output = '';
+	$text_length = utf8_strlen($text);
+
+	// Replace all spaces/invisible characters with single spaces
+	$text = preg_replace("/[[:^print:] ]+/", ' ', $text);
 
 	// we need to turn the entities back into their original form, to not cut the message in between them
-	$entities = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
-	$characters = array('<', '>', '[', ']', '.', ':', ':');
-	$text = str_replace($entities, $characters, $text);
+	$text = html_entity_decode($text);
 
-	$word_indizes = array();
-	if (count($words))
+	// Get first ocurrence of each word
+	$word_indizes = [];
+	foreach ($words as $word)
 	{
-		$match = '';
-		// find the starting indizes of all words
-		foreach ($words as $word)
-		{
-			if ($word)
-			{
-				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
-				{
-					if (empty($match[1]))
-					{
-						continue;
-					}
+		$pos = utf8_stripos($text, $word);
 
-					$pos = utf8_strpos($text, $match[1]);
-					if ($pos !== false)
-					{
-						$word_indizes[] = $pos;
-					}
-				}
-			}
+		if ($pos !== false)
+		{
+			$word_indizes[$pos] = $word;
 		}
-		unset($match);
+	}
 
-		if (count($word_indizes))
-		{
-			$word_indizes = array_unique($word_indizes);
-			sort($word_indizes);
+	// If there are coincidences
+	if (!empty($word_indizes))
+	{
+			ksort($word_indizes);
 
 			$wordnum = count($word_indizes);
-			// number of characters on the right and left side of each word
-			$sequence_length = (int) ($length / (2 * $wordnum)) - 2;
-			$final_text = '';
-			$word = $j = 0;
-			$final_text_index = -1;
+			// Size of the fragment of text per word
+			$characters_per_word = (int) ($length / $wordnum);
 
-			// cycle through every character in the original text
-			for ($i = $word_indizes[$word], $n = utf8_strlen($text); $i < $n; $i++)
+			// Get text fragments
+			$fragments = [];
+			$start = $end = 0;
+			foreach ($word_indizes as $indize => $word)
 			{
-				// if the current position is the start of one of the words then append $sequence_length characters to the final text
-				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
+				if ($end+$characters_per_word+utf8_strlen($word) < $indize)
 				{
-					if ($final_text_index < $i - $sequence_length - 1)
+					$fragment = utf8_substr($text, $start, $end-$start);
+					if ($start != 0)
 					{
-						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', utf8_substr($text, $i - $sequence_length, $sequence_length));
+						$fragment = '... ' . $fragment;
 					}
-					else
-					{
-						// if the final text is already nearer to the current word than $sequence_length we only append the text
-						// from its current index on and distribute the unused length to all other sequenes
-						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
-						$final_text .= utf8_substr($text, $final_text_index + 1, $i - $final_text_index - 1);
-					}
-					$final_text_index = $i - 1;
 
-					// add the following characters to the final text (see below)
-					$word++;
-					$j = 1;
+					$fragments[] = $fragment;
+
+					$start = $indize-($characters_per_word/2);
+					// Start fragment at the begining of a word
+					$end = $start = ($start > 0) ? (utf8_strpos($text, ' ', $start-1)+1) : 0;
 				}
 
-				if ($j > 0)
-				{
-					// add the character to the final text and increment the sequence counter
-					$final_text .= utf8_substr($text, $i, 1);
-					$final_text_index++;
-					$j++;
+				$end += $characters_per_word;
 
-					// if this is a whitespace then check whether we are done with this sequence
-					if (utf8_substr($text, $i, 1) == ' ')
-					{
-						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
-						if ($i + 4 < $n)
-						{
-							if (($j > $sequence_length && $word >= $wordnum) || utf8_strlen($final_text) > $length)
-							{
-								$final_text .= ' ...';
-								break;
-							}
-						}
-						else
-						{
-							// make sure the text really reaches the end
-							$j -= 4;
-						}
-
-						// stop context generation and wait for the next word
-						if ($j > $sequence_length)
-						{
-							$j = 0;
-						}
-					}
-				}
+				// End fragment at the end of a word
+				$substring = utf8_substr($text, $start, $end-$start);
+				$end = $start+utf8_strrpos($substring, ' ');
 			}
-			return str_replace($characters, $entities, $final_text);
-		}
+
+			$fragment = utf8_substr($text, $start, $end-$start);
+			if ($start != 0)
+			{
+				$fragment = '... ' . $fragment;
+			}
+			if ($end < $text_length)
+			{
+				$fragment .= ' ...';
+			}
+
+			// Get the last fragment
+			$fragments[] = $fragment;
+
+			$output = htmlentities(implode($fragments, ''));
 	}
 
-	if (!count($words) || !count($word_indizes))
-	{
-		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
-	}
-
-	return '';
+	return $output;
 }
 
 /**
