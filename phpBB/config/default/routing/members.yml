@@ -1,0 +1,4 @@
+phpbb_members_team:
+    path:             /team
+    defaults:
+        _controller:  members.controller.team:handle

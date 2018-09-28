@@ -1,0 +1,16 @@
+services:
+
+# Controllers
+    members.controller.team:
+        class: phpbb\members\controller\team
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
