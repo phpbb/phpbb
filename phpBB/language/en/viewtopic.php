@@ -88,6 +88,7 @@ $lang = array_merge($lang, array(
 	'NO_UNREAD_POSTS'		=> 'There are no new unread posts for this topic.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.',
 	'NO_VOTES'				=> 'No votes',
+	'NO_AUTH_PRINT_TOPIC'	=> 'You are not authorised to print topics.',
 
 	'POLL_ENDED_AT'			=> 'Poll ended at %s',
 	'POLL_RUN_TILL'			=> 'Poll runs till %s',
