@@ -24,6 +24,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 		$this->setParameter('session.log_errors', false);
 		$this->setParameter('session.force_sid', true);
 		$this->setParameter('finder.not_use_cache', false);
+		$this->setParameter('finder.cache', false);
 	}
 
 	/**

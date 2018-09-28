@@ -27,4 +27,4 @@ core:
         log_errors: true
 
     finder:
-        not_use_cache: true
+        cache: false

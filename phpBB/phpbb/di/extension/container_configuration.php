@@ -67,7 +67,7 @@ class container_configuration implements ConfigurationInterface
 				->arrayNode('finder')
 					->addDefaultsIfNotSet()
 					->children()
-						->booleanNode('not_use_cache')->defaultValue(false)->end()
+						->booleanNode('cache')->defaultValue(true)->end()
 					->end()
 				->end()
 			->end()

@@ -23,7 +23,7 @@ class finder
 	protected $extensions;
 	protected $phpbb_root_path;
 	protected $cache;
-	protected $not_use_cache;
+	protected $use_cache;
 	protected $php_ext;
 
 	/**
@@ -56,11 +56,11 @@ class finder
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(/*\phpbb\cache\service */ $cache, $not_use_cache, $phpbb_root_path, $php_ext, $cache_name = '_ext_finder')
+	public function __construct(/*\phpbb\cache\service */ $cache, $use_cache, $phpbb_root_path, $php_ext, $cache_name = '_ext_finder')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
-		$this->not_use_cache = $not_use_cache;
+		$this->use_cache = $use_cache;
 		$this->php_ext = $php_ext;
 		$this->cache_name = $cache_name;
 
@@ -426,7 +426,7 @@ class finder
 		$this->query['is_dir'] = $is_dir;
 		$query = md5(serialize($this->query) . serialize($extensions));
 
-		if (!$this->not_use_cache && $cache && isset($this->cached_queries[$query]))
+		if ($this->use_cache && $cache && isset($this->cached_queries[$query]))
 		{
 			return $this->cached_queries[$query];
 		}

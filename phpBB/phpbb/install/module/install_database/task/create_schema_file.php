@@ -48,7 +48,7 @@ class create_schema_file extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $not_use_cache;
+	protected $finder_cache;
 
 	/**
 	 * Constructor
@@ -64,7 +64,7 @@ class create_schema_file extends \phpbb\install\task_base
 								\phpbb\filesystem\filesystem_interface $filesystem,
 								$phpbb_root_path,
 								$php_ext,
-								$not_use_cache)
+								$finder_cache)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
@@ -84,7 +84,7 @@ class create_schema_file extends \phpbb\install\task_base
 		$this->filesystem		= $filesystem;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
-		$this->not_use_cache	= $not_use_cache;
+		$this->finder_cache		= $finder_cache;
 
 		parent::__construct(true);
 	}
@@ -124,7 +124,7 @@ class create_schema_file extends \phpbb\install\task_base
 				include ($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 			}
 
-			$finder = new \phpbb\finder\finder(null, true, $this->phpbb_root_path, $this->php_ext);
+			$finder = new \phpbb\finder\finder(null, $this->finder_cache, $this->phpbb_root_path, $this->php_ext);
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db, true);

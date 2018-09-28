@@ -243,7 +243,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new \phpbb\finder\finder($cache, true, __DIR__ . '/', 'php', '_custom_cache_name');
+		$finder = new \phpbb\finder\finder($cache, false, __DIR__ . '/', 'php', '_custom_cache_name');
 		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$files = $finder->suffix('_class.php')->get_files();
 
@@ -288,7 +288,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 					md5(serialize($query)) => array('file_name' => 'extension'),
 				),
 			)),
-			true,
+			false,
 			__DIR__ . '/',
 			'_ext_finder'
 		);

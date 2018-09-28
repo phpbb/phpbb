@@ -365,7 +365,7 @@ class phpbb_database_test_connection_manager
 		{
 			global $phpbb_root_path, $phpEx, $table_prefix;
 
-			$finder = new \phpbb\finder\finder(null, true, $phpbb_root_path, $phpEx);
+			$finder = new \phpbb\finder\finder(null, false, $phpbb_root_path, $phpEx);
 			$classes = $finder->core_path('phpbb/db/migration/data/')
 				->get_classes();
 

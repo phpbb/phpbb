@@ -24,6 +24,6 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$this->container = $container;
 		$this->config = new \phpbb\config\config(array());
 		$this->user = new \phpbb\user($lang,'\phpbb\datetime');
-		$this->finder_factory = new \phpbb\finder\factory(null, true, $this->phpbb_root_path, $phpEx);
+		$this->finder_factory = new \phpbb\finder\factory(null, false, $this->phpbb_root_path, $phpEx);
 	}
 }

@@ -3,6 +3,6 @@ services:
         class: phpbb\finder\factory
         arguments:
             - '@cache'
-            - '%finder.not_use_cache%'
+            - '%finder.cache%'
             - '%core.root_path%'
             - '%core.php_ext%'
