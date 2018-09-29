@@ -94,6 +94,11 @@ class user extends base
 	 */
 	public function after_unban(array $data)
 	{
+		if (empty($data['logging']))
+		{
+			return;
+		}
+
 		$user_ids = array_map('intval', $data['items']);
 
 		$sql = 'SELECT user_id, username
