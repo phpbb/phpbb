@@ -15,6 +15,11 @@ namespace phpbb\ban\type;
 
 class email extends base
 {
+	public function get_log_string()
+	{
+		return 'LOG_BAN_EMAIL';
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
