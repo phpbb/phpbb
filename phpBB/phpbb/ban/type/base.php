@@ -27,6 +27,13 @@ abstract class base implements type_interface
 	/** @var string */
 	protected $users_table;
 
+	/**
+	 * Creates a ban type.
+	 *
+	 * @param \phpbb\db\driver\driver_interface	$db				A phpBB DBAL object
+	 * @param \phpbb\user						$user			An user object
+	 * @param string							$users_table	The users table
+	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $users_table)
 	{
 		$this->db = $db;

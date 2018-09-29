@@ -26,7 +26,7 @@ class acp_email
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $template, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
@@ -74,7 +74,7 @@ class acp_email
 				{
 					// If giving usernames the admin is able to email inactive users too...
 					$sql_ary = array(
-						'SELECT'	=> 'username, user_email, user_jabber, user_notify_type, user_lang',
+						'SELECT'	=> 'user_id, username, user_email, user_jabber, user_notify_type, user_lang',
 						'FROM'		=> array(
 							USERS_TABLE		=> '',
 						),
@@ -88,7 +88,7 @@ class acp_email
 					if ($group_id)
 					{
 						$sql_ary = array(
-							'SELECT'	=> 'u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type',
+							'SELECT'	=> 'u.user_id, u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type',
 							'FROM'		=> array(
 								USERS_TABLE			=> 'u',
 								USER_GROUP_TABLE	=> 'ug',
@@ -104,28 +104,13 @@ class acp_email
 					else
 					{
 						$sql_ary = array(
-							'SELECT'	=> 'u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
+							'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
 							'FROM'		=> array(
 								USERS_TABLE	=> 'u',
 							),
 							'WHERE'		=> 'u.user_allow_massemail = 1
 								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')',
 							'ORDER_BY'	=> 'u.user_lang, u.user_notify_type',
-						);
-					}
-
-					// Mail banned or not
-					if (!isset($_REQUEST['mail_banned_flag']))
-					{
-						$sql_ary['WHERE'] .= ' AND (b.ban_id IS NULL
-						        OR b.ban_exclude = 1)';
-						$sql_ary['LEFT_JOIN'] = array(
-							array(
-								'FROM'	=> array(
-									BANLIST_TABLE	=> 'b',
-								),
-								'ON'	=> 'u.user_id = b.ban_userid',
-							),
 						);
 					}
 				}
@@ -141,11 +126,22 @@ class acp_email
 
 				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				$rows = $db->sql_fetchrowset($result);
+				$db->sql_freeresult($result);
 
-				if (!$row)
+				if (!empty($rows) && !$request->is_set('mail_banned_flag'))
 				{
-					$db->sql_freeresult($result);
+					/** @var \phpbb\ban\manager $ban_manager */
+					$ban_manager = $phpbb_container->get('ban.manager');
+					$banned_users = $ban_manager->get_banned_users();
+
+					$rows = array_filter($rows, function ($row) use ($banned_users) {
+						return !isset($banned_users[(int) $row['user_id']]);
+					});
+				}
+
+				if (empty($rows))
+				{
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -155,10 +151,10 @@ class acp_email
 				// Maximum number of bcc recipients
 				$max_chunk_size = (int) $config['email_max_chunk_size'];
 				$email_list = array();
-				$old_lang = $row['user_lang'];
-				$old_notify_type = $row['user_notify_type'];
+				$old_lang = $rows[0]['user_lang'];
+				$old_notify_type = $rows[0]['user_notify_type'];
 
-				do
+				foreach ($rows as $row)
 				{
 					if (($row['user_notify_type'] == NOTIFY_EMAIL && $row['user_email']) ||
 						($row['user_notify_type'] == NOTIFY_IM && $row['user_jabber']) ||
@@ -185,8 +181,6 @@ class acp_email
 						$i++;
 					}
 				}
-				while ($row = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
 
 				// Send the messages
 				if (!class_exists('messenger'))

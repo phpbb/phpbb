@@ -27,7 +27,23 @@ class user extends base
 	/** @var string */
 	private $ban_log_string = 'LOG_BAN_USER';
 
+	/** @var string */
 	private $unban_log_string = 'LOG_UNBAN_USER';
+
+	/**
+	 * Creates the user ban type
+	 *
+	 * @param \phpbb\db\driver\driver_interface	$db				A phpBB DBAL object
+	 * @param \phpbb\log\log_interface			$log			A log object
+	 * @param \phpbb\user						$user			An user object
+	 * @param string							$users_table	The users table
+	 */
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $users_table)
+	{
+		$this->log = $log;
+
+		parent::__construct($db, $user, $users_table);
+	}
 
 	/**
 	 * {@inheritDoc}
