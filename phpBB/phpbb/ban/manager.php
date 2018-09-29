@@ -20,6 +20,8 @@ class manager
 {
 	protected $ban_table;
 
+	protected $cache;
+
 	protected $db;
 
 	protected $log;
@@ -34,9 +36,10 @@ class manager
 
 	protected $users_table;
 
-	public function __construct($types, \phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $ban_table, $users_table = '', $sessions_table = '', $sessions_keys_table = '')
+	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $ban_table, $users_table = '', $sessions_table = '', $sessions_keys_table = '')
 	{
 		$this->ban_table = $ban_table;
+		$this->cache = $cache;
 		$this->db = $db;
 		$this->log = $log;
 		$this->sessions_keys_table = $sessions_keys_table;
@@ -46,7 +49,7 @@ class manager
 		$this->users_table = $users_table;
 	}
 
-	public function ban($mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, $reason, $display_reason = '', $logging = true)
+	public function ban($mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, $reason, $display_reason = '')
 	{
 		if (!isset($this->types[$mode]))
 		{
@@ -64,7 +67,7 @@ class manager
 		// Prevent duplicate bans
 		$sql = 'DELETE FROM ' . $this->ban_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
-			AND " . $this->db->sql_in_set('ban_item', $ban_items);
+			AND " . $this->db->sql_in_set('ban_item', $ban_items); // TODO (what if empty?)
 		$this->db->sql_query($sql);
 
 		$insert_array = [];
@@ -82,7 +85,7 @@ class manager
 
 		if (empty($insert_array))
 		{
-			return;
+			return; // TODO
 		}
 
 		$result = $this->db->sql_multi_insert($this->ban_table, $insert_array);
@@ -92,62 +95,86 @@ class manager
 			// TODO throw exception
 		}
 
-		if ($logging)
+		if ($ban_mode->get_log_string() !== false)
 		{
-			// TODO logging
+			$ban_items_log = implode(', ', $ban_items);
+
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_log_string(), false, [$reason, $ban_items_log]);
+			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_log_string(), false, [
+				'forum_id'	=> 0,
+				'topic_id'	=> 0,
+				$reason,
+				$ban_items_log,
+			]);
 		}
 
-		if (!$ban_mode->after_ban())
-		{
-			return;
-		}
+		$ban_data = [
+			'items'				=> $ban_items,
+			'start'				=> $start,
+			'end'				=> $end,
+			'reason'			=> $reason,
+			'display_reason'	=> $display_reason,
+		];
 
-		$user_column = $ban_mode->get_user_column();
-		if (!empty($user_column) && !empty($this->users_table))
+		if ($ban_mode->after_ban($ban_data))
 		{
-			$ban_items_sql = [];
-			$ban_or_like = '';
-			foreach ($ban_items as $ban_item)
+			$user_column = $ban_mode->get_user_column();
+			if (!empty($user_column) && !empty($this->users_table))
 			{
-				if (stripos($ban_item, '*') === false)
+				if ($user_column !== 'user_id')
 				{
-					$ban_items_sql[] = $ban_item;
+					$ban_items_sql = [];
+					$ban_or_like = '';
+					foreach ($ban_items as $ban_item)
+					{
+						if (stripos($ban_item, '*') === false)
+						{
+							$ban_items_sql[] = $ban_item;
+						}
+						else
+						{
+							$ban_or_like .= ' OR ' . $user_column . ' ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $ban_item));
+						}
+					}
+
+					$sql = 'SELECT user_id
+						FROM ' . $this->users_table . '
+						WHERE ' . $this->db->sql_in_set('u.' . $user_column, $ban_items_sql) . $ban_or_like;
+					$result = $this->db->sql_query($sql);
+
+					$user_ids = [];
+					while ($row = $this->db->sql_fetchrow($result))
+					{
+						$user_ids[] = (int)$row['user_id'];
+					}
+					$this->db->sql_freeresult($result);
 				}
 				else
 				{
-					$ban_or_like .= ' OR ' . $user_column . ' ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $ban_item));
+					$user_ids = $ban_items;
+				}
+
+				if (!empty($user_ids) && !empty($this->sessions_table))
+				{
+					$sql = 'DELETE FROM ' . $this->sessions_table . '
+						WHERE ' . $this->db->sql_in_set('session_user_id', $user_ids);
+					$this->db->sql_query($sql);
+				}
+				if (!empty($user_ids) && !empty($this->sessions_keys_table))
+				{
+					$sql = 'DELETE FROM ' . $this->sessions_keys_table . '
+						WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+					$this->db->sql_query($sql);
 				}
 			}
-
-			$sql = 'SELECT user_id
-				FROM ' . $this->users_table . '
-				WHERE ' . $this->db->sql_in_set('u.' . $user_column, $ban_items) . $ban_or_like;
-			$result = $this->db->sql_query($sql);
-
-			$user_ids = [];
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$user_ids[] = (int)$row['user_id'];
-			}
-			$this->db->sql_freeresult($result);
-
-			if (!empty($user_ids) && !empty($this->sessions_table))
-			{
-				$sql = 'DELETE FROM ' . $this->sessions_table . '
-				WHERE ' . $this->db->sql_in_set('session_user_id', $user_ids);
-				$this->db->sql_query($sql);
-			}
-			if (!empty($user_ids) && !empty($this->sessions_keys_table))
-			{
-				$sql = 'DELETE FROM ' . $this->sessions_keys_table . '
-				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
-				$this->db->sql_query($sql);
-			}
 		}
+
+		$this->cache->destroy('sql', $this->ban_table);
 	}
 
 	public function unban($mode, array $items, $reason, $logging = true)
 	{
+
 	}
 
 	public function check(array $user_data = [])

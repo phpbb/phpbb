@@ -19,6 +19,14 @@ namespace phpbb\ban\type;
 interface type_interface
 {
 	/**
+	 * Returns the language key that's used for the log entry.
+	 * False, if there is none (and thus no logs are created)
+	 *
+	 * @return string|bool
+	 */
+	public function get_log_string();
+
+	/**
 	 * Returns the type identifier for this ban type
 	 *
 	 * @return string
@@ -40,9 +48,13 @@ interface type_interface
 	 * Returns true if affected users should be logged out and
 	 * false otherwise
 	 *
+	 * @param array $data An array containing information about
+	 *                    the bans, like the reason or the start
+	 *                    and end of the ban
+	 *
 	 * @return bool
 	 */
-	public function after_ban();
+	public function after_ban($data);
 
 	public function after_unban(); // ???
 
