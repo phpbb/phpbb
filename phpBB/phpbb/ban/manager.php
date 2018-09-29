@@ -95,12 +95,12 @@ class manager
 			// TODO throw exception
 		}
 
-		if ($ban_mode->get_log_string() !== false)
+		if ($ban_mode->get_ban_log_string() !== false)
 		{
 			$ban_items_log = implode(', ', $ban_items);
 
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_log_string(), false, [$reason, $ban_items_log]);
-			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_log_string(), false, [
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_ban_log_string(), false, [$reason, $ban_items_log]);
+			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_ban_log_string(), false, [
 				'forum_id'	=> 0,
 				'topic_id'	=> 0,
 				$reason,
@@ -172,9 +172,50 @@ class manager
 		$this->cache->destroy('sql', $this->ban_table);
 	}
 
-	public function unban($mode, array $items, $reason, $logging = true)
+	public function unban($mode, array $items)
 	{
+		if (!isset($this->types[$mode]))
+		{
+			throw new type_not_found_exception(); // TODO
+		}
+		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		$ban_mode = $this->types[$mode];
 
+		$sql_ids = array_map('intval', $items);
+		$sql = 'SELECT ban_item
+			FROM ' . $this->ban_table . '
+			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids); // TODO (what if empty?)
+		$result = $this->db->sql_query($sql);
+
+		$unbanned_items = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$unbanned_items[] = $row['ban_item'];
+		}
+		$this->db->sql_freeresult($result);
+
+		$sql = 'DELETE FROM ' . $this->ban_table . '
+			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
+		$this->db->sql_query($sql);
+
+		if ($ban_mode->get_unban_log_string() !== false)
+		{
+			$unban_items_log = implode(', ', $unbanned_items);
+
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_unban_log_string(), false, [$unban_items_log]);
+			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_unban_log_string(), false, [
+				'forum_id'	=> 0,
+				'topic_id'	=> 0,
+				$unban_items_log,
+			]);
+		}
+
+		$unban_data = [
+			'items'		=> $unbanned_items,
+		];
+		$ban_mode->after_unban($unban_data);
+
+		$this->cache->destroy('sql', $this->ban_table);
 	}
 
 	public function check(array $user_data = [])
@@ -183,5 +224,6 @@ class manager
 
 	public function tidy()
 	{
+		// TODO: Delete stale bans
 	}
 }

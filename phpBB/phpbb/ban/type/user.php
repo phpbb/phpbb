@@ -22,14 +22,24 @@ class user extends base
 	protected $log;
 
 	/** @var string */
-	private $log_string = 'LOG_BAN_USER';
+	private $ban_log_string = 'LOG_BAN_USER';
+
+	private $unban_log_string = 'LOG_UNBAN_USER';
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_log_string()
+	public function get_ban_log_string()
 	{
 		// Have to handle logging differently here
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_unban_log_string()
+	{
 		return false;
 	}
 
@@ -52,12 +62,12 @@ class user extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_ban($data)
+	public function after_ban(array $data)
 	{
 		$usernames_log = implode(', ', $this->banned_users);
 
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->log_string, false, [$data['reason'], $usernames_log]);
-		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $this->log_string, false, [
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->ban_log_string, false, [$data['reason'], $usernames_log]);
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $this->ban_log_string, false, [
 			'forum_id'	=> 0,
 			'topic_id'	=> 0,
 			$data['reason'],
@@ -66,7 +76,7 @@ class user extends base
 
 		foreach ($this->banned_users as $user_id => $username)
 		{
-			$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $this->log_string, false, [
+			$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $this->ban_log_string, false, [
 				'reportee_id'	=> $user_id,
 				$data['reason'],
 				$usernames_log,
@@ -74,6 +84,50 @@ class user extends base
 		}
 
 		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function after_unban(array $data)
+	{
+		$user_ids = array_map('intval', $data['items']);
+
+		$sql = 'SELECT user_id, username
+			FROM ' . $this->users_table . '
+			WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+		$result = $this->db->sql_query($sql);
+
+		$real_user_ids = [];
+		$usernames = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$real_user_ids[] = $row['user_id'];
+			$usernames[] = $row['username'];
+		}
+		$this->db->sql_freeresult($result);
+
+		if (empty($usernames))
+		{
+			return;
+		}
+
+		$usernames_log = implode(', ', $usernames);
+
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $this->unban_log_string, false, [$usernames_log]);
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $this->unban_log_string, false, [
+			'forum_id'	=> 0,
+			'topic_id'	=> 0,
+			$usernames_log,
+		]);
+
+		foreach ($real_user_ids as $user_id)
+		{
+			$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $this->unban_log_string, false, [
+				'reportee_id'	=> $user_id,
+				$usernames_log,
+			]);
+		}
 	}
 
 	/**

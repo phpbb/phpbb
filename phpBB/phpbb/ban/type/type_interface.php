@@ -19,12 +19,20 @@ namespace phpbb\ban\type;
 interface type_interface
 {
 	/**
-	 * Returns the language key that's used for the log entry.
+	 * Returns the language key that's used for the ban log entry.
 	 * False, if there is none (and thus no logs are created)
 	 *
 	 * @return string|bool
 	 */
-	public function get_log_string();
+	public function get_ban_log_string();
+
+	/**
+	 * Returns the language key that's used for the unban log entry.
+	 * False, if thee is none (and thus no logs are created)
+	 *
+	 * @return string|bool
+	 */
+	public function get_unban_log_string();
 
 	/**
 	 * Returns the type identifier for this ban type
@@ -44,7 +52,7 @@ interface type_interface
 	public function get_user_column();
 
 	/**
-	 * Gives the possibility to do some clean up after banning
+	 * Gives the possibility to do some clean up after banning.
 	 * Returns true if affected users should be logged out and
 	 * false otherwise
 	 *
@@ -54,9 +62,19 @@ interface type_interface
 	 *
 	 * @return bool
 	 */
-	public function after_ban($data);
+	public function after_ban(array $data);
 
-	public function after_unban(); // ???
+	/**
+	 * Gives the possiblity to do some clean up after unbanning.
+	 * The return value of this method will be ignored and thus
+	 * should be null
+	 *
+	 * @param array $data An array containing information about
+	 *                    the unbans, e.g. the unbanned items.
+	 *
+	 * @return null
+	 */
+	public function after_unban(array $data);
 
 	/**
 	 * In the case that get_user_column() returns null, this method

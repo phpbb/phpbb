@@ -15,9 +15,14 @@ namespace phpbb\ban\type;
 
 class email extends base
 {
-	public function get_log_string()
+	public function get_ban_log_string()
 	{
 		return 'LOG_BAN_EMAIL';
+	}
+
+	public function get_unban_log_string()
+	{
+		return 'LOG_UNBAN_EMAIL';
 	}
 
 	/**
