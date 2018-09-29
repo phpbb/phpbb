@@ -97,6 +97,18 @@ interface type_interface
 	public function check(array $ban_rows, array $user_data);
 
 	/**
+	 * In case get_user_column() returns no string, this method will be called
+	 * when a list of banned users is retrieved.
+	 * Returns a list of banned users.
+	 * The result is cached and is not used for ban checking, so the accuracy
+	 * of the results is not as important as when *really* checking in check()
+	 *
+	 * @return array An array of banned users, where the user ids are the keys
+	 *               and the value is the end of the ban (or 0 if permanent)
+	 */
+	public function get_banned_users();
+
+	/**
 	 * Prepares the given ban items before saving them in the database
 	 *
 	 * @param array $items

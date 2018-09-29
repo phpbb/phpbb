@@ -65,6 +65,14 @@ abstract class base implements type_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function get_banned_users()
+	{
+		return [];
+	}
+
+	/**
 	 * Queries users that are excluded from banning (like founders)
 	 * from the database and saves them in $this->excluded array.
 	 * Returns true on success and false on failure

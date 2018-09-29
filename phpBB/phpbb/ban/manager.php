@@ -13,12 +13,15 @@
 
 namespace phpbb\ban;
 
+use phpbb\ban\exception\ban_insert_failed_exception;
 use phpbb\ban\exception\invalid_length_exception;
+use phpbb\ban\exception\no_items_specified_exception;
 use phpbb\ban\exception\type_not_found_exception;
 
 class manager
 {
-	const CACHE_KEY = '_ban_info';
+	const CACHE_KEY_INFO = '_ban_info';
+	const CACHE_KEY_USERS = '_banned_users';
 	const CACHE_TTL = 3600;
 
 	protected $ban_table;
@@ -65,13 +68,14 @@ class manager
 		{
 			throw new type_not_found_exception(); // TODO
 		}
+		$this->tidy();
 
 		$ban_items = $ban_mode->prepare_for_storage($items);
 
 		// Prevent duplicate bans
 		$sql = 'DELETE FROM ' . $this->ban_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
-			AND " . $this->db->sql_in_set('ban_item', $ban_items); // TODO (what if empty?)
+			AND " . $this->db->sql_in_set('ban_item', $ban_items, false, true);
 		$this->db->sql_query($sql);
 
 		$insert_array = [];
@@ -89,14 +93,13 @@ class manager
 
 		if (empty($insert_array))
 		{
-			return; // TODO
+			throw new no_items_specified_exception(); // TODO
 		}
 
 		$result = $this->db->sql_multi_insert($this->ban_table, $insert_array);
 		if ($result === false)
 		{
-			// Something went wrong
-			// TODO throw exception
+			throw new ban_insert_failed_exception(); // TODO
 		}
 
 		if ($ban_mode->get_ban_log_string() !== false)
@@ -173,10 +176,11 @@ class manager
 			}
 		}
 
-		$this->cache->destroy(self::CACHE_KEY);
+		$this->cache->destroy(self::CACHE_KEY_INFO);
+		$this->cache->destroy(self::CACHE_KEY_USERS);
 	}
 
-	public function unban($mode, array $items)
+	public function unban($mode, array $items, $logging = true)
 	{
 		/** @var \phpbb\ban\type\type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
@@ -184,6 +188,7 @@ class manager
 		{
 			throw new type_not_found_exception(); // TODO
 		}
+		$this->tidy();
 
 		$sql_ids = array_map('intval', $items);
 		$sql = 'SELECT ban_item
@@ -202,7 +207,7 @@ class manager
 			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
 		$this->db->sql_query($sql);
 
-		if ($ban_mode->get_unban_log_string() !== false)
+		if ($logging && $ban_mode->get_unban_log_string() !== false)
 		{
 			$unban_items_log = implode(', ', $unbanned_items);
 
@@ -216,10 +221,12 @@ class manager
 
 		$unban_data = [
 			'items'		=> $unbanned_items,
+			'logging'	=> $logging,
 		];
 		$ban_mode->after_unban($unban_data);
 
-		$this->cache->destroy(self::CACHE_KEY);
+		$this->cache->destroy(self::CACHE_KEY_INFO);
+		$this->cache->destroy(self::CACHE_KEY_USERS);
 	}
 
 	public function check(array $user_data = [])
@@ -229,33 +236,7 @@ class manager
 			$user_data = $this->user->data;
 		}
 
-		$ban_info = $this->cache->get(self::CACHE_KEY);
-		if ($ban_info === false)
-		{
-			$sql = 'SELECT ban_mode, ban_item, ban_end, ban_reason_display
-				FROM ' . $this->ban_table . '
-				WHERE 1';
-			$result = $this->db->sql_query($sql);
-
-			$ban_info = [];
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				if (!isset($ban_info[$row['ban_mode']]))
-				{
-					$ban_info[$row['ban_mode']] = [];
-				}
-
-				$ban_info[$row['ban_mode']][] = [
-					'item'		=> $row['ban_item'],
-					'end'		=> $row['ban_end'],
-					'reason'	=> $row['ban_reason_display'],
-				];
-			}
-			$this->db->sql_freeresult($result);
-
-			$this->cache->put(self::CACHE_KEY, $ban_info, self::CACHE_TTL);
-		}
+		$ban_info = $this->get_info_cache();
 
 		foreach ($ban_info as $mode => $ban_rows)
 		{
@@ -305,6 +286,100 @@ class manager
 		return false;
 	}
 
+	public function get_bans($mode)
+	{
+		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		$ban_mode = $this->find_type($mode);
+		if ($ban_mode === false)
+		{
+			throw new type_not_found_exception(); // TODO
+		}
+		$this->tidy();
+
+		$sql = 'SELECT ban_id, ban_item, ban_start, ban_end, ban_reason, ban_reason_display
+			FROM ' . $this->ban_table . "
+			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
+				AND (ban_end <= 0 OR ban_end >= " . (int) time() . ')';
+		$result = $this->db->sql_query($sql);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rowset;
+	}
+
+	public function get_banned_users()
+	{
+		$banned_users = $this->cache->get(self::CACHE_KEY_USERS);
+		if ($banned_users === false)
+		{
+			$manual_modes = [];
+			$where_array = [];
+
+			/** @var \phpbb\ban\type\type_interface $ban_mode */
+			foreach ($this->types as $ban_mode)
+			{
+				$user_column = $ban_mode->get_user_column();
+				if (empty($user_column))
+				{
+					$manual_modes[] = $ban_mode;
+					continue;
+				}
+				$where_array[] = ['AND',
+					[
+						['b.ban_item', '=', 'u.' . $user_column],
+						['b.ban_mode', '=', $ban_mode->get_type()],
+					],
+				];
+			}
+
+			$sql_array = [
+				'SELECT'	=> 'u.user_id, b.ban_end',
+				'FROM'		=> [
+					$this->ban_table	=> 'b',
+					$this->users_table	=> 'u',
+				],
+				'WHERE'		=> ['OR',
+					$where_array,
+				],
+			];
+			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			$result = $this->db->sql_query($sql);
+
+			$banned_users = [];
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$user_id = (int) $row['user_id'];
+				$end = (int) $row['ban_end'];
+				if (!isset($banned_users[$user_id]) || ($banned_users[$user_id] > 0 && $banned_users[$user_id] < $end))
+				{
+					$banned_users[$user_id] = $end;
+				}
+			}
+			$this->db->sql_freeresult($result);
+
+			/** @var \phpbb\ban\type\type_interface $manual_mode */
+			foreach ($manual_modes as $manual_mode)
+			{
+				$mode_banned_users = $manual_mode->get_banned_users();
+				foreach ($mode_banned_users as $user_id => $end)
+				{
+					$user_id = (int) $user_id;
+					$end = (int) $end;
+					if (!isset($banned_users[$user_id]) || ($banned_users[$user_id] > 0 && $banned_users[$user_id] < $end))
+					{
+						$banned_users[$user_id] = $end;
+					}
+				}
+			}
+
+			$this->cache->put(self::CACHE_KEY_USERS, $banned_users, self::CACHE_TTL);
+		}
+
+		return array_filter($banned_users, function ($end) {
+			return $end <= 0 || $end > time();
+		});
+	}
+
 	public function tidy()
 	{
 		// Delete stale bans
@@ -331,5 +406,38 @@ class manager
 		}
 
 		return false;
+	}
+
+	protected function get_info_cache()
+	{
+		$ban_info = $this->cache->get(self::CACHE_KEY_INFO);
+		if ($ban_info === false)
+		{
+			$sql = 'SELECT ban_mode, ban_item, ban_end, ban_reason_display
+				FROM ' . $this->ban_table . '
+				WHERE 1';
+			$result = $this->db->sql_query($sql);
+
+			$ban_info = [];
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if (!isset($ban_info[$row['ban_mode']]))
+				{
+					$ban_info[$row['ban_mode']] = [];
+				}
+
+				$ban_info[$row['ban_mode']][] = [
+					'item'		=> $row['ban_item'],
+					'end'		=> $row['ban_end'],
+					'reason'	=> $row['ban_reason_display'],
+				];
+			}
+			$this->db->sql_freeresult($result);
+
+			$this->cache->put(self::CACHE_KEY_INFO, $ban_info, self::CACHE_TTL);
+		}
+
+		return $ban_info;
 	}
 }
