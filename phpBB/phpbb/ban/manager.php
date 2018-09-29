@@ -24,27 +24,50 @@ class manager
 	const CACHE_KEY_USERS = '_banned_users';
 	const CACHE_TTL = 3600;
 
-	protected $ban_table;
+	/** @var string */
+	protected $bans_table;
 
+	/** @var \phpbb\cache\service */
 	protected $cache;
 
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\log\log_interface */
 	protected $log;
 
+	/** @var string */
 	protected $sessions_keys_table;
 
+	/** @var string */
 	protected $sessions_table;
 
+	/** @var \phpbb\di\service_collection */
 	protected $types;
 
+	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var string */
 	protected $users_table;
 
-	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $ban_table, $users_table = '', $sessions_table = '', $sessions_keys_table = '')
+	/**
+	 * Creates a service which manages all bans. Developers can
+	 * create their own ban types which will be handled in this.
+	 *
+	 * @param \phpbb\di\service_collection		$types					A service collection containing all ban types
+	 * @param \phpbb\cache\service				$cache					A cache object
+	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
+	 * @param \phpbb\log\log_interface			$log					A log object
+	 * @param \phpbb\user						$user					An user object
+	 * @param string							$bans_table				The bans table
+	 * @param string							$users_table			The users table
+	 * @param string							$sessions_table			The sessions table
+	 * @param string							$sessions_keys_table	The sessions key table
+	 */
+	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $bans_table, $users_table = '', $sessions_table = '', $sessions_keys_table = '')
 	{
-		$this->ban_table = $ban_table;
+		$this->bans_table = $bans_table;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->log = $log;
@@ -55,6 +78,19 @@ class manager
 		$this->users_table = $users_table;
 	}
 
+	/**
+	 * Creates ban entries for the given $items. Returns true if successful
+	 * and false if no entries were added to the database
+	 *
+	 * @param string				$mode			A string which identifies a ban type
+	 * @param array					$items			An array of items which should be banned
+	 * @param \DateTimeInterface	$start			A DateTimeInterface object which is the start of the ban
+	 * @param \DateTimeInterface	$end			A DateTimeInterface object which is the end of the ban (or 0 if permanent)
+	 * @param string				$reason			An (internal) reason for the ban
+	 * @param string				$display_reason	An optional reason which should be displayed to the banned
+	 *
+	 * @return bool
+	 */
 	public function ban($mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, $reason, $display_reason = '')
 	{
 		if ($start > $end && $end->getTimestamp() !== 0)
@@ -73,7 +109,7 @@ class manager
 		$ban_items = $ban_mode->prepare_for_storage($items);
 
 		// Prevent duplicate bans
-		$sql = 'DELETE FROM ' . $this->ban_table . "
+		$sql = 'DELETE FROM ' . $this->bans_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
 			AND " . $this->db->sql_in_set('ban_item', $ban_items, false, true);
 		$this->db->sql_query($sql);
@@ -93,10 +129,10 @@ class manager
 
 		if (empty($insert_array))
 		{
-			throw new no_items_specified_exception(); // TODO
+			return false;
 		}
 
-		$result = $this->db->sql_multi_insert($this->ban_table, $insert_array);
+		$result = $this->db->sql_multi_insert($this->bans_table, $insert_array);
 		if ($result === false)
 		{
 			throw new ban_insert_failed_exception(); // TODO
@@ -178,8 +214,17 @@ class manager
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
 		$this->cache->destroy(self::CACHE_KEY_USERS);
+
+		return true;
 	}
 
+	/**
+	 * Removes ban entries from the database with the given IDs
+	 *
+	 * @param string	$mode		The ban type in which the ban IDs were created
+	 * @param array		$items		An array of ban IDs which should be removed
+	 * @param bool		$logging	True, if log entries should be created, false otherwise.
+	 */
 	public function unban($mode, array $items, $logging = true)
 	{
 		/** @var \phpbb\ban\type\type_interface $ban_mode */
@@ -192,7 +237,7 @@ class manager
 
 		$sql_ids = array_map('intval', $items);
 		$sql = 'SELECT ban_item
-			FROM ' . $this->ban_table . '
+			FROM ' . $this->bans_table . '
 			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids); // TODO (what if empty?)
 		$result = $this->db->sql_query($sql);
 
@@ -203,7 +248,7 @@ class manager
 		}
 		$this->db->sql_freeresult($result);
 
-		$sql = 'DELETE FROM ' . $this->ban_table . '
+		$sql = 'DELETE FROM ' . $this->bans_table . '
 			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
 		$this->db->sql_query($sql);
 
@@ -229,6 +274,15 @@ class manager
 		$this->cache->destroy(self::CACHE_KEY_USERS);
 	}
 
+	/**
+	 * Checks for the given user data whether the user is banned.
+	 * Returns false if nothing was found and an array containing
+	 * 'mode', 'end', 'reason' and 'item' otherwise.
+	 *
+	 * @param array	$user_data	The array containing the user data
+	 *
+	 * @return array|bool
+	 */
 	public function check(array $user_data = [])
 	{
 		if (empty($user_data))
@@ -252,12 +306,16 @@ class manager
 				$ban_result = $ban_mode->check($ban_rows, $user_data);
 				if ($ban_result !== false)
 				{
-					return $ban_result;
+					return $ban_result + ['mode' => $mode];
 				}
 			}
 			else
 			{
 				$user_column = $ban_mode->get_user_column();
+				if (!isset($user_data[$user_column]))
+				{
+					continue;
+				}
 
 				foreach ($ban_rows as $ban_row)
 				{
@@ -267,7 +325,7 @@ class manager
 						{
 							if ($ban_row['item'] == $user_data[$user_column])
 							{
-								return $ban_row;
+								return $ban_row + ['mode' => $mode];
 							}
 						}
 						else
@@ -275,7 +333,7 @@ class manager
 							$regex = str_replace('\*', '.*?', preg_quote($ban_row['item'], '#'));
 							if (preg_match($regex, $user_data[$user_column]))
 							{
-								return $ban_row;
+								return $ban_row + ['mode' => $mode];
 							}
 						}
 					}
@@ -286,6 +344,13 @@ class manager
 		return false;
 	}
 
+	/**
+	 * Returns all bans for a given ban type. False, if none were found
+	 *
+	 * @param strng	$mode	The ban type for which the entries should be retrieved
+	 *
+	 * @return array|bool
+	 */
 	public function get_bans($mode)
 	{
 		/** @var \phpbb\ban\type\type_interface $ban_mode */
@@ -297,7 +362,7 @@ class manager
 		$this->tidy();
 
 		$sql = 'SELECT ban_id, ban_item, ban_start, ban_end, ban_reason, ban_reason_display
-			FROM ' . $this->ban_table . "
+			FROM ' . $this->bans_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
 				AND (ban_end <= 0 OR ban_end >= " . (int) time() . ')';
 		$result = $this->db->sql_query($sql);
@@ -307,6 +372,13 @@ class manager
 		return $rowset;
 	}
 
+	/**
+	 * Returns an array of banned users with 'id' => 'end' values.
+	 * The result is cached for performance reasons and is not as
+	 * accurate as the check() method. (Wildcards aren't considered e.g.)
+	 *
+	 * @return array
+	 */
 	public function get_banned_users()
 	{
 		$banned_users = $this->cache->get(self::CACHE_KEY_USERS);
@@ -335,11 +407,16 @@ class manager
 			$sql_array = [
 				'SELECT'	=> 'u.user_id, b.ban_end',
 				'FROM'		=> [
-					$this->ban_table	=> 'b',
+					$this->bans_table	=> 'b',
 					$this->users_table	=> 'u',
 				],
-				'WHERE'		=> ['OR',
-					$where_array,
+				'WHERE'		=> ['AND',
+					[
+						['OR',
+							$where_array,
+						],
+						['u.user_type', '<>', USER_FOUNDER],
+					]
 				],
 			];
 			$sql = $this->db->sql_build_query('SELECT', $sql_array);
@@ -380,10 +457,13 @@ class manager
 		});
 	}
 
+	/**
+	 * Cleans up the database of e.g. stale bans
+	 */
 	public function tidy()
 	{
 		// Delete stale bans
-		$sql = 'DELETE FROM ' . $this->ban_table . '
+		$sql = 'DELETE FROM ' . $this->bans_table . '
 			WHERE ban_end > 0 AND ban_end < ' . (int) time();
 		$this->db->sql_query($sql);
 
@@ -394,6 +474,14 @@ class manager
 		}
 	}
 
+	/**
+	 * Finds the ban type for the given mode string.
+	 * Returns false if none was found
+	 *
+	 * @param string	$mode	The mode string
+	 *
+	 * @return bool|type\type_interface
+	 */
 	protected function find_type($mode)
 	{
 		/** @var \phpbb\ban\type\type_interface $type */
@@ -408,13 +496,22 @@ class manager
 		return false;
 	}
 
+	/**
+	 * Returns the ban_info from the cache.
+	 * If they're not in the cache, bans are retrieved from the database
+	 * and then put into the cache.
+	 * The array contains an array for each mode with respectively
+	 * three values for 'item', 'end' and 'reason' only.
+	 *
+	 * @return array
+	 */
 	protected function get_info_cache()
 	{
 		$ban_info = $this->cache->get(self::CACHE_KEY_INFO);
 		if ($ban_info === false)
 		{
 			$sql = 'SELECT ban_mode, ban_item, ban_end, ban_reason_display
-				FROM ' . $this->ban_table . '
+				FROM ' . $this->bans_table . '
 				WHERE 1';
 			$result = $this->db->sql_query($sql);
 

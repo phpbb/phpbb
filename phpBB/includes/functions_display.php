@@ -1632,6 +1632,10 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 	}
 
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
+	$user_banned = $ban_manager->check($data);
+
 	// Can this user receive a Private Message?
 	$can_receive_pm = $check_can_receive_pm && (
 		// They must be a "normal" user
@@ -1644,7 +1648,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		count($auth->acl_get_list($user_id, 'u_readpm')) &&
 
 		// They must not be permanently banned
-		!count(phpbb_get_banned_user_ids($user_id, false)) &&
+		(empty($user_banned) || $user_banned['end'] > 0) &&
 
 		// They must allow users to contact via PM
 		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])

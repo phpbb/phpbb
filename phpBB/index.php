@@ -112,15 +112,8 @@ if ($show_birthdays)
 		'FROM' => array(
 			USERS_TABLE => 'u',
 		),
-		'LEFT_JOIN' => array(
-			array(
-				'FROM' => array(BANLIST_TABLE => 'b'),
-				'ON' => 'u.user_id = b.ban_userid',
-			),
-		),
-		'WHERE' => "(b.ban_id IS NULL OR b.ban_exclude = 1)
-			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)
-			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+		'WHERE' => 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . "
+			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)",
 	);
 
 	/**
@@ -140,8 +133,17 @@ if ($show_birthdays)
 	$rows = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
+	$banned_users = $ban_manager->get_banned_users();
+
 	foreach ($rows as $row)
 	{
+		if (isset($banned_users[(int) $row['user_id']]))
+		{
+			continue;
+		}
+
 		$birthday_username	= get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		$birthday_year		= (int) substr($row['user_birthday'], -4);
 		$birthday_age		= ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';

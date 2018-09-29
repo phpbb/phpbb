@@ -19,11 +19,17 @@ use phpbb\exception\runtime_exception;
 
 class email extends base
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_ban_log_string()
 	{
 		return 'LOG_BAN_EMAIL';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_unban_log_string()
 	{
 		return 'LOG_UNBAN_EMAIL';
