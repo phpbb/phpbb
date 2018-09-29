@@ -13,6 +13,8 @@
 
 namespace phpbb\ban\type;
 
+use phpbb\mimetype\null_guesser;
+
 /**
  * Interface implemented by all ban types
  */
@@ -82,13 +84,17 @@ interface type_interface
 	 * Please note, that this method is basically called on every page,
 	 * so the check should perform rather fast.
 	 *
-	 * Returns true if the person is banned and false otherwise.
+	 * Returns an array with information about the ban, like the end or
+	 * the reason. False if the user is not banned.
 	 *
-	 * @param array $data The user data array
+	 * @param array $ban_rows	An array containing the ban rows retrieved
+	 *                        	from the database for this specific mode.
+	 *                        	They contain the item, reason and end of the ban.
+	 * @param array $user_data	The user data
 	 *
-	 * @return bool
+	 * @return array|bool
 	 */
-	public function check(array $data);
+	public function check(array $ban_rows, array $user_data);
 
 	/**
 	 * Prepares the given ban items before saving them in the database
@@ -99,5 +105,11 @@ interface type_interface
 	 */
 	public function prepare_for_storage(array $items);
 
-	public function tidy(); // ???
+	/**
+	 * Does some cleanup work for the banning mode.
+	 * Is called before banning and unbanning and as cron job.
+	 *
+	 * @return null
+	 */
+	public function tidy();
 }

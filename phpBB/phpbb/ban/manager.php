@@ -18,6 +18,9 @@ use phpbb\ban\exception\type_not_found_exception;
 
 class manager
 {
+	const CACHE_KEY = '_ban_info';
+	const CACHE_TTL = 3600;
+
 	protected $ban_table;
 
 	protected $cache;
@@ -51,17 +54,18 @@ class manager
 
 	public function ban($mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, $reason, $display_reason = '')
 	{
-		if (!isset($this->types[$mode]))
-		{
-			throw new type_not_found_exception(); // TODO
-		}
 		if ($start > $end && $end->getTimestamp() !== 0)
 		{
 			throw new invalid_length_exception(); // TODO
 		}
 
 		/** @var \phpbb\ban\type\type_interface $ban_mode */
-		$ban_mode = $this->types[$mode];
+		$ban_mode = $this->find_type($mode);
+		if ($ban_mode === false)
+		{
+			throw new type_not_found_exception(); // TODO
+		}
+
 		$ban_items = $ban_mode->prepare_for_storage($items);
 
 		// Prevent duplicate bans
@@ -169,17 +173,17 @@ class manager
 			}
 		}
 
-		$this->cache->destroy('sql', $this->ban_table);
+		$this->cache->destroy(self::CACHE_KEY);
 	}
 
 	public function unban($mode, array $items)
 	{
-		if (!isset($this->types[$mode]))
+		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		$ban_mode = $this->find_type($mode);
+		if ($ban_mode === false)
 		{
 			throw new type_not_found_exception(); // TODO
 		}
-		/** @var \phpbb\ban\type\type_interface $ban_mode */
-		$ban_mode = $this->types[$mode];
 
 		$sql_ids = array_map('intval', $items);
 		$sql = 'SELECT ban_item
@@ -215,15 +219,117 @@ class manager
 		];
 		$ban_mode->after_unban($unban_data);
 
-		$this->cache->destroy('sql', $this->ban_table);
+		$this->cache->destroy(self::CACHE_KEY);
 	}
 
 	public function check(array $user_data = [])
 	{
+		if (empty($user_data))
+		{
+			$user_data = $this->user->data;
+		}
+
+		$ban_info = $this->cache->get(self::CACHE_KEY);
+		if ($ban_info === false)
+		{
+			$sql = 'SELECT ban_mode, ban_item, ban_end, ban_reason_display
+				FROM ' . $this->ban_table . '
+				WHERE 1';
+			$result = $this->db->sql_query($sql);
+
+			$ban_info = [];
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if (!isset($ban_info[$row['ban_mode']]))
+				{
+					$ban_info[$row['ban_mode']] = [];
+				}
+
+				$ban_info[$row['ban_mode']][] = [
+					'item'		=> $row['ban_item'],
+					'end'		=> $row['ban_end'],
+					'reason'	=> $row['ban_reason_display'],
+				];
+			}
+			$this->db->sql_freeresult($result);
+
+			$this->cache->put(self::CACHE_KEY, $ban_info, self::CACHE_TTL);
+		}
+
+		foreach ($ban_info as $mode => $ban_rows)
+		{
+			/** @var \phpbb\ban\type\type_interface $ban_mode */
+			$ban_mode = $this->find_type($mode);
+			if ($ban_mode === false)
+			{
+				continue;
+			}
+
+			if ($ban_mode->get_user_column() === null)
+			{
+				$ban_result = $ban_mode->check($ban_rows, $user_data);
+				if ($ban_result !== false)
+				{
+					return $ban_result;
+				}
+			}
+			else
+			{
+				$user_column = $ban_mode->get_user_column();
+
+				foreach ($ban_rows as $ban_row)
+				{
+					if ($ban_row['end'] > 0 && $ban_row['end'] < time())
+					{
+						if (stripos($ban_row['item'], '*') === false)
+						{
+							if ($ban_row['item'] == $user_data[$user_column])
+							{
+								return $ban_row;
+							}
+						}
+						else
+						{
+							$regex = str_replace('\*', '.*?', preg_quote($ban_row['item'], '#'));
+							if (preg_match($regex, $user_data[$user_column]))
+							{
+								return $ban_row;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public function tidy()
 	{
-		// TODO: Delete stale bans
+		// Delete stale bans
+		$sql = 'DELETE FROM ' . $this->ban_table . '
+			WHERE ban_end > 0 AND ban_end < ' . (int) time();
+		$this->db->sql_query($sql);
+
+		/** @var \phpbb\ban\type\type_interface $type */
+		foreach ($this->types as $type)
+		{
+			$type->tidy();
+		}
+	}
+
+	protected function find_type($mode)
+	{
+		/** @var \phpbb\ban\type\type_interface $type */
+		foreach ($this->types as $type)
+		{
+			if ($type->get_type() === $mode)
+			{
+				return $type;
+			}
+		}
+
+		return false;
 	}
 }
