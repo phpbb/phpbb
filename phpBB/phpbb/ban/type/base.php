@@ -37,12 +37,15 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_ban($data)
+	public function after_ban(array $data)
 	{
 		return true;
 	}
 
-	public function after_unban()
+	/**
+	 * {@inheritDoc}
+	 */
+	public function after_unban(array $data)
 	{
 	}
 
