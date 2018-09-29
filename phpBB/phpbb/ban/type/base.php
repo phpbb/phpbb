@@ -52,11 +52,14 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function check(array $data)
+	public function check(array $ban_rows, array $user_data)
 	{
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function tidy()
 	{
 	}

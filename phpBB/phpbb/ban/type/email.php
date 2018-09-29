@@ -13,6 +13,10 @@
 
 namespace phpbb\ban\type;
 
+use phpbb\ban\exception\no_valid_emails_exception;
+use phpbb\ban\exception\no_valid_users_exception;
+use phpbb\exception\runtime_exception;
+
 class email extends base
 {
 	public function get_ban_log_string()
@@ -48,9 +52,9 @@ class email extends base
 	{
 		if (!$this->get_excluded())
 		{
-			// TODO throw exception
+			throw new runtime_exception(); // TODO
 		}
-		$regex = get_preg_expression('email');
+		$regex = '#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i';
 
 		$ban_items = [];
 		foreach ($items as $item)
@@ -65,7 +69,7 @@ class email extends base
 
 		if (empty($ban_items))
 		{
-			// TODO throw exception - no valid emails defined
+			throw new no_valid_emails_exception(); // TODO
 		}
 
 		return $ban_items;

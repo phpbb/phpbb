@@ -13,6 +13,9 @@
 
 namespace phpbb\ban\type;
 
+use phpbb\ban\exception\no_valid_users_exception;
+use phpbb\exception\runtime_exception;
+
 class user extends base
 {
 	/** @var array */
@@ -137,7 +140,7 @@ class user extends base
 	{
 		if (!$this->get_excluded())
 		{
-			// TODO throw exception
+			throw new runtime_exception(); // TODO
 		}
 
 		$sql_usernames = [];
@@ -182,6 +185,11 @@ class user extends base
 			$this->banned_users[(int) $row['user_id']] = $row['username'];
 		}
 		$this->db->sql_freeresult($result);
+
+		if (empty($ban_items))
+		{
+			throw new no_valid_users_exception(); // TODO
+		}
 
 		return $ban_items;
 	}
