@@ -36,6 +36,6 @@ services:
             - '@dbal.conn'
             - '@log'
             - '@user'
-            - '%tables.users'
+            - '%tables.users%'
         tags:
             - { name: ban.type }

@@ -60,13 +60,13 @@ class email extends base
 		{
 			throw new runtime_exception(); // TODO
 		}
-		$regex = '#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i';
+		$regex = '#^.*?@.*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i';
 
 		$ban_items = [];
 		foreach ($items as $item)
 		{
 			$item = trim($item);
-			if (strlen($item) > 100 || preg_match($regex, $item) || in_array($item, $this->excluded))
+			if (strlen($item) > 100 || !preg_match($regex, $item) || in_array($item, $this->excluded))
 			{
 				continue;
 			}
