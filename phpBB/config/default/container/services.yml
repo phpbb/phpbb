@@ -2,6 +2,7 @@ imports:
     - { resource: services_attachment.yml }
     - { resource: services_auth.yml }
     - { resource: services_avatar.yml }
+    - { resource: services_ban.yml }
     - { resource: services_captcha.yml }
     - { resource: services_console.yml }
     - { resource: services_content.yml }
