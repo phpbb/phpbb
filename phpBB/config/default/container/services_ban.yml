@@ -1,0 +1,41 @@
+services:
+# ----- Ban management -----
+    ban.manager:
+        class: \phpbb\ban\manager
+        arguments:
+            - '@ban.type_collection'
+            - '@cache'
+            - '@dbal.conn'
+            - '@log'
+            - '@user'
+            - '%tables.bans%'
+            - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.sessions_keys%'
+
+# ----- Ban types -----
+    ban.type_collection:
+        class: \phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: ban.type }
+
+    ban.type.email:
+        class: \phpbb\ban\type\email
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '%tables.users%'
+        tags:
+            - { name: ban.type }
+
+    ban.type.user:
+        class: \phpbb\ban\type\user
+        arguments:
+            - '@dbal.conn'
+            - '@log'
+            - '@user'
+            - '%tables.users'
+        tags:
+            - { name: ban.type }

@@ -9,7 +9,7 @@ parameters:
     tables.auth_provider_oauth_states: '%core.table_prefix%oauth_states'
     tables.auth_provider_oauth_account_assoc: '%core.table_prefix%oauth_accounts'
     tables.backups: '%core.table_prefix%backups'
-    tables.banlist: '%core.table_prefix%banlist'
+    tables.bans: '%core.table_prefix%bans'
     tables.bbcodes: '%core.table_prefix%bbcodes'
     tables.bookmarks: '%core.table_prefix%bookmarks'
     tables.bots: '%core.table_prefix%bots'
