@@ -166,7 +166,7 @@ class user extends base
 
 		$sql_usernames = [];
 		$sql_or_like = [];
-		foreach ($items as $item)
+		foreach ($items as $item) // TODO: Prevent banning Anonymous
 		{
 			$cleaned_username = utf8_clean_string($item);
 			if (stripos($cleaned_username, '*') === false)

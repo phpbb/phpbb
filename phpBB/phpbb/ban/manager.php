@@ -180,9 +180,10 @@ class manager
 						}
 					}
 
+					// TODO: Prevent logging out founders
 					$sql = 'SELECT user_id
 						FROM ' . $this->users_table . '
-						WHERE ' . $this->db->sql_in_set('u.' . $user_column, $ban_items_sql) . $ban_or_like;
+						WHERE ' . $this->db->sql_in_set('u.' . $user_column, $ban_items_sql, false, true) . $ban_or_like;
 					$result = $this->db->sql_query($sql);
 
 					$user_ids = [];
