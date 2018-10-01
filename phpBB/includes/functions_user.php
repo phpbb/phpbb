@@ -185,7 +185,7 @@ function user_update_name($old_name, $new_name)
 */
 function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
-	global $db, $config, $cache;
+	global $db, $config;
 	global $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
@@ -298,11 +298,13 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	$user_id = $db->sql_nextid();
 
 	//	Check users_first_characters
+	$cache = $phpbb_container->get('cache');
 	$users_first_characters = $cache->get('users_first_characters');
 	if (($users_first_characters !== false) && (! array_key_exists(mb_substr($username_clean, 0, 1), $users_first_characters)))
 	{
 		$cache->destroy('users_first_characters');
 	}
+
 	// Insert Custom Profile Fields
 	if ($cp_data !== false && count($cp_data))
 	{
@@ -715,6 +717,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_return_on_error();
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$cache->destroy('users_first_characters');
 
 	// Change user_id to anonymous for posts edited by this user
 	$sql = 'UPDATE ' . POSTS_TABLE . '
