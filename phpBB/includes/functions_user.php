@@ -298,7 +298,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	$user_id = $db->sql_nextid();
 
 	//	Check users_first_characters
-	$cache = $phpbb_container->get('cache');
+	$cache = $phpbb_container->get('cache.driver');
 	$users_first_characters = $cache->get('users_first_characters');
 	if (($users_first_characters !== false) && (! array_key_exists(mb_substr($username_clean, 0, 1), $users_first_characters)))
 	{
