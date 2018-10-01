@@ -409,6 +409,14 @@ interface driver_interface
 	public function sql_escape($msg);
 
 	/**
+	* Quoting and escaping string used in sql query
+	*
+	* @param	string	$expression	String to be quoted and escaped
+	* @return	string		quoted and escaped version of $msg
+	*/
+	public function sql_quote($expression);
+
+	/**
 	* Correctly adjust LIKE expression for special characters
 	* Some DBMS are handling them in a different way
 	*
