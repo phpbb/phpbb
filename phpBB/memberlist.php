@@ -1183,7 +1183,9 @@ switch ($mode)
 				{
 					$users_first_characters[chr($i)] = chr($i - 32);
 				}
-			} else {
+			}
+			else
+			{
 				$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) first_char, count(*) count_users
 					FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('user_type', $user_types) . '
