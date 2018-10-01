@@ -1166,34 +1166,39 @@ switch ($mode)
 
 		$users_first_characters = $cache->get('users_first_characters');
 		// Setting sunstring SQL function
-		$substring_function = 'substring';
-		if ($db->get_sql_layer() === 'sqlite3')
+		$substring_function = 'substr';
+		if (substr($db->get_sql_layer(),0,5) === 'mssql')
 		{
-			$substring_function = 'substr';
+			$substring_function = 'substring';
 		}
 		// Rebuild $users_first_characters
 		if ($users_first_characters === false)
 		{
-			$substring_function = 'substring';
-			if ($db->get_sql_layer() === 'sqlite3')
-			{
-				$substring_function = 'substr';
-			}
-
-			$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) AS first_char, count(*) AS count_users
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
-				GROUP BY first_char
-				ORDER BY count_users DESC, first_char';
-
-			$result = $db-> sql_query_limit($sql, FIRST_CHARACTERS_LIMIT);
 			$users_first_characters = array();
-			while ($row = $db->sql_fetchrow($result))
+
+			if ($db->get_sql_layer() === 'mssql_odbc')
 			{
-				$users_first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
+				// `mssql_odbc` does not store UTF8 strings correctly, so SQL string functions does not work correctly
+				for ($i = 97; $i < 123; $i++)
+				{
+					$users_first_characters[chr($i)] = chr($i - 32);
+				}
+			} else {
+				$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) first_char, count(*) count_users
+					FROM ' . USERS_TABLE . '
+					WHERE ' . $db->sql_in_set('user_type', $user_types) . '
+					GROUP BY ' . $substring_function . '(username_clean,1,1)
+					ORDER BY count_users DESC, first_char';
+
+				$result = $db-> sql_query_limit($sql, FIRST_CHARACTERS_LIMIT);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$users_first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
+				}
+				$db->sql_freeresult($result);
+				ksort($users_first_characters);
 			}
-			$db->sql_freeresult($result);
-			ksort($users_first_characters);
+
 			$cache->put('users_first_characters',$users_first_characters);
 		}
 
@@ -1424,7 +1429,7 @@ switch ($mode)
 		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
 
 		$first_characters = array('' => $user->lang['ALL']) + $users_first_characters;
-		if (count($first_characters) > FIRST_CHARACTERS_LIMIT)
+		if ((count($first_characters) > FIRST_CHARACTERS_LIMIT) || ($db->get_sql_layer() === 'mssql_odbc'))
 		{
 			$first_characters['other'] =  $user->lang['OTHER'];
 		}
