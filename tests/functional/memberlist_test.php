@@ -43,7 +43,7 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 
 	protected function get_memberlist_leaders_table_crawler()
 	{
-		$crawler = self::request('GET', 'memberlist.php?mode=team&sid=' . $this->sid);
+		$crawler = self::request('GET', 'team?sid=' . $this->sid);
 		return $crawler->filter('.forumbg-table');
 	}
 
