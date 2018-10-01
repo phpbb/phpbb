@@ -696,7 +696,7 @@ abstract class driver implements driver_interface
 		}
 		else if (is_string($var))
 		{
-			return  $this->sql_quote($var);
+			return $this->sql_quote($var);
 		}
 		else
 		{

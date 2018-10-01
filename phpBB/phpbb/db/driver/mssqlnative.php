@@ -457,7 +457,9 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		if (mb_check_encoding($expression, 'ASCII'))
 		{
 			return "'" . $this->sql_escape($expression) . "'";
-		} else {
+		}
+		else
+		{
 			return "N'" . $this->sql_escape($expression) . "'";
 		}
 	}
