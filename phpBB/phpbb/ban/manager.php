@@ -15,7 +15,6 @@ namespace phpbb\ban;
 
 use phpbb\ban\exception\ban_insert_failed_exception;
 use phpbb\ban\exception\invalid_length_exception;
-use phpbb\ban\exception\no_items_specified_exception;
 use phpbb\ban\exception\type_not_found_exception;
 
 class manager
@@ -189,7 +188,7 @@ class manager
 					$user_ids = [];
 					while ($row = $this->db->sql_fetchrow($result))
 					{
-						$user_ids[] = (int)$row['user_id'];
+						$user_ids[] = (int) $row['user_id'];
 					}
 					$this->db->sql_freeresult($result);
 				}

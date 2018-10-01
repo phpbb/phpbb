@@ -95,7 +95,7 @@ abstract class base implements type_interface
 		}
 
 		$this->excluded = [
-			(int)$this->user->data['user_id']	=> $this->user->data[$user_column],
+			(int) $this->user->data['user_id']	=> $this->user->data[$user_column],
 		];
 
 		$sql = "SELECT user_id, {$user_column}

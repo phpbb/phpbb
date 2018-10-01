@@ -13,8 +13,6 @@
 
 namespace phpbb\ban\type;
 
-use phpbb\mimetype\null_guesser;
-
 /**
  * Interface implemented by all ban types
  */

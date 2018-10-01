@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
-	<table name="phpbb_banlist">
+	<table name="phpbb_bans">
 		<column>ban_userid</column>
 		<column>ban_exclude</column>
 		<column>ban_end</column>

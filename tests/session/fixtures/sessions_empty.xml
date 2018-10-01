@@ -30,11 +30,13 @@
 		<column>session_ip</column>
 		<column>session_browser</column>
 	</table>
-	<table name="phpbb_banlist">
+	<table name="phpbb_bans">
 		<column>ban_id</column>
-		<column>ban_userid</column>
-		<column>ban_email</column>
+		<column>ban_mode</column>
+		<column>ban_item</column>
+		<column>ban_start</column>
+		<column>ban_end</column>
 		<column>ban_reason</column>
-		<column>ban_give_reason</column>
+		<column>ban_reason_display</column>
 	</table>
 </dataset>

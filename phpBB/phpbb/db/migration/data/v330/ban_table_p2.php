@@ -35,7 +35,7 @@ class ban_table_p2 extends \phpbb\db\migration\migration
 			'add_tables'	=> array(
 				$this->table_prefix . 'banlist'		=> array(
 					'COLUMNS'	=> array(
-						'ban_id'			=> array('ULINT', NULL, 'auto_increment'),
+						'ban_id'			=> array('ULINT', null, 'auto_increment'),
 						'ban_userid'		=> array('ULINT', 0),
 						'ban_ip'			=> array('VCHAR:40', ''),
 						'ban_email'			=> array('VCHAR_UNI:100', ''),
