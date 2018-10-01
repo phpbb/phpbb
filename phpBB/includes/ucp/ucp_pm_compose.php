@@ -78,6 +78,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	/** @var \phpbb\group\helper $group_helper */
 	$group_helper = $phpbb_container->get('group_helper');
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel)
 	{
@@ -991,11 +994,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		if ($config['allow_post_links'])
 		{
-			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']}]{$quote_username}[/url]";
+			$quote_username_text = '[url=' . generate_board_url() . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']]) . "]{$quote_username}[/url]";
 		}
 		else
 		{
-			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']})";
+			$quote_username_text = $quote_username . ' (' . generate_board_url() . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']]) . ")";
 		}
 
 		$forward_text = array();
@@ -1177,9 +1180,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
-
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(

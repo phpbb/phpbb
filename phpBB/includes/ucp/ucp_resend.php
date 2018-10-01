@@ -135,7 +135,7 @@ class ucp_resend
 
 					$messenger->assign_vars(array(
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
-						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
+						'U_USER_DETAILS'	=> generate_board_url() . $controller_helper->route('phpbb_members_profile', ['user_id' => $user_row['user_id']]),
 						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);
 

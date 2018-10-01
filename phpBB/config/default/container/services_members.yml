@@ -1,0 +1,15 @@
+services:
+
+# Controllers
+    members.controller.profile:
+        class: phpbb\members\controller\profile
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'

@@ -37,7 +37,7 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		// XXX hardcoded user id
-		$crawler = self::request('GET', 'memberlist.php?mode=viewprofile&u=2&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/profile/2');
 		$this->assertContains('admin', $crawler->filter('h2')->text());
 	}
 

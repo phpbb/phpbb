@@ -151,7 +151,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 
 		return array(
 			'USERNAME'			=> htmlspecialchars_decode($username),
-			'U_USER_DETAILS'	=> "{$board_url}/memberlist.{$this->php_ext}?mode=viewprofile&u={$this->item_id}",
+			'U_USER_DETAILS'	=> "{$board_url}" . $controller_helper->route('phpbb_members_profile', ['user_id' => $this->item_id]),
 			'U_ACTIVATE'		=> "{$board_url}/ucp.{$this->php_ext}?mode=activate&u={$this->item_id}&k={$this->get_data('user_actkey')}",
 		);
 	}

@@ -1,0 +1,11 @@
+phpbb_members_profile:
+    path:             /profile/{user_id}
+    defaults:
+        _controller: members.controller.profile:handle
+    requirements:
+        user_id:           \d+
+
+#phpbb_members_profile_username:
+#    path:             /profile/u/{username}
+#    defaults:
+#        _controller: members.controller.profile:handle_username
