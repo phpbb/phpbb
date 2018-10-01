@@ -749,7 +749,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_query($sql);
 
 	// Delete the user_id from the banlist
-	$sql = 'DELETE FROM ' . BAN_TABLE . '
+	$sql = 'DELETE FROM ' . BANS_TABLE . '
 		WHERE ban_mode = \'user\' AND ' . $db->sql_in_set('ban_item', $user_ids);
 	$db->sql_query($sql);
 

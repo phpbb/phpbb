@@ -33,8 +33,8 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 				 false, false, false, false, /* should be banned? -> */ false),
 			array('Matching values in the database, should be banned',
 				 4, '127.0.0.1', 'bar@example.org', true, /* should be banned? -> */ true),
-			array('IP Banned, should be banned',
-			     false, '127.1.1.1', false, false, /* should be banned? -> */ true),
+			array('IP Banned, should not be banned',
+			     false, '127.1.1.1', false, false, /* should be banned? -> */ false),
 		);
 	}
 

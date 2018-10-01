@@ -148,7 +148,7 @@ class ban_table_p1 extends \phpbb\db\migration\migration
 			$processed_rows++;
 
 			$bans[] = [
-				'ban_userid'		=> ($row['ban_mode'] === 'user') ? (int)$row['ban_item'] : 0,
+				'ban_userid'		=> ($row['ban_mode'] === 'user') ? (int) $row['ban_item'] : 0,
 				'ban_ip'			=> ($row['ban_mode'] === 'ip') ? $row['ban_item'] : '',
 				'ban_email'			=> ($row['ban_mode'] === 'email') ? $row['ban_item'] : '',
 				'ban_start'			=> $row['ban_start'],
