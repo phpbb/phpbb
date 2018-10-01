@@ -20,7 +20,6 @@ use \phpbb\event\dispatcher;
 use \phpbb\group\helper as group_helper;
 use \phpbb\controller\helper;
 use \phpbb\language\language;
-use \phpbb\request\request_interface;
 use \phpbb\template\template;
 use \phpbb\user;
 
@@ -62,11 +61,6 @@ class team
 	protected $language;
 
 	/**
-	 * @var request_interface
-	 */
-	protected $request;
-
-	/**
 	 * @var template
 	 */
 	protected $template;
@@ -76,7 +70,7 @@ class team
 	 */
 	protected $user;
 
-	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher $dispatcher, group_helper $group_helper, helper $helper, language $language, request_interface $request, template $template, user $user)
+	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher $dispatcher, group_helper $group_helper, helper $helper, language $language, template $template, user $user)
 	{
 		$this->auth				= $auth;
 		$this->config			= $config;
@@ -85,7 +79,6 @@ class team
 		$this->group_helper		= $group_helper;
 		$this->helper			= $helper;
 		$this->language			= $language;
-		$this->request			= $request;
 		$this->template			= $template;
 		$this->user				= $user;
 	}

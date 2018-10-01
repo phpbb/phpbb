@@ -11,6 +11,5 @@ services:
             - '@group_helper'
             - '@controller.helper'
             - '@language'
-            - '@request'
             - '@template'
             - '@user'
