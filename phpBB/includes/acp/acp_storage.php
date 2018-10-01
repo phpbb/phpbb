@@ -24,7 +24,7 @@ class acp_storage
 	/** @var \phpbb\config\config $config */
 	protected $config;
 
-	/** @var \phpbb\db_text $config_text */
+	/** @var \phpbb\config\db_text $config_text */
 	protected $config_text;
 
 	/** @var \phpbb\db\driver\driver_interface $db */
