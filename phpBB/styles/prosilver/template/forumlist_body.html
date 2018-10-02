@@ -95,7 +95,7 @@
 									<!-- EVENT forumlist_body_last_post_title_prepend -->
 									<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
 								<!-- ENDIF -->
-									{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
+									{L_POST_BY_AUTHOR} <!-- EVENT forumlist_body_last_poster_username_prepend -->{forumrow.LAST_POSTER_FULL}<!-- EVENT forumlist_body_last_poster_username_append -->
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
 										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{L_VIEW_LATEST_POST}</span>
