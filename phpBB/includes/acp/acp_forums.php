@@ -1541,6 +1541,16 @@ class acp_forums
 
 		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
+		/**
+		 * Perform additional actions before move forum content
+		 *
+		 * @event core.acp_manage_forums_move_content_sql_before
+		 * @var	array	table_ary	Array of tables from which forum_id will be updated
+		 * @since 3.2.4-RC1
+		 */
+		$vars = array('table_ary');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content_sql_before', compact($vars)));
+
 		foreach ($table_ary as $table)
 		{
 			$sql = "UPDATE $table
