@@ -186,7 +186,7 @@
 
 						<!-- IF not S_IS_BOT -->
 						<div class="responsive-show" style="display: none;">
-							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
+							{L_LAST_POST} {L_POST_BY_AUTHOR} <!-- EVENT viewforum_body_last_post_author_username_prepend -->{topicrow.LAST_POST_AUTHOR_FULL}<!-- EVENT viewforum_body_last_post_author_username_append --> &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --><br />{L_POSTED} {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
 						</div>
 							<!-- IF topicrow.REPLIES -->
@@ -197,7 +197,7 @@
 						<div class="topic-poster responsive-hide left-box">
 							<!-- IF topicrow.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
 							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+							{L_POST_BY_AUTHOR} <!-- EVENT viewforum_body_topic_author_username_prepend -->{topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}<!-- EVENT viewforum_body_topic_author_username_append -->
 							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
 						</div>
 
@@ -223,7 +223,7 @@
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
 				<dd class="views">{topicrow.VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 				<dd class="lastpost">
-					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
+					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT viewforum_body_last_post_author_username_prepend -->{topicrow.LAST_POST_AUTHOR_FULL}<!-- EVENT viewforum_body_last_post_author_username_append -->
 						<!-- IF not S_IS_BOT and topicrow.U_LAST_POST -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
