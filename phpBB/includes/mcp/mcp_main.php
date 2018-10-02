@@ -1458,6 +1458,22 @@ function mcp_fork_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
 
+				/**
+				* Perform actions after forked topic is created.
+				*
+				* @event core.mcp_main_fork_sql_after
+				* @var	int		new_topic_id	The newly created topic ID
+				* @var	int		to_forum_id		The forum ID where the forked topic has been moved to
+				* @var	int		new_post_id		The newly created post ID
+				* @since 3.2.4-RC1
+				*/
+				$vars = array(
+					'new_topic_id',
+					'to_forum_id',
+					'new_post_id',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_main_fork_sql_after', compact($vars)));
+
 				switch ($row['post_visibility'])
 				{
 					case ITEM_APPROVED:
