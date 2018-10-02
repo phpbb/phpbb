@@ -1548,7 +1548,7 @@ class acp_forums
 		 * @var	array	table_ary	Array of tables from which forum_id will be updated
 		 * @since 3.2.4-RC1
 		 */
-		$vars = array('table_ary',);
+		$vars = array('table_ary');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content_sql_before', compact($vars)));
 
 		foreach ($table_ary as $table)
