@@ -107,8 +107,7 @@ class team
 		{
 			if ($this->user->data['user_id'] != ANONYMOUS)
 			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('NO_VIEW_USERS');
+				throw new http_exception(403, 'NO_VIEW_USERS');
 			}
 
 			login_box('', $this->language->lang('LOGIN_EXPLAIN_TEAM'));
