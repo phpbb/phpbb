@@ -126,8 +126,7 @@ class profile
 		{
 			if ($this->user->data['user_id'] != ANONYMOUS)
 			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('NO_VIEW_USERS');
+				throw new http_exception(403, 'NO_VIEW_USERS');
 			}
 
 			login_box('', $this->language->lang('LOGIN_EXPLAIN_VIEWPROFILE'));
@@ -138,7 +137,7 @@ class profile
 		// Display a profile
 		if ($user_id == ANONYMOUS)
 		{
-			trigger_error('NO_USER');
+			throw new http_exception(404, 'NO_USER');
 		}
 
 		// Get user...
@@ -151,7 +150,7 @@ class profile
 
 		if (!$member)
 		{
-			trigger_error('NO_USER');
+			throw new http_exception(404, 'NO_USER');
 		}
 
 		// a_user admins and founder are able to view inactive users and bots to be able to manage them more easily
@@ -160,11 +159,11 @@ class profile
 		{
 			if ($member['user_type'] == USER_IGNORE)
 			{
-				trigger_error('NO_USER');
+				throw new http_exception(404, 'NO_USER');
 			}
 			else if ($member['user_type'] == USER_INACTIVE && $member['user_inactive_reason'] != INACTIVE_PROFILE)
 			{
-				trigger_error('NO_USER');
+				throw new http_exception(404, 'NO_USER');
 			}
 		}
 
