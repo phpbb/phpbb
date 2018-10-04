@@ -56,6 +56,12 @@
 			<dt><label>{L_RELEASE_ANNOUNCEMENT}</label></dt>
 			<dd><strong><a href="{updates_available.announcement}">{updates_available.announcement}</a></strong></dd>
 		</dl>
+		{% if updates_available.signature %}
+		<dl>
+			<dt><label>{{ lang('1CLICK_UPDATE') }}</label></dt>
+			<dd><strong><a class="button2" href="{{ U_1CLICKUPDATE }}">{{ lang('UPDATE') }}</a></strong></dd>
+		</dl>
+		{% endif %}
 	</fieldset>
 <!-- END updates_available -->
 

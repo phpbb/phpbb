@@ -64,6 +64,7 @@ class version_helper
 		'stable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
+			'signature'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'bool',
@@ -71,6 +72,7 @@ class version_helper
 		'unstable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
+			'signature'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'bool',

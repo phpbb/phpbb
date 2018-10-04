@@ -208,6 +208,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed on this machine requires you to set the <var>NLS_CHARACTERSET</var> parameter to <var>UTF8</var>. Either upgrade your installation to 9.2+ or change the parameter.',
 	'INST_ERR_DB_NO_POSTGRES'		=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
 	'INST_SCHEMA_FILE_NOT_WRITABLE'	=> 'The schema file is not writable',
+	'NO_UPDATES_AVAILABLE'			=> 'There are no updates available.',
 
 	//
 	// Email data
@@ -230,6 +231,10 @@ $lang = array_merge($lang, array(
 	'SERVER_CONFIG'				=> 'Server configuration',
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
+
+	'1CLICK_UPDATE'			=> '1-click update',
+	'NO_1CLICKUPDATE'		=> 'Unable to initiate 1-click update. Please try again later.',
+	'SIGNATURE_MISMATCH'	=> 'Signature of the downloaded file does not match. See announcement topic for further information.',
 ));
 
 // Default database schema entries...
