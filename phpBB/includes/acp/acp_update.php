@@ -74,7 +74,7 @@ class acp_update
 		// Incomplete update?
 		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
 		{
-			$database_update_link = $phpbb_root_path . 'install/app.php/update';
+			$database_update_link = $phpbb_root_path . 'install/app.' . $phpEx . '/update';
 
 			$template->assign_vars(array(
 				'S_UPDATE_INCOMPLETE'		=> true,
