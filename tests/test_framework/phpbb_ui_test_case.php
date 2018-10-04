@@ -606,4 +606,37 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$this->getDriver()->takeScreenshot($screenshot);
 	}
+
+	/**
+	 * Wait for AJAX. Should be called after an AJAX action is made.
+	 *
+	 * @param string $framework javascript frameworks jquery|prototype|dojo
+	 * @throws \Facebook\WebDriver\Exception\NoSuchElementException
+	 * @throws \Facebook\WebDriver\Exception\TimeOutException
+	 */
+	public function waitForAjax($framework = 'jquery')
+	{
+		switch ($framework)
+		{
+			case 'jquery':
+				$code = 'return jQuery.active;';
+			break;
+			case 'prototype':
+				$code = 'return Ajax.activeRequestCount;';
+			break;
+			case 'dojo':
+				$code = 'return dojo.io.XMLHTTPTransport.inFlight.length;';
+			break;
+			default:
+				throw new \RuntimeException('Unsupported framework');
+			break;
+		}
+		// wait for at most 30s, retry every 2000ms (2s)
+		$driver = $this->getDriver();
+		$driver->wait(30, 2000)->until(
+			function () use ($driver, $code) {
+				return !$driver->executeScript($code);
+			}
+		);
+	}
 }
