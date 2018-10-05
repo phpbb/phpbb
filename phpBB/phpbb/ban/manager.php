@@ -32,15 +32,6 @@ class manager
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\log\log_interface */
-	protected $log;
-
-	/** @var string */
-	protected $sessions_keys_table;
-
-	/** @var string */
-	protected $sessions_table;
-
 	/** @var \phpbb\di\service_collection */
 	protected $types;
 
@@ -57,23 +48,15 @@ class manager
 	 * @param \phpbb\di\service_collection		$types					A service collection containing all ban types
 	 * @param \phpbb\cache\service				$cache					A cache object
 	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
-	 * @param \phpbb\log\log_interface			$log					A log object
-	 * @param \phpbb\user						$user					An user object
 	 * @param string							$bans_table				The bans table
 	 * @param string							$users_table			The users table
-	 * @param string							$sessions_table			The sessions table
-	 * @param string							$sessions_keys_table	The sessions key table
 	 */
-	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\log\log_interface $log, \phpbb\user $user, $bans_table, $users_table = '', $sessions_table = '', $sessions_keys_table = '')
+	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, $bans_table, $users_table = '')
 	{
 		$this->bans_table = $bans_table;
 		$this->cache = $cache;
 		$this->db = $db;
-		$this->log = $log;
-		$this->sessions_keys_table = $sessions_keys_table;
-		$this->sessions_table = $sessions_table;
 		$this->types = $types;
-		$this->user = $user;
 		$this->users_table = $users_table;
 	}
 
@@ -102,6 +85,10 @@ class manager
 		if ($ban_mode === false)
 		{
 			throw new type_not_found_exception(); // TODO
+		}
+		if (!empty($this->user))
+		{
+			$ban_mode->set_user($this->user);
 		}
 		$this->tidy();
 
@@ -137,19 +124,6 @@ class manager
 			throw new ban_insert_failed_exception(); // TODO
 		}
 
-		if ($ban_mode->get_ban_log_string() !== false)
-		{
-			$ban_items_log = implode(', ', $ban_items);
-
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_ban_log_string(), false, [$reason, $ban_items_log]);
-			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_ban_log_string(), false, [
-				'forum_id'	=> 0,
-				'topic_id'	=> 0,
-				$reason,
-				$ban_items_log,
-			]);
-		}
-
 		$ban_data = [
 			'items'				=> $ban_items,
 			'start'				=> $start,
@@ -160,56 +134,7 @@ class manager
 
 		if ($ban_mode->after_ban($ban_data))
 		{
-			$user_column = $ban_mode->get_user_column();
-			if (!empty($user_column) && !empty($this->users_table))
-			{
-				if ($user_column !== 'user_id')
-				{
-					$ban_items_sql = [];
-					$ban_or_like = '';
-					foreach ($ban_items as $ban_item)
-					{
-						if (stripos($ban_item, '*') === false)
-						{
-							$ban_items_sql[] = $ban_item;
-						}
-						else
-						{
-							$ban_or_like .= ' OR ' . $user_column . ' ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $ban_item));
-						}
-					}
-
-					// TODO: Prevent logging out founders
-					$sql = 'SELECT user_id
-						FROM ' . $this->users_table . '
-						WHERE ' . $this->db->sql_in_set('u.' . $user_column, $ban_items_sql, false, true) . $ban_or_like;
-					$result = $this->db->sql_query($sql);
-
-					$user_ids = [];
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$user_ids[] = (int) $row['user_id'];
-					}
-					$this->db->sql_freeresult($result);
-				}
-				else
-				{
-					$user_ids = $ban_items;
-				}
-
-				if (!empty($user_ids) && !empty($this->sessions_table))
-				{
-					$sql = 'DELETE FROM ' . $this->sessions_table . '
-						WHERE ' . $this->db->sql_in_set('session_user_id', $user_ids);
-					$this->db->sql_query($sql);
-				}
-				if (!empty($user_ids) && !empty($this->sessions_keys_table))
-				{
-					$sql = 'DELETE FROM ' . $this->sessions_keys_table . '
-						WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
-					$this->db->sql_query($sql);
-				}
-			}
+			// TODO
 		}
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
@@ -223,9 +148,8 @@ class manager
 	 *
 	 * @param string	$mode		The ban type in which the ban IDs were created
 	 * @param array		$items		An array of ban IDs which should be removed
-	 * @param bool		$logging	True, if log entries should be created, false otherwise.
 	 */
-	public function unban($mode, array $items, $logging = true)
+	public function unban($mode, array $items)
 	{
 		/** @var \phpbb\ban\type\type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
@@ -252,23 +176,10 @@ class manager
 			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
 		$this->db->sql_query($sql);
 
-		if ($logging && $ban_mode->get_unban_log_string() !== false)
-		{
-			$unban_items_log = implode(', ', $unbanned_items);
-
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_unban_log_string(), false, [$unban_items_log]);
-			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $ban_mode->get_unban_log_string(), false, [
-				'forum_id'	=> 0,
-				'topic_id'	=> 0,
-				$unban_items_log,
-			]);
-		}
-
 		$unban_data = [
 			'items'		=> $unbanned_items,
-			'logging'	=> $logging,
 		];
-		$ban_mode->after_unban($unban_data);
+		$unbanned_users = $ban_mode->after_unban($unban_data);
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
 		$this->cache->destroy(self::CACHE_KEY_USERS);
@@ -347,7 +258,7 @@ class manager
 	/**
 	 * Returns all bans for a given ban type. False, if none were found
 	 *
-	 * @param strng	$mode	The ban type for which the entries should be retrieved
+	 * @param string	$mode	The ban type for which the entries should be retrieved
 	 *
 	 * @return array|bool
 	 */
@@ -416,7 +327,7 @@ class manager
 							$where_array,
 						],
 						['u.user_type', '<>', USER_FOUNDER],
-					]
+					],
 				],
 			];
 			$sql = $this->db->sql_build_query('SELECT', $sql_array);
@@ -455,6 +366,16 @@ class manager
 		return array_filter($banned_users, function ($end) {
 			return $end <= 0 || $end > time();
 		});
+	}
+
+	/**
+	 * Sets the current user to exclude from banning
+	 *
+	 * @param \phpbb\user	$user	An user object
+	 */
+	public function set_user(\phpbb\user $user)
+	{
+		$this->user = $user;
 	}
 
 	/**
