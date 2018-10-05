@@ -325,6 +325,9 @@ class messenger
 			'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
 		));
 
+		// Parse message through template
+		$this->msg = trim($this->template->assign_display('body'));
+
 		$subject = $this->subject;
 		$message = $this->msg;
 		$template  = $this->template;
@@ -352,9 +355,6 @@ class messenger
 		$this->subject = $subject;
 		$this->msg = $message;
 		unset($subject, $message);
-
-		// Parse message through template
-		$this->msg = trim($this->template->assign_display('body'));
 
 		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
 		$this->msg = str_replace("\r\n", "\n", $this->msg);
