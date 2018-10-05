@@ -908,11 +908,36 @@ function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link =
 		$perm = ($perms !== 0) ? ($perms | CHMOD_EXECUTE) : $perms;
 		$dir_perm = (($owner_perm | CHMOD_EXECUTE) << 6) + ($perm << 3) + ($perm << 0);
 	}
+	
+	if (is_array($files))
+	{	
+		foreach ($files as $file)
+		{
+			if ($recursive && is_dir($file) && !is_link($file))
+			{
+				mx_chmod(new \FilesystemIterator($file), $perms, true);
+			}
 
-	// Symfony's filesystem component does not support extra execution flags on directories
-	// so we need to implement it again
-	foreach ($this->to_iterator($files) as $file)
+			// Don't chmod links as mostly those require 0777 and that cannot be changed
+			if (is_dir($file) || (is_link($file) && $force_chmod_link))
+			{
+				if (true !== @chmod($file, $dir_perm))
+				{
+					throw new filesystem_exception('CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
+				}
+			}
+			else if (is_file($file))
+			{
+				if (true !== @chmod($file, $file_perm))
+				{
+					throw new filesystem_exception('CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
+				}
+			}
+		}
+	}
+	else
 	{
+		$file = $files;
 		if ($recursive && is_dir($file) && !is_link($file))
 		{
 			mx_chmod(new \FilesystemIterator($file), $perms, true);
@@ -933,7 +958,7 @@ function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link =
 				throw new filesystem_exception('CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
 			}
 		}
-	}
+	}	
 }
 /**
  * {@inheritdoc}
