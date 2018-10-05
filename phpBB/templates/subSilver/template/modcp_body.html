@@ -2,7 +2,7 @@
 <form method="post" action="{S_MODCP_ACTION}">
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
   <tr> 
-	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a> <!-- IF PARENT_FORUM --> -> <a class="nav" href="{U_VIEW_PARENT_FORUM}">{PARENT_FORUM_NAME}</a> <!-- ENDIF --> -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
+	<td align="left"><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
   </tr>
 </table>
 
@@ -15,11 +15,11 @@
 	  <td class="spaceRow" colspan="5" align="center"><span class="gensmall">{L_MOD_CP_EXPLAIN}</span></td>
 	</tr>
 	<tr> 
-	  <th width="4%" class="thLeft" nowrap="nowrap">&nbsp;</th>
-	  <th nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
-	  <th width="8%" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
-	  <th width="17%" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
-	  <th width="5%" class="thRight" nowrap="nowrap">&nbsp;{L_SELECT}&nbsp;</th>
+	  <th width="4%" class="thLeft" nowrap="wrap">&nbsp;</th>
+	  <th nowrap="wrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	  <th width="8%" nowrap="wrap">&nbsp;{L_REPLIES}&nbsp;</th>
+	  <th width="17%" nowrap="wrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+	  <th width="5%" class="thRight" nowrap="wrap">&nbsp;{L_SELECT}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
 	<tr> 
@@ -47,7 +47,7 @@
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
 	<td align="left" valign="middle"><span class="nav">{PAGE_NUMBER}</b></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
+	<td align="right" valign="top" nowrap="wrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
   </tr>
 </table>
 </form>

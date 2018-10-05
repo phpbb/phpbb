@@ -250,7 +250,7 @@ else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 				}
 				else
 				{
-					message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+					message_die(GENERAL_MESSAGE, $lang['No_search_match'] . " (searching for: $search_author)");
 				}
 
 				$sql = "SELECT post_id 
@@ -413,7 +413,7 @@ else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 
 			if ( !$is_auth['auth_read'] )
 			{
-				message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
+				message_die(GENERAL_MESSAGE, $lang['No_searchable_forums'] . " (searching for: $search_forum)");
 			}
 
 			$auth_sql = "f.forum_id = $search_forum";
@@ -652,7 +652,115 @@ else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+			if ( !empty($auth_sql) )
+			{
+				$sql = "SELECT t.topic_id, f.forum_id
+					FROM " . TOPICS_TABLE . "  t, " . FORUMS_TABLE . " f
+					WHERE t.topic_replies = 0 
+						AND t.forum_id = f.forum_id
+						AND t.topic_moved_id = 0
+						AND $auth_sql";
+			}
+			else
+			{
+				$sql = "SELECT topic_id 
+					FROM " . TOPICS_TABLE . "  
+					WHERE topic_replies = 0 
+						AND topic_moved_id = 0";
+			}
+				
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
+			}
+
+			$search_ids = array();
+			while( $row = $db->sql_fetchrow($result) )
+			{
+				$search_ids[] = $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$total_match_count = count($search_ids);
+
+			//
+			// Basic requirements
+			//
+			$show_results = 'topics';
+			$sort_by = 0;
+			$sort_dir = 'DESC';
+			
+			if ( !empty($search_author) || $search_time || !empty($auth_sql) )
+			{
+				$search_id_chunks = array();
+				$count = 0;
+				$chunk = 0;
+
+				if (count($search_ids) > $limiter)
+				{
+					for ($i = 0; $i < count($search_ids); $i++) 
+					{
+						if ($count == $limiter)
+						{
+							$chunk++;
+							$count = 0;
+						}
+					
+						$search_id_chunks[$chunk][$count] = $search_ids[$i];
+						$count++;
+					}
+				}
+				else
+				{
+					$search_id_chunks[0] = $search_ids;
+				}
+
+				$search_ids = array();
+
+				for ($i = 0; $i < count($search_id_chunks); $i++)
+				{
+					$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')' : 'p.post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')';
+					$select_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id' : 'p.post_id';
+					$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
+
+					if ( $search_time )
+					{
+						$where_sql .= ( $search_author == '' && $auth_sql == '' ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time";
+					}
+
+					if ( !empty($auth_sql) )
+					{
+						$from_sql .= ", " . FORUMS_TABLE . " f";
+						$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
+					}
+
+					if ( !empty($search_author) )
+					{
+						$from_sql .= ", " . USERS_TABLE . " u";
+						$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
+					}
+
+					$sql = "SELECT " . $select_sql . " 
+						FROM $from_sql 
+						WHERE $where_sql";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
+					}
+
+					while( $row = $db->sql_fetchrow($result) )
+					{
+						$search_ids[] = $row['post_id'];
+					}
+					$db->sql_freeresult($result);
+				}
+
+				$total_match_count = count($search_ids);
+			}
+			else			
+			{
+				message_die(GENERAL_MESSAGE, $lang['No_search_match'] . " Search_id: " . print_r($search_ids) );
+			}		
 		}
 
 		//
@@ -681,15 +789,15 @@ else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 		// Limit the character length (and with this the results displayed at all following pages) to prevent
 		// truncated result arrays. Normally, search results above 12000 are affected.
 		// - to include or not to include
-		/*
-		$max_result_length = 60000;
+		/**/
+		$max_result_length = 12000;
 		if (strlen($search_results) > $max_result_length)
 		{
 			$search_results = substr($search_results, 0, $max_result_length);
 			$search_results = substr($search_results, 0, strrpos($search_results, ','));
 			$total_match_count = count(explode(', ', $search_results));
 		}
-		*/
+		/**/
 
 		for($i = 0; $i < count($store_vars); $i++)
 		{
@@ -1305,7 +1413,7 @@ else if ( !empty($search_keywords) || !empty($search_author) || $search_id )
 	}
 	else
 	{
-		message_die(GENERAL_MESSAGE, $lang['No_search_match']);
+		message_die(GENERAL_MESSAGE, $lang['No_search_match']) . " (searching for: $search_result)";
 	}
 }
 
@@ -1372,7 +1480,7 @@ if ( !empty($s_forums) )
 }
 else
 {
-	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums']);
+	message_die(GENERAL_MESSAGE, $lang['No_searchable_forums'] . " (searching for: $s_forums)");	
 }
 
 //

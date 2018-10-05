@@ -8,7 +8,7 @@
 *
 */
 
-if (!defined('IN_PORTAL'))
+if (!defined('IN_PHPBB'))
 {
 	die('Hacking attempt');
 }
@@ -20,26 +20,38 @@ class FacebookConnect extends SocialConnect
 
 	public function __construct($network_name)
 	{
-		global $config;
+		global $board_config;
 
 		parent::__construct($network_name);
-
-		include(PHPBB_ROOT_PATH . "includes/social_connect/facebook/facebook." . PHP_EXT);
-
-		$app_id = $config['facebook_app_id'];
-		$app_secret = $config['facebook_app_secret'];
-
+		
+		require_once(PHPBB_ROOT_PATH . "includes/social_connect/facebook/Facebook." . PHP_EXT);
+		//require_once(PHPBB_ROOT_PATH . "includes/social_connect/Facebook/autoload.php");
+		
+		$app_id = $board_config['facebook_app_id'];
+		$app_secret = $board_config['facebook_app_secret']; 
+		
+		if (!isset($board_config['facebook_app_id']))
+		{
+			throw new Exception('Required "facebook_app_id" key not set in config and could not find fallback environment variable "' . '"');
+		}
+		elseif (!$board_config['facebook_app_id'])
+		{
+			throw new Exception('Required "facebook_app_id" key not supplied in config and could not find fallback environment variable "' . $board_config['facebook_app_id'] . '"');
+		}
+		
 		$facebook_config = array(
-			'appId'  => $app_id,
-			'secret' => $app_secret
-		);
-
+			'appId'  => $board_config['facebook_app_id'], //old id
+			'app_id'  => $board_config['facebook_app_id'], //new id			
+			'app_secret' => $board_config['facebook_app_secret'], 
+			'default_graph_version' => 'v2.12',
+		);	
 		$this->client = new Facebook($facebook_config);
+		//$this->client = new Facebook\Facebook($facebook_config);
 	}
 
 	public function do_login($redirect, $force_retry = false)
 	{
-		global $config, $user;
+		global $board_config, $user;
 
 		// If user is already logged in and granted our application, we don't need to redirect him to facebook
 		$user_fb_id = $this->client->getUser();
@@ -52,7 +64,7 @@ class FacebookConnect extends SocialConnect
 		if ($confirm != 1 || $force_retry)
 		{
 			// Build the social network return url
-			$current_page = extract_current_page(PHPBB_ROOT_PATH);
+			$current_page = extract_current_page(IP_ROOT_PATH);
 			$return_url = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://';
 			$return_url .= extract_current_hostname() . $current_page['script_path'] . $current_page['page'];
 			$return_url .= (strpos($return_url, '?') ? '&' : '?') . 'redirect=' . $redirect . '&confirm=1';

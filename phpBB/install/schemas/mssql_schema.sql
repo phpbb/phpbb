@@ -561,6 +561,21 @@ ALTER TABLE [phpbb_words] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_zebra] (
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[zebra_id] [int] DEFAULT (0) NOT NULL ,
+	[friend] [int] DEFAULT (0) NOT NULL ,
+	[foe] [int] DEFAULT (0) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_zebra] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[zebra_id]
+	)
+GO
+
 ALTER TABLE [phpbb_auth_access] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_auth_access_auth_view] DEFAULT (0) FOR [auth_view],
 	CONSTRAINT [DF_phpbb_auth_access_auth_read] DEFAULT (0) FOR [auth_read],

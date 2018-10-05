@@ -579,7 +579,7 @@ $lang['Current_password'] = 'Parola curentă';
 $lang['New_password'] = 'Parola nouă';
 $lang['Confirm_password'] = 'Confirmaţi parola';
 $lang['Confirm_password_explain'] = 'Trebuie să confirmaţi parola curentă dacă vreţi să o schimbaţi sau vreţi să aveţi altă adresă de email';
-$lang['password_if_changed'] = 'Este necesar să specificaţi parola dacă vreţi să o schimbaţi';
+$lang['password_if_changed'] = 'Este necesar să specificaţi parola dacă vreţi să o schimbaţi.<br />Atenţie dacă browserul ţine în cache parola să o ştergeţi când trimiteţi formularul paginii.';
 $lang['password_confirm_if_changed'] = 'Este necesar să confirmaţi parola dacă aţi schimbat-o anterior';
 
 $lang['Avatar'] = 'Imagine asociată (Avatar)';
@@ -1060,8 +1060,15 @@ $lang['youtube_link'] = 'Link';
 $lang['Subforums'] = 'Subforumuri';
 // End Simple Subforums MOD
 
+$lang['SOCIAL_CONNECT'] = 'You can login using your social network accounts:';
+$lang['SOCIAL_CONNECT_LOGIN'] = 'Login with my %s account';
+$lang['SOCIAL_CONNECT_REGISTER_INFO'] = 'Your profile will be automatically filled with the information retrieved from your profile in the social network.';
+$lang['SOCIAL_CONNECT_LINK_ACCOUNT'] = 'Please login to link your social network account to your account';
+$lang['SOCIAL_CONNECT_LINK_ACCOUNT_MSG'] = 'We couldn\'t find any social network account linked with your %s account. You can either register or link an existing account with your %s account.<br /><br />Click %shere%s if you already have an account.<br/ ><br />Click %shere%s to create a new account.';
+ 
+
 //
-// That's all Folks!
+// That's all, Folks!
 // -------------------------------------------------
 
 ?>

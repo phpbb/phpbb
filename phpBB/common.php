@@ -24,9 +24,13 @@ if ( !defined('IN_PHPBB') )
 	die("Hacking attempt");
 }
 
+//This is for MXP Forum Hack.To show the forum inside the cms page or not.
+//define('IN_CMS', true);
+
 //error_reporting  (E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 //error_reporting(E_ALL ^ E_NOTICE); // Report all errors, except notices
-error_reporting(E_ALL);
+//
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 
 // If we are on PHP >= 6.0.0 we do not need some code
 if (version_compare(PHP_VERSION, '5.3.0', '>='))
@@ -48,11 +52,13 @@ else
 
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
+
 //Temp fix for timezone
 if (@function_exists('date_default_timezone_set') && @function_exists('date_default_timezone_get'))
 {
 	@date_default_timezone_set(@date_default_timezone_get());
 }
+
 // The following code (unsetting globals)
 // Thanks to Matt Kavanagh and Stefan Esser for providing feedback as well as patch files
 
@@ -218,5 +224,27 @@ if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN
 */
 @define('IP_ROOT_PATH', $phpbb_root_path);
 
-
+/*
+ +mx_forum
+*/
+if( !defined('IN_ADMIN') && defined('IN_CMS') )
+{
+	$mx_root_path = './../';
+	$mx_table_prefix = 'mx_';
+	$module_root_path = $mx_root_path  . 'modules/mx_forum/';
+	
+	if (function_exists('custom_file_exists') && (@custom_file_exists($modules_root_path.'includes/forum_hack.'.$phpEx)) )
+	{
+		include_once($module_root_path.'includes/forum_hack.'.$phpEx);
+	}
+	elseif (@file_exists($module_root_path.'includes/forum_hack.'.$phpEx))
+	{
+		include_once($module_root_path.'includes/forum_hack.'.$phpEx);
+	}	
+	@define('PORTAL_BACKEND', 'phpbb2');
+	@define('CMS_ROOT_PATH', $mx_root_path);	
+}
+/*
+-mx_forum
+*/
 ?>

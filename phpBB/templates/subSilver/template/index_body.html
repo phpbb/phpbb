@@ -1,140 +1,82 @@
-<!-- INCLUDE overall_header.html -->
-
-<!-- IF U_MCP -->
-	<div id="pageheader">
-		<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
-	</div>
-
-	<br clear="all" /><br />
-<!-- ENDIF -->
-
-<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
+<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center" class="table1 main_table">
+<tbody>
   <tr> 
-	<td align="left" valign="bottom"><span class="gensmall">
+	<td align="left" valign="bottom">
+	<span class="gensmall">
 	<!-- BEGIN switch_user_logged_in -->
 	{LAST_VISIT_DATE}<br />
 	<!-- END switch_user_logged_in -->
-	{CURRENT_TIME}<br /></span><span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span></td>
+	{CURRENT_TIME}<br />
+	</span>
+	<span class="nav"><a href="{U_INDEX}" class="nav">{L_INDEX}</a></span>
+	</td>
 	<td align="right" valign="bottom" class="gensmall">
 		<!-- BEGIN switch_user_logged_in -->
 		<a href="{U_SEARCH_NEW}" class="gensmall">{L_SEARCH_NEW}</a><br /><a href="{U_SEARCH_SELF}" class="gensmall">{L_SEARCH_SELF}</a><br />
 		<!-- END switch_user_logged_in -->
 		<a href="{U_SEARCH_UNANSWERED}" class="gensmall">{L_SEARCH_UNANSWERED}</a></td>
   </tr>
+ </tbody> 
 </table>
 
-<table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
+<table width="100%" cellpadding="2" cellspacing="1" border="0" class="table1 main_table forumline">
+ <thead> 
   <tr> 
-	<th colspan="2" class="thCornerL" height="25" nowrap="nowrap">&nbsp;{L_FORUM}&nbsp;</th>
-	<th width="50" class="thTop" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
-	<th width="50" class="thTop" nowrap="nowrap">&nbsp;{L_POSTS}&nbsp;</th>
-	<th class="thCornerR" nowrap="nowrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+	<th colspan="2" class="thCornerL" height="25" nowrap="wrap">&nbsp;{L_FORUM}&nbsp;</th>
+	<th width="50" class="thTop" nowrap="wrap">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th width="50" class="thTop" nowrap="wrap">&nbsp;{L_POSTS}&nbsp;</th>
+	<th class="thCornerR" nowrap="wrap">&nbsp;{L_LASTPOST}&nbsp;</th>
   </tr>
+ </thead>   
+ <tbody> 
   <!-- BEGIN catrow -->
   <tr> 
 	<td class="catLeft" colspan="2" height="28"><span class="cattitle"><a href="{catrow.U_VIEWCAT}" class="cattitle">{catrow.CAT_DESC}</a></span></td>
 	<td class="rowpic" colspan="3" align="right">&nbsp;</td>
   </tr>
   <!-- BEGIN forumrow -->
-  <!-- IF ! forumrow.PARENT -->
-<tr> 
-	<td class="row1" align="center" valign="middle" height="50">
-		<img src="{catrow.forumrow.FORUM_FOLDER_IMG}" width="46" height="25" alt="{catrow.forumrow.L_FORUM_FOLDER_ALT}" title="{catrow.forumrow.L_FORUM_FOLDER_ALT}" />
-	</td>
-	<td class="row1" width="100%" height="50">
-		<span class="forumlink"> 
-			<a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink">{catrow.forumrow.FORUM_NAME}</a><br />
-		</span> 
-		<span class="genmed">
-		{catrow.forumrow.FORUM_DESC}<br />
-		</span>
-		<!-- IF catrow.forumrow.MODERATORS -->
-			<span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}<br /></span>
-		<!-- ENDIF -->
-		<!-- BEGIN sub -->
-		<!-- DEFINE $HAS_SUB = 1 -->
-		<!-- IF catrow.forumrow.sub.NUM > 0 -->, <!-- ELSE --><span class="genmed">{L_SUBFORUMS}: <!-- ENDIF -->
-		{catrow.forumrow.sub.LAST_POST_SUB} 
-		<a href="{catrow.forumrow.sub.U_VIEWFORUM}" <!-- IF catrow.forumrow.sub.UNREAD -->class="topic-new"<!-- ENDIF --> title="{catrow.forumrow.sub.FORUM_DESC_HTML}">
-		{catrow.forumrow.sub.FORUM_NAME}
-		</a>
-		<!-- END sub -->
-		<!-- IF $HAS_SUB --></span><!-- UNDEFINE $HAS_SUB -->
-	<!-- ENDIF -->
-	</td>
-	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOTAL_TOPICS}</span></td>
-	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOTAL_POSTS}</span></td>
-	<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
-</tr>
+  <tr> 
+	<td class="row1" align="center" valign="middle" height="50"><img src="{catrow.forumrow.FORUM_FOLDER_IMG}" width="46" height="25" alt="{catrow.forumrow.L_FORUM_FOLDER_ALT}" title="{catrow.forumrow.L_FORUM_FOLDER_ALT}" /></td>
+	<td class="row1" width="100%" height="50"><span class="forumlink"> <a href="{catrow.forumrow.U_VIEWFORUM}" class="forumlink">{catrow.forumrow.FORUM_NAME}</a><br />
+	  </span> <span class="genmed">{catrow.forumrow.FORUM_DESC}<br />
+	  </span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
+	<td class="row2" align="center" valign="middle" height="50" nowrap="wrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+  </tr>
   <!-- END forumrow -->
-  <!-- ENDIF -->  
   <!-- END catrow -->
+ </tbody> 
 </table>
 
+<table width="100%" cellspacing="0" border="0" align="center" cellpadding="2">
+  <tr> 
+	<td align="left"><span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span></td>
+	<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
+  </tr>
+</table>
 
-<!-- IF not S_IS_BOT or U_TEAM -->
-<span class="gensmall"><!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}">{L_DELETE_COOKIES}</a><!-- ENDIF --><!-- IF not S_IS_BOT and U_TEAM --> | <!-- ENDIF --><!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF --></span><br />
-<!-- ENDIF -->
-
-<br clear="all" />
-
-<!-- INCLUDE breadcrumbs.html -->
-
-<!-- IF S_DISPLAY_ONLINE_LIST -->
-	<br clear="all" />
-
-	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
-	<tr>
-		<td class="catHead" colspan="2"><!-- IF U_VIEWONLINE --><h4><span class="cattitle"><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></span></h4><!-- ELSE --><h4>{L_WHO_IS_ONLINE}</h4><!-- ENDIF --></td>
-	</tr>
-	<tr>
-	<!-- IF LEGEND -->
-	<td class="row1" align="center" valign="middle" rowspan="2"><img src="templates/subSilver/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-	<!-- ELSE -->
-		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-	<!-- ENDIF -->
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+  <tr> 
+	<td class="catHead" colspan="2" height="28"><span class="cattitle"><a href="{U_VIEWONLINE}" class="cattitle">{L_WHO_IS_ONLINE}</a></span></td>
+  </tr>
+  <tr> 
+	<td class="row1" align="center" valign="middle" rowspan="2"><img src="templates/aluminoid/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+	<td class="row1" align="left" width="100%"><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span>
+	</td>
+  </tr>
+  <tr> 
 	<td class="row1" align="left"><span class="gensmall">{TOTAL_USERS_ONLINE} &nbsp; [ {L_WHOSONLINE_ADMIN} ] &nbsp; [ {L_WHOSONLINE_MOD} ]<br />{RECORD_USERS}<br />{LOGGED_IN_USER_LIST}</span></td>
-	</tr>
-	<!-- IF LEGEND -->
-	<tr>
-			<td align="left" valign="top">
-			<b class="gensmall">{L_LEGEND} :: {LEGEND}</b>
-			
-			</td>
-	</tr>
-	<!-- ENDIF -->
-	</table>	
-<!-- ENDIF -->
+  </tr>
+</table>
 
-<!-- IF S_DISPLAY_BIRTHDAY_LIST -->
-	<br clear="all" />
-
-	<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<td class="cat" colspan="2"><h4>{L_BIRTHDAYS}</h4></td>
-	</tr>
-	<tr>
-		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_BIRTHDAYS}" /></td>
-		<td class="row1" width="100%"><p class="genmed"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
-	</tr>
-	</table>
-<!-- ENDIF -->
-
-<br clear="all" />
-
-<table class="tablebg" width="100%" cellspacing="1">
+<table width="100%" cellpadding="1" cellspacing="1" border="0">
 <tr>
-	<td class="cat" colspan="2"><h4>{L_STATISTICS}</h4></td>
-</tr>
-<tr>
-	<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_STATISTICS}" /></td>
-	<td class="row1" width="100%" valign="middle"><p class="genmed">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</p></td>
+	<td align="left" valign="top"><span class="gensmall">{L_ONLINE_EXPLAIN}</span></td>
 </tr>
 </table>
 
-<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
-	<br clear="all" />
-
+<!-- BEGIN switch_user_logged_out -->
 <form method="post" action="{S_LOGIN_ACTION}">
   <table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
 	<tr> 
@@ -145,31 +87,27 @@
 		<input class="post" type="text" name="username" size="10" />
 		&nbsp;&nbsp;&nbsp;{L_PASSWORD}: 
 		<input class="post" type="password" name="password" size="10" maxlength="32" />
-		<!-- BEGIN switch_allow_autologin -->
 		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
 		<input class="text" type="checkbox" name="autologin" />
-		<!-- END switch_allow_autologin -->
 		&nbsp;&nbsp;&nbsp; 
 		<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" />
 		</span> </td>
 	</tr>
   </table>
 </form>
-<!-- ENDIF -->
+<!-- END switch_user_logged_out -->
 
 <br clear="all" />
 
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_new_big.gif" alt="{L_NEW_POSTS}"/></td>
+	<td width="20" align="center"><img src="templates/aluminoid/images/folder_new_big.gif" alt="{L_NEW_POSTS}"/></td>
 	<td><span class="gensmall">{L_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_big.gif" alt="{L_NO_NEW_POSTS}" /></td>
+	<td width="20" align="center"><img src="templates/aluminoid/images/folder_big.gif" alt="{L_NO_NEW_POSTS}" /></td>
 	<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_locked_big.gif" alt="{L_FORUM_LOCKED}" /></td>
+	<td width="20" align="center"><img src="templates/aluminoid/images/folder_locked_big.gif" alt="{L_FORUM_LOCKED}" /></td>
 	<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
   </tr>
 </table>
-
-<!-- INCLUDE overall_footer.html -->

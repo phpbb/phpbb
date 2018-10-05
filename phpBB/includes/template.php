@@ -2123,7 +2123,7 @@ class Template
 		
 		$code = str_replace('{% set', '<!-- SET', $code);		
 		$code = str_replace('%}', '-->', $code);
-		$code = str_replace('%', '--', $code);		
+		//$code = str_replace('%', '--', $code);		
 		
 		/**Fix our IF tokens **/
 		// $code = $this->fix_if_tokens($code);

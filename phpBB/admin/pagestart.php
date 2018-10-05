@@ -32,27 +32,27 @@ include($phpbb_root_path . 'common.'.$phpEx);
 //
 // Start session management
 //
-$userdata = $user->session_pagestart($user_ip, PAGE_SEARCH);
+$userdata = $user->session_pagestart($user_ip, PAGE_ADMIN);
 $user->set_lang($user->lang, $user->help, 'common');
 $lang = &$user->lang;
 //$user->_init_userprefs($user->data);
-init_userprefs($user->data);
+init_userprefs($userdata);
 //
 // End session management
 //
 
 if (!$userdata['session_logged_in'])
 {
-	//redirect(append_sid("login.$phpEx?redirect=admin/index.$phpEx", true));
+	redirect(append_sid("login.$phpEx?redirect=admin/index.$phpEx", true));
 }
 else if ($userdata['user_level'] != ADMIN)
 {
-	//message_die(GENERAL_MESSAGE, $lang['Not_admin']);
+	message_die(GENERAL_MESSAGE, $lang['Not_admin']);
 }
 
 if ($_GET['sid'] != $userdata['session_id'])
 {
-	//redirect("index.$phpEx?sid=" . $userdata['session_id']);
+	redirect("index.$phpEx?sid=" . $userdata['session_id']);
 }
 
 if (!$userdata['session_admin'])

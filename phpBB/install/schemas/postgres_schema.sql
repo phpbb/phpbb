@@ -576,3 +576,14 @@ CREATE TABLE phpbb_words (
    replacement varchar(100) DEFAULT '' NOT NULL,
    CONSTRAINT phpbb_words_pkey PRIMARY KEY (word_id)
 );
+
+/* --------------------------------------------------------
+  Table structure for table phpbb_zebra
+-------------------------------------------------------- */
+CREATE TABLE phpbb_zebra (
+	user_id mediumint(8) NOT NULL,
+	zebra_id mediumint(8) NOT NULL,
+	friend tinyint(1) DEFAULT '0',
+	foe tinyint(1) DEFAULT '0',
+   CONSTRAINT phpbb_zebra_pkey PRIMARY KEY (user_id, zebra_id)
+);

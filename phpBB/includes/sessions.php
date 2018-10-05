@@ -3049,6 +3049,284 @@ class user
 	}
 	
 	/**
+	 * Determine which plural form we should use.
+	 *
+	 * For some languages this is not as simple as for English.
+	 *
+	 * @param int|float		$number		The number we want to get the plural case for. Float numbers are floored.
+	 * @param int|bool		$force_rule	False to use the plural rule of the language package
+	 *									or an integer to force a certain plural rule
+	 *
+	 * @return int	The plural-case we need to use for the number plural-rule combination
+	 *
+	 * @throws \phpbb\language\exception\invalid_plural_rule_exception	When $force_rule has an invalid value
+	 */
+	public function get_plural_form($number, $force_rule = false)
+	{
+		$number			= (int) $number;
+		$plural_rule	= ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
+
+		if ($plural_rule > 15 || $plural_rule < 0)
+		{
+			throw new invalid_plural_rule_exception('INVALID_PLURAL_RULE', array(
+				'plural_rule' => $plural_rule,
+			));
+		}
+
+		/**
+		 * The following plural rules are based on a list published by the Mozilla Developer Network
+		 * https://developer.mozilla.org/en/Localization_and_Plurals
+		 */
+		switch ($plural_rule)
+		{
+			case 0:
+				/**
+				 * Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
+				 * 1 - everything: 0, 1, 2, ...
+				 */
+			return 1;
+			case 1:
+				/**
+				 * Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
+				 * 1 - 1
+				 * 2 - everything else: 0, 2, 3, ...
+				 */
+			return ($number === 1) ? 1 : 2;
+			case 2:
+				/**
+				 * Families: Romanic (French, Brazilian Portuguese)
+				 * 1 - 0, 1
+				 * 2 - everything else: 2, 3, ...
+				 */
+			return (($number === 0) || ($number === 1)) ? 1 : 2;
+			case 3:
+				/**
+				 * Families: Baltic (Latvian)
+				 * 1 - 0
+				 * 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
+				 * 3 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
+				 */
+			return ($number === 0) ? 1 : ((($number % 10 === 1) && ($number % 100 != 11)) ? 2 : 3);
+			case 4:
+				/**
+				 * Families: Celtic (Scottish Gaelic)
+				 * 1 - is 1 or 11: 1, 11
+				 * 2 - is 2 or 12: 2, 12
+				 * 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
+				 * 4 - everything else: 0, 20, 21, ...
+				 */
+			return ($number === 1 || $number === 11) ? 1 : (($number === 2 || $number === 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
+			case 5:
+				/**
+				 * Families: Romanic (Romanian)
+				 * 1 - 1
+				 * 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
+				 * 3 - everything else: 20, 21, ...
+				 */
+			return ($number === 1) ? 1 : ((($number === 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
+			case 6:
+				/**
+				 * Families: Baltic (Lithuanian)
+				 * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+				 * 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
+				 * 3 - everything else: 2, 3, ... 8, 9, 22, 23, ... 29, 32, 33, ...
+				 */
+			return (($number % 10 === 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
+			case 7:
+				/**
+				 * Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
+				 * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
+				 * 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
+				 * 3 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
+				 */
+			return (($number % 10 === 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
+			case 8:
+				/**
+				 * Families: Slavic (Slovak, Czech)
+				 * 1 - 1
+				 * 2 - 2, 3, 4
+				 * 3 - everything else: 0, 5, 6, 7, ...
+				 */
+			return ($number === 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
+			case 9:
+				/**
+				 * Families: Slavic (Polish)
+				 * 1 - 1
+				 * 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
+				 * 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
+				 */
+			return ($number === 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
+			case 10:
+				/**
+				 * Families: Slavic (Slovenian, Sorbian)
+				 * 1 - ends in 01: 1, 101, 201, ...
+				 * 2 - ends in 02: 2, 102, 202, ...
+				 * 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
+				 * 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
+				 */
+			return ($number % 100 === 1) ? 1 : (($number % 100 === 2) ? 2 : ((($number % 100 === 3) || ($number % 100 === 4)) ? 3 : 4));
+			case 11:
+				/**
+				 * Families: Celtic (Irish Gaeilge)
+				 * 1 - 1
+				 * 2 - 2
+				 * 3 - is 3-6: 3, 4, 5, 6
+				 * 4 - is 7-10: 7, 8, 9, 10
+				 * 5 - everything else: 0, 11, 12, ...
+				 */
+			return ($number === 1) ? 1 : (($number === 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
+			case 12:
+				/**
+				 * Families: Semitic (Arabic)
+				 * 1 - 1
+				 * 2 - 2
+				 * 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
+				 * 4 - ends in 11-99: 11, ... 99, 111, 112, ...
+				 * 5 - everything else: 100, 101, 102, 200, 201, 202, ...
+				 * 6 - 0
+				 */
+			return ($number === 1) ? 1 : (($number === 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
+			case 13:
+				/**
+				 * Families: Semitic (Maltese)
+				 * 1 - 1
+				 * 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
+				 * 3 - ends in 11-19: 11, 12, ... 18, 19, 111, 112, ...
+				 * 4 - everything else: 20, 21, ...
+				 */
+			return ($number === 1) ? 1 : ((($number === 0) || (($number % 100 > 1) && ($number % 100 < 11))) ? 2 : ((($number % 100 > 10) && ($number % 100 < 20)) ? 3 : 4));
+			case 14:
+				/**
+				 * Families: Slavic (Macedonian)
+				 * 1 - ends in 1: 1, 11, 21, ...
+				 * 2 - ends in 2: 2, 12, 22, ...
+				 * 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
+				 */
+			return ($number % 10 === 1) ? 1 : (($number % 10 === 2) ? 2 : 3);
+			case 15:
+				/**
+				 * Families: Icelandic
+				 * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
+				 * 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
+				 */
+			return (($number % 10 === 1) && ($number % 100 != 11)) ? 1 : 2;
+		}
+	}	
+
+	/**
+	 * Returns the raw value associated to a language key or the language key no translation is available.
+	 * No parameter substitution is performed, can be a string or an array.
+	 *
+	 * @param string|array	$key	Language key
+	 *
+	 * @return array|string
+	 */
+	public function lang_raw($key)
+	{
+		if (is_array($key))
+		{
+			$lang = &$this->lang[array_shift($key)];
+			foreach ($key as $_key)
+			{
+				$lang = &$lang[$_key];
+			}
+		}
+		else
+		{
+			$lang = &$this->lang[$key];
+		}
+		// Return if language string does not exist
+		if (!isset($lang) || (!is_string($lang) && !is_array($lang)))
+		{
+			return $key;
+		}
+		return $lang;
+	}
+	
+	/**
+	 * Act like lang() but takes a key and an array of parameters instead of using variadic
+	 *
+	 * @param string|array	$key	Language key
+	 * @param array			$args	Parameters
+	 *
+	 * @return string
+	 */
+	public function lang_array($key, $args = array())
+	{
+		$lang = $this->lang_raw($key);
+		
+		if ($lang === $key)
+		{
+			return $key;
+		}
+		// If the language entry is a string, we simply mimic sprintf() behaviour
+		if (is_string($lang))
+		{
+			if (count($args) === 0)
+			{
+				return $lang;
+			}
+			// Replace key with language entry and simply pass along...
+			return vsprintf($lang, $args);
+		}
+		else if (count($lang) == 0)
+		{
+			// If the language entry is an empty array, we just return the language key
+			return $key;
+		}
+		// It is an array... now handle different nullar/singular/plural forms
+		$key_found = false;
+
+		// We now get the first number passed and will select the key based upon this number
+		for ($i = 0, $num_args = count($args); $i < $num_args; $i++)
+		{
+			if (is_int($args[$i]) || is_float($args[$i]))
+			{
+				if ($args[$i] == 0 && isset($lang[0]))
+				{
+					// We allow each translation using plural forms to specify a version for the case of 0 things,
+					// so that "0 users" may be displayed as "No users".
+					$key_found = 0;
+					break;
+				}
+				else
+				{
+					$use_plural_form = $this->get_plural_form($args[$i]);
+					if (isset($lang[$use_plural_form]))
+					{
+						// The key we should use exists, so we use it.
+						$key_found = $use_plural_form;
+					}
+					else
+					{
+						// If the key we need to use does not exist, we fall back to the previous one.
+						$numbers = array_keys($lang);
+
+						foreach ($numbers as $num)
+						{
+							if ($num > $use_plural_form)
+							{
+								break;
+							}
+							$key_found = $num;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		// Ok, let's check if the key was found, else use the last entry (because it is mostly the plural form)
+		if ($key_found === false)
+		{
+			$numbers = array_keys($lang);
+			$key_found = end($numbers);
+		}
+		// Use the language string we determined and pass it to sprintf()
+		return vsprintf($lang[$key_found], $args);
+	}	
+	
+	/**
 	* More advanced language substitution
 	* Function to mimic sprintf() with the possibility of using phpBB's language system to substitute nullar/singular/plural forms.
 	* Params are the language key and the parameters to be substituted.
@@ -3148,8 +3426,8 @@ class user
 		
 		// Use the language string we determined and pass it to sprintf()
 		$args[0] = $lang[$key_found];
-		return call_user_func_array('sprintf', $args);
-		//return $this->lang_array($key, $args);
+		//return call_user_func_array('sprintf', $args);
+		return $this->lang_array($key, $args);
 	}
 	
 	/**
@@ -4067,7 +4345,7 @@ class user
 
 		if ($alt)
 		{
-			$alt = $this->lang($alt);
+			$alt = $this->lang[$alt];
 			$title = ' title="' . $alt . '"';
 		}
 		

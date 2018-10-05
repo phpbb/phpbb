@@ -355,7 +355,13 @@ define('SMILEY_LIMIT', 1000);
 @define('AUTH_NEWS', 20);
 @define('AUTH_GLOBALANNOUNCE', 21);
 
-/**#@+
+/**#@+*/
+// Script Time Limit: if your site is large you may want to set a time limit to force scripts shut down and avoid server overload
+define('TIME_LIMIT', 30); // Script Time Limit in seconds
+
+// Session Refresh Seconds
+define('SESSION_REFRESH', 120); // Session Refresh Time (Seconds)
+define('ONLINE_REFRESH', 300); // Online Refresh Time (Seconds)
 /**#@-*/
 
 // Table names
@@ -390,5 +396,5 @@ define('WORDS_TABLE', $table_prefix.'words');
 define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
 define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
 define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
-
+define('ZEBRA_TABLE', $table_prefix . 'zebra');
 ?>

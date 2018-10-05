@@ -1760,7 +1760,7 @@ for ($i = 0; $i < $total_posts; $i++)
 		$yim_img = '';
 		$yim = '';
 	}
-
+	
 	$temp_url = append_sid("posting.$phpEx?mode=quote&amp;" . POST_POST_URL . "=" . $postrow[$i]['post_id']);
 	$quote_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_quote'] . '" alt="' . $lang['Reply_with_quote'] . '" title="' . $lang['Reply_with_quote'] . '" border="0" /></a>';
 	$quote = '<li class="' . 'quote-icon' . '">' . '<a href="' . $temp_url . '" title=' . '"' . $lang['Reply_with_quote'] . '">' . '</a></li>';

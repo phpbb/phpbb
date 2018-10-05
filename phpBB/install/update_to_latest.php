@@ -713,7 +713,32 @@ switch ($row['config_value'])
 					forum_parent int NOT NULL";
 				break;
 		}
+		// Add tables for visual confirmation ... saves me the trouble of writing a seperate
+		// script :D
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':			
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'zebra (user_id mediumint(8) UNSIGNED DEFAULT \'0\' NOT NULL, zebra_id mediumint(8) UNSIGNED DEFAULT \'0\' NOT NULL, friend tinyint(1) UNSIGNED DEFAULT \'0\' NOT NULL, foe tinyint(1) UNSIGNED DEFAULT \'0\' NOT NULL, PRIMARY KEY (user_id, zebra_id))';
+				break;
 
+			case 'mssql':
+			case 'mssql-odbc':
+				$sql[] = 'CREATE TABLE [' . $table_prefix . 'zebra] ([user_id] [char] (32) NOT NULL , [zebra_id] [char] (32) NOT NULL , [friend] [char] (6) NOT NULL ) ON [PRIMARY], [foe] [char] (6) NOT NULL ) ON [PRIMARY]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'zebra] WITH NOCHECK ADD CONSTRAINT [PK_' . $table_prefix . 'confirm] PRIMARY KEY  CLUSTERED ( [user_id],[zebra_id])  ON [PRIMARY]';
+				$sql[] = 'ALTER TABLE [' . $table_prefix . 'zebra] WITH NOCHECK ADD CONSTRAINT [DF_' . $table_prefix . 'confirm_confirm_id] DEFAULT (\'\') FOR [user_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_zebra_id] DEFAULT (\'\') FOR [zebra_id], CONSTRAINT [DF_' . $table_prefix . 'confirm_friend] DEFAULT (\'\') FOR [friend]';
+				break;
+
+			case 'msaccess':
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'zebra (user_id char(32) NOT NULL, zebra_id char(32) NOT NULL, friend char(6) NOT NULL, foe char(6) NOT NULL)';
+				$sql[] = 'ALTER TABLE ' . $table_prefix . 'zebra ADD (PRIMARY KEY (user_id, zebra_id))';
+				break;
+
+			case 'postgresql':
+				$sql[] = 'CREATE TABLE ' . $table_prefix . 'zebra (user_id mediumint(8) NOT NULL,  zebra_id mediumint(8) NOT NULL, friend tinyint(1) DEFAULT \'0\', foe tinyint(1) DEFAULT \'0\', CONSTRAINT {$table_prefix}confirm_pkey PRIMARY KEY (user_id, zebra_id))';
+				break;
+		}
 		break;		
 }
 
@@ -742,7 +767,7 @@ if (count($sql))
 			echo "SQL &nbsp; :: <b>" . $error_ary['sql'][$i] . "</b><br /><br /></li>";
 		}
 
-		echo "</ul>\n<p>This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our development board. See <a href=\"docs\README.html\">README</a> for details on how to obtain advice.</p>\n";
+		echo "</ul>\n<p>This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our development board. See <a href=\"..\docs\README.html\">README</a> for details on how to obtain advice.</p>\n";
 	}
 	else
 	{
@@ -1209,7 +1234,7 @@ if ($errored)
 		echo "SQL &nbsp; :: <b>" . $error_ary['sql'][$i] . "</b><br /><br /></li>";
 	}
 
-	echo "</ul>\n<p>This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our development board. See <a href=\"docs\README.html\">README</a> for details on how to obtain advice.</p>\n";
+	echo "</ul>\n<p>This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our development board. See <a href=\"..\docs\README.html\">README</a> for details on how to obtain advice.</p>\n";
 }
 else
 {

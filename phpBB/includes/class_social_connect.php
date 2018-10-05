@@ -27,18 +27,18 @@ abstract class SocialConnect
 		$this->network_name = empty($lang[strtoupper($network_name)]) ? $network_name : $lang[strtoupper($network_name)];
 		$this->network_name_clean = $network_name;
 	}
-
+	
 	public static function get_available_networks()
 	{
-		global $config;
+		global $board_config, $phpEx;
 
 		foreach (self::$social_networks as $network_name)
 		{
 			if (empty(self::$available_networks))
 			{
-				if (in_array($network_name, self::$social_networks) && !empty($config['enable_' . $network_name . '_login']))
+				if (in_array($network_name, self::$social_networks) && !empty($board_config['enable_' . $network_name . '_login']))
 				{
-					include(PHPBB_ROOT_PATH . 'includes/social_connect/class_' . $network_name . '_connect.' . PHP_EXT);
+					include(PHPBB_ROOT_PATH . 'includes/social_connect/class_' . $network_name . '_connect.' . $phpEx);
 					$class_name = strtoupper(substr($network_name, 0, 1)) . substr($network_name, 1) . 'Connect';
 					$network = new $class_name($network_name);
 					self::$available_networks[$network_name] = $network;

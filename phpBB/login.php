@@ -26,6 +26,7 @@
 //
 define("IN_LOGIN", true);
 define('IN_PHPBB', true);
+define('IN_SOCIAL_CONNECT', false);
 
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -39,7 +40,12 @@ define('LOGIN_REDIRECT_PAGE', $phpbb_root_path . 'index.' . $phpEx);
 
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/auth_db_phpbb2.' . $phpEx);
-$config['enable_social_connect'] = true;
+
+$board_config['enable_social_connect'] = IN_SOCIAL_CONNECT;
+$board_config['enable_facebook_login'] = IN_SOCIAL_CONNECT;
+$board_config['facebook_app_id'] = '1923638584362290';
+$board_config['facebook_app_secret'] = '93613186a2da77f4e2fec0a1b527f4c70';
+
 //
 // Start session management
 //
@@ -66,7 +72,7 @@ if (!empty($user->data['is_bot']))
 $sid = request_var('sid', '');
 
 $redirect = request_var('redirect', '', true);
-$redirect_url = (!empty($redirect) ? urldecode(str_replace(array('&amp;', '?', PHP_EXT . '&'), array('&', '&', PHP_EXT . '?'), $redirect)) : LOGIN_REDIRECT_PAGE);
+$redirect_url = (!empty($redirect) ? urldecode(str_replace(array('&amp;', '?', $phpEx . '&'), array('&', '&', $phpEx . '?'), $redirect)) : LOGIN_REDIRECT_PAGE);
 
 if (strstr($redirect_url, "\n") || strstr($redirect_url, "\r") || strstr($redirect_url, ';url'))
 {
@@ -74,15 +80,16 @@ if (strstr($redirect_url, "\n") || strstr($redirect_url, "\r") || strstr($redire
 }
 
 $available_networks = array();
-if ($config['enable_social_connect'])
+if ($board_config['enable_social_connect'])
 {
-	include_once(PHPBB_ROOT_PATH . 'includes/class_social_connect.' . PHP_EXT);
+	include_once(PHPBB_ROOT_PATH . 'includes/class_social_connect.' . $phpEx);
 	$available_networks = SocialConnect::get_available_networks();
-
+	
 	$login_admin = request_get_var('admin', 0);
 
 	$social_network = request_var('social_network', '');
 	$social_network_link = request_var('social_network_link', '');
+	
 	// Logging in via social network
 	if (!empty($social_network) && !empty($available_networks[$social_network]))
 	{
@@ -102,7 +109,12 @@ if ($config['enable_social_connect'])
 		{
 			$social_network_name = $social_network->get_name();
 			$social_network_name_clean = $social_network->get_name_clean();
-
+			/** /
+			$template->assign_vars(array(
+				'SOCIAL_CONNECT' => false,
+				'SOCIAL_CONNECT_LINK' => false,
+			));
+			/**/
 			// Display login or register!
 			$template->assign_block_vars('social_connect_button', array(
 				'L_SOCIAL_CONNECT' => sprintf($lang['SOCIAL_CONNECT_LOGIN'], $social_network_name),
@@ -124,27 +136,29 @@ if ($config['enable_social_connect'])
 	{
 		$social_network = $available_networks[$social_network_link];
 		$user_data_social = $social_network->get_user_data();
-
-		$template->assign_vars(array(
+		
+		$template->assign_var('SOCIAL_CONNECT_LINK', true);
+		$template->assign_vars(array(	
 			'SOCIAL_CONNECT_LINK' => true,
 			'U_PROFILE_PHOTO' => $user_data_social['u_profile_photo'],
 			'USER_REAL_NAME' => $user_data_social['user_real_name'],
 			'U_PROFILE_LINK' => $user_data_social['u_profile_link'],
 			'SOCIAL_NETWORK_NAME' => $social_network->get_name(),
 			'U_SOCIAL_NETWORK_ICON' => PHPBB_ROOT_PATH . 'images/social_connect/' . $social_network->get_name_clean() . '_icon.png',
-
-			'S_LOGIN_ACTION' => append_sid(PHPBB_ROOT_PATH . PHPBB_PAGE_LOGIN . '?social_network_link=' . $social_network_link . '&redirect=' . urlencode($redirect_url) . '&admin=' . $login_admin))
+			'S_LOGIN_ACTION' => append_sid(PHPBB_PAGE_LOGIN . '?social_network_link=' . $social_network_link . '&redirect=' . urlencode($redirect_url) . '&admin=' . $login_admin))
 		);
 	}
 	else
 	{
 		$template->assign_var('SOCIAL_CONNECT', true);
+		$template->assign_var('SOCIAL_CONNECT_LINK', false);
+				
 		foreach ($available_networks as $social_network)
 		{
 			$template->assign_block_vars('social_connect_button', array(
 				'L_SOCIAL_CONNECT' => sprintf($lang['SOCIAL_CONNECT_LOGIN'], $social_network->get_name()),
 				'U_SOCIAL_CONNECT' => append_sid(PHPBB_PAGE_LOGIN . '?social_network=' . $social_network->get_name_clean() . '&amp;redirect=' . urlencode($redirect_url) . '&amp;admin=' . $login_admin),
-				'IMG_SOCIAL_CONNECT' => '<img src="' . PHPBB_ROOT_PATH . 'images/social_connect/' . $social_network->get_name_clean() . '_button_connect.png" alt="" title="" />'
+				'IMG_SOCIAL_CONNECT' => '<img src="' . $phpbb_root_path . 'images/social_connect/' . $social_network->get_name_clean() . '_button_connect.png" alt="" title="" />'
 				)
 			);
 		}
@@ -155,7 +169,7 @@ if ($config['enable_social_connect'])
 $sid = request_var('sid', '');
 
 $redirect = request_var('redirect', '', true);
-$redirect_url = (!empty($redirect) ? urldecode(str_replace(array('&amp;', '?', PHP_EXT . '&'), array('&', '&', PHP_EXT . '?'), $redirect)) : LOGIN_REDIRECT_PAGE);
+$redirect_url = (!empty($redirect) ? urldecode(str_replace(array('&amp;', '?', $phpEx . '&'), array('&', '&', $phpEx . '?'), $redirect)) : LOGIN_REDIRECT_PAGE);
 
 if (strstr($redirect_url, "\n") || strstr($redirect_url, "\r") || strstr($redirect_url, ';url'))
 {
@@ -371,10 +385,10 @@ else
 		
 		make_jumpbox('viewforum.'.$phpEx);				
 		$template->assign_vars(array(
-			'LOGIN_ERROR'		=> '',
-			'LOGIN_EXPLAIN'		=> $l_explain,
+			'LOGIN_ERROR'					=> '',
+			'LOGIN_EXPLAIN'					=> $l_explain,
 			
-			'USERNAME'				=> ($admin) ? $username : '',
+			'USERNAME'						=> ($admin) ? $username : '',
 
 			'USERNAME_CREDENTIAL'	=> 'username',
 			'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
@@ -383,14 +397,14 @@ else
 			
 			'U_SEND_PASSWORD' 		=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=sendpassword"),
 			'U_RESEND_ACTIVATION'	=> ($board_config['require_activation'] == USER_ACTIVATION_SELF) ? append_sid("{$phpbb_root_path}profile.$phpEx?mode=resend_act") : '',
-			'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),
-			'U_PRIVACY'				=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=privacy"),
+			'U_TERMS_USE'				=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),
+			'U_PRIVACY'					=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=privacy"),
 
 			'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-			'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
-			'S_CONFIRM_CODE'		=> false,
+			'S_HIDDEN_FIELDS' 			=> $s_hidden_fields,
+			'S_CONFIRM_CODE'			=> false,
 			'S_SIMPLE_MESSAGE'		=> '',
-			'S_ADMIN_AUTH'			=> $admin,
+			'S_ADMIN_AUTH'				=> $admin,
 						
 			'CAPTCHA_TEMPLATE'			=> '',			
 		));

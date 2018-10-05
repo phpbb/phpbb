@@ -71,9 +71,9 @@ function show_coppa()
 }
 //
 // ---------------------------------------
-
-$error = FALSE;
+$error = false;	
 $error_msg = '';
+$mode = isset($mode) ? $mode : request_var('mode', '');
 $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
 if ( $mode == 'register' && !isset($_POST['agreed']) && !isset($_GET['agreed']) )
@@ -121,17 +121,23 @@ if (
 	}
 
 	$username = ( !empty($_POST['username']) ) ? phpbb_clean_username($_POST['username']) : '';
-
+	
+	/** /
+	* $cur_password => 'cur_password', 
+	* $new_password => 'new_password', 
+	* $password_confirm => 'password_confirm', 
+	* $signature => 'signature'
+	/**/
 	$trim_var_list = array('cur_password' => 'cur_password', 'new_password' => 'new_password', 'password_confirm' => 'password_confirm', 'signature' => 'signature');
 
 	while( list($var, $param) = @each($trim_var_list) )
 	{
-		if ( !empty($_POST[$param]) )
+		if ( is_post($param) )
 		{
-			$$var = trim($_POST[$param]);
+			$$var = trim(request_post_var($param, ''));
 		}
 	}
-
+	
 	$signature = (isset($signature)) ? str_replace('<br />', "\n", $signature) : '';
 	$signature_bbcode_uid = '';
 
@@ -164,25 +170,29 @@ if (
 	}
 
 	$user_style = ( isset($_POST['style']) ) ? intval($_POST['style']) : $board_config['default_style'];
-
-	if ( !empty($_POST['language']) )
+	
+	// Try and load an appropriate language if required
+	if ( is_request('language') )
 	{
-		if ( preg_match('/^[a-z_]+$/i', $_POST['language']) )
-		{
-			$user_lang = htmlspecialchars($_POST['language']);
+		if ( preg_match('/^[a-z_]+$/i', request_var('language', 'english')) )
+		{		
+			$user_lang = htmlspecialchars(basename(request_var('language', '')));
+			//print_r(array('Could not get user language: ' . $user_lang, $error_msg, __LINE__, __FILE__, $error));
 		}
 		else
 		{
 			$error = true;
 			$error_msg = $lang['Fields_empty'];
+			//print_r(array('Could not get user language', $error_msg, __LINE__, __FILE__, $error));
 		}
 	}
 	else
 	{
 		$user_lang = $board_config['default_lang'];
+		//print_r(array('Could not get user language', request_var('language', $user_lang), __LINE__, __FILE__, $user_lang));
 	}
 
-	$user_timezone = ( isset($_POST['timezone']) ) ? doubleval($_POST['timezone']) : $board_config['board_timezone'];
+	$user_timezone = ( is_request('timezone') ) ? doubleval(request_var('timezone', '')) : $board_config['board_timezone'];
 
 	$sql = "SELECT config_value
 		FROM " . CONFIG_TABLE . "
@@ -192,6 +202,7 @@ if (
 		message_die(GENERAL_ERROR, 'Could not select default dateformat', '', __LINE__, __FILE__, $sql);
 	}
 	$row = $db->sql_fetchrow($result);
+	
 	$board_config['default_dateformat'] = $row['config_value'];
 	$user_dateformat = ( !empty($_POST['dateformat']) ) ? trim(htmlspecialchars($_POST['dateformat'])) : $board_config['default_dateformat'];
 
@@ -199,7 +210,7 @@ if (
 	$user_avatar_category = ( isset($_POST['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($_POST['avatarcatname']) : '' ;
 
 	$user_avatar_remoteurl = ( !empty($_POST['avatarremoteurl']) ) ? trim(htmlspecialchars($_POST['avatarremoteurl'])) : '';
-	$user_avatar_upload = ( !empty($_POST['avatarurl']) ) ? trim($_POST['avatarurl']) : ( ( $_POST['avatar']['tmp_name'] != "none") ? $_POST['avatar']['tmp_name'] : '' );
+	$user_avatar_upload = ( !empty($_POST['avatarurl']) ) ? trim($_POST['avatarurl']) : ( ( isset($_POST['avatar']['tmp_name']) ) ? $_POST['avatar']['tmp_name'] : '' );
 	$user_avatar_name = ( !empty($_POST['avatar']['name']) ) ? $_POST['avatar']['name'] : '';
 	$user_avatar_size = ( !empty($_POST['avatar']['size']) ) ? $_POST['avatar']['size'] : 0;
 	$user_avatar_filetype = ( !empty($_POST['avatar']['type']) ) ? $_POST['avatar']['type'] : '';
@@ -250,10 +261,10 @@ if ($mode == 'register' && ($userdata['session_logged_in'] || $username == $user
 //
 // Did the user submit? In this case build a query to update the users profile in the DB
 //
-if ( isset($_POST['submit']) )
+if ( is_request('submit') )
 {
 	include($phpbb_root_path . 'includes/usercp_avatar.'.$phpEx);
-
+	
 	// session id check
 	if ($sid == '' || $sid != $userdata['session_id'])
 	{
@@ -371,7 +382,7 @@ if ( isset($_POST['submit']) )
 			}
 		}
 	}
-	else if ( ( empty($new_password) && !empty($password_confirm) ) || ( !empty($new_password) && empty($password_confirm) ) )
+	elseif ( ( empty($new_password) && !empty($password_confirm) ) || ( !empty($new_password) && empty($password_confirm) ) )
 	{
 		$error = TRUE;
 		$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Password_mismatch'];
@@ -466,8 +477,7 @@ if ( isset($_POST['submit']) )
 	{
 		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	}
-	else
-	if ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
+	elseif ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
 	{
 		if ( !empty($user_avatar_upload) )
 		{
@@ -529,7 +539,7 @@ if ( isset($_POST['submit']) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql);
 			}
-
+			
 			// We remove all stored login keys since the password has been updated
 			// and change the current one (if applicable)
 			if ( !empty($passwd_sql) )
@@ -654,7 +664,7 @@ if ( isset($_POST['submit']) )
 				'user_email'				=>	str_replace("\'", "''", $email), 
 				'user_icq'					=>	str_replace("\'", "''", $icq), 
 				'user_website'			=>	str_replace("\'", "''", $website), 
-				'user_occ'					=>	str_replace("\'", "''", $occupation), 
+				'user_occ'				=>	str_replace("\'", "''", $occupation), 
 				'user_from'				=>	str_replace("\'", "''", $location), 
 				'user_interests'			=>	str_replace("\'", "''", $interests), 
 				'user_sig'					=>	str_replace("\'", "''", $signature), 
@@ -1058,7 +1068,7 @@ else
 		$confirm_id = md5(uniqid($user_ip));
 
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . " (confirm_id, session_id, code) 
-			VALUES ('$confirm_id', '". $userdata['session_id'] . "', '$code')";
+			VALUES ('$confirm_id', '". $userdata['session_id'] . "', '$code')";	
 		if (!$db->sql_query($sql))
 		{
 			message_die(GENERAL_ERROR, 'Could not insert new confirm code information', '', __LINE__, __FILE__, $sql);
@@ -1081,8 +1091,11 @@ else
 	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 	
 	$user_sn_im_array = get_user_sn_im_array();
+	
 	foreach ($user_sn_im_array as $k => $v)
 	{
+		//500px.com facebook, flickr, jabber, linkedin, pinterest, skype, twitter, vimeo, youtube;
+		global $$v['form'];		
 		$template->assign_var(strtoupper($v['form']), $$v['form']);
 	}
 	

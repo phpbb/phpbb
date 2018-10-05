@@ -1,0 +1,107 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- EVENT memberlist_email_before -->
+
+<!-- IF S_CONTACT_ADMIN-->
+<h2 class="titlespace">{L_CONTACT_ADMIN}</h2>
+<!-- ELSEIF S_SEND_USER -->
+<h2 class="titlespace">{L_SEND_EMAIL_USER}</h2>
+<!-- ELSE -->
+<h2 class="titlespace">{L_EMAIL_TOPIC}</h2>
+<!-- ENDIF -->
+
+<form method="post" action="{S_POST_ACTION}" id="post">
+
+	<!-- IF CONTACT_INFO -->
+	<div class="panel">
+		<div class="inner">
+			<div class="postbody">
+				<div class="content">
+					{CONTACT_INFO}
+				</div>
+			</div>
+		</div>
+	</div>
+		<br class="clear" />
+	<!-- ENDIF -->
+
+	<div class="panel">
+		<div class="inner">
+	<div class="content">
+
+		<!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
+		<fieldset class="fields2">
+		<!-- IF S_SEND_USER -->
+			<dl>
+				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
+				<dd><strong>{USERNAME_FULL}</strong></dd>
+			</dl>
+			<dl>
+				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="1" value="{SUBJECT}" /></dd>
+			</dl>
+		<!-- ELSEIF S_CONTACT_ADMIN-->
+			<dl>
+				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
+				<dd><strong>{L_ADMINISTRATOR}</strong></dd>
+			</dl>
+			<!-- IF not S_IS_REGISTERED -->
+			<dl>
+				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="name">{L_SENDER_NAME}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
+			</dl>
+			<!-- ENDIF -->
+			<dl>
+				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
+			</dl>
+		<!-- ELSE -->
+			<dl>
+				<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="email" name="email" id="email" size="50" maxlength="100" tabindex="2" value="{EMAIL}" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="name">{L_REAL_NAME}{L_COLON}</label></dt>
+				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="3" value="{NAME}" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="lang">{L_DEST_LANG}{L_COLON}</label><br />
+					<span>{L_DEST_LANG_EXPLAIN}</span></dt>
+				<dd><select name="lang">{S_LANG_OPTIONS}</select></dd>
+			</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label for="message">{L_MESSAGE_BODY}{L_COLON}</label><br />
+			<span>{L_EMAIL_BODY_EXPLAIN}</span></dt>
+			<dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76" tabindex="4">{MESSAGE}</textarea></dd>
+		</dl>
+		<!-- IF S_REGISTERED_USER -->
+		<dl>
+			<dt>&nbsp;</dt>
+			<dd><label for="cc_sender"><input type="checkbox" name="cc_sender" id="cc_sender" value="1" checked="checked" tabindex="5" /> {L_CC_SENDER}</label></dd>
+		</dl>
+		<!-- ENDIF -->
+		</fieldset>
+	</div>
+
+	</div>
+</div>
+
+<div class="panel">
+	<div class="inner">
+	<div class="content">
+		<fieldset class="submit-buttons">
+			<input type="submit" tabindex="6" name="submit" class="button1" value="{L_SEND_EMAIL}" />
+		</fieldset>
+	</div>
+	</div>
+{S_FORM_TOKEN}
+</div>
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

@@ -1,0 +1,37 @@
+<!-- INCLUDE simple_header.html -->
+
+<script type="text/javascript">
+// <![CDATA[
+/**
+* Jump to inbox
+*/
+function jump_to_inbox(url)
+{
+	opener.document.location.href = url.replace(/&amp;/g, '&');
+	window.close();
+}
+// ]]>
+</script>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10">
+<tr>
+	<td>
+		<table width="100%" border="0" cellspacing="1" cellpadding="4" class="tablebg">
+		<tr class="row1"> 
+			<td valign="top" align="center">
+				<br /><span class="gen">
+				<!-- IF S_NOT_LOGGED_IN -->
+					{L_LOGIN_CHECK_PM}
+				<!-- ELSE -->
+					{MESSAGE}<br /><br />{CLICK_TO_VIEW}
+				<!-- ENDIF -->
+				</span>
+				<br /><br /><span class="genmed"><a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a></span><br /><br />
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<!-- INCLUDE simple_footer.html -->

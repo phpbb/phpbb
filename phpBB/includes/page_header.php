@@ -641,7 +641,7 @@ if (empty($cfg['parent']))
 }																				
 //Check if is a phpBB3 style or if is a Icy-Phoenix Style
 $style_name = isset($cfg['name']) ? $cfg['name'] : basename($theme['template_name']);
-$imageset_backend = (@version_compare($cfg['style_version'], '3.0.0', '>=')) ? 'phpbb3' : 'phpbb2';
+$imageset_backend = (@version_compare($cfg['phpbb_version'], '3.0.0', '>=')) ? 'phpbb3' : 'phpbb2';
 	 
 //
 // The following assigns all _common_ variables that may be used at any point
@@ -832,7 +832,7 @@ $template->assign_vars(array(
 	'T_STYLESHEET_LINK'		=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/stylesheet.css',
 	'T_STYLESHEET_LANG_LINK'=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/images/lang_' . $default_lang . '/stylesheet.css',
 	'T_FONT_AWESOME_LINK'	=> "{$web_path}assets/css/font-awesome.min.css",
-	
+	'T_FONT_IONIC_LINK'			=> "{$web_path}assets/css/ionicons.min.css",	
 	'T_JQUERY_LINK'			=> !empty($board_config['allow_cdn']) && !empty($board_config['load_jquery_url']) ? $board_config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $phpbb_major,
 	'S_ALLOW_CDN'			=> !empty($board_config['allow_cdn']),		
 	

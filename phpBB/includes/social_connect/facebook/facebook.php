@@ -29,7 +29,7 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
-include(PHPBB_ROOT_PATH . "includes/social_connect/facebook/base_facebook." . PHP_EXT);
+require_once(PHPBB_ROOT_PATH . "includes/social_connect/facebook/Base_Facebook." . PHP_EXT);
 
 /**
  * Extends the BaseFacebook class with the intent of using
@@ -52,18 +52,43 @@ class Facebook extends BaseFacebook
 	 * access token if during the course of execution
 	 * we discover them.
 	 *
-	 * @param Array $config the application configuration. Additionally
+	 * @param Array $board_config the application configuration. Additionally
 	 * accepts "sharedSession" as a boolean to turn on a secondary
 	 * cookie for environments with a shared session (that is, your app
 	 * shares the domain with other apps).
 	 * @see BaseFacebook::__construct in facebook.php
 	 */
-	public function __construct($config) {
-		if (!session_id()) {
-			session_start();
+	public function __construct($facebook_config) 
+	{
+		if (!session_id()) 
+		{
+			@session_start();
 		}
-		parent::__construct($config);
-		if (!empty($config['sharedSession'])) {
+			
+		if (!is_array($facebook_config)) 
+		{
+	 		global $board_config;
+			$facebook_config = array(
+				'appId'  => $board_config['facebook_app_id'], //old id
+				'app_id'  => $board_config['facebook_app_id'], //new id				
+				'app_secret' => $board_config['facebook_app_secret'], 
+				'default_graph_version' => 'v2.12',
+			);	          
+        }
+	
+		require_once(PHPBB_ROOT_PATH . "includes/social_connect/facebook/FacebookSDKException." . PHP_EXT);
+		
+		if (!isset($facebook_config['app_id'])) 
+		{
+            throw new FacebookSDKException('Required "app_id" key not set in config and could not find fallback environment variable "' . '"');
+        }
+		elseif (!$facebook_config['app_id'])
+		{
+            throw new FacebookSDKException('Required "app_id" key not supplied in config and could not find fallback environment variable "' . $facebook_config['app_id'] . '"');
+        }		
+		parent::__construct($facebook_config);
+		if (!empty($facebook_config['sharedSession'])) 
+		{
 			$this->initSharedSession();
 		}
 	}
@@ -71,9 +96,11 @@ class Facebook extends BaseFacebook
 	protected static $kSupportedKeys =
 		array('state', 'code', 'access_token', 'user_id');
 
-	protected function initSharedSession() {
+	protected function initSharedSession() 
+	{
 		$cookie_name = $this->getSharedSessionCookieName();
-		if (isset($_COOKIE[$cookie_name])) {
+		if (isset($_COOKIE[$cookie_name])) 
+		{
 			$data = $this->parseSignedRequest($_COOKIE[$cookie_name]);
 			if ($data && !empty($data['domain']) &&
 					self::isAllowedDomain($this->getHttpHost(), $data['domain'])) {
@@ -93,10 +120,13 @@ class Facebook extends BaseFacebook
 			)
 		);
 		$_COOKIE[$cookie_name] = $cookie_value;
-		if (!headers_sent()) {
+		if (!headers_sent())
+		{
 			$expire = time() + self::FBSS_COOKIE_EXPIRE;
 			setcookie($cookie_name, $cookie_value, $expire, '/', '.'.$base_domain);
-		} else {
+		} 
+		else 
+		{
 			// @codeCoverageIgnoreStart
 			self::errorLog(
 				'Shared session ID cookie could not be set! You must ensure you '.

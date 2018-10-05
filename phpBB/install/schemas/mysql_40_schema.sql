@@ -625,3 +625,12 @@ CREATE TABLE phpbb_words (
    replacement char(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
+
+DROP TABLE IF EXISTS `phpbb_zebra`;
+CREATE TABLE phpbb_zebra (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	friend tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (user_id, zebra_id)
+);

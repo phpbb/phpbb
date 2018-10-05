@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="noindex" />
+{META}
+<title>{SITENAME} &bull; {PAGE_TITLE}</title>
+
+<link href="{T_THEME_PATH}/print.css" rel="stylesheet">
+<!-- EVENT ucp_pm_viewmessage_print_head_append -->
+</head>
+<body id="phpbb">
+<div id="wrap">
+	<a id="top" class="anchor" accesskey="t"></a>
+
+	<div id="page-header">
+		<h1>{SITENAME}</h1>
+		<p>{SITE_DESCRIPTION}</p>
+
+		<h2>{L_PRIVATE_MESSAGING}</h2>
+	</div>
+
+	<div id="page-body">
+		<div class="page-number">{PAGE_NUMBER}</div>
+			<div class="post">
+				<h3>{SUBJECT}</h3>
+				<div class="date">{L_SENT_AT} <strong>{SENT_DATE}</strong></div>
+				<div class="author">{L_PM_FROM} <strong>{MESSAGE_AUTHOR}</strong></div>
+				<!-- IF S_TO_RECIPIENT -->
+					<div class="author">{L_TO} <strong><!-- BEGIN to_recipient -->{to_recipient.NAME}&nbsp;<!-- END to_recipient --></strong></div>
+				<!-- ENDIF -->
+				<!-- IF S_BCC_RECIPIENT -->
+					<div class="author">{L_BCC} <strong><!-- BEGIN bcc_recipient -->{bcc_recipient.NAME}&nbsp;<!-- END bcc_recipient --></strong></div>
+				<!-- ENDIF -->
+				<hr />
+				<div class="content">{MESSAGE}</div>
+			</div>
+			<hr />
+	</div>
+
+	<div id="page-footer">
+		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
+		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Limited<br />https://www.phpbb.com/</div>
+	</div>
+</div>
+
+</body>
+</html>

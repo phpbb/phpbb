@@ -414,6 +414,68 @@ function is_empty_get($var)
 	return empty($_GET[$var]) ? 1 : 0 ;
 }
 
+/** /
+*
+* by guillermogomezruiz@gmail.com ¶
+/**/
+function file_exists_2($filePath)
+{
+	if (!function_exists('curl_init')) 
+	{
+		//continue
+	}
+	else
+	{
+		return ($ch = curl_init($filePath)) ? @curl_close($ch) || true : false;		
+	}	
+
+}
+
+/** /
+*
+* https://stackoverflow.com/users/2456038/rafasashi
+/**/
+function custom_file_exists($file_path = '')
+{
+	if (function_exists('file_exists') && $file_exists = file_exists($file_path)) 
+	{
+		return $file_exists;
+	}
+	else
+	{
+		$file_exists = false;
+	}	
+	
+	//clear cached results
+	//clearstatcache();
+	
+	//trim path
+	$file_dir = trim(dirname($file_path));
+	
+	//normalize path separator
+    $file_dir = str_replace('/', DIRECTORY_SEPARATOR, $file_dir) . DIRECTORY_SEPARATOR;
+	
+	//trim file name
+	$file_name = trim(basename($file_path));
+	
+	//rebuild path
+	$file_path = $file_dir . "{$file_name}";
+	
+	//If you simply want to check that some file (not directory) exists, 
+	//and concerned about performance, try is_file() instead.
+	//It seems like is_file() is almost 2x faster when a file exists 
+	//and about the same when it doesn't.
+	if (!function_exists('curl_init')) 
+	{
+		$file_exists = is_file($file_path);
+	}
+	else
+	{
+		$file_exists = is_file($file_path) ? true :  (($ch = @curl_init($file_path)) ? @curl_close($ch) || true : false);		
+	}	
+	return $file_exists;
+}
+
 /**
  * Is REQUEST empty (GET and POST) var?
  * * autor John Olson 
@@ -816,11 +878,11 @@ function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link =
 	if (is_null($perms))
 	{
 		// Default to read permission for compatibility reasons
-		$perms = self::CHMOD_READ;
+		$perms = CHMOD_READ;
 	}
 
 	// Check if we got a permission flag
-	if ($perms > self::CHMOD_ALL)
+	if ($perms > CHMOD_ALL)
 	{
 		$file_perm = $perms;
 
@@ -830,21 +892,21 @@ function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link =
 		$other = ($file_perm >> 0) & 7;
 
 		// Does any permissions provided? if so we add execute bit for directories
-		$group = ($group !== 0) ? ($group | self::CHMOD_EXECUTE) : $group;
-		$other = ($other !== 0) ? ($other | self::CHMOD_EXECUTE) : $other;
+		$group = ($group !== 0) ? ($group | CHMOD_EXECUTE) : $group;
+		$other = ($other !== 0) ? ($other | CHMOD_EXECUTE) : $other;
 
 		// Compute directory permissions
-		$dir_perm = (self::CHMOD_ALL << 6) + ($group << 3) + ($other << 3);
+		$dir_perm = (CHMOD_ALL << 6) + ($group << 3) + ($other << 3);
 	}
 	else
 	{
 		// Add execute bit to owner if execute bit is among perms
-		$owner_perm	= (self::CHMOD_READ | self::CHMOD_WRITE) | ($perms & self::CHMOD_EXECUTE);
+		$owner_perm	= (CHMOD_READ | CHMOD_WRITE) | ($perms & CHMOD_EXECUTE);
 		$file_perm	= ($owner_perm << 6) + ($perms << 3) + ($perms << 0);
 
 		// Compute directory permissions
-		$perm = ($perms !== 0) ? ($perms | self::CHMOD_EXECUTE) : $perms;
-		$dir_perm = (($owner_perm | self::CHMOD_EXECUTE) << 6) + ($perm << 3) + ($perm << 0);
+		$perm = ($perms !== 0) ? ($perms | CHMOD_EXECUTE) : $perms;
+		$dir_perm = (($owner_perm | CHMOD_EXECUTE) << 6) + ($perm << 3) + ($perm << 0);
 	}
 
 	// Symfony's filesystem component does not support extra execution flags on directories
@@ -2996,7 +3058,7 @@ function decode_ip($int_ip)
 //
 // Create date/time from format and timezone
 //
-function create_date($format, $gmepoch, $tz)
+function create_date($format, $gmepoch, $tz, $forcedate = false)
 {
 	global $user, $board_config, $lang;
 	
@@ -3361,6 +3423,152 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 	return true;
 }
 
+function empty_cache_folders_admin()
+{
+	global $cache, $phpbb_root_path;
+
+	$cache->destroy_datafiles(array('_'), $phpbb_root_path . '/cache/', 'sql', true);
+
+	return true;
+}
+
+function empty_cache_folders_cms()
+{
+	global $cache;
+	
+	global $board_config, $phpbb_root_path, $phpEx;
+
+	$cache->destroy_datafiles(array('_'), $phpbb_root_path . '/cache/', 'sql', true);
+	
+	return true;
+}
+
+function empty_cache_folders($cache_folder = '', $files_per_step = 0)
+{
+	global $board_config, $phpbb_root_path, $phpEx;
+	
+	$skip_files = array(
+		'.',
+		'..',
+		'.htaccess',
+		'index.htm',
+		'index.html',
+		'index.' . PHP_EXT,
+		'empty_cache.bat',
+	);
+
+	$sql_prefix = 'sql_';
+	$tpl_prefix = 'tpl_';
+
+	// Make sure the forum tree is deleted...
+	@unlink(MAIN_CACHE_FOLDER . CACHE_TREE_FILE);
+
+	$cache_dirs_array = array(MAIN_CACHE_FOLDER, CMS_CACHE_FOLDER, FORUMS_CACHE_FOLDER, POSTS_CACHE_FOLDER, SQL_CACHE_FOLDER, TOPICS_CACHE_FOLDER, USERS_CACHE_FOLDER);
+	$cache_dirs_array = ((empty($cache_folder) || !in_array($cache_folder, $cache_dirs_array)) ? $cache_dirs_array : array($cache_folder));
+	$files_counter = 0;
+	for ($i = 0; $i < sizeof($cache_dirs_array); $i++)
+	{
+		$dir = $cache_dirs_array[$i];
+		$dir = ((is_dir($dir)) ? $dir : @phpbb_realpath($dir));
+		$res = opendir($dir);
+		while(($file = readdir($res)) !== false)
+		{
+			$file_full_path = $dir . $file;
+			if (!in_array($file, $skip_files) && !is_dir($file_full_path))
+			{
+				@chmod($file_full_path, 0777);
+				$res2 = @unlink($file_full_path);
+				$files_counter++;
+			}
+			if (($files_per_step > 0) && ($files_counter >= $files_per_step))
+			{
+				closedir($res);
+				return $files_per_step;
+			}
+		}
+		closedir($res);
+	}
+	return true;
+}
+
+function empty_images_cache_folders($files_per_step = 0)
+{
+	global $board_config, $phpbb_root_path, $phpEx;
+
+	$skip_files = array(
+		'.',
+		'..',
+		'.htaccess',
+		'index.htm',
+		'index.html',
+		'index.' . $phpEx,
+	);
+
+	$cache_dirs_array = array(POSTED_IMAGES_THUMBS_PATH);
+	if (!empty($board_config['plugins']['album']['enabled']))
+	{
+		$cache_dirs_array = array_merge($cache_dirs_array, array(
+			$phpbb_root_path . ALBUM_CACHE_PATH,
+			$phpbb_root_path . ALBUM_MED_CACHE_PATH,
+			$phpbb_root_path . ALBUM_WM_CACHE_PATH
+		));
+	}
+
+	$files_counter = 0;
+	for ($i = 0; $i < sizeof($cache_dirs_array); $i++)
+	{
+		$dir = $cache_dirs_array[$i];
+		$dir = ((is_dir($dir)) ? $dir : @phpbb_realpath($dir));
+		$res = opendir($dir);
+		while(($file = readdir($res)) !== false)
+		{
+			$file_full_path = $dir . $file;
+			if (!in_array($file, $skip_files))
+			{
+				if (is_dir($file_full_path))
+				{
+					$subres = @opendir($file_full_path);
+					while(($subfile = readdir($subres)) !== false)
+					{
+						$subfile_full_path = $file_full_path . '/' . $subfile;
+						if (!in_array($subfile, $skip_files) && !is_dir($subfile_full_path))
+						{
+							if(preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $subfile))
+							{
+								@chmod($subfile_full_path, 0777);
+								$res2 = @unlink($subfile_full_path);
+								$files_counter++;
+							}
+							if (($files_per_step > 0) && ($files_counter >= $files_per_step))
+							{
+								closedir($subres);
+								return $files_per_step;
+							}
+						}
+					}
+					closedir($subres);
+				}
+				elseif(preg_match('/(\.gif$|\.png$|\.jpg|\.jpeg)$/is', $file))
+				{
+					@chmod($file_full_path, 0777);
+					$res2 = @unlink($file_full_path);
+					$files_counter++;
+				}
+			}
+			if (($files_per_step > 0) && ($files_counter >= $files_per_step))
+			{
+				closedir($res);
+				return $files_per_step;
+			}
+		}
+		closedir($res);
+		if ($cg == true)
+		{
+			return true;
+		}
+	}
+	return true;
+}
 
 /**
 * Closing the cache object and the database
@@ -3368,18 +3576,6 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 function garbage_collection()
 {
 	global $db, $cache;
-
-	// If we are in ACP it is better to clear some files in cache to make sure all options are updated
-	if (defined('IN_ADMIN') && !defined('ACP_MODULES'))
-	{
-		empty_cache_folders_admin();
-	}
-
-	// If we are in ACP it is better to clear some files in cache to make sure all options are updated
-	if (defined('IN_CMS'))
-	{
-		empty_cache_folders_cms();
-	}
 
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
@@ -3596,6 +3792,28 @@ function get_preg_expression($mode)
 	}
 
 	return '';
+}
+
+/**
+* Generate regexp for naughty words censoring
+* Depends on whether installed PHP version supports unicode properties
+*
+* @param string	$word			word template to be replaced
+*
+* @return string $preg_expr		regex to use with word censor
+*/
+function get_censor_preg_expression($word)
+{
+	// Unescape the asterisk to simplify further conversions
+	$word = str_replace('\*', '*', preg_quote($word, '#'));
+
+	// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
+	$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
+
+	// Generate the final substitution
+	$preg_expr = '#(?<![\p{Nd}\p{L}_-])(' . $word . ')(?![\p{Nd}\p{L}_-])#iu';
+
+	return $preg_expr;
 }
 
 /**
@@ -4378,7 +4596,7 @@ function phpbb_realpath($path)
 */
 function redirect($url)
 {
-	global $db, $board_config;
+	global $db, $board_config, $_SERVER;
 
 	if (!empty($db))
 	{
@@ -4394,34 +4612,19 @@ function redirect($url)
 	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
-	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$script_name = ($script_name == '') ? $_SERVER : '/' . $script_name;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
-	
-	$encoding_charset = !empty($lang['ENCODING']) ? $lang['ENCODING'] : 'UTF-8';
-	$lang_dir = !empty($lang['DIRECTION']) ? $lang['DIRECTION'] : 'ltr';
-	$header_lang = !empty($lang['HEADER_LANG']) ? $lang['HEADER_LANG'] : 'en-gb';
-	$xml_header_lang = !empty($lang['HEADER_LANG_XML']) ? $lang['HEADER_LANG_XML'] : 'en-gb';	
-	
+
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')))
 	{
-		header('Refresh: 0; URL=' . PHPBB_URL . $url);
-		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-		<html>
-		<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=' . $encoding_charset . '/>
-		<meta http-equiv="refresh" content="0; url=' . PHPBB_URL . $url . '"/>
-		<title>Redirect</title>
-		</head>
-		<body>
-		<div align="center">If your browser does not support meta redirection please click <a href="' . PHPBB_URL . $url . '">HERE</a> to be redirected</div>
-		</body>
-		</html>';
-		exit;		
+		header('Refresh: 0; URL=' . $server_protocol . $server_name . $server_port . $script_name . $url);
+		echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="refresh" content="0; url=' . $server_protocol . $server_name . $server_port . $script_name . $url . '"><title>Redirect</title></head><body><div align="center">If your browser does not support meta redirection please click <a href="' . $server_protocol . $server_name . $server_port . $script_name . $url . '">HERE</a> to be redirected</div></body></html>';
+		exit;
 	}
 
 	// Behave as per HTTP/1.1 spec for others
-	header('Location: ' . PHPBB_URL . $url);
+	header('Location: ' . $server_protocol . $server_name . $server_port . $script_name . $url);
 	exit;
 }
 
@@ -4435,7 +4638,7 @@ function redirect($url)
 */
 function phpbb_redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $lang;
+	global $db, $cache, $config, $user, $lang, $_SERVER;
 
 	$failover_flag = false;
 
@@ -4584,7 +4787,7 @@ function phpbb_redirect($url, $return = false, $disable_cd_check = false)
 	$server_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name']));
 	$server_port = ($board_config['server_port'] <> 80) ? ':' . trim($board_config['server_port']) : '';
 	$script_name = preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path']));
-	$script_name = ($script_name == '') ? $script_name : '/' . $script_name;
+	$script_name = ($script_name == '') ? $_SERVER['REQUEST_URI'] : '/' . $script_name;
 	$url = preg_replace('#^\/?(.*?)\/?$#', '/\1', trim($url));
 
 	// Redirect via an HTML form for PITA webservers
