@@ -21,22 +21,6 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_ban_log_string()
-	{
-		return 'LOG_BAN_EMAIL';
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function get_unban_log_string()
-	{
-		return 'LOG_UNBAN_EMAIL';
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function get_type()
 	{
 		return 'email';
@@ -53,13 +37,23 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
+	public function after_ban(array $data)
+	{
+		$this->logout_affected_users($data['items']);
+
+		return parent::after_ban($data);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function prepare_for_storage(array $items)
 	{
 		if (!$this->get_excluded())
 		{
 			throw new runtime_exception(); // TODO
 		}
-		$regex = '#^.*?@.*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i';
+		$regex = '#^.*?@.*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i'; // TODO
 
 		$ban_items = [];
 		foreach ($items as $item)

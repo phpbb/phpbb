@@ -21,6 +21,12 @@ abstract class base implements type_interface
 	/** @var array */
 	protected $excluded;
 
+	/** @var string */
+	protected $sessions_keys_table;
+
+	/** @var string */
+	protected $sessions_table;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -30,15 +36,26 @@ abstract class base implements type_interface
 	/**
 	 * Creates a ban type.
 	 *
-	 * @param \phpbb\db\driver\driver_interface	$db				A phpBB DBAL object
-	 * @param \phpbb\user						$user			An user object
-	 * @param string							$users_table	The users table
+	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
+	 * @param string							$users_table			The users table
+	 * @param string							$sessions_table			The sessions table
+	 * @param string							$sessions_keys_table	The sessions keys table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $users_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $users_table, $sessions_table, $sessions_keys_table)
 	{
 		$this->db = $db;
-		$this->user = $user;
 		$this->users_table = $users_table;
+		$this->sessions_table = $sessions_table;
+		$this->sessions_keys_table = $sessions_keys_table;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function set_user(\phpbb\user $user)
+	{
+		// TODO: Implement new logging
+		$this->user = $user;
 	}
 
 	/**
@@ -46,7 +63,7 @@ abstract class base implements type_interface
 	 */
 	public function after_ban(array $data)
 	{
-		return true;
+		return $data['items'];
 	}
 
 	/**
@@ -54,6 +71,7 @@ abstract class base implements type_interface
 	 */
 	public function after_unban(array $data)
 	{
+		return $data['items'];
 	}
 
 	/**
@@ -94,9 +112,12 @@ abstract class base implements type_interface
 			return false;
 		}
 
-		$this->excluded = [
-			(int) $this->user->data['user_id']	=> $this->user->data[$user_column],
-		];
+		$this->excluded = [];
+
+		if (!empty($this->user))
+		{
+			$this->excluded[(int) $this->user->data['user_id']]	= $this->user->data[$user_column];
+		}
 
 		$sql = "SELECT user_id, {$user_column}
 			FROM {$this->users_table}
@@ -110,5 +131,86 @@ abstract class base implements type_interface
 		$this->db->sql_freeresult($result);
 
 		return true;
+	}
+
+	/**
+	 * Logs out all affected users in the given array. The values
+	 * have to match the values of the column returned by get_user_column().
+	 * Returns all banned users.
+	 *
+	 * @param array $ban_items
+	 *
+	 * @return array
+	 */
+	protected function logout_affected_users(array $ban_items)
+	{
+		$user_column = $this->get_user_column();
+
+		if (empty($user_column))
+		{
+			// TODO throw ex (it's a developer exception)
+		}
+
+		if ($user_column !== 'user_id')
+		{
+			$ban_items_sql = [];
+			$ban_like_items = [];
+			foreach ($ban_items as $ban_item)
+			{
+				if (stripos($ban_item, '*') === false)
+				{
+					$ban_items_sql[] = $ban_item;
+				}
+				else
+				{
+					$ban_like_items[] = [$user_column, 'LIKE', str_replace('*', $this->db->get_any_char(), $ban_item)];
+				}
+			}
+
+			$sql_array = [
+				'SELECT'	=> 'user_id',
+				'FROM'		=> [
+					$this->users_table	=> '',
+				],
+				'WHERE'		=> ['AND',
+					[
+						['OR',
+							array_merge([
+								[$user_column, 'IN', $ban_items_sql]
+							], $ban_like_items),
+						],
+						['user_id', 'NOT_IN', array_map('intval', array_keys($this->excluded))],
+					],
+				],
+			];
+			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			$result = $this->db->sql_query($sql);
+
+			$user_ids = [];
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$user_ids[] = (int) $row['user_id'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+		else
+		{
+			$user_ids = array_map('intval', $ban_items);
+		}
+
+		if (!empty($user_ids) && !empty($this->sessions_table))
+		{
+			$sql = 'DELETE FROM ' . $this->sessions_table . '
+				WHERE ' . $this->db->sql_in_set('session_user_id', $user_ids);
+			$this->db->sql_query($sql);
+		}
+		if (!empty($user_ids) && !empty($this->sessions_keys_table))
+		{
+			$sql = 'DELETE FROM ' . $this->sessions_keys_table . '
+				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+			$this->db->sql_query($sql);
+		}
+
+		return $user_ids;
 	}
 }

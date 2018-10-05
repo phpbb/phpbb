@@ -6,12 +6,8 @@ services:
             - '@ban.type_collection'
             - '@cache'
             - '@dbal.conn'
-            - '@log'
-            - '@user'
             - '%tables.bans%'
             - '%tables.users%'
-            - '%tables.sessions%'
-            - '%tables.sessions_keys%'
 
 # ----- Ban types -----
     ban.type_collection:
@@ -25,8 +21,9 @@ services:
         class: \phpbb\ban\type\email
         arguments:
             - '@dbal.conn'
-            - '@user'
             - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.sessions_keys%'
         tags:
             - { name: ban.type }
 
@@ -34,8 +31,8 @@ services:
         class: \phpbb\ban\type\user
         arguments:
             - '@dbal.conn'
-            - '@log'
-            - '@user'
             - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.sessions_keys%'
         tags:
             - { name: ban.type }

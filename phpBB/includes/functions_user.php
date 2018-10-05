@@ -971,6 +971,8 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	$end->setTimestamp($ban_end);
 
 	return $ban_manager->ban($mode, $items, $start, $end, $ban_reason, $ban_give_reason);
+
+	// TODO: logging
 }
 
 /**
