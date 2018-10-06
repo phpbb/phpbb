@@ -410,6 +410,24 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
 
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/docs" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/examples" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/html-docs" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/tests" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.gitignore" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.scrutinizer.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.install.sh" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpdox.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpmd.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/proxy-manager.png" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/proxy-manager.svg" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/README.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/STABILITY.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/UPGRADE.md" />
+
 		<delete dir="${dir}/vendor/paragonie/random_compat/dist" />
 		<delete dir="${dir}/vendor/paragonie/random_compat/other" />
 		<delete file="${dir}/vendor/paragonie/random_compat/CHANGELOG.md" />
