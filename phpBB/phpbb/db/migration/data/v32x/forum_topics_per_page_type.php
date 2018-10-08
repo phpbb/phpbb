@@ -19,7 +19,7 @@ class forum_topics_per_page_type extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v32x\v323rc2',
+			'\phpbb\db\migration\data\v32x\v323',
 		);
 	}
 
