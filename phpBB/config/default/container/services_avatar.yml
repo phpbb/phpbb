@@ -3,6 +3,7 @@ services:
         class: phpbb\avatar\manager
         arguments:
             - '@config'
+            - '@dispatcher'
             - '@avatar.driver_collection'
 
 # ----- Avatar drivers -----

@@ -22,6 +22,12 @@ class manager
 	protected $config;
 
 	/**
+	* phpBB event dispatcher
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $phpbb_dispatcher;
+
+	/**
 	* Array that contains a list of enabled drivers
 	* @var array
 	*/
@@ -49,11 +55,13 @@ class manager
 	* Construct an avatar manager object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
+	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher phpBB event dispatcher
 	* @param array $avatar_drivers Avatar drivers passed via the service container
 	*/
-	public function __construct(\phpbb\config\config $config, $avatar_drivers)
+	public function __construct(\phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $avatar_drivers)
 	{
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->register_avatar_drivers($avatar_drivers);
 	}
 
@@ -331,6 +339,19 @@ class manager
 				WHERE user_avatar = '" . $db->sql_escape($avatar_data['avatar']) . "'";
 			$db->sql_query($sql);
 		}
+
+		/**
+		* Event is triggered after user avatar has been deleted
+		*
+		* @event core.avatar_manager_avatar_delete_after
+		* @var	\phpbb\user	user		phpBB user object
+		* @var	array		avatar_data	Normalised avatar-related user data
+		* @var	string		table		Table to delete avatar from
+		* @var	string		prefix		Column prefix to delete avatar from
+		* @since 3.2.4-RC1
+		*/
+		$vars = array('user', 'avatar_data', 'table', 'prefix');
+		extract($this->phpbb_dispatcher->trigger_event('core.avatar_manager_avatar_delete_after', compact($vars)));
 	}
 
 	/**
