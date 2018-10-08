@@ -327,6 +327,7 @@ class messenger
 
 		$subject = $this->subject;
 		$message = $this->msg;
+		$template  = $this->template;
 		/**
 		* Event to modify notification message text before parsing
 		*
@@ -336,13 +337,16 @@ class messenger
 		*						and the message without sending it
 		* @var	string	subject	The message subject
 		* @var	string	message	The message text
+		* @var	\phpbb\template\template	template	Template object
 		* @since 3.1.11-RC1
+		* @changed 3.2.4-RC1 Added template
 		*/
 		$vars = array(
 			'method',
 			'break',
 			'subject',
 			'message',
+			'template',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
 		$this->subject = $subject;
