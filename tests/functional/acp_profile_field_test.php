@@ -28,18 +28,20 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 	public function data_add_profile_field()
 	{
 		return array(
-			array('bool', 'profilefields.type.bool',
+			array('profilefields.type.bool',
 				array(
+					'field_ident'		=> 'bool',
+					'lang_name'			=> 'bool',
 					'lang_options[0]'	=> 'foo',
 					'lang_options[1]'	=> 'bar',
 				),
-				array(),
 			),
-			array('dropdown', 'profilefields.type.dropdown',
+			array('profilefields.type.dropdown',
 				array(
+					'field_ident'	=> 'dropdown',
+					'lang_name'		=> 'dropdown',
 					'lang_options'	=> "foo\nbar\nbar\nfoo",
 				),
-				array(),
 			),
 		);
 	}
@@ -47,13 +49,12 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 	/**
 	 * @dataProvider data_add_profile_field
 	 */
-	public function test_add_profile_field($name, $type, $page1_settings, $page2_settings)
+	public function test_add_profile_field($type, $page1_settings)
 	{
 		// Custom profile fields page
 		$crawler = self::request('GET', 'adm/index.php?i=acp_profile&mode=profile&sid=' . $this->sid);
 		// these language strings are html
 		$form = $crawler->selectButton('Create new field')->form(array(
-			'field_ident'	=> $name,
 			'field_type'	=> $type,
 		));
 		$crawler = self::submit($form);
@@ -63,7 +64,7 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 
 		// Fill form for profile field specific options
-		$form = $crawler->selectButton('Save')->form($page2_settings);
+		$form = $crawler->selectButton('Save')->form();
 		$crawler= self::submit($form);
 
 		$this->assertContainsLang('ADDED_PROFILE_FIELD', $crawler->text());
