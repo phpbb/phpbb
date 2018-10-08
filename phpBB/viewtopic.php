@@ -998,6 +998,29 @@ if (!empty($topic_data['poll_start']))
 				'total_votes'		=> array_sum($vote_counts),
 				'can_vote'			=> !count($valid_user_votes) || ($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']),
 			);
+
+			/**
+			* Event to manipulate the poll data sent by AJAX response
+			*
+			* @event core.viewtopic_modify_poll_ajax_data
+			* @var	array	data				JSON response data
+			* @var	array	valid_user_votes	Valid user votes
+			* @var	array	vote_counts			Vote counts
+			* @var	int		forum_id			Forum ID
+			* @var	array	topic_data			Topic data
+			* @var	array	poll_info			Array with the poll information
+			* @since 3.2.4-RC1
+			*/
+			$vars = array(
+				'data',
+				'valid_user_votes',
+				'vote_counts',
+				'forum_id',
+				'topic_data',
+				'poll_info',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_ajax_data', compact($vars)));
+
 			$json_response = new \phpbb\json_response();
 			$json_response->send($data);
 		}
