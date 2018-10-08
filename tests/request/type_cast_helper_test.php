@@ -20,16 +20,6 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 	}
 
-	public function test_addslashes_recursively()
-	{
-		$data = array('some"string' => array('that"' => 'really"', 'needs"' => '"escaping'));
-		$expected = array('some\\"string' => array('that\\"' => 'really\\"', 'needs\\"' => '\\"escaping'));
-
-		$this->type_cast_helper->addslashes_recursively($data);
-
-		$this->assertEquals($expected, $data);
-	}
-
 	public function test_simple_recursive_set_var()
 	{
 		$data = 'eviL<3';
