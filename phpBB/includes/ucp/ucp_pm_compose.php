@@ -658,13 +658,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (confirm_box(true))
 			{
+				$message_parser->message = $message;
+				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
+
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'user_id'		=> $user->data['user_id'],
 					'topic_id'		=> 0,
 					'forum_id'		=> 0,
 					'save_time'		=> $current_time,
 					'draft_subject'	=> $subject,
-					'draft_message'	=> $message
+					'draft_message'	=> $message_parser->message,
 					)
 				);
 				$db->sql_query($sql);
