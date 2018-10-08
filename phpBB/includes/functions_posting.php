@@ -2277,8 +2277,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
+				if ($user->data['user_id'] == $poster_id)
+				{
+					$phpbb_notifications->update_notifications(array(
+						'notification.type.quote',
+					), $notification_data);
+				}
+
 				$phpbb_notifications->update_notifications(array(
-					'notification.type.quote',
 					'notification.type.bookmark',
 					'notification.type.topic',
 					'notification.type.post',
