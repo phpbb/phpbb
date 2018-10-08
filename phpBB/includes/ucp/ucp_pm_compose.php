@@ -953,7 +953,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = $request->variable('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
+				$message_link = generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}";
+				$message_link_subject = "{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}";
+				if ($bbcode_status)
+				{
+					$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
+				}
+				else
+				{
+					$message_link = $message_link . " - " . $message_link_subject . "\n\n";
+				}
 			}
 			else
 			{
@@ -973,11 +982,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text($message_parser->message),
-			$quote_attributes
-		);
-		$message_parser->message = $message_link . $quote_text . "\n\n";
+
+		phpbb_format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
