@@ -2351,10 +2351,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			* @event core.login_box_redirect
 			* @var  string	redirect	Redirect string
 			* @var	bool	admin		Is admin?
+			* @var	array	result		Result from auth provider
 			* @since 3.1.0-RC5
 			* @changed 3.1.9-RC1 Removed undefined return variable
+			* @changed 3.2.4-RC1 Added result
 			*/
-			$vars = array('redirect', 'admin');
+			$vars = array('redirect', 'admin', 'result');
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
