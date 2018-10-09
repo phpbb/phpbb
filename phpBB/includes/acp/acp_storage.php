@@ -148,17 +148,13 @@ class acp_storage
 
 		if ($action)
 		{
-			switch ($action)
+			if ($action == 'progress_bar')
 			{
-				case 'progress_bar':
-					$this->display_progress_bar();
-				break;
-				case 'update':
-					// Just continue
-				break;
-				default:
-					trigger_error('NO_ACTION', E_USER_ERROR);
-				break;
+				$this->display_progress_bar();
+			}
+			else if ($action != 'update')
+			{
+				trigger_error('NO_ACTION', E_USER_ERROR);
 			}
 
 			if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
@@ -188,7 +184,6 @@ class acp_storage
 							AND file_id > " . $this->state['file_index'];
 					$result = $this->db->sql_query($sql);
 
-					$starttime = microtime(true);
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						if (!still_on_time())
@@ -235,7 +230,6 @@ class acp_storage
 								AND file_id > " . $this->state['file_index'];
 						$result = $this->db->sql_query($sql);
 
-						$starttime = microtime(true);
 						while ($row = $this->db->sql_fetchrow($result))
 						{
 							if (!still_on_time())
