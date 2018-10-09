@@ -1012,7 +1012,7 @@ class acp_forums
 		}
 
 		$range_test_ary = array(
-			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data_ary['forum_topics_per_page'], 'column_type' => 'TINT:0'),
+			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data_ary['forum_topics_per_page'], 'column_type' => 'USINT:0'),
 		);
 
 		if (!empty($forum_data_ary['forum_image']) && !file_exists($phpbb_root_path . $forum_data_ary['forum_image']))
