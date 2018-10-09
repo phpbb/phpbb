@@ -120,7 +120,8 @@ before_test:
       (Get-Content c:\projects\phpbb\phpBB\web.config).replace("`t</system.webServer>", "`t`t<httpErrors errorMode=`"Detailed`" />`n`t</system.webServer>") | Set-Content c:\projects\phpbb\phpBB\web.config
   - cd c:\projects\phpbb\phpBB
   - php ..\composer.phar install
-  - choco install -y urlrewrite
+  - choco install -y --ignore-checksums urlrewrite
+  #wat
   - ps: New-WebSite -Name 'phpBBTest' -PhysicalPath 'c:\projects\phpbb\phpBB' -Force
   - ps: Import-Module WebAdministration; Set-ItemProperty 'IIS:\Sites\phpBBTest' -name Bindings -value @{protocol='http';bindingInformation='*:80:phpbb.test'}
   - echo Change default anonymous user AUTH to ApplicationPool
