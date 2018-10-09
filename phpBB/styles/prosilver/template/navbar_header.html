@@ -178,9 +178,9 @@
 	</ul>
 
 	<ul id="nav-breadcrumbs" class="nav-breadcrumbs linklist navlinks" role="menubar">
-		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
+		<!-- DEFINE $MICRODATA = ' itemtype="http://schema.org/ListItem" itemprop="itemListElement" itemscope' -->
 		<!-- EVENT overall_header_breadcrumbs_before -->
-		<li class="breadcrumbs">
+		<li class="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">
 			<!-- IF U_SITE_HOME -->
 				<span class="crumb" {$MICRODATA}><a href="{U_SITE_HOME}" itemprop="url" data-navbar-reference="home"><i class="icon fa-home fa-fw" aria-hidden="true"></i><span itemprop="title">{L_SITE_HOME}</span></a></span>
 			<!-- ENDIF -->
