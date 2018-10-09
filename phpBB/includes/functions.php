@@ -4492,7 +4492,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
-		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
+		'T_THEME_LANG_NAME'		=> $user->lang_name,
 		'T_TEMPLATE_NAME'		=> $user->style['style_path'],
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',
