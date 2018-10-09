@@ -1171,6 +1171,29 @@ $sql = 'SELECT p.post_id
 		" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
+
+/**
+* Event to modify the SQL query that gets post_list
+*
+* @event core.viewtopic_modify_post_list_sql
+* @var	string	sql			The SQL query to generate the post_list
+* @var	int		sql_limit	The number of posts the query fetches
+* @var	int		sql_start	The index the query starts to fetch from
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_days	Display posts of previous x days
+* @var	int		forum_id	Forum ID
+* @since 3.2.4-RC1
+*/
+$vars = array(
+	'sql',
+	'sql_limit',
+	'sql_start',
+	'sort_key',
+	'sort_days',
+	'forum_id',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_list_sql', compact($vars)));
+
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $i = ($store_reverse) ? $sql_limit - 1 : 0;
