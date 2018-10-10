@@ -18,6 +18,7 @@ folders:
 sites:
     - map: phpbb.app
       to: "/home/vagrant/phpbb/phpBB"
+      type: "apache"
 
 databases:
     - phpbb
