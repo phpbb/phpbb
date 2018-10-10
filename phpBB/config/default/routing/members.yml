@@ -1,3 +1,13 @@
+phpbb_members_online:
+    path: /online
+    defaults:
+        _controller: members.controller.online:handle
+
+phpbb_members_online_whois:
+    path: /online/whois/{session_id}
+    defaults:
+        _controller: members.controller.online.whois:handle
+
 phpbb_members_team:
     path:             /team
     defaults:
