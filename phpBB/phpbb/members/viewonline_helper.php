@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb;
+namespace phpbb\members;
 
 use phpbb\filesystem\helper as filesystem_helper;
 

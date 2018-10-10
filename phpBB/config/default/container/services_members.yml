@@ -1,0 +1,36 @@
+services:
+
+# Controllers
+    members.controller.online:
+        class: phpbb\members\controller\online
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@viewonline_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@router'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    members.controller.online.whois:
+        class: phpbb\members\controller\online_whois
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    viewonline_helper:
+        class: phpbb\members\viewonline_helper
