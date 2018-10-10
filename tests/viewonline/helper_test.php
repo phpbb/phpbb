@@ -23,7 +23,33 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->viewonline_helper = new \phpbb\viewonline_helper($db);
+		$config = $this->getMockBuilder('\phpbb\config\config')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$dispatcher = $this->getMockBuilder('phpbb_mock_event_dispatcher')
+			->getMock();
+
+		$router = $this->getMockBuilder('\phpbb\routing\router')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$controller_helper = $this->getMockBuilder('\phpbb\controller\helper')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$language = $this->getMockBuilder('\phpbb\language\language')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$phpbb_root_path = './';
+		$phpEx = 'php';
+
+		$this->viewonline_helper = new \phpbb\members\viewonline_helper($db, $config, $dispatcher, $router, $controller_helper, $language, $auth, $phpbb_root_path, $phpEx, 'adm/', '%tables.users%', '%tables.sessions%', '%tables.topics%', '%tables.forums%');
 	}
 
 	public static function session_pages_data()

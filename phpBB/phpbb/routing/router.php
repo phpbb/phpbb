@@ -189,6 +189,17 @@ class router implements RouterInterface
 	 */
 	public function match(string $pathinfo): array
 	{
+		// Remove query string
+		$pathinfo = parse_url($pathinfo, PHP_URL_PATH);
+
+		if ($pathinfo === null)
+		{
+			throw new RuntimeException('Malformed pathinfo given to the router.');
+		}
+
+		// Remove app.php if present
+		$pathinfo = preg_replace('/^\/app\.php\//', '/', $pathinfo);
+
 		return $this->get_matcher()->match($pathinfo);
 	}
 

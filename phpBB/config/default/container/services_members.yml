@@ -1,6 +1,37 @@
 services:
 
 # Controllers
+    members.controller.online:
+        class: phpbb\members\controller\online
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@viewonline_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    members.controller.online.whois:
+        class: phpbb\members\controller\online_whois
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%tables.users%'
+            - '%tables.sessions%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     members.controller.team:
         class: phpbb\members\controller\team
         arguments:
@@ -20,3 +51,22 @@ services:
             - '%tables.teampage%'
             - '%tables.user_group%'
             - '%tables.users%'
+
+# Helpers
+    viewonline_helper:
+        class: phpbb\members\viewonline_helper
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@event_dispatcher'
+            - '@router'
+            - '@controller.helper'
+            - '@language'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%core.adm_relative_path%'
+            - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.topics%'
+            - '%tables.forums%'
