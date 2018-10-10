@@ -439,16 +439,9 @@ class md_exporter
 		$event_list = array();
 		$file_content = file_get_contents($this->path . $file);
 
-		$events = explode('<!-- EVENT ', $file_content);
-		// Remove the code before the first event
-		array_shift($events);
-		foreach ($events as $event)
-		{
-			$event = explode(' -->', $event, 2);
-			$event_list[] = array_shift($event);
-		}
+		preg_match_all('/(?:{%|<!--) EVENT (.*) (?:%}|-->)/U', $file_content, $event_list);
 
-		return $event_list;
+		return $event_list[1];
 	}
 
 	/**
