@@ -19,3 +19,6 @@ core:
     extensions:
         composer_debug: true
         composer_verbose: true
+
+    session:
+        log_errors: true
