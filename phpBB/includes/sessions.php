@@ -1069,13 +1069,14 @@ class user
 	/**
 	 * @var string	ISO code of the default board language
 	 */
-	protected $default_language;
-	protected $default_language_name;
+	var $default_language;
+	var $default_language_name;
 	/**
 	 * @var string	ISO code of the User's language
 	 */
-	protected $user_language;
-	protected $user_language_name;
+	var $user_language;
+	var $user_language_name;
+	
 	protected $phpbb_root_path;
 	
 	var $lang;		

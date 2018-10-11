@@ -28,8 +28,13 @@
 $no_page_header = TRUE;
 $phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
+if (!defined('$php_ext')) define('$php_ext', substr(strrchr(__FILE__, '.'), 1));
 require('./pagestart.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+
+//setup_extra_lang(array('common'));
+
 // ---------------
 // Begin functions
 //
@@ -51,7 +56,8 @@ function inarray($needle, $haystack)
 //
 // Generate relevant output
 //
-if( isset($_GET['pane']) && $_GET['pane'] == 'left' )
+$acp_pane = request_var('pane', '');
+if($acp_pane == 'left')
 {
 	$dir = @opendir(".");
 

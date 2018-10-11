@@ -133,7 +133,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Version information about used database
 	*/
 	function sql_server_info($raw = false, $use_cache = true)
 	{
@@ -163,7 +163,7 @@ class dbal_mysqli extends dbal
 	* SQL Transaction
 	* @access private
 	*/
-	function _sql_transaction($status = 'begin')
+	function sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
@@ -188,7 +188,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Base query method
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -287,9 +287,73 @@ class dbal_mysqli extends dbal
 
 		return ($query_id) ? @mysqli_num_rows($query_id) : false;
 	}
+	
+	/**
+	* Return fields num
+	* Not used within core code
+	*/		
+	function sql_numfields($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = mysqli_num_fields($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	* Return fields names by orynider
+	* Not used within core code
+	*/	
+	function sql_fieldname($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{		
+			$fields_cnt = mysqli_num_fields($query_id);
+			// Get field information ($query_id, $offset);
+			$field = mysqli_fetch_fields($query_id);
+			$field_set = array();
+
+			$result = $field[$offset]->name;
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function sql_fieldtype($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = mysqli_field_type($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	/**
-	* {@inheritDoc}
+	* Return number of affected rows
 	*/
 	function sql_affectedrows()
 	{
@@ -297,7 +361,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Fetch current row
 	*/
 	function sql_fetchrow($query_id = false)
 	{
@@ -348,7 +412,8 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Seek to given row number
+	* rownum is zero-based
 	*/
 	function sql_rowseek($rownum, &$query_id)
 	{
@@ -368,7 +433,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Get last inserted id after insert statement
 	*/
 	function sql_nextid()
 	{
@@ -376,7 +441,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Free sql result
 	*/
 	function sql_freeresult($query_id = false)
 	{
@@ -406,7 +471,7 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* {@inheritDoc}
+	* Escape string used in sql query
 	*/
 	function sql_escape($msg)
 	{
@@ -670,6 +735,40 @@ class dbal_mysqli extends dbal
 			break;
 		}
 	}
+	
+	/**
+	* Cache clear function
+	*/
+	function clear_cache($cache_prefix = '', $cache_folder = SQL_CACHE_FOLDER, $files_per_step = 0)
+	{
+		global $phpEx;
+		
+		$cache_folder = (empty($cache_folder) ? SQL_CACHE_FOLDER : $cache_folder);
+
+		$cache_prefix = 'sql_' . $cache_prefix;
+		$cache_folder = (!empty($cache_folder) && @is_dir($cache_folder)) ? $cache_folder : SQL_CACHE_FOLDER;
+		$cache_folder = ((@is_dir($cache_folder)) ? $cache_folder : @phpbb_realpath($cache_folder));
+
+		$res = opendir($cache_folder);
+		if($res)
+		{
+			$files_counter = 0;
+			while(($file = readdir($res)) !== false)
+			{
+				if(!@is_dir($file) && (substr($file, 0, strlen($cache_prefix)) === $cache_prefix) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
+				{
+					@unlink($cache_folder . $file);
+					$files_counter++;
+				}
+				if (($files_per_step > 0) && ($files_counter >= $files_per_step))
+				{
+					closedir($res);
+					return $files_per_step;
+				}
+			}
+		}
+		@closedir($res);
+	}	
 }
 
 } // if ... define
@@ -678,6 +777,6 @@ class dbal_mysqli extends dbal
 $db	= new $sql_db();
 if(!$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, false))
 {
-	mx_message_die(CRITICAL_ERROR, "Could not connect to the database");
+	message_die(CRITICAL_ERROR, "Could not connect to the database");
 }
 ?>

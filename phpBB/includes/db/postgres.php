@@ -454,6 +454,39 @@ class dbal_postgres extends dbal
 		}
 	}
 
+	/**
+	* Cache clear function
+	*/
+	function clear_cache($cache_prefix = '', $cache_folder = SQL_CACHE_FOLDER, $files_per_step = 0)
+	{
+		global $phpEx;
+		
+		$cache_folder = (empty($cache_folder) ? SQL_CACHE_FOLDER : $cache_folder);
+
+		$cache_prefix = 'sql_' . $cache_prefix;
+		$cache_folder = (!empty($cache_folder) && @is_dir($cache_folder)) ? $cache_folder : SQL_CACHE_FOLDER;
+		$cache_folder = ((@is_dir($cache_folder)) ? $cache_folder : @phpbb_realpath($cache_folder));
+
+		$res = opendir($cache_folder);
+		if($res)
+		{
+			$files_counter = 0;
+			while(($file = readdir($res)) !== false)
+			{
+				if(!@is_dir($file) && (substr($file, 0, strlen($cache_prefix)) === $cache_prefix) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
+				{
+					@unlink($cache_folder . $file);
+					$files_counter++;
+				}
+				if (($files_per_step > 0) && ($files_counter >= $files_per_step))
+				{
+					closedir($res);
+					return $files_per_step;
+				}
+			}
+		}
+		@closedir($res);
+	}	
 }
 
 } // if ... defined

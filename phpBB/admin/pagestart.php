@@ -26,6 +26,7 @@ if (!defined('IN_PHPBB'))
 }
 
 define('IN_ADMIN', true);
+
 // Include files
 include($phpbb_root_path . 'common.'.$phpEx);
 

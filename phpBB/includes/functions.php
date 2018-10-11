@@ -1390,7 +1390,55 @@ function confirm_backend()
 * </code>
 *
 */
-function append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
+function append_sid($url, $non_html_amp = false, $mod_rewrite_only = false)
+{
+	global $SID, $_SID, $mx_mod_rewrite, $userdata;
+	
+	//Fix for login page
+	if ( !empty($url) && preg_match('#'.PHPBB_URL.'#', $url) && defined('IN_LOGIN') )
+	{
+		$url = preg_replace('#' . PHPBB_URL . '#', '', $url);
+	}		
+
+	// Is mod_rewrite enabled? If so, do some url rewrites...
+	if (is_object($mx_mod_rewrite))
+	{
+		$url = $mx_mod_rewrite->encode($url);
+	}
+
+	// Replaces same function in mx_sessions_phpbbx.php
+	if ($mod_rewrite_only)
+	{
+		return $url;
+	}
+
+	/*
+	if ( !empty($_SID) && !preg_match('#sid=#', $url) )
+	{
+		$url .= ( ( strpos($url, '?') !== false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
+	}
+	*/
+
+	//Will this make troble if it's correct?
+	if ( !empty($_SID) && !preg_match('#sid=#', $url) )
+	{
+		$url .= ( (strpos($url, '?') === false) ?  '?' : (( $non_html_amp ) ? '&' : '&amp;' ) ) . 'sid=' . $_SID;
+	}
+
+	if ( !empty($SID) && !preg_match('#sid=#', $url) )
+	{
+		$url .= ( (strpos($url, '?') === false) ?  '?' : (( $non_html_amp ) ? '&' : '&amp;' ) ) . $SID;
+	}
+
+	if (defined('IN_ADMIN') && !preg_match('#sid=#', $url))
+	{
+		$url .= ( (strpos($url, '?') === false) ?  '?' : (( $non_html_amp ) ? '&' : '&amp;' ) ) . 'sid=' . $userdata['session_id'];
+	}
+
+	return $url;
+}
+
+function phpbb3_append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
 {
 	global $SID, $user, $_EXTRA_URL;
 	
