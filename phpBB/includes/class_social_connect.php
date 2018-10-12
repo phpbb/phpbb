@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 
 abstract class SocialConnect
 {
-	private static $social_networks = array("facebook");
+	private static $social_networks = array("facebook", "google");
 	private static $available_networks = array();
 
 	private $network_name;

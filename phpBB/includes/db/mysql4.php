@@ -39,9 +39,7 @@ class dbal_mysql4 extends dbal
 {
 	var $mysql_version;
 	var $multi_insert = true;
-	/**
-	* Connect to server
-	*/
+
 	/**
 	* Connect to server
 	* @access public
@@ -52,6 +50,8 @@ class dbal_mysql4 extends dbal
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
+		
+		//$this->sql_layer = 'mysql4';
 
 		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
 
@@ -372,10 +372,19 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		//global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
+
+		/* Backported from Olympus, not compatible with phpbb2 ?
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($rownum, $query_id);
+		}
+		*/
 
 		return ($query_id) ? @mysql_data_seek($query_id, $rownum) : false;
 	}
@@ -393,10 +402,19 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		//global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
+
+		/* Backported from Olympus, not compatible with phpbb2 ?
+		if (isset($mx_cache->sql_rowset[$query_id]))
+		{
+			return $mx_cache->sql_freeresult($query_id);
+		}
+		*/
 
 		if (isset($this->open_queries[(int) $query_id]))
 		{
@@ -464,7 +482,6 @@ class dbal_mysql4 extends dbal
 
 		return $data;
 	}
-
 
 
 	/**
