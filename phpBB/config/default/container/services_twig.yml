@@ -62,6 +62,7 @@ services:
             - '@user'
             - '@template.twig.extensions.collection'
             - '@ext.manager'
+        lazy:  true
 
     template_context:
         class: phpbb\template\context
