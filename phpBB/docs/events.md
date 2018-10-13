@@ -652,6 +652,13 @@ attachment_file_prepend
 * Since: 3.1.6-RC1
 * Purpose: Add custom attachment types displaying to the top of attachment block.
 
+confirm_delete_body_delete_reason_before
+===
+* Locations:
+    + styles/prosilver/template/confirm_delete_body.html
+* Since: 3.2.4-RC1
+* Purpose: Add custom text to the confirmation of a post that is deleted.
+
 forumlist_body_category_header_after
 ===
 * Locations:
