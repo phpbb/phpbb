@@ -3604,11 +3604,6 @@ function remove_newly_registered($user_id, $user_data = false)
 		}
 	}
 
-	if (empty($user_data['user_new']))
-	{
-		return false;
-	}
-
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "
 		WHERE group_name = 'NEWLY_REGISTERED'
