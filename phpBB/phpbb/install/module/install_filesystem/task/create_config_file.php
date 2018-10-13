@@ -217,10 +217,9 @@ class create_config_file extends \phpbb\install\task_base
 		if ($environment === 'test')
 		{
 			$config_content .= "@define('DEBUG_TEST', true);\n";
-
-			// Mandatory for the functional tests, will be removed by PHPBB3-12623
-			$config_content .= "@define('DEBUG', true);\n";
 		}
+
+        $config_content .= "@define('DEBUG', true);\n";
 
 		return $config_content;
 	}
