@@ -1992,6 +1992,13 @@ simple_footer_after
 * Locations:
     + styles/prosilver/template/simple_footer.html
 * Since: 3.1.0-a1
+* Purpose: Add content prior to the scripts of the simple footer
+
+simple_footer_body_after
+===
+* Locations:
+    + styles/prosilver/template/simple_footer.html
+* Since: 3.2.4-RC1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
 simple_header_body_before
