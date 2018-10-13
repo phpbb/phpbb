@@ -273,11 +273,9 @@ function insertUser(formId, value) {
 function insert_marked_users(formId, users) {
 	'use strict';
 
-	for (var i = 0; i < users.length; i++) {
-		if (users[i].checked) {
-			insertUser(formId, users[i].value);
-		}
-	}
+	$(users).filter(':checked').each(function() {
+		insertUser(formId, this.value);
+	});
 
 	window.close();
 }
