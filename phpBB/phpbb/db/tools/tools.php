@@ -499,6 +499,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['change_columns'] as $table => $columns)
 			{
+				// only change columns if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($columns as $column_name => $column_data)
 				{
 					// If the column exists we change it, else we add it ;)
@@ -535,6 +541,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['add_columns'] as $table => $columns)
 			{
+				// only add columns if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($columns as $column_name => $column_data)
 				{
 					// Only add the column if it does not exist yet
@@ -574,6 +586,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['drop_keys'] as $table => $indexes)
 			{
+				// only remove keys if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($indexes as $index_name)
 				{
 					if (!$this->sql_index_exists($table, $index_name))
@@ -596,6 +614,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['drop_columns'] as $table => $columns)
 			{
+				// only drop columns if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($columns as $column)
 				{
 					// Only remove the column if it exists...
@@ -621,6 +645,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['add_primary_keys'] as $table => $columns)
 			{
+				// only add primary keys if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				$result = $this->sql_create_primary_key($table, $columns, true);
 
 				if ($sqlite)
@@ -639,6 +669,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['add_unique_index'] as $table => $index_array)
 			{
+				// only add unique indexes if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($index_array as $index_name => $column)
 				{
 					if ($this->sql_unique_index_exists($table, $index_name))
@@ -661,6 +697,12 @@ class tools implements tools_interface
 		{
 			foreach ($schema_changes['add_index'] as $table => $index_array)
 			{
+				// only add indexes if the table exists
+				if (!$this->sql_table_exists($table))
+				{
+					continue;
+				}
+
 				foreach ($index_array as $index_name => $column)
 				{
 					if ($this->sql_index_exists($table, $index_name))
