@@ -293,7 +293,16 @@
 	</div>
 <!-- ENDIF -->
 
-<!-- INCLUDE jumpbox.html -->
+<div class="action-bar actions-jump">
+	<p class="jumpbox-return">
+		<a href="{U_INDEX}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_INDEX}</span>
+		</a>
+	</p>
+
+	{{ jumpbox() }}
+
+</div>
 
 <!-- IF S_DISPLAY_ONLINE_LIST and U_VIEWONLINE -->
 	<div class="stat-block online-list">

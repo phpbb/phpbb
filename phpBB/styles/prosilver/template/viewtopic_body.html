@@ -440,7 +440,17 @@
 </div>
 
 <!-- EVENT viewtopic_body_footer_before -->
-<!-- INCLUDE jumpbox.html -->
+
+<div class="action-bar actions-jump">
+	<p class="jumpbox-return">
+		<a href="{U_VIEW_FORUM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_FORUM}</span>
+		</a>
+	</p>
+
+	{{ jumpbox() }}
+
+</div>
 
 <!-- IF S_DISPLAY_ONLINE_LIST and U_VIEWONLINE -->
 	<div class="stat-block online-list">

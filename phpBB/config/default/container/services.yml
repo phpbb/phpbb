@@ -15,6 +15,7 @@ imports:
     - { resource: services_help.yml }
     - { resource: services_hook.yml }
     - { resource: services_http.yml }
+    - { resource: services_jumpbox.yml }
     - { resource: services_language.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }

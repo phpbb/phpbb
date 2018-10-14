@@ -1,0 +1,6 @@
+services:
+    jumpbox.twig.extension:
+        class: phpbb\jumpbox\twig\extension
+        arguments:
+        tags:
+            - { name: twig.extension }
