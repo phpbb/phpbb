@@ -1687,10 +1687,10 @@ phpbb.recaptchaOnSubmit = function () {
 
 // reCAPTCHA doesn't accept callback functions nested inside objects
 // so we need to make this helper functions here
-function phpbbRecaptchaOnLoad() {
+window.phpbbRecaptchaOnLoad = function() {
 	phpbb.recaptchaOnLoad();
 }
-function phpbbRecaptchaOnSubmit() {
+window.phpbbRecaptchaOnSubmit = function() {
 	phpbb.recaptchaOnSubmit();
 }
 
