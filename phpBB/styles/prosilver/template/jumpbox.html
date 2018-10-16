@@ -1,6 +1,6 @@
-<div class="jumpbox dropdown-container dropdown-container-right dropdown-up dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control" id="jumpbox">
-	<span title="{L_JUMP_TO}" class="button button-secondary dropdown-trigger dropdown-select">
-		<span>{L_JUMP_TO}</span>
+<div class="jumpbox dropdown-container dropdown-container-right dropdown-up dropdown-{{ lang('DIRECTION') == 'ltr' ? 'left' : 'right' }} dropdown-button-control" id="jumpbox">
+	<span title="{{ lang('JUMP_TO') }}" class="button button-secondary dropdown-trigger dropdown-select">
+		<span>{{ lang('JUMP_TO') }}</span>
 		<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
 	</span>
 	<div class="dropdown">
@@ -12,7 +12,7 @@
 				<a href="{{ forum.LINK }}" class="{% if forum.level %}jumpbox-sub-link{% elseif forum.S_IS_CAT %}jumpbox-cat-link{% else %}jumpbox-forum-link{% endif %}">
 					{% for level in forum.level %}<span class="spacer"></span>{% endfor %}
 					<span>
-						{% if forum.level %}{% if S_CONTENT_DIRECTION == 'rtl' %}&#8626;{% else %}&#8627;{% endif %} &nbsp;{% endif %}
+						{% if forum.level %}{% if lang('DIRECTION') == 'rtl' %}&#8626;{% else %}&#8627;{% endif %} &nbsp;{% endif %}
 						{{ forum.FORUM_NAME }}
 					</span>
 				</a>
