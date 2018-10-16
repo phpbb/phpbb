@@ -2,5 +2,9 @@ services:
     jumpbox.twig.extension:
         class: phpbb\jumpbox\twig\extension
         arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@path_helper'
         tags:
             - { name: twig.extension }

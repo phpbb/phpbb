@@ -13,18 +13,27 @@
 
 namespace phpbb\jumpbox\twig;
 
+use \phpbb\auth\auth;
+use \phpbb\db\driver\driver_interface;
+use \phpbb\event\dispatcher_interface;
+use \phpbb\path_helper;
+
 class extension extends \Twig_Extension
 {
 	/**
-	* Constructor
-	*
-	* @param \phpbb\template\context $context
-	* @param \phpbb\language\language $language
-	* @return \phpbb\template\twig\extension
-	*/
-	public function __construct()
+	 * Constructor
+	 *
+	 * @param \phpbb\auth\auth $auth Auth object
+	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param \phpbb\path_helper	$path_helper	Path helper
+	 */
+	public function __construct(auth $auth, driver_interface $db, dispatcher_interface $dispatcher, path_helper $path_helper)
 	{
-
+		$this->auth = $auth;
+		$this->db = $db;
+		$this->dispatcher = $dispatcher;
+		$this->path_helper = $path_helper;
 	}
 
 	/**
@@ -54,19 +63,7 @@ class extension extends \Twig_Extension
 	*/
 	function jumpbox(\Twig_Environment $env)
 	{
-		global $auth, $db, $phpbb_path_helper, $phpbb_dispatcher;
-
-		$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
-			FROM ' . FORUMS_TABLE . '
-			ORDER BY left_id ASC';
-		$result = $db->sql_query($sql, 600);
-
-		$rowset = [];
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$rowset[(int) $row['forum_id']] = $row;
-		}
-		$db->sql_freeresult($result);
+		$rowset = $this->get_forums();
 
 		if (empty($rowset))
 		{
@@ -84,7 +81,7 @@ class extension extends \Twig_Extension
 		* @since 3.1.10-RC1
 		*/
 		$vars = array('rowset');
-		extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
 
 		// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 		// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
@@ -114,22 +111,17 @@ class extension extends \Twig_Extension
 				continue;
 			}
 
-			if (!$auth->acl_get('f_list', $row['forum_id']))
+			if (!$this->auth->acl_get('f_list', $row['forum_id']))
 			{
 				// if the user does not have permissions to list this forum skip
 				continue;
 			}
 
-			//if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
-			//{
-			//	continue;
-			//}
-
 			$tpl_ary = array(
 				'FORUM_ID'		=> $row['forum_id'],
 				'FORUM_NAME'	=> $row['forum_name'],
 				'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
-				'LINK'			=> $phpbb_path_helper->append_url_params("viewforum.php", array('f' => $row['forum_id'])),
+				'LINK'			=> $this->path_helper->append_url_params("viewforum.php", array('f' => $row['forum_id'])),
 			);
 
 			/**
@@ -144,7 +136,7 @@ class extension extends \Twig_Extension
 				'row',
 				'tpl_ary',
 			);
-			extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
+			extract($this->dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
 
 			for ($i = 0; $i < $padding; $i++)
 			{
@@ -157,7 +149,26 @@ class extension extends \Twig_Extension
 		// Display jumpbox only if there are forums
 		if (!empty($forums))
 		{
-			return $env->render('jumpbox.html', ['jumpbox_forums' => $forums]);
+			return $env->render('jumpbox.html', [
+				'jumpbox_forums'	=> $forums,
+			]);
 		}
+	}
+
+	protected function get_forums()
+	{
+		$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
+			FROM ' . FORUMS_TABLE . '
+			ORDER BY left_id ASC';
+		$result = $this->db->sql_query($sql, 600);
+
+		$rowset = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rowset[(int) $row['forum_id']] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $rowset;
 	}
 }
