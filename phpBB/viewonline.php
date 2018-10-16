@@ -87,7 +87,6 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	$template->set_filenames(array(
 		'body' => 'viewonline_whois.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }
@@ -517,6 +516,5 @@ page_header($user->lang['WHO_IS_ONLINE']);
 $template->set_filenames(array(
 	'body' => 'viewonline_body.html')
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();

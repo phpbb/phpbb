@@ -2519,7 +2519,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }

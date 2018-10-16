@@ -1353,7 +1353,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$template->set_filenames(array(
 		'body' => 'search_results.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }
@@ -1557,6 +1556,5 @@ page_header($user->lang['SEARCH']);
 $template->set_filenames(array(
 	'body' => 'search_body.html')
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();

@@ -159,6 +159,8 @@
 <!-- IF S_IN_SEARCH_POPUP -->
 	<!-- INCLUDE simple_footer.html -->
 <!-- ELSE -->
-	<!-- INCLUDE jumpbox.html -->
+	<div class="action-bar actions-jump">
+		{{ jumpbox() }}
+	</div>
 	<!-- INCLUDE overall_footer.html -->
 <!-- ENDIF -->
