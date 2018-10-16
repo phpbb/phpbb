@@ -13,20 +13,20 @@
 
 namespace phpbb\jumpbox\twig;
 
-use \phpbb\auth\auth;
-use \phpbb\db\driver\driver_interface;
-use \phpbb\event\dispatcher_interface;
-use \phpbb\path_helper;
+use phpbb\auth\auth;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\path_helper;
 
 class extension extends \Twig_Extension
 {
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\auth\auth $auth Auth object
-	 * @param \phpbb\db\driver\driver_interface Database object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
-	 * @param \phpbb\path_helper	$path_helper	Path helper
+	 * @param auth $auth Auth object
+	 * @param driver_interface Database object
+	 * @param dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param path_helper	$path_helper	Path helper
 	 */
 	public function __construct(auth $auth, driver_interface $db, dispatcher_interface $dispatcher, path_helper $path_helper)
 	{
