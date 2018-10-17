@@ -1465,12 +1465,14 @@ function mcp_fork_topic($topic_ids)
 				* @var	int		new_topic_id	The newly created topic ID
 				* @var	int		to_forum_id		The forum ID where the forked topic has been moved to
 				* @var	int		new_post_id		The newly created post ID
+				* @var	array	row				Post data
 				* @since 3.2.4-RC1
 				*/
 				$vars = array(
 					'new_topic_id',
 					'to_forum_id',
 					'new_post_id',
+					'row',
 				);
 				extract($phpbb_dispatcher->trigger_event('core.mcp_main_fork_sql_after', compact($vars)));
 
