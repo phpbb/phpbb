@@ -457,6 +457,30 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 }
 
 /**
+* Options to pick an element from array
+*
+* @param	array 		$options_array		An array contains the element to include in select options, Array key is the value, Array value is language key
+* @param	string		$default			An element to select
+*
+* @return	string		Returns a string containing the options for the selector.
+*/
+function phpbb_general_select($options_array, $default = '')
+{
+	global $phpbb_container;
+
+	$user = $phpbb_container->get('user');
+	$general_options = '';
+
+	foreach ($options_array as $key => $value)
+	{
+		$selected = ($key == $default) ? ' selected="selected"' : '';
+		$general_options .= '<option value="' . $key . '"' . $selected . '>'. $user->lang($value) . '</option>';
+	}
+
+	return $general_options;
+}
+
+/**
 * Options to pick a timezone and date/time
 *
 * @param	\phpbb\template\template $template	phpBB template object
