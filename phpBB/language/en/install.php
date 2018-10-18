@@ -232,9 +232,12 @@ $lang = array_merge($lang, array(
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
 
-	'1CLICK_UPDATE'			=> '1-click update',
-	'NO_1CLICKUPDATE'		=> 'Unable to initiate 1-click update. Please try again later.',
-	'SIGNATURE_MISMATCH'	=> 'Signature of the downloaded file does not match. See announcement topic for further information.',
+	'1CLICK_UPDATE'					=> '1-click update',
+	'CONFIRM_1CLICKUPDATE'			=> 'Do you really want to automatically update your board? By clicking Yes you confirm that you have a backup of all board files and the database.',
+	'NO_1CLICKUPDATE'				=> 'Unable to initiate 1-click update. Please try again later.',
+	'1CLICKUPDATE_TMP_FILE_EXISTS'	=> 'Temporary file of new version already exists. Please, remove it first.',
+	'SIGNATURE_MISMATCH'			=> 'Signature of the downloaded file does not match. See announcement topic for further information.',
+	'UNZIP_FAILED'					=> 'Unzipping new file failed. Please, try again.',
 ));
 
 // Default database schema entries...

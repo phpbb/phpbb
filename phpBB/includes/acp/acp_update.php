@@ -54,26 +54,6 @@ class acp_update
 			$updates_available = array();
 		}
 
-		// TODO remove
-		$updates_available['download'] = 'http://localhost/phpBB-3.2.3.zip';
-		$updates_available['signature'] = 'http://localhost/phpBB-3.2.3.sig';
-
-// generate keys
-// $rsa = new RSA();
-// $keys = $rsa->createKey();
-// file_put_contents($phpbb_root_path . 'phpbb/update/key/key.private', $keys['privatekey']);
-// file_put_contents($phpbb_root_path . 'phpbb/update/key/key', $keys['publickey']);
-// print_r($keys);die;
-
-// sign version
-// $rsa = new RSA();
-// $rsa->loadKey(file_get_contents($phpbb_root_path . 'phpbb/update/key/key.private'), RSA::PRIVATE_FORMAT_PKCS1);
-// $rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
-// $hash = md5(file_get_contents('http://localhost/phpBB-3.2.3.zip'));
-// $signature = $rsa->sign($hash);
-// file_put_contents($phpbb_root_path . '../../phpBB-3.2.3.sig', $signature);
-// die;
-
 		if ($request->is_set('1clickupdate'))
 		{
 			if (empty($updates_available))
@@ -88,35 +68,80 @@ class acp_update
 					trigger_error($user->lang('NO_1CLICKUPDATE') . adm_back_link($this->u_action));
 				}
 
+				$filesystem = new \Symfony\Component\Filesystem\Filesystem();
+
+				// generate local filename for new version
+				$tmp_filename = 'phpbb-update-' . $updates_available['current'] . '.zip';
+
+				// generate path where new version will be temporarily stored and make sure it doesn't exist
+				$tmp_path = $phpbb_root_path . 'store/' . $tmp_filename;
+				if (file_exists($tmp_path))
+				{
+					trigger_error($user->lang('1CLICKUPDATE_TMP_FILE_EXISTS') . adm_back_link($this->u_action));
+				}
+
 				// download new version
-				$filename = 'phpBB-' . $updates_available['current'] . '.zip';
-				$location = $phpbb_root_path . 'store/' . $filename;
 				$client = new \GuzzleHttp\Client;
-				$client->request('GET', $updates_available['download'], ['sink' => $location]);
+				$client->request('GET', $updates_available['download'], ['sink' => $tmp_path]);
 				
-				// verify integrity
+				// download signature of the new version
 				$signature_response = $client->request('GET', $updates_available['signature']);
 				$signature = $signature_response->getBody();
+
+				// verify integrity of the downloaded file
 				$rsa = new RSA();
-				$rsa->loadKey(file_get_contents($phpbb_root_path . 'phpbb/update/key/key'), RSA::PRIVATE_FORMAT_PKCS1);
+				$key = file_get_contents($phpbb_root_path . 'phpbb/update/key/key');
+				$rsa->loadKey($key, RSA::PRIVATE_FORMAT_PKCS1);
 				$rsa->setSignatureMode(RSA::SIGNATURE_PKCS1);
-				$hash = md5(file_get_contents($location));
+				$hash = sha1_file($tmp_path);
 				if (!$rsa->verify($hash, $signature))
 				{
 					// remove file
-					$filesystem = new \Symfony\Component\Filesystem\Filesystem();
-					$filesystem->remove($location);
+					$filesystem->remove($tmp_path);
 
 					trigger_error($user->lang('SIGNATURE_MISMATCH') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					// unzip, replace, redirect to db updater
+					// unzip new version
+					$zip = new \ZipArchive;
+					$res = $zip->open($tmp_path);
+					if ($res !== true)
+					{
+						// remove file
+						$filesystem->remove($tmp_path);
+
+						trigger_error($user->lang('UNZIP_FAILED') . adm_back_link($this->u_action));
+					}
+					
+					$tmp_path_dir = substr($tmp_path, 0, -3);
+					$zip->extractTo($tmp_path_dir);
+					$zip->close();
+
+					// remove config, images, store and foles from new version
+					$filesystem->remove($tmp_path_dir . '/phpBB3/config.php');
+					$filesystem->remove($tmp_path_dir . '/phpBB3/images');
+					$filesystem->remove($tmp_path_dir . '/phpBB3/store');
+					$filesystem->remove($tmp_path_dir . '/phpBB3/files');
+
+					// remove vendor and cache from current version
+					$filesystem->remove($phpbb_root_path . 'vendor');
+					$filesystem->remove($phpbb_root_path . 'cache');
+
+					// copy new version to root path
+					$filesystem->mirror($tmp_path_dir . '/phpBB3/', $phpbb_root_path);
+
+					// remove temporary files
+					$filesystem->remove($tmp_path);
+					$filesystem->remove($tmp_path_dir);
+
+					// redirect user to installation script
+					redirect(append_sid($phpbb_root_path . 'install/app.' . $phpEx));
 				}
 			}
 			else
 			{
-				confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
+				confirm_box(false, $user->lang('CONFIRM_1CLICKUPDATE'), build_hidden_fields(array(
 					'i'						=> $id,
 					'mode'					=> $mode,
 					'1clickupdate'			=> true,

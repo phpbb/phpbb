@@ -23,12 +23,14 @@ class version_helper
 	/**
 	 * @var string Host
 	 */
-	protected $host = 'version.phpbb.com';
+	//protected $host = 'version.phpbb.com';
+	protected $host = 'localhost';
 
 	/**
 	 * @var string Path to file
 	 */
-	protected $path = '/phpbb';
+	//protected $path = '/phpbb';
+	protected $path = '/';
 
 	/**
 	 * @var string File name
@@ -38,7 +40,8 @@ class version_helper
 	/**
 	 * @var bool Use SSL or not
 	 */
-	protected $use_ssl = true;
+	//protected $use_ssl = true;
+	protected $use_ssl = false;
 
 	/**
 	 * @var string Current version installed
