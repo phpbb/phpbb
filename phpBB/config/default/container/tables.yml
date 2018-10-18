@@ -20,6 +20,7 @@ parameters:
     tables.confirm: '%core.table_prefix%confirm'
     tables.disallow: '%core.table_prefix%disallow'
     tables.drafts: '%core.table_prefix%drafts'
+    tables.email_notifications: '%core.table_prefix%email_notifications'
     tables.ext: '%core.table_prefix%ext'
     tables.extensions: '%core.table_prefix%extensions'
     tables.extension_groups: '%core.table_prefix%extension_groups'
