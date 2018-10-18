@@ -394,6 +394,6 @@ class board extends \phpbb\notification\method\base
 			WHERE notification_type_id = ' . (int) $notification_type_id;
 		$this->db->sql_query($sql);
 
-		$this->cache->destroy('notification_type_ids');
+		$this->cache->destroy('sql', $this->notification_types_table);
 	}
 }
