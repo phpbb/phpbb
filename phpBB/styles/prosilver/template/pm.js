@@ -21,11 +21,10 @@ $(function() {
 		var url = $paginationLink.attr('href');
 
 		// temporarily replace pagination text with a spinner
-		var paginationText = $paginationLink.text();
 		$paginationLink.html('<i class="fa fa-spinner fa-spin"></i>');
 
 		$.get(url, function(source) {
-			$('#pm-conversations-list')[functionName]($('#pm-conversations-list .c-pm-list', source));
+			$('#pm-conversations-list .c-pm-list')[functionName]($('#pm-conversations-list .c-pm-list > *', source));
 			replace_ajax_links(source);
 			history.pushState({}, '', url);
 		});
@@ -33,17 +32,22 @@ $(function() {
 
 	// messages pagination
 	$(document).on('click', '#pm-message-pagination-older', function(e) {
-		handle_message_pagination(e, $(this).attr('href'));
+		handle_message_pagination('prepend', e);
 	});
 	$(document).on('click', '#pm-message-pagination-newer', function(e) {
-		handle_message_pagination(e, $(this).attr('href'));
+		handle_message_pagination('append', e);
 	});
 
-	function handle_message_pagination(e, url) {
+	function handle_message_pagination(functionName, e) {
 		e.preventDefault();
+		var $paginationLink = $(e.target);
+		var url = $paginationLink.attr('href');
+
+		// temporarily replace pagination text with a spinner
+		$paginationLink.html('<i class="fa fa-spinner fa-spin"></i>');
 
 		$.get(url, function(source) {
-			$('#pm-messages-list').replaceWith($('#pm-messages-list', source));
+			$('#pm-messages-list')[functionName]($('#pm-messages-list', source));
 			replace_ajax_links(source);
 			history.pushState({}, '', url);
 		});

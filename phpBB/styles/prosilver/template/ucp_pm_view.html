@@ -6,12 +6,12 @@
 	<p class="">{{ lang('SELECT_CONVERSATION') }}</p>
 {% endif %}
 
+{% if U_OLDER_MESSAGES %}
+	<div class="pm-pagination-item">
+		<a id="pm-message-pagination-older" href="{{ U_OLDER_MESSAGES }}">{{ lang('LOAD_OLDER_MESSAGES') }}</a>
+	</div>
+{% endif %}
 <ul id="pm-messages-list" class="o-list c-pm-msg-list">
-	{% if U_OLDER_MESSAGES %}
-		<li class="o-list-item pm-pagination-item">
-			<a id="pm-message-pagination-older" href="{{ U_OLDER_MESSAGES }}">{{ lang('LOAD_OLDER_MESSAGES') }}</a>
-		</li>
-	{% endif %}
 	{% for message in messages %}
 		<li class="o-list-item pm-msg-item" id="pm-msg-{{ message.MSG_ID }}">
 			<a class="o-list-media c-pm-msg-media" href="{{ message.U_MESSAGE_AUTHOR }}">
@@ -84,12 +84,12 @@
 			</article>
 		</li>
 	{% endfor %}
-	{% if U_NEWER_MESSAGES %}
-		<li class="o-list-item pm-pagination-item">
-			<a id="pm-message-pagination-newer" href="{{ U_NEWER_MESSAGES }}">{{ lang('LOAD_NEWER_MESSAGES') }}</a>
-		</li>
-	{% endif %}
 </ul>
+{% if U_NEWER_MESSAGES %}
+	<div class="pm-pagination-item">
+		<a id="pm-message-pagination-newer" href="{{ U_NEWER_MESSAGES }}">{{ lang('LOAD_NEWER_MESSAGES') }}</a>
+	</div>
+{% endif %}
 
 {% if messages %}
 <div class="o-bar c-pm-reply-container">
