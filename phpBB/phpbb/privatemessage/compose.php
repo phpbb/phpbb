@@ -283,7 +283,7 @@ class compose
 				}
 				else
 				{
-					$sql = 'SELECT t.folder_id, p.*, u.username as quote_username
+					$sql = 'SELECT p.*, u.username as quote_username
 						FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 						WHERE t.user_id = ' . $this->user->data['user_id'] . "
 							AND p.author_id = u.user_id
@@ -299,12 +299,11 @@ class compose
 				}
 
 				// check for outbox (not read) status, we do not allow editing if one user already having the message
-				$sql = 'SELECT p.*, t.folder_id
+				$sql = 'SELECT p.*
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
 					WHERE t.user_id = ' . $this->user->data['user_id'] . '
-						AND t.folder_id = ' . PRIVMSGS_OUTBOX . "
 						AND t.msg_id = $msg_id
-						AND t.msg_id = p.msg_id";
+						AND t.msg_id = p.msg_id';
 			break;
 
 			case 'delete':
@@ -318,7 +317,7 @@ class compose
 					return $this->helper->error('NO_MESSAGE', 404);
 				}
 
-				$sql = 'SELECT msg_id, pm_unread, pm_new, author_id, folder_id
+				$sql = 'SELECT msg_id, pm_unread, pm_new, author_id
 					FROM ' . PRIVMSGS_TO_TABLE . '
 					WHERE user_id = ' . $this->user->data['user_id'] . "
 						AND msg_id = $msg_id";
@@ -379,7 +378,7 @@ class compose
 				// If editing it could be the recipient already read the message...
 				if ($action == 'edit')
 				{
-					$sql = 'SELECT p.*, t.folder_id
+					$sql = 'SELECT p.*
 						FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
 						WHERE t.user_id = ' . $this->user->data['user_id'] . "
 							AND t.msg_id = $msg_id
@@ -453,7 +452,6 @@ class compose
 			}
 
 			$msg_id = (int) $post['msg_id'];
-			$folder_id = (isset($post['folder_id'])) ? $post['folder_id'] : 0;
 			$message_text = (isset($post['message_text'])) ? $post['message_text'] : '';
 
 			if ((!$post['author_id'] || ($post['author_id'] == ANONYMOUS && $action != 'delete')) && $msg_id)
