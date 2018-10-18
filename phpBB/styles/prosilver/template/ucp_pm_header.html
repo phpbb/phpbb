@@ -19,7 +19,7 @@
 	<ul id="pm-conversations-list" class="o-list c-pm-list">
 		{% if conversations %}
 			{% if U_NEWER_CONVERSATIONS %}
-				<li class="o-list-item c-pm-pagination-item">
+				<li class="o-list-item pm-pagination-item">
 					<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
@@ -53,7 +53,7 @@
 				</li>
 			{% endfor %}
 			{% if U_OLDER_CONVERSATIONS %}
-				<li class="o-list-item c-pm-pagination-item">
+				<li class="o-list-item pm-pagination-item">
 					<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
 				</li>
 			{% endif %}
