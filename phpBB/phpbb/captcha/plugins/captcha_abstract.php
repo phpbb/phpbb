@@ -54,101 +54,6 @@ abstract class captcha_abstract
 		}
 	}
 
-	function execute_demo()
-	{
-		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
-		$this->seed = hexdec(substr(unique_id(), 4, 10));
-
-		// compute $seed % 0x7fffffff
-		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
-
-		$generator = $this->get_generator_class();
-		$captcha = new $generator();
-		define('IMAGE_OUTPUT', 1);
-		$captcha->execute($this->code, $this->seed);
-	}
-
-	function execute()
-	{
-		if (empty($this->code))
-		{
-			if (!$this->load_code())
-			{
-				// invalid request, bail out
-				return false;
-			}
-		}
-		$generator = $this->get_generator_class();
-		$captcha = new $generator();
-		define('IMAGE_OUTPUT', 1);
-		$captcha->execute($this->code, $this->seed);
-	}
-
-	function get_template()
-	{
-		global $config, $user, $template, $phpEx, $phpbb_root_path;
-
-		if ($this->is_solved())
-		{
-			return false;
-		}
-		else
-		{
-			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
-			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
-
-			$template->assign_vars(array(
-				'CONFIRM_IMAGE_LINK'		=> $link,
-				'CONFIRM_IMAGE'				=> '<img src="' . $link . '" />',
-				'CONFIRM_IMG'				=> '<img src="' . $link . '" />',
-				'CONFIRM_ID'				=> $this->confirm_id,
-				'S_CONFIRM_CODE'			=> true,
-				'S_TYPE'					=> $this->type,
-				'S_CONFIRM_REFRESH'			=> ($config['enable_confirm'] && $config['confirm_refresh'] && $this->type == CONFIRM_REG) ? true : false,
-				'L_CONFIRM_EXPLAIN'			=> $explain,
-			));
-
-			return 'captcha_default.html';
-		}
-	}
-
-	function get_demo_template($id)
-	{
-		global $config, $template, $request, $phpbb_admin_path, $phpEx;
-
-		$variables = '';
-
-		if (is_array($this->captcha_vars))
-		{
-			foreach ($this->captcha_vars as $captcha_var => $template_var)
-			{
-				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . $request->variable($captcha_var, (int) $config[$captcha_var]);
-			}
-		}
-
-		// acp_captcha has a delivery function; let's use it
-		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
-			'CONFIRM_ID'		=> $this->confirm_id,
-		));
-
-		return 'captcha_default_acp_demo.html';
-	}
-
-	function get_hidden_fields()
-	{
-		$hidden_fields = array();
-
-		// this is required for posting.php - otherwise we would forget about the captcha being already solved
-		if ($this->solved)
-		{
-			$hidden_fields['confirm_code'] = $this->confirm_code;
-		}
-		$hidden_fields['confirm_id'] = $this->confirm_id;
-		return $hidden_fields;
-	}
-
 	function garbage_collect($type)
 	{
 		global $db;
@@ -177,16 +82,6 @@ abstract class captcha_abstract
 			}
 		}
 		$db->sql_freeresult($result);
-	}
-
-	function uninstall()
-	{
-		$this->garbage_collect(0);
-	}
-
-	function install()
-	{
-		return;
 	}
 
 	function validate()

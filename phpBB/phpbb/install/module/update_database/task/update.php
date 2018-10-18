@@ -210,6 +210,7 @@ class update extends task_base
 		}
 
 		$this->iohandler->add_success_message('INLINE_UPDATE_SUCCESSFUL');
+		$this->iohandler->add_warning_message('OLD_CAPTCHAS_REMOVED');
 
 		$this->cache->purge();
 

@@ -70,14 +70,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cache_gc', '7200');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_plugin', 'core.captcha.plugins.nogd');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_foreground_noise', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_x_grid', '25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_y_grid', '25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_wave', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_3d_noise', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_fonts', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_plugin', 'core.captcha.plugins.recaptcha');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('confirm_refresh', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_attachment_content', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');

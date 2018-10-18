@@ -311,6 +311,7 @@ $lang = array_merge($lang, array(
 
 	// Installer general progress messages
 	'INSTALLER_FINISHED'	=> 'The installer has finished successfully',
+	'OLD_CAPTCHAS_REMOVED'	=> 'We have removed old (and broken) CAPTCHAs. Please, double-check your current antispambot settings.',
 ));
 
 // Installer's general messages

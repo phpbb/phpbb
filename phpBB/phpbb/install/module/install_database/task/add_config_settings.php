@@ -284,17 +284,6 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'dbms_version'",
 		);
 
-		if (@extension_loaded('gd'))
-		{
-			$sql_ary[] = 'UPDATE ' . $this->config_table . "
-				SET config_value = 'core.captcha.plugins.gd'
-				WHERE config_name = 'captcha_plugin'";
-
-			$sql_ary[] = 'UPDATE ' . $this->config_table . "
-				SET config_value = '1'
-				WHERE config_name = 'captcha_gd'";
-		}
-
 		$ref = substr($referer, strpos($referer, '://') + 3);
 		if (!(stripos($ref, $server_name) === 0))
 		{
