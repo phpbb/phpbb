@@ -32,19 +32,7 @@ class email extends \phpbb\notification\method\messenger_base
 	protected $db;
 
 	/** @var string */
-	protected $topics_watch_table;
-
-	/** @var string */
-	protected $topics_track_table;
-
-	/** @var string */
-	protected $posts_table;
-
-	/** @var string */
-	protected $forums_watch_table;
-
-	/** @var string */
-	protected $forums_track_table;
+	protected $email_notifications_table;
 
 	/**
 	 * Notification Method email Constructor
@@ -55,24 +43,16 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
-	 * @param string $topics_watch_table
-	 * @param string $topics_track_table
-	 * @param string $posts_table
-	 * @param string $forums_watch_table
-	 * @param string $forums_track_table
+	 * @param string $email_notifications_table
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $topics_watch_table, $topics_track_table, $posts_table, $forums_watch_table, $forums_track_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $email_notifications_table)
 	{
 		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;
 		$this->db = $db;
-		$this->topics_watch_table = $topics_watch_table;
-		$this->topics_track_table = $topics_track_table;
-		$this->posts_table = $posts_table;
-		$this->forums_watch_table = $forums_watch_table;
-		$this->forums_track_table = $forums_track_table;
+		$this->email_notifications_table = $email_notifications_table;
 	}
 
 	/**
@@ -105,42 +85,18 @@ class email extends \phpbb\notification\method\messenger_base
 	{
 		$notified_users = array();
 
-		if ($notification_type_id == 'notification.type.post' && !empty($options['item_parent_id']))
+		$sql = 'SELECT user_id
+			FROM ' . $this->email_notifications_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id .
+			(isset($options['item_id']) ? ' AND item_id = ' . (int) $options['item_id'] : '') .
+			(isset($options['item_parent_id']) ? ' AND item_parent_id = ' . (int) $options['item_parent_id'] : '') .
+			(isset($options['user_id']) ? ' AND user_id = ' . (int) $options['user_id'] : '');
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// Topics watch
-			$sql = 'SELECT tw.user_id
-					FROM ' . $this->topics_watch_table . ' tw
-					LEFT JOIN ' . $this->topics_track_table . ' tt
-						ON (tt.user_id = tw.user_id AND tt.topic_id = tw.topic_id)
-					LEFT JOIN ' . $this->posts_table . ' p
-						ON (p.topic_id = tw.topic_id)
-					WHERE tw.topic_id = ' . (int) $options['item_parent_id'] . '
-						AND p.post_time > tt.mark_time
-					HAVING COUNT(p.post_id) > 1';
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$notified_users[$row['user_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-
-			// Forums watch
-			$sql = 'SELECT fw.user_id
-					FROM ' . $this->forums_watch_table . ' fw
-					LEFT JOIN ' . $this->forums_track_table . ' ft
-						ON (ft.user_id = fw.user_id AND ft.forum_id = fw.forum_id)
-					LEFT JOIN ' . $this->posts_table . ' p
-						ON (p.forum_id = fw.forum_id)
-					WHERE p.topic_id = ' . (int) $options['item_parent_id'] . '
-						AND p.post_time > ft.mark_time
-					HAVING COUNT(p.post_id) > 1';
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$notified_users[$row['user_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
+			$notified_users[$row['user_id']] = $row;
 		}
+		$this->db->sql_freeresult($result);
 
 		return $notified_users;
 	}
@@ -150,6 +106,59 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function notify()
 	{
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->email_notifications_table);
+
+		/** @var \phpbb\notification\type\type_interface $notification */
+		foreach ($this->queue as $notification)
+		{
+			$data = $this->clean_data($notification->get_insert_array());
+			$insert_buffer->insert($data);
+		}
+
+		$insert_buffer->flush();
+
 		return $this->notify_using_messenger(NOTIFY_EMAIL);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
+	{
+		$sql = 'DELETE FROM ' . $this->email_notifications_table . '
+			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '') .
+			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
+			(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
+	{
+		$sql = 'DELETE FROM ' . $this->email_notifications_table . '
+			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '') .
+			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
+			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : 'item_parent_id = ' . (int) $item_parent_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	 * Clean data to contain only what we need for email notifications table
+	 *
+	 * @param array $data Notification data
+	 * @return array Cleaned notification data
+	 */
+	protected function clean_data(array $data)
+	{
+		$model = array(
+			'notification_type_id'	=> null,
+			'item_id'				=> null,
+			'item_parent_id'		=> null,
+			'user_id'				=> null,
+		);
+
+		return array_intersect_key($data, $model);
 	}
 }

@@ -209,11 +209,7 @@ services:
             - '@dbal.conn'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%tables.topics_watch%'
-            - '%tables.topics_track%'
-            - '%tables.posts%'
-            - '%tables.forums_watch%'
-            - '%tables.forums_track%'
+            - '%tables.email_notifications%'
         tags:
             - { name: notification.method }
 
