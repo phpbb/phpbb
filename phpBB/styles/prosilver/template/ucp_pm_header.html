@@ -16,13 +16,13 @@
 </style>
 
 <div class="c-pm-container">
-	<ul id="pm-conversations-list" class="o-list c-pm-list">
-		{% if conversations %}
-			{% if U_NEWER_CONVERSATIONS %}
-				<li class="o-list-item pm-pagination-item">
-					<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
-				</li>
-			{% endif %}
+	<div id="pm-conversations-list">
+		{% if U_NEWER_CONVERSATIONS %}
+			<div class="pm-pagination-item">
+				<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
+			</div>
+		{% endif %}
+		<ul class="o-list c-pm-list">
 			{% for conversation in conversations %}
 				<li class="o-list-item c-pm-item{% if conversation.S_CURRENT_CONVERSATION %} is-active{% endif %}">
 					<a class="o-list-media c-pm-media" href="{{ conversation.U_MESSAGE_AUTHOR }}">
@@ -51,18 +51,19 @@
 						</span>
 					</span>
 				</li>
-			{% endfor %}
-			{% if U_OLDER_CONVERSATIONS %}
-				<li class="o-list-item pm-pagination-item">
-					<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
+			{% else %}
+				<li class="o-list-item">
+					{{ lang('NO_CONVERSATIONS') }}
 				</li>
-			{% endif %}
-		{% else %}
-			<li class="o-list-item">
-				{{ lang('NO_CONVERSATIONS') }}
-			</li>
+			{% endfor %}
+		</ul>
+		{% if U_OLDER_CONVERSATIONS %}
+			<div class="pm-pagination-item">
+				<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
+			</div>
 		{% endif %}
-	</ul>
+	</div>
+
 	<div class="c-pm-viewer">
 			<div class="o-bar c-pm-viewer-header">
 					<ul class="o-bar-left">

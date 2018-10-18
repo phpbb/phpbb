@@ -9,17 +9,23 @@ $(function() {
 
 	// conversations pagination
 	$(document).on('click', '#pm-conversation-pagination-newer', function(e) {
-		handle_conversation_pagination(e, $(this).attr('href'));
+		handle_conversation_pagination('prepend', e);
 	});
 	$(document).on('click', '#pm-conversation-pagination-older', function(e) {
-		handle_conversation_pagination(e, $(this).attr('href'));
+		handle_conversation_pagination('append', e);
 	});
 
-	function handle_conversation_pagination(e, url) {
+	function handle_conversation_pagination(functionName, e) {
 		e.preventDefault();
+		var $paginationLink = $(e.target);
+		var url = $paginationLink.attr('href');
+
+		// temporarily replace pagination text with a spinner
+		var paginationText = $paginationLink.text();
+		$paginationLink.html('<i class="fa fa-spinner fa-spin"></i>');
 
 		$.get(url, function(source) {
-			$('#pm-conversations-list').replaceWith($('#pm-conversations-list', source));
+			$('#pm-conversations-list')[functionName]($('#pm-conversations-list .c-pm-list', source));
 			replace_ajax_links(source);
 			history.pushState({}, '', url);
 		});
