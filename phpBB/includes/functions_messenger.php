@@ -915,7 +915,7 @@ class queue
 						/**
 						* Event to send message via external transport
 						*
-						* @event core.notification_message_email
+						* @event core.notification_message_process
 						* @var	bool	break		Flag indicating if the function return after hook
 						* @var	array	addresses 	The message recipients
 						* @var	string	subject		The message subject
@@ -928,7 +928,7 @@ class queue
 							'subject',
 							'msg',
 						);
-						extract($phpbb_dispatcher->trigger_event('core.notification_message_email', compact($vars)));
+						extract($phpbb_dispatcher->trigger_event('core.notification_message_process', compact($vars)));
 
 						if (!$break)
 						{
