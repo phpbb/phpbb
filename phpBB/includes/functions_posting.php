@@ -2250,6 +2250,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		'post_subject'		=> $subject,
 	));
 
+	/**
+	* This event allows you to modify the notification data upon submission
+	*
+	* @event core.modify_submit_notification_data
+	* @var	array	notification_data	The notification data to be inserted in to the database
+	* @var	array	data_ary			The data array with a lot of the post submission data
+	* @var 	string	mode				The posting mode
+	* @var	int		poster_id			The poster id
+	* @since 3.2.4-RC1
+	*/
+	$vars = array('notification_data', 'data_ary', 'mode', 'poster_id');
+	extract($phpbb_dispatcher->trigger_event('core.modify_submit_notification_data', compact($vars)));
+
 	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
