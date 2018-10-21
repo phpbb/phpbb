@@ -1429,20 +1429,13 @@ function user_ipwhois($ip)
 		return '';
 	}
 
-	if (preg_match(get_preg_expression('ipv4'), $ip))
-	{
-		// IPv4 address
-		$whois_host = 'whois.arin.net.';
-	}
-	else if (preg_match(get_preg_expression('ipv6'), $ip))
-	{
-		// IPv6 address
-		$whois_host = 'whois.sixxs.net.';
-	}
-	else
+	if (!preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 	{
 		return '';
 	}
+
+	// IPv4 & IPv6 addresses
+	$whois_host = 'whois.arin.net.';
 
 	$ipwhois = '';
 
