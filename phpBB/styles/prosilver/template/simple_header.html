@@ -1,71 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="keywords" content="" />
-<meta name="description" content="" />
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 {META}
 <title>{SITENAME} &bull; <!-- IF S_IN_MCP -->{L_MCP} &bull; <!-- ELSEIF S_IN_UCP -->{L_UCP} &bull; <!-- ENDIF -->{PAGE_TITLE}</title>
 
-<script type="text/javascript">
-// <![CDATA[
-
-	var jump_page = '{LA_JUMP_PAGE}:';
-	var on_page = '{ON_PAGE}';
-	var per_page = '{PER_PAGE}';
-	var base_url = '{A_BASE_URL}';
-	var style_cookie = 'phpBBstyle';
-	var onload_functions = new Array();
-	var onunload_functions = new Array();
-	var style_cookie_settings = '{A_COOKIE_SETTINGS}';
-
-	/**
-	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
-	*/
-	window.onload = function()
-	{
-		for (var i = 0; i < onload_functions.length; i++)
-		{
-			eval(onload_functions[i]);
+<!-- IF S_ALLOW_CDN -->
+<script>
+	WebFontConfig = {
+		google: {
+			families: ['Open+Sans:600:cyrillic-ext,latin,greek-ext,greek,vietnamese,latin-ext,cyrillic']
 		}
-	}
+	};
 
-	window.onunload = function()
-	{
-		for (var i = 0; i < onunload_functions.length; i++)
-		{
-			eval(onunload_functions[i]);
-		}
-	}
-
-// ]]>
+	(function(d) {
+		var wf = d.createElement('script'), s = d.scripts[0];
+		wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+		wf.async = true;
+		s.parentNode.insertBefore(wf, s);
+	})(document);
 </script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/styleswitcher.js"></script>
-<script type="text/javascript" src="{T_SUPER_TEMPLATE_PATH}/forum_fn.js"></script>
-
-<link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" media="print" title="printonly" />
-<link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
-
-<link href="{T_THEME_PATH}/normal.css" rel="alternate stylesheet" type="text/css" title="A" />
-<link href="{T_THEME_PATH}/medium.css" rel="alternate stylesheet" type="text/css" title="A+" />
-<link href="{T_THEME_PATH}/large.css" rel="alternate stylesheet" type="text/css" title="A++" />
+<!-- ENDIF -->
+<link href="{T_STYLESHEET_LINK}" rel="stylesheet">
+<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet">
+<link href="{T_THEME_PATH}/responsive.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" media="all and (max-width: 700px)">
 
 <!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-	<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet" type="text/css" media="screen, projection" />
+	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
 <!-- ENDIF -->
+
+<!--[if lte IE 8]>
+	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
+<![endif]-->
 
 <!-- DEFINE $POPUP = 1 -->
 
+<!-- EVENT simple_header_head_append -->
+
+{$STYLESHEETS}
+
+<!-- EVENT simple_header_stylesheets_after -->
+
 </head>
 
-<body id="phpbb" class="{S_CONTENT_DIRECTION}">
+<body id="phpbb" class="nojs {S_CONTENT_DIRECTION} {BODY_CLASS}">
 
-<div id="simple-wrap">
-	<a id="top" name="top" accesskey="t"></a>
-	<div id="page-body">
+<!-- EVENT simple_header_body_before -->
+
+<div id="wrap">
+	<a id="top" class="anchor" accesskey="t"></a>
+	<div id="page-body" role="main">

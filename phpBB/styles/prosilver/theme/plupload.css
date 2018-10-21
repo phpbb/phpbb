@@ -1,0 +1,86 @@
+#attach-panel-multi {
+	display: none;
+	margin-bottom: 1em;
+}
+
+#file-list td {
+	vertical-align: middle;
+}
+
+.attach-name {
+	width: 50%;
+}
+
+.attach-comment {
+	width: 30%;
+}
+
+.attach-comment .inputbox {
+	resize: vertical;
+	width: 100%;
+}
+
+.attach-filesize {
+	width: 15%;
+}
+
+.attach-status {
+	width: 5%;
+}
+
+.attach-filesize, .attach-status {
+	text-align: center;
+}
+
+.attach-controls {
+	display: inline-block;
+	float: right;
+}
+
+#attach-row-tpl, .nojs .file-inline-bbcode {
+	display: none;
+}
+
+#file-total-progress {
+	height: 2px;
+	display: block;
+	position: relative;
+	margin: 4px -10px -6px -10px;
+}
+
+.file-progress {
+	background-color: #CCCCCC;
+	display:inline-block;
+	height: 8px;
+	width: 50px;
+}
+
+.file-progress-bar, #file-total-progress-bar {
+	background-color: green;
+	display: block;
+	height: 100%;
+	width: 0;
+}
+
+.file-status.file-working {
+	background: url('./images/plupload/throbber.gif');
+}
+
+.file-status.file-uploaded {
+	background: url('./images/plupload/done.gif');
+}
+
+.file-status.file-error {
+	background: url('./images/plupload/error.gif');
+}
+
+.file-status {
+	display: inline-block;
+	height: 16px;
+	width: 16px;
+}
+
+.file-name {
+	max-width: 65%;
+	vertical-align: bottom;
+}

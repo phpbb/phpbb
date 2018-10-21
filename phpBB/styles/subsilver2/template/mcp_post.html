@@ -74,7 +74,7 @@
 </tr>
 <!-- IF S_TO_RECIPIENT -->
 	<tr>
-		<td class="row1" nowrap="nowrap" width="150"><b class="gen">{L_TO}:</b></td>
+		<td class="row1" width="150"><b class="gen">{L_TO}:</b></td>
 		<td class="row2 gen">
 		<!-- BEGIN to_recipient -->
 			<!-- IF to_recipient.IS_GROUP --><span class="sep"><a href="{to_recipient.U_VIEW}">{to_recipient.NAME}</a></span><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
@@ -85,7 +85,7 @@
 
 <!-- IF S_BCC_RECIPIENT -->
 	<tr>
-		<td class="row1" nowrap="nowrap" width="150"><b class="gen">{L_BCC}:</b></td>
+		<td class="row1" width="150"><b class="gen">{L_BCC}:</b></td>
 		<td class="row2 gen">
 		<!-- BEGIN bcc_recipient -->
 			<!-- IF bcc_recipient.IS_GROUP --><span class="sep"><a href="{bcc_recipient.U_VIEW}">{bcc_recipient.NAME}</a></span><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
@@ -182,7 +182,7 @@
 		<!-- END userrow -->
 		<tr>
 			<td class="cat"><b class="gen">{L_IPS_POSTED_FROM}</b></td>
-			<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
+			<td class="cat" width="10%"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
 		</tr>
 		<!-- BEGIN iprow -->
 			<!-- IF iprow.S_ROW_COUNT is even -->

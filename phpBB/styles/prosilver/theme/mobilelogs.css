@@ -1,0 +1,92 @@
+/* CSS Mobile Detect - mobilelogs.css
+----------------------------------- */
+
+h2.mobile-title {
+	margin-top: 0;
+}
+
+h2.mobile-title a {
+	cursor: pointer;
+}
+
+ul.topiclist.forums dt .mobile-inner {
+	width: 98% !important;
+	padding-left: 4px !important;
+}
+	
+.mobile-pagination {
+	background-color: #f9f9f9;
+	padding: 2px 4px;
+	margin-right: 6px;
+	border: 1px solid #b4bac0;
+	border-radius: 6px;
+}
+
+.mobile-names {
+	background-color: #FFF;
+	padding: 1px 4px;
+	font-weight: bold;
+	font-size: 0.9em;
+	border: 1px solid #999;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+}
+
+.log-device {
+	color: #FF4400;
+}
+
+.log-author {
+	color: #FF7700;
+}
+
+.log-time {
+	color: #00AA00;
+}
+
+input.mobile-close {
+	float: left;
+	margin-top: 4px;
+	margin-left: 6px;
+}
+
+input.mobile-clear {
+	margin: 0 0 10px 6px;
+}
+
+a.mobile-refresh {
+	float: right;
+	margin-right: 6px;
+	cursor: pointer;
+}
+
+a.mobile-remove {
+	float: right;
+	cursor: pointer;
+}
+
+#mobilelogsload
+{
+   background: transparent url("./images/loading-page.gif") no-repeat center center;
+   height: 100px;
+   width: 100px;
+   position: fixed;
+   z-index: 1000;
+   left: 45%;
+   top:15%;
+}
+
+.mobile-update-text {
+	float: right;
+	margin-right: 6px;
+	font-size: 0.6em !important;
+}
+
+.noshow {
+	display: none !important;
+}
+
+a { 
+    color: #4692BF !important; 
+}

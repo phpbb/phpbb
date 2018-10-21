@@ -1,14 +1,14 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF FORUM_NAME --><h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2><!-- ENDIF -->
+<!-- IF FORUM_NAME --><h2 class="forum-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2><!-- ENDIF -->
 
 <form id="login_forum" method="post" action="{S_LOGIN_ACTION}">
 {S_FORM_TOKEN}
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div class="content">
-		<h2>{L_LOGIN}</h2>
+		<h2 class="login-title">{L_LOGIN}</h2>
 
 		<p>{L_LOGIN_FORUM}</p>
 
@@ -21,8 +21,8 @@
 			<!-- ENDIF -->
 
 			<dl>
-				<dt><label for="password">{L_PASSWORD}:</label></dt>
-				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" /></dd>
+				<dt><label for="password">{L_PASSWORD}{L_COLON}</label></dt>
+				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" autocomplete="off" /></dd>
 			</dl>
 			{S_LOGIN_REDIRECT}
 			<dl>
@@ -32,7 +32,7 @@
 		</fieldset>
 	</div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 </form>

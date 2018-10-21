@@ -5,7 +5,7 @@
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<!-- IF S_ERROR -->
 	<fieldset>
@@ -20,18 +20,18 @@
 
 		<fieldset>
 		<dl>
-			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
+			<dt><label for="group_name">{L_GROUP_NAME}{L_COLON}</label></dt>
 			<dd><!-- IF S_SPECIAL_GROUP --><strong<!-- IF GROUP_COLOUR --> style="color: #{GROUP_COLOUR};"<!-- ENDIF -->>{GROUP_NAME}</strong> <input name="group_name" type="hidden" value="{GROUP_INTERNAL_NAME}" />
 				<!-- ELSE --><input name="group_name" type="text" id="group_name" value="{GROUP_INTERNAL_NAME}" class="inputbox" /><!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
+			<dt><label for="group_desc">{L_GROUP_DESC}{L_COLON}</label></dt>
 			<dd><textarea id="group_desc" name="group_desc" rows="5" cols="45" class="inputbox">{GROUP_DESC}</textarea></dd>
 			<dd><label for="desc_parse_bbcode"><input type="checkbox" class="radio" name="desc_parse_bbcode" id="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>&nbsp;<label for="desc_parse_smilies"><input type="checkbox" class="radio" name="desc_parse_smilies" id="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>&nbsp;<label for="desc_parse_urls"><input type="checkbox" class="radio" name="desc_parse_urls" id="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
 		</dl>
 		<!-- IF not S_SPECIAL_GROUP -->
 		<dl>
-			<dt><label for="group_type1">{L_GROUP_TYPE}:</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
+			<dt><label for="group_type1">{L_GROUP_TYPE}{L_COLON}</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
 			<dd>
 				<label for="group_type1"><input type="radio" class="radio" name="group_type" id="group_type1" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN}</label> 
 				<label for="group_type2"><input type="radio" class="radio" name="group_type" id="group_type2" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST}</label> 
@@ -44,34 +44,37 @@
 		<!-- ENDIF -->
 		</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 	<h3>{L_GROUP_SETTINGS_SAVE}</h3>
 
 	<fieldset>
 	<dl>
-		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" class="inputbox narrow" /> <span style="background-color: #{GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</dd>
+		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
+		<dd>
+			<input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" class="inputbox narrow" />
+			<span style="background-color: #{GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span>
+			[ <a href="#" id="color_palette_toggle">{L_COLOUR_SWATCH}</a> ]
+			<div id="color_palette_placeholder" class="hidden" data-orientation="h" data-height="12" data-width="15" data-target="#group_colour"></div>
+		</dd>
 	</dl>
 	<dl>
-		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
+		<dt><label for="group_rank">{L_GROUP_RANK}{L_COLON}</label></dt>
 		<dd><select name="group_rank" id="group_rank">{S_RANK_OPTIONS}</select></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- INCLUDE ucp_avatar_options.html -->
 
 <fieldset class="submit-buttons">
 	{S_HIDDEN_FIELDS}
-	<!-- IF S_DISPLAY_GALLERY --><input type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" class="button2" />&nbsp; <!-- ENDIF -->
-	<!-- IF S_IN_AVATAR_GALLERY --><input type="submit" name="cancel" value="{L_CANCEL}" class="button2" />&nbsp; <!-- ELSE -->
-	<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; <!-- ENDIF -->
+	<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
 	<input type="submit" name="update" value="{L_SUBMIT}" class="button1" />
 	{S_FORM_TOKEN}
 </fieldset>
@@ -79,7 +82,7 @@
 <!-- ELSEIF S_LIST -->
 
 	<!-- IF .leader -->
-	<table class="table1" cellspacing="1">
+	<table class="table1">
 	<thead>
 	<tr>
 		<th class="name">{L_GROUP_LEAD}</th>
@@ -105,7 +108,7 @@
 
 	<!-- BEGIN member -->
 		<!-- IF member.S_PENDING -->
-			<table class="table1" cellspacing="1">
+			<table class="table1">
 			<thead>
 			<tr>
 				<th class="name">{L_GROUP_PENDING}</th>
@@ -121,7 +124,7 @@
 				</tbody>
 				</table>
 			<!-- ENDIF -->
-			<table class="table1" cellspacing="1">
+			<table class="table1">
 			<thead>
 			<tr>
 				<th class="name">{L_GROUP_APPROVED}</th>
@@ -142,7 +145,7 @@
 			</tr>
 		<!-- ENDIF -->
 	<!-- BEGINELSE -->
-		<table class="table1" cellspacing="1">
+		<table class="table1">
 		<thead>
 		<tr>
 			<th class="name">{L_MEMBERS}</th>
@@ -156,13 +159,15 @@
 	</tbody>
 	</table>
 
-	<ul class="linklist">
-		<li class="leftside pagination">
-			<!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{S_ON_PAGE}<!-- ENDIF -->
-		</li>
-	</ul>
+	<!-- IF .pagination -->
+	<div class="action-bar bottom">
+		<div class="pagination"> 
+			<!-- INCLUDE pagination.html -->
+		</div>
+	</div>
+	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="display-actions">	
@@ -172,7 +177,7 @@
 </fieldset>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_ADD_USERS}</h3>
 
@@ -180,20 +185,20 @@
 
 	<fieldset>
 	<dl>
-		<dt><label for="default0">{L_USER_GROUP_DEFAULT}:</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
+		<dt><label for="default0">{L_USER_GROUP_DEFAULT}{L_COLON}</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
 		<dd>
 			<label for="default1"><input type="radio" name="default" id="default1" value="1" /> {L_YES}</label> 
 			<label for="default0"><input type="radio" name="default" id="default0" value="0" checked="checked" /> {L_NO}</label>
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
+		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea name="usernames" id="usernames" rows="3" cols="30" class="inputbox"></textarea></dd>
 		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="submit-buttons">
@@ -204,21 +209,25 @@
 <!-- ELSE -->
 
 	<!-- IF .leader -->
-		<ul class="topiclist">
+		<ul class="topiclist two-long-columns">
 			<li class="header">
 				<dl>
-					<dt>{L_GROUP_LEADER}</dt>
+					<dt><div class="list-inner">{L_GROUP_LEADER}</div></dt>
 					<dd class="info"><span>{L_OPTIONS}</span></dd>
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist">
+		<ul class="topiclist cplist two-long-columns responsive-show-all">
 
 		<!-- BEGIN leader -->
 		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
-				<dt><a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
-					<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF --></dt>
+				<dt>
+					<div class="list-inner">
+						<a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
+						<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF -->
+					</div>
+				</dt>
 				<dd class="option"><span><a href="{leader.U_EDIT}" >{L_EDIT}</a></span></dd>
 				<dd class="option"><span><a href="{leader.U_LIST}">{L_GROUP_LIST}</a></span></dd>
 			</dl>
@@ -229,7 +238,7 @@
 		<p><strong>{L_NO_LEADERS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- ENDIF -->

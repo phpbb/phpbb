@@ -5,7 +5,7 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_BOOKMARKS_EXPLAIN}</p>
 
@@ -14,33 +14,60 @@
 <!-- ELSE -->
 
 <!-- IF .topicrow -->
-	<ul class="topiclist">
+	<ul class="topiclist missing-column">
 		<li class="header">
 			<dl class="icon">
-				<dt>{L_BOOKMARKS}</dt>
+				<dt><div class="list-inner">{L_BOOKMARKS}</div></dt>
 				<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
+				<dd class="mark">{L_MARK}</dd>
 			</dl>
 		</li>
 	</ul>
-	<ul class="topiclist cplist">
+	<ul class="topiclist cplist missing-column">
 
 	<!-- BEGIN topicrow -->
 		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<!-- IF topicrow.S_DELETED_TOPIC -->
-				<dl><dt><strong>{L_DELETED_TOPIC}</strong></dt>
-				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
+				<dl>
+					<dt><div class="list-inner"><strong>{L_DELETED_TOPIC}</strong></div></dt>
+					<dd class="lastpost"><span>&nbsp;</span></dd>
+					<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
 				</dl>
 			<!-- ELSE -->
-			<dl class="icon" style="background-image: url({topicrow.TOPIC_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
+			<dl class="icon {topicrow.TOPIC_IMG_STYLE}">
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
-					<!-- IF topicrow.PAGINATION --><strong class="pagination"><span>{topicrow.PAGINATION}</span></strong><!-- ENDIF -->
-					<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="icon-link"></a><!-- ENDIF -->
+					<div class="list-inner">
+						<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+						<!-- IF .topicrow.pagination -->
+						<div class="pagination">
+							<ul>
+							<!-- BEGIN pagination -->
+								<!-- IF topicrow.pagination.S_IS_PREV -->
+								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ENDIF -->
+							<!-- END pagination -->
+							</ul>
+						</div>
+						<!-- ENDIF -->
+						<div class="responsive-hide">
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+						</div>
+						<div class="responsive-show" style="display: none;">
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo;
+							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
+						</div>
+					</div>
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{topicrow.LAST_POST_TIME}</span>
+					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{LAST_POST_IMG}</a> <br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
 			</dl>
@@ -48,19 +75,25 @@
 		</li>
 	<!-- END topicrow -->
 	</ul>
-	<ul class="linklist">
-		<li class="rightside pagination">
-			<!-- IF TOTAL_TOPICS --> {TOTAL_TOPICS} <!-- ENDIF -->
-			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
-		</li>
-	</ul>
+
+	<div class="action-bar bottom">
+		<div class="pagination">
+			{TOTAL_TOPICS}
+			<!-- IF .pagination --> 
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE --> 
+				 &bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	</div>
+
 <!-- ELSE -->
 	<p><strong>{L_NO_BOOKMARKS}</strong></p>
 <!-- ENDIF -->
 
 <!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF .topicrow and not S_NO_DISPLAY_BOOKMARKS -->

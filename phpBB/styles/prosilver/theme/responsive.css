@@ -1,0 +1,574 @@
+/* Responsive Design
+---------------------------------------- */
+
+.responsive-hide { display: none !important; }
+.responsive-show { display: block !important; }
+.responsive-show-inline { display: inline !important; }
+.responsive-show-inline-block { display: inline-block !important; }
+
+/* Content wrappers
+----------------------------------------*/
+html {
+	height: auto;
+}
+
+body {
+	padding: 0;
+}
+
+#wrap {
+	border: none;
+	border-radius: 0;
+	margin: 0;
+	min-width: 290px;
+	padding: 0 5px;
+}
+
+/* Common block wrappers
+----------------------------------------*/
+.headerbar, .navbar, .forabg, .forumbg, .post, .panel {
+	border-radius: 0;
+	margin-left: -5px;
+	margin-right: -5px;
+}
+
+#cp-main .forabg, #cp-main .forumdb, #cp-main .post, #cp-main .panel {
+	border-radius: 7px;
+}
+
+/* Logo block
+----------------------------------------*/
+#site-description {
+	float: none;
+	width: auto;
+	text-align: center;
+}
+
+.logo {
+	/* change display value to inline-block to show logo */
+	display: none;
+	float: none;
+	padding: 10px;
+}
+
+#site-description h1, #site-description p {
+	text-align: inherit;
+	float: none;
+	margin: 5px;
+	line-height: 1.2em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#site-description p, .search-header {
+	display: none;
+}
+
+/* Navigation
+----------------------------------------*/
+.headerbar + .navbar {
+	margin-top: -5px;
+}
+
+/* Search
+----------------------------------------*/
+.responsive-search { display: block !important; }
+.responsive-search a {
+	display: block;
+	width: 16px;
+	height: 22px;
+	text-indent: 99px;
+	overflow: hidden;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	text-decoration: none;
+}
+
+/* .topiclist lists
+----------------------------------------*/
+li.header dt {
+	text-align: center;
+	text-transform: none;
+	line-height: 1em;
+	font-size: 1.2em;
+	padding-bottom: 4px;
+}
+
+ul.topiclist li.header dt, ul.topiclist li.header dt .list-inner {
+	margin-right: 0 !important;
+	padding-right: 0;
+}
+
+ul.topiclist li.header dd {
+	display: none !important;
+}
+
+ul.topiclist dt, ul.topiclist dt .list-inner,
+ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
+ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
+ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
+	margin-right: 0;
+}
+
+ul.topiclist dt .list-inner.with-mark {
+	padding-right: 34px;
+}
+
+ul.topiclist dt .list-inner {
+	min-height: 28px;
+}
+
+ul.topiclist li.header dt .list-inner {
+	min-height: 0;
+}
+
+ul.topiclist dd {
+	display: none;
+}
+ul.topiclist dd.mark {
+	display: block;
+}
+
+/* Forums and topics lists
+----------------------------------------*/
+ul.topiclist.forums dt {
+	margin-right: -250px;
+}
+ul.topiclist.forums dt .list-inner {
+	margin-right: 250px;
+}
+
+ul.topiclist.forums dd.lastpost {
+	display: block;
+}
+
+ul.topiclist dd.mark {
+	display: block;
+	position: absolute;
+	right: 5px;
+	top: 0;
+	margin: 0;
+	width: auto;
+	min-width: 0;
+	text-align: left;
+}
+
+ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
+	position: relative;
+	left: 0;
+	width: auto;
+	display: inline;
+	font-weight: normal;
+}
+
+@media only screen and (max-width: 550px), only screen and (max-device-width: 550px) {
+	ul.topiclist.forums dt {
+		margin-right: 0;
+	}
+
+	ul.topiclist.forums dt .list-inner {
+		margin-right: 0;
+	}
+
+	ul.topiclist.forums dd.lastpost {
+		display: none;
+	}
+}
+
+li.row .responsive-show strong {
+	font-weight: bold;
+	color: inherit;
+}
+
+ul.topiclist li.row dt a.subforum {
+	display: inline-block;
+	vertical-align: bottom;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100px;
+}
+
+/* Notifications list
+----------------------------------------*/
+@media only screen and (max-width: 350px), only screen and (max-device-width: 350px) {
+	.dropdown-extended .dropdown-contents {
+		width: auto;
+	}
+}
+
+/* Pagination
+----------------------------------------*/
+.pagination > ul {
+	margin: 5px 0 0;
+}
+
+.row .pagination .ellipsis + li {
+	display: none !important;
+}
+
+/* Responsive tables
+----------------------------------------*/
+table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
+	display: block;
+}
+
+table.responsive thead, table.responsive th {
+	display: none;
+}
+
+table.responsive.show-header thead, table.responsive.show-header th:first-child {
+	display: block;
+	width: auto !important;
+	text-align: left !important;
+}
+
+table.responsive.show-header th:first-child span.rank-img {
+	display: none;
+}
+
+table.responsive tr {
+	margin: 2px 0;
+}
+
+table.responsive td {
+	width: auto !important;
+	text-align: left !important;
+	padding: 4px;
+}
+
+table.responsive td.empty {
+	display: none !important;
+}
+
+table.responsive td > dfn {
+	display: inline-block !important;
+}
+
+table.responsive td > dfn:after {
+	content: ':';
+	padding-right: 5px;
+}
+
+table.responsive span.rank-img {
+	float: none;
+	padding-right: 5px;
+}
+
+table.responsive#memberlist td:first-child input[type="checkbox"] {
+	float: right;
+}
+
+/* Forms
+----------------------------------------*/
+fieldset dt, fieldset.fields1 dt, fieldset.fields2 dt {
+	width: auto;
+	float: none;
+}
+
+fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
+	margin-left: 20px;
+}
+
+textarea, dd textarea, #message-box textarea {
+	width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+dl.pmlist dt {
+	width: auto !important;
+	margin-bottom: 5px;
+}
+
+dl.pmlist dd {
+	display: inline-block;
+	margin-left: 0 !important;
+}
+
+dl.pmlist dd:first-of-type {
+	padding-left: 20px;
+}
+
+#smiley-box, #message-box {
+	float: none;
+	width: auto;
+}
+
+#smiley-box {
+	margin-top: 5px;
+}
+
+.bbcode-status {
+	display: none;
+}
+
+.colour-palette, .colour-palette tbody, .colour-palette tr {
+	display: block;
+}
+
+.colour-palette td {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+.horizontal-palette td:nth-child(2n), .vertical-palette tr:nth-child(2n) {
+	display: none;
+}
+
+.colour-palette a {
+	display: inline-block !important;
+}
+
+fieldset.quick-login label {
+	display: block;
+	margin-bottom: 5px;
+	white-space: normal;
+}
+
+fieldset.quick-login label > span {
+	display: inline-block;
+	min-width: 100px;
+}
+
+fieldset.quick-login input.inputbox {
+	width: 85%;
+	max-width: 300px;
+	margin-left: 20px;
+}
+
+fieldset.quick-login label[for="autologin"] {
+	display: inline-block;
+	text-align: right;
+	min-width: 50%;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+	dd label {
+		white-space: normal;
+	}
+
+	select, .inputbox {
+		max-width: 260px;
+	}
+
+	.captcha-panel dd.captcha {
+		margin-left: 0;
+	}
+
+	.captcha-panel dd.captcha-image img {
+		width: 100%;
+	}
+
+	#recaptcha_challenge_image,
+	#recaptcha_response_field,
+	.recaptchatable #recaptcha_image {
+		width: 100% !important;
+		height: auto !important;
+	}
+
+	.recaptchatable tr td:last-child {
+		display: none;
+	}
+
+	.captcha-panel .recaptcha-responsive {
+		display: inline-block !important;
+		margin-top: 10px;
+		vertical-align: middle;
+	}
+}
+
+@media only screen and (max-width: 430px), only screen and (max-device-width: 430px) {
+	.section-viewtopic .search-box .inputbox {
+		width: 110px;
+	}
+}
+
+@media only screen and (max-width: 320px), only screen and (max-device-width: 320px) {
+	select, .inputbox {
+		max-width: 240px;
+	}
+}
+
+/* User profile
+----------------------------------------*/
+.column1, .column2, .left-box.profile-details {
+	float: none;
+	width: auto;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+	dl.details dt, dl.details dd {
+		width: auto;
+		float: none;
+		text-align: left;
+	}
+
+	dl.details dd {
+		margin-left: 20px;
+	}
+}
+
+/* Polls
+----------------------------------------*/
+fieldset.polls dt {
+	width: 90%;
+}
+
+fieldset.polls dd.resultbar {
+	padding-left: 20px;
+}
+
+fieldset.polls dd.poll_option_percent {
+	width: 20%;
+}
+
+fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
+	margin-top: 5px;
+}
+
+/* Post
+----------------------------------------*/
+.postbody {
+	position: inherit;
+}
+
+.postprofile, .postbody, .search .postbody {
+	display: block;
+	width: auto;
+	float: none;
+	padding: 0;
+	min-height: 0;
+}
+
+.post .postprofile {
+	width: auto;
+	border-width: 0 0 1px 0;
+	padding-bottom: 5px;
+	margin: 0;
+	margin-bottom: 5px;
+	min-height: 40px;
+	overflow: hidden;
+}
+
+.postprofile dd {
+	display: none;
+}
+
+.postprofile dt, .postprofile dd.profile-rank, .search .postprofile dd {
+	display: block;
+	margin: 0;
+}
+
+.postprofile .has-avatar .avatar-container {
+	margin: 0;
+	overflow: inherit;
+}
+
+.postprofile .avatar-container:after {
+	clear: none;
+}
+
+.postprofile .avatar {
+	margin-right: 5px;
+}
+
+.postprofile .avatar img {
+	width: auto !important;
+	height: auto !important;
+	max-height: 32px;
+}
+
+.has-profile .postbody h3 {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+.has-profile .post-buttons {
+	right: 20px;
+	top: 15px;
+}
+
+.online {
+	background-size: 40px;
+}
+
+/* Misc stuff
+----------------------------------------*/
+h2 {
+	margin-top: .5em;
+}
+
+p {
+	margin-bottom: .5em;
+	overflow: hidden;
+}
+
+p.rightside {
+	margin-bottom: 0;
+}
+
+fieldset.display-options label {
+	display: block;
+	clear: both;
+	margin-bottom: 5px;
+}
+
+dl.mini dd.pm-legend {
+	float: left;
+	min-width: 200px;
+}
+
+#topicreview {
+	margin: 0 -5px;
+	padding: 0 5px;
+}
+
+fieldset.display-actions {
+	white-space: normal;
+}
+
+.phpbb_alert {
+	width: auto;
+	margin: 0 5px;
+}
+
+.attach-comment dfn {
+	width: 100%;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+	p.responsive-center {
+		float: none;
+		text-align: center;
+		margin-bottom: 5px;
+	}
+
+	.action-bar > div {
+		margin-bottom: 5px;
+ 	}
+
+	.action-bar > .pagination {
+		float: none;
+		clear: both;
+		padding-bottom: 1px;
+		text-align: center;
+	}
+
+	.action-bar > .pagination li.page-jump {
+		margin: 0 2px;
+	}
+
+	p.jumpbox-return {
+		display: none;
+	}
+
+	.display-options > label:nth-child(1) {
+		display: block;
+		margin-bottom: 5px;
+	}
+
+	.attach-controls {
+		margin-top: 5px;
+		width: 100%;
+	}
+}

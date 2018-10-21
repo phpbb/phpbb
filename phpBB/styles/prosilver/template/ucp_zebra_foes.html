@@ -5,14 +5,14 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_FOES_EXPLAIN}</p>
 
 	<fieldset class="fields2">
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 	<dl>
-		<dt><label <!-- IF S_USERNAME_OPTIONS -->for="usernames"<!-- ENDIF -->>{L_YOUR_FOES}:</label><br /><span>{L_YOUR_FOES_EXPLAIN}</span></dt>
+		<dt><label <!-- IF S_USERNAME_OPTIONS -->for="usernames"<!-- ENDIF -->>{L_YOUR_FOES}{L_COLON}</label><br /><span>{L_YOUR_FOES_EXPLAIN}</span></dt>
 		<dd>
 			<!-- IF S_USERNAME_OPTIONS -->
 				<select name="usernames[]" id="usernames" multiple="multiple" size="5">{S_USERNAME_OPTIONS}</select>
@@ -22,13 +22,13 @@
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="add">{L_ADD_FOES}:</label><br /><span>{L_ADD_FOES_EXPLAIN}</span></dt>
+		<dt><label for="add">{L_ADD_FOES}{L_COLON}</label><br /><span>{L_ADD_FOES_EXPLAIN}</span></dt>
 		<dd><textarea name="add" id="add" rows="3" cols="30" class="inputbox">{USERNAMES}</textarea></dd>
 		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="submit-buttons">

@@ -13,13 +13,20 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
-
+if (!defined('E_STRICT'))
+{
+	define('E_STRICT', 2048);
+}
 // Report all errors, except notices and deprecation messages
 if (!defined('E_DEPRECATED'))
 {
 	define('E_DEPRECATED', 8192);
 }
-$level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+@ini_set('display_errors', 1);
+//error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+@session_cache_expire (1440);
+@set_time_limit (1500);
+$level = E_ALL | E_NOTICE | E_STRICT;
 if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 {
 	// PHP 5.4 adds E_STRICT to E_ALL.
@@ -29,11 +36,8 @@ if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 	// Therefore, in phpBB 3.0.x we disable E_STRICT on PHP 5.4+,
 	// while phpBB 3.1 will fix utf8 normalizer.
 	// E_STRICT is defined starting with PHP 5
-	if (!defined('E_STRICT'))
-	{
-		define('E_STRICT', 2048);
-	}
-	$level &= ~E_STRICT;
+
+	//$level &= ~E_STRICT;
 }
 error_reporting($level);
 
@@ -124,13 +128,13 @@ function phpbb_has_trailing_path($phpEx)
 }
 
 // Check if trailing path is used
-if (phpbb_has_trailing_path($phpEx))
+if (@phpbb_has_trailing_path($phpEx))
 {
 	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
 	{
 		$prefix = 'Status:';
 	}
-	else if (!empty($_SERVER['SERVER_PROTOCOL']) && is_string($_SERVER['SERVER_PROTOCOL']) && preg_match('#^HTTP/[0-9]\.[0-9]$#', $_SERVER['SERVER_PROTOCOL']))
+	else if (!empty($_SERVER['SERVER_PROTOCOL']))
 	{
 		$prefix = $_SERVER['SERVER_PROTOCOL'];
 	}

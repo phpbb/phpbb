@@ -31,16 +31,16 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle">
 		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
 		</td>
 		<!-- IF TOTAL_POSTS -->
-			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<td class="nav" valign="middle">&nbsp;{PAGE_NUMBER}<br /></td>
+			<td class="gensmall">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
+			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
@@ -50,7 +50,7 @@
 		<td class="cat">
 			<table width="100%" cellspacing="0">
 			<tr>
-				<td class="nav" nowrap="nowrap">&nbsp;
+				<td class="nav">&nbsp;
 				<!-- IF not S_IS_BOT -->
 					<!-- IF U_WATCH_TOPIC --><a href="{U_WATCH_TOPIC}" title="{L_WATCH_TOPIC}">{L_WATCH_TOPIC}</a><!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC or U_BOOKMARK_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
 					<!-- IF U_BOOKMARK_TOPIC --><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}">{L_BOOKMARK_TOPIC}</a><!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
@@ -59,7 +59,7 @@
 					<!-- IF U_BUMP_TOPIC --><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}">{L_BUMP_TOPIC}</a><!-- ENDIF -->
 				<!-- ENDIF -->
 				</td>
-				<td class="nav" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a><!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a><!-- ENDIF --> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
+				<td class="nav" align="{S_CONTENT_FLOW_END}"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a><!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a><!-- ENDIF --> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
 			</tr>
 			</table>
 		</td>
@@ -305,16 +305,16 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle">
 		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
 		</td>
 		<!-- IF TOTAL_POSTS -->
-			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
-			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<td class="nav" valign="middle">&nbsp;{PAGE_NUMBER}<br /></td>
+			<td class="gensmall">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
+			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
@@ -347,8 +347,8 @@
 
 <table width="100%" cellspacing="1">
 <tr>
-	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
-	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
+	<td width="40%" valign="top" align="{S_CONTENT_FLOW_BEGIN}"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+	<td align="{S_CONTENT_FLOW_END}" valign="top"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 </tr>
 </table>
 

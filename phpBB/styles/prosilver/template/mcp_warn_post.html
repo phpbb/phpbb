@@ -5,7 +5,7 @@
 <h2>{L_MCP_WARN_POST}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3><!-- IF USER_COLOR --><span style="color: #{USER_COLOR}">{USERNAME}</span><!-- ELSE -->{USERNAME}<!-- ENDIF --></h3>
 
@@ -16,20 +16,20 @@
 
 		<div class="column2">
 			<dl class="details">
-				<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
-				<dt>{L_JOINED}:</dt><dd>{JOINED}</dd>
-				<dt>{L_TOTAL_POSTS}:</dt><dd>{POSTS}</dd>
-				<dt>{L_WARNINGS}: </dt><dd>{WARNINGS}</dd>
+				<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
+				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+				<dt>{L_JOINED}{L_COLON}</dt><dd>{JOINED}</dd>
+				<dt>{L_TOTAL_POSTS}{L_COLON}</dt><dd>{POSTS}</dd>
+				<dt>{L_WARNINGS}{L_COLON} </dt><dd>{WARNINGS}</dd>
 			</dl>
 		</div>
 	</div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_POST_DETAILS}</h3>
 
@@ -41,11 +41,13 @@
 
 	</div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
+<!-- EVENT mcp_warn_post_add_warning_field_before -->
+
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_ADD_WARNING}</h3>
 	<p>{L_ADD_WARNING_EXPLAIN}</p>
@@ -61,8 +63,10 @@
 		<!-- ENDIF -->
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
+
+<!-- EVENT mcp_warn_post_add_warning_field_after -->
 
 <fieldset class="submit-buttons">
 	<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 

@@ -1,8 +1,8 @@
 <!-- IF S_TYPE == 1 -->
-<div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+<div class="panel captcha-panel">
+	<div class="inner">
 
-	<h3>{L_CONFIRMATION}</h3>
+	<h3 class="captcha-title">{L_CONFIRMATION}</h3>
 	<p>{L_CONFIRM_EXPLAIN}</p>
 
 	<fieldset class="fields2">
@@ -10,25 +10,17 @@
 
 <!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
-	<dt><label>{L_CONFIRM_CODE}</label>:<br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
-	<dd>
-		<script type="text/javascript">
-		// <![CDATA[
+	<dt><label>{L_CONFIRM_CODE}{L_COLON}</label><br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
+	<dd class="captcha">
+		<script>
 		var RecaptchaOptions = {
 			lang : '{LA_RECAPTCHA_LANG}',
 			theme : 'clean',
 			tabindex : <!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->
 		};
-		// ]]>
 		</script>
-		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
-		<script type="text/javascript">
-		// <![CDATA[
-		<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-			document.getElementById('recaptcha_table').style.direction = 'ltr';
-		<!-- ENDIF -->
-		// ]]>
-		</script>
+		<script src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
+
 		<noscript>
 		<div>
 			<object data="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" type="text/html" height="300" width="500"></object><br />
@@ -37,6 +29,7 @@
 		</div>
 		</noscript>
 
+		<a href="http://www.google.com/intl/{LA_RECAPTCHA_LANG}/policies/" target="_blank" class="recaptcha-responsive" style="display: none"><img alt="" width="71" height="36" src="{RECAPTCHA_SERVER}/img/clean/logo.png"></a>
 	</dd>
 	</dl>
 <!-- ELSE -->
@@ -45,6 +38,6 @@
 
 <!-- IF S_TYPE == 1 -->
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->

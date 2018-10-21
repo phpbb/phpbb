@@ -4,7 +4,7 @@
 
 <!-- IF not S_PM -->
 <fieldset class="forum-selection">
-	<label for="fo">{L_FORUM}: <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
+	<label for="fo">{L_FORUM}{L_COLON} <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
 	<input type="submit" name="sort" value="{L_GO}" class="button2" />
 	{S_FORM_TOKEN}
 </fieldset>
@@ -13,48 +13,64 @@
 <h2>{L_TITLE}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_EXPLAIN}</p>
 
 	<!-- IF .postrow -->
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL -->{TOTAL_REPORTS}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
-			</li>
-		</ul>
-		<ul class="topiclist">
+		<div class="action-bar top">
+			<div class="pagination">
+				{TOTAL_REPORTS}
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+		<ul class="topiclist missing-column">
 			<li class="header">
 				<dl>
-					<dt>{L_VIEW_DETAILS}</dt>
+					<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
 					<dd class="moderation"><span>{L_REPORTER}<!-- IF not S_PM --> &amp; {L_FORUM}<!-- ENDIF --></span></dd>
 					<dd class="mark">{L_MARK}</dd>
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist">
+		<ul class="topiclist cplist missing-column">
 
 		<!-- BEGIN postrow -->
 			<li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<!-- IF S_PM -->
 					<dt>
-						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
-						<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
-						<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
+						<div class="list-inner">
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+							<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
+							<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
+							<div class="responsive-show" style="display: none;">
+								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}
+							</div>
+						</div>
 					</dt>
 					<dd class="moderation">
 						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}</span>
 					</dd>
 					<!-- ELSE -->
 					<dt>
-						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
-						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
+						<div class="list-inner">
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+							<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
+							<div class="responsive-show" style="display: none;">
+								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
+								<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF -->
+							</div>
+						</div>
 					</dt>
 					<dd class="moderation">
 						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
-						<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span>
+						<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span>
 					</dd>
 					<!-- ENDIF -->
 					<dd class="mark"><input type="checkbox" name="report_id_list[]" value="{postrow.REPORT_ID}" /></dd>
@@ -64,26 +80,30 @@
 		</ul>
 
 		<fieldset class="display-options">
-			<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-			<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-			<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
+			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
 			<input type="submit" name="sort" value="{L_GO}" class="button2" />
 		</fieldset>
+
 		<hr />
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL -->{TOTAL_REPORTS}<!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
-			</li>
-		</ul>
+
+		<div class="action-bar bottom">
+			<div class="pagination">
+				{TOTAL_REPORTS}
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
 
 	<!-- ELSE -->
 		<p><strong>{L_NO_REPORTS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF .postrow -->

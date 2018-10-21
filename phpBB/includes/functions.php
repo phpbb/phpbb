@@ -4756,6 +4756,26 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 
 		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
+		
+		// phpBB3.1 and 3.2 variables	
+		'L_QUICK_LINKS'			=> isset($user->lang['QUICK_LINKS']) ? $user->lang['QUICK_LINKS'] : $user->lang('Quick Links'), 	
+		'L_ACP_SHORT'			=> $user->lang('ACP'), 	
+		'L_MCP_SHORT'			=> $user->lang('MCP'), 	
+		'L_UCP'					=> $user->lang('UCP'),
+		'L_COLON'				=> isset($user->lang['COLON']) ? $user->lang['COLON'] : ':',		
+		'S_ENABLE_FEEDS'			=> false,
+		'S_ENABLE_FEEDS_OVERALL'	=> false,
+		'S_ENABLE_FEEDS_FORUMS'		=> false,
+		'S_ENABLE_FEEDS_TOPICS'		=> false,
+		'S_ENABLE_FEEDS_TOPICS_ACTIVE'	=> false,
+		'S_ENABLE_FEEDS_NEWS'		=> false,		
+		'U_FEED'					=> '',	
+		
+		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->theme['theme_path'] ? $user->theme['theme_path'] : str_replace('.css', '', $user->theme['imageset_path'])) . '/theme/' . ($user->data['user_lang'] ? $user->data['user_lang'] : $board_config['default_lang']) . '/stylesheet.css',
+		'T_FONT_AWESOME_LINK'	=> "{$web_path}assets/css/font-awesome.min.css",
+		'T_FONT_IONIC_LINK'			=> "{$web_path}assets/css/ionicons.min.css",	
+		'T_JQUERY_LINK'				=>  "{$web_path}assets/javascript/jquery.min.js?assets_version=3.0.15",
+		'S_ALLOW_CDN'					=> true,		
 	));
 
 	// application/xhtml+xml not used because of IE

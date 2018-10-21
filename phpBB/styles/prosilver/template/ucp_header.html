@@ -1,11 +1,11 @@
 <!-- INCLUDE overall_header.html -->
 
-<h2>{L_UCP}</h2>
+<h2 class="ucp-title">{L_UCP}</h2>
 
 <div id="tabs">
 	<ul>
 		<!-- BEGIN t_block1 -->
-		<li <!-- IF t_block1.S_SELECTED -->class="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+		<li class="tab<!-- IF t_block1.S_SELECTED --> activetab<!-- ENDIF -->"><a href="{t_block1.U_TITLE}">{t_block1.L_TITLE}</a></li>
 		<!-- END t_block1 -->
 	</ul>
 </div>
@@ -15,12 +15,12 @@
 <!-- ENDIF -->
 
 <div class="panel bg3">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div style="width: 100%;">
 
 	<div id="cp-menu">
-		<div id="navigation">
+		<div id="navigation" role="navigation">
 
 		<!-- IF S_PRIVMSGS -->
 			<!-- BEGIN t_block2 -->
@@ -63,7 +63,7 @@
 
 		<!-- IF .friends_online or .friends_offline -->
 		<div class="cp-mini">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<dl class="mini">
 				<dt>{L_FRIENDS}</dt>
@@ -77,13 +77,13 @@
 				<!-- END friends_offline -->
 			</dl>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 		<!-- ENDIF -->
 
 		<!-- IF S_SHOW_COLOUR_LEGEND -->
 		<div class="cp-mini">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<dl class="mini">
 				<dt>{L_MESSAGE_COLOURS}</dt>
@@ -92,10 +92,10 @@
 				<!-- END pm_colour_info -->
 			</dl>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 		<!-- ENDIF -->
 
 	</div>
 
-	<div id="cp-main" class="ucp-main">
+	<div id="cp-main" class="ucp-main panel-container">

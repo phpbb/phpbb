@@ -16,6 +16,11 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+ * Modifications:
+ *
+ */
+
+/**
 * Some Unicode characters encoded in UTF-8
 *
 * Preserved for compatibility
@@ -161,7 +166,8 @@ class utf_normalizer
 			// ASCII strings return immediately
 			return;
 		}
-
+		
+		/*
 		if (!isset($GLOBALS['utf_nfkc_qc']))
 		{
 			global $phpbb_root_path, $phpEx;
@@ -175,6 +181,10 @@ class utf_normalizer
 		}
 
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
+		
+		*/
+		
+		$str = $str;
 	}
 
 	/**
@@ -219,6 +229,8 @@ class utf_normalizer
 			// ASCII strings return immediately
 			return;
 		}
+		
+		/*
 
 		if (!isset($GLOBALS['utf_compatibility_decomp']))
 		{
@@ -227,6 +239,10 @@ class utf_normalizer
 		}
 
 		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
+		
+		*/
+		
+		$str = $str;
 	}
 
 

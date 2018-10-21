@@ -91,11 +91,11 @@ hr {
 }
 
 /* Dont want to print url for names or titles in content area */
-.postbody .author a:link, .postbody .author a:visited, 
-html>body .postbody .author a:link:after, 
+.postbody .author a:link, .postbody .author a:visited,
+html>body .postbody .author a:link:after,
 html>body .postbody .author a:visited:after,
-.postquote .quote-by a:link, .postquote .quote-by a:visited, 
-html>body .postquote .quote-by a:link:after, 
+.postquote .quote-by a:link, .postquote .quote-by a:visited,
+html>body .postquote .quote-by a:link:after,
 html>body .postquote .quote-by a:visited:after,
 html>body .postbody h1 a:link:after, html>body .postbody h2 a:link:after {
 	text-decoration: none;
@@ -119,7 +119,7 @@ html>body .postbody h1 a:link:after, html>body .postbody h2 a:link:after {
 .postquote img { display: none; }
 .postquote span { display: block; }
 .postquote span .postquote { font-size: 100%; }
-.quote-by, blockquote cite { 
+.quote-by, blockquote cite {
 	color: black;
 	display : block;
 	font-weight: bold;
@@ -136,4 +136,4 @@ div.spacer { clear: both; }
 /* Accessibility tweaks: Mozilla.org */
 .skip_link { display: none; }
 
-dl.codebox dt { display: none; }
+.codebox p { display: none; }

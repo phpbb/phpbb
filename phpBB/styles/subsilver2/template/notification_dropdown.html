@@ -1,0 +1,45 @@
+<div id="notification_list" class="dropdown dropdown-extended notification_list">
+	<div class="pointer"><div class="pointer-inner"></div></div>
+	<div class="dropdown-contents">
+		<div class="header">
+			{L_NOTIFICATIONS}
+			<span class="header_settings">
+				<a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a>
+				<!-- IF NOTIFICATIONS_COUNT -->
+					<span id="mark_all_notifications"> &bull; <a href="{U_MARK_ALL_NOTIFICATIONS}" data-ajax="notification.mark_all_read">{L_MARK_ALL_READ}</a></span>
+				<!-- ENDIF -->
+			</span>
+		</div>
+
+		<ul>
+			<!-- IF not .notifications -->
+				<li class="no_notifications">
+					{L_NO_NOTIFICATIONS}
+				</li>
+			<!-- ENDIF -->
+			<!-- BEGIN notifications -->
+				<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF --><!-- IF notifications.STYLING --> {notifications.STYLING}<!-- ENDIF --><!-- IF not notifications.URL --> no-url<!-- ENDIF -->">
+					<!-- IF notifications.URL -->
+						<a class="notification-block" href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}" data-real-url="{notifications.URL}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->">
+					<!-- ENDIF -->
+						<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+						<div class="notification_text">
+							<p class="notification-title">{notifications.FORMATTED_TITLE}</p>
+							<!-- IF notifications.REFERENCE --><p class="notification-reference">{notifications.REFERENCE}</p><!-- ENDIF -->
+							<!-- IF notifications.FORUM --><p class="notification-forum">{notifications.FORUM}</p><!-- ENDIF -->
+							<!-- IF notifications.REASON --><p class="notification-reason">{notifications.REASON}</p><!-- ENDIF -->
+							<p class="notification-time">{notifications.TIME}</p>
+						</div>
+					<!-- IF notifications.URL --></a><!-- ENDIF -->
+					<!-- IF notifications.UNREAD -->
+						<a href="{notifications.U_MARK_READ}" class="mark_read icon-mark" data-ajax="notification.mark_read" title="{L_MARK_READ}"></a>
+					<!-- ENDIF -->
+				</li>
+			<!-- END notifications -->
+		</ul>
+
+		<div class="footer">
+			<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+		</div>
+	</div>
+</div>
