@@ -33,7 +33,7 @@ class build_package
 	var $status_begun = false;
 	var $num_dots = 0;
 
-	function build_package($versions, $verbose = false)
+	function __construct($versions, $verbose = false)
 	{
 		$this->versions = $versions;
 		$this->verbose = $verbose;

@@ -18,7 +18,7 @@ class phpbb_cache_memory extends \phpbb\cache\driver\memory
 	/**
 	* Set cache path
 	*/
-	function phpbb_cache_memory()
+	function __construct()
 	{
 	}
 
