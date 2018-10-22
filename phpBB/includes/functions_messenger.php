@@ -325,14 +325,27 @@ class messenger
 			'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
 		));
 
-		// Parse message through template
-		$this->msg = trim($this->template->assign_display('body'));
-
 		$subject = $this->subject;
-		$message = $this->msg;
-		$template  = $this->template;
+		$template = $this->template;
 		/**
-		* Event to modify notification message text before parsing
+		* Event to modify the template before parsing
+		*
+		* @event core.modify_notification_template
+		* @var	int						method		User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
+		* @var	bool					break		Flag indicating if the function only formats the subject
+		*											and the message without sending it
+		* @var	string					subject		The message subject
+		* @var \phpbb\template\template template	The (readonly) template object
+		* @since 3.2.4-RC1
+		*/
+		$vars = array('method', 'break', 'subject', 'template');
+		extract($phpbb_dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
+
+		// Parse message through template
+		$message = trim($this->template->assign_display('body'));
+
+		/**
+		* Event to modify notification message text after parsing
 		*
 		* @event core.modify_notification_message
 		* @var	int		method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
@@ -340,21 +353,14 @@ class messenger
 		*						and the message without sending it
 		* @var	string	subject	The message subject
 		* @var	string	message	The message text
-		* @var	\phpbb\template\template	template	Template object
 		* @since 3.1.11-RC1
-		* @changed 3.2.4-RC1 Added template
 		*/
-		$vars = array(
-			'method',
-			'break',
-			'subject',
-			'message',
-			'template',
-		);
+		$vars = array('method', 'break', 'subject', 'message');
 		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
+
 		$this->subject = $subject;
 		$this->msg = $message;
-		unset($subject, $message);
+		unset($subject, $message, $template);
 
 		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
 		$this->msg = str_replace("\r\n", "\n", $this->msg);
