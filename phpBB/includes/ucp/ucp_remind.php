@@ -80,8 +80,9 @@ class ucp_remind
 
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
+			$rowset = $db->sql_fetchrowset($result);
 
-			if ($db->sql_affectedrows() > 1)
+			if (count($rowset) > 1)
 			{
 				$db->sql_freeresult($result);
 
@@ -92,7 +93,7 @@ class ucp_remind
 			}
 			else
 			{
-				$user_row = $db->sql_fetchrow($result);
+				$user_row = $rowset[0];
 				$db->sql_freeresult($result);
 
 				if (!$user_row)
