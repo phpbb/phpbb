@@ -164,7 +164,6 @@ class acp_attachments
 						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'absolute_path',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
@@ -234,37 +233,15 @@ class acp_attachments
 
 				$template->assign_var('S_ATTACHMENT_SETTINGS', true);
 
-				if ($action == 'imgmagick')
-				{
-					$this->new_config['img_imagick'] = $this->search_imagemagick();
-				}
-
-				// We strip eventually manual added convert program, we only want the patch
-				if ($this->new_config['img_imagick'])
-				{
-					// Change path separator
-					$this->new_config['img_imagick'] = str_replace('\\', '/', $this->new_config['img_imagick']);
-					$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
-
-					// Check for trailing slash
-					if (substr($this->new_config['img_imagick'], -1) !== '/')
-					{
-						$this->new_config['img_imagick'] .= '/';
-					}
-				}
-
 				$supported_types = get_supported_image_types();
 
 				// Check Thumbnail Support
-				if (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !count($supported_types['format'])))
+				if (!isset($supported_types['format']) || !count($supported_types['format']))
 				{
 					$this->new_config['img_create_thumbnail'] = 0;
 				}
 
-				$template->assign_vars(array(
-					'U_SEARCH_IMAGICK'		=> $this->u_action . '&amp;action=imgmagick',
-					'S_THUMBNAIL_SUPPORT'	=> (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !count($supported_types['format']))) ? false : true)
-				);
+				$template->assign_var('S_THUMBNAIL_SUPPORT', (!isset($supported_types['format']) || !count($supported_types['format'])) ? false : true);
 
 				// Secure Download Options - Same procedure as with banning
 				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
@@ -1493,47 +1470,6 @@ class acp_attachments
 		$group_select .= '</select>';
 
 		return $group_select;
-	}
-
-	/**
-	* Search Imagick
-	*/
-	function search_imagemagick()
-	{
-		$imagick = '';
-
-		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
-
-		$magic_home = getenv('MAGICK_HOME');
-
-		if (empty($magic_home))
-		{
-			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
-
-			$locations = array_merge($path_locations, $locations);
-
-			foreach ($locations as $location)
-			{
-				// The path might not end properly, fudge it
-				if (substr($location, -1) !== '/')
-				{
-					$location .= '/';
-				}
-
-				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
-				{
-					$imagick = str_replace('\\', '/', $location);
-					continue;
-				}
-			}
-		}
-		else
-		{
-			$imagick = str_replace('\\', '/', $magic_home);
-		}
-
-		return $imagick;
 	}
 
 	/**

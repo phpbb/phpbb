@@ -564,9 +564,6 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				$cfg_array[$config_name] = trim($destination);
 
-			// Absolute file path
-			case 'absolute_path':
-			case 'absolute_path_writable':
 			// Path being relative (still prefixed by phpbb_root_path), but with the ability to escape the root dir...
 			case 'path':
 			case 'wpath':
@@ -585,7 +582,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					break;
 				}
 
-				$path = in_array($config_definition['validate'], array('wpath', 'path', 'rpath', 'rwpath')) ? $phpbb_root_path . $cfg_array[$config_name] : $cfg_array[$config_name];
+				$path = $phpbb_root_path . $cfg_array[$config_name];
 
 				if (!file_exists($path))
 				{
@@ -598,7 +595,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 				// Check if the path is writable
-				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath' || $config_definition['validate'] === 'absolute_path_writable')
+				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
 				{
 					if (file_exists($path) && !$phpbb_filesystem->is_writable($path))
 					{

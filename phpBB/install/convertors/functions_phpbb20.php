@@ -1694,7 +1694,6 @@ function phpbb_import_attach_config()
 	$config->set('img_create_thumbnail', $attach_config['img_create_thumbnail']);
 	$config->set('img_max_thumb_width', 400);
 	$config->set('img_min_thumb_filesize', $attach_config['img_min_thumb_filesize']);
-	$config->set('img_imagick', $attach_config['img_imagick']);
 }
 
 /**
