@@ -2115,7 +2115,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		array(
 			'ID'		=> 'pm',
 			'NAME' 		=> $user->lang['SEND_PRIVATE_MESSAGE'],
-			'U_CONTACT'	=> $u_pm,
+			'U_CONTACT'	=> $post_row['U_PM'],
 		),
 		array(
 			'ID'		=> 'email',
