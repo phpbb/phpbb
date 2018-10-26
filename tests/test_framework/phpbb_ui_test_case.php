@@ -192,6 +192,13 @@ class phpbb_ui_test_case extends phpbb_test_case
 			}
 		}
 
+		$install_config_file = $phpbb_root_path . 'store/install_config.php';
+
+		if (file_exists($install_config_file))
+		{
+			unlink($install_config_file);
+		}
+
 		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 		$container = $container_builder
 			->with_environment('installer')
@@ -205,11 +212,14 @@ class phpbb_ui_test_case extends phpbb_test_case
 				],
 				'cache.driver.class' => 'phpbb\cache\driver\file'
 			])
+			->with_config(new \phpbb\config_php_file($phpbb_root_path, $phpEx))
 			->without_compiled_container()
 			->get_container();
 
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
+		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
 		$container->compile();
 
 		$language = $container->get('language');
@@ -338,6 +348,12 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
+			global $phpbb_container, $phpbb_root_path;
+
+			$phpbb_container = new phpbb_mock_container_builder();
+			$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+			$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
+
 			$this->cache = new \phpbb\cache\driver\file;
 		}
 
@@ -589,5 +605,38 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$screenshot = time() . ".png";
 
 		$this->getDriver()->takeScreenshot($screenshot);
+	}
+
+	/**
+	 * Wait for AJAX. Should be called after an AJAX action is made.
+	 *
+	 * @param string $framework javascript frameworks jquery|prototype|dojo
+	 * @throws \Facebook\WebDriver\Exception\NoSuchElementException
+	 * @throws \Facebook\WebDriver\Exception\TimeOutException
+	 */
+	public function waitForAjax($framework = 'jquery')
+	{
+		switch ($framework)
+		{
+			case 'jquery':
+				$code = 'return jQuery.active;';
+			break;
+			case 'prototype':
+				$code = 'return Ajax.activeRequestCount;';
+			break;
+			case 'dojo':
+				$code = 'return dojo.io.XMLHTTPTransport.inFlight.length;';
+			break;
+			default:
+				throw new \RuntimeException('Unsupported framework');
+			break;
+		}
+		// wait for at most 30s, retry every 2000ms (2s)
+		$driver = $this->getDriver();
+		$driver->wait(30, 2000)->until(
+			function () use ($driver, $code) {
+				return !$driver->executeScript($code);
+			}
+		);
 	}
 }

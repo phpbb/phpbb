@@ -371,7 +371,7 @@ $lang = array_merge($lang, array(
 	'ACP_CONTACT_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable the contact page and also add a text that is displayed on the page.',
 
 	'CONTACT_US_ENABLE'				=> 'Enable contact page',
-	'CONTACT_US_ENABLE_EXPLAIN'		=> 'This page allows users to send emails to board administrators. Please note that board-wide emails option must be enabled as well. You can find this option in General > Client Communication > Email settings.',
+	'CONTACT_US_ENABLE_EXPLAIN'		=> 'This page allows users to send emails to board administrators. Please note that board-wide emails option must be enabled as well. You can find this option in General &gt; Client Communication &gt; Email settings.',
 
 	'CONTACT_US_INFO'				=> 'Contact information',
 	'CONTACT_US_INFO_EXPLAIN'		=> 'The message is displayed on the contact page',

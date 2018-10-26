@@ -1643,7 +1643,7 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
-$(window).load(phpbb.lazyLoadAvatars);
+$(window).on('load', phpbb.lazyLoadAvatars);
 
 /**
 * Apply code editor to all textarea elements with data-bbcode attribute

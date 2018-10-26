@@ -31,10 +31,12 @@
 	<form method="post" id="mcp_report" action="{S_CLOSE_ACTION}">
 
 	<fieldset class="submit-buttons">
+		{% EVENT mcp_post_report_buttons_top_before %}
 		<!-- IF not S_REPORT_CLOSED -->
 			<input class="button1" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
 		<!-- ENDIF -->
 		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
+		{% EVENT mcp_post_report_buttons_top_after %}
 		<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
 		{S_FORM_TOKEN}
 	</fieldset>
@@ -69,8 +71,8 @@
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {POST_DATE}
 			<br /><strong>{L_PM_FROM}{L_COLON}</strong> {POST_AUTHOR_FULL}
-			<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}{L_COLON}</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}" style="color:<!-- IF to_recipient.COLOUR -->{to_recipient.COLOUR}<!-- ELSEIF to_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{to_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
-			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}" style="color:<!-- IF bcc_recipient.COLOUR -->{bcc_recipient.COLOUR}<!-- ELSEIF bcc_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{bcc_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
+			<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}{L_COLON}</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:{to_recipient.COLOUR};"<!-- ENDIF -->><strong>{to_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
+			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:{bcc_recipient.COLOUR};"<!-- ENDIF -->><strong>{bcc_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
 		</p>
 		<!-- ELSE -->
 		<p class="author"><span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{MINI_POST_IMG}</span></span> {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>

@@ -652,6 +652,13 @@ attachment_file_prepend
 * Since: 3.1.6-RC1
 * Purpose: Add custom attachment types displaying to the top of attachment block.
 
+confirm_delete_body_delete_reason_before
+===
+* Locations:
+    + styles/prosilver/template/confirm_delete_body.html
+* Since: 3.2.4-RC1
+* Purpose: Add custom text to the confirmation of a post that is deleted.
+
 forumlist_body_category_header_after
 ===
 * Locations:
@@ -973,6 +980,20 @@ mcp_post_additional_options
     + styles/prosilver/template/mcp_post.html
 * Since: 3.1.5-RC1
 * Purpose: Add content within the list of post moderation actions
+
+mcp_post_report_buttons_top_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+* Since: 3.2.4-RC1
+* Purpose: Add content after report buttons
+
+mcp_post_report_buttons_top_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+* Since: 3.2.4-RC1
+* Purpose: Add content before report buttons
 
 mcp_topic_options_after
 ===
@@ -1971,6 +1992,13 @@ simple_footer_after
 * Locations:
     + styles/prosilver/template/simple_footer.html
 * Since: 3.1.0-a1
+* Purpose: Add content prior to the scripts of the simple footer
+
+simple_footer_body_after
+===
+* Locations:
+    + styles/prosilver/template/simple_footer.html
+* Since: 3.2.4-RC1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
 simple_header_body_before

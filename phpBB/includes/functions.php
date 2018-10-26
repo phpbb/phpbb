@@ -1744,14 +1744,14 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	if ($url_parts === false)
 	{
 		// Malformed url
-		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
 		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
-			trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
+			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 		}
 	}
 	else if ($url[0] == '/')
@@ -1791,13 +1791,13 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
-		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
 	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
 	{
-		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
 
 	// Now, also check the protocol and for a valid url the last time...
@@ -1806,7 +1806,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
 	{
-		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
 
 	/**
@@ -2363,10 +2363,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			* @event core.login_box_redirect
 			* @var  string	redirect	Redirect string
 			* @var	bool	admin		Is admin?
+			* @var	array	result		Result from auth provider
 			* @since 3.1.0-RC5
 			* @changed 3.1.9-RC1 Removed undefined return variable
+			* @changed 3.2.4-RC1 Added result
 			*/
-			$vars = array('redirect', 'admin');
+			$vars = array('redirect', 'admin', 'result');
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
@@ -2539,7 +2541,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $phpbb_container, $request, $template, $user, $phpbb_dispatcher;
+	global $db, $phpbb_container, $request, $template, $user, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 	$password = $request->variable('password', '', true);
 
@@ -2623,6 +2625,8 @@ function login_forum_box($forum_data)
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
 	);
+
+	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_data['forum_id']);
 
 	page_footer();
 }
@@ -4506,7 +4510,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
-		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
+		'T_THEME_LANG_NAME'		=> $user->lang_name,
 		'T_TEMPLATE_NAME'		=> $user->style['style_path'],
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',

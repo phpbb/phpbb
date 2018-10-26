@@ -780,7 +780,7 @@ $template->assign_vars(array(
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
-	'U_VIEW_TOPIC' 			=> $viewtopic_url,
+	'U_VIEW_TOPIC' 			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . (strlen($u_sort_param) ? "&amp;$u_sort_param" : '')),
 	'U_CANONICAL'			=> generate_board_url() . '/' . append_sid("viewtopic.$phpEx", "t=$topic_id" . (($start) ? "&amp;start=$start" : ''), true, ''),
 	'U_VIEW_FORUM' 			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 	'U_VIEW_OLDER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
@@ -998,6 +998,29 @@ if (!empty($topic_data['poll_start']))
 				'total_votes'		=> array_sum($vote_counts),
 				'can_vote'			=> !count($valid_user_votes) || ($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']),
 			);
+
+			/**
+			* Event to manipulate the poll data sent by AJAX response
+			*
+			* @event core.viewtopic_modify_poll_ajax_data
+			* @var	array	data				JSON response data
+			* @var	array	valid_user_votes	Valid user votes
+			* @var	array	vote_counts			Vote counts
+			* @var	int		forum_id			Forum ID
+			* @var	array	topic_data			Topic data
+			* @var	array	poll_info			Array with the poll information
+			* @since 3.2.4-RC1
+			*/
+			$vars = array(
+				'data',
+				'valid_user_votes',
+				'vote_counts',
+				'forum_id',
+				'topic_data',
+				'poll_info',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_ajax_data', compact($vars)));
+
 			$json_response = new \phpbb\json_response();
 			$json_response->send($data);
 		}
@@ -1148,6 +1171,29 @@ $sql = 'SELECT p.post_id
 		" . (($join_user_sql[$sort_key]) ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
+
+/**
+* Event to modify the SQL query that gets post_list
+*
+* @event core.viewtopic_modify_post_list_sql
+* @var	string	sql			The SQL query to generate the post_list
+* @var	int		sql_limit	The number of posts the query fetches
+* @var	int		sql_start	The index the query starts to fetch from
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_days	Display posts of previous x days
+* @var	int		forum_id	Forum ID
+* @since 3.2.4-RC1
+*/
+$vars = array(
+	'sql',
+	'sql_limit',
+	'sql_start',
+	'sort_key',
+	'sort_days',
+	'forum_id',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_list_sql', compact($vars)));
+
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $i = ($store_reverse) ? $sql_limit - 1 : 0;
@@ -2069,7 +2115,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		array(
 			'ID'		=> 'pm',
 			'NAME' 		=> $user->lang['SEND_PRIVATE_MESSAGE'],
-			'U_CONTACT'	=> $u_pm,
+			'U_CONTACT'	=> $post_row['U_PM'],
 		),
 		array(
 			'ID'		=> 'email',

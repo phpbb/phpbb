@@ -327,6 +327,7 @@ class messenger
 
 		$subject = $this->subject;
 		$message = $this->msg;
+		$template  = $this->template;
 		/**
 		* Event to modify notification message text before parsing
 		*
@@ -336,13 +337,16 @@ class messenger
 		*						and the message without sending it
 		* @var	string	subject	The message subject
 		* @var	string	message	The message text
+		* @var	\phpbb\template\template	template	Template object
 		* @since 3.1.11-RC1
+		* @changed 3.2.4-RC1 Added template
 		*/
 		$vars = array(
 			'method',
 			'break',
 			'subject',
 			'message',
+			'template',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
 		$this->subject = $subject;
@@ -517,7 +521,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config;
+		global $config, $phpbb_dispatcher;
 
 		if (empty($config['email_enable']))
 		{
@@ -544,6 +548,33 @@ class messenger
 
 		$contact_name = htmlspecialchars_decode($config['board_contact_name']);
 		$board_contact = (($contact_name !== '') ? '"' . mail_encode($contact_name) . '" ' : '') . '<' . $config['board_contact'] . '>';
+
+		$break = false;
+		$addresses = $this->addresses;
+		$subject = $this->subject;
+		$msg = $this->msg;
+		/**
+		* Event to send message via external transport
+		*
+		* @event core.notification_message_email
+		* @var	bool	break		Flag indicating if the function return after hook
+		* @var	array	addresses 	The message recipients
+		* @var	string	subject		The message subject
+		* @var	string	msg			The message text
+		* @since 3.2.4-RC1
+		*/
+		$vars = array(
+			'break',
+			'addresses',
+			'subject',
+			'msg',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.notification_message_email', compact($vars)));
+
+		if ($break)
+		{
+			return true;
+		}
 
 		if (empty($this->replyto))
 		{
@@ -783,7 +814,7 @@ class queue
 	*/
 	function process()
 	{
-		global $config, $phpEx, $phpbb_root_path, $user;
+		global $config, $phpEx, $phpbb_root_path, $user, $phpbb_dispatcher;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -880,23 +911,45 @@ class queue
 				switch ($object)
 				{
 					case 'email':
-						$err_msg = '';
-						$to = (!$to) ? 'undisclosed-recipients:;' : $to;
+						$break = false;
+						/**
+						* Event to send message via external transport
+						*
+						* @event core.notification_message_process
+						* @var	bool	break		Flag indicating if the function return after hook
+						* @var	array	addresses 	The message recipients
+						* @var	string	subject		The message subject
+						* @var	string	msg			The message text
+						* @since 3.2.4-RC1
+						*/
+						$vars = array(
+							'break',
+							'addresses',
+							'subject',
+							'msg',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.notification_message_process', compact($vars)));
 
-						if ($config['smtp_delivery'])
+						if (!$break)
 						{
-							$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
-						}
-						else
-						{
-							$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
-						}
+							$err_msg = '';
+							$to = (!$to) ? 'undisclosed-recipients:;' : $to;
 
-						if (!$result)
-						{
-							$messenger = new messenger();
-							$messenger->error('EMAIL', $err_msg);
-							continue 2;
+							if ($config['smtp_delivery'])
+							{
+								$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
+							}
+							else
+							{
+								$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
+							}
+
+							if (!$result)
+							{
+								$messenger = new messenger();
+								$messenger->error('EMAIL', $err_msg);
+								continue 2;
+							}
 						}
 					break;
 
