@@ -273,11 +273,9 @@ function insertUser(formId, value) {
 function insert_marked_users(formId, users) {
 	'use strict';
 
-	for (var i = 0; i < users.length; i++) {
-		if (users[i].checked) {
-			insertUser(formId, users[i].value);
-		}
-	}
+	$(users).filter(':checked').each(function() {
+		insertUser(formId, this.value);
+	});
 
 	window.close();
 }
@@ -612,7 +610,7 @@ function parseDocument($container) {
 
 		// If there are any images in the links list, run the check again after they have loaded
 		$linksAll.find('img').each(function() {
-			$(this).load(function() {
+			$(this).on('load', function() {
 				check();
 			});
 		});

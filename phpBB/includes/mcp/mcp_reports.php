@@ -242,6 +242,10 @@ class mcp_reports
 					}
 				}
 
+				// parse signature
+				$parse_flags = ($post_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+				$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
+
 				$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
@@ -291,6 +295,7 @@ class mcp_reports
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
+					'SIGNATURE'				=> $post_info['user_sig'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
 				));

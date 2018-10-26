@@ -9,6 +9,7 @@ core:
         exceptions: true
         load_time: true
         sql_explain: true
+        memory: true
 
     twig:
         debug: true
@@ -18,3 +19,6 @@ core:
     extensions:
         composer_debug: true
         composer_verbose: true
+
+    session:
+        log_errors: true

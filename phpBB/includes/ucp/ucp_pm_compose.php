@@ -124,7 +124,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Add groups to PM box
 		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 				FROM ' . GROUPS_TABLE . ' g';
 
 			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -147,7 +147,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}
@@ -658,13 +658,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (confirm_box(true))
 			{
+				$message_parser->message = $message;
+				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
+
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'user_id'		=> $user->data['user_id'],
 					'topic_id'		=> 0,
 					'forum_id'		=> 0,
 					'save_time'		=> $current_time,
 					'draft_subject'	=> $subject,
-					'draft_message'	=> $message
+					'draft_message'	=> $message_parser->message,
 					)
 				);
 				$db->sql_query($sql);
@@ -953,7 +956,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = $request->variable('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
+				$message_link = generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}";
+				$message_link_subject = "{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}";
+				if ($bbcode_status)
+				{
+					$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
+				}
+				else
+				{
+					$message_link = $message_link . " - " . $message_link_subject . "\n\n";
+				}
 			}
 			else
 			{
@@ -973,11 +985,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text($message_parser->message),
-			$quote_attributes
-		);
-		$message_parser->message = $message_link . $quote_text . "\n\n";
+
+		phpbb_format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
@@ -1260,7 +1269,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	// Delete User [TO/BCC]
 	if ($remove_u && $request->variable('remove_u', array(0 => '')))
@@ -1437,6 +1446,21 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
+
+	/**
+	* Event for additional message list actions
+	*
+	* @event core.message_list_actions
+	* @var	array	address_list		The assoc array with the recipient user/group ids
+	* @var	array	error				The array containing error data
+	* @var	bool	remove_u			The variable for removing a user
+	* @var	bool	remove_g			The variable for removing a group
+	* @var	bool	add_to				The variable for adding a user to the [TO] field
+	* @var	bool	add_bcc				The variable for adding a user to the [BCC] field
+	* @since 3.2.4-RC1
+	*/
+	$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
+	extract($phpbb_dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 }
 
 /**
