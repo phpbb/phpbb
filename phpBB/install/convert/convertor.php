@@ -63,7 +63,7 @@ class convertor
 	{
 		global $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
-		global $request, $phpbb_dispatcher;
+		global $request, $phpbb_dispatcher, $phpbb_container;
 
 		$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 		extract($phpbb_config_php_file->get_all());
@@ -687,7 +687,7 @@ class convertor
 
 				$this->template->assign_block_vars('checks', array(
 					'TITLE'		=> "skip_rows = $skip_rows",
-					'RESULT'	=> $rows . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
+					'RESULT'	=> $rows . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
 				));
 
 				$mtime = explode(' ', microtime());
@@ -920,6 +920,7 @@ class convertor
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config, $cache;
 		global $convert;
+		global $phpbb_container;
 
 		include_once ($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
@@ -959,7 +960,7 @@ class convertor
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
+				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
 				'RESULT'	=> $user->lang['DONE'],
 			));
 

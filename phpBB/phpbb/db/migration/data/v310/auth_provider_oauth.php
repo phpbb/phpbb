@@ -17,7 +17,7 @@ class auth_provider_oauth extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return $this->db_tools->sql_table_exists($this->table_prefix . 'auth_provider_oauth');
+		return $this->db_tools->sql_table_exists($this->table_prefix . 'oauth_tokens');
 	}
 
 	static public function depends_on()

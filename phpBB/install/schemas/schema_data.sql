@@ -289,13 +289,13 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_enab
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purge_on_remove', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\path', 'files');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\subfolders', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\path', 'images/avatars/upload');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\subfolders', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\path', 'store');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\depth', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\config\subfolders', '0');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);
@@ -795,11 +795,11 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'rtf');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mp3');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mpeg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mpg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogm');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mp3');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpeg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogm');
 
 # Add default profile fields
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_location', 'profilefields.type.string', 'phpbb_location', '20', '2', '100', '', '', '.*', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, '', '');

@@ -72,6 +72,8 @@ class core extends Extension
 			}
 		}
 
+		$container->setParameter('allow_install_dir', $config['allow_install_dir']);
+
 		// Set the Twig options if defined in the environment
 		$definition = $container->getDefinition('template.twig.environment');
 		$twig_environment_options = $definition->getArgument(static::TWIG_OPTIONS_POSITION);
@@ -109,6 +111,12 @@ class core extends Extension
 		foreach ($config['debug'] as $name => $value)
 		{
 			$container->setParameter('debug.' . $name, $value);
+		}
+
+		// Set the log options
+		foreach ($config['session'] as $name => $value)
+		{
+			$container->setParameter('session.' . $name, $value);
 		}
 	}
 

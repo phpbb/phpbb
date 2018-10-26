@@ -157,7 +157,6 @@ $lang = array_merge($lang, array(
 	'BYTES_SHORT'			=> 'B',
 
 	'CANCEL'				=> 'Cancel',
-	'CANNOT_RENAME_FILE'	=> 'Cannot rename %s',
 	'CHANGE'				=> 'Change',
 	'CHANGE_FONT_SIZE'		=> 'Change font size',
 	'CHANGING_PREFERENCES'	=> 'Changing board preferences',
@@ -267,6 +266,17 @@ $lang = array_merge($lang, array(
 	'FROM'					=> 'from',
 	'FSOCK_DISABLED'		=> 'The operation could not be completed because the <var>fsockopen</var> function has been disabled or the server being queried could not be found.',
 	'FSOCK_TIMEOUT'			=> 'A timeout occurred while reading from the network stream.',
+
+	'FILESYSTEM_CANNOT_CHANGE_FILE_GROUP'		=> 'Unable to change file group',
+	'FILESYSTEM_CANNOT_CHANGE_FILE_PERMISSIONS'	=> 'Unable to change file permissions',
+	'FILESYSTEM_CANNOT_COPY_FILES'				=> 'Unable to copy files',
+	'FILESYSTEM_CANNOT_CREATE_SYMLINK'			=> 'Unable to create a symlink',
+	'FILESYSTEM_CANNOT_CREATE_DIRECTORY'		=> 'Unable to create directory',
+	'FILESYSTEM_CANNOT_DELETE_FILES'			=> 'Unable to delete files from the system',
+	'FILESYSTEM_CANNOT_DUMP_FILE'				=> 'Unable to dump file',
+	'FILESYSTEM_CANNOT_MIRROR_DIRECTORY'		=> 'Unable to mirror directory',
+	'FILESYSTEM_CANNOT_RENAME_FILE'				=> 'Unable to rename a file from the system',
+	'FILESYSTEM_CANNOT_TOUCH_FILES'				=> 'Unable to determine if the file exists',
 
 	'FTP_FSOCK_HOST'				=> 'FTP host',
 	'FTP_FSOCK_HOST_EXPLAIN'		=> 'FTP server used to connect your site.',
@@ -745,6 +755,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_CANNOT_CREATE_DIR'		=> 'Can not create directory.',
 	'STORAGE_CANNOT_OPEN_FILE'		=> 'Can not open file.',
 	'STORAGE_CANNOT_CREATE_FILE'	=> 'Can not create file.',
+	'STORAGE_INVALID_RESOURCE'		=> 'Resource is invalid.',
 
 	'TB'				=> 'TB',
 	'TERMS_LINK'		=> 'Terms',

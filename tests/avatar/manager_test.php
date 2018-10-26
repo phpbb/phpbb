@@ -30,25 +30,16 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		// Mock phpbb_container
-
-		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container->expects($this->any())
 			->method('get')
 			->will($this->returnArgument(0));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$adapter = new \phpbb\storage\adapter\local($filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
-		$adapter->configure(['path' => 'images/avatars/upload']);
-		$db = $this->createMock('\phpbb\db\driver\driver_interface');
-		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
-		$adapter_factory_mock->expects($this->any())
-			->method('get')
-			->willReturn($adapter);
-		$storage = new \phpbb\storage\storage($db, $cache, $adapter_factory_mock, '', '');
+		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
+		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$path_helper =  new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()

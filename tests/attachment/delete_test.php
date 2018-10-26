@@ -21,9 +21,6 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\filesystem\filesystem */
-	protected $filesystem;
-
 	/** @var \phpbb\attachment\resync */
 	protected $resync;
 
@@ -47,22 +44,11 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$this->config = new \phpbb\config\config(array());
 		$this->db = $this->new_dbal();
-		$db_mock = $this->createMock('\phpbb\db\driver\driver_interface');
 		$this->resync = new \phpbb\attachment\resync($this->db);
-		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
-		$this->filesystem->expects($this->any())
-			->method('remove')
-			->willReturn(false);
-		$this->filesystem->expects($this->any())
+		$this->storage = $this->createMock('\phpbb\storage\storage');
+		$this->storage->expects($this->any())
 			->method('exists')
 			->willReturn(true);
-		$adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
-		$adapter->configure(['path' => 'files']);
-		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
-		$adapter_factory_mock->expects($this->any())
-			->method('get')
-			->willReturn($adapter);
-		$this->storage = new \phpbb\storage\storage($db_mock, $cache, $adapter_factory_mock, '', '');
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}

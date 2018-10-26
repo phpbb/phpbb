@@ -56,7 +56,6 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Database
 		$this->db = $this->new_dbal();
 		$db = $this->db;
-		$db_mock = $this->createMock('\phpbb\db\driver\driver_interface');
 
 		// Auth
 		$auth = $this->createMock('\phpbb\auth\auth');

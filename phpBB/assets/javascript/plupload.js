@@ -211,7 +211,7 @@ phpbb.plupload.updateHiddenData = function(row, attach, index) {
 			.attr('type', 'hidden')
 			.attr('name', 'attachment_data[' + index + '][' + key + ']')
 			.attr('value', attach[key]);
-		$('textarea', row).after(input);
+		$(row).append(input);
 	}
 };
 

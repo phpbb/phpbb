@@ -77,6 +77,22 @@ class ucp_main
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
 				if (!empty($forum_ary))
 				{
+					/**
+					 * Modify sql variables before query is processed
+					 *
+					 * @event core.ucp_main_front_modify_sql
+					 * @var string	sql_select	SQL select
+					 * @var string  sql_from	SQL from
+					 * @var array   forum_ary	Forum array
+					 * @since 3.2.4-RC1
+					 */
+					$vars = array(
+						'sql_select',
+						'sql_from',
+						'forum_ary',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.ucp_main_front_modify_sql', compact($vars)));
+
 					$sql = "SELECT t.* $sql_select
 						FROM $sql_from
 						WHERE t.topic_type = " . POST_GLOBAL . '
@@ -144,7 +160,7 @@ class ucp_main
 						$folder_img .= '_mine';
 					}
 
-					$template->assign_block_vars('topicrow', array(
+					$topicrow = array(
 						'FORUM_ID'					=> $forum_id,
 						'TOPIC_ID'					=> $topic_id,
 						'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -171,8 +187,30 @@ class ucp_main
 						'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 						'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-						'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"))
+						'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"),
 					);
+
+					/**
+					 * Add template variables to a front topics row.
+					 *
+					 * @event core.ucp_main_front_modify_template_vars
+					 * @var array	topicrow		Array containing the template variables for the row
+					 * @var array   row    	        Array containing the subscribed forum row data
+					 * @var int     forum_id        Forum ID
+					 * @var string  folder_img		Folder image
+					 * @var string  folder_alt      Alt text for the folder image
+					 * @since 3.2.4-RC1
+					 */
+					$vars = array(
+						'topicrow',
+						'row',
+						'forum_id',
+						'folder_img',
+						'folder_alt',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.ucp_main_front_modify_template_vars', compact($vars)));
+
+					$template->assign_block_vars('topicrow', $topicrow);
 				}
 
 				if ($config['load_user_activity'])
@@ -502,6 +540,9 @@ class ucp_main
 				$draft_subject = $draft_message = '';
 				add_form_key('ucp_draft');
 
+				include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+				$message_parser = new parse_message();
+
 				if ($delete)
 				{
 					if (check_form_key('ucp_draft'))
@@ -535,9 +576,19 @@ class ucp_main
 					{
 						if ($draft_message && $draft_subject)
 						{
+							// $auth->acl_gets can't be used here because it will check for global forum permissions in this case
+							// In general we don't need too harsh checking here for permissions, as this will be handled later when submitting
+							$bbcode_status = $auth->acl_get('u_pm_bbcode') || $auth->acl_getf_global('f_bbcode');
+							$smilies_status = $auth->acl_get('u_pm_smilies') || $auth->acl_getf_global('f_smilies');
+							$img_status = $auth->acl_get('u_pm_img') || $auth->acl_getf_global('f_img');
+							$flash_status = $auth->acl_get('u_pm_flash') || $auth->acl_getf_global('f_flash');
+
+							$message_parser->message = $draft_message;
+							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, $flash_status, true, $config['allow_post_links']);
+
 							$draft_row = array(
 								'draft_subject' => $draft_subject,
-								'draft_message' => $draft_message
+								'draft_message' => $message_parser->message,
 							);
 
 							$sql = 'UPDATE ' . DRAFTS_TABLE . '
@@ -639,9 +690,16 @@ class ucp_main
 						$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d=" . $draft['draft_id']);
 					}
 
+					if (!$submit)
+					{
+						$message_parser->message = $draft['draft_message'];
+						$message_parser->decode_message();
+						$draft_message = $message_parser->message;
+					}
+
 					$template_row = array(
 						'DATE'			=> $user->format_date($draft['save_time']),
-						'DRAFT_MESSAGE'	=> ($submit) ? $draft_message : $draft['draft_message'],
+						'DRAFT_MESSAGE'	=> $draft_message,
 						'DRAFT_SUBJECT'	=> ($submit) ? $draft_subject : $draft['draft_subject'],
 						'TITLE'			=> $title,
 

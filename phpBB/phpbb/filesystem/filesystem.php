@@ -68,7 +68,7 @@ class filesystem implements filesystem_interface
 			$error = trim($e->getMessage());
 			$file = substr($error, strrpos($error, ' '));
 
-			throw new filesystem_exception('CANNOT_CHANGE_FILE_GROUP', $file, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_CHANGE_FILE_GROUP', $file, array(), $e);
 		}
 	}
 
@@ -125,14 +125,14 @@ class filesystem implements filesystem_interface
 			{
 				if (true !== @chmod($file, $dir_perm))
 				{
-					throw new filesystem_exception('CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
+					throw new filesystem_exception('FILESYSTEM_CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
 				}
 			}
 			else if (is_file($file))
 			{
 				if (true !== @chmod($file, $file_perm))
 				{
-					throw new filesystem_exception('CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
+					throw new filesystem_exception('FILESYSTEM_CANNOT_CHANGE_FILE_PERMISSIONS', $file,  array());
 				}
 			}
 		}
@@ -154,7 +154,7 @@ class filesystem implements filesystem_interface
 			$error = trim($e->getMessage());
 			$file = substr($error, strrpos($error, ' '));
 
-			throw new filesystem_exception('CANNOT_CHANGE_FILE_GROUP', $file, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_CHANGE_FILE_GROUP', $file, array(), $e);
 		}
 	}
 
@@ -177,7 +177,7 @@ class filesystem implements filesystem_interface
 		}
 		catch (IOException $e)
 		{
-			throw new filesystem_exception('CANNOT_COPY_FILES', '', array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_COPY_FILES', '', array(), $e);
 		}
 	}
 
@@ -192,7 +192,7 @@ class filesystem implements filesystem_interface
 		}
 		catch (IOException $e)
 		{
-			throw new filesystem_exception('CANNOT_DUMP_FILE', $filename, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_DUMP_FILE', $filename, array(), $e);
 		}
 	}
 
@@ -304,7 +304,7 @@ class filesystem implements filesystem_interface
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
 
-			throw new filesystem_exception('CANNOT_MIRROR_DIRECTORY', $filename, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_MIRROR_DIRECTORY', $filename, array(), $e);
 		}
 	}
 
@@ -322,7 +322,7 @@ class filesystem implements filesystem_interface
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
 
-			throw new filesystem_exception('CANNOT_CREATE_DIRECTORY', $filename, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_CREATE_DIRECTORY', $filename, array(), $e);
 		}
 	}
 
@@ -487,7 +487,7 @@ class filesystem implements filesystem_interface
 			$error = trim($e->getMessage());
 			$file = substr($error, strrpos($error, ' '));
 
-			throw new filesystem_exception('CANNOT_DELETE_FILES', $file, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_DELETE_FILES', $file, array(), $e);
 		}
 	}
 
@@ -505,7 +505,7 @@ class filesystem implements filesystem_interface
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
 
-			throw new filesystem_exception('CANNOT_RENAME_FILE', $filename, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_RENAME_FILE', $filename, array(), $e);
 		}
 	}
 
@@ -520,7 +520,7 @@ class filesystem implements filesystem_interface
 		}
 		catch (IOException $e)
 		{
-			throw new filesystem_exception('CANNOT_CREATE_SYMLINK', $origin_dir, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_CREATE_SYMLINK', $origin_dir, array(), $e);
 		}
 	}
 
@@ -540,7 +540,7 @@ class filesystem implements filesystem_interface
 			$error = trim($e->getMessage());
 			$file = substr($error, strrpos($error, ' '));
 
-			throw new filesystem_exception('CANNOT_TOUCH_FILES', $file, array(), $e);
+			throw new filesystem_exception('FILESYSTEM_CANNOT_TOUCH_FILES', $file, array(), $e);
 		}
 	}
 

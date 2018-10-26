@@ -12,6 +12,17 @@
 	}
 </script>
 
+<div class="panel">
+	<div class="inner">
+
+		<h2>{{ SITENAME }} - {{ lang('OAUTH_REGISTRATION') }}</h2>
+
+		{% if PROVIDER_TEMPLATE_FILE %}
+			{% include PROVIDER_TEMPLATE_FILE %}
+		{% endif %}
+	</div>
+</div>
+
 <form id="register" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <div class="panel">

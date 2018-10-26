@@ -86,7 +86,14 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 			$ext		= substr(strrchr($filename, '.'), 1);
 			$filename	= (int) $filename;
 
-			$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
+			try
+			{
+				$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				// If file don't exist, don't track it
+			}
 		}
 		$this->db->sql_freeresult($result);
 	}
@@ -103,11 +110,25 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$storage->track_file($row['physical_filename']);
+			try
+			{
+				$storage->track_file($row['physical_filename']);
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				// If file don't exist, don't track it
+			}
 
 			if ($row['thumbnail'] == 1)
 			{
-				$storage->track_file('thumb_' . $row['physical_filename']);
+				try
+				{
+					$storage->track_file('thumb_' . $row['physical_filename']);
+				}
+				catch (\phpbb\storage\exception\exception $e)
+				{
+					// If file don't exist, don't track it
+				}
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -125,8 +146,16 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$storage->track_file($row['filename']);
+			try
+			{
+				$storage->track_file($row['filename']);
+			}
+			catch (\phpbb\storage\exception\exception $e)
+			{
+				// If file don't exist, don't track it
+			}
 		}
+
 		$this->db->sql_freeresult($result);
 	}
 }
