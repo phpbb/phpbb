@@ -24,7 +24,7 @@
 *   For support on phpMyAdmin or for phpMyAdmin itself, visit www.phpmyadmin.net
 *
 ***************************************************************************/
-define('IN_PHPBB', 1);
+@define('IN_PHPBB', 1);
 
 if (!empty($setmodules))
 {

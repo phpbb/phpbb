@@ -53,7 +53,13 @@ class dbal_sqlite extends dbal
 
 		return ($this->db_connect_id) ? true : array('message' => $error);
 	}
-
+	
+	
+	function sql_connect_id() 
+	{
+		return $this->db_connect_id;
+	}
+	
 	/**
 	* Version information about used database
 	*/
@@ -97,13 +103,37 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
+	* Close sql connection
+	* @private
+	*/
+	function sql_close()
+	{
+		if($this->db_connect_id)
+		{
+			//
+			// Commit any remaining transactions
+			//
+			if( $this->in_transaction )
+			{
+				@sqlite_query("COMMIT", $this->db_connect_id);
+			}
+
+			return @sqlite_close($this->db_connect_id);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
 	* Base query method
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
 		if (!empty($query))
 		{
-			global $mx_cache;
+			global $cache;
 
 			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
@@ -113,7 +143,7 @@ class dbal_sqlite extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($mx_cache, 'sql_load')) ? $mx_cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
 			if (!$this->query_result)
 			{
@@ -129,10 +159,10 @@ class dbal_sqlite extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($mx_cache, 'sql_save'))
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$mx_cache->sql_save($query, $this->query_result, $cache_ttl);
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -190,7 +220,168 @@ class dbal_sqlite extends dbal
 
 		return ($query_id) ? @sqlite_num_rows($query_id) : false;
 	}
+	
+	/**
+	* Return fields num
+	* Not used within core code
+	*/		
+	function sql_numfields($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = @sqlite_num_fields($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	* Return fields name(s)
+	* Not used within core code
+	*/		
+	function sql_fieldname($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = sqlite_field_name($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a field type in a database.
+	 *
+	 * @param string $offset of sql array.
+	 * @param string $query_id from sql array.
+	 * @return field type.
+	 */
+	function sql_fieldtype($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = @sqlite_field_type($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets a list of columns of a table.
+	 *
+	 * @param string $table_name table name
+	 * @return array of columns names (all lower case)
+	 */
+	function sql_list_columns($table_name)
+	{
+		$columns = array();
+		$sql = "SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table'
+				AND name = '{$table_name}'";
+		$result = $this->sql_query($sql);
+		
+		if (!$result)
+		{
+			return false;
+		}
+		
+		$row = $this->sql_fetchrow($result);
+		$this->sql_freeresult($result);
+		
+		preg_match('#\((.*)\)#s', $row['sql'], $matches);
+		
+		$cols = trim($matches[1]);
+		$col_array = preg_split('/,(?![\s\w]+\))/m', $cols);
 
+		foreach ($col_array as $declaration)
+		{
+			$entities = preg_split('#\s+#', trim($declaration));
+			if ($entities[0] == 'PRIMARY')
+			{
+				continue;
+			}
+			
+			$column = strtolower($entities[0]);
+			$columns[$column] = $column;
+		}
+		
+		return $columns;
+	}
+	
+	/**
+	 * Check if a field exists in a table.
+	 *
+	 * @param string $column for field name.
+	 * @param string $table_name for table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_field_exists($column, $table_name)
+	{
+		$query = $this->sql_query("PRAGMA table_info('{$table_name}')");
+		while($row = @sqlite_fetch_array($query))
+		{
+			if($row['name'] == $column)
+			{
+				++$count;
+			}
+		}
+		$query->closeCursor();
+		
+		if($count > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a table exists in a database.
+	 *
+	 * @param string $table_name for the table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_table_exists($table_name)
+	{
+		//$count = $this->num_rows($this->sql_query("SELECT * FROM sqlite_master WHERE type='table' AND name='{$table_name}'"));
+		$query = $this->sql_query("SELECT COUNT(name) as count FROM sqlite_master WHERE type='table' AND name='{$table_name}'");
+		$count = $this->sql_fetch_field($query, "count");
+		$query->closeCursor();
+		
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	/**
 	* Return number of affected rows
 	*/
@@ -204,26 +395,59 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_fetchrow($query_id = false)
 	{
-		global $mx_cache;
+		global $cache;
 
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if (isset($mx_cache->sql_rowset[$query_id]))
+		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $mx_cache->sql_fetchrow($query_id);
+			return $cache->sql_fetchrow($query_id);
 		}
 
 		return ($query_id) ? @sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
 	}
-
+	
+	/**
+	 * Return a result array for a query
+	 *
+	 * @param PDO statement $query for the query.
+	 * @param int $resulttype One of PDO's constants: 
+	 * FETCH_ASSOC, FETCH_BOUND, FETCH_CLASS, 
+	 * FETCH_INTO, FETCH_LAZY, FETCH_NAMED, 
+	 * FETCH_NUM, FETCH_OBJ or FETCH_BOTH
+	 *
+	 * @return array for the query of result.
+	 */
+	function sql_fetch_array($query, $resulttype=PDO::FETCH_BOTH)
+	{
+		switch($resulttype)
+		{
+			case FETCH_ASSOC: 
+	 		case FETCH_BOUND: 
+	 		case FETCH_CLASS: 
+	 		case FETCH_INTO: 
+	 		case FETCH_LAZY: 
+	 		case FETCH_NAMED: 
+	 		case FETCH_NUM: 
+	 		case FETCH_OBJ:
+	 		case FETCH_BOTH:
+			break;
+			
+			default:
+				$resulttype = FETCH_ASSOC;
+			break;
+		}
+		return  @sqlite_fetch_array($query, $resulttype);
+	}
+	
 	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($column, $rownum = false, $query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -234,16 +458,34 @@ class dbal_sqlite extends dbal
 		{
 			if ($rownum === false)
 			{
-				return @sqlite_column($query_id, $field);
+				return @sqlite_column($query_id, $column);
 			}
 			else
 			{
 				@sqlite_seek($query_id, $rownum);
-				return @sqlite_column($query_id, $field);
+				return @sqlite_column($query_id, $column);
 			}
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Returns a specific field from a query.
+	 *
+	 * @param PDO Statement $query for the query ID.
+	 * @param string $column for the name of the field to return.
+	 * @param int/bool $row for the number of the row to fetch it from.
+	 * @return mixed
+	 */
+	function sql_fetch_field($query, $column, $row = false)
+	{
+		if($row !== false)
+		{
+			@sqlite_seek($query, $row);
+		}
+		$array = $this->sql_fetch_array($query);
+		return $array[$column];
 	}
 
 	/**

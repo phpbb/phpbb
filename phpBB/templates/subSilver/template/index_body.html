@@ -22,10 +22,10 @@
 <table width="100%" cellpadding="2" cellspacing="1" border="0" class="table1 main_table forumline">
  <thead> 
   <tr> 
-	<th colspan="2" class="thCornerL" height="25" nowrap="wrap">&nbsp;{L_FORUM}&nbsp;</th>
-	<th width="50" class="thTop" nowrap="wrap">&nbsp;{L_TOPICS}&nbsp;</th>
-	<th width="50" class="thTop" nowrap="wrap">&nbsp;{L_POSTS}&nbsp;</th>
-	<th class="thCornerR" nowrap="wrap">&nbsp;{L_LASTPOST}&nbsp;</th>
+	<th colspan="2" class="thCornerL" height="25" aria-hidden="true">&nbsp;{L_FORUM}&nbsp;</th>
+	<th width="50" class="thTop" aria-hidden="true">&nbsp;{L_TOPICS}&nbsp;</th>
+	<th width="50" class="thTop" aria-hidden="true">&nbsp;{L_POSTS}&nbsp;</th>
+	<th class="thCornerR" aria-hidden="true">&nbsp;{L_LASTPOST}&nbsp;</th>
   </tr>
  </thead>   
  <tbody> 
@@ -42,7 +42,7 @@
 	  </span><span class="gensmall">{catrow.forumrow.L_MODERATOR} {catrow.forumrow.MODERATORS}</span></td>
 	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.TOPICS}</span></td>
 	<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{catrow.forumrow.POSTS}</span></td>
-	<td class="row2" align="center" valign="middle" height="50" nowrap="wrap"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
+	<td class="row2" align="center" valign="middle" height="50" aria-hidden="true"> <span class="gensmall">{catrow.forumrow.LAST_POST}</span></td>
   </tr>
   <!-- END forumrow -->
   <!-- END catrow -->
@@ -61,7 +61,7 @@
 	<td class="catHead" colspan="2" height="28"><span class="cattitle"><a href="{U_VIEWONLINE}" class="cattitle">{L_WHO_IS_ONLINE}</a></span></td>
   </tr>
   <tr> 
-	<td class="row1" align="center" valign="middle" rowspan="2"><img src="templates/aluminoid/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
+	<td class="row1" align="center" valign="middle" rowspan="2"><img src="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}theme/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
 	<td class="row1" align="left" width="100%"><span class="gensmall">{TOTAL_POSTS}<br />{TOTAL_USERS}<br />{NEWEST_USER}</span>
 	</td>
   </tr>
@@ -101,13 +101,13 @@
 
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
-	<td width="20" align="center"><img src="templates/aluminoid/images/folder_new_big.gif" alt="{L_NEW_POSTS}"/></td>
+	<td width="20" align="center"><img src="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}theme/images/folder_new_big.gif" alt="{L_NEW_POSTS}"/></td>
 	<td><span class="gensmall">{L_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/aluminoid/images/folder_big.gif" alt="{L_NO_NEW_POSTS}" /></td>
+	<td width="20" align="center"><img src="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}theme/images/folder_big.gif" alt="{L_NO_NEW_POSTS}" /></td>
 	<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/aluminoid/images/folder_locked_big.gif" alt="{L_FORUM_LOCKED}" /></td>
+	<td width="20" align="center"><img src="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}theme/images/folder_locked_big.gif" alt="{L_FORUM_LOCKED}" /></td>
 	<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
   </tr>
 </table>

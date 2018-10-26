@@ -1,6 +1,6 @@
 <?php
 
-// eXtreme Styles mod cache. Generated on Tue, 09 Oct 2018 07:33:01 +0000 (time=1539070381)
+// eXtreme Styles mod cache. Generated on Mon, 22 Oct 2018 18:07:25 +0000 (time=1540231645)
 
 ?><html dir="<?php echo isset($this->vars['S_CONTENT_DIRECTION']) ? $this->vars['S_CONTENT_DIRECTION'] : $this->lang('S_CONTENT_DIRECTION'); ?>">
 <head>

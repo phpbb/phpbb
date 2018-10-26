@@ -112,11 +112,11 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 				
 				// If there are too much login attempts, we need to check for a confirm image
 				// Every auth module is able to define what to do by itself...
-				if (!empty($config['max_login_attempts']) && ($row['user_login_attempts'] >= $config['max_login_attempts']))
+				if (!empty($board_config['max_login_attempts']) && ($row['user_login_attempts'] >= $board_config['max_login_attempts']))
 				{
 					/*
 					// Visual Confirmation handling
-					$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+					$captcha =& phpbb_captcha_factory::get_instance($board_config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 					$vc_response = $captcha->validate();
 					if ($vc_response)

@@ -44,7 +44,7 @@ class class_settings
 	*/
 	function setup_settings()
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
 		// Get all settings
 		$this->modules = array();
@@ -59,11 +59,11 @@ class class_settings
 	/**
 	* Set config
 	*/
-	function set_config($config_name, $config_value, $clear_cache = false, $return = false)
+	function set_config($board_config_name, $board_config_value, $clear_cache = false, $return = false)
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
-		set_config($config_name, $config_value, false, $return);
+		set_config($board_config_name, $board_config_value, false, $return);
 
 		if ($clear_cache)
 		{
@@ -74,11 +74,11 @@ class class_settings
 	/**
 	* Remove plugin config
 	*/
-	function remove_config($config_name, $config_value, $clear_cache = true, $return = false)
+	function remove_config($board_config_name, $board_config_value, $clear_cache = true, $return = false)
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
-		$sql = "DELETE FROM " . CONFIG_TABLE . " WHERE config_name = '" . $db->sql_escape($config_name) . "'";
+		$sql = "DELETE FROM " . CONFIG_TABLE . " WHERE config_name = '" . $db->sql_escape($board_config_name) . "'";
 		$db->sql_return_on_error($return);
 		$db->sql_query($sql);
 		$db->sql_return_on_error(false);
@@ -94,7 +94,7 @@ class class_settings
 	*/
 	function user_config_key($key, $user_field = '', $over_field = '')
 	{
-		global $config, $user;
+		global $board_config, $user;
 
 		// Get the user fields name if not given
 		if (empty($user_field))
@@ -109,26 +109,26 @@ class class_settings
 		}
 
 		// Does the key exists?
-		if (!isset($config[$key])) return;
+		if (!isset($board_config[$key])) return;
 
 		// Does the user field exists ?
 		if (!isset($user->data[$user_field])) return;
 
 		// Does the overwrite switch exists?
-		if (!isset($config[$over_field]))
+		if (!isset($board_config[$over_field]))
 		{
-			$config[$over_field] = 0; // no overwrite
+			$board_config[$over_field] = 0; // no overwrite
 		}
 
 		// Overwrite with the user data only if not overwrite set, not anonymous, logged in
 		// If the user is admin we will not overwrite his setting either...
-		if ((!intval($config[$over_field]) && ($user->data['user_id'] != ANONYMOUS) && $user->data['session_logged_in']) || ($user->data['user_level'] == ADMIN))
+		if ((!intval($board_config[$over_field]) && ($user->data['user_id'] != ANONYMOUS) && $user->data['session_logged_in']) || ($user->data['user_level'] == ADMIN))
 		{
-			$config[$key] = $user->data[$user_field];
+			$board_config[$key] = $user->data[$user_field];
 		}
 		else
 		{
-			$user->data[$user_field] = $config[$key];
+			$user->data[$user_field] = $board_config[$key];
 		}
 	}
 
@@ -137,38 +137,38 @@ class class_settings
 	*/
 	function init_config($settings_details, $settings_data)
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
 		$this->modules[$settings_details['menu_name']]['data'][$settings_details['name']]['id'] = array($settings_details['id'] => $settings_details['name']);
 		@reset($settings_data);
-		while (list($config_key, $config_data) = each($settings_data))
+		while (list($board_config_key, $board_config_data) = each($settings_data))
 		{
-			if (!isset($config_data['user_only']) || !$config_data['user_only'])
+			if (!isset($board_config_data['user_only']) || !$board_config_data['user_only'])
 			{
 				// Create the key value
-				$config_value = (isset($config_data['values'][$config_data['default']]) ? $config_data['values'][$config_data['default']] : $config_data['default']);
-				if (!isset($config[$config_key]))
+				$board_config_value = (isset($board_config_data['values'][$board_config_data['default']]) ? $board_config_data['values'][$board_config_data['default']] : $board_config_data['default']);
+				if (!isset($board_config[$board_config_key]))
 				{
-					$this->set_config($config_key, $config_value, true, true);
+					$this->set_config($board_config_key, $board_config_value, true, true);
 				}
-				if (!empty($config_data['user']))
+				if (!empty($board_config_data['user']))
 				{
-					$config_key_over = $config_key . '_over';
-					if (!isset($config[$config_key_over]))
+					$board_config_key_over = $board_config_key . '_over';
+					if (!isset($board_config[$board_config_key_over]))
 					{
 						// Create the "overwrite user choice" value
-						$this->set_config($config_key_over, 0, true, true);
+						$this->set_config($board_config_key_over, 0, true, true);
 					}
 
 					// Get user choice value
-					$this->user_config_key($config_key, $config_data['user']);
+					$this->user_config_key($board_config_key, $board_config_data['user']);
 				}
 			}
 
 			// Deliver it for input only if not hidden
-			if (!isset($config_data['hide']) || !$config_data['hide'])
+			if (!isset($board_config_data['hide']) || !$board_config_data['hide'])
 			{
-				$this->modules[$settings_details['menu_name']]['data'][$settings_details['name']]['data'][$settings_details['sub_name']]['data'][$config_key] = $config_data;
+				$this->modules[$settings_details['menu_name']]['data'][$settings_details['name']]['data'][$settings_details['sub_name']]['data'][$board_config_key] = $board_config_data;
 
 				// Sort values: overwrite only if not yet provided
 				if (empty($this->modules[$settings_details['menu_name']]['sort']) || ($this->modules[$settings_details['menu_name']]['sort'] == 0))
@@ -357,22 +357,22 @@ class class_settings
 	/*
 	* Check if the field is to be displayed or not
 	*/
-	function is_auth_display($config_name, $config_data, $in_acp = true, $target_userdata = false)
+	function is_auth_display($board_config_name, $board_config_data, $in_acp = true, $target_userdata = false)
 	{
-		global $config, $user;
+		global $board_config, $user;
 
 		$return = false;
 
 		if ($in_acp || empty($target_userdata))
 		{
-			if (!isset($config_data['user_only']) || !$config_data['user_only'])
+			if (!isset($board_config_data['user_only']) || !$board_config_data['user_only'])
 			{
 				$return = true;
 			}
 		}
 		else
 		{
-			if (((!empty($config_data['user']) && isset($target_userdata[$config_data['user']]) && (!$config[$config_name . '_over'] || ($user->data['user_level'] == ADMIN))) || $config_data['system']) && $this->is_auth($config_data['auth']))
+			if (((!empty($board_config_data['user']) && isset($target_userdata[$board_config_data['user']]) && (!$board_config[$board_config_name . '_over'] || ($user->data['user_level'] == ADMIN))) || $board_config_data['system']) && $this->is_auth($board_config_data['auth']))
 			{
 				$return = true;
 			}
@@ -411,7 +411,7 @@ class class_settings
 	*/
 	function setup_modules($modules_path, $modules_prefix = 'settings_')
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
 		// We need to reset the modules to avoid modules in memory to be parsed again
 		$this->modules = array();
@@ -445,16 +445,16 @@ class class_settings
 	*/
 	function obtain_lang_files($suffix = 'settings_')
 	{
-		global $cache, $config;
+		global $cache, $board_config;
 
 		$suffix = !empty($suffix) ? trim(basename($suffix)) : 'settings_';
 
-		if (($lang_files = $cache->get('_lang_' . $suffix . $config['default_lang'])) === false)
+		if (($lang_files = $cache->get('_lang_' . $suffix . $board_config['default_lang'])) === false)
 		{
 			$lang_files = array();
 
 			// Now search for langs...
-			$dir = @opendir(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/');
+			$dir = @opendir(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/');
 
 			if ($dir)
 			{
@@ -468,7 +468,7 @@ class class_settings
 				@closedir($dir);
 			}
 
-			$cache->put('_lang_' . $suffix . $config['default_lang'], $lang_files);
+			$cache->put('_lang_' . $suffix . $board_config['default_lang'], $lang_files);
 		}
 
 		return $lang_files;
@@ -479,7 +479,7 @@ class class_settings
 	*/
 	function cache_clear()
 	{
-		global $db, $cache, $config, $lang;
+		global $db, $cache, $board_config, $lang;
 
 		$cache->destroy('config');
 		$db->clear_cache('config_');

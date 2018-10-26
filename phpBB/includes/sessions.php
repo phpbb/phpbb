@@ -549,22 +549,32 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 	// If not, just use the user_id value
 	//
 	$userdata = array();
-
 	if ($user_id != ANONYMOUS)
 	{
 		if (isset($sessiondata['autologinid']) && (string) !empty($sessiondata['autologinid']) && $user_id)
 		{
-			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type 
-				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-				WHERE u.user_id = ' . (int) $user_id . "
-					AND u.user_active = 1
-					AND k.user_id = u.user_id
-					AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+			if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+			{
+				$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type 
+					FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+					WHERE u.user_id = ' . (int) $user_id . "
+						AND u.user_active = 1
+						AND k.user_id = u.user_id
+						AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+			}
+			else
+			{
+				$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type 
+					FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+					WHERE u.user_id = ' . (int) $user_id . "
+						AND u.user_active = 1
+						AND k.user_id = u.user_id
+						AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+			}
 			if (!($result = $db->sql_query($sql)))
 			{
 				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 			}
-
 			$userdata = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		
@@ -574,11 +584,21 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		{
 			$sessiondata['autologinid'] = '';
 			$sessiondata['userid'] = $user_id;
-
-			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-				FROM ' . USERS_TABLE . ' u
-				WHERE user_id = ' . (int) $user_id . '
-					AND user_active = 1';
+			
+			if (!$db->sql_field_exists('user_colour', USERS_TABLE))
+			{
+				$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+					FROM ' . USERS_TABLE . ' u
+					WHERE user_id = ' . (int) $user_id . '
+						AND user_active = 1';
+			}
+			else
+			{
+				$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+					FROM ' . USERS_TABLE . ' u
+					WHERE user_id = ' . (int) $user_id . '
+						AND user_active = 1';
+			}
 			if (!($result = $db->sql_query($sql)))
 			{
 				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -603,10 +623,18 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		$sessiondata['autologinid'] = '';
 		$sessiondata['userid'] = $user_id = ANONYMOUS;
 		$enable_autologin = $login = 0;
-
-		$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-			FROM ' . USERS_TABLE . ' u
-			WHERE user_id = ' . (int) $user_id;
+		if (!$db->sql_field_exists('user_colour', USERS_TABLE))
+		{
+			$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . (int) $user_id;
+		}
+		else
+		{
+			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . (int) $user_id;
+		}
 		if (!($result = $db->sql_query($sql)))
 		{
 			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -782,10 +810,20 @@ function session_pagestart($user_ip, $thispage_id)
 		// session_id exists so go ahead and attempt to grab all
 		// data in preparation
 		//
-		$sql = "SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
-			FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-			WHERE s.session_id = '$session_id'
-				AND u.user_id = s.session_user_id";
+		if (!$db->sql_field_exists('user_colour', USERS_TABLE))
+		{
+			$sql = "SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
+				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+				WHERE s.session_id = '$session_id'
+					AND u.user_id = s.session_user_id";
+		}
+		else
+		{
+			$sql = "SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
+				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+				WHERE s.session_id = '$session_id'
+					AND u.user_id = s.session_user_id";
+		}
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -921,9 +959,18 @@ function session_end($session_id, $user_id)
 	// We expect that message_die will be called after this function,
 	// but just in case it isn't, reset $userdata to the details for a guest
 	//
-	$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-		FROM ' . USERS_TABLE . ' u
-		WHERE user_id = ' . ANONYMOUS;
+	if (!$db->sql_field_exists('user_colour', USERS_TABLE))
+	{
+		$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+			FROM ' . USERS_TABLE . ' u
+			WHERE user_id = ' . ANONYMOUS;
+	}
+	else
+	{
+		$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+			FROM ' . USERS_TABLE . ' u
+			WHERE user_id = ' . ANONYMOUS;
+	}
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
@@ -1033,6 +1080,38 @@ function session_reset_keys($user_id, $user_ip)
 	}
 }
 
+/*
+ * This class is part of Crawler Detect - the web crawler detection library.
+ *
+ * (c) Mark Beech <m@rkbee.ch>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file fixtures\LICENSE.
+ */
+//namespace Jaybizzle\CrawlerDetect;
+abstract class AbstractProvider
+{
+    /**
+     * The data set.
+     * 
+     * @var array
+     */
+    protected $data;
+    /**
+     * Return the data set.
+     * 
+     * @return array
+     */
+    public function getAll()
+    {
+        return $this->data;
+    }
+}
+
+include_once($phpbb_root_path . 'includes/fixtures/headers.'.$phpEx);
+include_once($phpbb_root_path . 'includes/fixtures/crawlers.'.$phpEx);
+include_once($phpbb_root_path . 'includes/fixtures/exclusions.'.$phpEx);
+
 /**
  * Class: user.
  *
@@ -1119,6 +1198,7 @@ class user
 
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
+	protected $request;
 	/** @var \phpbb\config\config */
 	protected $config;
 	/** @var \phpbb\db\driver\driver_interface */
@@ -1138,6 +1218,62 @@ class user
 	var $time_now = 0;
 	var $update_session_page = true;
 	
+    /**
+     * The user agent.
+     *
+     * @var null
+     */
+    protected $userAgent = null;
+
+    /**
+     * Headers that contain a user agent.
+     *
+     * @var array
+     */
+    protected $httpHeaders = array();
+
+    /**
+     * Store regex matches.
+     *
+     * @var array
+     */
+    protected $matches = array();
+
+    /**
+     * Crawlers object.
+     *
+     * @var \Jaybizzle\CrawlerDetect\Fixtures\Crawlers
+     */
+    protected $crawlers;
+
+    /**
+     * Exclusions object.
+     *
+     * @var \Jaybizzle\CrawlerDetect\Fixtures\Exclusions
+     */
+    protected $exclusions;
+
+    /**
+     * Headers object.
+     *
+     * @var \Jaybizzle\CrawlerDetect\Fixtures\Headers
+     */
+    protected $uaHttpHeaders;
+
+    /**
+     * The compiled regex string.
+     *
+     * @var string
+     */
+    protected $compiledRegex;
+
+    /**
+     * The compiled exclusions regex string.
+     *
+     * @var string
+     */
+    protected $compiledExclusions;
+	
 	//var  $phpbb_root_path;	
 	/**#@-*/
 
@@ -1150,16 +1286,42 @@ class user
 	//
 	function user()
 	{
-		global $cache, $board_config, $db, $phpbb_root_path, $phpEx;
+		global $cache, $request, $template, $board_config, $db, $phpbb_root_path, $phpEx;
  		
-		$this->cache = $cache;
-		$this->config = $board_config;
-		$this->db = $db;
-		$this->user = $this;
-		$this->service_providers = array('user_id'	=> 1, 'session_id'	=> 0, 'provider'	=> '', 'oauth_token' => '');		
-		$this->phpbb_root_path = $phpbb_root_path;		
-		$this->php_ext = $phpEx;
+		$this->cache             = $cache;
+		$this->request           = $request;
+		$this->template         = $template;
+		$this->config            = $board_config;
+		$this->db                 = $db;
+		$this->user               = $this;
 
+		// Setup $this->db_tools
+		if (!class_exists('phpbb_db_tools') && !class_exists('tools'))
+		{
+			include_once($phpbb_root_path . 'includes/db/tools.' . $phpEx);
+		}
+		if (class_exists('phpbb_db_tools'))
+		{
+			$this->db_tools = new phpbb_db_tools($this->db);
+		}
+		elseif (class_exists('tools'))
+		{
+			$this->db_tools = new tools($this->db);
+		}
+		
+		$this->service_providers = array('user_id' => 1, 'session_id' => 0, 'provider' => '', 'oauth_token' => '');
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+		
+        $this->crawlers = new Crawlers();
+        $this->exclusions = new Exclusions();
+        $this->uaHttpHeaders = new Headers();
+
+        $this->compiledRegex = $this->compileRegex($this->crawlers->getAll());
+        $this->compiledExclusions = $this->compileRegex($this->exclusions->getAll());
+
+        $this->setHttpHeaders($headers);
+        $this->userAgent = $this->setUserAgent($userAgent);
 		
 		$this->lang_path = $phpbb_root_path . 'language/';
 		$this->load();
@@ -1176,19 +1338,554 @@ class user
 	 */
 	function load()
 	{
-		global $user_ip;
+		global $user_ip, $page_id;
 	
 		$this->user_ip = $user_ip;
-		$this->page_id = PAGE_INDEX;
+		$this->page_id = $page_id ? $page_id : $this->request->request('page', MX_TYPE_INT, PAGE_INDEX);
 		
 		//
 		// Populate user data
-		//			
+		//
 		$this->data = session_pagestart($this->user_ip, $this->page_id);
 		
-		if (preg_match('/bot|crawl|curl|dataprovider|search|get|spider|find|java|majesticsEO|google|yahoo|teoma|contaxe|yandex|libwww-perl|facebookexternalhit/i', $_SERVER['HTTP_USER_AGENT'])) 
+		$status = $this->mobile_device_detect();
+		
+		if (!$this->db->sql_field_exists('user_type', USERS_TABLE))
 		{
-		    $this->data['is_bot'] = true;
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_type', array('column_type_sql' => 'tinyint(2)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_id'), false);
+		}
+		
+		if (!isset($this->data['username_clean']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'username_clean', array('column_type_sql' => 'varchar(255)', 'null' => 'NOT NULL', 'default' => '', 'after' => 'username'), false);
+		}
+		
+		if (!isset($this->data['user_email_hash']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_email_hash', array('column_type_sql' => 'BIGINT(20)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_email'), false);
+		}
+		
+		if (!isset($this->data['group_id']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'group_id', array('column_type_sql' => 'mediumint(8)', 'null' => 'NOT NULL', 'default' => '3', 'after' => 'user_type'), false);
+		}
+		
+		if (!isset($this->data['user_ip']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_ip', array('column_type_sql' => 'varchar(40)', 'null' => 'NOT NULL', 'default' => '"' . @encode_ip('127.0.0.1') . '"', 'after' => 'user_active'), false);
+		}
+		
+		if (!isset($this->data['user_passchg']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_passchg', array('column_type_sql' => 'int(11)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_password'), false);
+		}
+		
+		if (!isset($this->data['user_options']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_options', array('column_type_sql' => 'int(11)', 'null' => 'NOT NULL', 'default' => '230271', 'after' => 'user_rank'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_new', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_new', array('column_type_sql' => 'tinyint(1)', 'null' => 'NOT NULL', 'default' => '1', 'after' => 'user_newpasswd'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_inactive_reason', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_inactive_reason', array('column_type_sql' => 'tinyint(4)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_last_login_try'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_inactive_time', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_inactive_time', array('column_type_sql' => 'int(2)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_inactive_reason'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_lastmark', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_lastmark', array('column_type_sql' => 'int(11)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_lastvisit'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_birthday', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_birthday', array('column_type_sql' => 'varchar(10)', 'null' => 'NOT NULL', 'default' => '""', 'after' => 'user_email_hash'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_lastvisit', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_lastvisit', array('column_type_sql' => 'int(11)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_birthday'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_lastpage', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_lastpage', array('column_type_sql' => 'varchar(200)', 'null' => 'NOT NULL', 'default' => '""', 'after' => 'user_lastmark'), false);
+		}
+		
+		if (!isset($this->data['user_colour']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_colour', array('column_type_sql' => 'varchar(50)', 'null' => 'NOT NULL', 'default' => '"9E8DA7"', 'after' => 'user_style'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_avatar_width', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_avatar_width', array('column_type_sql' => 'tinyint(6)', 'null' => 'NOT NULL', 'default' => 98, 'after' => 'user_last_login_try'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_avatar_height', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_avatar_height', array('column_type_sql' => 'tinyint(6)', 'null' => 'NOT NULL', 'default' => 98, 'after' => 'user_last_login_try'), false);
+		}
+		
+		if (!isset($this->data['user_form_salt']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_form_salt', array('column_type_sql' => 'varchar(32)', 'null' => 'NOT NULL', 'default' => '""', 'after' => 'user_newpasswd'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_allow_viewemail', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_allow_viewemail', array('column_type_sql' => 'tinyint(1)', 'null' => 'NOT NULL', 'default' => '1', 'after' => 'user_allow_viewonline'), false);
+		}
+		
+		if (!$this->db->sql_field_exists('user_allow_massemail', USERS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_allow_massemail', array('column_type_sql' => 'tinyint(1)', 'null' => 'NOT NULL', 'default' => '1', 'after' => 'user_allow_viewemail'), false);
+		}
+		
+		if (!isset($this->data['user_sig']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for user_sig column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_sig', array('column_type_sql_default'	=> 'mediumtext ', 'column_type_sql' => 'mediumtext', 'null' => 'NOT NULL', 'default' => '""', 'after' => 'user_sig'), false);
+		}
+		
+		if (!isset($this->data['user_sig_bbcode_uid']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for user_sig_bbcode_uid column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_sig_bbcode_uid', array('column_type_sql_default'	=> 'varchar(8)', 'column_type_sql' => 'varchar(8)', 'null' => 'NOT NULL', 'after' => 'user_sig'), false);
+		}
+		
+		if (!isset($this->data['user_sig_bbcode_bitfield']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for user_sig_bbcode_bitfield column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_sig_bbcode_bitfield', array('column_type_sql_default'	=> 'varchar(255)', 'column_type_sql' => 'varchar(255)', 'null' => 'NOT NULL', 'default' => '"1111111111111"', 'after' => 'user_sig_bbcode_uid'), false);
+		}
+		
+		//
+		// Check USERS_TABLE schema for is_bot
+		//
+		if (!isset($this->data['is_bot']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for is_bot column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'is_bot', array('column_type_sql'	=> 'int(2)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_lang'), false);
+		}
+		
+		//
+		// Check USERS_TABLE schema for is_mobile
+		//
+		if (!isset($this->data['is_mobile']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for is_mobile column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'is_mobile', array('column_type_sql'	=> 'int(2)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'is_bot'), false);
+		}
+		
+		//
+		// Check USERS_TABLE schema for user_agent
+		//
+		if (!isset($this->data['user_agent']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for user_agent column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_agent', array('column_type_sql_default'	=> 'varchar(255)', 'column_type_sql' => 'varchar(99)', 'null' => 'NOT NULL', 'default' => '"Mozilla/5.0 (Windows NT 10.0; rv:63.0) Gecko/20100101 Firefox/63.0.68"', 'after' => 'is_mobile'), false);
+		}
+		
+		//
+		// Check USERS_TABLE schema for device_name
+		//
+		if (!isset($this->data['device_name']))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Cheching for device_name column in USERS_TABLE schema!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'device_name', array('column_type_sql' => 'varchar(99)', 'null' => 'NOT NULL', 'default' => $status[1],  'after' => 'user_agent'), false);
+		}
+		
+		/*
+		if (!isset($this->data['device_name']))
+		{	
+			$after = '';
+			$sql_arry = array(
+				"ADD COLUMN  int(2) UNSIGNED NOT NULL DEFAULT 1" . $after,
+				"ADD COLUMN is_mobile int(2) UNSIGNED NOT NULL DEFAULT 1",
+				"ADD COLUMN user_agent varchar(255) NOT NULL",
+				"ADD COLUMN device_name varchar(99) NOT NULL",
+			);
+			
+			foreach ($sql_arry as $alter)
+			{
+				$sql = "ALTER TABLE " . USERS_TABLE . " " . $alter;
+				$this->db->sql_return_on_error(true);
+				$result = $this->db->sql_query($sql);
+				$this->db->sql_return_on_error(false);
+				
+				// We could add error handling here...
+				if (!($result))
+				{		
+					print_r("Could not upgrade users table at ". ' '. __LINE__ . ': '. __FILE__ . ':<br /> ' . $sql . '<br />');
+				}
+			}
+		}
+		*/
+		
+		$this->data['is_mobile'] = $status;
+		
+		$this->cookie_data['mobile_name'] = $status[1];
+		$cookie_mobile_name = $this->request->variable($this->config['cookie_name'] . '_mobile_name', '', true, $this->request->COOKIE);
+		if (!$cookie_mobile_name)
+		{
+			$this->user->set_cookie('mobile_name', $status[1], time() + 5 * 24 * 60 * 60, '/', false, false);
+		}
+		
+		if (!$this->db->sql_field_exists('group_colour', GROUPS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Refreshing the groups table!</p></i>');
+			$this->db_tools->sql_column_add(GROUPS_TABLE, 'group_colour', array('column_type_sql' => 'varchar(50)', 'null' => 'NOT NULL', 'after' => ''), false);
+			
+			/*
+			-- Refreshing Groups
+			*/
+			$default_groups = array(
+				//'Anonymous'					=> array('', 0, 0, 1, 'Personal User'),
+				'GUESTS'						=> array('', 0, 0, 0, 'Default Group'),
+				'REGISTERED'					=> array('', 0, 0, 0, 'Default Group'),
+				'REGISTERED_COPPA'		=> array('', 0, 0, 0, 'Default Group'),
+				'GLOBAL_MODERATORS'	=> array('00AA00', 2, 0, 0, 'Default Group'),
+				'ADMINISTRATORS'			=> array('AA0000', 1, 1, 0, 'Default Group'),
+				'BOTS'							=> array('9E8DA7', 0, 0, 0, 'Default Group'),
+				'NEWLY_REGISTERED'		=> array('', 0, 0, 0, 'Default Group'),
+			);
+			
+			/*
+			-- Refreshing Groups
+			*/
+			$sql = 'SELECT *
+				FROM ' . GROUPS_TABLE . '
+				WHERE ' . $this->db->sql_in_set('group_name', array_keys($default_groups));
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				unset($default_groups[strtoupper($row['group_name'])]);
+			}
+			$this->db->sql_freeresult($result);
+			
+			$sql_ary = array();
+			foreach ($default_groups as $name => $data)
+			{
+				$sql_ary[] = array(
+					'group_type'					=> GROUP_CLOSED,
+					'group_name'					=> (string) $name,
+					'group_description'			=> (string) $data[4],
+					//'group_desc_uid'		=> '',
+					//'group_desc_bitfield'	=> '',
+					'group_colour'					=> (string) $data[0],
+					//'group_legend'			=> (int) $data[1],
+					'group_moderator'			=> (int) $data[2],
+					'group_single_user'			=> (int) $data[3],
+				);
+			}
+			if (count($sql_ary))
+			{
+				$this->db->sql_multi_insert(GROUPS_TABLE, $sql_ary);
+			}
+			
+			/** /
+			$sql_ary[] = array(
+				'group_id'						=> (int) $db->sql_nextid(),
+				'user_id'							=> '',
+				'user_pending'					=>  '0',
+			);
+			if (count($sql_ary))
+			{
+				$this->db->sql_multi_insert(USER_GROUP_TABLE, $sql_ary);
+			}
+			/**/
+			
+		}
+		
+		//
+		// Check BOTS_TABLE Schema
+		//
+		if (!$this->db->sql_field_exists('bot_id', BOTS_TABLE))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Creating the BOTS_TABLE!</p></i>');
+			
+			/* Updating from IP 1.2.10.37
+			* Make sure we have bot_name field
+			*
+			* old phpbb2 colums field names: 
+			* 	bot_id, bot_name, last_visit, bot_visits, bot_pages list($page_id, )
+			* new phpbb colums field names: 
+			* 	bot_id, bot_name, bot_last_visit, bot_visit_counter
+			*/
+			$schema = array(
+				'COLUMNS'	=> array(
+					'bot_id'				=> array('UINT', NULL, 'auto_increment'),
+					'bot_active'			=> array('BOOL', 1),
+					'bot_name'			=> array('STEXT_UNI', ''),
+					'bot_color'			=> array('VCHAR', ''),
+					'user_id'				=> array('UINT', 0),
+					'bot_agent'			=> array('VCHAR', ''),
+					'bot_ip'				=> array('VCHAR', ''),
+					'bot_last_visit'		=> array('VCHAR:11', ''),
+					'bot_visit_counter'	=> array('UINT:8', 0),
+				),
+				'PRIMARY_KEY'	=> 'bot_id',
+				'KEYS'	=> array(
+					'bot_active'	=> array('INDEX', 'bot_active'),
+				),
+			);
+			if (!$this->db->sql_table_exists(BOTS_TABLE))
+			{
+				$this->db_tools->sql_create_table(BOTS_TABLE, $schema);
+			}
+		}
+		
+		if ($this->isCrawler($this->request->server('HTTP_USER_AGENT')) && ($this->data['is_bot'] !== 1)) 
+		{
+		    $this->data['is_bot'] = 1;
+			
+			// Register bot...
+			
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . "
+				WHERE group_name = 'BOTS'
+					AND group_type = " . GROUP_CLOSED;
+			if ( !($result = $this->db->sql_query($sql)) )
+			{
+				message_die(CRITICAL_ERROR, 'Could not update user info');
+			}
+			$add_group_id = (int) $this->db->sql_fetchfield('group_id');
+			$this->db->sql_freeresult($result);
+			
+			$bots = array(
+				'AdsBot [Google]'					=> array('AdsBot-Google', 'adsbot-support@google.com'),
+				'Alexa [Bot]'						=> array('ia_archiver', 'crawler@alexa.com'),
+				'Alta Vista [Bot]'					=> array('Scooter/', 'search-support@altavista.de'),
+				'Ask Jeeves [Bot]'					=> array('Ask Jeeves', 'askjeevesbot@askjeeves.com'),
+				'Baidu [Spider]'						=> array('Baiduspider+(', 'ir@baidu.com'),
+				'Bing [Bot]'							=> array('bingbot/', 'bingbot@microsoft.com'), //bingbot-feedback@microsoft.com
+				'Exabot [Bot]'						=> array('Exabot/', 'crawler@exabot.com'),
+				'FAST Enterprise [Crawler]'		=> array('FAST Enterprise Crawler', 'scirus-crawler@fast.no'),
+				'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', 'atw-crawler@fast.no'),
+				'Francis [Bot]'						=> array('http://www.neomo.de/', 'francis@neomo.de'),
+				'Gigabot [Bot]'						=> array('Gigabot/', 'gigabot-support@google.com'),
+				'Google Adsense [Bot]'			=> array('Mediapartners-Google', 'adsense-support@google.com'),
+				'Google Desktop'					=> array('Google Desktop', 'desktop-support@google.com'),
+				'Google Feedfetcher'				=> array('Feedfetcher-Google', 'feedfetcher-support@google.com'),
+				'Google [Bot]'						=> array('Googlebot', 'googlebot@googlebot.com'),
+				'Heise IT-Markt [Crawler]'		=> array('heise-IT-Markt-Crawler', 'info-hg@heise.de'),
+				'Heritrix [Crawler]'					=> array('heritrix/1.', 'info@archive.org'),
+				'IBM Research [Bot]'				=> array('ibm.com/cs/crawler', 'crawler@almaden.ibm.com'),
+				'ICCrawler - ICjobs'				=> array('ICCrawler - ICjobs', 'bot@icjobs.de'),
+				'ichiro [Crawler]'					=> array('ichiro/2', 'ichiro@mail.goo.ne.jp'), //ichiro@abc.ne.jp
+				'Majestic-12 [Bot]'				=> array('MJ12bot/', 'help@majestic.com'),
+				'Metager [Bot]'						=> array('MetagerBot/', ' office@suma-ev.de'),
+				'MSN NewsBlogs'					=> array('msnbot-NewsBlogs/', 'msnbot-newsblogs@microsoft.com'),
+				'MSN [Bot]'							=> array('msnbot/', 'msnbot@microsoft.com'),
+				'MSNbot Media'					=> array('msnbot-media/', 'msnbot-media@microsoft.com'),
+				'NG-Search [Bot]'					=> array('NG-Search/', 'info@newvisionsystems.com'),
+				'Nutch [Bot]'						=> array('http://lucene.apache.org/nutch/', 'nutch-agent@lucene.apache.org'),
+				'Nutch/CVS [Bot]'					=> array('NutchCVS/', 'nutch-agent@lists.sourceforge.net'),
+				'OmniExplorer [Bot]'				=> array('OmniExplorer_Bot/', 'info@etherdesk.com'),
+				'Online link [Validator]'			=> array('online link validator', ''),
+				'psbot [Picsearch]'					=> array('psbot/0', 'custom@passionsports.ca'),
+				'Seekport [Bot]'					=> array('Seekbot/', 'info@seekbot.net'),
+				'Sensis [Crawler]'					=> array('Sensis Web Crawler', 'digitalenquiries@sensis.com.au'),
+				'SEO Crawler'						=> array('SEO search Crawler/', ''),
+				'Seoma [Crawler]'					=> array('Seoma [SEO Crawler]', 'comp-seo@seomaconsulting.com'),
+				'SEOSearch [Crawler]'			=> array('SEOsearch/', 'e-search@seosearch.biz'),
+				'Snappy [Bot]'						=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
+				'Steeler [Crawler]'					=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
+				'Synoo [Bot]'						=> array('SynooBot/', 'synoobot'),
+				'Telekom [Bot]'					=> array('crawleradmin.t-info@telekom.de', 'crawleradmin.t-info@telekom.de'),
+				'TurnitinBot [Bot]'					=> array('TurnitinBot/', 'tiisupport@turnitin.com'),
+				'Voyager [Bot]'						=> array('voyager/1.0', ''),
+				'W3 [Sitesearch]'					=> array('W3 SiteSearch Crawler', 'sitesearch@w3.org'), //MIT/LCS (Massachusetts Institute of Technology, Laboratory for Computer Science)
+				'W3C [Linkcheck]'				=> array('W3C-checklink/', 'site-comments@w3.org'),
+				'W3C [Validator]'					=> array('W3C_*Validator', 'www-validator@w3.org'),
+				'WiseNut [Bot]'						=> array('http://www.WISEnutbot.com', 'ZyBorg@WISEnutbot.com'),
+				'YaCy [Bot]'							=> array('yacybot', '(mc@yacy.net'),
+				'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', 'vertical-crawl-support@yahoo-inc.com'),
+				'Yahoo Slurp [Bot]'				=> array('Yahoo! DE Slurp', 'slurp@inktomi.com'),
+				'Yahoo [Bot]'						=> array('Yahoo! Slurp', 'crawl-support@yahoo-inc.com'),
+				'YahooSeeker [Bot]'				=> array('YahooSeeker/', 'seeker-support@yahoo-inc.com'),
+			);
+			
+			$botmatches = $this->getMatches();
+			
+			//$bots[$bot_name] = $bot_ary[$user_agent][$bot_email];
+			foreach ($bots as $bot_name => $bot_ary)
+			{
+				$user_row = array(
+					'user_type'			=> USER_IGNORE,
+					'group_id'			=> $add_group_id,
+					'username'			=> $bot_name,
+					'user_regdate'		=> time(),
+					'user_password'	=> '',
+					'user_colour'		=> '9E8DA7',
+					'user_email'			=> $bot_ary[1],
+					'user_timezone'	=> $this->config['board_timezone'],
+					'user_dateformat'	=> $this->config['default_dateformat'],
+					'user_lang'			=> $this->config['default_lang'],
+					'user_style'			=> (int) $this->config['default_style'],
+					'is_bot'				=> (int) 1,
+					'user_agent'  		=> (string) $bot_ary[0],
+					'user_ip'				=> (string) $user_ip,
+					'device_name' 		=> (string) $status[1],
+					'user_allow_massemail'	=> 0,
+				);
+			}
+			  
+			$sql = "SELECT user_id, username as bot_name
+					FROM " . USERS_TABLE . "
+					WHERE username = '$bot_name'";
+			if ( !($result = $this->db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Couldn\'t query data from bots table.', '', __LINE__, __FILE__, $sql);
+			}
+				
+			$sql_bot_name_check = $this->db->sql_numrows($result);
+			$row = $this->db->sql_fetchrow($result);
+			$current_name = $row['bot_name'];
+			$this->db->sql_freeresult($result);
+		
+			if(($sql_bot_name_check > 0) && ($current_name != $bot_name))
+			{
+				$bot_errors = $lang['Error_Bot_Name_Taken'];
+			}
+			
+			if ($current_name !== $bot_name)
+			{
+				// Register user...
+				print('<p><span style="color: red;"></span></p><i><p>Registering Your IP to the dabadase...!</p></i>');
+				if (!function_exists('user_add'))
+				{
+					include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+				}
+				
+				$user_id = (int) user_add($user_row);
+				
+				/*
+				* Make sure we have bot_name field
+				*
+				*/
+				$ary = array(
+					'bot_active'			=> 1,
+					'bot_name'			=> $bot_name,
+					'user_id'				=> $user_id,
+					'bot_agent'			=> $bot_ary[0],
+					'bot_ip'				=> $user_ip,
+					//'bot_style'		=> (int) $board_config['default_style'],
+					'bot_color'			=> '9E8DA7',
+					'bot_last_visit'		=> time(),
+					'bot_visit_counter'	=> 1,
+				);
+				
+				/*
+				* Update bots table
+				*/
+				//$this->db->sql_return_on_error(true);
+				if ( !($result = $this->db->sql_query('INSERT INTO ' . BOTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $ary))) )
+				{
+					message_die(GENERAL_ERROR, 'Couldn\'t insert data into bots table.', '', __LINE__, __FILE__,  '<br /><br />SQL Error : ' . $this->db->sql_error('')['code'] . ' ' . $this->db->sql_error('')['message']);
+				}
+				//$this->db->sql_return_on_error(false);
+				/*
+				*/
+			}
+			else
+			{
+				$user_id = (int) $row['user_id'];
+				//$bot_name = (string) $row['bot_name'];
+				
+				$sql = "SELECT *
+					FROM " . BOTS_TABLE . "
+					WHERE bot_name = '$bot_name'";
+				if ( !($result = $this->db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$sql_bot_name_check = $this->db->sql_numrows($result);
+				$row = $this->db->sql_fetchrow($result);
+				$current_name = $row['bot_name'];
+				$this->db->sql_freeresult($result);
+		
+				if(($sql_bot_name_check > 0) && ($current_name != $bot_name))
+				{
+					$bot_errors = $lang['Error_Bot_Name_Taken'];
+				}
+				elseif(($sql_bot_name_check > 0) && ($current_name == $bot_name))
+				{
+					//$user_id = (int) $this->data['user_id'];
+					// Update existing bot last visit time
+					$sql = "UPDATE " . BOTS_TABLE . "
+									SET bot_visit_counter = (bot_visit_counter + 1),
+										bot_last_visit = '" . time() . "'
+									WHERE bot_id = '" . $row['bot_id'] . "'";
+					if ( !($result = $this->db->sql_query($sql)) )
+					{
+						message_die(CRITICAL_ERROR, 'Could not update bot info', '', __LINE__, __FILE__, $sql);
+					}
+					$this->db->sql_freeresult($result);
+				}
+				else
+				{
+					// Register user...
+					print('<p><span style="color: red;"></span></p><i><p>Registering You as bot to the dabadase...!</p></i>');
+					
+					/*
+					* Make sure we have bot_name field
+					*/
+					$ary = array(
+						'bot_active'			=> 1,
+						'bot_name'			=> $bot_name,
+						'user_id'				=> $user_id,
+						'bot_agent'			=> $bot_ary[0],
+						'bot_ip'				=> $user_ip,
+						//'bot_style'		=> (int) $board_config['default_style'],
+						'bot_color'			=> '9E8DA7',
+						'bot_last_visit'		=> time(),
+						'bot_visit_counter'	=> 1,
+					);
+					
+					/*
+					* Update bots table
+					*/
+					//$this->db->sql_return_on_error(true);
+					if ( !($result = $this->db->sql_query('INSERT INTO ' . BOTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $ary))) )
+					{
+						message_die(GENERAL_ERROR, 'Couldn\'t insert data into bots table.', '', __LINE__, __FILE__,  '<br /><br />SQL Error : ' . $this->db->sql_error('')['code'] . ' ' . $this->db->sql_error('')['message']);
+					}
+					//$this->db->sql_return_on_error(false);
+					/*
+					*/
+				}
+			}
 		}
 		else
 		{
@@ -1212,10 +1909,144 @@ class user
 		$this->session_id = $this->data['session_id'];
 	}
 	
+	
+	/*
+	 * This class is part of Crawler Detect - the web crawler detection library.
+	 *
+	 * (c) Mark Beech <m@rkbee.ch>
+	 *
+	 * This source file is subject to the MIT license that is bundled
+	 * with this source code in the file fixtures\LICENSE.
+	 */
+	 
 	// ------------------------------
 	// Public Methods
-	//
+	// 
+	 
+    /**
+     * Compile the regex patterns into one regex string.
+     *
+     * @param array
+     * 
+     * @return string
+     */
+    public function compileRegex($patterns)
+    {
+        return '('.implode('|', $patterns).')';
+    }
 
+    /**
+     * Set HTTP headers.
+     *
+     * @param array|null $httpHeaders
+     */
+	 public function setHttpHeaders($httpHeaders)
+	{
+		// Use global _SERVER if $httpHeaders aren't defined.
+		if (! is_array($httpHeaders) || ! count($httpHeaders))
+		{
+			// enable super globals to get literal value
+			$super_globals_disabled = $this->request->super_globals_disabled();
+			
+			if ($super_globals_disabled)
+			{
+				$this->request->enable_super_globals();
+			}
+			
+			$httpHeaders = $_SERVER;
+			
+			if ($super_globals_disabled)
+			{
+				$this->request->disable_super_globals();
+			}
+		}
+		
+		// Clear existing headers.
+		$this->httpHeaders = array();
+		// Only save HTTP headers. In PHP land, that means
+		// only _SERVER vars that start with HTTP_.
+		foreach ($httpHeaders as $key => $value)
+		{
+            if (strpos($key, 'HTTP_') === 0) 
+			{
+                $this->httpHeaders[$key] = $value;
+            }
+        }
+		unset($httpHeaders);
+    }
+
+    /**
+     * Return user agent headers.
+     *
+     * @return array
+     */
+    public function getUaHttpHeaders()
+    {
+        return $this->uaHttpHeaders->getAll();
+    }
+
+    /**
+     * Set the user agent.
+     *
+     * @param string $userAgent
+     */
+    public function setUserAgent($userAgent)
+    {
+        if (is_null($userAgent)) 
+		{
+            foreach ($this->getUaHttpHeaders() as $altHeader) 
+			{
+                if (isset($this->httpHeaders[$altHeader])) 
+				{
+                    $userAgent .= $this->httpHeaders[$altHeader].' ';
+                }
+            }
+        }
+        return $userAgent;
+    }
+
+    /**
+     * Check user agent string against the regex.
+     *
+     * @param string|null $userAgent
+     *
+     * @return bool
+     */
+    public function isCrawler($userAgent = null)
+    {
+        $agent = $userAgent ?: $this->userAgent;
+
+        $agent = preg_replace('/'.$this->compiledExclusions.'/i', '', $agent);
+
+        if (strlen(trim($agent)) == 0) 
+		{
+            return false;
+        }
+
+        $result = preg_match('/'.$this->compiledRegex.'/i', trim($agent), $matches);
+		//print_r($result);
+        if ($matches)
+		{
+            $this->matches = $matches;
+        }
+
+        return (bool) $result;
+    }
+
+    /**
+     * Return the matches.
+     *
+     * @return string|null
+     */
+    public function getMatches()
+    {
+        return isset($this->matches[0]) ? $this->matches[0] : null;
+    }
+	
+	// ------------------------------
+	// Init user class.
+	//
+	
 	/**
 	 * Init user class.
 	 * Populate $userdata, $lang
@@ -1265,16 +2096,66 @@ class user
 		$this->data = $userdata; //for compatibility with Olympus style modules
 		
 		// Give us some basic information
-		$this->time_now				= time();
+		$this->time_now			= time();
 		
-		$this->browser				= $_SERVER['HTTP_USER_AGENT'];
-		$this->referer				= $_SERVER['Referer'];
-		$this->forwarded_for		= $_SERVER['X-Forwarded-For'];
+		$this->browser			= $this->request->server('HTTP_USER_AGENT');
+		$this->referer				= $this->request->server('Referer');
+		$this->forwarded_for		= $this->request->server('X-Forwarded-For');
 
 		$this->host					= extract_current_hostname();
-		$this->page					= extract_current_page($phpbb_root_path);
+		$this->page				= extract_current_page($phpbb_root_path);
 		
 		$this->is_admin = $this->data['user_level'] == ADMIN && $this->data['session_logged_in'];
+	}
+	
+	function sql_column_add_array($table, $column_array = '', $after = '')
+	{
+			foreach ($column_array as $column_name => $column_type)
+			{
+				$this->sql_column_add($table, $column_name, $column_type, '', $after);
+			}
+	}
+	
+	function sql_column_add($table, $column_name, $column_type = 'TEXT', $column_data = '', $after = '')
+	{
+		// If the column exists we change it, else we add it ;)
+		$column_data = ($table = USERS_TABLE) ? $this->user->data : $column_data;
+		
+		//if ($this->db_tools->sql_column_exists($table, $column_name))
+		if ($this->db->sql_field_exists($column_name, $table)  == true)
+		{
+			$result = true;
+			print('<p><span style="color: red;">column_exists: </span></p><i><p>'.$column_name.'</p></i>');
+		}
+		else
+		{
+			$column_data[$column_name] = $column_data[$column_name] ? $column_data[$column_name] : '0';
+			$column_data['column_type_sql'] = $column_data['column_type_sql']  ? $column_data['column_type_sql'] : $column_type;
+			$result = $this->db_tools->sql_column_add($table, $column_name, $column_data, true);
+		}
+		
+		if ($this->db->sql_field_exists($column_name, $table)  == true)
+		{
+			$result = true;
+		}
+		else
+		{
+			$column_data['column_type_sql'] = 'TEXT';
+			$column_data[$column_name] = $column_data[$column_name] ? $column_data[$column_name] : 'NULL';
+			$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);
+			if (!$result)
+			{
+				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : $after;
+				$sql = 'ALTER TABLE `' . $table . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;
+				
+				// We could add error handling here...
+				$result = $db->sql_query($sql);
+				if (!($result))
+				{
+					message_die(CRITICAL_ERROR, "Could not info", '', __LINE__, __FILE__, $sql);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -1287,25 +2168,25 @@ class user
 	 */
 	function _init_userprefs()
 	{
-		global $userdata, $board_config, $portal_config, $theme, $images;
+		global $user, $board_config, $portal_config, $theme, $images;
 		global $template, $lang, $phpEx, $phpbb_root_path, $db;
 		global $nav_links;
 
-		if ( $userdata['user_id'] != ANONYMOUS )
+		if ( $this->data['user_id'] != ANONYMOUS )
 		{
-			if ( !empty($userdata['user_lang']))
+			if ( !empty($this->data['user_lang']))
 			{
-				$language = phpbb_ltrim(basename(phpbb_rtrim($userdata['user_lang'])), "'");
+				$language = phpbb_ltrim(basename(phpbb_rtrim($this->data['user_lang'])), "'");
 			}
 
-			if ( !empty($userdata['user_dateformat']) )
+			if ( !empty($this->data['user_dateformat']) )
 			{
-				$board_config['default_dateformat'] = $userdata['user_dateformat'];
+				$this->config['default_dateformat'] = $this->data['user_dateformat'];
 			}
 
-			if ( isset($userdata['user_timezone']) )
+			if ( isset($this->data['user_timezone']) )
 			{
-				$board_config['board_timezone'] = $userdata['user_timezone'];
+				$this->config['board_timezone'] = $this->data['user_timezone'];
 			}
 		}
 		//
@@ -1313,15 +2194,15 @@ class user
 		//
 		else
 		{
-			$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+			$language = phpbb_ltrim(basename(phpbb_rtrim($this->config['default_lang'])), "'");
 		}
 
 		if ( !file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $language . '/lang_main.'.$phpEx)) )
 		{
-			if ( $userdata['user_id'] != ANONYMOUS )
+			if ( $this->data['user_id'] != ANONYMOUS )
 			{
 				// For logged in users, try the board default language next
-				$language = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+				$language = phpbb_ltrim(basename(phpbb_rtrim($this->config['default_lang'])), "'");
 			}
 			else
 			{
@@ -1343,7 +2224,7 @@ class user
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . "
 				SET user_lang = '" . $language . "'
-				WHERE user_lang = '" . $userdata['user_lang'] . "'";
+				WHERE user_lang = '" . $this->data['user_lang'] . "'";
 
 			if ( !($result = $db->sql_query($sql)) )
 			{
@@ -1352,7 +2233,7 @@ class user
 
 			$userdata['user_lang'] = $language;
 		}
-		elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $language )
+		elseif ( $this->data['user_id'] === ANONYMOUS && $this->config['default_lang'] !== $language )
 		{
 			$sql = 'UPDATE ' . CONFIG_TABLE . "
 				SET config_value = '" . $language . "'
@@ -1364,7 +2245,7 @@ class user
 			}
 		}
 
-		$board_config['default_lang'] = $language;
+		$this->config['default_lang'] = $language;
 
 		include($phpbb_root_path . 'language/lang_' . $language . '/lang_main.' . $phpEx); // Also include phpBB lang keys
 
@@ -1372,12 +2253,12 @@ class user
 		{
 			if ((@include $phpbb_root_path . "language/lang_" . $language . "/lang_main.$phpEx") === false)
 			{
-				$board_config['default_lang'] = 'english'; 
+				$this->config['default_lang'] = 'english'; 
 			}					
 			// Also include phpBB lang keys
-			elseif ((@include $phpbb_root_path . "language/lang_" . $board_config['default_lang'] . "/lang_main.$phpEx") === false)
+			elseif ((@include $phpbb_root_path . "language/lang_" . $this->config['default_lang'] . "/lang_main.$phpEx") === false)
 			{
-				message_die(CRITICAL_ERROR, 'Language file ' . $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . ' & Language file ' . $phpbb_root_path . 'language/lang_' . $language . '/lang_main.$phpEx' . ' couldn\'t be opened.');
+				message_die(CRITICAL_ERROR, 'Language file ' . $phpbb_root_path . 'language/lang_' . $this->config['default_lang'] . ' & Language file ' . $phpbb_root_path . 'language/lang_' . $language . '/lang_main.$phpEx' . ' couldn\'t be opened.');
 			}			
 		}
 
@@ -1389,7 +2270,7 @@ class user
 		//
 		$nav_links['top'] = array (
 			'url' => append_sid($phpbb_root_path . 'index.' . $phpEx),
-			'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+			'title' => sprintf($lang['Forum_Index'], $this->config['sitename'])
 		);
 		$nav_links['search'] = array (
 			'url' => append_sid($phpbb_root_path . 'search.' . $phpEx),
@@ -1403,7 +2284,340 @@ class user
 			'url' => append_sid($phpbb_root_path . 'memberlist.' . $phpEx),
 			'title' => $lang['Memberlist']
 		);
-	}	
+	}
+	
+	/**
+	* @package Sessions - Mobile Device
+	* @author FlorinCB aka orynider
+	* @copyright (c) 2015 Sniper_E - http://www.sniper-e.com
+	* @copyright (c) 2015 dmzx - http://www.dmzx-web.net
+	* @copyright (c) 2015 martin - http://www.martins-phpbb.com
+	* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+	*/
+	public function mobile_device_detect($iphone = true, $ipod = true, $ipad = true, $android = true, $opera = true, $blackberry = true, $palm = true, $windows = true, $lg = true)
+	{
+		$mobile_browser = false;
+		$user_agent = $this->request->server('HTTP_USER_AGENT');
+		
+		switch (true)
+		{		
+			case (preg_match('/x86_64|WOW64|Win64|Iceweasel/i', $user_agent) && $this->config['mobile_test_enable']);
+				$status = $this->user->lang('DESKTOP');
+				$mobile_browser = true;
+			break;
+			case (preg_match('/Bot|CFNetwork|libwww|Java|Jigsaw|SpreadTrum|httpget/i', $user_agent)) || $this->user->data['is_bot'];
+				$mobile_browser = false;
+			break;
+			case (preg_match('/ipad/i',$user_agent));
+				$status = $this->user->lang('IPAD');
+				$mobile_browser = $ipad;
+			break;
+			case (preg_match('/ipod/i',$user_agent));
+				$status = $this->user->lang('IPOD');
+				$mobile_browser = $ipod;
+			break;
+			case (preg_match('/iphone/i', $user_agent));
+				$status = $this->user->lang('IPHONE');
+				$mobile_browser = $iphone;
+			break;
+			case (preg_match('/android/i', $user_agent));
+				if (preg_match('/SM-G870A/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS5A');
+				}
+				else if (preg_match('/SM-G900A|SM-G900F|SM-G900H|SM-G900M|SM-G900P|SM-G900R4|SM-G900T|SM-G900V|SM-G900W8|SM-G800F/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS5');
+				}
+				else if (preg_match('/SM-G920F/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS6');
+				}
+				else if (preg_match('/SGH-I497/i', $user_agent))
+				{
+					$status = $this->user->lang('SG2T');
+				}
+				else if (preg_match('/GT-P5210|SM-T110|SM-T310/i', $user_agent))
+				{
+					$status = $this->user->lang('SGT3');
+				}
+				else if (preg_match('/SM-T210/i', $user_agent))
+				{
+					$status = $this->user->lang('SGT3W');
+				}
+				else if (preg_match('/SM-T335|SM-T530/i', $user_agent))
+				{
+					$status = $this->user->lang('SGT4');
+				}
+				else if (preg_match('/SM-T520/i', $user_agent))
+				{
+					$status = $this->user->lang('SGTP');
+				}
+				else if (preg_match('/SGH-I537/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS4A');
+				}
+				else if (preg_match('/GT-I9505|GT-I9500|SPH-L720T/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS4');
+				}
+				else if (preg_match('/GT-I9100P/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS2');
+				}
+				else if (preg_match('/SM-N9005|SM-P600/i', $user_agent))
+				{
+					$status = $this->user->lang('SGN3');
+				}
+				else if (preg_match('/SM-N7505/i', $user_agent))
+				{
+					$status = $this->user->lang('SGN3N');
+				}
+				else if (preg_match('/SM-N910C|SM-N910F/i', $user_agent))
+				{
+					$status = $this->user->lang('SGN4');
+				}
+				else if (preg_match('/SM-N920P/i', $user_agent))
+				{
+					$status = $this->user->lang('SGN5');
+				}
+				else if (preg_match('/SM-G357FZ/i', $user_agent))
+				{
+					$status = $this->user->lang('SGA4');
+				}
+				else if (preg_match('/SM-G925P/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS6E');
+				}
+				else if (preg_match('/SM-G935F/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS7E');
+				}
+				else if (preg_match('/SM-G950F|SM-G955F/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS8');
+				}
+				else if (preg_match('/GT-S7582/i', $user_agent))
+				{
+					$status = $this->user->lang('SGSD2');
+				}
+				else if (preg_match('/GT-I9100P/i', $user_agent))
+				{
+					$status = $this->user->lang('SGS2');
+				}
+				else if (preg_match('/HONORPLK-L01/i',$user_agent))
+				{
+					$status = $this->user->lang('HPL01');
+				}
+				else if (preg_match('/EVA-L09/i', $user_agent))
+				{
+					$status = $this->user->lang('HPL09');
+				}
+				else if (preg_match('/VNS-L23/i', $user_agent))
+				{
+					$status = $this->user->lang('HPL23');
+				}
+				else if (preg_match('/IMM76B/i', $user_agent))
+				{
+					$status = $this->user->lang('SGN');
+				}
+				else if (preg_match('/TF101/i', $user_agent))
+				{
+					$status = $this->user->lang('ATT');
+				}
+				else if (preg_match('/Archos 40b/i', $user_agent))
+				{
+					$status = $this->user->lang('A4TS');
+				}
+				else if (preg_match('/A0001/i', $user_agent))
+				{
+					$status = $this->user->lang('OPO');
+				}
+				else if (preg_match('/Orange Nura/i', $user_agent))
+				{
+					$status = $this->user->lang('ORN');
+				}
+				else if (preg_match('/XT1030/i', $user_agent))
+				{
+					$status = $this->user->lang('MDM');
+				}
+				else if (preg_match('/TIANYU-KTOUCH/i', $user_agent))
+				{
+					$status = $this->user->lang('TKT');
+				}
+				else if (preg_match('/D2005|D2105/i',$user_agent))
+				{
+					$status = $this->user->lang('SXED');
+				}
+				else if (preg_match('/C2005|D2303/i', $user_agent))
+				{
+					$status = $this->user->lang('SXM2');
+				}
+				else if (preg_match('/C6906/i', $user_agent))
+				{
+					$status = $this->user->lang('SXZ1');
+				}
+				else if (preg_match('/D5803/i', $user_agent))
+				{
+					$status = $this->user->lang('SXZ3');
+				}
+				else if (preg_match('/P710/i', $user_agent))
+				{
+					$status = $this->user->lang('LGOL7IT');
+				}
+				else if (preg_match('/LG-H850/i', $user_agent))
+				{
+					$status = $this->user->lang('LGH850');
+				}
+				else if (preg_match('/LG-V500/i', $user_agent))
+				{
+					$status = $this->user->lang('LGV500');
+				}
+				else if (preg_match('/lg/i', $user_agent))
+				{
+					$status = $this->user->lang('LG');
+				}
+				else if (preg_match('/ASUS_T00J/i', $user_agent))
+				{
+					$status = $this->user->lang('ATOOJ');
+				}
+				else if (preg_match('/Aquaris E5/i', $user_agent))
+				{
+					$status = $this->user->lang('AE5HD');
+				}
+				else if (preg_match('/HTC Desire|626s/i', $user_agent))
+				{
+					$status = $this->user->lang('HTCD');
+				}
+				else if (preg_match('/Nexus One/i', $user_agent))
+				{
+					$status = $this->user->lang('N1');
+				}
+				else if (preg_match('/Nexus 4|LRX22C|LVY48F|LMY47V/i', $user_agent))
+				{
+					$status = $this->user->lang('N4');
+				}
+				else if (preg_match('/Nexus 5|LMY48S/i', $user_agent))
+				{
+					$status = $this->user->lang('N5');
+				}
+				else if (preg_match('/Nexus 7|KTU84P/i', $user_agent))
+				{
+					$status = $this->user->lang('N7');
+				}
+				else if (preg_match('/Nexus 9|LMY47X/i',$user_agent))
+				{
+					$status = $this->user->lang('N9');
+				}
+				else if (preg_match('/Lenovo_K50_T5/i', $user_agent))
+				{
+					$status = $this->user->lang('LK50T5');
+				}
+				else
+				{
+					$status = $this->user->lang('ANDROID');
+				}
+				$mobile_browser = $android;
+			break;
+			case (preg_match('/opera mini/i', $user_agent));
+				$status = $this->user->lang('MOBILE_DEVICE');
+				$mobile_browser = $opera;
+			break;
+			case (preg_match('/blackberry/i', $user_agent));
+				if (preg_match('/BlackBerry9900|BlackBerry9930|BlackBerry9790|BlackBerry9780|BlackBerry9700|BlackBerry9650|BlackBerry9000|/i',$user_agent))
+				{
+					$status = 'BlackBerry Bold';
+				}
+				else if (preg_match('/BlackBerry9380|BlackBerry9370|BlackBerry9360|BlackBerry9350|BlackBerry9330|BlackBerry9320|BlackBerry9300|BlackBerry9220|BlackBerry8980|BlackBerry8900|BlackBerry8530|BlackBerry8520|BlackBerry8330|BlackBerry8320|BlackBerry8310|BlackBerry8300/i',$user_agent))
+				{
+					$status = $this->user->lang('BBCURVE');
+				}
+				else if (preg_match('/BlackBerry9860|BlackBerry9850|BlackBerry9810|BlackBerry9800/i', $user_agent))
+				{
+					$status = $this->user->lang('BBTORCH');
+				}
+				else if (preg_match('/BlackBerry9900/i', $user_agent))
+				{
+					$status = $this->user->lang('BBTOUCH');
+				}
+				else if (preg_match('/BlackBerry9105/i', $user_agent))
+				{
+					$status = $this->user->lang('BBPEARL');
+				}
+				else if (preg_match('/BlackBerry8220/i', $user_agent))
+				{
+					$status = $this->user->lang('BBPEARLF');
+				}
+				else if (preg_match('/BlackBerry Storm|BlackBerry Storm2/i', $user_agent))
+				{
+					$status = $this->user->lang('BBSTORM');
+				}
+				else if (preg_match('/BlackBerry Passport/i', $user_agent))
+				{
+					$status = $this->user->lang('BBPP');
+				}
+				else if (preg_match('/BlackBerry Porsche/i',$user_agent))
+				{
+					$status = $this->user->lang('BBP');
+				}
+				else if (preg_match('/BlackBerry PlayBook/i', $user_agent))
+				{
+					$status = $this->user->lang('BBPB');
+				}
+				else
+				{
+					$status = $this->user->lang('BLACKBERRY');
+				}
+				$mobile_browser = $blackberry;
+			break;
+			case (preg_match('/(pre\/|palm os|palm|hiptop|avantgo|plucker|xiino|blazer|elaine)/i', $user_agent));
+				$status = $this->user->lang('PALM');
+				$mobile_browser = $palm;
+			break;
+			case (preg_match('/(iris|3g_t|windows ce|windows Phone|opera mobi|windows ce; smartphone;|windows ce; iemobile)/i', $user_agent));
+				if (preg_match('/Lumia 640 XL/i', $user_agent))
+				{
+					$status = $this->user->lang('L640XL');
+				}
+				else
+				{
+					$status = $this->user->lang('WSP');
+				}
+				$mobile_browser = $windows;
+			break;
+			case (preg_match('/lge vx10000/i', $user_agent));
+				$status = $this->user->lang('VOYAGER');
+				$mobile_browser = $windows;
+			break;
+			case (preg_match('/(mini 9.5|vx1000|lge |m800|e860|u940|ux840|compal|wireless| mobi|ahong|lg380|lgku|lgu900|lg210|lg47|lg920|lg840|lg370|sam-r|mg50|s55|g83|t66|vx400|mk99|d615|d763|el370|sl900|mp500|samu3|samu4|vx10|xda_|samu5|samu6|samu7|samu9|a615|b832|m881|s920|n210|s700|c-810|_h797|mob-x|sk16d|848b|mowser|s580|r800|471x|v120|rim8|c500foma:|160x|x160|480x|x640|t503|w839|i250|sprint|w398samr810|m5252|c7100|mt126|x225|s5330|s820|htil-g1|fly v71|s302|-x113|novarra|k610i|-three|8325rc|8352rc|sanyo|vx54|c888|nx250|n120|mtk |c5588|s710|t880|c5005|i;458x|p404i|s210|c5100|teleca|s940|c500|s590|foma|samsu|vx8|vx9|a1000|_mms|myx|a700|gu1100|bc831|e300|ems100|me701|me702m-three|sd588|s800|8325rc|ac831|mw200|brew |d88|htc\/|htc_touch|355x|m50|km100|d736|p-9521|telco|sl74|ktouch|m4u\/|me702|8325rc|kddi|phone|lg |sonyericsson|samsung|240x|x320|vx10|nokia|sony cmd|motorola|up.browser|up.link|mmp|symbian|smartphone|midp|wap|vodafone|o2|pocket|kindle|mobile|psp|treo)/i', $user_agent));
+				$status = $this->user->lang('MOBILE_DEVICE');
+				$mobile_browser = true;
+			break;
+			case (isset($post['HTTP_X_WAP_PROFILE'])||isset($post['HTTP_PROFILE']));
+				$status = $this->user->lang('MOBILE_DEVICE');
+				$mobile_browser = true;
+			break;
+			case (in_array(strtolower(substr($user_agent, 0, 4)), array('1207'=>'1207','3gso'=>'3gso','4thp'=>'4thp','501i'=>'501i','502i'=>'502i','503i'=>'503i','504i'=>'504i','505i'=>'505i','506i'=>'506i','6310'=>'6310','6590'=>'6590','770s'=>'770s','802s'=>'802s','a wa'=>'a wa','acer'=>'acer','acs-'=>'acs-','airn'=>'airn','alav'=>'alav','asus'=>'asus','attw'=>'attw','au-m'=>'au-m','aur '=>'aur ','aus '=>'aus ','abac'=>'abac','acoo'=>'acoo','aiko'=>'aiko','alco'=>'alco','alca'=>'alca','amoi'=>'amoi','anex'=>'anex','anny'=>'anny','anyw'=>'anyw','aptu'=>'aptu','arch'=>'arch','argo'=>'argo','bell'=>'bell','bird'=>'bird','bw-n'=>'bw-n','bw-u'=>'bw-u','beck'=>'beck','benq'=>'benq','bilb'=>'bilb','blac'=>'blac','c55/'=>'c55/','cdm-'=>'cdm-','chtm'=>'chtm','capi'=>'capi','cond'=>'cond','craw'=>'craw','dall'=>'dall','dbte'=>'dbte','dc-s'=>'dc-s','dica'=>'dica','ds-d'=>'ds-d','ds12'=>'ds12','dait'=>'dait','devi'=>'devi','dmob'=>'dmob','doco'=>'doco','dopo'=>'dopo','el49'=>'el49','erk0'=>'erk0','esl8'=>'esl8','ez40'=>'ez40','ez60'=>'ez60','ez70'=>'ez70','ezos'=>'ezos','ezze'=>'ezze','elai'=>'elai','emul'=>'emul','eric'=>'eric','ezwa'=>'ezwa','fake'=>'fake','fly-'=>'fly-','fly_'=>'fly_','g-mo'=>'g-mo','g1 u'=>'g1 u','g560'=>'g560','gf-5'=>'gf-5','grun'=>'grun','gene'=>'gene','go.w'=>'go.w','good'=>'good','grad'=>'grad','hcit'=>'hcit','hd-m'=>'hd-m','hd-p'=>'hd-p','hd-t'=>'hd-t','hei-'=>'hei-','hp i'=>'hp i','hpip'=>'hpip','hs-c'=>'hs-c','htc '=>'htc ','htc-'=>'htc-','htca'=>'htca','htcg'=>'htcg','htcp'=>'htcp','htcs'=>'htcs','htct'=>'htct','htc_'=>'htc_','haie'=>'haie','hita'=>'hita','huaw'=>'huaw','hutc'=>'hutc','i-20'=>'i-20','i-go'=>'i-go','i-ma'=>'i-ma','i230'=>'i230','iac'=>'iac','iac-'=>'iac-','iac/'=>'iac/','ig01'=>'ig01','im1k'=>'im1k','inno'=>'inno','iris'=>'iris','jata'=>'jata','java'=>'java','kddi'=>'kddi','kgt'=>'kgt','kgt/'=>'kgt/','kpt '=>'kpt ','kwc-'=>'kwc-','klon'=>'klon','lexi'=>'lexi','lg g'=>'lg g','lg-a'=>'lg-a','lg-b'=>'lg-b','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-f'=>'lg-f','lg-g'=>'lg-g','lg-k'=>'lg-k','lg-l'=>'lg-l','lg-m'=>'lg-m','lg-o'=>'lg-o','lg-p'=>'lg-p','lg-s'=>'lg-s','lg-t'=>'lg-t','lg-u'=>'lg-u','lg-w'=>'lg-w','lg/k'=>'lg/k','lg/l'=>'lg/l','lg/u'=>'lg/u','lg50'=>'lg50','lg54'=>'lg54','lge-'=>'lge-','lge/'=>'lge/','lynx'=>'lynx','leno'=>'leno','m1-w'=>'m1-w','m3ga'=>'m3ga','m50/'=>'m50/','maui'=>'maui','mc01'=>'mc01','mc21'=>'mc21','mcca'=>'mcca','medi'=>'medi','meri'=>'meri','mio8'=>'mio8','mioa'=>'mioa','mo01'=>'mo01','mo02'=>'mo02','mode'=>'mode','modo'=>'modo','mot '=>'mot ','mot-'=>'mot-','mt50'=>'mt50','mtp1'=>'mtp1','mtv '=>'mtv ','mate'=>'mate','maxo'=>'maxo','merc'=>'merc','mits'=>'mits','mobi'=>'mobi','motv'=>'motv','mozz'=>'mozz','n100'=>'n100','n101'=>'n101','n102'=>'n102','n202'=>'n202','n203'=>'n203','n300'=>'n300','n302'=>'n302','n500'=>'n500','n502'=>'n502','n505'=>'n505','n700'=>'n700','n701'=>'n701','n710'=>'n710','nec-'=>'nec-','nem-'=>'nem-','newg'=>'newg','neon'=>'neon','netf'=>'netf','noki'=>'noki','nzph'=>'nzph','o2 x'=>'o2 x','o2-x'=>'o2-x','opwv'=>'opwv','owg1'=>'owg1','opti'=>'opti','oran'=>'oran','p800'=>'p800','pand'=>'pand','pg-1'=>'pg-1','pg-2'=>'pg-2','pg-3'=>'pg-3','pg-6'=>'pg-6','pg-8'=>'pg-8','pg-c'=>'pg-c','pg13'=>'pg13','phil'=>'phil','pn-2'=>'pn-2','pt-g'=>'pt-g','palm'=>'palm','pana'=>'pana','pire'=>'pire','pock'=>'pock','pose'=>'pose','psio'=>'psio','qa-a'=>'qa-a','qc-2'=>'qc-2','qc-3'=>'qc-3','qc-5'=>'qc-5','qc-7'=>'qc-7','qc07'=>'qc07','qc12'=>'qc12','qc21'=>'qc21','qc32'=>'qc32','qc60'=>'qc60','qci-'=>'qci-','qwap'=>'qwap','qtek'=>'qtek','r380'=>'r380','r600'=>'r600','raks'=>'raks','rim9'=>'rim9','rove'=>'rove','s55/'=>'s55/','sage'=>'sage','sams'=>'sams','sc01'=>'sc01','sch-'=>'sch-','scp-'=>'scp-','sdk/'=>'sdk/','se47'=>'se47','sec-'=>'sec-','sec0'=>'sec0','sec1'=>'sec1','semc'=>'semc','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','sk-0'=>'sk-0','sl45'=>'sl45','slid'=>'slid','smb3'=>'smb3','smt5'=>'smt5','sp01'=>'sp01','sph-'=>'sph-','spv '=>'spv ','spv-'=>'spv-','sy01'=>'sy01','samm'=>'samm','sany'=>'sany','sava'=>'sava','scoo'=>'scoo','send'=>'send','siem'=>'siem','smar'=>'smar','smit'=>'smit','soft'=>'soft','sony'=>'sony','t-mo'=>'t-mo','t218'=>'t218','t250'=>'t250','t600'=>'t600','t610'=>'t610','t618'=>'t618','tcl-'=>'tcl-','tdg-'=>'tdg-','telm'=>'telm','tim-'=>'tim-','ts70'=>'ts70','tsm-'=>'tsm-','tsm3'=>'tsm3','tsm5'=>'tsm5','tx-9'=>'tx-9','tagt'=>'tagt','talk'=>'talk','teli'=>'teli','topl'=>'topl','hiba'=>'hiba','up.b'=>'up.b','upg1'=>'upg1','utst'=>'utst','v400'=>'v400','v750'=>'v750','veri'=>'veri','vk-v'=>'vk-v','vk40'=>'vk40','vk50'=>'vk50','vk52'=>'vk52','vk53'=>'vk53','vm40'=>'vm40','vx98'=>'vx98','virg'=>'virg','vite'=>'vite','voda'=>'voda','vulc'=>'vulc','w3c '=>'w3c ','w3c-'=>'w3c-','wapj'=>'wapj','wapp'=>'wapp','wapu'=>'wapu','wapm'=>'wapm','wig '=>'wig ','wapi'=>'wapi','wapr'=>'wapr','wapv'=>'wapv','wapy'=>'wapy','wapa'=>'wapa','waps'=>'waps','wapt'=>'wapt','winc'=>'winc','winw'=>'winw','wonu'=>'wonu','x700'=>'x700','xda2'=>'xda2','xdag'=>'xdag','yas-'=>'yas-','your'=>'your','zte-'=>'zte-','zeto'=>'zeto','acs-'=>'acs-','alav'=>'alav','alca'=>'alca','amoi'=>'amoi','aste'=>'aste','audi'=>'audi','avan'=>'avan','benq'=>'benq','bird'=>'bird','blac'=>'blac','blaz'=>'blaz','brew'=>'brew','brvw'=>'brvw','bumb'=>'bumb','ccwa'=>'ccwa','cell'=>'cell','cldc'=>'cldc','cmd-'=>'cmd-','dang'=>'dang','doco'=>'doco','eml2'=>'eml2','eric'=>'eric','fetc'=>'fetc','hipt'=>'hipt','http'=>'http','ibro'=>'ibro','idea'=>'idea','ikom'=>'ikom','inno'=>'inno','ipaq'=>'ipaq','jbro'=>'jbro','jemu'=>'jemu','java'=>'java','jigs'=>'jigs','kddi'=>'kddi','keji'=>'keji','kyoc'=>'kyoc','kyok'=>'kyok','leno'=>'leno','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-g'=>'lg-g','lge-'=>'lge-','libw'=>'libw','m-cr'=>'m-cr','maui'=>'maui','maxo'=>'maxo','midp'=>'midp','mits'=>'mits','mmef'=>'mmef','mobi'=>'mobi','mot-'=>'mot-','moto'=>'moto','mwbp'=>'mwbp','mywa'=>'mywa','nec-'=>'nec-','newt'=>'newt','nok6'=>'nok6','noki'=>'noki','o2im'=>'o2im','opwv'=>'opwv','palm'=>'palm','pana'=>'pana','pant'=>'pant','pdxg'=>'pdxg','phil'=>'phil','play'=>'play','pluc'=>'pluc','port'=>'port','prox'=>'prox','qtek'=>'qtek','qwap'=>'qwap','rozo'=>'rozo','sage'=>'sage','sama'=>'sama','sams'=>'sams','sany'=>'sany','sch-'=>'sch-','sec-'=>'sec-','send'=>'send','seri'=>'seri','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','siem'=>'siem','smal'=>'smal','smar'=>'smar','sony'=>'sony','sph-'=>'sph-','symb'=>'symb','t-mo'=>'t-mo','teli'=>'teli','tim-'=>'tim-','tosh'=>'tosh','treo'=>'treo','tsm-'=>'tsm-','upg1'=>'upg1','upsi'=>'upsi','vk-v'=>'vk-v','voda'=>'voda','vx52'=>'vx52','vx53'=>'vx53','vx60'=>'vx60','vx61'=>'vx61','vx70'=>'vx70','vx80'=>'vx80','vx81'=>'vx81','vx83'=>'vx83','vx85'=>'vx85','wap-'=>'wap-','wapa'=>'wapa','wapi'=>'wapi','wapp'=>'wapp','wapr'=>'wapr','webc'=>'webc','whit'=>'whit','winw'=>'winw','wmlb'=>'wmlb','xda-'=>'xda-',)));
+				$status = $this->user->lang('MOBILE_DEVICE');
+				$mobile_browser = true;
+			break;
+			default;
+				$status = $this->user->lang('DESKTOP');
+				$mobile_browser = false;
+			break;
+		}
+		header('Cache-Control: no-transform');
+		header('Vary: User-Agent');
+		
+		if ($mobile_browser == '')
+		{
+			return $mobile_browser;
+		}
+		else
+		{
+			return array($mobile_browser, $status);
+		}
+	}
 	
 	//
 	// Adds/updates a new session to the database for the given userid.
@@ -1414,10 +2628,10 @@ class user
 		global $db, $board_config, $backend;
 		global $request_vars, $SID;
 		$user_ip = $user_ip ? $user_ip : $this->user_ip;
-		$cookiename = $board_config['cookie_name'];
-		$cookiepath = $board_config['cookie_path'];
-		$cookiedomain = $board_config['cookie_domain'];
-		$cookiesecure = $board_config['cookie_secure'];
+		$cookiename = $this->config['cookie_name'];
+		$cookiepath = $this->config['cookie_path'];
+		$cookiedomain = $this->config['cookie_domain'];
+		$cookiesecure = $this->config['cookie_secure'];
 
 		if ( isset($_COOKIE[$cookiename . '_sid']) || isset($_COOKIE[$cookiename . '_data']) )
 		{
@@ -1448,10 +2662,10 @@ class user
 		// If allow_autologin is not set or is true then they are
 		// (same behaviour as old 2.0.x session code)
 		//
-		if (isset($board_config['allow_autologin']) && !$board_config['allow_autologin'])
+		if (isset($this->config['allow_autologin']) && !$this->config['allow_autologin'])
 		{
 			$enable_autologin = $persist_login = $sessiondata['autologinid'] = false;
-			$this->cookie_data['k'] = false;			
+			$this->cookie_data['k'] = false;
 		}
 
 		//
@@ -1495,12 +2709,24 @@ class user
 		{
 			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '' && $user_id)
 			{
-				$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-					FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-					WHERE u.user_id = ' . (int) $user_id . "
-						AND u.user_active = 1
-						AND k.user_id = u.user_id
-						AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+				if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+				{
+					$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+						FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+						WHERE u.user_id = ' . (int) $user_id . "
+							AND u.user_active = 1
+							AND k.user_id = u.user_id
+							AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+				}
+				else
+				{
+					$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+						FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+						WHERE u.user_id = ' . (int) $user_id . "
+							AND u.user_active = 1
+							AND k.user_id = u.user_id
+							AND k.key_id = '" . md5($sessiondata['autologinid']) . "'";
+				}
 				if (!($result = $db->sql_query($sql)))
 				{
 					message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -1515,16 +2741,24 @@ class user
 			{
 				$sessiondata['autologinid'] = '';
 				$sessiondata['userid'] = $user_id;
-
-				$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-					FROM ' . USERS_TABLE . ' u
-					WHERE user_id = ' . (int) $user_id . '
-						AND user_active = 1';
+				if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+				{
+					$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+						FROM ' . USERS_TABLE . ' u
+						WHERE user_id = ' . (int) $user_id . '
+							AND user_active = 1';
+				}
+				else
+				{
+					$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+						FROM ' . USERS_TABLE . ' u
+						WHERE user_id = ' . (int) $user_id . '
+							AND user_active = 1';
+				}
 				if (!($result = $db->sql_query($sql)))
 				{
 					message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
 				}
-
 				$userdata = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 				
@@ -1553,10 +2787,18 @@ class user
 			$this->cookie_data['u'] = $sessiondata['userid'] = $user_id = ANONYMOUS;		
 			
 			$enable_autologin = $login = 0;
-
-			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-				FROM ' . USERS_TABLE . ' u
-				WHERE user_id = ' . (int) $user_id;
+			if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+			{
+				$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+					FROM ' . USERS_TABLE . ' u
+					WHERE user_id = ' . (int) $user_id;
+			}
+			else
+			{
+				$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+					FROM ' . USERS_TABLE . ' u
+					WHERE user_id = ' . (int) $user_id;
+			}
 			if (!($result = $db->sql_query($sql)))
 			{
 				message_die(CRITICAL_ERROR, 'Error doing DB query ANONYMOUS user userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -1699,10 +2941,10 @@ class user
 		global $db, $lang, $board_config;
 		global $SID;
 
-		$cookiename = $board_config['cookie_name'];
-		$cookiepath = $board_config['cookie_path'];
-		$cookiedomain = $board_config['cookie_domain'];
-		$cookiesecure = $board_config['cookie_secure'];
+		$cookiename = $this->config['cookie_name'];
+		$cookiepath = $this->config['cookie_path'];
+		$cookiedomain = $this->config['cookie_domain'];
+		$cookiesecure = $this->config['cookie_secure'];
 
 		$current_time = time();
 		unset($userdata);
@@ -1737,10 +2979,20 @@ class user
 			// session_id exists so go ahead and attempt to grab all
 			// data in preparation
 			//
-			$sql = "SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
-				FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
-				WHERE s.session_id = '$session_id'
-					AND u.user_id = s.session_user_id";
+			if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+			{
+				$sql = "SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
+					FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+					WHERE s.session_id = '$session_id'
+						AND u.user_id = s.session_user_id";
+			}
+			else
+			{
+				$sql = "SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type, s.*
+					FROM " . SESSIONS_TABLE . " s, " . USERS_TABLE . " u
+					WHERE s.session_id = '$session_id'
+						AND u.user_id = s.session_user_id";
+			}
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(CRITICAL_ERROR, 'Error doing DB query userdata row fetch', '', __LINE__, __FILE__, $sql);
@@ -1770,7 +3022,7 @@ class user
 					if ( $current_time - $userdata['session_time'] > 60 )
 					{
 						// A little trick to reset session_admin on session re-usage
-						$update_admin = (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($board_config['session_length']+60)) ? ', session_admin = 0' : '';
+						$update_admin = (!defined('IN_ADMIN') && $current_time - $userdata['session_time'] > ($this->config['session_length']+60)) ? ', session_admin = 0' : '';
 
 						$sql = "UPDATE " . SESSIONS_TABLE . "
 							SET session_time = $current_time, session_page = $thispage_id$update_admin
@@ -1833,10 +3085,10 @@ class user
 		global $db, $lang, $board_config, $userdata;
 		global $SID;
 
-		$cookiename = $board_config['cookie_name'];
-		$cookiepath = $board_config['cookie_path'];
-		$cookiedomain = $board_config['cookie_domain'];
-		$cookiesecure = $board_config['cookie_secure'];
+		$cookiename = $this->config['cookie_name'];
+		$cookiepath = $this->config['cookie_path'];
+		$cookiedomain = $this->config['cookie_domain'];
+		$cookiesecure = $this->config['cookie_secure'];
 
 		$current_time = time();
 
@@ -1875,9 +3127,19 @@ class user
 		// We expect that message_die will be called after this function,
 		// but just in case it isn't, reset $userdata to the details for a guest
 		//
-		$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-			FROM ' . USERS_TABLE . ' u
-			WHERE user_id = ' . ANONYMOUS;
+		if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+		{
+			$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . ANONYMOUS;
+		}
+		else
+		{
+			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . ANONYMOUS;
+		}
+		
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
@@ -1960,9 +3222,18 @@ class user
 		// We expect that message_die will be called after this function,
 		// but just in case it isn't, reset $userdata to the details for a guest
 		//
-		$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-			FROM ' . USERS_TABLE . ' u
-			WHERE user_id = ' . ANONYMOUS;
+		if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+		{
+			$sql = 'SELECT u.*, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . ANONYMOUS;
+		}
+		else
+		{
+			$sql = 'SELECT u.*, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . ANONYMOUS;
+		}
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(CRITICAL_ERROR, 'Error obtaining user details', '', __LINE__, __FILE__, $sql);
@@ -1998,7 +3269,7 @@ class user
 		// Delete expired sessions
 		//
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE session_time < ' . (time() - (int) $board_config['session_length']) . "
+			WHERE session_time < ' . (time() - (int) $this->config['session_length']) . "
 				AND session_id <> '$session_id'";
 		if ( !$db->sql_query($sql) )
 		{
@@ -2010,10 +3281,10 @@ class user
 		// If max_autologin_time is not set then keys will never be deleted
 		// (same behaviour as old 2.0.x session code)
 		//
-		if (!empty($board_config['max_autologin_time']) && $board_config['max_autologin_time'] > 0)
+		if (!empty($this->config['max_autologin_time']) && $this->config['max_autologin_time'] > 0)
 		{
 			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-				WHERE last_login < ' . (time() - (86400 * (int) $board_config['max_autologin_time']));
+				WHERE last_login < ' . (time() - (86400 * (int) $this->config['max_autologin_time']));
 			$db->sql_query($sql);
 		}
 
@@ -2066,10 +3337,10 @@ class user
 			// And now rebuild the cookie
 			$sessiondata['userid'] = $user_id;
 			$sessiondata['autologinid'] = $auto_login_key;
-			$cookiename = $board_config['cookie_name'];
-			$cookiepath = $board_config['cookie_path'];
-			$cookiedomain = $board_config['cookie_domain'];
-			$cookiesecure = $board_config['cookie_secure'];
+			$cookiename = $this->config['cookie_name'];
+			$cookiepath = $this->config['cookie_path'];
+			$cookiedomain = $this->config['cookie_domain'];
+			$cookiesecure = $this->config['cookie_secure'];
 
 			setcookie($cookiename . '_data', serialize($sessiondata), $current_time + 31536000, $cookiepath, $cookiedomain, $cookiesecure);
 
@@ -2083,7 +3354,32 @@ class user
 	 * Include the User class
 	 ******************************************************************************************************* */
 	 
+	/**
+	* Sets a cookie
+	*
+	* Sets a cookie of the given name with the specified data for the given length of time. If no time is specified, a session cookie will be set.
+	*
+	* @param string $name		Name of the cookie, will be automatically prefixed with the phpBB cookie name. track becomes [cookie_name]_track then.
+	* @param string $cookiedata	The data to hold within the cookie
+	* @param int $cookietime	The expiration time as UNIX timestamp. If 0 is provided, a session cookie is set.
+	* @param bool $httponly		Use HttpOnly. Defaults to true. Use false to make cookie accessible by client-side scripts.
+	*/
+	function set_cookie($name, $cookiedata, $cookietime, $httponly = true)
+	{
+		//global $config;
 
+		// If headers are already set, we just return
+		if (headers_sent())
+		{
+			return;
+		}
+
+		$name_data = rawurlencode($this->config['cookie_name'] . '_' . $name) . '=' . rawurlencode($cookiedata);
+		$expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $cookietime);
+		$domain = (!$this->config['cookie_domain'] || $this->config['cookie_domain'] == '127.0.0.1' || strpos($this->config['cookie_domain'], '.') === false) ? '' : '; domain=' . $this->config['cookie_domain'];
+
+		header('Set-Cookie: ' . $name_data . (($cookietime) ? '; expires=' . $expire : '') . '; path=' . $this->config['cookie_path'] . $domain . ((!$config['cookie_secure']) ? '' : '; secure') . ';' . (($httponly) ? ' HttpOnly' : ''), false);
+	}
 	
 	/** *******************************************************************************************************
 	 * Include the User class
@@ -2095,7 +3391,7 @@ class user
 	function setup($lang_set = false, $style_id = false)
 	{
 		global $cache, $board_config, $theme, $images;
-		global $db, $board_config, $userdata, $auth, $phpbb_root_path;		
+		global $db, $userdata, $auth, $phpbb_root_path;		
 		global $template, $lang, $phpEx, $nav_links;
 		
 		$this->data = !empty($this->data['user_id']) ? $this->data : session_pagestart($this->user_ip, $this->page_id);
@@ -2124,20 +3420,20 @@ class user
 		// Grab phpBB global variables, re-cache if necessary
 		// - optional parameter to enable/disable cache for config data. If enabled, remember to refresh the MX-Publisher cache whenever updating phpBB config settings
 		// - true: enable cache, false: disable cache
-		if (empty($board_config['script_path']))
+		if (empty($this->config['script_path']))
 		{
-			$board_config = $cache->obtain_config(false);
+			$this->config = $cache->obtain_config(false);
 		}		
 				
-		$board_config['user_timezone'] = !empty($board_config['user_timezone']) ? $board_config['user_timezone'] : $board_config['board_timezone'];
+		$this->config['user_timezone'] = !empty($this->config['user_timezone']) ? $this->config['user_timezone'] : $this->config['board_timezone'];
 		$this->data['user_dst'] = !empty($this->data['user_dst']) ? $this->data['user_dst'] : $this->data['user_timezone'];
 		
-		$this->date_format = $board_config['default_dateformat'];
-		$this->timezone = $board_config['user_timezone'] * 3600;
+		$this->date_format = $this->config['default_dateformat'];
+		$this->timezone = $this->config['user_timezone'] * 3600;
 		$this->dst = $this->data['user_timezone'] * 3600;
 		
-		$sign = ($board_config['board_timezone'] < 0) ? '-' : '+';
-		$time_offset = abs($board_config['board_timezone']);
+		$sign = ($this->config['board_timezone'] < 0) ? '-' : '+';
+		$time_offset = abs($this->config['board_timezone']);
 
 		$offset_seconds	= $time_offset % 3600;
 		$offset_minutes	= $offset_seconds / 60;
@@ -2146,18 +3442,18 @@ class user
 		// Zone offset
 		$zone_offset = $this->timezone + $this->dst;
 		
-		$offset_string = sprintf($board_config['default_dateformat'], $sign, $offset_hours, $offset_minutes);
+		$offset_string = sprintf($this->config['default_dateformat'], $sign, $offset_hours, $offset_minutes);
 				
 		$s_date = gmdate("Y-m-d\TH:i:s", time() + $zone_offset) . $offset_string;
 		
 		// Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
-		$l_timezone = explode('.', $board_config['board_timezone']);
-		$l_timezone = (count($l_timezone) > 1) ? $this->lang(sprintf('%.1f', $board_config['board_timezone'])) : $offset_string;
+		$l_timezone = explode('.', $this->config['board_timezone']);
+		$l_timezone = (count($l_timezone) > 1) ? $this->lang(sprintf('%.1f', $this->config['board_timezone'])) : $offset_string;
 
-		$server_name = !empty($board_config['server_name']) ? preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['server_name'])) : 'localhost';
-		$server_protocol = ($board_config['cookie_secure'] ) ? 'https://' : 'http://';
-		$server_port = (($board_config['server_port']) && ($board_config['server_port'] <> 80)) ? ':' . trim($board_config['server_port']) . '/' : '/';
-		$script_name_phpbb = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path'])) . '/';		
+		$server_name = !empty($this->config['server_name']) ? preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($this->config['server_name'])) : 'localhost';
+		$server_protocol = ($this->config['cookie_secure'] ) ? 'https://' : 'http://';
+		$server_port = (($this->config['server_port']) && ($this->config['server_port'] <> 80)) ? ':' . trim($this->config['server_port']) . '/' : '/';
+		$script_name_phpbb = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($this->config['script_path'])) . '/';		
 		$server_url = $server_protocol . str_replace("//", "/", $server_name . $server_port . '/'); //On some server the slash is not added and this trick will fix it	
 		$corrected_url = $server_protocol . $server_name . $server_port . $script_name_phpbb;
 		$board_url = $server_url . $script_name_phpbb;
@@ -2168,9 +3464,9 @@ class user
 		//
 		// Send a proper content-language to the output
 		//
-		$img_lang = $board_config['default_lang'];
+		$img_lang = $this->config['default_lang'];
 		
-		$default_lang = ($this->data['user_lang']) ? $this->data['user_lang'] : $board_config['default_lang'];
+		$default_lang = ($this->data['user_lang']) ? $this->data['user_lang'] : $this->config['default_lang'];
 		
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -2181,17 +3477,17 @@ class user
 
 			if (!empty($this->data['user_dateformat']))
 			{
-				$board_config['default_dateformat'] = $this->data['user_dateformat'];
+				$this->config['default_dateformat'] = $this->data['user_dateformat'];
 			}
 
 			if (isset($userdata['user_timezone']))
 			{
-				$board_config['board_timezone'] = $this->data['user_timezone'];
+				$this->config['board_timezone'] = $this->data['user_timezone'];
 			}
 		}
 		else
 		{
-			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+			$default_lang = phpbb_ltrim(basename(phpbb_rtrim($this->config['default_lang'])), "'");
 		}
 
 		if (!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $default_lang . '/lang_main.'.$phpEx)))
@@ -2199,7 +3495,7 @@ class user
 			if ($userdata['user_id'] != ANONYMOUS)
 			{
 				// For logged in users, try the board default language next
-				$default_lang = phpbb_ltrim(basename(phpbb_rtrim($board_config['default_lang'])), "'");
+				$default_lang = phpbb_ltrim(basename(phpbb_rtrim($this->config['default_lang'])), "'");
 			}
 			else
 			{
@@ -2230,7 +3526,7 @@ class user
 
 			$this->data['user_lang'] = $default_lang;
 		}
-		elseif ($this->data['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $default_lang)
+		elseif ($this->data['user_id'] == ANONYMOUS && $this->config['default_lang'] !== $default_lang)
 		{
 			$sql = 'UPDATE ' . CONFIG_TABLE . "
 				SET config_value = '" . $default_lang . "'
@@ -2242,10 +3538,10 @@ class user
 			}
 		}
 
-		$board_config['default_lang'] = $default_lang;
+		$this->config['default_lang'] = $default_lang;
 
 		$this->lang_name = $this->lang['default_lang'] = $default_lang;
-		$this->lang_path = $shared_lang_path = $phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/';
+		$this->lang_path = $shared_lang_path = $phpbb_root_path . 'language/lang_' . $this->config['default_lang'] . '/';
 		
 		//
 		// We include common language file here to not load it every time a custom language file is included
@@ -2261,7 +3557,7 @@ class user
 				die('Language file ' . $this->lang_path . "lang_main.$phpEx" . ' couldn\'t be opened.');
 			}
 		}
-		//  include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
+		//  include($phpbb_root_path . 'language/lang_' . $this->config['default_lang'] . '/lang_main.' . $phpEx);
 		
 		$this->add_lang($lang_set);
 
@@ -2272,12 +3568,12 @@ class user
 			
 		if (defined('IN_ADMIN'))
 		{
-			if(!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.'.$phpEx)))
+			if(!file_exists(@phpbb_realpath($phpbb_root_path . 'language/lang_' . $this->config['default_lang'] . '/lang_admin.'.$phpEx)))
 			{
-				$board_config['default_lang'] = 'english';
+				$this->config['default_lang'] = 'english';
 			}
 
-			include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_admin.' . $phpEx);
+			include($phpbb_root_path . 'language/lang_' . $this->config['default_lang'] . '/lang_admin.' . $phpEx);
 		}
 		
 		//
@@ -2289,10 +3585,10 @@ class user
 		$user_lang = $this->user_lang;
 		
 		$this->user_language		= $this->encode_lang($this->lang_name);
-		$this->default_language		= $this->encode_lang($board_config['default_lang']);
+		$this->default_language		= $this->encode_lang($this->config['default_lang']);
 		
 		$this->user_language_name		= $this->decode_lang($this->lang_name);
-		$this->default_language_name	= $this->decode_lang($board_config['default_lang']);
+		$this->default_language_name	= $this->decode_lang($this->config['default_lang']);
 		
 		$counter = 0; //First language pack lang_id		
 		$lang_ids = array();
@@ -2329,12 +3625,12 @@ class user
 		//
 		if ($this->data['user_id'] == ANONYMOUS && empty($this->data['user_style']))
 		{
-			$this->data['user_style'] = $board_config['default_style'];
+			$this->data['user_style'] = $this->config['default_style'];
 		}
 		
 		$style_request = request_var('style', 0);
 		
-		if ($style_request && (!$board_config['override_user_style'] || !defined('IN_ADMIN')))
+		if ($style_request && (!$this->config['override_user_style'] || !defined('IN_ADMIN')))
 		{
 			global $SID, $_EXTRA_URL;
 
@@ -2345,13 +3641,13 @@ class user
 		else
 		{
 			// Set up style
-			$style_id = ($style_id) ? $style_id : ((!$board_config['override_user_style']) ? $this->data['user_style'] : $board_config['default_style']);
+			$style_id = ($style_id) ? $style_id : ((!$this->config['override_user_style']) ? $this->data['user_style'] : $this->config['default_style']);
 		}
 		
 		$sql = 'SELECT s.*
 			FROM ' . THEMES_TABLE . " s
 			WHERE s.themes_id = $style_id";
-		$result = $db->sql_query($sql, 3600);
+		$result = $db->sql_query($sql);
 		$this->style = $this->theme = $theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		
@@ -2380,11 +3676,11 @@ class user
 		// We are trying to setup a style which does not exist in the database
 		// Try to fallback to the board default (if the user had a custom style)
 		// and then any users using this style to the default if it succeeds
-		if ($theme['themes_id'] != $board_config['default_style'])
+		if ($theme['themes_id'] != $this->config['default_style'])
 		{					
 			$sql = 'SELECT template_name
 					FROM ' . THEMES_TABLE . '
-					WHERE themes_id = ' . (int) $board_config['default_style'];
+					WHERE themes_id = ' . (int) $this->config['default_style'];
 			
 			if ($row = $db->sql_fetchrow($result = $db->sql_query($sql)))
 			{
@@ -2697,7 +3993,7 @@ class user
 		//
 		$nav_links['top'] = array (
 			'url' => append_sid($phpbb_root_path . 'index.' . $phpEx),
-			'title' => sprintf($lang['Forum_Index'], $board_config['sitename'])
+			'title' => sprintf($lang['Forum_Index'], $this->config['sitename'])
 		);
 		$nav_links['search'] = array (
 			'url' => append_sid($phpbb_root_path . 'search.' . $phpEx),
@@ -2869,8 +4165,8 @@ class user
 				// Vote graphic length defines the maximum length of a vote result
 				// graphic, ie. 100% = this length
 				//
-				$board_config['vote_graphic_length'] = 205;
-				$board_config['privmsg_graphic_length'] = 175;			
+				$this->config['vote_graphic_length'] = 205;
+				$this->config['privmsg_graphic_length'] = 175;			
 			}
 			else		
 			{
@@ -2882,7 +4178,7 @@ class user
 				message_die(CRITICAL_ERROR, "Could not open $this->template_name template config file", '', __LINE__, __FILE__, $sql);
 			}
 			
-			$img_lang = (file_exists(@phpbb_realpath($phpbb_root_path . $this->current_template_path . '/images/lang_' . $board_config['default_lang']))) ? $board_config['default_lang'] : 'english';
+			$img_lang = (file_exists(@phpbb_realpath($phpbb_root_path . $this->current_template_path . '/images/lang_' . $this->config['default_lang']))) ? $this->config['default_lang'] : 'english';
 		
 			while(list($key, $value) = @each($images))
 			{
@@ -3568,7 +4864,7 @@ class user
 		
 		if (!$this->lang_name)
 		{
-			$this->lang_name = $board_config['default_lang'];
+			$this->lang_name = $this->config['default_lang'];
 		}
 
 		$sql = 'SELECT lang_id
@@ -4724,7 +6020,7 @@ class user
 	 * This function is used with phpBB2 backend to specify xml:lang  in overall headers (only two chars are allowed)
 	 * Do not change!
 	 *
-	 * $default_lang = $user->encode_lang($board_config['default_lang']);
+	 * $default_lang = $user->encode_lang($this->config['default_lang']);
 	 *
 	 * @param unknown_type $lang
 	 * @return unknown
@@ -5330,7 +6626,7 @@ class user
 	/**
 	 * ucstrreplace
 	 *
-	 * $lang_local_name = $user->ucstrreplace($board_config['default_lang']);
+	 * $lang_local_name = $user->ucstrreplace($this->config['default_lang']);
 	 *
 	 * @param unknown_type $lang
 	 * @return unknown
@@ -7441,14 +8737,14 @@ class language extends language_file_loader
 		
 		// Now only the root for mxp blocks
 		$user_path = $path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
-		$board_path = $path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+		$board_path = $path . 'language/lang_' . $this->config['default_lang'] . '/' . $filename . '.' . $php_ext;
 		$default_path = $path . 'language/lang_english/' . $filename . '.' . $php_ext;
 				
 		// phpBB		
 		if (($path != 'phpbb2') && ($path != 'phpbb3'))	
 		{
 			$phpbb_user_path = $path . 'language/' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
-			$phpbb_board_path = $path . 'language/' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $path . 'language/' . $this->config['default_lang'] . '/' . $filename . '.' . $php_ext;
 			$phpbb_default_path = $path . 'language/en/' . $filename . '.' . $php_ext;		
 		}		
 		
@@ -7458,7 +8754,7 @@ class language extends language_file_loader
 			$phpbb2_shared_path = $this->phpbb_root_path . '';
 			
 			$phpbb_user_path = $phpbb2_shared_path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
-			$phpbb_board_path = $phpbb2_shared_path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $phpbb2_shared_path . 'language/lang_' . $this->config['default_lang'] . '/' . $filename . '.' . $php_ext;
 			$phpbb_default_path = $phpbb2_shared_path . 'language/lang_english/' . $filename . '.' . $php_ext;			
 		}							
 		
@@ -7468,7 +8764,7 @@ class language extends language_file_loader
 			$phpbb3_shared_path = $this->phpbb_root_path . '';
 
 			$phpbb_user_path = $phpbb3_shared_path . 'language/lang_' . $this->data['user_lang'] . '/' . $filename . '.' . $php_ext;
-			$phpbb_board_path = $phpbb3_shared_path . 'language/lang_' . $board_config['default_lang'] . '/' . $filename . '.' . $php_ext;
+			$phpbb_board_path = $phpbb3_shared_path . 'language/lang_' . $this->config['default_lang'] . '/' . $filename . '.' . $php_ext;
 			$phpbb_default_path = $phpbb3_shared_path . 'language/lang_english/' . $filename . '.' . $php_ext;				
 		}	
 		
@@ -8826,7 +10122,7 @@ class auth extends auth_base
 		$hold_str = $this->build_bitstring($hold_ary);
 
 		if ($hold_str)
-		{			
+		{
 			$userdata['user_permissions'] = $hold_str;
 			
 			$sql = 'UPDATE ' . USERS_TABLE . "
@@ -8838,70 +10134,40 @@ class auth extends auth_base
 				// If the column exists we change it, else we add it ;)
 				$table = USERS_TABLE;
 				
-				$column_data = $userdata;				
+				$column_data = $userdata;
 				
 				if (!class_exists('phpbb_db_tools') && !class_exists('tools'))
 				{
 					global $phpbb_root_path, $phpEx;
-					require($phpbb_root_path . 'includes/db/tools.' . $phpEx);
+					include_once($phpbb_root_path . 'includes/db/tools.' . $phpEx);
 				}
 				
 				if (class_exists('phpbb_db_tools'))
 				{
-					$db_tools = new phpbb_db_tools($db);					
-				}				
+					$db_tools = new phpbb_db_tools($db);
+				}
 				elseif (class_exists('tools'))
 				{
-					$db_tools = new tools($db);					
+					$db_tools = new tools($db);
 				}
 				
 				if (is_object($db_tools))
 				{
-					if ($db_tools->sql_column_exists($table, 'user_perm_from'))
+					if ($db_tools->sql_column_exists($table, 'user_permissions'))
 					{
 						$result = true;
 					}
 					else
 					{
-						$column_name = 'user_perm_from';
-						
-						$column_data['column_type_sql'] = 'TEXT';
-						$column_data['user_perm_from'] = '0';
-						
-						$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);				
-					
-						if (!$result)
-						{											
-							$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
-							$sql = 'ALTER TABLE `' . $table . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;					
-						
-							// We could add error handling here...
-							$result = $db->sql_query($sql);					
-							if (!($result))
-							{		
-								message_die(CRITICAL_ERROR, "Could not info", '', __LINE__, __FILE__, $sql);
-							}						
-						}										
-					}				
-					
-					if ($db_tools->sql_column_exists($table, 'user_permissions'))
-					{
-						$result = true;
-					}
-					else					
-					{
 						$column_name = 'user_permissions';
-						
-						$column_data['column_type_sql'] = 'TEXT';
-						$column_data['user_permissions'] = 'NULL';
-						
-						$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);				
-					
+						$column_data = array('column_type_sql' => 'mediumtext', 'null' => 'NOT NULL', 'after' => 'group_id');
+						print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+						$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);
 						if (!$result)
 						{											
 							$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
 							$sql = 'ALTER TABLE `' . $table . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;
-							
+								
 							// We could add error handling here...
 							$result = $db->sql_query($sql);					
 							if (!($result))
@@ -8911,26 +10177,47 @@ class auth extends auth_base
 						}										
 					}
 					
+					if ($db_tools->sql_column_exists($table, 'user_perm_from'))
+					{
+						$result = true;
+					}
+					else
+					{
+						$column_name = 'user_perm_from';
+						$column_data = array('column_type_sql' => 'mediumint(8)', 'null' => 'NOT NULL', 'default' => '0', 'after' => 'user_permissions');
+						print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+						$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);
+						if (!$result)
+						{											
+							$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
+							$sql = 'ALTER TABLE `' . $table . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;					
+						
+							// We could add error handling here...
+							$result = $db->sql_query($sql);					
+							if (!($result))
+							{
+								message_die(CRITICAL_ERROR, "Could not info", '', __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+					
 					if ($db_tools->sql_column_exists($table, 'user_birthday'))
 					{
 						$result = true;
 					}
-					else					
+					else
 					{
 						$column_name = 'user_birthday';
-						
-						$column_data['column_type_sql'] = 'TEXT';
-						$column_data['user_birthday'] = 'NULL';
-						
+						$column_data = array('column_type_sql' => 'varchar(10)', 'null' => 'NOT NULL', 'default' => '', 'after' => 'user_permissions');
+						print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
 						$result = $db_tools->sql_column_add($table, $column_name, $column_data, true);
-						
 						if (!$result)
-						{											
+						{
 							$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
 							$statements[] = 'ALTER TABLE `' . $table . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;					
 							
 							// We could add error handling here...
-							$result = $db->sql_query($sql);					
+							$result = $db->sql_query($sql);
 							if (!($result))
 							{		
 								message_die(CRITICAL_ERROR, "Could not info", '', __LINE__, __FILE__, $sql);
@@ -9010,7 +10297,7 @@ class auth extends auth_base
 		{
 			foreach ($auth_level_read as $auth_level)
 			{
-				$auth_user = $this->auth($auth_level, AUTH_LIST_ALL, $user->data);
+				$auth_user = $this->auth($auth_level, AUTH_LIST_ALL, $this->data);
 
 				if ($num_forums = count($auth_user))
 				{
@@ -9037,7 +10324,7 @@ class auth extends auth_base
 		}
 		else
 		{
-			$auth_user = $this->auth($auth_level_read, AUTH_LIST_ALL, $user->data);
+			$auth_user = $this->auth($auth_level_read, AUTH_LIST_ALL, $this->data);
 
 			foreach($auth_user as $forum_id => $is_auth_row)
 			{
@@ -9074,10 +10361,19 @@ class auth extends auth_base
 	public function obtain_user_data($user_id)
 	{
 		global $db;
-
-		$sql = 'SELECT u.user_id, u.username, u.user_permissions, u.user_type, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
-			FROM ' . USERS_TABLE . ' u
-			WHERE user_id = ' . $user_id;
+		
+		if (!$this->db->sql_field_exists('user_colour', USERS_TABLE))
+		{
+			$sql = 'SELECT u.user_id, u.username, u.user_permissions, u.user_type, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . $user_id;
+		}
+		else
+		{
+			$sql = 'SELECT u.user_id, u.username, u.user_permissions, u.user_type, u.user_id as user_colour, u.user_level as user_type, u.user_avatar as avatar, u.user_avatar_type as avatar_type
+				FROM ' . USERS_TABLE . ' u
+				WHERE user_id = ' . $user_id;
+		}
 		if (!($result = $db->sql_query($sql)))
 		{
 			message_die(CRITICAL_ERROR, 'Could not query user info');
@@ -9372,10 +10668,206 @@ class auth extends auth_base
 		global $db, $cache, $user;
 
 		$hold_ary = array();
-		$hold_ary = $this->auth(AUTH_VIEW, AUTH_LIST_ALL, $user->data);
+		$hold_ary = $this->auth(AUTH_VIEW, AUTH_LIST_ALL, $this->data);
 		return $hold_ary;
 	}	
 	
+}
+
+/**
+* Configuration container class
+*/
+class config
+{
+	/**
+	* Cache instance
+	* @var \phpbb\cache\driver\driver_interface
+	*/
+	protected $cache;
+
+	/**
+	* Database connection
+	* @var \phpbb\db\driver\driver_interface
+	*/
+	protected $db;
+
+	/**
+	* Name of the database table used for configuration.
+	* @var string
+	*/
+	protected $table;
+
+	/**
+	* Creates a configuration container with a default set of values
+	*
+	* @param \phpbb\db\driver\driver_interface    $db    Database connection
+	* @param \phpbb\cache\driver\driver_interface $cache Cache instance
+	* @param string  $table Configuration table name
+	*/
+	public function __construct($db, $cache, $table = CONFIG_TABLE)
+	{
+		$this->db = $db;
+		$this->cache =$cache;
+		$this->table = $table;
+
+		if (($config = $this->cache->get('config')) !== false)
+		{
+			$sql = 'SELECT config_name, config_value
+				FROM ' . $this->table;
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$config[$row['config_name']] = $row['config_value'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+		else
+		{
+			$config = $cached_config = array();
+
+			$sql = 'SELECT *
+				FROM ' . $this->table;
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				if (!$row['is_dynamic'])
+				{
+					$cached_config[$row['config_name']] = $row['config_value'];
+				}
+
+				$config[$row['config_name']] = $row['config_value'];
+			}
+			$this->db->sql_freeresult($result);
+
+			$this->cache->put('config', $cached_config);
+		}
+
+		$this->config = $config;
+
+	}
+
+	/**
+	* Removes a configuration option
+	*
+	* @param  String $key       The configuration option's name
+	* @param  bool   $use_cache Whether this variable should be cached or if it
+	*                           changes too frequently to be efficiently cached
+	* @return null
+	*/
+	public function delete($key, $use_cache = true)
+	{
+		$sql = 'DELETE FROM ' . $this->table . "
+			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+		$this->db->sql_query($sql);
+
+		unset($this->config[$key]);
+
+		if ($use_cache)
+		{
+			$this->cache->destroy('config');
+		}
+	}
+
+	/**
+	* Sets a configuration option's value
+	*
+	* @param string $key       The configuration option's name
+	* @param string $value     New configuration value
+	* @param bool   $use_cache Whether this variable should be cached or if it
+	*                          changes too frequently to be efficiently cached.
+	*/
+	public function set($key, $value, $use_cache = true)
+	{
+		$this->set_atomic($key, false, $value, $use_cache);
+	}
+
+	/**
+	* Sets a configuration option's value only if the old_value matches the
+	* current configuration value or the configuration value does not exist yet.
+	*
+	* @param  string $key       The configuration option's name
+	* @param  mixed  $old_value Current configuration value or false to ignore
+	*                           the old value
+	* @param  string $new_value New configuration value
+	* @param  bool   $use_cache Whether this variable should be cached or if it
+	*                           changes too frequently to be efficiently cached
+	* @return bool              True if the value was changed, false otherwise
+	*/
+	public function set_atomic($key, $old_value, $new_value, $use_cache = true)
+	{
+		$sql = 'UPDATE ' . $this->table . "
+			SET config_value = '" . $this->db->sql_escape($new_value) . "'
+			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+
+		if ($old_value !== false)
+		{
+			$sql .= " AND config_value = '" . $this->db->sql_escape($old_value) . "'";
+		}
+
+		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows() && isset($this->config[$key]))
+		{
+			return false;
+		}
+
+		if (!isset($this->config[$key]))
+		{
+			$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
+				'config_name'	=> $key,
+				'config_value'	=> $new_value,
+				'is_dynamic'	=> ($use_cache) ? 0 : 1));
+			if (!$this->db->sql_query($sql))
+			{
+				$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
+					'config_name'	=> $key,
+					'config_value'	=> $new_value));
+				$this->db->sql_query($sql);
+			}
+		}
+
+		if ($use_cache)
+		{
+			$this->cache->destroy('config');
+		}
+
+		$this->config[$key] = $new_value;
+		return true;
+	}
+
+	/**
+	* Increments an integer config value directly in the database.
+	*
+	* Using this method instead of setting the new value directly avoids race
+	* conditions and unlike set_atomic it cannot fail.
+	*
+	* @param string $key       The configuration option's name
+	* @param int    $increment Amount to increment by
+	* @param bool   $use_cache Whether this variable should be cached or if it
+	*                          changes too frequently to be efficiently cached.
+	*/
+	function increment($key, $increment, $use_cache = true)
+	{
+		if (!isset($this->config[$key]))
+		{
+			$this->set($key, '0', $use_cache);
+		}
+
+		$sql_update = $this->db->cast_expr_to_string($this->db->cast_expr_to_bigint('config_value') . ' + ' . (int) $increment);
+
+		$this->db->sql_query('UPDATE ' . $this->table . '
+			SET config_value = ' . $sql_update . "
+			WHERE config_name = '" . $this->db->sql_escape($key) . "'");
+
+		if ($use_cache)
+		{
+			$this->cache->destroy('config');
+		}
+
+		$this->config[$key] += $increment;
+	}
 }
 
 //
@@ -9618,7 +11110,7 @@ class base
 
 
 	/**
-	* {@inheritDoc}
+	* Enter description here...
 	*/
 	function sql_fetchfield($query_id, $field)
 	{
@@ -9631,7 +11123,7 @@ class base
 	}
 
 	/**
-	* {@inheritDoc}
+	* Enter description here...
 	*/
 	function sql_rowseek($rownum, $query_id)
 	{
@@ -9645,7 +11137,7 @@ class base
 	}
 
 	/**
-	* {@inheritDoc}
+	* Enter description here...
 	*/
 	function sql_freeresult($query_id)
 	{

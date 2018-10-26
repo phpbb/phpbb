@@ -33,13 +33,13 @@ function check_uncheck_all_{topics_list_box.row.header_table.BOX_ID}()
 
 <table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline">
 <tr> 
-	<th colspan="{topics_list_box.row.header_table.COLSPAN}" align="center" nowrap="wrap">&nbsp;{topics_list_box.row.L_TITLE}&nbsp;</th>
-	<th width="50" align="center" nowrap="wrap">&nbsp;{topics_list_box.row.L_REPLIES}&nbsp;</th>
-	<th width="100" align="center" nowrap="wrap">&nbsp;{topics_list_box.row.L_AUTHOR}&nbsp;</th>
-	<th width="50" align="center" nowrap="wrap">&nbsp;{topics_list_box.row.L_VIEWS}&nbsp;</th>
-	<th width="150" align="center" nowrap="wrap">&nbsp;{topics_list_box.row.L_LASTPOST}&nbsp;</th>
+	<th colspan="{topics_list_box.row.header_table.COLSPAN}" align="center" aria-hidden="true">&nbsp;{topics_list_box.row.L_TITLE}&nbsp;</th>
+	<th width="50" align="center" aria-hidden="true">&nbsp;{topics_list_box.row.L_REPLIES}&nbsp;</th>
+	<th width="100" align="center" aria-hidden="true">&nbsp;{topics_list_box.row.L_AUTHOR}&nbsp;</th>
+	<th width="50" align="center" aria-hidden="true">&nbsp;{topics_list_box.row.L_VIEWS}&nbsp;</th>
+	<th width="150" align="center" aria-hidden="true">&nbsp;{topics_list_box.row.L_LASTPOST}&nbsp;</th>
 	<!-- BEGIN multi_selection -->
-	<th width="20" align="center" nowrap="wrap"><input type="checkbox" name="all_mark_{topics_list_box.row.header_table.BOX_ID}" value="0" onClick="check_uncheck_all_{topics_list_box.row.header_table.BOX_ID}();" /></th>
+	<th width="20" align="center" aria-hidden="true"><input type="checkbox" name="all_mark_{topics_list_box.row.header_table.BOX_ID}" value="0" onClick="check_uncheck_all_{topics_list_box.row.header_table.BOX_ID}();" /></th>
 	<!-- END multi_selection -->
 </tr>
 <!-- END header_table -->
@@ -69,7 +69,7 @@ function check_uncheck_all_{topics_list_box.row.header_table.BOX_ID}()
 	<td class="row2" align="center" valign="middle"><span class="postdetails">{topics_list_box.row.REPLIES}</span></td>
 	<td class="row3" align="center" valign="middle"><span class="name">{topics_list_box.row.TOPIC_AUTHOR}</span></td>
 	<td class="row2" align="center" valign="middle"><span class="postdetails">{topics_list_box.row.VIEWS}</span></td>
-	<td class="row3" align="center" valign="middle" nowrap="wrap"><span class="postdetails">{topics_list_box.row.LAST_POST_TIME}<br />{topics_list_box.row.LAST_POST_AUTHOR} {topics_list_box.row.LAST_POST_IMG}</span></td>
+	<td class="row3" align="center" valign="middle" aria-hidden="true"><span class="postdetails">{topics_list_box.row.LAST_POST_TIME}<br />{topics_list_box.row.LAST_POST_AUTHOR} {topics_list_box.row.LAST_POST_IMG}</span></td>
 	<!-- BEGIN multi_selection -->
 	<td class="row2" align="center" valign="middle"><span class="postdetails"><input type="checkbox" name="{topics_list_box.FIELDNAME}[]{topics_list_box.row.BOX_ID}" value="{topics_list_box.row.FID}" onClick="javascript:check_uncheck_main_{topics_list_box.row.BOX_ID}();" {topics_list_box.row.L_SELECT} /></span></td>
 	<!-- END multi_selection -->

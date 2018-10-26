@@ -115,7 +115,7 @@ function validate_username($username)
 // test SMTP mail delivery
 function probe_smtp_mailbox($email, $hostname)
 {
-	global $config, $user, $phpEx;
+	global $board_config, $user, $phpEx;
 	@set_time_limit(30);
 	
 	if ($connect = fsockopen($hostname, 25, $errno, $errstr, 15))
@@ -125,7 +125,7 @@ function probe_smtp_mailbox($email, $hostname)
 
 	    if (preg_match('#^220#', $out))
 	    {
-	      fputs($connect, "HELO " . $config['server_name'] . "\r\n");
+	      fputs($connect, "HELO " . $board_config['server_name'] . "\r\n");
 
 	      while (preg_match('#^220#', $out))
 	      {
@@ -135,7 +135,7 @@ function probe_smtp_mailbox($email, $hostname)
 	      fputs($connect, "VRFY <" . $email . ">\r\n");
 	      $verify = fgetss($connect, 1024);
 
-	      fputs($connect, "MAIL FROM: <" . $config['board_email'] . ">\r\n");
+	      fputs($connect, "MAIL FROM: <" . $board_config['board_email'] . ">\r\n");
 	      $from = fgetss($connect, 1024);
 
 	      fputs($connect, "RCPT TO: <" . $email . ">\r\n");

@@ -1,32 +1,29 @@
 <!-- INCLUDE overall_header.html -->
 
+<div align="center">
 
-<form action="{S_PROFILE_ACTION}" method="post" id="resend">
+<form action="{S_PROFILE_ACTION}" method="post">
 
-<div class="panel">
-	<div class="inner">
+<table class="tablebg" width="50%" cellspacing="1" cellpadding="4" border="0">
+<tr>
+	<th colspan="2">{L_UCP_RESEND}</th>
+</tr>
+<tr>
+	<td class="row1" width="38%"><b class="genmed">{L_USERNAME}: </b></td>
+	<td class="row2"><input type="text" class="post" name="username" size="25" value="{USERNAME}" /></td>
+</tr>
+<tr>
+	<td class="row1"><b class="genmed">{L_EMAIL_ADDRESS}: </b><br /><span class="gensmall">{L_EMAIL_REMIND}</span></td>
+	<td class="row2"><input type="text" class="post" name="email" size="25" maxlength="100" value="{EMAIL}" /></td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="btnmain" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" name="reset" class="btnlite" /></td>
+</tr>
+</table>
+{S_FORM_TOKEN}
 
-	<div class="content">
-		<h2>{L_UCP_RESEND}</h2>
-
-		<fieldset>
-		<dl>
-			<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
-			<dd><input class="inputbox narrow" type="text" name="username" id="username" size="25" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label><br /><span>{L_EMAIL_REMIND}</span></dt>
-			<dd><input class="inputbox narrow" type="email" name="email" id="email" size="25" maxlength="100" /></dd>
-		</dl>
-		<dl>
-			<dt>&nbsp;</dt>
-			<dd>{S_HIDDEN_FIELDS}{S_FORM_TOKEN}<input type="submit" name="submit" id="submit" class="button1" value="{L_SUBMIT}" tabindex="2" />&nbsp; <input type="reset" value="{L_RESET}" name="reset" class="button2" /></dd>
-		</dl>
-		</fieldset>
-	</div>
-
-	</div>
-</div>
 </form>
+
+</div>
 
 <!-- INCLUDE overall_footer.html -->

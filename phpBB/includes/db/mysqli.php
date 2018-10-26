@@ -40,7 +40,7 @@ class dbal_mysqli extends dbal
 	/**
 	* Connect to server
 	* downgraded for phpBB2 backend
-	* {@inheritDoc}
+	* @access public
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
@@ -131,7 +131,12 @@ class dbal_mysqli extends dbal
 
 		return $this->sql_error('');
 	}
-
+	
+	function sql_connect_id()
+	{
+		return "SELECT CONNECTION_ID()";
+	}
+	
 	/**
 	* Version information about used database
 	*/
@@ -321,12 +326,12 @@ class dbal_mysqli extends dbal
 		}
 		if($query_id)
 		{		
-			$fields_cnt = mysqli_num_fields($query_id);
+			$columns_cnt = mysqli_num_fields($query_id);
 			// Get field information ($query_id, $offset);
-			$field = mysqli_fetch_fields($query_id);
-			$field_set = array();
+			$column = mysqli_fetch_fields($query_id);
+			$column_set = array();
 
-			$result = $field[$offset]->name;
+			$result = $column[$offset]->name;
 			return $result;
 		}
 		else
@@ -335,6 +340,13 @@ class dbal_mysqli extends dbal
 		}
 	}
 	
+	/**
+	 * Check if a field type in a database.
+	 *
+	 * @param string $offset of sql array.
+	 * @param string $query_id from sql array.
+	 * @return field type.
+	 */
 	function sql_fieldtype($offset, $query_id = 0)
 	{
 		if(!$query_id)
@@ -351,7 +363,73 @@ class dbal_mysqli extends dbal
 			return false;
 		}
 	}
+	
+	/**
+	 * Gets a list of columns of a table.
+	 *
+	 * @param string $table_name	table name
+	 * @return array of columns names (all lower case)
+	 */
+	function sql_list_columns($table_name)
+	{
+		$columns = array();
+		$result = $this->sql_query("SHOW COLUMNS FROM $table_name");
+		while ($row = $this->sql_fetchrow($result))
+		{
+			$column = strtolower(current($row));
+			$columns[$column] = $column;
+		}
+		$this->sql_freeresult($result);
+		
+		return $columns;
+	}
+	
+	/**
+	 * Check if a field exists in a table.
+	 *
+	 * @param string $column for field name.
+	 * @param string $table_name for table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_field_exists($column, $table_name)
+	{
+		//$query = $this->sql_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name='{$table_name}' AND column_name='{$column}'");
+		$query = $this->sql_query("SHOW FULL COLUMNS FROM $table_name LIKE '$column'");
+		$numrows = $this->sql_numrows($query);
+		
+		if($numrows > 0)
+		{
+			return true;
+		}
+		else
+		{
+			$columns = $this->sql_list_columns($table_name);
+			return isset($columns[$column]);
+		}
+	}
+	
+	/**
+	 * Check if a table exists in a database.
+	 *
+	 * @param string $table_name for the table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_table_exists($table_name)
+	{
+		// Execute on master server to ensure if we've just created a table that we get the correct result
+		$query = (version_compare($this->sql_get_version(), '5.0.2', '>=')) ? $this->sql_query("SHOW FULL TABLES FROM `".$this->dbname."` WHERE table_type = 'BASE TABLE' AND `Tables_in_".$this->dbname."` = '$table_name'") : $this->sql_query("SHOW TABLES LIKE '$table_name'");
 
+		$exists = $this->sql_numrows($query);
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	/**
 	* Return number of affected rows
 	*/
@@ -385,12 +463,36 @@ class dbal_mysqli extends dbal
 
 		return false;
 	}
-
+	
+	/**
+	 * Return a result array for a query.
+	 *
+	 * @param resource $query for the query_id.
+	 * @param int $resulttype for the type of array to return: 
+	 *  MYSQLI_NUM, MYSQLI_BOTH or MYSQLI_ASSOC
+	 * @return array for the query of result.
+	 */
+	function sql_fetch_array($query, $resulttype=MYSQLI_ASSOC)
+	{
+		switch($resulttype)
+		{
+			case MYSQLI_NUM:
+			case MYSQLI_BOTH:
+			case MYSQLI_ASSOC:
+			break;
+			
+			default:
+				$resulttype = MYSQLI_ASSOC;
+			break;
+		}
+		return @mysqli_fetch_array($query, $resulttype);
+	}
+	
 	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($column, $rownum = false, $query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -405,7 +507,7 @@ class dbal_mysqli extends dbal
 			}
 
 			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
+			return isset($row[$column]) ? $row[$column] : false;
 		}
 
 		return false;
@@ -477,7 +579,31 @@ class dbal_mysqli extends dbal
 	{
 		return @mysqli_real_escape_string($this->db_connect_id, $msg);
 	}
-
+	
+	/**
+	 * Gets db version.
+	 *
+	 * @return string Version of this db.
+	 */
+	function sql_get_version()
+	{
+		if($this->version)
+		{
+			return $this->version;
+		}
+		
+		$query = $this->sql_query("SELECT VERSION() as version");
+		$ver = $this->sql_fetch_array($query);
+		$version = $ver['version'];
+		
+		if($version)
+		{
+			$version = explode(".", $version, 3);
+			$this->version = (int)$version[0].".".(int)$version[1].".".(int)$version[2];
+		}
+		return $this->version;
+	}
+	
 	/**
 	* Gets the estimated number of rows in a specified table.
 	*
@@ -490,17 +616,17 @@ class dbal_mysqli extends dbal
 	*/
 	function get_estimated_row_count($table_name)
 	{
-		$table_status = $this->get_table_status($table_name);
+		$table_name_status = $this->get_table_status($table_name);
 
-		if (isset($table_status['Engine']))
+		if (isset($table_name_status['Engine']))
 		{
-			if ($table_status['Engine'] === 'MyISAM')
+			if ($table_name_status['Engine'] === 'MyISAM')
 			{
-				return $table_status['Rows'];
+				return $table_name_status['Rows'];
 			}
-			else if ($table_status['Engine'] === 'InnoDB' && $table_status['Rows'] > 100000)
+			else if ($table_name_status['Engine'] === 'InnoDB' && $table_name_status['Rows'] > 100000)
 			{
-				return '~' . $table_status['Rows'];
+				return '~' . $table_name_status['Rows'];
 			}
 		}
 
@@ -518,11 +644,11 @@ class dbal_mysqli extends dbal
 	*/
 	function get_row_count($table_name)
 	{
-		$table_status = $this->get_table_status($table_name);
+		$table_name_status = $this->get_table_status($table_name);
 
-		if (isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM')
+		if (isset($table_name_status['Engine']) && $table_name_status['Engine'] === 'MyISAM')
 		{
-			return $table_status['Rows'];
+			return $table_name_status['Rows'];
 		}
 
 		return parent::get_row_count($table_name);
@@ -542,37 +668,43 @@ class dbal_mysqli extends dbal
 		$sql = "SHOW TABLE STATUS
 			LIKE '" . $this->sql_escape($table_name) . "'";
 		$result = $this->sql_query($sql);
-		$table_status = $this->sql_fetchrow($result);
+		$table_name_status = $this->sql_fetchrow($result);
 		$this->sql_freeresult($result);
 
-		return $table_status;
+		return $table_name_status;
 	}
 
 	/**
-	* Build LIKE expression
+	* return sql error array
 	* @access private
 	*/
-	function _sql_like_expression($expression)
+	function sql_error()
 	{
-		return $expression;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		switch ($stage)
+		if ($this->db_connect_id)
 		{
-			case 'FROM':
-				$data = '(' . $data . ')';
-			break;
+			$error = array(
+				'message'	=> @mysqli_error($this->db_connect_id),
+				'code'		=> @mysqli_errno($this->db_connect_id)
+			);
+		}
+		else if (function_exists('mysqli_connect_error'))
+		{
+			$error = array(
+				'message'	=> @mysqli_connect_error(),
+				'code'		=> @mysqli_connect_errno(),
+			);
+		}
+		else
+		{
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
 		}
 
-		return $data;
-	}	
-	
+		return $error;
+	}
+
 	/**
 	* return sql error array
 	* @access private
@@ -603,6 +735,32 @@ class dbal_mysqli extends dbal
 
 		return $error;
 	}
+
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Build db-specific query data
+	* @access private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		switch ($stage)
+		{
+			case 'FROM':
+				$data = '(' . $data . ')';
+			break;
+		}
+
+		return $data;
+	}	
+	
 
 	/**
 	* Close sql connection

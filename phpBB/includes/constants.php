@@ -44,6 +44,12 @@ define('EMAILER_DISABLED', false);
 // User Levels <- Do not change the values of USER or ADMIN
 define('DELETED', -1);
 define('ANONYMOUS', -1);
+define('BOT', -2);
+
+define('USER_NORMAL', 0);
+define('USER_INACTIVE', 1);
+define('USER_IGNORE', 2);
+define('USER_FOUNDER', 3);
 
 define('USER', 0);
 define('ADMIN', 1);
@@ -61,6 +67,9 @@ define('USER_AVATAR_UPLOAD', 1);
 define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
+define('AVATAR_UPLOAD', 1);
+define('AVATAR_REMOTE', 2);
+define('AVATAR_GALLERY', 3);
 
 // Group settings
 define('GROUP_OPEN', 0);
@@ -364,15 +373,34 @@ define('SESSION_REFRESH', 120); // Session Refresh Time (Seconds)
 define('ONLINE_REFRESH', 300); // Online Refresh Time (Seconds)
 /**#@-*/
 
+// Event Registration - BEGIN
+define('REG_OPTION1', 1);
+define('REG_OPTION2', 2);
+define('REG_OPTION3', 3);
+define('REG_UNREGISTER', 4);
+// Event Registration - END
+
+// Some of the most used colors names
+define('RGB_COLORS_LIST', 'aqua,black,blue,brown,cadetblue,chocolate,crimson,cyan,darkblue,darkgreen,darkgrey,darkorchid,darkred,deepskyblue,fuchsia,gold,gray,green,indigo,lightgrey,lime,maroon,navy,olive,orange,peachpuff,purple,red,seagreen,silver,teal,violet,white,yellow');
+
+// Do not insert anything but tables below!
 // Table names
+define('ACRONYMS_TABLE', $table_prefix . 'acronyms');
 define('CONFIRM_TABLE', $table_prefix.'confirm');
 define('AUTH_ACCESS_TABLE', $table_prefix.'auth_access');
 define('BANLIST_TABLE', $table_prefix.'banlist');
+define('BBCODES_TABLE', $table_prefix . 'bbcodes');
+define('BOTS_TABLE', $table_prefix . 'bots');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('DISALLOW_TABLE', $table_prefix.'disallow');
+define('FLAG_TABLE', $table_prefix . 'flags');
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('GROUPS_TABLE', $table_prefix.'groups');
+define('IMAGES_TABLE', $table_prefix . 'images');
+define('LOGINS_TABLE', $table_prefix . 'logins');
+define('LOG_TABLE', $table_prefix . 'log');
+define('LOGS_TABLE', $table_prefix . 'logs');
 define('POSTS_TABLE', $table_prefix.'posts');
 define('POSTS_TEXT_TABLE', $table_prefix.'posts_text');
 define('PRIVMSGS_TABLE', $table_prefix.'privmsgs');

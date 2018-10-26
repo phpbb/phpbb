@@ -1,6 +1,6 @@
 <?php
 
-// eXtreme Styles mod cache. Generated on Mon, 08 Oct 2018 14:00:54 +0000 (time=1539007254)
+// eXtreme Styles mod cache. Generated on Fri, 26 Oct 2018 14:46:57 +0000 (time=1540565217)
 
 ?>
 <!-- 

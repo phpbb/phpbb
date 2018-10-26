@@ -17,7 +17,7 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
+@define('IN_PHPBB', 1);
 
 if( !empty($setmodules) )
 {
@@ -329,7 +329,7 @@ else
 	/**
 	 * function decode_lang from mx_traslator phpBB3 Extension
 	 *
-	 * $default_lang = $user->decode_country_name($board_config['default_lang']);
+	 * $user_lang = decode_country_name($lang['USER_LANG'], 'country');
 	 *
 	 * @param unknown_type $lang
 	 * @return unknown
@@ -1798,11 +1798,11 @@ else
 
 	if (class_exists('phpbb_db_tools'))
 	{
-		$db_tools = new phpbb_db_tools($db);					
-	}				
+		$db_tools = new phpbb_db_tools($db);
+	}
 	elseif (class_exists('tools'))
 	{
-		$db_tools = new tools($db);					
+		$db_tools = new tools($db);
 	}	 
 	
 	$template->assign_vars(array(
@@ -1834,7 +1834,7 @@ else
 		$sql = "SELECT * FROM " . FLAG_TABLE . "
 			ORDER BY flag_id ASC";
 		$sql = "SELECT *
-			FROM " . FLAG_TABLE;			
+			FROM " . FLAG_TABLE;
 		if( !$result = $db->sql_query($sql) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain flags data", "", __LINE__, __FILE__, $sql);
@@ -1881,9 +1881,20 @@ else
 				$flag_name = preg_replace("/\[(.*?)_(.*)\]/", "[ \\1 - \\2 ]", $displayname);
 			
 				$country_name = ucfirst(decode_country_name(strtolower($flag_name)));	
-									
-				$flags[$flag_id] = $flag;				
-				$countries[$flag] = $country_name;									
+				
+				/* This code is commented and left as reference how a language list displays on other boards * /
+				if (isset($lang['USER_LANG']))
+				{
+					if(!empty($lang['USER_LANG']) && is_file($phpbb_root_path . 'images/flags/'.$lang['USER_LANG'].'.png'))
+					{
+						$lang_name = decode_country_name($lang['USER_LANG'], 'language');
+						//here You can set an icon with img src=
+					}
+				}
+				/**/
+				
+				$flags[$flag_id] = $flag;
+				$countries[$flag] = $country_name;
 			}
 		}
 		@closedir($dir);		
@@ -1896,9 +1907,13 @@ else
 			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
 			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];					
 			
+			$filename = basename($flag);
+			$displayname = substr($filename, 0, strrpos($filename, '.'));
+			$lang_name = decode_country_name($displayname, 'language');
+			
 			$sql_ary[$flag_id] = array(
 				'flag_id'			=> $flag_id,
-				'flag_name'		=> $country_name,
+				'flag_name'		=> $country_name, //$lang_name
 				'flag_image'		=> $flag
 			);								
 			
@@ -1907,7 +1922,7 @@ else
 				"ROW_COLOR" => "#" . $row_color,
 				"ROW_CLASS" => $row_class,
 				"FLAG" => isset($lang[$country_name]) ? $lang[$country_name] : $country_name,
-				"IMAGE_DISPLAY" => ($flag) ? '<img src="../images/flags/' . $flag . '" />' : "",
+				"IMAGE_DISPLAY" => ($flag) ? '<img title="' . $country_name . '" alt="' . $displayname . '" src="../images/flags/' . $flag . '" />' : "",
 
 				"U_FLAG_EDIT" => append_sid("admin_flags.$phpEx?mode=edit&amp;id=$flag_id"),
 				"U_FLAG_DELETE" => append_sid("admin_flags.$phpEx?mode=delete&amp;id=$flag_id"))

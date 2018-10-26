@@ -3,7 +3,26 @@
 
 <p>{L_CONFIGURATION_EXPLAIN}</p>
 
-<form action="{S_CONFIG_ACTION}" method="post"><table width="99%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+<form action="{S_CONFIG_ACTION}" method="post">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center">
+	<tr>
+		<td>
+			<div id="admintabs">
+				<ul>
+				<li id="gen_sett_tab"><a href="javascript:selectPart('gen_sett')">{L_GENERAL_SETTINGS}</a></li>
+				<li id="cookie_sett_tab"><a href="javascript:selectPart('cookie_sett')">{L_COOKIE_SETTINGS}</a></li>
+				<li id="prv_msgs_tab"><a href="javascript:selectPart('prv_msgs')">{L_PRIVATE_MESSAGING}</a></li>
+				<li id="ablts_sett_tab"><a href="javascript:selectPart('ablts_sett')">{L_ABILITIES_SETTINGS}</a></li>
+				<li id="avtr_sett_tab"><a href="javascript:selectPart('avtr_sett')">{L_AVATAR_SETTINGS}</a></li>
+				<li id="coppa_sett_tab"><a href="javascript:selectPart('coppa_sett')">{L_COPPA_SETTINGS}</a></li>
+				<li id="email_sett_tab"><a href="javascript:selectPart('email_sett')">{L_EMAIL_SETTINGS}</a></li>
+				</ul>
+			</div>
+		</td>
+	</tr>
+</table>
+<fieldset id="gen_sett">
+<table width="99%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
 	<tr>
 	  <th class="thHead" colspan="2">{L_GENERAL_SETTINGS}</th>
 	</tr>
@@ -108,6 +127,14 @@
 		<td class="row2"><input type="radio" name="prune_enable" value="1" {PRUNE_YES} /> {L_YES}&nbsp;&nbsp;<input type="radio" name="prune_enable" value="0" {PRUNE_NO} /> {L_NO}</td>
 	</tr>
 	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="cookie_sett">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+	<tr>
 		<th class="thHead" colspan="2">{L_COOKIE_SETTINGS}</th>
 	</tr>
 	<tr>
@@ -134,6 +161,14 @@
 		<td class="row2"><input class="post" type="text" maxlength="5" size="5" name="session_length" value="{SESSION_LENGTH}" /></td>
 	</tr>
 	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="prv_msgs">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+	<tr>
 		<th class="thHead" colspan="2">{L_PRIVATE_MESSAGING}</th>
 	</tr>
 	<tr>
@@ -152,6 +187,14 @@
 		<td class="row1">{L_SAVEBOX_LIMIT}</td>
 		<td class="row2"><input class="post" type="text" maxlength="4" size="4" name="max_savebox_privmsgs" value="{SAVEBOX_LIMIT}" /></td>
 	</tr>
+	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="ablts_sett">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
 	<tr>
 	  <th class="thHead" colspan="2">{L_ABILITIES_SETTINGS}</th>
 	</tr>
@@ -192,6 +235,14 @@
 		<td class="row2"><input type="radio" name="allow_namechange" value="1" {NAMECHANGE_YES} /> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_namechange" value="0" {NAMECHANGE_NO} /> {L_NO}</td>
 	</tr>
 	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="avtr_sett">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+	<tr>
 	  <th class="thHead" colspan="2">{L_AVATAR_SETTINGS}</th>
 	</tr>
 	<tr>
@@ -225,6 +276,14 @@
 		<td class="row2"><input class="post" type="text" size="20" maxlength="255" name="avatar_gallery_path" value="{AVATAR_GALLERY_PATH}" /></td>
 	</tr>
 	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="coppa_sett">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+	<tr>
 	  <th class="thHead" colspan="2">{L_COPPA_SETTINGS}</th>
 	</tr>
 	<tr>
@@ -235,7 +294,14 @@
 		<td class="row1">{L_COPPA_MAIL}<br /><span class="gensmall">{L_COPPA_MAIL_EXPLAIN}</span></td>
 		<td class="row2"><textarea name="coppa_mail" rows="5" cols="30">{COPPA_MAIL}</textarea></td>
 	</tr>
-
+	<tr>
+		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+		</td>
+	</tr>
+</table>
+</fieldset>
+<fieldset id="email_sett">
+<table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
 	<tr>
 	  <th class="thHead" colspan="2">{L_EMAIL_SETTINGS}</th>
 	</tr>
@@ -267,6 +333,42 @@
 		<td class="catBottom" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
 		</td>
 	</tr>
-</table></form>
-
+</table>
+</form>
+</fieldset>
 <br clear="all" />
+<script type="text/javascript">
+<!--
+function admingetObj(obj)
+{
+	return ( document.getElementById ? document.getElementById(obj) : ( document.all ? document.all[obj] : null ) );
+}
+function adminsetNone(part)
+{
+	admingetObj(part + '_tab').className = '';
+	admingetObj(part).style.display = 'none';
+
+}
+function adminsetBlock(part)
+{
+	admingetObj(part + '_tab').className = 'activetab';
+	admingetObj(part).style.display = 'block';
+
+}
+function selectPart(part)
+{
+	adminsetNone('gen_sett');
+	adminsetNone('cookie_sett');
+	adminsetNone('prv_msgs');
+	adminsetNone('ablts_sett');
+	adminsetNone('avtr_sett');
+	adminsetNone('coppa_sett');
+	adminsetNone('email_sett');
+
+	adminsetBlock(part);
+}
+
+selectPart('gen_sett');
+
+// -->
+</script>

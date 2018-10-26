@@ -1,49 +1,70 @@
-<div class="post <!-- IF S_PRIVMSGS -->pm<!-- ELSE -->bg2<!-- ENDIF -->" id="preview">
-	<div class="inner">
 
+<table class="tablebg" width="100%" cellspacing="1">
+<tr> 
+	<th>{L_PREVIEW}</th>
+</tr>
+<tr> 
+	<td class="row1">{MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {POST_DATE} &nbsp;&nbsp;&nbsp; {L_POST_SUBJECT}: {PREVIEW_SUBJECT}</span></td>
+</tr>
 <!-- IF S_HAS_POLL_OPTIONS -->
-	<div class="content">
-		<h2>{L_PREVIEW}{L_COLON} {POLL_QUESTION}</h2>
-		<p class="author"><!-- IF L_POLL_LENGTH -->{L_POLL_LENGTH}<br /><!-- ENDIF -->{L_MAX_VOTES}</p>
-
-		<fieldset class="polls">
-		<!-- BEGIN poll_option -->
-			<dl>
-				<dt><label for="vote_{poll_option.POLL_OPTION_ID}">{poll_option.POLL_OPTION_CAPTION}</label></dt>
-				<dd style="width: auto;"><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ELSE --><input type="radio" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></dd>
-			</dl>
-		<!-- END poll_option -->
-		</fieldset>
-	</div>
-
-	</div>
-</div>
-
-<div class="post bg2">
-	<div class="inner">
-
+	<tr>
+		<td class="row2" colspan="2" align="center"><br clear="all" />
+			<table cellspacing="0" cellpadding="4" border="0" align="center">
+			<tr>
+				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
+			</tr>
+			<tr>
+				<td align="center">
+					<table cellspacing="0" cellpadding="2" border="0">
+					<!-- BEGIN poll_option -->
+						<tr>
+							<td>
+							<!-- IF S_IS_MULTI_CHOICE -->
+								<input type="checkbox" class="radio" name="vote_id" value="" />
+							<!-- ELSE -->
+								<input type="radio" class="radio" name="vote_id" value="" />
+							<!-- ENDIF -->
+							</td>
+							<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
+						</tr>
+					<!-- END poll_option -->
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="center"><span class="gensmall">{L_MAX_VOTES}</span></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
 <!-- ENDIF -->
+<tr> 
+	<td class="row1">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><div class="postbody">{PREVIEW_MESSAGE}</div>
+			<!-- IF .attachment -->
+				<br clear="all" /><br />
 
-<!-- EVENT posting_preview_poll_after -->
+				<table class="tablebg" width="100%" cellspacing="1">
+				<tr>
+					<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+				</tr>
+				<!-- BEGIN attachment -->
+					<tr>
+						<td class="row2">{attachment.DISPLAY_ATTACHMENT}</td>
+					</tr>
+				<!-- END attachment -->
+				</table>
+			<!-- ENDIF -->
+			<!-- IF PREVIEW_SIGNATURE --><span class="postbody"><br />_________________<br />{PREVIEW_SIGNATURE}</span><!-- ENDIF --></td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td class="spacer"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+</tr>
+</table>
 
-	<div class="postbody">
-		<h3>{L_PREVIEW}{L_COLON} {PREVIEW_SUBJECT}</h3>
-
-		<div class="content">{PREVIEW_MESSAGE}</div>
-
-		<!-- IF .attachment -->
-		<dl class="attachbox">
-			<dt>{L_ATTACHMENTS}</dt>
-			<!-- BEGIN attachment -->
-			<dd>{attachment.DISPLAY_ATTACHMENT}</dd>
-			<!-- END attachment -->
-		</dl>
-		<!-- ENDIF -->
-
-		<!-- IF PREVIEW_SIGNATURE --><div class="signature">{PREVIEW_SIGNATURE}</div><!-- ENDIF -->
-	</div>
-
-	</div>
-</div>
-
-<hr />
+<br clear="all" />

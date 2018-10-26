@@ -351,7 +351,7 @@ function mozWrap(txtarea, open, close)
 */
 function storeCaret(textEl)
 {
-	if (textEl.createTextRange && document.selection)
+	if (textEl.createTextRange)
 	{
 		textEl.caretPos = document.selection.createRange().duplicate();
 	}

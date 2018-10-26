@@ -1,9 +1,9 @@
 /*  phpBB3 Style Sheet
     --------------------------------------------------------------
-	Style name:		SwiftBlue
-	Based on style:	SwiftBlue Theme for phpBB2 by BitByBit, 	http://www.bitbybit.f2s.com
-	Original author:	OryNider, using subsilver2 Theme as a base.	
-	This is an alternative subsilver2 style with purple-blue colors.
+	Style name:			subsilver2
+	Based on style:		subSilver (the default phpBB 2.0.x style)
+	Original author:	Tom Beddard ( http://www.subblue.com/ )
+	Modified by:		phpBB Group ( https://www.phpbb.com/ )
     --------------------------------------------------------------
 */
 
@@ -15,16 +15,15 @@
 	padding: 0;
 }
 
-abbr {
-	text-decoration: none;
-}
-
 html {
 	font-size: 100%;
 }
 /* General page style. The scroll bar colours only visible in IE5.5+ */
 body {
-	background-color: #E3F0FB;
+	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
+	font-family: Verdana, Geneva, 'Lucida Grande', Arial, Helvetica, sans-serif, droid-serif;
+	color: #323D4F;
+	background-color: #FFFFFF;
 	scrollbar-face-color: #BADBF5;
 	scrollbar-highlight-color: #E3F0FB;
 	scrollbar-shadow-color: #BADBF5;
@@ -32,16 +31,13 @@ body {
 	scrollbar-arrow-color:  #072978;
 	scrollbar-track-color: #DAECFA;
 	scrollbar-darkshadow-color: #4B8DF1;
-	padding-right: 0px; 
-	padding-left: 0px; 
-	background: url("./images/backgroundbluelight.gif"); 
-	padding-bottom: 0px; 
-	margin: 5px 10px 10px; 
-	font-family: Verdana, Geneva, 'Lucida Grande', Arial, Helvetica, sans-serif, droid-serif;  
-	padding-top: 0px;
-	font-size: 89.5%;
-	margin: 0;	
+	padding-bottom: 0px;
+ 	padding-top: 0px;
+	margin: 5px 10px 10px; 	
+	font-size: 62.5%; /* This sets the default font size to be equivalent to 10px */
+	margin: 0;
 }
+
 
 #wrapheader {
 	min-height: 120px;
@@ -65,17 +61,18 @@ body {
 #wrapnav {
 	width: 100%;
 	margin: 0;
-	background-color: #DAECFA;
+	background-color: #ECECEC;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #A9B8C2;
 }
 
 #logodesc {
-	margin-bottom: 5px;
-	padding: 5px 25px;
-	background: transparent none 0 0 no-repeat;		
-	border-bottom: 1px solid #D9DFE4;
+	background-color: #C1CAD2;
+	background-image: url('./images/background.gif');
+	background-repeat: repeat-x;
+	background-position: center bottom;
+	padding: 0 25px 15px 25px;
 }
 
 #menubar {
@@ -224,19 +221,20 @@ p.topicdetails {
 	margin: 1px 0;
 }
 
-.postreported, .postreported a:visited, .postreported a:hover, .postreported a:link, .postreported a:active {
+.postreported, .postreported a:link, .postreported a:visited, .postreported a:hover, .postreported a:active {
 	margin: 1px 0;
 	color: red;
 	font-weight:bold;
 }
 
-.postapprove, .postapprove a:visited, .postapprove a:hover, .postapprove a:link, .postapprove a:active {
+.postapprove, .postapprove a:link, .postapprove a:visited, .postapprove a:hover, .postapprove a:active {
 	color: green;
 	font-weight:bold;
 }
 
 .postapprove img, .postreported img {
 	vertical-align: bottom;
+	padding-top: 5px;
 }
 
 .postauthor {
@@ -246,6 +244,7 @@ p.topicdetails {
 .postdetails {
 	color: #000000;
 }
+
 
 /* The content of the posts (body of text) */
 .postbody { 
@@ -267,6 +266,7 @@ p.topicdetails {
 }
 
 .nav {
+	margin: 0;
 	color: black;
 	font-weight: bold;
 }
@@ -323,15 +323,14 @@ fa-fw {
 
 }
 
-/* General text */
 .gen {
 	margin: 1px 1px;
-	font-size: 15px;
+	font-size: 1.2em;
 }
 
 .genmed {
 	margin: 1px 1px;
-	font-size: 14px;
+	font-size: 1.1em;
 }
 
 .gensmall {
@@ -418,6 +417,7 @@ a.copyright:hover { color: #000000; text-decoration: underline;}
 .error {
 	color: red;
 }
+
 
 /* Horizontal lists
 ----------------------------------------*/
@@ -999,25 +999,20 @@ li.notification-reported strong, li.notification-disapproved strong {
 
 /* Tables
  ------------ */
-/* General font families for common tags */
-font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
-a:link,a:active,a:visited { color : #006699; }
-a:hover		{ text-decoration: underline; color : #DD6900; }
-hr	{ height: 0px; border: solid #80BBEC 0px; border-top-width: 1px;}
-
-
-/* This is the border line & background colour round the entire page */
-.bodyline	{ 
-	background-color: #E3F0FB;
-	background-image: url("./images/bodyline.jpg");
-	padding-bottom: 40px; 	
-	border: 1px #4B8DF1 solid; 
+th {
+	color: #FFA34F;
+	font-size: 1.1em;
+	font-weight: bold;
+	background-color: #006699;
+	background-image: url('./images/cellpic3.gif');
+	white-space: nowrap;
+	padding: 7px 5px;
 }
 
-/* This is the outline round the main forum tables */
-.forumline	{ background-color: #E3F0FB; border: 2px #006699 solid; }
-
-.profile {
+td {
+	padding: 2px;
+}
+td.profile {
 	padding: 4px;
 }
 
@@ -1071,6 +1066,9 @@ hr	{ height: 0px; border: solid #80BBEC 0px; border-top-width: 1px;}
 
 .catdiv {
 	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 	background: white url('./images/cellpic2.jpg') repeat-y scroll top left;
 }
 .rtl .catdiv {
@@ -1086,49 +1084,38 @@ th	{
 
 .cat {
 	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 	background-color: #C7D0D7;
+	background-image: url('./images/cellpic1.gif');
 	text-indent: 4px;
 }
 
-
-.cat,.catHead,.catSides,.catLeft,.catRight,.catBottom {
-			background-image: url('./images/cellpic1.gif');
-			background-color:#80BBEC; border: #E3F0FB; border-style: solid; height: 28px;
+.row1 {
+	background-color: #ECECEC;
+	padding: 4px;
 }
 
-
-/*
-  Setting additional nice inner borders for the main table cells.
-  The names indicate which sides the border will be on.
-  Don't worry if you don't understand this, just ignore it :-)
-*/
-td.cat,td.catHead,td.catBottom {
-	height: 29px;
-	border-width: 0px 0px 0px 0px;
+.row2 {
+	background-color: #DCE1E5;
+	padding: 4px;
 }
-th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
-	font-weight: bold; border: #E3F0FB; border-style: solid; height: 28px; }
-td.row3Right,td.spaceRow {
-	background-color: #80BBEC; border: #E3F0FB; border-style: solid; }
 
-th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
-th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
-th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
-th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
-th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
-th.thTop	 { border-width: 1px 0px 0px 0px; }
-th.thCornerL { border-width: 1px 0px 0px 1px; }
-th.thCornerR { border-width: 1px 1px 0px 0px; } 
+.row3 {
+	background-color: #C0C8D0;
+	padding: 4px;
+}
 
 .spacer {
-	background-color: #80BBEC;
+	background-color: #D1D7DC;
 }
 
 hr {
 	height: 1px;
 	border-width: 0;
-	background-color: #80BBEC;
-	color: #80BBEC;
+	background-color: #D1D7DC;
+	color: #D1D7DC;
 }
 
 .legend {
@@ -1138,13 +1125,20 @@ hr {
 
 /* Links
  ------------ */
- 
+
+/* Links adjustment to correctly display an order of rtl/ltr mixed content */
+.rtl a {
+	direction: rtl;
+	unicode-bidi: embed;
+}
+
+/* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
+/* See http://www.phpbb.com/bugs/phpbb3/59685 */
 a:link {
 	color: #006597;
 	text-decoration: none;
 }
 
-a:active,
 a:visited {
 	color: #005784;
 	text-decoration: none;
@@ -1155,18 +1149,23 @@ a:hover {
 	text-decoration: underline;
 }
 
+a:active {
+	color: #005784;
+	text-decoration: none;
+}
+
 a.forumlink {
 	color: #069;
 	font-weight: bold;
 	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
-	font-size: 13px;
+	font-size: 1.2em;
 }
 
 a.topictitle {
 	margin: 1px 0;
 	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 	font-weight: bold;
-	font-size: 13px;
+	font-size: 1.2em;
 }
 
 a.topictitle:visited {
@@ -1196,7 +1195,7 @@ form {
 input {
 	color: #333333;
 	font-family: "Lucida Grande", Verdana, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: normal;
 	padding: 1px;
 	border: 1px solid #A9B8C2;
@@ -1207,8 +1206,8 @@ textarea {
 	background-color: #FAFAFA;
 	color: #333333;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 14px; 
-	line-height: 15px;
+	font-size: 1.3em; 
+	line-height: 1.4em;
 	font-weight: normal;
 	border: 1px solid #A9B8C2;
 	padding: 2px;
@@ -1242,48 +1241,48 @@ input.radio {
 }
 
 .post {
-	background-color: #DAECFA;
+	background-color: white;
 	border-style: solid;
 	border-width: 1px;
 }
 
 .btnbbcode {
 	color: #000000;
-	font-weight: normal;	
-	font-size: 0.8em;
+	font-weight: normal;
+	font-size: 1.1em;
 	font-family: "Lucida Grande", Verdana, Helvetica, sans-serif;
-	background-color: #DAECFA;
+	background-color: #EFEFEF;
 	border: 1px solid #666666;
 }
 
 .btnmain {
 	font-weight: bold;
-	background-color: #DAECFA;
+	background-color: #ECECEC;
 	border: 1px solid #A9B8C2;
 	cursor: pointer;
-	padding: 1px 3px;
-	font-size: 0.8em;
+	padding: 1px 5px;
+	font-size: 1.1em;
 }
 
 .btnlite {
 	font-weight: normal;
-	background-color: #DAECFA;
+	background-color: #ECECEC;
 	border: 1px solid #A9B8C2;
 	cursor: pointer;
-	padding: 1px 3px;
-	font-size: 0.8em;
+	padding: 1px 5px;
+	font-size: 1.1em;
 }
 
 .btnfile {
 	font-weight: normal;
-	background-color: #DAECFA;
+	background-color: #ECECEC;
 	border: 1px solid #A9B8C2;
-	padding: 1px 3px;
-	font-size: 0.8em;
+	padding: 1px 5px;
+	font-size: 1.1em;
 }
 
 .helpline {
-	background-color: #BADBF5;
+	background-color: #DEE3E7;
 	border-style: none;
 }
 
@@ -1355,7 +1354,7 @@ input.radio {
 }
 
 .syntaxbg {
-	color: #E3F0FB;
+	color: #FFFFFF;
 }
 
 .syntaxcomment {
@@ -1425,7 +1424,28 @@ pre {
 .username-coloured {
 	font-weight: bold;
 }
-
+/* GYM Sitemaps & RSS - www.phpbb-seo.com */
+div.gymsublist {
+	display:block;
+	position:relative;
+	padding-left:10px;
+	padding-top:5px;
+	padding-bottom:10px;
+	padding-right:0;
+	margin:0;
+}
+div.gymsublist ul {
+	display:block;
+	position:relative;
+	height:1%;
+	padding-left:30px;
+}
+div.gymsublist ul li {
+	display:block;
+	position:relative;
+	line-height:18px;
+	font-size:11px;
+}
 .emoji {
 	min-height: 18px;
 	min-width: 18px;
@@ -3016,3 +3036,4 @@ table.fixed-width-table {
 #memberlist tr.inactive, #team tr.inactive {
 	font-style: italic;
 }
+/* GYM Sitemaps & RSS - www.phpbb-seo.com */

@@ -19,7 +19,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0">
   <tr> 
-	<td align="left" valign="bottom" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
+	<td align="left" valign="bottom" aria-hidden="true"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
 	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
 	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
   </tr>
@@ -33,8 +33,8 @@
 {POLL_DISPLAY} 
 {REG_DISPLAY} 
 	<tr>
-		<th class="thLeft" width="150" height="26" nowrap="nowrap">{L_AUTHOR}</th>
-		<th class="thRight" nowrap="nowrap">{L_MESSAGE}</th>
+		<th class="thLeft" width="150" height="26" aria-hidden="true">{L_AUTHOR}</th>
+		<th class="thRight" aria-hidden="true">{L_MESSAGE}</th>
 	</tr>
 	</thead>
 	<tbody>	
@@ -44,7 +44,7 @@
 		<td class="{postrow.ROW_CLASS}" width="100%" height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td width="100%"><a href="{postrow.U_MINI_POST}"><img src="{postrow.MINI_POST_IMG}" width="12" height="9" alt="{postrow.L_MINI_POST_ALT}" title="{postrow.L_MINI_POST_ALT}" border="0" /></a><span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp; &nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
-				<td valign="top" align="right" nowrap="nowrap">
+				<td valign="top" align="right" aria-hidden="true">
 					<div class="right popup" style="position: static;">
 						<a href="javascript:void(0);" class="gradient button-main"><span></span></a>
 						<ul class="menu">
@@ -66,9 +66,9 @@
 	</tr>
 	<tr> 
 		<td class="{postrow.ROW_CLASS}" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">{L_BACK_TO_TOP}</a></span></td>
-		<td class="{postrow.ROW_CLASS}" width="100%" height="28" valign="bottom" nowrap="nowrap"><table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
+		<td class="{postrow.ROW_CLASS}" width="100%" height="28" valign="bottom" aria-hidden="true"><table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
 			<tr> 
-				<td valign="middle" nowrap="nowrap">
+				<td valign="middle" aria-hidden="true">
 			<div class="extra-top-padding">
 				{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG}{postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}
 				&nbsp;
@@ -79,7 +79,7 @@
 	if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
 		document.write(' {postrow.ICQ_IMG}');
 	else
-		document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
+		document.write('</td><td>&nbsp;</td><td valign="top" aria-hidden="true"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
 				
 				//--></script><noscript>{postrow.ICQ_IMG}</noscript></td>
 			</tr>
@@ -105,10 +105,10 @@
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
  <tbody> 
   <tr> 
-	<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
+	<td align="left" valign="middle" aria-hidden="true"><span class="nav"><a href="{U_POST_NEW_TOPIC}"><img src="{POST_IMG}" border="0" alt="{L_POST_NEW_TOPIC}" align="middle" /></a>&nbsp;&nbsp;&nbsp;<a href="{U_POST_REPLY_TOPIC}"><img src="{REPLY_IMG}" border="0" alt="{L_POST_REPLY_TOPIC}" align="middle" /></a></span></td>
 	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> 
 	  -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span> 
+	<td align="right" valign="top" aria-hidden="true"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span> 
 	  </td>
   </tr>
   <tr>
@@ -120,10 +120,10 @@
 <table width="100%" cellspacing="2" border="0" align="center">
 <tbody>
   <tr> 
-	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}</span><br />
+	<td width="40%" valign="top" aria-hidden="true" align="left"><span class="gensmall">{S_WATCH_TOPIC}</span><br />
 	  &nbsp;<br />
 	  {S_TOPIC_ADMIN}</td>
-	<td align="right" valign="top" nowrap="nowrap">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span></td>
+	<td align="right" valign="top" aria-hidden="true">{JUMPBOX}<span class="gensmall">{S_AUTH_LIST}</span></td>
   </tr>
  </tbody> 
 </table>

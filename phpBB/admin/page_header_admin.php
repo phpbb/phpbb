@@ -59,12 +59,37 @@ if ( $board_config['gzip_compress'] )
 		}
 	}
 }
+
+$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
+$default_lang = ($user->data['user_lang']) ? $user->data['user_lang'] : $board_config['default_lang'];
+$server_name = !empty($board_config['server_name']) ? preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['server_name'])) : 'localhost';
+$server_protocol = ($board_config['cookie_secure'] ) ? 'https://' : 'http://';
+$server_port = (($board_config['server_port']) && ($board_config['server_port'] <> 80)) ? ':' . trim($board_config['server_port']) . '/' : '/';
+$script_name_phpbb = preg_replace('/^\/?(.*?)\/?$/', "\\1", trim($board_config['script_path'])) . '/';		
+$server_url = $server_protocol . str_replace("//", "/", $server_name . $server_port . $server_name . '/'); //On some server the slash is not added and this trick will fix it	
+$corrected_url = $server_protocol . $server_name . $server_port . $script_name_phpbb;
+$board_url = $server_url . $script_name_phpbb;
+$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_url;
+
+// Send a proper content-language to the output
+$user_lang = !empty($user->lang['USER_LANG']) ? $user->lang['USER_LANG'] : $user->encode_lang($user->lang_name);
+
+if (!defined('TEMPLATE_ROOT_PATH'))
+{
+	define('TEMPLATE_ROOT_PATH', $phpbb_root_path.'templates/'.$theme['template_name'].'/');
+}
+
 if(isset($mx_page) && is_object($mx_page))
 {
 	$page_title = $mx_page->page_title;
 }
+//
+// Parse and show the overall header.
+//
 $template->set_filenames(array(
-	'header' => 'admin/page_header.tpl')
+	'header' => ( !isset($gen_simple_header) ) ? 'admin/page_header.html' : 'admin/simple_header.html')
 );
 
 // Format Timezone. We are unable to use array_pop here, because of PHP3 compatibility
@@ -77,27 +102,29 @@ $l_timezone = (count($l_timezone) > 1 && $l_timezone[count($l_timezone)-1] != 0)
 // should all S_x_ACTIONS for forms.
 //
 $template->assign_vars(array(
-	'SITENAME' => $board_config['sitename'],
-	'PAGE_TITLE' => isset($page_title) ? $page_title : $lang['Admin'],
+	'SITENAME' 						=> $board_config['sitename'],
+	'SITE_DESCRIPTION' 			=> $board_config['site_desc'],
+	'PAGE_TITLE' 					=> isset($page_title) ? $page_title : $lang['Admin'],
+	'SCRIPT_NAME' 					=> str_replace('.' . $phpEx, '', basename(__FILE__)),	
+	'L_ADMIN' 							=> $lang['Admin'], 
+	'L_INDEX' 							=> sprintf($lang['Forum_Index'], $board_config['sitename']),
+	'L_FAQ' 							=> $lang['FAQ'],
 
-	'L_ADMIN' => $lang['Admin'], 
-	'L_INDEX' => sprintf($lang['Forum_Index'], $board_config['sitename']),
-	'L_FAQ' => $lang['FAQ'],
+	'U_INDEX' 							=> append_sid('../index.'.$phpEx),
 
-	'U_INDEX' => append_sid('../index.'.$phpEx),
-
-	'S_TIMEZONE' => sprintf($lang['All_times'], $l_timezone),
-	'S_LOGIN_ACTION' => append_sid('../login.'.$phpEx),
-	'S_JUMPBOX_ACTION' => append_sid('../viewforum.'.$phpEx),
-	'S_CURRENT_TIME' => sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])), 
-	'S_CONTENT_DIRECTION' => $lang['DIRECTION'], 
-	'S_CONTENT_ENCODING' => $lang['ENCODING'], 
-	'S_CONTENT_DIR_LEFT' => $lang['LEFT'], 
-	'S_CONTENT_DIR_RIGHT' => $lang['RIGHT'], 
-
-	'T_HEAD_STYLESHEET' => $theme['head_stylesheet'],
-	'T_BODY_BACKGROUND' => $theme['body_background'],
-	'T_BODY_BGCOLOR' => '#'.$theme['body_bgcolor'],
+	'S_TIMEZONE' 					=> sprintf($lang['All_times'], $l_timezone),
+	'S_LOGIN_ACTION' 			=> append_sid('../login.'.$phpEx),
+	'S_JUMPBOX_ACTION' 		=> append_sid('../viewforum.'.$phpEx),
+	'S_CURRENT_TIME' 			=> sprintf($lang['Current_time'], create_date($board_config['default_dateformat'], time(), $board_config['board_timezone'])), 
+	'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'], 
+	'S_CONTENT_ENCODING' 	=> $lang['ENCODING'], 
+	'S_CONTENT_DIR_LEFT' 		=> $lang['LEFT'], 
+	'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'], 
+	
+	'T_HEAD_STYLESHEET' 		=> isset($theme['head_stylesheet']) ? $theme['head_stylesheet'] : 'admin/admin.css',
+	'T_GECKO_STYLESHEET' => 'gecko.css',
+	'T_BODY_BACKGROUND' 	=> $theme['body_background'],
+	'T_BODY_BGCOLOR' 			=> '#'.$theme['body_bgcolor'],
 	'T_BODY_TEXT' => '#'.$theme['body_text'],
 	'T_BODY_LINK' => '#'.$theme['body_link'],
 	'T_BODY_VLINK' => '#'.$theme['body_vlink'],
@@ -132,7 +159,30 @@ $template->assign_vars(array(
 	'T_FONTCOLOR3' => '#'.$theme['fontcolor3'],
 	'T_SPAN_CLASS1' => $theme['span_class1'],
 	'T_SPAN_CLASS2' => $theme['span_class2'],
-	'T_SPAN_CLASS3' => $theme['span_class3'])
+	'T_SPAN_CLASS3' => $theme['span_class3'],
+	
+	'ROOT_PATH'			=> $web_path,
+	'FULL_SITE_PATH'	=> $web_path,
+	'CMS_PAGE_HOME'		=> $board_url,
+	'BOARD_URL'			=> $board_url,
+	'PHPBB_VERSION'		=> PHPBB_VERSION,
+	'PHPBB_MAJOR'		=> $phpbb_major,
+	'S_COOKIE_NOTICE'	=> !empty($board_config['cookie_name']),
+	
+	'T_STYLESHEET_LINK'		=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/stylesheet.css',
+	'T_STYLESHEET_LANG_LINK'=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/images/lang_' . $default_lang . '/stylesheet.css',
+	'T_FONT_AWESOME_LINK'	=> "{$web_path}assets/css/font-awesome.min.css",
+	'T_FONT_IONIC_LINK'			=> "{$web_path}assets/css/ionicons.min.css",
+	'T_JQUERY_LINK'			=> "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $phpbb_major,
+	'S_ALLOW_CDN'			=> true,	
+	
+	'T_THEME_NAME'				=> rawurlencode($theme['template_name']),
+	'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
+	'T_TEMPLATE_NAME'			=> $theme['template_name'],
+	'T_SUPER_TEMPLATE_NAME'	=> rawurlencode($theme['template_name']),
+	'TEMPLATE_ROOT_PATH' => TEMPLATE_ROOT_PATH,
+	'U_PHPBB_ROOT_PATH' => PHPBB_URL,
+	)
 );
 
 // Work around for "current" Apache 2 + PHP module which seems to not

@@ -1,51 +1,110 @@
 <!-- INCLUDE ucp_header.html -->
 
-<form id="postform" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+<!-- DEFINE $S_SIGNATURE = 1 -->
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="2">{L_TITLE}</th>
+</tr>
+<tr>
+	<td colspan="2" class="row1">{L_SIGNATURE_EXPLAIN}</td>
+</tr>
 
-<h2>{L_TITLE}</h2>
-
-<!-- IF SIGNATURE_PREVIEW != '' -->
-	<div class="panel">
-		<div class="inner">
-		<h3>{L_SIGNATURE_PREVIEW}</h3>
-		<div class="postbody">
-			<div class="signature standalone">{SIGNATURE_PREVIEW}</div>
-		</div>
-		</div>
-	</div>
+<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="genmed error">{ERROR}</span></td>
+	</tr>
 <!-- ENDIF -->
 
-<div class="panel">
-	<div class="inner">
-
-	<p>{L_SIGNATURE_EXPLAIN}</p>
-
-	<!-- DEFINE $SIG_EDIT = 1 -->
-	<!-- INCLUDE posting_editor.html -->
-	<h3>{L_OPTIONS}</h3>
-	<fieldset>
+<tr>
+	<td colspan="2" class="row2">
+		<script type="text/javascript">
+		// <![CDATA[
+			var form_name = 'ucp';
+			var text_name = 'signature';
+		// ]]>
+		</script>
+		
+		<table cellspacing="0" cellpadding="2" border="0" width="99%">
+		<!-- INCLUDE posting_buttons.html -->
+		<tr>
+			<td colspan="2"><textarea class="post" name="signature" rows="10" cols="76" style="width: 90%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();">{SIGNATURE}</textarea></td>
+		</tr>
 		<!-- IF S_BBCODE_ALLOWED -->
-			<div><label for="disable_bbcode"><input type="checkbox" name="disable_bbcode" id="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label></div>
+		<tr>
+			<td colspan="2">
+				<table cellspacing="0" cellpadding="0" border="0" width="100%">
+				<tr>
+					<td align="{S_CONTENT_FLOW_BEGIN}">
+						<script type="text/javascript">
+						// <![CDATA[
+							colorPalette('h', 6, 5)
+						// ]]>
+						</script>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		<!-- ENDIF -->
+		</table>
+	</td>
+</tr>
+<tr>
+	<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br />
+		<table cellspacing="2" cellpadding="0" border="0">
+		<tr>
+			<td class="gensmall">{BBCODE_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{IMG_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{FLASH_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{URL_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{SMILIES_STATUS}</td>
+		</tr>
+		</table>
+	</td>
+	<td class="row2" valign="top">
+		<table cellspacing="0" cellpadding="1" border="0">
+		<!-- IF S_BBCODE_ALLOWED -->
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_BBCODE}</td>
+			</tr>
 		<!-- ENDIF -->
 		<!-- IF S_SMILIES_ALLOWED -->
-			<div><label for="disable_smilies"><input type="checkbox" name="disable_smilies" id="disable_smilies"{S_SMILIES_CHECKED} /> {L_DISABLE_SMILIES}</label></div>
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_SMILIES}</td>
+			</tr>
 		<!-- ENDIF -->
 		<!-- IF S_LINKS_ALLOWED -->
-			<div><label for="disable_magic_url"><input type="checkbox" name="disable_magic_url" id="disable_magic_url"{S_MAGIC_URL_CHECKED} /> {L_DISABLE_MAGIC_URL}</label></div>
+			<tr>
+				<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
+				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
+			</tr>
 		<!-- ENDIF -->
+		</table>
+	</td>
+</tr>
 
-	</fieldset>
+<!-- IF SIGNATURE_PREVIEW != '' -->
+	<tr>
+		<th colspan="2" valign="middle">{L_SIGNATURE_PREVIEW}</th>
+	</tr>
+	<tr> 
+		<td class="row1" colspan="2"><div class="postbody" style="padding: 6px;">{SIGNATURE_PREVIEW}</div></td>
+	</tr>
+<!-- ENDIF -->
 
-	</div>
-</div>
-
-<fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}
-	<input type="reset" name="reset" value="{L_RESET}" class="button2" />&nbsp;
-	<input type="submit" name="preview" value="{L_PREVIEW}" class="button2" />&nbsp;
-	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
-	{S_FORM_TOKEN}
-</fieldset>
-</form>
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" name="preview" value="{L_PREVIEW}" />&nbsp;&nbsp;<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+</tr>
+</table>
 
 <!-- INCLUDE ucp_footer.html -->

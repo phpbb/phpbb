@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /*
-if ($config['allow_zebra'] == false)
+if ($board_config['allow_zebra'] == false)
 {
 	message_die(GENERAL_MESSAGE, $lang['Not_Auth_View']);
 }

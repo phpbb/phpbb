@@ -1354,7 +1354,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $cache, $phpbb_root_path;
+	global $board_config, $user, $cache, $phpbb_root_path;
 
 	if ($force_option || !$board_config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -1453,7 +1453,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
-	global $auth, $config, $user;
+	global $auth, $board_config, $user;
 
 
 	if ($text === '')
@@ -1550,7 +1550,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data_ary)
 {
-	global $template, $auth, $config;
+	global $template, $auth, $board_config;
 	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	if (!$auth->acl_get('f_list', $forum_data_ary['forum_id']))
@@ -1605,7 +1605,7 @@ function generate_forum_nav(&$forum_data_ary)
 		'FORUM_NAME'	=> $forum_data_ary['forum_name'],
 		'FORUM_DESC'	=> generate_text_for_display($forum_data_ary['forum_desc'], $forum_data_ary['forum_desc_uid'], $forum_data_ary['forum_desc_bitfield'], $forum_data_ary['forum_desc_options']),
 
-		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data_ary['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data_ary['forum_options'])) ? true : false,
+		'S_ENABLE_FEEDS_FORUM'	=> ($board_config['feed_forum'] && $forum_data_ary['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data_ary['forum_options'])) ? true : false,
 	);
 
 	$forum_data = $forum_data_ary;
@@ -1683,17 +1683,32 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		$forum_id_ary = array_flip($forum_id);
 	}
 	//, u.user_id as user_colour, g.group_id as group_colour, g.group_type
-
-	$sql = "SELECT m.*, u.*, u.user_id as user_colour, ug.group_id, g.group_name, m.group_id as group_colour, g.group_type 
-		FROM " . AUTH_ACCESS_TABLE . " m, " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
-		WHERE m.auth_mod = " . true . " 
-			AND g.group_single_user = 0 
-			AND g.group_type <> " . GROUP_HIDDEN . "
-			AND u.user_id = ug.user_id
-			AND ug.group_id = m.group_id 
-			AND g.group_id = m.group_id 
-		GROUP BY g.group_id, g.group_name, m.forum_id 
-		ORDER BY m.forum_id, g.group_id";
+	if (!$this->db->sql_field_exists('group_colour', GROUPS_TABLE) || !$this->db->sql_field_exists('user_colour', USERS_TABLE))
+	{
+		$sql = "SELECT m.*, u.*, u.user_id as user_colour, ug.group_id, g.group_name, m.group_id as group_colour, g.group_type 
+			FROM " . AUTH_ACCESS_TABLE . " m, " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
+			WHERE m.auth_mod = " . true . " 
+				AND g.group_single_user = 0 
+				AND g.group_type <> " . GROUP_HIDDEN . "
+				AND u.user_id = ug.user_id
+				AND ug.group_id = m.group_id 
+				AND g.group_id = m.group_id 
+			GROUP BY g.group_id, g.group_name, m.forum_id 
+			ORDER BY m.forum_id, g.group_id";
+	}
+	else
+	{
+		$sql = "SELECT m.*, u.*, ug.group_id, g.group_name, g.group_type 
+			FROM " . AUTH_ACCESS_TABLE . " m, " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
+			WHERE m.auth_mod = " . true . " 
+				AND g.group_single_user = 0 
+				AND g.group_type <> " . GROUP_HIDDEN . "
+				AND u.user_id = ug.user_id
+				AND ug.group_id = m.group_id 
+				AND g.group_id = m.group_id 
+			GROUP BY g.group_id, g.group_name, m.forum_id 
+			ORDER BY m.forum_id, g.group_id";
+	}
 	// We query every forum here because for caching we should not have any parameter.
 	if ( !($result = $db->sql_query($sql, false, true)) )
 	{

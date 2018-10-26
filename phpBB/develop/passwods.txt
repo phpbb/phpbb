@@ -1,0 +1,14 @@
+
+
+I needed to:
+
+    update database table column phpbb_users.user_password to store up to 255 characters
+    copy /phpbb/passwords/driver/*
+    copy /phpbb/config/config.php
+    create a class which extends phpbb\config\config to make set() actually store data
+    write my own code which
+        always includes the files and creates instances of the classes that are always needed
+        distinguishes from the hash which additional class(es) have to be included and instanciated
+        patches /includes/functions.php in phpbb_hash() and phpbb_check_hash()
+
+All the "drivers" are only there for backward compatibilty, especially for non-phpBB migrations (but also for i.e. phpBB3.0 and phpBB2) - only bcrypt is "interesting" to be used actively, nothing else.

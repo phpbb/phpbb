@@ -1,35 +1,28 @@
-<!-- IF S_AJAX_REQUEST -->
-	<form action="{S_CONFIRM_ACTION}" method="post">
-		<h3>{MESSAGE_TITLE}</h3>
-		<p>{MESSAGE_TEXT}</p>
-
-		<fieldset class="submit-buttons">
-			<input type="button" name="confirm" value="{L_YES}" class="button2" />&nbsp;
-			<input type="button" name="cancel" value="{L_NO}" class="button2" />
-		</fieldset>
-	</form>
-
-<!-- ELSE -->
-
 <!-- INCLUDE overall_header.html -->
 
-<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
-<div class="panel">
-	<div class="inner">
+<div id="pagecontent">
 
-	<h2 class="message-title">{MESSAGE_TITLE}</h2>
-	<p>{MESSAGE_TEXT}</p>
-
-	<fieldset class="submit-buttons">
-		{S_HIDDEN_FIELDS}
-		<input type="submit" name="confirm" value="{L_YES}" class="button2" />&nbsp;
-		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
-	</fieldset>
-
-	</div>
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{MESSAGE_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><br /><p class="gen">{MESSAGE_TEXT}</p><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></td>
+	</tr>
+	</table>
+	
+	</form>
+	
 </div>
-</form>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->
-
-<!-- ENDIF -->

@@ -34,9 +34,19 @@ if (!is_object('dbal_mssql'))
 */
 class dbal_mssql extends dbal
 {
-	/**
-	* Connect to server
-	*/
+	//var $db_connect_id;
+	//var $result;
+
+	//var $next_id;
+	//var $in_transaction = 0;
+
+	//var $row = array();
+	//var $rowset = array();
+	//var $limit_offset;
+	//var $query_limit_success;
+
+	//var $num_queries = 0;
+
 	/**
 	* Connect to server
 	*/
@@ -75,7 +85,19 @@ class dbal_mssql extends dbal
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
-
+	
+	function sql_connect_id() 
+	{
+		$query = $this->result("SELECT SCOPE_IDENTITY()"); // @@IDENTITY can return trigger INSERT
+		$result = $this->query($query);
+		if (!is_object($result)) 
+		{
+			return $this->db_connect_id;
+		}
+		$row = $result->fetch_row();
+		return $row[$column];
+	} 
+	
 	/**
 	* Version information about used database
 	*/
@@ -133,13 +155,37 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* Close sql connection
+	* @private
+	*/
+	function sql_close()
+	{
+		if($this->db_connect_id)
+		{
+			//
+			// Commit any remaining transactions
+			//
+			if( $this->in_transaction )
+			{
+				@mssql_query("COMMIT", $this->db_connect_id);
+			}
+
+			return @mssql_close($this->db_connect_id);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
 	* Base query method
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
 		if ($query != '')
 		{
-			global $mx_cache;
+			global $cache;
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -147,7 +193,7 @@ class dbal_mssql extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->query_result = ($cache_ttl && method_exists($mx_cache, 'sql_load')) ? $mx_cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
 			if (!$this->query_result)
 			{
@@ -163,10 +209,10 @@ class dbal_mssql extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($mx_cache, 'sql_save'))
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$mx_cache->sql_save($query, $this->query_result, $cache_ttl);
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -227,7 +273,141 @@ class dbal_mssql extends dbal
 
 		return ($query_id) ? @mssql_num_rows($query_id) : false;
 	}
+	/**
+	* Return fields num
+	* Not used within core code
+	*/		
+	function sql_numfields($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = mssql_num_fields($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	* Return fields names by orynider
+	* Not used within core code
+	*/	
+	function sql_fieldname($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{		
+			$result = @mssql_field_name($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a field type in a database.
+	 *
+	 * @param string $offset of sql array.
+	 * @param string $query_id from sql array.
+	 * @return field type.
+	 */
+	function sql_fieldtype($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = mssql_field_type($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets a list of columns of a table.
+	 *
+	 * @param string $table_name	table name
+	 * @return array of columns names (all lower case)
+	 */
+	function sql_list_columns($table_name)
+	{
+		$columns = array();
 
+		$sql = "SELECT c.name
+			FROM syscolumns c
+			LEFT JOIN sysobjects o ON c.id = o.id
+			WHERE o.name = '{$table_name}'";
+		$result = $this->sql_query($sql);
+
+		while ($row = $this->sql_fetchrow($result))
+		{
+			$column = strtolower(current($row));
+			$columns[$column] = $column;
+		}
+		$this->sql_freeresult($result);
+
+		return $columns;
+	} 
+	 
+	/**
+	 * Check if a field exists in a table.
+	 *
+	 * @param string $column for field name.
+	 * @param string $table_name for table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_field_exists($column, $table_name)
+	{
+		$query = $this->sql_query("SHOW FULL COLUMNS FROM $table_name LIKE '$column'");
+		$exists = $this->sql_numrows($query);
+		
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a table exists in a database.
+	 *
+	 * @param string $table_name for the table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_table_exists($table_name)
+	{
+		// Execute on master server to ensure if we've just created a table that we get the correct result
+		$query = (version_compare($this->sql_get_version(), '5.0.2', '>=')) ? $this->sql_query("SHOW FULL TABLES FROM `".$this->dbname."` WHERE table_type = 'BASE TABLE' AND `Tables_in_".$this->dbname."` = '$table_name'") : $this->sql_query("SHOW TABLES LIKE '$table_name'");
+		$exists = $this->sql_numrows($query);
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	/**
 	* Return number of affected rows
 	*/
@@ -241,16 +421,16 @@ class dbal_mssql extends dbal
 	*/
 	function sql_fetchrow($query_id = false)
 	{
-		global $mx_cache;
+		global $cache;
 
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if (isset($mx_cache->sql_rowset[$query_id]))
+		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $mx_cache->sql_fetchrow($query_id);
+			return $cache->sql_fetchrow($query_id);
 		}
 
 		$row = @mssql_fetch_assoc($query_id);
@@ -267,11 +447,41 @@ class dbal_mssql extends dbal
 		return $row;
 	}
 
+	function sql_fetchrowset($query_id = 0)
+	{
+		if( !$query_id )
+		{
+			$query_id = $this->result;
+		}
+
+		if( $query_id )
+		{
+			$i = 0;
+			empty($rowset);
+
+			while( $row = @mssql_fetch_array($query_id))
+			{
+				while( list($key, $value) = @each($row) )
+				{
+					$rowset[$i][$key] = ($value === ' ') ? '' : stripslashes($value);
+				}
+				$i++;
+			}
+			@reset($rowset);
+
+			return $rowset;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($column, $rownum = false, $query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -286,7 +496,7 @@ class dbal_mssql extends dbal
 			}
 
 			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
+			return isset($row[$column]) ? $row[$column] : false;
 		}
 
 		return false;

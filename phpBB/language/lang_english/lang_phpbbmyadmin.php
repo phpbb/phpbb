@@ -27,7 +27,7 @@
 
 $revision = 'v0.3.5';
 $name = 'phpBBMyAdmin ' . $revision;
-
+$lang['SQL_Admin_EXPLAIN'] = 'phpBBMyAdmin is in no way affiliated with phpMyAdmin (www.phpmyadmin.net)';
 $lang['SQL_Admin_Title'] = 'Welcome to phpBBMyAdmin';
 $lang['SQL_Admin_Copyright'] = $name . ' © 2003, 2004 Armin Altorffer';
 $lang['SQL_Admin_Current_Time'] = 'The current board time is %d (%s)';

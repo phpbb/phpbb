@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 */
 function user_check_friend_foe($target_id, $friend = true)
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $board_config, $user;
 
 	$sql_check = !empty($friend) ? (" AND friend = '1' ") : (" AND foe = '1' ");
 	$sql = "SELECT * FROM " . ZEBRA_TABLE . "
@@ -42,7 +42,7 @@ function user_check_friend_foe($target_id, $friend = true)
 */
 function user_get_zebra_list($ftype = 'friends')
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $board_config, $user;
 
 	if ($ftype == 'foes')
 	{
@@ -81,7 +81,7 @@ function user_get_zebra_list($ftype = 'friends')
 */
 function user_get_friends_online_list()
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $board_config, $user;
 
 	$friends_online_list = array();
 	$sql = "SELECT u.user_id, u.username, u.user_active, u.user_color, u.user_allow_viewonline, s.session_logged_in, s.session_time
@@ -117,7 +117,7 @@ function user_get_friends_online_list()
 */
 function user_friend_foe_add($target_ids, $friend = true)
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $board_config, $user;
 
 	if (empty($target_ids))
 	{
@@ -150,7 +150,7 @@ function user_friend_foe_add($target_ids, $friend = true)
 */
 function user_friend_foe_remove($target_ids, $friend = true)
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $board_config, $user;
 
 	if (empty($target_ids))
 	{

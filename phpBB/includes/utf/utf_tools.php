@@ -5,13 +5,13 @@
 * @version $Id: utf_tools.php,v 1.2 2009/01/24 16:47:52 orynider Exp $
 * @copyright (c) 2002-2008 MX-Publisher Project Team & (C) 2005 The phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU General Public License v2
-* @link http://www.mx-publisher.com
+* @link http://mxpcms.sourceforge.net
 *
 */
 
-if ( !defined('IN_PHPBB') )
+if (!defined('IN_PHPBB'))
 {
-	die("Hacking attempt");
+	exit;
 }
 
 /**
@@ -1661,9 +1661,13 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 	{
 		global $phpbb_root_path, $phpEx;
 		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		$utf_normalizer = new utf_normalizer();
 	}
-	
-	if( !is_object($utf_normalizer))
+	if (version_compare(PHP_VERSION, '5.4.0-dev', '>=') && !isset($utf_normalizer))
+	{
+		$utf_normalizer = new utf_normalizer();
+	}
+	elseif( !is_object($utf_normalizer))
 	{
 		$utf_normalizer = new utf_normalizer();
 	}

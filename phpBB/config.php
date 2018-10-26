@@ -13,6 +13,6 @@ $dbpasswd = '';
 
 $table_prefix = 'phpbb_';
 
-
+//define('PHPBB_INSTALLED', true); 
 
 ?>

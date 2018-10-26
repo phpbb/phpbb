@@ -678,27 +678,48 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 		$forum_sql = 'AND m.' . $db->sql_in_set('forum_id', $forum_id);
 	}
-
-	$sql_array = array(
-		'SELECT'	=> 'm.*, u.user_colour, g.group_colour, g.group_type',
-
-		'FROM'		=> array(
-			MODERATOR_CACHE_TABLE	=> 'm',
-		),
-
-		'LEFT_JOIN'	=> array(
-			array(
-				'FROM'	=> array(USERS_TABLE => 'u'),
-				'ON'	=> 'm.user_id = u.user_id',
+	
+	if (!$this->db->sql_field_exists('group_colour', GROUPS_TABLE) || !$this->db->sql_field_exists('user_colour', USERS_TABLE))
+	{
+		$sql_array = array(
+			'SELECT'	=> 'm.*, u.user_id as user_colour, g.group_id as group_colour, g.group_type',
+			'FROM'		=> array(
+				MODERATOR_CACHE_TABLE	=> 'm',
 			),
-			array(
-				'FROM'	=> array(GROUPS_TABLE => 'g'),
-				'ON'	=> 'm.group_id = g.group_id',
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'm.user_id = u.user_id',
+				),
+				array(
+					'FROM'	=> array(GROUPS_TABLE => 'g'),
+					'ON'	=> 'm.group_id = g.group_id',
+				),
 			),
-		),
+			'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+		);
+	}
+	else
+	{
+		$sql_array = array(
+			'SELECT'	=> 'm.*, u.user_colour, g.group_colour, g.group_type',
+			'FROM'		=> array(
+				MODERATOR_CACHE_TABLE	=> 'm',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'm.user_id = u.user_id',
+				),
+				array(
+					'FROM'	=> array(GROUPS_TABLE => 'g'),
+					'ON'	=> 'm.group_id = g.group_id',
+				),
+			),
+			'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+		);
+	}
 
-		'WHERE'		=> "m.display_on_index = 1 $forum_sql",
-	);
 
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);

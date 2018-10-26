@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 function login_db(&$username, &$password, $user_id = false, $increase_attempts = true)
 {
-	global $db, $config;
+	global $db, $board_config;
 
 	// do not allow empty password
 	if (!$password)
@@ -81,11 +81,11 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 		);
 	}
 
-	$config['max_login_attempts'] = (int) $config['max_login_attempts'];
-	$config['login_reset_time'] = (int) $config['login_reset_time'];
+	$board_config['max_login_attempts'] = (int) $board_config['max_login_attempts'];
+	$board_config['login_reset_time'] = (int) $board_config['login_reset_time'];
 
 	// Check to see if user is allowed to login again... if his tries are exceeded
-	if (!empty($config['max_login_attempts']) && !empty($login_result['user_row']['user_last_login_attempt']) && !empty($config['max_login_attempts']) && ($login_result['user_row']['user_last_login_attempt'] >= (time() - ($config['login_reset_time'] * 60))) && ($login_result['user_row']['user_login_attempts'] >= ($config['max_login_attempts'] + 1)))
+	if (!empty($board_config['max_login_attempts']) && !empty($login_result['user_row']['user_last_login_attempt']) && !empty($board_config['max_login_attempts']) && ($login_result['user_row']['user_last_login_attempt'] >= (time() - ($board_config['login_reset_time'] * 60))) && ($login_result['user_row']['user_login_attempts'] >= ($board_config['max_login_attempts'] + 1)))
 	{
 		return array(
 			'status' => LOGIN_ERROR_ATTEMPTS,
@@ -96,11 +96,11 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 
 	// If there are too much login attempts, we need to check for a confirm image
 	// Every auth module is able to define what to do by itself...
-	if (!empty($config['max_login_attempts']) && ($row['user_login_attempts'] >= $config['max_login_attempts']))
+	if (!empty($board_config['max_login_attempts']) && ($row['user_login_attempts'] >= $board_config['max_login_attempts']))
 	{
 		/*
 		// Visual Confirmation handling
-		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+		$captcha =& phpbb_captcha_factory::get_instance($board_config['captcha_plugin']);
 		$captcha->init(CONFIRM_LOGIN);
 		$vc_response = $captcha->validate();
 		if ($vc_response)
@@ -116,7 +116,7 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 	}
 
 	// If the last login is more than x minutes ago, then reset the login tries/time
-	if (!empty($config['login_reset_time']) && !empty($row['user_last_login_attempt']) && ($row['user_last_login_attempt'] < (time() - ($config['login_reset_time'] * 60))))
+	if (!empty($board_config['login_reset_time']) && !empty($row['user_last_login_attempt']) && ($row['user_last_login_attempt'] < (time() - ($board_config['login_reset_time'] * 60))))
 	{
 		reset_login_attempts($login_result['user_row']['user_id']);
 		$row['user_last_login_attempt'] = 0;

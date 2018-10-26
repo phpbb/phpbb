@@ -1,6 +1,6 @@
 <?php
 
-// eXtreme Styles mod cache. Generated on Tue, 09 Oct 2018 08:53:58 +0000 (time=1539075238)
+// eXtreme Styles mod cache. Generated on Mon, 22 Oct 2018 18:07:29 +0000 (time=1540231649)
 
 ?>
 <h1><?php echo isset($this->vars['L_FLAGS_TITLE']) ? $this->vars['L_FLAGS_TITLE'] : $this->lang('L_FLAGS_TITLE'); ?></h1>

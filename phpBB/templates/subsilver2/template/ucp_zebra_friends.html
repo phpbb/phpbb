@@ -1,43 +1,28 @@
 <!-- INCLUDE ucp_header.html -->
 
-<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
-
-<h2>{L_TITLE}</h2>
-
-<div class="panel">
-	<div class="inner">
-
-	<p>{L_FRIENDS_EXPLAIN}</p>
-
-	<fieldset class="fields2">
-	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
-	<!-- EVENT ucp_friend_list_before -->
-	<dl>
-		<dt><label <!-- IF S_USERNAME_OPTIONS -->for="usernames"<!-- ENDIF -->>{L_YOUR_FRIENDS}{L_COLON}</label><br /><span>{L_YOUR_FRIENDS_EXPLAIN}</span></dt>
-		<dd>
-			<!-- IF S_USERNAME_OPTIONS -->
-				<select name="usernames[]" id="usernames" multiple="multiple" size="5">{S_USERNAME_OPTIONS}</select>
-			<!-- ELSE -->
-				<strong>{L_NO_FRIENDS}</strong>
-			<!-- ENDIF -->
-		</dd>
-	</dl>
-	<!-- EVENT ucp_friend_list_after -->
-	<dl>
-		<dt><label for="add">{L_ADD_FRIENDS}{L_COLON}</label><br /><span>{L_ADD_FRIENDS_EXPLAIN}</span></dt>
-		<dd><textarea name="add" id="add" rows="3" cols="30" class="inputbox">{USERNAMES}</textarea></dd>
-		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
-	</dl>
-	</fieldset>
-
-	</div>
-</div>
-
-<fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
-	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
-	{S_FORM_TOKEN}
-</fieldset>
-</form>
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="2" valign="middle">{L_TITLE}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="2"><span class="gensmall">{L_FRIENDS_EXPLAIN}</span></td>
+</tr>
+<!-- IF ERROR -->
+	<tr>
+		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
+	</tr>
+<!-- ENDIF -->
+<tr>
+	<td class="row1" width="40%"><b class="genmed">{L_YOUR_FRIENDS}:</b><br /><span class="gensmall">{L_YOUR_FRIENDS_EXPLAIN}</span></td>
+	<td class="row2" align="center"><!-- IF S_USERNAME_OPTIONS --><select name="usernames[]" multiple="multiple" size="5">{S_USERNAME_OPTIONS}</select><!-- ELSE --><b class="genmed">{L_NO_FRIENDS}</b><!-- ENDIF --></td>
+</tr>
+<tr>
+	<td class="row1"><b class="genmed">{L_ADD_FRIENDS}:</b><br /><span class="gensmall">{L_ADD_FRIENDS_EXPLAIN} [ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span></td>
+	<td class="row2" align="center"><textarea name="add" rows="5" cols="30">{USERNAMES}</textarea><br /></td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+</tr>
+</table>
 
 <!-- INCLUDE ucp_footer.html -->

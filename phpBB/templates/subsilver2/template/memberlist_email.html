@@ -1,107 +1,73 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- EVENT memberlist_email_before -->
+<div id="pagecontent">
 
-<!-- IF S_CONTACT_ADMIN-->
-<h2 class="titlespace">{L_CONTACT_ADMIN}</h2>
-<!-- ELSEIF S_SEND_USER -->
-<h2 class="titlespace">{L_SEND_EMAIL_USER}</h2>
-<!-- ELSE -->
-<h2 class="titlespace">{L_EMAIL_TOPIC}</h2>
-<!-- ENDIF -->
-
-<form method="post" action="{S_POST_ACTION}" id="post">
-
-	<!-- IF CONTACT_INFO -->
-	<div class="panel">
-		<div class="inner">
-			<div class="postbody">
-				<div class="content">
-					{CONTACT_INFO}
-				</div>
-			</div>
-		</div>
-	</div>
-		<br class="clear" />
+	<form action="{S_POST_ACTION}" method="post" name="postform">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr> 
+		<th colspan="2">{L_SEND_EMAIL_USER} {USERNAME}</th>
+	</tr>
+	<!-- IF ERROR_MESSAGE -->
+		<tr>
+			<td class="row3" colspan="2" align="center"><span class="error">{ERROR_MESSAGE}</span></td>
+		</tr>
 	<!-- ENDIF -->
+	<!-- IF S_SEND_USER -->
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_RECIPIENT}</b></td>
+			<td class="row2" width="65%"><b class="genmed">{USERNAME}</b></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_SUBJECT}</b></td>
+			<td class="row2"><input class="post" type="text" name="subject" size="50" tabindex="2" value="{SUBJECT}" /></td>
+		</tr>
+	<!-- ELSE -->
+		<tr>
+			<td class="row1" width="35%"><b class="genmed">{L_EMAIL_ADDRESS}</b></td>
+			<td class="row2"><input class="post" type="text" name="email" size="50" maxlength="100" value="{EMAIL}" /></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_REAL_NAME}</b></td>
+			<td class="row2"><input class="post" type="text" name="name" size="50" value="{NAME}" /></td>
+		</tr>
+		<tr> 
+			<td class="row1" width="35%"><b class="genmed">{L_DEST_LANG}</b><br /><span class="gensmall">{L_DEST_LANG_EXPLAIN}</span></td>
+			<td class="row2"><select name="lang">{S_LANG_OPTIONS}</select></td>
+		</tr>
+	<!-- ENDIF -->
+	<tr> 
+		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}</b><br /><span class="gensmall">{L_EMAIL_BODY_EXPLAIN}</span></td>
+		<td class="row2"><textarea class="post" name="message" rows="15" cols="76" tabindex="3">{MESSAGE}</textarea></td>
+	</tr>
+	<tr> 
+		<td class="row1" valign="top"><span class="gen"><b>{L_OPTIONS}</b></span></td>
+		<td class="row2">
+			<table cellspacing="0" cellpadding="1" border="0">
+			<tr> 
+				<td><input type="checkbox" class="radio" name="cc_email" value="1" checked="checked" /></td>
+				<td class="gen">{L_CC_EMAIL}</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="submit" tabindex="6" name="submit" class="btnmain" value="{L_SEND_EMAIL}" /></td>
+	</tr>
+	</table>
 
-	<div class="panel">
-		<div class="inner">
-	<div class="content">
+	{S_FORM_TOKEN}
+	
+	</form>
 
-		<!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
-		<fieldset class="fields2">
-		<!-- IF S_SEND_USER -->
-			<dl>
-				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
-				<dd><strong>{USERNAME_FULL}</strong></dd>
-			</dl>
-			<dl>
-				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="1" value="{SUBJECT}" /></dd>
-			</dl>
-		<!-- ELSEIF S_CONTACT_ADMIN-->
-			<dl>
-				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
-				<dd><strong>{L_ADMINISTRATOR}</strong></dd>
-			</dl>
-			<!-- IF not S_IS_REGISTERED -->
-			<dl>
-				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="name">{L_SENDER_NAME}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
-			</dl>
-			<!-- ENDIF -->
-			<dl>
-				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
-			</dl>
-		<!-- ELSE -->
-			<dl>
-				<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="email" name="email" id="email" size="50" maxlength="100" tabindex="2" value="{EMAIL}" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="name">{L_REAL_NAME}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="3" value="{NAME}" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="lang">{L_DEST_LANG}{L_COLON}</label><br />
-					<span>{L_DEST_LANG_EXPLAIN}</span></dt>
-				<dd><select name="lang">{S_LANG_OPTIONS}</select></dd>
-			</dl>
-		<!-- ENDIF -->
-		<dl>
-			<dt><label for="message">{L_MESSAGE_BODY}{L_COLON}</label><br />
-			<span>{L_EMAIL_BODY_EXPLAIN}</span></dt>
-			<dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76" tabindex="4">{MESSAGE}</textarea></dd>
-		</dl>
-		<!-- IF S_REGISTERED_USER -->
-		<dl>
-			<dt>&nbsp;</dt>
-			<dd><label for="cc_sender"><input type="checkbox" name="cc_sender" id="cc_sender" value="1" checked="checked" tabindex="5" /> {L_CC_SENDER}</label></dd>
-		</dl>
-		<!-- ENDIF -->
-		</fieldset>
-	</div>
-
-	</div>
 </div>
 
-<div class="panel">
-	<div class="inner">
-	<div class="content">
-		<fieldset class="submit-buttons">
-			<input type="submit" tabindex="6" name="submit" class="button1" value="{L_SEND_EMAIL}" />
-		</fieldset>
-	</div>
-	</div>
-{S_FORM_TOKEN}
-</div>
+<br clear="all" />
 
-</form>
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div style="float: {S_CONTENT_FLOW_END};"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

@@ -2,7 +2,7 @@
 /**
 *
 * @package utf
-* @version $Id: utf_normalizer.php,v 1.1 2010/10/10 15:06:10 orynider Exp $
+* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -14,6 +14,11 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
+
+/**
+ * Modifications:
+ *
+ */
 
 /**
 * Some Unicode characters encoded in UTF-8
@@ -161,7 +166,8 @@ class utf_normalizer
 			// ASCII strings return immediately
 			return;
 		}
-
+		
+		/*
 		if (!isset($GLOBALS['utf_nfkc_qc']))
 		{
 			global $phpbb_root_path, $phpEx;
@@ -175,6 +181,10 @@ class utf_normalizer
 		}
 
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
+		
+		*/
+		
+		$str = $str;
 	}
 
 	/**
@@ -219,6 +229,8 @@ class utf_normalizer
 			// ASCII strings return immediately
 			return;
 		}
+		
+		/*
 
 		if (!isset($GLOBALS['utf_compatibility_decomp']))
 		{
@@ -227,6 +239,10 @@ class utf_normalizer
 		}
 
 		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
+		
+		*/
+		
+		$str = $str;
 	}
 
 

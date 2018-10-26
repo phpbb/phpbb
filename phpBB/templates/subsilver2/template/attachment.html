@@ -1,32 +1,30 @@
-<!-- EVENT attachment_file_before -->
 
 <!-- BEGIN _file -->
+
 	<!-- IF _file.S_DENIED -->
-	<p>[{_file.DENIED_MESSAGE}]</p>
+		<span class="genmed">[{_file.DENIED_MESSAGE}]</span><br />
 	<!-- ELSE -->
-		<!-- EVENT attachment_file_prepend -->
+
+		<!-- IF _file.COMMENT -->
+			<span class="gensmall"><b>{L_FILE_COMMENT}:</b> {_file.COMMENT}</span><br />
+		<!-- ENDIF -->
 
 		<!-- IF _file.S_THUMBNAIL -->
-		<dl class="thumbnail">
-			<dt><a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" class="postimage" alt="{_file.DOWNLOAD_NAME}" title="{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}" /></a></dt>
-			<!-- IF _file.COMMENT --><dd> {_file.COMMENT}</dd><!-- ENDIF -->
-		</dl>
+			<a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" title="<!-- IF _file.COMMENT_CLEAN -->{_file.COMMENT_CLEAN} / {_file.DOWNLOAD_NAME}<!-- ELSE -->{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}<!-- ENDIF -->"/></a><br />
+			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_IMAGE -->
-		<dl class="file">
-			<dt class="attach-image"><img src="{_file.U_INLINE_LINK}" class="postimage" alt="{_file.DOWNLOAD_NAME}" onclick="viewableArea(this);" /></dt>
-			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
-			<dd>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
-		</dl>
+			<img src="{_file.U_INLINE_LINK}" alt="{_file.DOWNLOAD_NAME}" title="<!-- IF _file.COMMENT_CLEAN -->{_file.COMMENT_CLEAN} / <!-- ENDIF -->{_file.DOWNLOAD_NAME}"/><br />
+			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_FILE -->
-		<dl class="file">
-			<dt><!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF --><a class="postlink" href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a></dt>
-			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
-			<dd>({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
-		</dl>
+			<span class="genmed">
+				<!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF -->
+				<a href="{_file.U_DOWNLOAD_LINK}" title="<!-- IF _file.COMMENT_CLEAN -->{_file.COMMENT_CLEAN} / <!-- ENDIF -->{_file.DOWNLOAD_NAME}">{_file.DOWNLOAD_NAME}</a> [{_file.FILESIZE} {_file.SIZE_LANG}]
+			</span><br />
+			<span class="gensmall">{_file.L_DOWNLOAD_COUNT}</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE -->
@@ -70,25 +68,25 @@
 			</object>
 		<!-- ELSEIF _file.S_QUICKTIME_FILE -->
 			<object id="qtstream_{_file.ATTACH_ID}" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" width="320" height="285">
-				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
-				<param name="controller" value="true" />
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
+				<param name="controller" value="true">
 				<param name="autoplay" value="false" />
-				<param name="type" value="video/quicktime" />
+				<param name="type" value="video/quicktime">
 				<embed name="qtstream_{_file.ATTACH_ID}" src="{_file.U_DOWNLOAD_LINK}" pluginspage="http://www.apple.com/quicktime/download/" enablejavascript="true" controller="true" width="320" height="285" type="video/quicktime" autoplay="false"></embed>
 			</object>
 		<!-- ELSEIF _file.S_RM_FILE -->
 			<object id="rmstream_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="200" height="50">
-				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
-				<param name="autostart" value="false" />
-				<param name="controls" value="ImageWindow" />
-				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
-				<param name="prefetch" value="false" />
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
+				<param name="autostart" value="false">
+				<param name="controls" value="ImageWindow">
+				<param name="console" value="ctrls_{_file.ATTACH_ID}">
+				<param name="prefetch" value="false">
 				<embed name="rmstream_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" src="{_file.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="ctrls_{_file.ATTACH_ID}" prefetch="false"></embed>
 			</object>
 			<br />
 			<object id="ctrls_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
-				<param name="controls" value="ControlPanel" />
-				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
+				<param name="controls" value="ControlPanel">
+				<param name="console" value="ctrls_{_file.ATTACH_ID}">
 				<embed name="ctrls_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="ctrls_{_file.ATTACH_ID}"></embed>
 			</object>
 
@@ -112,12 +110,12 @@
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
-			<p>
+			<br />
 			<!-- IF _file.S_QUICKTIME_FILE --><a href="#" onclick="play_qt_file(document.qtstream_{_file.ATTACH_ID}); return false;">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
-			<a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</p>
+			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
-		<!-- EVENT attachment_file_append -->
+		<br />
 	<!-- ENDIF -->
+
 <!-- END _file -->
-<!-- EVENT attachment_file_after -->

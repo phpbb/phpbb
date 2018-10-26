@@ -1,0 +1,64 @@
+<h1>{L_CONFIGURATION_TITLE}</h1>
+
+<p>{L_CONFIGURATION_EXPLAIN}</p>
+
+<form action="{S_CONFIG_ACTION}" method="post">
+  <table width="100%" cellpadding="4" cellspacing="1" border="0" align="center" class="forumline">
+	<tr>
+		<th class="thHead" colspan="2">{L_SITEMAP_SETTINGS}</th>
+	</tr>
+	<tr> 
+		<td class="row1">{L_SQL_LIMIT}<br /><span class="gensmall">{L_SQL_LIMIT_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_sql_limit" value="{SQL_LIMIT}" /></td> 
+	</tr>
+	<tr> 
+		<td class="row1">{L_DEFAULT_LIMIT}<br /><span class="gensmall">{L_DEFAULT_LIMIT_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_url_limit" value="{DEFAULT_LIMIT}" /></td> 
+	</tr>
+	<tr>
+		<td class="row1">{L_SORT_ORDER}<br /><span class="gensmall">{L_SORT_ORDER_EXPLAIN}</span></td>
+		<td class="row2"><input type="radio" name="sitemap_sort" value="DESC" {SITEMAP_SORT_DESC} /> {L_NEW_FIRST}&nbsp;&nbsp;<input type="radio" name="sitemap_sort" value="ASC" {SITEMAP_SORT_ASC} /> {L_OLD_FIRST}</td>
+	</tr>
+	<tr>
+		<td class="row1">{L_S_MOD_REWRITE}<br /><span class="gensmall">{L_S_MOD_REWRITE_EXPLAIN}</span></td>
+		<td class="row2"><input type="radio" name="sitemap_rewrited" value="FALSE" {REWRTIE_S_NO} /> {L_NO}&nbsp;&nbsp;<input type="radio" name="sitemap_rewrited" value="TRUE" {REWRTIE_S_YES} /> {L_YES}</td>
+	</tr> 
+	<tr>
+		<th class="thHead" colspan="2">{L_SITEMAP_FORUM_SET}</th>
+	</tr>
+	<tr> 
+		<td class="row1">{L_ANNOUNCE_PRIORITY}<br /><span class="gensmall">{L_ANNOUNCE_PRIORITY_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_announce_priority" value="{ANNOUNCE_PRIORITY}" /></td> 
+	</tr>
+	<tr> 
+		<td class="row1">{L_STICKY_PRIORITY}<br /><span class="gensmall">{L_STICKY_PRIORITY_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_sticky_priority" value="{STICKY_PRIORITY}" /></td> 
+	</tr>
+	<tr> 
+		<td class="row1">{L_DEFAULT_PRIORITY}<br /><span class="gensmall">{L_DEFAULT_PRIORITY_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_default_priority" value="{DEFAULT_PRIORITY}" /></td> 
+	</tr>
+	<tr> 
+		<td class="row1">{L_PAGINATION_LIMIT1}<br /><span class="gensmall">{L_PAGINATION_LIMIT_EXPLAIN1}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_limitdown" value="{PAGINATION_LIMITDOWN}" /></td> 
+	</tr>
+	<tr> 
+		<td class="row1">{L_PAGINATION_LIMIT2}<br /><span class="gensmall">{L_PAGINATION_LIMIT_EXPLAIN2}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_limitup" value="{PAGINATION_LIMITUP}" /></td> 
+	</tr>
+<!-- BEGIN kb_config -->
+	<tr>
+		<th class="thHead" colspan="2">{kb_config.L_SITEMAP_KB_SET}</th>
+	</tr>
+	<tr> 
+		<td class="row1">{kb_config.L_KB_MX_PAGE}<br /><span class="gensmall">{kb_config.L_KB_MX_PAGE_EXPLAIN}</span></td> 
+		<td class="row2"><input type="text" name="sitemap_kb_mx_page" value="{kb_config.KB_MX_PAGE}" /></td> 
+	</tr>
+<!-- END kb_config -->
+<tr>
+	<td class="catBottom" colspan="3" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="{L_RESET}" class="liteoption" />
+</tr> 
+
+</table></form>
+<div align="center"><span class="copyright">{VER_INFO}</span></div>
+<br clear="all" />

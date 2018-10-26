@@ -23,7 +23,7 @@ if(!empty($setmodules))
 $phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
-if (!defined('$php_ext')) define('$php_ext', substr(strrchr(__FILE__, '.'), 1));
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 require('./pagestart.' . $phpEx);
 
 include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);

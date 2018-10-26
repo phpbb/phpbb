@@ -1,27 +1,27 @@
-<form method="post" action="{U_QR_ACTION}" id="qr_postform">
-<!-- EVENT quickreply_editor_panel_before -->
-	<div class="panel">
-		<div class="inner">
-				<h2 class="quickreply-title">{L_QUICKREPLY}</h2>
-				<fieldset class="fields1">
-				<!-- EVENT quickreply_editor_subject_before -->
-					<dl style="clear: left;">
-						<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-						<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
-					</dl>
-				<!-- EVENT quickreply_editor_message_before -->
-				<div id="message-box">
-					<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
-				</div>
-				<!-- EVENT quickreply_editor_message_after -->
-				</fieldset>
-				<fieldset class="submit-buttons">
-					{S_FORM_TOKEN}
-					{QR_HIDDEN_FIELDS}
-					<input type="submit" accesskey="f" tabindex="6" name="preview" value="{L_FULL_EDITOR}" class="button2" id="qr_full_editor" />&nbsp;
-					<input type="submit" accesskey="s" tabindex="7" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-				</fieldset>
-		</div>
-	</div>
-<!-- EVENT quickreply_editor_panel_after -->
+<form method="post" action="{U_QR_ACTION}">
+
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th align="center" colspan="2">{L_QUICKREPLY}</th>
+		</tr>
+		<tr>
+			<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
+			<td  class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" /></td>
+		</tr>
+		<tr>
+			<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}:</b></td>
+			<td class="row2" valign="top" align="left" width="78%"><textarea name="message" rows="7" cols="76" tabindex="3"  style="width: 700px; height: 130px; min-width: 98%; max-width: 98%;"></textarea> </td>
+		</tr>
+		<tr>
+			<td class="cat" colspan="2" align="center">
+				<input class="btnmain" type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" />&nbsp;
+				<input class="btnlite" type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" />
+
+				{S_FORM_TOKEN}
+				{QR_HIDDEN_FIELDS}
+			</td>
+		</tr>
+	</table>
+	
 </form>
+<br clear="all" />

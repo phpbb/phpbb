@@ -39,6 +39,8 @@ class dbal_postgres extends dbal
 
 	/**
 	* Connect to server
+	* downgraded for phpBB2 backend
+	* @access public
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
@@ -121,6 +123,11 @@ class dbal_postgres extends dbal
 
 		return $this->sql_error('');
 	}
+	
+	function sql_connect_id()
+	{
+		return "SELECT pg_backend_pid()";
+	}
 
 	/**
 	* Version information about used database
@@ -171,7 +178,7 @@ class dbal_postgres extends dbal
 	{
 		if ($query != '')
 		{
-			global $mx_cache;
+			global $cache;
 
 			if (strpos($query, 'SELECT') === 0 && strpos($query, 'FROM (') !== false)
 			{
@@ -185,7 +192,7 @@ class dbal_postgres extends dbal
 			}
 
 			$this->last_query_text = $query;
-			$this->query_result = ($cache_ttl && method_exists($mx_cache, 'sql_load')) ? $mx_cache->sql_load($query) : false;
+			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 
 			if (!$this->query_result)
 			{
@@ -201,10 +208,10 @@ class dbal_postgres extends dbal
 					$this->sql_report('stop', $query);
 				}
 
-				if ($cache_ttl && method_exists($mx_cache, 'sql_save'))
+				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$mx_cache->sql_save($query, $this->query_result, $cache_ttl);
+					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
@@ -262,7 +269,168 @@ class dbal_postgres extends dbal
 
 		return ($query_id) ? @pg_num_rows($query_id) : false;
 	}
+	
+	/**
+	* Return fields num
+	* Not used within core code
+	*/		
+	function sql_numfields($query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = @pg_num_fields($query_id);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
+	/**
+	* Return fields name(s)
+	* Not used within core code
+	*/		
+	function sql_fieldname($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = pg_field_name($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a field type in a database.
+	 *
+	 * @param string $offset of sql array.
+	 * @param string $query_id from sql array.
+	 * @return field type.
+	 */
+	function sql_fieldtype($offset, $query_id = 0)
+	{
+		if(!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+		if($query_id)
+		{
+			$result = pg_field_type($query_id, $offset);
+			return $result;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if a field exists in a table.
+	 *
+	 * @param string $column for field name.
+	 * @param string $table_name for table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_fieldexists($column, $table_name)
+	{
+		$query = $this->sql_query("SELECT COUNT(column_name) as column_names FROM information_schema.columns WHERE table_name=$table_name AND column_name=$column");
+		$exists = $this->sql_numrows($query);
+		
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets a list of columns of a table.
+	 *
+	 * @param string $table_name	table name
+	 * @return array of columns names (all lower case)
+	 */
+	function sql_list_columns($table_name)
+	{
+		$columns = array();
+
+		$sql = "SELECT a.attname
+			FROM pg_class c, pg_attribute a
+			WHERE c.relname = '{$table_name}'
+				AND a.attnum > 0
+				AND a.attrelid = c.oid";
+		$result = $this->sql_query($sql);
+
+		while ($row = $this->sql_fetchrow($result))
+		{
+			$column = strtolower(current($row));
+			$columns[$column] = $column;
+		}
+		$this->sql_freeresult($result);
+
+		return $columns;
+	}
+	
+	/**
+	 * Check if a field exists in a table.
+	 *
+	 * @param string $column for field name.
+	 * @param string $table_name for table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_field_exists($column, $table_name)
+	{
+		$query = $this->sql_query("SELECT COUNT(column_name) as column_names FROM information_schema.columns WHERE table_name='{$table_name}' AND column_name='{$column}'");
+		$exists = $this->sql_fetch_field($query, "column_names");
+
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Check if a table exists in a database.
+	 *
+	 * @param string $table_name The table name.
+	 * @return boolean true or false if not exists.
+	 */
+	function sql_table_exists($table_name)
+	{
+		// Execute on master server to ensure if we've just created a table that we get the correct result
+		$query = $this->sql_query("SELECT COUNT(table_name) as table_names FROM information_schema.tables WHERE table_schema = 'public' AND table_name='{$table_name}'");
+		$exists = $this->sql_fetch_field($query, 'table_names');
+		
+		if($exists > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	
 	/**
 	* Return number of affected rows
 	*/
@@ -276,26 +444,49 @@ class dbal_postgres extends dbal
 	*/
 	function sql_fetchrow($query_id = false)
 	{
-		global $mx_cache;
+		global $cache;
 
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if (isset($mx_cache->sql_rowset[$query_id]))
+		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $mx_cache->sql_fetchrow($query_id);
+			return $cache->sql_fetchrow($query_id);
 		}
 
 		return ($query_id) ? @pg_fetch_assoc($query_id, NULL) : false;
 	}
-
+	
+	/**
+	 * Return a result array for a query.
+	 *
+	 * @param resource $query for the query_id.
+	 * @param int $resulttype for the type of array to return:
+	 * PGSQL_NUM, PGSQL_BOTH or PGSQL_ASSOC
+	 * @return array for the query of result. 
+	 */
+	function sql_fetch_array($query, $resulttype=PGSQL_ASSOC)
+	{
+		switch($resulttype)
+		{
+			case PGSQL_NUM:
+			case PGSQL_BOTH:
+			case PGSQL_BOTH:
+			break;
+			default:
+				$resulttype = PGSQL_ASSOC;
+			break;
+		}
+		return @pg_fetch_array($query, NULL, $resulttype);
+	}
+	
 	/**
 	* Fetch field
 	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($column, $rownum = false, $query_id = false)
 	{
 		if (!$query_id)
 		{
@@ -310,10 +501,31 @@ class dbal_postgres extends dbal
 			}
 
 			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
+			return isset($row[$column]) ? $row[$column] : false;
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Return a specific field from a query.
+	 *
+	 * @param resource $query The query ID.
+	 * @param string $column The name of the field to return.
+	 * @param int|bool The number of the row to fetch it from.
+	 * @return string|bool|null As per http://php.net/manual/en/function.pg-fetch-result.php
+	 */
+	function sql_fetch_field($query, $column, $row=false)
+	{
+		if($row === false)
+		{
+			$array = $this->sql_fetch_array($query);
+			return $array[$column];
+		}
+		else
+		{
+			return @pg_fetch_result($query, $row, $column);
+		}
 	}
 
 	/**
@@ -339,9 +551,9 @@ class dbal_postgres extends dbal
 
 		if ($query_id && $this->last_query_text != '')
 		{
-			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
+			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $table_name))
 			{
-				$query = "SELECT currval('" . $tablename[1] . "_id_seq') AS last_value";
+				$query = "SELECT currval('" . $table_name[1] . "_id_seq') AS last_value";
 				$temp_q_id =  @pg_query($this->db_connect_id, $query);
 				if (!$temp_q_id)
 				{

@@ -45,12 +45,13 @@ class tools
 	*
 	* @return array
 	*/
-	public static function get_dbms_type_map()
+	static public function get_dbms_type_map()
 	{
 		return array(
 			'mysql_41'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -81,6 +82,7 @@ class tools
 			'mysql_40'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -108,69 +110,10 @@ class tools
 				'VARBINARY'	=> 'varbinary(255)',
 			),
 
-			'mssql'		=> array(
-				'INT:'		=> '[int]',
-				'BINT'		=> '[float]',
-				'UINT'		=> '[int]',
-				'UINT:'		=> '[int]',
-				'TINT:'		=> '[int]',
-				'USINT'		=> '[int]',
-				'BOOL'		=> '[int]',
-				'VCHAR'		=> '[varchar] (255)',
-				'VCHAR:'	=> '[varchar] (%d)',
-				'CHAR:'		=> '[char] (%d)',
-				'XSTEXT'	=> '[varchar] (1000)',
-				'STEXT'		=> '[varchar] (3000)',
-				'TEXT'		=> '[varchar] (8000)',
-				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
-				'TIMESTAMP'	=> '[int]',
-				'DECIMAL'	=> '[float]',
-				'DECIMAL:'	=> '[float]',
-				'PDECIMAL'	=> '[float]',
-				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
-				'VARBINARY'	=> '[varchar] (255)',
-			),
-
-			'mssqlnative'	=> array(
-				'INT:'		=> '[int]',
-				'BINT'		=> '[float]',
-				'UINT'		=> '[int]',
-				'UINT:'		=> '[int]',
-				'TINT:'		=> '[int]',
-				'USINT'		=> '[int]',
-				'BOOL'		=> '[int]',
-				'VCHAR'		=> '[varchar] (255)',
-				'VCHAR:'	=> '[varchar] (%d)',
-				'CHAR:'		=> '[char] (%d)',
-				'XSTEXT'	=> '[varchar] (1000)',
-				'STEXT'		=> '[varchar] (3000)',
-				'TEXT'		=> '[varchar] (8000)',
-				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
-				'TIMESTAMP'	=> '[int]',
-				'DECIMAL'	=> '[float]',
-				'DECIMAL:'	=> '[float]',
-				'PDECIMAL'	=> '[float]',
-				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
-				'VARBINARY'	=> '[varchar] (255)',
-			),
-
 			'oracle'	=> array(
 				'INT:'		=> 'number(%d)',
 				'BINT'		=> 'number(20)',
+				'ULINT'		=> 'number(10)',
 				'UINT'		=> 'number(8)',
 				'UINT:'		=> 'number(%d)',
 				'TINT:'		=> 'number(%d)',
@@ -198,39 +141,10 @@ class tools
 				'VARBINARY'	=> 'raw(255)',
 			),
 
-			'sqlite'	=> array(
-				'INT:'		=> 'int(%d)',
-				'BINT'		=> 'bigint(20)',
-				'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
-				'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
-				'TINT:'		=> 'tinyint(%d)',
-				'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
-				'BOOL'		=> 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
-				'VCHAR'		=> 'varchar(255)',
-				'VCHAR:'	=> 'varchar(%d)',
-				'CHAR:'		=> 'char(%d)',
-				'XSTEXT'	=> 'text(65535)',
-				'STEXT'		=> 'text(65535)',
-				'TEXT'		=> 'text(65535)',
-				'MTEXT'		=> 'mediumtext(16777215)',
-				'XSTEXT_UNI'=> 'text(65535)',
-				'STEXT_UNI'	=> 'text(65535)',
-				'TEXT_UNI'	=> 'text(65535)',
-				'MTEXT_UNI'	=> 'mediumtext(16777215)',
-				'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
-				'DECIMAL'	=> 'decimal(5,2)',
-				'DECIMAL:'	=> 'decimal(%d,2)',
-				'PDECIMAL'	=> 'decimal(6,3)',
-				'PDECIMAL:'	=> 'decimal(%d,3)',
-				'VCHAR_UNI'	=> 'varchar(255)',
-				'VCHAR_UNI:'=> 'varchar(%d)',
-				'VCHAR_CI'	=> 'varchar(255)',
-				'VARBINARY'	=> 'blob',
-			),
-
 			'sqlite3'	=> array(
 				'INT:'		=> 'INT(%d)',
 				'BINT'		=> 'BIGINT(20)',
+				'ULINT'		=> 'INTEGER UNSIGNED',
 				'UINT'		=> 'INTEGER UNSIGNED',
 				'UINT:'		=> 'INTEGER UNSIGNED',
 				'TINT:'		=> 'TINYINT(%d)',
@@ -257,36 +171,6 @@ class tools
 				'VCHAR_CI'	=> 'VARCHAR(255)',
 				'VARBINARY'	=> 'BLOB',
 			),
-
-			'postgres'	=> array(
-				'INT:'		=> 'INT4',
-				'BINT'		=> 'INT8',
-				'UINT'		=> 'INT4', // unsigned
-				'UINT:'		=> 'INT4', // unsigned
-				'USINT'		=> 'INT2', // unsigned
-				'BOOL'		=> 'INT2', // unsigned
-				'TINT:'		=> 'INT2',
-				'VCHAR'		=> 'varchar(255)',
-				'VCHAR:'	=> 'varchar(%d)',
-				'CHAR:'		=> 'char(%d)',
-				'XSTEXT'	=> 'varchar(1000)',
-				'STEXT'		=> 'varchar(3000)',
-				'TEXT'		=> 'varchar(8000)',
-				'MTEXT'		=> 'TEXT',
-				'XSTEXT_UNI'=> 'varchar(100)',
-				'STEXT_UNI'	=> 'varchar(255)',
-				'TEXT_UNI'	=> 'varchar(4000)',
-				'MTEXT_UNI'	=> 'TEXT',
-				'TIMESTAMP'	=> 'INT4', // unsigned
-				'DECIMAL'	=> 'decimal(5,2)',
-				'DECIMAL:'	=> 'decimal(%d,2)',
-				'PDECIMAL'	=> 'decimal(6,3)',
-				'PDECIMAL:'	=> 'decimal(%d,3)',
-				'VCHAR_UNI'	=> 'varchar(255)',
-				'VCHAR_UNI:'=> 'varchar(%d)',
-				'VCHAR_CI'	=> 'varchar_ci',
-				'VARBINARY'	=> 'bytea',
-			),
 		);
 	}
 
@@ -294,7 +178,7 @@ class tools
 	* A list of types being unsigned for better reference in some db's
 	* @var array
 	*/
-	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+	var $unsigned_types = array('ULINT', 'UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 	/**
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
@@ -478,12 +362,8 @@ class tools
 	}
 
 	/**
-	* Check if table exists
-	*
-	*
-	* @param string	$table_name	The table name to check for
-	* @return bool true if table exists, else false
-	*/
+	 * sql_table_exists
+	 */
 	function sql_table_exists($table_name)
 	{
 		$this->db->sql_return_on_error(true);
@@ -500,12 +380,8 @@ class tools
 	}
 
 	/**
-	* Create SQL Table
-	*
-	* @param string	$table_name	The table name to create
-	* @param array	$table_data	Array containing table data.
-	* @return array	Statements if $return_statements is true.
-	*/
+	 * sql_create_table
+	 */
 	function sql_create_table($table_name, $table_data)
 	{
 		// holds the DDL for a column
@@ -526,26 +402,7 @@ class tools
 		$create_sequence = false;
 
 		// Begin table sql statement
-		switch ($this->sql_layer)
-		{
-			case 'mssql':
-			case 'mssqlnative':
-				$table_sql = 'CREATE TABLE [' . $table_name . '] (' . "\n";
-			break;
-
-			default:
-				$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
-			break;
-		}
-
-		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
-		{
-			if (!isset($table_data['PRIMARY_KEY']))
-			{
-				$table_data['COLUMNS']['mssqlindex'] = array('UINT', null, 'auto_increment');
-				$table_data['PRIMARY_KEY'] = 'mssqlindex';
-			}
-		}
+		$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
 
 		// Iterate through the columns to create a table
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -559,17 +416,7 @@ class tools
 			}
 
 			// here we add the definition of the new column to the list of columns
-			switch ($this->sql_layer)
-			{
-				case 'mssql':
-				case 'mssqlnative':
-					$columns[] = "\t [{$column_name}] " . $prepared_column['column_type_sql_default'];
-				break;
-
-				default:
-					$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
-				break;
-			}
+			$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
 
 			// see if we have found a primary key set due to a column definition if we have found it, we can stop looking
 			if (!$primary_key_gen)
@@ -577,7 +424,7 @@ class tools
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
 			}
 
-			// create sequence DDL based off of the existance of auto incrementing columns
+			// create sequence DDL based off of the existence of auto incrementing columns
 			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
 			{
 				$create_sequence = $column_name;
@@ -586,16 +433,6 @@ class tools
 
 		// this makes up all the columns in the create table statement
 		$table_sql .= implode(",\n", $columns);
-
-		// Close the table for two DBMS and add to the statements
-		switch ($this->sql_layer)
-		{
-			case 'mssql':
-			case 'mssqlnative':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-		}
 
 		// we have yet to create a primary key for this table,
 		// this means that we can add the one we really wanted instead
@@ -613,25 +450,8 @@ class tools
 				{
 					case 'mysql_40':
 					case 'mysql_41':
-					case 'postgres':
-					case 'sqlite':
 					case 'sqlite3':
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
-					break;
-
-					case 'mssql':
-					case 'mssqlnative':
-						// We need the data here
-						$old_return_statements = $this->return_statements;
-						$this->return_statements = true;
-
-						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
-						foreach ($primary_key_stmts as $pk_stmt)
-						{
-							$statements[] = $pk_stmt;
-						}
-
-						$this->return_statements = $old_return_statements;
 					break;
 
 					case 'oracle':
@@ -651,19 +471,7 @@ class tools
 			break;
 
 			case 'mysql_40':
-			case 'sqlite':
 			case 'sqlite3':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-
-			case 'postgres':
-				// do we need to add a sequence for auto incrementing columns?
-				if ($create_sequence)
-				{
-					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
-				}
-
 				$table_sql .= "\n);";
 				$statements[] = $table_sql;
 			break;
@@ -1475,10 +1283,9 @@ class tools
 				$result = $this->db->sql_query($sql);
 			}
 		}
-		
 		if (!($result))
 		{		
-			message_die(CRITICAL_ERROR, "Could not info", '', __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "",  '<br /><br />SQL Error : ' . $this->db->sql_error('')['code'] . ' ' . $this->db->sql_error('')['message'] . ' <br />' . $sql, true, __LINE__, __FILE__, $sql);
 		}
 		return true;
 	}
@@ -1692,11 +1499,12 @@ class tools
 	* Get the column's database type from the type map
 	*
 	* @param string $column_map_type
-	* @return array		column type for this database
-	*					and map type without length
+	* @return array column type for this database
+	* and map type without length
 	*/
 	function get_column_type($column_map_type)
 	{
+		$column_type = '';
 		if (strpos($column_map_type, ':') !== false)
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_map_type);
@@ -1752,7 +1560,7 @@ class tools
 	*/
 	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
-		$column_data = !empty($column_data[$column_name]) ? $column_data : $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+		$column_data = is_array($column_data) ? $column_data : $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		
 		$statements = array();
 		
@@ -1761,16 +1569,49 @@ class tools
 			case 'mssql':
 			case 'mssqlnative':
 				// Does not support AFTER, only through temporary table
-				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
+				$column_type_sql = (!empty($column_data['column_type_sql_default'])) ? $column_data['column_type_sql_default'] : $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_type_sql;
 			break;
 
 			case 'mysql_40':
-				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
-			break;			
+				$sql = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
+				if (isset($column_data['null']))
+				{
+					if ($column_data['null'] == 'NOT NULL')
+					{
+						$sql .= ' NOT NULL';
+					}
+				}
+				if (isset($column_data['default']))
+				{
+					$sql .= ' DEFAULT ' . $column_data['default'];
+				}
+				if (isset($column_data['after']) && !empty($column_data['after']))
+				{
+					$sql .= ' AFTER ' . $column_data['after'];
+				}
+				$statements[] = $sql;
+			break;
+			
 			case 'mysql_41':
-				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD `' . $column_name . '` ' . (($column_data['column_type_sql'] = 'NULL') ? 'TEXT' :  $column_data['column_type_sql']) . ' ' . (!empty($column_data[$column_name]) ? $column_data[$column_name] : 'NULL') . ' DEFAULT NULL'  . $after;
+				$column_type_sql = (!empty($column_data['column_type_sql_default'])) ? $column_data['column_type_sql_default'] : $column_data['column_type_sql'];
+				$sql = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_type_sql;
+				if (isset($column_data['null']))
+				{
+					if ($column_data['null'] == 'NOT NULL')
+					{
+						$sql .= ' NOT NULL';
+					}
+				}
+				if (isset($column_data['default']) && !empty($column_data['default']))
+				{
+					$sql .= ' DEFAULT ' . $column_data['default'];
+				}
+				if (isset($column_data['after']) && !empty($column_data['after']))
+				{
+					$sql .= ' AFTER ' . $column_data['after'];
+				}
+				$statements[] = $sql;
 			break;
 
 			case 'oracle':
@@ -1787,8 +1628,9 @@ class tools
 				else
 				{
 					// old versions cannot add columns with default and null information
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type'] . ' ' . $column_data['constraint'];
-
+					$column_type_sql = (!empty($column_data['column_type'])) ? $column_data['column_type'] : $column_data['column_type_sql'];
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_type_sql . ' ' . $column_data['constraint'];
+					
 					if (isset($column_data['null']))
 					{
 						if ($column_data['null'] == 'NOT NULL')
@@ -1796,7 +1638,6 @@ class tools
 							$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET NOT NULL';
 						}
 					}
-
 					if (isset($column_data['default']))
 					{
 						$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
@@ -2185,7 +2026,8 @@ class tools
 			case 'oracle':
 			case 'sqlite':
 			case 'sqlite3':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name);
+				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mysql_40':
@@ -2228,7 +2070,8 @@ class tools
 			case 'oracle':
 			case 'sqlite':
 			case 'sqlite3':
-				$statements[] = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name);
+				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mysql_40':
@@ -2243,6 +2086,7 @@ class tools
 				}
 			// no break
 			case 'mysql_41':
+				$index_name = $this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
 			break;
 
@@ -2253,6 +2097,55 @@ class tools
 		}
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * Check whether the index name is too long
+	 *
+	 * @param string $table_name
+	 * @param string $index_name
+	 * @param bool $throw_error
+	 * @return string	The index name, shortened if too long
+	 */
+	protected function check_index_name_length($table_name, $index_name, $throw_error = true)
+	{
+		$max_index_name_length = $this->get_max_index_name_length();
+		if (strlen($index_name) > $max_index_name_length)
+		{
+			// Try removing the table prefix if it's at the beginning
+			$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+			if (strpos($index_name, $table_prefix) === 0)
+			{
+				$index_name = substr($index_name, strlen($table_prefix));
+				return $this->check_index_name_length($table_name, $index_name, $throw_error);
+			}
+
+			// Try removing the remaining suffix part of table name then
+			$table_suffix = substr($table_name, strlen($table_prefix));
+			if (strpos($index_name, $table_suffix) === 0)
+			{
+				// Remove the suffix and underscore separator between table_name and index_name
+				$index_name = substr($index_name, strlen($table_suffix) + 1);
+				return $this->check_index_name_length($table_name, $index_name, $throw_error);
+			}
+
+			if ($throw_error)
+			{
+				trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is $max_index_name_length characters.", E_USER_ERROR);
+			}
+		}
+
+		return $index_name;
+	}
+
+	/**
+	 * Get maximum index name length. Might vary depending on db type
+	 *
+	 * @return int Maximum index name length
+	 */
+	protected function get_max_index_name_length()
+	{
+		return 30;
 	}
 
 	/**

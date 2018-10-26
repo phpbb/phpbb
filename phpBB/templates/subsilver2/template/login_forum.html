@@ -1,41 +1,56 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF FORUM_NAME --><h2 class="forum-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2><!-- ENDIF -->
+<!-- IF FORUM_NAME -->
+	<div id="pageheader">
+		<h2><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
+	</div>
 
-<form id="login_forum" method="post" action="{S_LOGIN_ACTION}">
-{S_FORM_TOKEN}
-<div class="panel">
-	<div class="inner">
+	<br clear="all" /><br />
+<!-- ENDIF -->
 
-	<div class="content">
-		<h2 class="login-title">{L_LOGIN}</h2>
+<div id="pagecontent">
 
-		<p>{L_LOGIN_FORUM}</p>
-
-		<fieldset class="fields1">
+	<form name="login_forum" method="post" action="{S_LOGIN_ACTION}">
+	
+	<table class="tablebg" width="100%" cellspacing="1" align="center">
+	<tr> 
+		<th>{L_LOGIN}</th>
+	</tr>
+	<tr>
+		<td class="row3" align="center"><span class="gensmall">{L_LOGIN_FORUM}</span></td>
+	</tr>
+	<tr> 
+		<td class="row1" align="center">
+		
+			<table cellspacing="1" cellpadding="4" border="0">
 			<!-- IF LOGIN_ERROR -->
-				<dl>
-					<dt>&nbsp;</dt>
-					<dd class="error">{LOGIN_ERROR}</dd>
-				</dl>
+				<tr>
+					<td class="gensmall" colspan="2" align="center"><span class="error">{LOGIN_ERROR}</span></td>
+				</tr>
 			<!-- ENDIF -->
+			<tr> 
+				<td class="gensmall"><b>{L_PASSWORD}:</b></td>
+				<td><input class="post" type="password" name="password" size="25" tabindex="2" /></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr> 
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="btnmain" value="{L_LOGIN}" tabindex="3" /></td>
+	</tr>
+	</table>
+	{S_FORM_TOKEN}
+	{S_LOGIN_REDIRECT}
+	</form>
 
-			<dl>
-				<dt><label for="password">{L_PASSWORD}{L_COLON}</label></dt>
-				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" autocomplete="off" /></dd>
-			</dl>
-			{S_LOGIN_REDIRECT}
-			<dl>
-				<dt>&nbsp;</dt>
-				<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" id="login" class="button1" value="{L_LOGIN}" tabindex="2" /></dd>
-			</dl>
-		</fieldset>
-	</div>
-
-	</div>
 </div>
 
-</form>
+<br clear="all" />
 
-<!-- INCLUDE jumpbox.html -->
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
+
 <!-- INCLUDE overall_footer.html -->

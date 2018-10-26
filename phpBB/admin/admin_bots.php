@@ -18,7 +18,7 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', true);
+@define('IN_PHPBB', true);
 
 if( !empty($setmodules) )
 {
@@ -39,17 +39,17 @@ include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/
 $bot_errors = "";
 
 // get relevant query data
-$submit = ((isset($HTTP_POST_VARS['submit'])) ? true : false);
-if (isset($HTTP_GET_VARS['action']) || isset($HTTP_POST_VARS['action']))
+$submit = ((isset($_POST['submit'])) ? true : false);
+if (isset($_GET['action']) || isset($_POST['action']))
 {
-	$action = (isset($HTTP_POST_VARS['action'])) ? $HTTP_POST_VARS['action'] : $HTTP_GET_VARS['action'];
+	$action = (isset($_POST['action'])) ? $_POST['action'] : $_GET['action'];
 }
 else
 {
 	$action = '';
 }
-$id = (isset($HTTP_GET_VARS['id'])) ? $HTTP_GET_VARS['id'] : 0;
-$mark = (isset($HTTP_POST_VARS['mark'])) ? $HTTP_POST_VARS['mark'] : 0;
+$id = (isset($_GET['id'])) ? $_GET['id'] : 0;
+$mark = (isset($_POST['mark'])) ? $_POST['mark'] : 0;
 if (isset($_POST['add'])) $action = 'add';
 
 // editing and marks don't go well together...
@@ -63,13 +63,12 @@ if ( ((sizeof($mark)) ?  $mark != '' : false ) && $action == "edit" )
 
 // hmmmmmm what does the user want to do?
 switch ($action)
-
 {
 	case 'ignore_pending':
 	case 'add_pending':
 		// get required query data
-		$pending_number = $HTTP_GET_VARS['pending']; 
-		$pending_data = $HTTP_GET_VARS['data']; 
+		$pending_number = $_GET['pending']; 
+		$pending_data = $_GET['data']; 
 
 		// get data from table
 		$sql = "SELECT pending_" . $pending_data . " 
@@ -233,32 +232,26 @@ switch ($action)
 
 	case 'add':
 	case 'edit':
-// get data from table
+		// get data from table
 
-
-		
-		
- 
-		
 		// check if data has been submitted?
 		if ($submit)
 		{
-
 			// get and validate required submitted data - for some reason isset doesn't work here?!
-			if ( $HTTP_POST_VARS['bot_ip'] == '' )
+			if ( $_POST['bot_ip'] == '' )
 			{
-				if ( $HTTP_POST_VARS['bot_agent'] == '')
+				if ( $_POST['bot_agent'] == '')
 				{
 					$bot_errors = $lang['Error_No_Agent_Or_Ip'];
 				}
 			}
-			if ( $_SERVER['REMOTE_ADDR'] == $HTTP_POST_VARS['bot_ip'])
+			if ( $_SERVER['REMOTE_ADDR'] == $_POST['bot_ip'])
 			{
 			$bot_errors = $lang['Error_Own_Ip'];
              }
-			if ( $HTTP_POST_VARS['bot_name'] != '' )
+			if ( $_POST['bot_name'] != '' )
 			{
-				$bot_name = $HTTP_POST_VARS['bot_name'];
+				$bot_name = $_POST['bot_name'];
 			}
 			else
 			{
@@ -267,85 +260,74 @@ switch ($action)
 			
 			if ($action == 'edit')
 			{
-			$sql = "SELECT bot_name
-				FROM " . BOTS_TABLE . "
-				WHERE bot_id = $id";
-			
-	if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				$sql = "SELECT bot_name
+					FROM " . BOTS_TABLE . "
+					WHERE bot_id = $id";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				}
+				 $row = $db->sql_fetchrow($result);
+				 $current_name = $row['bot_name'];
+				 $db->sql_freeresult($result);
+			  
+			   $sql = "SELECT bot_name
+					FROM " . BOTS_TABLE . "
+					WHERE bot_name = '$bot_name'";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				}
+				
+				$sql_bot_name_check = $db->sql_numrows($result);
+				$db->sql_freeresult($result);
+		
+				if(($sql_bot_name_check > 0) && ($current_name != $bot_name))
+				{
+					$bot_errors = $lang['Error_Bot_Name_Taken'];
+				}
 			}
-			 $row = $db->sql_fetchrow($result);
-			 $current_name = $row['bot_name'];
-	$db->sql_freeresult($result);
-		  
-		   $sql = "SELECT bot_name
-				FROM " . BOTS_TABLE . "
-				WHERE bot_name = '$bot_name'";
-			
-	if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
-			}
-			
-			$sql_bot_name_check = $db->sql_numrows($result);
- $db->sql_freeresult($result);
- if(($sql_bot_name_check > 0) && ($current_name != $bot_name))
- 
- {
- 
- $bot_errors = $lang['Error_Bot_Name_Taken'];
-			}
-			}
-			
 			
 			if ($action == 'add')
 			{
-			 $sql = "SELECT bot_name
-				FROM " . BOTS_TABLE . "
-				WHERE bot_name = '$bot_name'";
-			
-	if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				 $sql = "SELECT bot_name
+					FROM " . BOTS_TABLE . "
+					WHERE bot_name = '$bot_name'";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Couldn\'t delete data from bots table.', '', __LINE__, __FILE__, $sql);
+				}
+				$sql_bot_name_check = $db->sql_numrows($result);
+				
+				if($sql_bot_name_check > 0)
+				{
+					$bot_errors = $lang['Error_Bot_Name_Taken'];
+				}
 			}
 			
-			$sql_bot_name_check = $db->sql_numrows($result);
- 
- if($sql_bot_name_check > 0)
- 
- {
- $bot_errors = $lang['Error_Bot_Name_Taken'];
-			}
-			
-			}
 			if (!$bot_errors)
 			{
-			
-
-				$bot_agent = ( ( $HTTP_POST_VARS['bot_agent'] != '' ) ? $HTTP_POST_VARS['bot_agent'] : '' );
-				$bot_ip = ( ( $HTTP_POST_VARS['bot_ip'] != '' ) ? $HTTP_POST_VARS['bot_ip'] : '' );
-				$bot_style = $HTTP_POST_VARS['style'];
-
+				$bot_agent = ( ( $_POST['bot_agent'] != '' ) ? $_POST['bot_agent'] : '' );
+				$bot_ip = ( ( $_POST['bot_ip'] != '' ) ? $_POST['bot_ip'] : '' );
+				$bot_color = $_POST['style'];
+				
 				// remove spaces from ip
-				$bot_ip = str_replace(' ', '', $bot_ip);
-
-
+				$bot_ip = str_replace(' ', '', encode_ip($bot_ip));
+				
 				// are we creating a new bot - or not?
 				if ($action == 'add')
 				{
-					$sql = "INSERT INTO " . BOTS_TABLE . " (bot_name, bot_agent, bot_ip, bot_style)
-						  VALUES ('$bot_name', '$bot_agent', '$bot_ip', '$bot_style')";
-
+					$sql = "INSERT INTO " . BOTS_TABLE . " (bot_name, bot_agent, bot_ip, bot_color)
+						  VALUES ('$bot_name', '$bot_agent', '$bot_ip', '$bot_color')";
 					if ( !($result = $db->sql_query($sql)) )
 					{
 						message_die(GENERAL_ERROR, 'Couldn\'t insert data into bots table.', '', __LINE__, __FILE__, $sql);
 					}
-
-				} else {
-
+				} 
+				else 
+				{
 					$sql = "UPDATE " . BOTS_TABLE . " 
-						  SET bot_name='$bot_name', bot_agent='$bot_agent', bot_ip='$bot_ip', bot_style='$bot_style' 
+						  SET bot_name='$bot_name', bot_agent='$bot_agent', bot_ip='$bot_ip', bot_color='$bot_color' 
 						  WHERE bot_id = $id";
 
 					if ( !($result = $db->sql_query($sql)) )
@@ -392,7 +374,7 @@ switch ($action)
 			if ($id) 
 			{
 				// get required bot data
-				$sql = "SELECT bot_name, bot_agent, bot_ip, bot_style
+				$sql = "SELECT bot_name, bot_agent, bot_ip, bot_color
 				FROM " . BOTS_TABLE . "
 				WHERE bot_id = $id";
 
@@ -417,13 +399,14 @@ switch ($action)
 				while ($row2 = $db->sql_fetchrow($result))
 				{
 					$loop++;
-					$bot_style .= "<option " . (($loop == $row['bot_style'])? "selected" : "") . " value='$loop'>" . $row2['template_name'] . "</option>";
+					$bot_style .= "<option " . (($loop == $row['bot_color'])? "selected" : "") . " value='$loop'>" . $row2['template_name'] . "</option>";
 				}
 
 				$template->assign_vars(array(
 					"BOT_NAME" => $row['bot_name'],
 					"BOT_AGENT" => $row['bot_agent'],
-					"BOT_IP" => $row['bot_ip'])
+					"BOT_IP" => decode_ip($row['bot_ip'])
+					)
 				);
 			}
 		}
@@ -499,7 +482,7 @@ $total_pages += $total_users + floor($total_users / 50);
 $total_pages = floor($total_pages*1.35);
 
 // get bot table data
-$sql = "SELECT bot_id, bot_name, last_visit, bot_visits, bot_pages
+$sql = "SELECT bot_id, bot_name, bot_last_visit, bot_visit_counter, bot_visit_counter as bot_pages
 FROM " . BOTS_TABLE;
 
 if ( !($result = $db->sql_query($sql)) )
@@ -511,20 +494,21 @@ if ( !($result = $db->sql_query($sql)) )
 while ($row = $db->sql_fetchrow($result))
 {
 
-$row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $theme['td_class2']);
+	$row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $theme['td_class2']);
+	$bot_last_visits = explode('|', $row['bot_last_visit']);
 
-	$last_visits = explode('|', $row['last_visit']);
-
-	if ($last_visits[0] == '')
+	if ($bot_last_visits[0] == '')
 	{
-		$last_visit = $lang['Never'];
-	} else {
-		$last_visit = "<select>";
-		foreach ($last_visits as $visit)
+		$bot_last_visit = $lang['Never'];
+	} 
+	else 
+	{
+		$bot_last_visit = "<select>";
+		foreach ($bot_last_visits as $visit)
 		{
-			$last_visit .= "<option>" . date("j M y H:i:s", $visit) . "</option>";
+			$bot_last_visit .= "<option>" . date("j M y H:i:s", $visit) . "</option>";
 		}
-		$last_visit .= "</select>";
+		$bot_last_visit .= "</select>";
 	}
 
 	$bot_pages = $row['bot_pages'];
@@ -539,8 +523,8 @@ $row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $them
 
 		'BOT_NAME' => $row['bot_name'],
 		'PAGES' => $bot_pages,
-		'VISITS' => $row['bot_visits'],
-		'LAST_VISIT' => $last_visit)
+		'VISITS' => $row['bot_visit_counter'],
+		'bot_last_visit' => $bot_last_visit)
 	);
 
 }
@@ -558,7 +542,7 @@ if ( $db->sql_numrows($result) == 0 )
 $db->sql_freeresult($result);
 
 // get bot table data
-$sql = "SELECT bot_id, bot_name, pending_agent, pending_ip 
+$sql = "SELECT bot_id, bot_name, bot_agent, bot_ip 
 FROM " . BOTS_TABLE;
 
 if ( !($result = $db->sql_query($sql)) )
@@ -566,58 +550,32 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Couldn\'t query bots.', '', __LINE__, __FILE__, $sql);
 }
 
-$pending_bots = 0;
+$pending_bots = $db->sql_numrows($result);
+$row = $db->sql_fetchrowset($result);
 
 // generate pending table from bot data
-while ($row = $db->sql_fetchrow($result))
+
+// i know its bad practice to have to almost identical statements but what the hey!
+$pending_array = explode('|', $row['bot_agent']);
+		
+for ($loop = 0; $loop < $pending_bots; $loop++)
 {
-
-	// i know its bad practice to have to almost identical statements but what the hey!
-	if ( $row['pending_agent'] )
-	{
-		$pending_array = explode('|', $row['pending_agent']);
-		if ($pending_array) $pending_bots = 1;
-
-		for ($loop = 0; $loop < count($pending_array); $loop+=2)
-		{
-			$row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $theme['td_class2']);
-			$template->assign_block_vars('pendingrow', array(
-				'ROW_NUMBER' => $row['bot_id'],
-				'PENDING_NUMBER' => ($loop/2)+1,
-				'PENDING_DATA' => "agent",
-				'ROW_CLASS' => $row_class,
+	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+	$row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $theme['td_class2']);
 	
-				'BOT_NAME' => $row['bot_name'],
-				'AGENT' => "<b>" . $pending_array[$loop] . "</b>",
-				'IP' => "<a href=\"http://network-tools.com/default.asp?host=" . $pending_array[$loop+1] . "\" target=\"_phpbbwhois\">" . $pending_array[$loop+1] . "</a>")
-			);	
-		}
-	}
-
-
-	if ( $row['pending_ip'] )
-	{
-		$pending_array = explode('|', $row['pending_ip']);
-		if ($pending_array) $pending_bots = 1;
-
-		for ($loop = 0; $loop < count($pending_array); $loop+=2)
-		{
-			$row_class = ( ($row_class == $theme['td_class2']) ? $theme['td_class1'] : $theme['td_class2']);
-			$template->assign_block_vars('pendingrow', array(
-				'ROW_NUMBER' => $row['bot_id'],
-				'PENDING_NUMBER' => ($loop/2)+1,
-				'PENDING_DATA' => "ip",
-				'ROW_CLASS' => $row_class,
+	$template->assign_block_vars('pendingrow', array(
+		"ROW_COLOR" 			=> "#" . $row_color,
+		"ROW_CLASS" 			=> $row_class,
+				
+		'ROW_NUMBER' 		=> $row[$loop]['bot_id'],
+		'PENDING_NUMBER' 	=> $loop,
+		'PENDING_DATA' 		=> "agent",
 	
-				'BOT_NAME' => $row['bot_name'],
-				'AGENT' => $pending_array[$loop+1],
-				'IP' => "<b><a href=\"http://network-tools.com/default.asp?host=" . $pending_array[$loop] . "\" target=\"_phpbbwhois\">" . $pending_array[$loop] . "</a></b>")
-			);	
-		}
-	}
-
+		'BOT_NAME' 	=> $row[$loop]['bot_name'],
+		'AGENT' 		=> "<b>" . $row[$loop]['bot_agent'] . "</b>",
+		'IP' 				=> "<a href=\"http://network-tools.com/default.asp?host=" . decode_ip($row[$loop]['bot_ip']) . "\" target=\"_phpbbwhois\">" . decode_ip($row[$loop]['bot_ip']) . "</a>")
+	);
 }
-
 
 // if their are no pending bots write a friendly, informative message!
 if ( !$pending_bots )

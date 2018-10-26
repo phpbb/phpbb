@@ -30,7 +30,7 @@ abstract class SocialConnect
 	
 	public static function get_available_networks()
 	{
-		global $board_config, $phpEx;
+		global $board_config, $phpEx, $phpbb_root_path;
 
 		foreach (self::$social_networks as $network_name)
 		{
@@ -38,7 +38,7 @@ abstract class SocialConnect
 			{
 				if (in_array($network_name, self::$social_networks) && !empty($board_config['enable_' . $network_name . '_login']))
 				{
-					include(PHPBB_ROOT_PATH . 'includes/social_connect/class_' . $network_name . '_connect.' . $phpEx);
+					include($phpbb_root_path . 'includes/auth/class_' . $network_name . '_connect.' . $phpEx);
 					$class_name = strtoupper(substr($network_name, 0, 1)) . substr($network_name, 1) . 'Connect';
 					$network = new $class_name($network_name);
 					self::$available_networks[$network_name] = $network;

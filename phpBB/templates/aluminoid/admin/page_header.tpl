@@ -1,17 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html dir="{S_CONTENT_DIRECTION}">
 <head>
 {META}
 <meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}"  />
-<!-- link rel="stylesheet" href="../templates/aluminoid/{T_HEAD_STYLESHEET}" type="text/css" -->
+<!-- First load standard template *.css definition, located in the the phpbb template folder -->
+<link rel="stylesheet" href="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}{T_HEAD_STYLESHEET}" type="text/css" >
+
+<!-- link rel="stylesheet" href="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}{T_HEAD_STYLESHEET}" type="text/css" -->
 <style type="text/css">
 <!--
 
 /*
-  Aluminoid theme created by DewChugr at yahoo.com
-  http://dewchugr.home.insightbb.com
-
-  The original subsilver Theme for phpBB version 2+
+  The original subSilver Theme for phpBB version 2+
   Created by subBlue design
   http://www.subBlue.com
 
@@ -62,7 +62,7 @@ td.row3	{ background-color: {T_TR_COLOR3}; }
 */
 td.rowpic {
 		background-color: {T_TD_COLOR2};
-		background-image: url(../templates/aluminoid/images/{T_TH_CLASS3});
+		background-image: url({U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}images/{T_TH_CLASS3});
 		background-repeat: repeat-y;
 }
 
@@ -70,11 +70,11 @@ td.rowpic {
 th	{
 	color: {T_FONTCOLOR3}; font-size: {T_FONTSIZE2}px; font-weight : bold; 
 	background-color: {T_BODY_LINK}; height: 25px;
-	background-image: url(../templates/aluminoid/images/{T_TH_CLASS2});
+	background-image: url({U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}images/{T_TH_CLASS2});
 }
 
 td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
-			background-image: url(../templates/aluminoid/images/{T_TH_CLASS1});
+			background-image: url({U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}images/{T_TH_CLASS1});
 			background-color:{T_TR_COLOR3}; border: {T_TH_COLOR3}; border-style: solid; height: 28px;
 }
 
@@ -219,10 +219,25 @@ input.liteoption {
 
 
 /* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
-@import url("../templates/aluminoid/formIE.css"); 
+@import url("{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}formIE.css"); 
 -->
 </style>
 <title>{SITENAME} - {L_PHPBB_ADMIN}</title>
+
+<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_FONT_IONIC_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" />
+
+
+<link rel="stylesheet" href="{U_PORTAL_ROOT_PATH}{TEMPLATE_ROOT_PATH}admin/admin.css" type="text/css" >
+<!-- Optionally, redefine some defintions for gecko browsers -->
+<!-- IF GECKO -->
+<!-- Optionally, redefine some defintions for gecko browsers -->
+<link rel="stylesheet" href="{U_PORTAL_ROOT_PATH}{TEMPLATE_ROOT_PATH}{T_GECKO_STYLESHEET}" type="text/css" >
+<!-- ENDIF -->
+{$STYLESHEETS}
+
 </head>
 <body bgcolor="{T_BODY_BGCOLOR}" text="{T_BODY_TEXT}" link="{T_BODY_LINK}" vlink="{T_BODY_VLINK}">
 

@@ -21,6 +21,7 @@ body, div, p, th, td, li, dd {
 	font-size: small
 }
 
+
 html>body, html>div, html>p, html>th, html>td, html>li, html>dd {
 	font-size: small
 }
@@ -163,14 +164,16 @@ a:active {
 }
 
 #content {
-	padding: 30px 10px 10px;
+	padding: 10px 10px;
 	position: relative;
 }
 
 #content h1 {
-	color: #115098;
+	/*color: #115098;*/
+	color: #536482;
 	line-height: 1.2em;
-	margin-bottom: 0;
+	border-bottom: 1px solid #536482;
+	margin-bottom: 5px;
 }
 
 #main {
@@ -259,12 +262,12 @@ a:active {
 	color: #BC2A4D;
 }
 
-#tabs #activetab a {
+#tabs #activetab a, #tabs .activetab a {
 	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
 }
 
-#tabs #activetab a span {
+#tabs #activetab a span, #tabs .activetab a span {
 	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
@@ -278,18 +281,109 @@ a:active {
 	background-position: 100% -69px;
 }
 
-#tabs #activetab a:hover span {
+#tabs #activetab a:hover span, #tabs .activetab a:hover span {
 	color: #115098;
 }
 
+/* CP tabbed menu for tables
+----------------------------------------*/
+.tabs {
+	margin: 20px 0 0 7px;
+}
+
+.tabs .tab > a {
+	border: 1px solid transparent;
+	border-radius: 4px 4px 0 0;
+	margin: 1px 1px 0 0;
+}
+
+.tabs .activetab > a {
+	margin-top: 0;
+	padding-bottom: 7px;
+}
+
+
+/* Mini tabbed menu used in MCP
+----------------------------------------*/
+.minitabs {
+	float: right;
+	margin: 15px 7px 0 0;
+	max-width: 50%;
+}
+
+.minitabs .tab {
+	float: right;
+}
+
+.minitabs .tab > a {
+	border-radius: 5px 5px 0 0;
+	margin-left: 2px;
+}
+
+.minitabs .tab > a:hover {
+	text-decoration: none;
+}
+
+/* Responsive tabs
+----------------------------------------*/
+.responsive-tab {
+	position: relative;
+}
+
+.responsive-tab > a.responsive-tab-link {
+	display: block;
+	font-size: 1.6em;
+	position: relative;
+	width: 16px;
+	line-height: 0.9em;
+	text-decoration: none;
+}
+
+.responsive-tab .responsive-tab-link:before {
+	content: '';
+	position: absolute;
+	left: 10px;
+	top: 7px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid transparent;
+	border-top: 0.375em double transparent;
+}
+
+.tabs .dropdown, .minitabs .dropdown {
+	top: 20px;
+	margin-right: -2px;
+	font-size: 1.1em;
+	font-weight: normal;
+}
+
+.minitabs .dropdown {
+	margin-right: -4px;
+}
+
+.tabs .dropdown-up .dropdown, .minitabs .dropdown-up .dropdown {
+	bottom: 20px;
+	top: auto;
+}
+
+.tabs .dropdown li {
+	text-align: right;
+}
+
+.minitabs .dropdown li {
+	text-align: left;
+}
 
 /* Main Panel
 ---------------------------------------- */
-#acp {
+#acp, .acp {
 	margin: 4px 0;
 	padding: 3px 1px;
 	background-color: #FFFFFF;
 	border: 1px #999999 solid;
+}
+#acp .acp .content {
+	padding: 0px 5px;
 }
 
 .panel {
@@ -404,7 +498,7 @@ span.corners-bottom span {
 	padding: 3px 8px 3px 3px;
 }
 
-#menu li a:hover, #menu li a:hover span {
+#menu li a:hover, #menu li a:hover span, #menu li a:active, #menu li a:active span {
 	text-decoration: none;
 	background-color: #FFFFFF;
 	
@@ -629,7 +723,7 @@ fieldset {
 }
 
 fieldset p {
-	font-size: 0.85em;
+	/*font-size: 0.85em;*/
 }
 
 legend {
@@ -698,7 +792,7 @@ input.langvalue, textarea.langvalue {
 
 optgroup, select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 0.85em;
+	font-size: 0.95em;
 	font-weight: normal;
 	font-style: normal;
 	cursor: pointer;
@@ -1589,3 +1683,54 @@ fieldset.permissions .permissions-switch {
 	margin: 0;
 	padding: 0;
 }
+
+	.buttons {
+		float:right;
+	}
+	
+	.buttons img {
+		cursor: pointer;
+	}
+	
+	#acp .acp .content {
+		padding: 0px 5px;
+	}
+	.blockColapse {
+		padding: 0px 10px 5px 0px;
+		margin-top: 5px;
+		border-bottom: 1px solid #999999;
+	}
+	
+	.blockColapse .colapse {
+		width: 16px;
+		float:left;
+		cursor:pointer;
+	}
+	
+	.blockColapse:last-child {
+		border-bottom-width: 0px; 
+	}
+	
+	.blockColapse .parName {
+		display: inline-block;
+		width: 30%;
+		float:left;
+	}
+	.blockColapse .parType {
+		font-style: italic;
+	}
+	
+	.blockColapse .header {
+	}
+	
+	.blockColapse .header .title {
+		cursor: pointer;
+	}
+	
+	.settings legend {
+		padding-left: 20px;
+		background: transparent url("/templates/prosilver/images/admin_icons/contract.gif") no-repeat 0 0;
+		cursor: pointer;
+	}
+
+	

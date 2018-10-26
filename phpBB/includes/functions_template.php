@@ -109,7 +109,7 @@ class template_compile
 	*/
 	function compile($code, $no_echo = false, $echo_var = '')
 	{
-		global $config;
+		global $board_config;
 
 		if ($echo_var)
 		{
@@ -229,11 +229,11 @@ class template_compile
 				break;
 
 				case 'INCLUDEPHP':
-					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
+					$compile_blocks[] = ($board_config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
 				break;
 
 				case 'PHP':
-					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
+					$compile_blocks[] = ($board_config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
 				break;
 
 				default:

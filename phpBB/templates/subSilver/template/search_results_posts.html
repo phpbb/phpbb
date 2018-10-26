@@ -13,12 +13,12 @@
 
 <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline" align="center">
   <tr> 
-	<th width="150" height="25" class="thCornerL" nowrap="wrap">{L_AUTHOR}</th>
-	<th width="100%" class="thCornerR" nowrap="wrap">{L_MESSAGE}</th>
+	<th width="150" height="25" class="thCornerL" aria-hidden="true">{L_AUTHOR}</th>
+	<th width="100%" class="thCornerR" aria-hidden="true">{L_MESSAGE}</th>
   </tr>
   <!-- BEGIN searchresults -->
   <tr> 
-	<td class="catHead" colspan="2" height="28"><span class="topictitle"><img src="templates/aluminoid/images/folder.gif" align="absmiddle">&nbsp; {L_TOPIC}:&nbsp;<a href="{searchresults.U_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span></td>
+	<td class="catHead" colspan="2" height="28"><span class="topictitle"><img src="{U_PHPBB_ROOT_PATH}{TEMPLATE_ROOT_PATH}theme/images/folder.gif" align="absmiddle">&nbsp; {L_TOPIC}:&nbsp;<a href="{searchresults.U_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span></td>
   </tr>
   <tr> 
 	<td width="150" align="left" valign="top" class="row1" rowspan="2"><span class="name"><b>{searchresults.POSTER_NAME}</b></span><br />
@@ -40,7 +40,7 @@
 <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
   <tr> 
 	<td align="left" valign="top"><span class="nav">{PAGE_NUMBER}</span></td>
-	<td align="right" valign="top" nowrap="wrap"><span class="nav">{PAGINATION}</span><br /><span class="gensmall">{S_TIMEZONE}</span></td>
+	<td align="right" valign="top" aria-hidden="true"><span class="nav">{PAGINATION}</span><br /><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
 

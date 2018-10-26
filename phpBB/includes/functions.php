@@ -509,7 +509,7 @@ function set_config($config_name, $config_value)
 			'config_value'	=> $config_value));
 		$db->sql_query($sql);
 	}
-	$config[$config_name] = $config_value;
+	$board_config[$config_name] = $config_value;
 }
 
 function get_db_stat($mode)
@@ -772,11 +772,11 @@ function get_userdata($user, $force_str = false)
  */
 function obtain_phpbb_config($use_cache = true)
 {
-	global $db, $cache, $phpEx;
+	global $db, $board_config, $cache, $phpEx;
 
-	if (($config = $cache->get('phpbb_config')) && ($use_cache) )
+	if (($board_config = $cache->get('phpbb_config')) && ($use_cache) )
 	{
-		return $config;
+		return $board_config;
 	}
 	else
 	{		
@@ -804,15 +804,15 @@ function obtain_phpbb_config($use_cache = true)
 
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$config[$row['config_name']] = $row['config_value'];
+			$board_config[$row['config_name']] = $row['config_value'];
 		}
 		$db->sql_freeresult($result);
 
 		if ($use_cache)
 		{
-			$cache->put('phpbb_config', $config);
+			$cache->put('phpbb_config', $board_config);
 		}
-		return $config;
+		return $board_config;
 	}
 }
 
@@ -871,7 +871,7 @@ function get_phpbb_version()
 }
 
 /**
- * {@inheritdoc}
+ * Enter description here...
  */
 function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link = false)
 {
@@ -961,7 +961,7 @@ function mx_chmod($files, $perms = null, $recursive = false, $force_chmod_link =
 	}	
 }
 /**
- * {@inheritdoc}
+ * Enter description here...
  */
 function mx_chown($files, $user, $recursive = false)
 {
@@ -981,7 +981,7 @@ function mx_chown($files, $user, $recursive = false)
 }
 
 /**
- * {@inheritdoc}
+ * Enter description here...
  */
 function mx_chgrp($files, $group, $recursive = false)
 {
@@ -3245,6 +3245,18 @@ function check_link_hash($token, $link_name)
 }
 
 /**
+* Hashes an email address to a big integer
+*
+* @param string $email		Email address
+*
+* @return string			Unsigned Big Integer
+*/
+function phpbb_email_hash($email)
+{
+	return sprintf('%u', crc32(strtolower($email))) . strlen($email);
+}
+
+/**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
 * @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
 * @param string  $template_variable_suffix A string that is appended to the name of the template variable to which the form elements are assigned
@@ -3276,12 +3288,12 @@ function add_form_key($form_name, $template_variable_suffix = '')
  */
 function check_form_key($form_name, $timespan = false)
 {
-	global $config, $request, $user;
+	global $board_config, $request, $user;
 
 	if ($timespan === false)
 	{
 		// we enforce a minimum value of half a minute here.
-		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
+		$timespan = ($board_config['form_token_lifetime'] == -1) ? -1 : max(30, $board_config['form_token_lifetime']);
 	}
 
 	if ($request->is_set_post('creation_time') && $request->is_set_post('form_token'))
@@ -3294,7 +3306,7 @@ function check_form_key($form_name, $timespan = false)
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
 		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
 		{
-			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
+			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($board_config['form_token_sid_guests'])) ? $user->session_id : '';
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
 
 			if ($key === $token)
@@ -3670,7 +3682,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook, $config;
+	global $phpbb_hook, $board_config;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
@@ -3682,17 +3694,17 @@ function exit_handler()
 
 	// URL Rewrite - BEGIN
 	// Compress buffered output if required and send to browser
-	if (!empty($config['url_rw_runtime']))
+	if (!empty($board_config['url_rw_runtime']))
 	{
 		$contents = rewrite_urls(ob_get_contents());
 		ob_end_clean();
-		(@extension_loaded('zlib') && !empty($config['gzip_compress_runtime'])) ? ob_start('ob_gzhandler') : ob_start();
+		(@extension_loaded('zlib') && !empty($board_config['gzip_compress_runtime'])) ? ob_start('ob_gzhandler') : ob_start();
 		echo $contents;
 	}
 	// URL Rewrite - END
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	(empty($config['gzip_compress_runtime']) && empty($config['url_rw_runtime'])) ? @flush() : @ob_flush();
+	(empty($board_config['gzip_compress_runtime']) && empty($board_config['url_rw_runtime'])) ? @flush() : @ob_flush();
 
 	exit;
 }
@@ -3704,7 +3716,7 @@ function full_page_generation($page_template, $page_title = '', $page_descriptio
 {
 	global $template, $meta_content, $phpbb_root_path, $phpEx;
 
-	global $db, $cache, $config, $user, $images, $theme, $lang, $tree;
+	global $db, $cache, $board_config, $user, $images, $theme, $lang, $tree;
 	global $table_prefix, $SID, $_SID;
 	global $starttime, $base_memory_usage, $do_gzip_compress, $start;
 	global $gen_simple_header, $meta_content, $nav_separator, $nav_links, $nav_pgm, $nav_add_page_title, $skip_nav_cat;
@@ -4119,7 +4131,7 @@ function phpbb_user_session_handler()
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $config, $lang;
+	global $board_config, $lang;
 	global $msg_code, $msg_title, $msg_long_text;
 
 	// Do not display notices if we suppress them via @
@@ -4165,8 +4177,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 
 				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
-				$config['gzip_compress_runtime'] = (isset($config['gzip_compress_runtime']) ? $config['gzip_compress_runtime'] : $config['gzip_compress']);
-				if (!empty($config['gzip_compress_runtime']))
+				$board_config['gzip_compress_runtime'] = (isset($board_config['gzip_compress_runtime']) ? $board_config['gzip_compress_runtime'] : $board_config['gzip_compress']);
+				if (!empty($board_config['gzip_compress_runtime']))
 				{
 					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
 					{
@@ -4711,7 +4723,7 @@ function redirect($url)
 */
 function phpbb_redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $lang, $_SERVER;
+	global $db, $cache, $board_config, $user, $lang, $_SERVER;
 
 	$failover_flag = false;
 

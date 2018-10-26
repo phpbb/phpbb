@@ -1,48 +1,63 @@
 <!-- INCLUDE overall_header.html -->
 
-<h2 class="faq-title">{L_FAQ_TITLE}</h2>
+<a name="faqtop"></a>
 
+<div id="pagecontent">
 
-<div class="panel bg1" id="faqlinks">
-	<div class="inner">
-		<div class="column1">
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{L_FAQ_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1">
 		<!-- BEGIN faq_block -->
-			<!-- IF faq_block.SWITCH_COLUMN or (SWITCH_COLUMN_MANUALLY and faq_block.S_ROW_COUNT == 4) -->
-				</div>
-
-				<div class="column2">
-			<!-- ENDIF -->
-
-			<dl class="faq">
-				<dt><strong>{faq_block.BLOCK_TITLE}</strong></dt>
-				<!-- BEGIN faq_row -->
-					<dd><a href="#f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}">{faq_block.faq_row.FAQ_QUESTION}</a></dd>
-				<!-- END faq_row -->
-			</dl>
+			<span class="gen"><b>{faq_block.BLOCK_TITLE}</b></span><br />
+			<!-- BEGIN faq_row -->
+				<span class="gen"><a href="#f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}">{faq_block.faq_row.FAQ_QUESTION}</a></span><br />
+			<!-- END faq_row -->
+			<br />
 		<!-- END faq_block -->
-		</div>
-	</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="cat">&nbsp;</td>
+	</tr>
+	</table>
+
+	<br clear="all" />
+
+	<!-- BEGIN faq_block -->
+		<table class="tablebg" width="100%" cellspacing="1">
+		<tr> 
+			<td class="cat" align="center"><h4>{faq_block.BLOCK_TITLE}</h4></td>
+		</tr>
+		<!-- BEGIN faq_row --> 
+		<tr>
+			<!-- IF faq_block.faq_row.S_ROW_COUNT is even -->
+				<td class="row1" valign="top">
+			<!-- ELSE -->
+				<td class="row2" valign="top">
+			<!-- ENDIF -->
+				<div class="postbody"><a name="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"></a><b>&#187; {faq_block.faq_row.FAQ_QUESTION}</b></div>
+				<div class="postbody">{faq_block.faq_row.FAQ_ANSWER}</div>
+				<p class="gensmall"><a href="#faqtop">{L_BACK_TO_TOP}</a></p>
+			</td>
+		</tr>
+		<tr>
+			<td class="spacer" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+		</tr>
+		<!-- END faq_row -->
+		</table>
+
+		<br clear="all" />
+	<!-- END faq_block -->
+
 </div>
 
-<!-- BEGIN faq_block -->
-	<div class="panel <!-- IF faq_block.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-		<div class="inner">
+<!-- INCLUDE breadcrumbs.html -->
 
-		<div class="content">
-			<h2 class="faq-title">{faq_block.BLOCK_TITLE}</h2>
-			<!-- BEGIN faq_row -->
-				<dl class="faq">
-					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
-					<dd>{faq_block.faq_row.FAQ_ANSWER}</dd>
-					<dd><a href="#faqlinks" class="top2">{L_BACK_TO_TOP}</a></dd>
-				</dl>
-				<!-- IF not faq_block.faq_row.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
-			<!-- END faq_row -->
-		</div>
+<br clear="all" />
 
-		</div>
-	</div>
-<!-- END faq_block -->
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
 
-<!-- INCLUDE jumpbox.html -->
 <!-- INCLUDE overall_footer.html -->

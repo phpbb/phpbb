@@ -1,12 +1,24 @@
-<!DOCTYPE html>
-<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
 <head>
-<meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-{META}
+{SEO_BASE_HREF}
+<!-- IF SEO_CANONICAL_URL --><link rel="canonical" href="{SEO_CANONICAL_URL}" /><!-- ENDIF -->
+<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
 <title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
-
+<meta http-equiv="content-language" content="{S_USER_LANG}" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<meta name="resource-type" content="document" />
+<meta name="distribution" content="global" />
+<meta name="copyright" content="2000, 2002, 2005, 2007 phpBB Group" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+{META_TAG}
+{META}
+<!-- BEGIN gym_rsslinks -->
+<link rel="alternate" type="application/rss+xml" title="{gym_rsslinks.TITLE}" href="{gym_rsslinks.URL}" />
+<!-- END gym_rsslinks -->
 <!-- IF S_ENABLE_FEEDS -->
 	<!-- IF S_ENABLE_FEEDS_OVERALL --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {SITENAME}" href="{{ path('phpbb_feed_index') }}"><!-- ENDIF -->
 	<!-- IF S_ENABLE_FEEDS_NEWS --><link rel="alternate" type="application/atom+xml" title="{L_FEED} - {L_FEED_NEWS}" href="{{ path('phpbb_feed_news') }}"><!-- ENDIF -->
@@ -19,15 +31,14 @@
 <!-- ENDIF -->
 
 <!-- IF U_CANONICAL -->
-	<link rel="canonical" href="{U_CANONICAL}">
+	<link rel="canonical" href="{U_CANONICAL}" />
 <!-- ENDIF -->
 
 <!--
-	phpBB style name: Allan Style - SUBSILVER
+	phpBB style name: subsilver2 or subSilver
 	Based on style:   prosilver (this is the default phpBB3 style)
 	Based on style:   subsilver2 (this is the default phpBB3 style)
 	Original author:  Tom Beddard ( http://www.subBlue.com/ )
-	Modified by:  Allan ( http://x-tk.ru/ )
 -->
 
 <!-- IF S_ALLOW_CDN -->
@@ -40,26 +51,28 @@
 
 	(function(d) {
 		var wf = d.createElement('script'), s = d.scripts[0];
-		wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+		wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js';
 		wf.async = true;
 		s.parentNode.insertBefore(wf, s);
 	})(document);
 </script>
 <!-- ENDIF -->
-<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet">
-<link href="{T_STYLESHEET_LINK}" rel="stylesheet">
-<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet">
+
+<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_FONT_IONIC_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" />
+<link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" />
 
 <!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
+	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" />
 <!-- ENDIF -->
 
 <!-- IF S_PLUPLOAD -->
-	<link href="{T_THEME_PATH}/plupload.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
+	<link href="{T_THEME_PATH}/plupload.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" />
 <!-- ENDIF -->
 
 <!-- IF S_COOKIE_NOTICE -->
-	<link href="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
+	<link href="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" />
 <!-- ENDIF -->
 
 <!--[if lte IE 9]>
@@ -72,283 +85,734 @@
 
 <!-- EVENT overall_header_stylesheets_after -->
 
+<script type="text/javascript">
+// <![CDATA[
+<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
+	popup('{UA_POPUP_PM}', 400, 225, '_phpbbprivmsg');
+<!-- ENDIF -->
+
+function popup(url, width, height, name)
+{
+	if (!name)
+	{
+		name = '_popup';
+	}
+
+	window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes,width=' + width);
+	return false;
+}
+
+// www.phpBB-SEO.com SEO TOOLKIT BEGIN
+function jumpto() {
+	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
+	var perpage = '{PER_PAGE}';
+	var base_url = '{A_BASE_URL}';
+	var seo_delim_start = '{SEO_START_DELIM}';
+	var seo_static_pagination = '{SEO_SATIC_PAGE}';
+	var seo_ext_pagination = '{SEO_EXT_PAGE}';
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
+		var seo_page = (page - 1) * perpage;
+		var anchor = '';
+		var anchor_parts = base_url.split('#');
+		if ( anchor_parts[1] ) {
+			base_url = anchor_parts[0];
+			anchor = '#' + anchor_parts[1];
+		}
+		if ( seo_page > 0 ) {
+			var phpEXtest = false;
+			if ( base_url.indexOf('?') >= 0 || ( phpEXtest = base_url.match(/\.php$/i))) {
+				document.location.href = base_url.replace(/&amp;/g, '&') + (phpEXtest ? '?' : '&') + 'start=' + seo_page + anchor;
+			} else {
+				var ext = base_url.match(/\.[a-z0-9]+$/i);
+				if (ext) {
+					// location.ext => location-xx.ext
+					document.location.href = base_url.replace(/\.[a-z0-9]+$/i, '') + seo_delim_start + seo_page + ext + anchor;
+				} else {
+					// location and location/ to location/pagexx.html
+					var slash = base_url.match(/\/$/) ? '' : '/';
+					document.location.href = base_url + slash + seo_static_pagination + seo_page + seo_ext_pagination + anchor;
+				}
+			}
+		} else {
+			document.location.href = base_url + anchor;
+		}
+	}
+}
+var seo_external = {SEO_EXTERNAL};
+var seo_external_sub = {SEO_EXTERNAL_SUB};
+var seo_ext_classes = {SEO_EXT_CLASSES};
+var seo_hashfix = {SEO_HASHFIX};
+/**
+*  phpbb_seo_href()
+*  Fixes href="#something" links with virtual directories
+*  Optionally open external or marked with a css class links in a new window
+*  in a XHTML 1.x compliant way.
+*/
+function phpbb_seo_href() {
+	var current_domain = document.domain.toLowerCase();
+	if (!current_domain || !document.getElementsByTagName) return;
+	if (seo_external_sub && current_domain.indexOf('.') >= 0) {
+		current_domain = current_domain.replace(new RegExp(/^[a-z0-9_-]+\.([a-z0-9_-]+\.([a-z]{2,6}|[a-z]{2,3}\.[a-z]{2,3}))$/i), '$1');
+	}
+	if (seo_ext_classes) {
+		var extclass = new RegExp("(^|\s)(" + seo_ext_classes + ")(\s|$)");
+	}
+	if (seo_hashfix) {
+		var basehref = document.getElementsByTagName('base')[0];
+		if (basehref) {
+			basehref = basehref.href;
+			var hashtest = new RegExp("^(" + basehref + "|)#[a-z0-9_-]+$");
+			var current_href = document.location.href.replace(/#[a-z0-9_-]+$/i, "");
+		} else {
+			seo_hashfix = false;
+		}
+	}
+	var hrefels = document.getElementsByTagName("a");
+	var hrefelslen = hrefels.length;
+	for (var i = 0; i < hrefelslen; i++) {
+		var el = hrefels[i];
+		var hrefinner = el.innerHTML.toLowerCase();
+		if (el.onclick || (el.href == '') || (el.href.indexOf('javascript') >=0 ) || (el.href.indexOf('mailto') >=0 ) || (hrefinner.indexOf('<a') >= 0) ) {
+			continue;
+		}
+		if (seo_hashfix && el.hash && hashtest.test(el.href)) {
+			el.href = current_href + el.hash;
+		}
+		if (seo_external) {
+			if ((el.href.indexOf(current_domain) >= 0) && !(seo_ext_classes && extclass.test(el.className))) {
+				continue;
+			}
+			el.onclick = function () { window.open(this.href); return false; };
+		}
+	}
+}
+window.onload = function() {
+	if (seo_external || seo_hashfix) {
+		phpbb_seo_href();
+	}
+	// here you can add other window.onload events
+}
+// www.phpBB-SEO.com SEO TOOLKIT END
+
+/**
+* Find a member
+*/
+function find_username(url)
+{
+	popup(url, 760, 570, '_usersearch');
+	return false;
+}
+
+/**
+* Mark/unmark checklist
+* id = ID of parent container, name = name prefix, state = state [true/false]
+*/
+function marklist(id, name, state)
+{
+	var parent = document.getElementById(id);
+	if (!parent)
+	{
+		eval('parent = document.' + id);
+	}
+
+	if (!parent)
+	{
+		return;
+	}
+
+	var rb = parent.getElementsByTagName('input');
+	
+	for (var r = 0; r < rb.length; r++)
+	{
+		if (rb[r].name.substr(0, name.length) == name)
+		{
+			rb[r].checked = state;
+		}
+	}
+}
+
+<!-- IF ._file -->
+
+	/**
+	* Play quicktime file by determining it's width/height
+	* from the displayed rectangle area
+	*
+	* Only defined if there is a file block present.
+	*/
+	function play_qt_file(obj)
+	{
+		var rectangle = obj.GetRectangle();
+
+		if (rectangle)
+		{
+			rectangle = rectangle.split(',')
+			var x1 = parseInt(rectangle[0]);
+			var x2 = parseInt(rectangle[2]);
+			var y1 = parseInt(rectangle[1]);
+			var y2 = parseInt(rectangle[3]);
+
+			var width = (x1 < 0) ? (x1 * -1) + x2 : x2 - x1;
+			var height = (y1 < 0) ? (y1 * -1) + y2 : y2 - y1;
+		}
+		else
+		{
+			var width = 200;
+			var height = 0;
+		}
+
+		obj.width = width;
+		obj.height = height + 16;
+
+		obj.SetControllerVisible(true);
+
+		obj.Play();
+	}
+<!-- ENDIF -->
+
+// ]]>
+</script>
+
+<!-- EVENT overall_header_head_append -->
+
+{$STYLESHEETS}
+
+<!-- EVENT overall_header_stylesheets_after -->
+
 </head>
-<body id="phpbb" class="nojs notouch section-{SCRIPT_NAME} {S_CONTENT_DIRECTION} {BODY_CLASS}">
-
-<div id="header-subsilver">
-	<a id="top" class="top-anchor" accesskey="t"></a>
-		<div class="headerbar" role="banner">
-		<!-- EVENT overall_header_headerbar_before -->
-			<div class="inner">
-
-			<div id="site-description" class="site-description">
-				<a id="logo" class="logo" href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" title="<!-- IF U_SITE_HOME -->{L_SITE_HOME}<!-- ELSE -->{L_INDEX}<!-- ENDIF -->"><span class="site_logo"></span></a>
-				<h1>{SITENAME}</h1>
-				<p>{SITE_DESCRIPTION}</p>
-				<p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
-			</div>
-
-			<!-- EVENT overall_header_searchbox_before -->
-			<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
-			<div id="search-box" class="search-box search-header" role="search">
-				<form action="{U_SEARCH}" method="get" id="search">
-				<fieldset>
-					<input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny" size="20" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
-					<button class="button button-search" type="submit" title="{L_SEARCH}">
-						<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
-					</button>
-					<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-						<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
-					</a>
-					{S_SEARCH_HIDDEN_FIELDS}
-				</fieldset>
-				</form>
-			</div>
-			<!-- ENDIF -->
-			<!-- EVENT overall_header_searchbox_after -->
-
-			</div>
-			<!-- EVENT overall_header_headerbar_after -->
-		</div>
-</div>
 
 <!-- EVENT overall_header_body_before -->
+<body id="phpbb" bgcolor="#7EB5E8" text="#000000" link="#072978" vlink="#072978" class="nojs notouch section-{SCRIPT_NAME} {S_CONTENT_DIRECTION} {BODY_CLASS}">
 
-<div id="wrap" class="wrap">
-	<div id="page-header">
-		<!-- EVENT overall_header_navbar_before -->
+<a name="top" class="anchor"></a>
+
+<div id="wrapheader">
+	
+<table width="100%" cellspacing="0" cellpadding="1" border="0" align="center" class="table1 main_table">
+	
+	<!-- EVENT overall_header_headerbar_before -->	
+	<thead>	
+	<tr class="bg1">		
+		<td class="bodyline"><a id="logo" class="imageset site_logo responsive-hide" href="{U_INDEX}"><!-- {SITE_LOGO_IMG}--></a>
+			
+			<div id="logodesc">
+				
+				<table width="100%" align="center" cellspacing="0" cellpadding="5" border="0" class="table1 main_table">
+					<tbody>
+					<tr class="bg1">
+						
+						<td class="table1 responsive-hide" align="left" valign="top"><a href="<!-- IF U_SITE_HOME -->{U_SITE_HOME}<!-- ELSE -->{U_INDEX}<!-- ENDIF -->" class="imageset" >{SITE_LOGO_IMG}</a></td>
+						<td class="table1 responsive-hide" align="center" valign="middle" width="15%">
+							<span class="responsive-hide">&nbsp;&nbsp;</span>
+						</td>
+						
+						<td class="table1 responsive-hide" align="right" valign="middle" width="15%">
+							<span class="pagetitle">&nbsp;&nbsp;{PAGE_TITLE}</span>
+						</td>						
+						
+						<td class="table1" style="text-align:center;" valign="middle" width="60%">
+							<h1>{SITENAME}&nbsp;&nbsp;&nbsp;&nbsp;</h1>
+							<span class="gen">{SITE_DESCRIPTION}&nbsp;&nbsp;&nbsp;&nbsp;</span>						
+						</td>						
+						
+						<td class="table1 responsive-hide" align="center" valign="middle" width="5%">&nbsp;</td>					
+					
+					</tr>
+					</tbody>
+				</table>
+			
+			</div>			
+			
+			
+			<!-- EVENT overall_header_searchbox_before -->
+			<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
+			<div id="search-box" class="search-box search-header right" role="search">
+					
+					<table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="table1 main_table">
+					<tbody>						
+						<tr class="bg1">
+							
+							<td class="table1 responsive-hide" style="text-align:center;"></td>
+							
+							<td class="table1 responsive-hide" valign="top" align="left" width="5" height="5" >&nbsp;</td>
+							
+							<td class="table1" valign="top" align="right" width="100%" height="5" >
+				
+							<form action="{U_SEARCH}" method="get" id="search">
+							<fieldset>
+								<input name="search_keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny rightside responsive-search" value="{L_SEARCH}..." onclick="if(this.value=='{L_SEARCH}...')this.value='';" onblur="if(this.value=='')this.value='{L_SEARCH}...';" placeholder="{L_SEARCH_MINI}" /> 
+								<button class="button button-search" type="submit" title="{L_SEARCH}">
+									<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+								</button>								
+								<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+									<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+								</a>
+								{S_SEARCH_HIDDEN_FIELDS}
+							</fieldset>
+							</form>
+							
+							</td>
+							
+							<td class="table1 responsive-hide" valign="top" align="left" width="5" height="5" >
+								<span class="responsive-hide">&nbsp;&nbsp;</span>
+							</td>
+							
+							<td class="table1 responsive-hide" align="center" valign="middle" width="5%">&nbsp;</td>						
+						
+						</tr>
+					</tbody>					
+					</table>
+			</div>
+			<!-- ENDIF -->
+			<!-- EVENT overall_header_searchbox_after -->	
 		
+		
+		</td>
+	</tr>
+	</thead>	
+		
+	<!-- EVENT overall_header_navbar_before -->		
+	<tbody>
+	<div id="page-header" role="navigation">
+
+	<tr id="nav-main" class="nav-main linklist bg2" role="menubar">
+				
+		<td class="genmed" style="width: 5%; text-align: center;">	
+							
+		<!-- EVENT overall_header_navigation_prepend -->				
+		<table id="nav-main" class="table1 nav-main linklist" cellspacing="6" cellpadding="2" border="0" role="menubar">
 		<div class="navbar-top" role="navigation">
-			<div class="inner">
-
-			<ul id="nav-main" class="nav-main linklist" role="menubar">
-
-				<li id="quick-links" class="quick-links dropdown-container responsive-menu<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true">
-					<a href="#" class="dropdown-trigger">
-						<i class="icon fa-bars fa-fw" aria-hidden="true"></i><span>{L_QUICK_LINKS}</span>
-					</a>
-					<div class="dropdown">
-						<div class="pointer"><div class="pointer-inner"></div></div>
-						<ul class="dropdown-contents" role="menu">
-							<!-- EVENT navbar_header_quick_links_before -->
-
-							<!-- IF S_DISPLAY_SEARCH -->
-								<li class="separator"></li>
-								<!-- IF S_REGISTERED_USER -->
-									<li>
-										<a href="{U_SEARCH_SELF}" role="menuitem">
-											<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_SELF}</span>
-										</a>
-									</li>
-								<!-- ENDIF -->
-								<!-- IF S_USER_LOGGED_IN -->
-									<li>
-										<a href="{U_SEARCH_NEW}" role="menuitem">
-											<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_NEW}</span>
-										</a>
-									</li>
-								<!-- ENDIF -->
-								<!-- IF S_LOAD_UNREADS -->
-									<li>
-										<a href="{U_SEARCH_UNREAD}" role="menuitem">
-											<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_UNREAD}</span>
-										</a>
-									</li>
-								<!-- ENDIF -->
-									<li>
-										<a href="{U_SEARCH_UNANSWERED}" role="menuitem">
-											<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_UNANSWERED}</span>
-										</a>
-									</li>
-									<li>
-										<a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">
-											<i class="icon fa-file-o fa-fw icon-blue" aria-hidden="true"></i><span>{L_SEARCH_ACTIVE_TOPICS}</span>
-										</a>
-									</li>
-									<li class="separator"></li>
-									<li>
-										<a href="{U_SEARCH}" role="menuitem">
-											<i class="icon fa-search fa-fw" aria-hidden="true"></i><span>{L_SEARCH}</span>
-										</a>
-									</li>
-							<!-- ENDIF -->
-
-							<!-- IF not S_IS_BOT and (S_DISPLAY_MEMBERLIST or U_TEAM) -->
-								<li class="separator"></li>
-								<!-- IF S_DISPLAY_MEMBERLIST -->
-									<li>
-										<a href="{U_MEMBERLIST}" role="menuitem">
-											<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
-										</a>
-									</li>
-								<!-- ENDIF -->
-								<!-- IF U_TEAM -->
-									<li>
-										<a href="{U_TEAM}" role="menuitem">
-											<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
-										</a>
-									</li>
-								<!-- ENDIF -->
-							<!-- ENDIF -->
-							<li class="separator"></li>
-
-							<!-- EVENT navbar_header_quick_links_after -->
-						</ul>
-					</div>
-				</li>
-
-				<!-- EVENT overall_header_navigation_prepend -->
-				<li <!-- IF not S_USER_LOGGED_IN -->data-skip-responsive="true"<!-- ELSE -->data-last-responsive="true"<!-- ENDIF -->>
-					<a href="{U_FAQ}" rel="help" title="{L_FAQ_EXPLAIN}" role="menuitem">
-						<i class="icon fa-question-circle fa-fw" aria-hidden="true"></i><span>{L_FAQ}</span>
-					</a>
-				</li>
-				<!-- EVENT overall_header_navigation_append -->
-				<!-- IF U_ACP -->
-					<li data-last-responsive="true">
-						<a href="{U_ACP}" title="{L_ACP}" role="menuitem">
-							<i class="icon fa-cogs fa-fw" aria-hidden="true"></i><span>{L_ACP_SHORT}</span>
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- IF U_MCP -->
-					<li data-last-responsive="true">
-						<a href="{U_MCP}" title="{L_MCP}" role="menuitem">
-							<i class="icon fa-gavel fa-fw" aria-hidden="true"></i><span>{L_MCP_SHORT}</span>
-						</a>
-					</li>
-				<!-- ENDIF -->
-
-			<!-- IF S_REGISTERED_USER -->
-				<!-- EVENT navbar_header_user_profile_prepend -->
-				<li id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
-					<!-- EVENT navbar_header_username_prepend -->
-					<div class="header-profile dropdown-container">
-						<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF --> {CURRENT_USERNAME_SIMPLE}</a>
+		<thead>
+			<div class="inner">						
+					<ul id="nav-main" class="nav-main linklist" role="menubar">						
+					<tr class="bg2"> 
+						<td id="quick-links" class="quick-links dropdown-container responsive-menu<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true" role="menuitem">
+						
+						<span class="mainmenu dropdown-trigger">
+							<a href="#" class="dropdown-trigger">
+								<i class="icon fa-bars fa-fw" aria-hidden="true">
+								<!-- img src="{T_THEME_PATH}/images/icon_mini_forum.gif"  border="0" alt="{L_QUICK_LINKS}" hspace="3" /-->
+								</i>
+							</a>
+						</span>						
+														
 						<div class="dropdown">
 							<div class="pointer"><div class="pointer-inner"></div></div>
 							<ul class="dropdown-contents" role="menu">
-								<!-- IF U_RESTORE_PERMISSIONS -->
-									<li>
-										<a href="{U_RESTORE_PERMISSIONS}">
-											<i class="icon fa-refresh fa-fw" aria-hidden="true"></i><span>{L_RESTORE_PERMISSIONS}</span>
-										</a>
-									</li>
+								<!-- EVENT navbar_header_quick_links_before -->
+
+								<!-- IF S_DISPLAY_SEARCH -->
+									<li class="separator"></li>
+									<!-- IF S_REGISTERED_USER -->
+										<li>
+											<a href="{U_SEARCH_SELF}" role="menuitem">
+												<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_SELF}</span>
+											</a>
+										</li>
+									<!-- ENDIF -->
+									<!-- IF S_USER_LOGGED_IN -->
+										<li>
+											<a href="{U_SEARCH_NEW}" role="menuitem">
+												<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_NEW}</span>
+											</a>
+										</li>
+									<!-- ENDIF -->
+									<!-- IF S_LOAD_UNREADS -->
+										<li>
+											<a href="{U_SEARCH_UNREAD}" role="menuitem">
+												<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_UNREAD}</span>
+											</a>
+										</li>
+									<!-- ENDIF -->
+										<li>
+											<a href="{U_SEARCH_UNANSWERED}" role="menuitem">
+												<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_UNANSWERED}</span>
+											</a>
+										</li>
+										<li>
+											<a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">
+												<i class="icon fa-file-o fa-fw icon-blue" aria-hidden="true"></i><span>{L_SEARCH_ACTIVE_TOPICS}</span>
+											</a>
+										</li>
+										<li class="separator"></li>
+										<li>
+											<a href="{U_SEARCH}" role="menuitem">
+												<i class="icon fa-search fa-fw" aria-hidden="true"></i><span>{L_SEARCH}</span>
+											</a>
+										</li>
 								<!-- ENDIF -->
 
-							<!-- EVENT navbar_header_profile_list_before -->
-
-								<li>
-									<a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">
-										<i class="icon fa-sliders fa-fw" aria-hidden="true"></i><span>{L_PROFILE}</span>
-									</a>
-								</li>
-								<li>
-									<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
-										<i class="icon fa-user fa-fw" aria-hidden="true"></i><span>{L_READ_PROFILE}</span>
-									</a>
-								</li>
-
-								<!-- EVENT navbar_header_profile_list_after -->
-
+								<!-- IF not S_IS_BOT and (S_DISPLAY_MEMBERLIST or U_TEAM) -->
+									<li class="separator"></li>
+									<!-- IF S_DISPLAY_MEMBERLIST -->
+										<li>
+											<a href="{U_MEMBERLIST}" role="menuitem">
+												<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
+											</a>
+										</li>
+									<!-- ENDIF -->
+									<!-- IF U_TEAM -->
+										<li>
+											<a href="{U_TEAM}" role="menuitem">
+												<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
+											</a>
+										</li>
+									<!-- ENDIF -->
+								<!-- ENDIF -->
 								<li class="separator"></li>
-								<li>
-									<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-										<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
-									</a>
-								</li>
+
+								<!-- EVENT navbar_header_quick_links_after -->
 							</ul>
 						</div>
-					</div>
-					<!-- EVENT navbar_header_username_append -->
-				</li>
-				<!-- IF S_DISPLAY_PM -->
-					<li class="rightside" data-skip-responsive="true">
-						<a href="{U_PRIVATEMSGS}" role="menuitem">
-							<i class="icon fa-inbox fa-fw" aria-hidden="true"></i><span>{L_PRIVATE_MESSAGES} </span><strong class="badge<!-- IF not PRIVATE_MESSAGE_COUNT --> hidden<!-- ENDIF -->">{PRIVATE_MESSAGE_COUNT}</strong>
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-					<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
-						<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
-							<i class="icon fa-bell fa-fw" aria-hidden="true"></i><span>{L_NOTIFICATIONS} </span><strong class="badge<!-- IF not NOTIFICATIONS_COUNT --> hidden<!-- ENDIF -->">{NOTIFICATIONS_COUNT}</strong>
-						</a>
-						<!-- INCLUDE notification_dropdown.html -->
-					</li>
-				<!-- ENDIF -->
-				<!-- EVENT navbar_header_user_profile_append -->
-			<!-- ELSE -->
-				<li class="rightside"  data-skip-responsive="true">
-					<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-						<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
-					</a>
-				</li>
-				<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
-					<li class="rightside" data-skip-responsive="true">
-						<a href="{U_REGISTER}" role="menuitem">
-							<i class="icon fa-pencil-square-o  fa-fw" aria-hidden="true"></i><span>{L_REGISTER}</span>
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- EVENT navbar_header_logged_out_content -->
-			<!-- ENDIF -->
-			</ul>
+								
+						</td>
+						
+						<td data-last-responsive="true" class="nav-main linklist table1 responsive-hide" role="menubar" height="15" align="center" valign="top"><span class="mainmenu">
+							<span class="mainmenu">						
+							<a href="{U_INDEX}" title="{L_INDEX}" role="menuitem" class="mainmenu">
+								<i class="icon ion-md-cloud-outline fa-fw" aria-hidden="true"></i>
+							</a>						
+							</span>
+						</td>
+						
+						<td data-last-responsive="true" class="table1" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_FAQ}" title="{L_FAQ}" role="menuitem" class="mainmenu" height="15" align="center" valign="top">
+								<i class="icon ion-md-help-circle-outline fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>
+						</td>
+						
+						<!-- IF U_ACP -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">							
+							<a href="{U_ACP}" title="{L_ACP}" role="menuitem" class="table1" height="15" align="center" valign="top">
+								<i class="icon ion-ios-settings fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>						
+						</td>
+						<!-- ENDIF -->
+						<!-- IF U_MCP -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">							
+							<a href="{U_MCP}" title="{L_MCP}" role="menuitem" class="mainmenu">
+								<i class="icon fa-object-group fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>						
+						</td>
+						<!-- ENDIF -->						
+												
+						<!-- IF S_DISPLAY_SEARCH -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_SEARCH}" title="{L_SEARCH}" role="menuitem" class="mainmenu">				
+								<i class="icon ion-ios-search fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						<!-- IF not S_IS_BOT -->
+						<!-- IF S_DISPLAY_MEMBERLIST -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST}" role="menuitem" class="mainmenu">								<i class="icon ion-ios-list-box fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						<!-- IF S_USER_LOGGED_IN -->
+						<td data-last-responsive="true" class="table1" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem" class="mainmenu">
+								<i class="icon ion-md-man fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						<!-- ENDIF -->						
+						<!-- IF S_DISPLAY_PM -->
+						<td data-last-responsive="true" class="table1" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_PRIVATEMSGS}" title="{L_PRIVATE_MESSAGES}" class="mainmenu" role="menuitem">
+								<i class="icon ion-ios-notifications fa-fw" aria-hidden="true"></i>
+							</a>
+							</span>
+						</td>						
+						<!-- ENDIF -->
+						<!-- IF not S_IS_BOT -->	
+						<!-- IF S_USER_LOGGED_OUT -->						
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="mainmenu" role="menuitem">
+								<i class="icon ion-ios-log-in fa-fw" aria-hidden="true"></i>
+							</a>							
+							</span>
+						</td>
+						<!-- ELSE -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+							<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="mainmenu" role="menuitem">
+								<i class="icon ion-ios-log-out fa-fw" aria-hidden="true"></i>
+							</a>							
+							</span>
+						</td>						
+						<!-- ENDIF -->						
+						<!-- ENDIF -->
+						<!-- IF S_USER_LOGGED_OUT -->
+						<td data-last-responsive="true" class="table1 responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">							
+							<a href="{U_REGISTER}" title="{L_REGISTER}" class="mainmenu" role="menuitem">
+								<img src="{T_THEME_PATH}/images/icon_mini_register.gif" border="0" alt="{L_REGISTER}" hspace="3" />
+							</a>
+							</span>
+						</td>
+						&nbsp;
+						<!-- ENDIF -->
+	<!-- IF S_REGISTERED_USER -->
+						<td data-last-responsive="true" class="forumtitle genmed" height="15" align="center" valign="top">	
+		<!-- EVENT navbar_header_user_profile_prepend -->
+		<div id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
+			<!-- EVENT navbar_header_username_prepend -->
+			<div class="header-profile dropdown-container">
+				<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF --> {CURRENT_USERNAME_SIMPLE}</a>
+				<div class="dropdown">
+					<div class="pointer"><div class="pointer-inner"></div></div>
+					<ul class="dropdown-contents" role="menu">
+						<!-- IF U_RESTORE_PERMISSIONS -->
+							<li>
+								<a href="{U_RESTORE_PERMISSIONS}">
+									<i class="icon fa-refresh fa-fw" aria-hidden="true"></i><span>{L_RESTORE_PERMISSIONS}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
 
+					<!-- EVENT navbar_header_profile_list_before -->
+
+						<li>
+							<a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">
+								<i class="icon fa-sliders fa-fw" aria-hidden="true"></i><span>{L_PROFILE}</span>
+							</a>
+						</li>
+						<li>
+							<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
+								<i class="icon fa-user fa-fw" aria-hidden="true"></i><span>{L_READ_PROFILE}</span>
+							</a>
+						</li>
+
+						<!-- EVENT navbar_header_profile_list_after -->
+
+						<li class="separator"></li>
+						<li>
+							<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
+								<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
+							</a>
+						</li>
+					</ul>
+				</div>
 			</div>
+			<!-- EVENT navbar_header_username_append -->
 		</div>
 
-		<div class="navbar" role="navigation">
-			<div class="inner">
-
-			<ul id="nav-breadcrumbs" class="nav-breadcrumbs linklist navlinks" role="menubar">
-				<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
-				<!-- EVENT overall_header_breadcrumbs_before -->
-				<li class="breadcrumbs">
-					<!-- IF U_SITE_HOME -->
-						<span class="crumb" {$MICRODATA}><a href="{U_SITE_HOME}" itemprop="url" data-navbar-reference="home"><i class="icon fa-home fa-fw" aria-hidden="true"></i><span itemprop="title">{L_SITE_HOME}</span></a></span>
-					<!-- ENDIF -->
-					<!-- EVENT overall_header_breadcrumb_prepend -->
-						<span class="crumb" {$MICRODATA}><a href="{U_INDEX}" itemprop="url" accesskey="h" data-navbar-reference="index"><!-- IF not U_SITE_HOME --><i class="icon fa-home fa-fw"></i><!-- ENDIF --><span itemprop="title">{L_INDEX}</span></a></span>
-
-					<!-- BEGIN navlinks -->
-						<!-- EVENT overall_header_navlink_prepend -->
-						<span class="crumb" {$MICRODATA}<!-- IF navlinks.MICRODATA --> {navlinks.MICRODATA}<!-- ENDIF -->><a href="{navlinks.U_VIEW_FORUM}" itemprop="url"><span itemprop="title">{navlinks.FORUM_NAME}</span></a></span>
-						<!-- EVENT overall_header_navlink_append -->
-					<!-- END navlinks -->
-					<!-- EVENT overall_header_breadcrumb_append -->
-				</li>
-				<!-- EVENT overall_header_breadcrumbs_after -->
-
-				<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
-					<li class="rightside responsive-search">
-						<a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}" role="menuitem">
-							<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
-						</a>
-					</li>
-				<!-- ENDIF -->
-			</ul>
-
-			</div>
+	<!-- ELSE -->
+		<div class="rightside" data-skip-responsive="true">
+			<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
+				<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
+			</a>
 		</div>
-
-		<!-- IF S_DISPLAY_SEARCH -->
-		<div class="navbar-top-link">
-			<div class="inner">
-				<ul>
-					<li class="navbar-top-link-left"><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></li>
-					<li class="navbar-top-link-left"><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
-
-					<!-- IF S_REGISTERED_USER --><li class="navbar-top-link-right"><a href="{U_SEARCH_SELF}" role="menuitem">{L_SEARCH_SELF}</a></li><!-- ENDIF -->
-					<!-- IF S_USER_LOGGED_IN --><li class="navbar-top-link-right"><a href="{U_SEARCH_NEW}" role="menuitem">{L_SEARCH_NEW}</a></li><!-- ENDIF -->
-					<!-- IF S_LOAD_UNREADS --><li class="navbar-top-link-right"><a href="{U_SEARCH_UNREAD}" role="menuitem">{L_SEARCH_UNREAD}</a></li><!-- ENDIF -->
-				</ul>
+		<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
+			<div class="rightside" data-skip-responsive="true">
+				<a href="{U_REGISTER}" role="menuitem">
+					<i class="icon fa-pencil-square-o  fa-fw" aria-hidden="true"></i><span>{L_REGISTER}</span>
+				</a>
 			</div>
-		</div>
-		<!-- ENDIF -->		
-		
-		
+		<!-- ENDIF -->
+		<!-- EVENT navbar_header_logged_out_content -->
+						</td>		
+	<!-- ENDIF -->							
+					</tr>
+					</ul>
+			</div>					
+					</thead>
+		</div>					
+					<tbody>				
+					<tr class="bg2">
+						<td data-last-responsive="true" class="table1 genmed" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="#" title="{L_QUICK_LINKS}" class="mainmenu">
+								<span>{L_QUICK_LINKS} </span>
+								</a>
+							</span>
+						</td>					
+						
+						<td data-last-responsive="true" class="table1 forumtitle responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_INDEX}" title="{L_INDEX}" class="mainmenu">
+								<span>{L_FORUM} </span>
+								</a>
+							</span>
+						</td>
+						
+						<td data-last-responsive="true" class="table1 forumtitle" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_FAQ}" title="{L_FAQ}" class="mainmenu">
+								<span>{L_FAQ} </span>
+								</a>
+							</span>
+						</td>
+						
+						<!-- IF U_ACP -->
+						<td data-last-responsive="true" class="table1 forumtitle responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">							
+								<a href="{U_ACP}" title="{L_ACP}" role="menuitem">
+								<span>{L_ACP_SHORT} </span>
+								</a>
+							</span>						
+						</td>
+						<!-- ENDIF -->
+						<!-- IF U_MCP -->
+						<td data-last-responsive="true" class="table1 forumtitle responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">							
+								<a href="{U_MCP}" title="{L_MCP}" role="menuitem">
+								<span>{L_MCP_SHORT} </span>
+								</a>
+							</span>						
+						</td>
+						<!-- ENDIF -->						
+						
+						<!-- IF S_DISPLAY_SEARCH -->						
+						<td data-last-responsive="true" class="forumtitle responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_SEARCH}" title="{L_SEARCH}" class="mainmenu">
+								<span>{L_SEARCH} </span>
+								</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						
+						<!-- IF not S_IS_BOT -->
+						
+						<!-- IF S_DISPLAY_MEMBERLIST -->
+						<td data-last-responsive="true" class="forumtitle responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST}" class="mainmenu">
+								<span>{L_MEMBERLIST} </span>
+								</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						
+						<!-- IF S_USER_LOGGED_IN -->
+						<td data-last-responsive="true" class="forumtitle genmed" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_PROFILE}" title="{L_PROFILE}" class="mainmenu">
+								<span>{L_UCP} </span>
+								</a>
+							</span>
+						</td>
+						<!-- ENDIF -->	
+						
+						<!-- ENDIF -->						
+						
+						<!-- IF S_DISPLAY_PM -->
+						<td data-last-responsive="true"class="forumtitle genmed" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_PRIVATEMSGS}" title="{L_PRIVATE_MESSAGES}" class="mainmenu">
+									<span>{L_PRIVATE_MESSAGES} </span>
+									<strong class="badge<!-- IF not PRIVATE_MESSAGE_COUNT --> hidden<!-- ENDIF -->">
+									{PRIVATE_MESSAGE_COUNT}
+									</strong>
+									<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF -->
+								</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						
+						<!-- IF not S_IS_BOT -->						
+						<td data-last-responsive="true" class="forumtitle genmed responsive-hide" height="15" align="center" valign="top">
+							<span class="mainmenu">
+								<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" class="mainmenu">
+								<span>{L_LOGIN_LOGOUT}&nbsp; </span>
+								</a>
+							</span>
+						</td>
+						<!-- ENDIF -->
+						
+						<!-- IF S_USER_LOGGED_OUT -->
+						<td data-last-responsive="true" class="forumtitle genmed responsive-hide" height="15" align="center" valign="top">
+						<span class="mainmenu">						
+							<a href="{U_REGISTER}" title="{L_REGISTER}" class="mainmenu">
+							<span>{L_REGISTER} </span>
+							</a>
+						</span>
+						</td>
+						<!-- ENDIF -->
+	
+						<!-- IF S_REGISTERED_USER -->
+						<td data-last-responsive="true" class="forumtitle genmed" height="15" align="center" valign="top">	
+
+						<!-- IF S_NOTIFICATIONS_DISPLAY -->
+							<div class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
+								<span class="mainmenu">
+								<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
+									<i class="icon fa-bell fa-fw" aria-hidden="true"></i>
+									<span>{L_NOTIFICATIONS} </span>
+									<strong class="badge<!-- IF not NOTIFICATIONS_COUNT --> hidden<!-- ENDIF -->">
+									{NOTIFICATIONS_COUNT}
+									</strong>
+								</a>
+								</span>
+								<!-- INCLUDE notification_dropdown.html -->
+							</div>
+						<!-- ENDIF -->
+						<!-- EVENT navbar_header_user_profile_append -->						
+						
+						</td>		
+						<!-- ENDIF -->						
+
+						</tr>
+					<tr class="bg2"> 					
+						<td data-last-responsive="true" class="forumtitle genmed" align="{S_CONTENT_FLOW_END}">					
+						<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span style="color: red;">{L_BOARD_DISABLED}</span><!-- ENDIF -->							
+						</td>	
+					</tr>					
+					</tbody>
+					
+				</table>
+			<!-- EVENT overall_header_navigation_append -->					
+				
+		</td>	
+	</tr>
+	
+	</div>	
+	</tbody>
+	<!-- EVENT overall_header_navbar_after -->	
+</table>								
+
+	<div id="datebar">
+		<table width="100%" cellspacing="0">
+		<tr>
+			<td class="gensmall"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ENDIF --></td>
+			<td class="gensmall" align="{S_CONTENT_FLOW_END}">{CURRENT_TIME}<br /></td>
+		</tr>
+		</table>
 	</div>
+
+</div>
+
+<!-- EVENT overall_header_body_content_before -->
+<div id="wrapcentre wrap" class="wrap">
+
+	<!-- IF S_DISPLAY_SEARCH -->
+	<p class="searchbar">
+		<span style="float: {S_CONTENT_FLOW_BEGIN};"><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a> | <a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></span>
+		<!-- IF S_USER_LOGGED_IN -->
+		<span style="float: {S_CONTENT_FLOW_END};"><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a> | <a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></span>
+		<!-- ENDIF -->
+	</p>
+	<!-- ENDIF -->
+
+	<br style="clear: both;" />
+
+	<!-- INCLUDE breadcrumbs.html -->
 
 	<!-- EVENT overall_header_page_body_before -->
 

@@ -65,12 +65,12 @@ if (@function_exists('date_default_timezone_set') && @function_exists('date_defa
 // PHP5 with register_long_arrays off? This is requested in class mx_request_vars, do not change!
 if (@phpversion() >= '5.0.0' && (!@ini_get('register_long_arrays') || @ini_get('register_long_arrays') == '0' || strtolower(@ini_get('register_long_arrays')) == 'off'))
 {
-	$HTTP_POST_VARS = $_POST;
-	$HTTP_GET_VARS = $_GET;
-	$HTTP_SERVER_VARS = $_SERVER;
-	$HTTP_COOKIE_VARS = $_COOKIE;
-	$HTTP_ENV_VARS = $_ENV;
-	$HTTP_POST_VARS = $_FILES;
+	$HTTP_POST_VARS 		= $_POST;
+	$HTTP_GET_VARS 			= $_GET;
+	$HTTP_SERVER_VARS 	= $_SERVER;
+	$HTTP_COOKIE_VARS 	= $_COOKIE;
+	$HTTP_ENV_VARS 			= $_ENV;
+	$HTTP_POST_VARS 		= $_FILES;
 
 	// _SESSION is the only superglobal which is conditionally set
 	if (isset($_SESSION))
@@ -160,6 +160,18 @@ require($phpbb_root_path . 'vendor/paragonie/random_compat/lib/random.' . $phpEx
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
 
+// false param: enable super globals, so the created request class does not
+// make super globals inaccessible everywhere outside this function.
+$request = new request_vars('', false);
+
+// this is needed to prevent unicode normalization
+$super_globals_disabled = $request->super_globals_disabled();
+// enable super globals to get literal value
+if (!$super_globals_disabled)
+{
+	//$request->disable_super_globals();
+}
+
 //
 // Obtain and encode users IP
 //
@@ -168,7 +180,7 @@ unset($dbpasswd);
 // even bother complaining ... go scream and shout at the idiots out there who feel
 // "clever" is doing harm rather than good ... karma is a great thing ... :)
 //
-$client_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : getenv('REMOTE_ADDR') );
+$client_ip = $request->server('REMOTE_ADDR');
 $user_ip = encode_ip($client_ip);
 
 //
@@ -176,17 +188,24 @@ $user_ip = encode_ip($client_ip);
 // then we output a CRITICAL_ERROR since
 // basic forum information is not available
 //
+
+// We need to fill the config to let internal functions correctly work
+$phpbb_config = new config($db, new cache(), CONFIG_TABLE);
+$board_config = $phpbb_config->config;
+
+/** /
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 if( !($result = $db->sql_query($sql)) )
 {
 	message_die(CRITICAL_ERROR, "Could not query config information", "", __LINE__, __FILE__, $sql);
 }
-
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$board_config[$row['config_name']] = $row['config_value'];
 }
+/**/
+
 define('PHPBB_ENVIRONMENT', 'production');
 define('PHPBB_VERSION', '2'.$board_config['version']);
 
@@ -201,10 +220,11 @@ define('CHMOD_EXECUTE', 1);
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
-$user = new user();
 $auth = new auth();
+$template = new phpbb_Template();
+/* @var $user \phpbb\user */
+$user = new user(new cache(), $request, $template, $board_config, $db, $phpbb_root_path, $phpEx);
 $cache = new cache();
-$template = new phpbb_Template(); 
 
 if (file_exists('install') || file_exists('contrib'))
 {
@@ -214,7 +234,7 @@ if (file_exists('install') || file_exists('contrib'))
 //
 // Show 'Board is disabled' message if needed.
 //
-if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN") )
+if ($board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN"))
 {
 	message_die(GENERAL_MESSAGE, 'Board_disable', 'Information');
 }
@@ -225,13 +245,16 @@ if( $board_config['board_disable'] && !defined("IN_ADMIN") && !defined("IN_LOGIN
 @define('IP_ROOT_PATH', $phpbb_root_path);
 
 /*
- +mx_forum
+ *   Set mx_forum or mx_phpbb 
+ *   integration module name
+ *   if You have MX-Publisher CMS
 */
 if( !defined('IN_ADMIN') && defined('IN_CMS') )
 {
+	$module_name = 'mx_forum';
 	$mx_root_path = './../';
 	$mx_table_prefix = 'mx_';
-	$module_root_path = $mx_root_path  . 'modules/mx_forum/';
+	$module_root_path = $mx_root_path  . 'modules/' . $module_name . '/';
 	
 	if (function_exists('custom_file_exists') && (@custom_file_exists($modules_root_path.'includes/forum_hack.'.$phpEx)) )
 	{
@@ -245,6 +268,6 @@ if( !defined('IN_ADMIN') && defined('IN_CMS') )
 	@define('CMS_ROOT_PATH', $mx_root_path);	
 }
 /*
--mx_forum
+ *   mx_forum or mx_phpbb
 */
 ?>
