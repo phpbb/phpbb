@@ -899,32 +899,19 @@ class manager
 	*/
 	public function get_notification_type_id($notification_type_name)
 	{
-		$notification_type_ids = $this->cache->get('notification_type_ids');
-
-		$this->db->sql_transaction('begin');
-
-		if ($notification_type_ids === false)
+		$sql = 'SELECT notification_type_id, notification_type_name
+			FROM ' . $this->notification_types_table;
+		$result = $this->db->sql_query($sql, 604800); // cache for one week
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$notification_type_ids = array();
-
-			$sql = 'SELECT notification_type_id, notification_type_name
-				FROM ' . $this->notification_types_table;
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$notification_type_ids[$row['notification_type_name']] = (int) $row['notification_type_id'];
-			}
-			$this->db->sql_freeresult($result);
-
-			$this->cache->put('notification_type_ids', $notification_type_ids);
+			$notification_type_ids[$row['notification_type_name']] = (int) $row['notification_type_id'];
 		}
+		$this->db->sql_freeresult($result);
 
 		if (!isset($notification_type_ids[$notification_type_name]))
 		{
 			if (!isset($this->notification_types[$notification_type_name]) && !isset($this->notification_types['notification.type.' . $notification_type_name]))
 			{
-				$this->db->sql_transaction('rollback');
-
 				throw new \phpbb\notification\exception('NOTIFICATION_TYPE_NOT_EXIST', array($notification_type_name));
 			}
 
@@ -934,12 +921,12 @@ class manager
 			));
 			$this->db->sql_query($sql);
 
+			// expose new notification type ID for this request
 			$notification_type_ids[$notification_type_name] = (int) $this->db->sql_nextid();
 
-			$this->cache->put('notification_type_ids', $notification_type_ids);
+			// destroy cache, we have a new addition which we have to to load next time
+			$this->cache->destroy('sql', $this->notification_types_table);
 		}
-
-		$this->db->sql_transaction('commit');
 
 		return $notification_type_ids[$notification_type_name];
 	}
