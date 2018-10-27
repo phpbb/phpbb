@@ -76,7 +76,7 @@ class database
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
-			'DELIM'			=> '/',
+			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
