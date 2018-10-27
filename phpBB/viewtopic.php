@@ -342,6 +342,12 @@ if (($topic_data['topic_type'] != POST_NORMAL) && $topic_data['topic_time_limit'
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
 
+if ($view == 'print' && !$auth->acl_get('f_print', $forum_id))
+{
+	send_status_line(403, 'Forbidden');
+	trigger_error('NO_AUTH_PRINT_TOPIC');
+}
+
 $overrides_f_read_check = false;
 $overrides_forum_password_check = false;
 $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null;
