@@ -1,4 +1,5 @@
 Subject: New topic notification - "{FORUM_NAME}"
+List-Unsubscribe: <{U_STOP_WATCHING_FORUM}>
 
 Hello {USERNAME},
 
