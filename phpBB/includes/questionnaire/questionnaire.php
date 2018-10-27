@@ -40,7 +40,7 @@ class phpbb_questionnaire_data_collector
 	*
 	* @param	string
 	*/
-	function phpbb_questionnaire_data_collector($install_id)
+	function __construct($install_id)
 	{
 		$this->install_id = $install_id;
 		$this->providers = array();
@@ -220,7 +220,7 @@ class phpbb_questionnaire_phpbb_data_provider
 	*
 	* @param	array	$config
 	*/
-	function phpbb_questionnaire_phpbb_data_provider($config)
+	function __construct($config)
 	{
 		// generate a unique id if necessary
 		if (empty($config['questionnaire_unique_id']))
