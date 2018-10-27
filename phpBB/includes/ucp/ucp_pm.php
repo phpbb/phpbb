@@ -170,6 +170,12 @@ class ucp_pm
 					trigger_error('NO_AUTH_READ_MESSAGE');
 				}
 
+				if ($view == 'print' && (!$config['print_pm'] || !$auth->acl_get('u_pm_printpm')))
+				{
+					send_status_line(403, 'Forbidden');
+					trigger_error('NO_AUTH_PRINT_MESSAGE');
+				}
+
 				// Do not allow hold messages to be seen
 				if ($folder_id == PRIVMSGS_HOLD_BOX)
 				{
