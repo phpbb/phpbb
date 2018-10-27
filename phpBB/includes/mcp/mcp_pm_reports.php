@@ -28,7 +28,7 @@ class mcp_pm_reports
 	var $p_master;
 	var $u_action;
 
-	function mcp_pm_reports(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

@@ -27,7 +27,7 @@ class auth_admin extends \phpbb\auth\auth
 	/**
 	* Init auth settings
 	*/
-	function auth_admin()
+	function __construct()
 	{
 		global $db, $cache;
 
@@ -819,7 +819,7 @@ class auth_admin extends \phpbb\auth\auth
 
 		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.
 		$this->acl_options = array();
-		$this->auth_admin();
+		$this->__construct();
 
 		return true;
 	}

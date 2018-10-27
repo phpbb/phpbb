@@ -28,7 +28,7 @@ class mcp_notes
 	var $p_master;
 	var $u_action;
 
-	function mcp_notes(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

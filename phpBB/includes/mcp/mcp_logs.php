@@ -28,7 +28,7 @@ class mcp_logs
 	var $u_action;
 	var $p_master;
 
-	function mcp_logs(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

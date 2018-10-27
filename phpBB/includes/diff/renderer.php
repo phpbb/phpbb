@@ -56,7 +56,7 @@ class diff_renderer
 	/**
 	* Constructor.
 	*/
-	function diff_renderer($params = array())
+	function __construct($params = array())
 	{
 		foreach ($params as $param => $value)
 		{
