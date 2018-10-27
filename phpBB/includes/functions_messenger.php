@@ -373,6 +373,12 @@ class messenger
 			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
 		}
 
+		if (preg_match('#^(List-Unsubscribe:(.*?))$#m', $this->msg, $match))
+		{
+			$this->extra_headers[] = $match[1];
+			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+		}
+
 		if ($drop_header)
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
