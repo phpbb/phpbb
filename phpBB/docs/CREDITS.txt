@@ -29,6 +29,7 @@ phpBB Developers:        bantu (Andreas Fischer)
                          Hanakin (Michael Miday)
                          MichaelC (Michael Cullum)
                          Nicofuma (Tristan Darricau)
+                         rubencm (Rubén Calvo)
 
 For a list of phpBB Team members, please see:
 http://www.phpbb.com/about/team/
