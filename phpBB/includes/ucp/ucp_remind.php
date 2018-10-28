@@ -79,7 +79,7 @@ class ucp_remind
 			extract($phpbb_dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
 
 			$sql = $db->sql_build_query('SELECT', $sql_array);
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query_limit($sql, 2); // don't waste resources on more rows than we need
 			$rowset = $db->sql_fetchrowset($result);
 
 			if (count($rowset) > 1)
@@ -93,29 +93,24 @@ class ucp_remind
 			}
 			else
 			{
+				$message = $user->lang['PASSWORD_UPDATED_IF_EXISTED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+
+				if (empty($rowset))
+				{
+					trigger_error($message);
+				}
+
 				$user_row = $rowset[0];
 				$db->sql_freeresult($result);
 
 				if (!$user_row)
 				{
-					trigger_error('NO_EMAIL_USER');
+					trigger_error($message);
 				}
 
-				if ($user_row['user_type'] == USER_IGNORE)
+				if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
 				{
-					trigger_error('NO_USER');
-				}
-
-				if ($user_row['user_type'] == USER_INACTIVE)
-				{
-					if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL)
-					{
-						trigger_error('ACCOUNT_DEACTIVATED');
-					}
-					else
-					{
-						trigger_error('ACCOUNT_NOT_ACTIVATED');
-					}
+					trigger_error($message);
 				}
 
 				// Check users permissions
@@ -124,8 +119,7 @@ class ucp_remind
 
 				if (!$auth2->acl_get('u_chgpasswd'))
 				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_PASSWORD_REMINDER');
+					trigger_error($message);
 				}
 
 				$server_url = generate_board_url();
@@ -164,9 +158,6 @@ class ucp_remind
 
 				$messenger->send($user_row['user_notify_type']);
 
-				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-
-				$message = $user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}

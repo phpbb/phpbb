@@ -23,17 +23,27 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->add_lang('ucp');
 		$user_id = $this->create_user('reset-password-test-user', 'reset-password-test-user@test.com');
 
+		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
+		// test with non-existent email
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$form = $crawler->selectButton('submit')->form(array(
+			'email'	=> 'non-existent@email.com',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+
+		// test with correct email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> 'reset-password-test-user@test.com',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
 
 		// Check if columns in database were updated for password reset
 		$this->get_user_data('reset-password-test-user');
@@ -57,7 +67,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'	=> 'reset-password-test-user1',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
 
 		// Check if columns in database were updated for password reset
 		$this->get_user_data('reset-password-test-user1');
@@ -182,7 +192,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$db = $this->get_db();
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
-			WHERE username = '$username'";
+			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);
 		$this->user_data = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
