@@ -534,6 +534,30 @@ class ucp_register
 					}
 				}
 
+				/**
+				* Perform additional actions after user registration
+				*
+				* @event core.ucp_register_register_after
+				* @var	array		user_row	Array with user registration data
+				* @var	array		cp_data		Array with custom profile fields data
+				* @var	array		data		Array with current ucp registration data
+				* @var	string		message		Message to be displayed to the user after registration
+				* @var	string		server_url	Server URL
+				* @var	int			user_id		New user ID
+				* @var	string		user_actkey	User activation key
+				* @since 3.2.4-RC1
+				*/
+				$vars = array(
+					'user_row',
+					'cp_data',
+					'data',
+					'message',
+					'server_url',
+					'user_id',
+					'user_actkey',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.ucp_register_register_after', compact($vars)));
+
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
