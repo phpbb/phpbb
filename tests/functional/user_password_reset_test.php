@@ -21,25 +21,56 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function test_password_reset()
 	{
 		$this->add_lang('ucp');
-		$user_id = $this->create_user('reset-password-test-user');
+		$user_id = $this->create_user('reset-password-test-user', 'reset-password-test-user@test.com');
 
+		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
-		$form = $crawler->selectButton('submit')->form(array(
-			'username'	=> 'reset-password-test-user',
-		));
+		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
+		// test with non-existent email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
-			'username'	=> 'reset-password-test-user',
-			'email'		=> 'nobody@example.com',
+			'email'	=> 'non-existent@email.com',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+
+		// test with correct email
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$form = $crawler->selectButton('submit')->form(array(
+			'email'		=> 'reset-password-test-user@test.com',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
 
 		// Check if columns in database were updated for password reset
-		$this->get_user_data();
+		$this->get_user_data('reset-password-test-user');
+		$this->assertNotNull($this->user_data['user_actkey']);
+		$this->assertNotNull($this->user_data['user_newpasswd']);
+
+		// Create another user with the same email
+		$this->create_user('reset-password-test-user1', 'reset-password-test-user@test.com');
+
+		// Test that username is now also required
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$form = $crawler->selectButton('submit')->form(array(
+			'email'		=> 'reset-password-test-user@test.com',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('EMAIL_NOT_UNIQUE', $crawler->text());
+
+		// Provide both username and email
+		$form = $crawler->selectButton('submit')->form(array(
+			'email'		=> 'reset-password-test-user@test.com',
+			'username'	=> 'reset-password-test-user1',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+
+		// Check if columns in database were updated for password reset
+		$this->get_user_data('reset-password-test-user1');
 		$this->assertNotNull($this->user_data['user_actkey']);
 		$this->assertNotNull($this->user_data['user_newpasswd']);
 
@@ -73,7 +104,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function test_activate_new_password($expected, $user_id, $act_key)
 	{
 		$this->add_lang('ucp');
-		$this->get_user_data();
+		$this->get_user_data('reset-password-test-user');
 		$user_id = (!$user_id) ? $this->user_data['user_id'] : $user_id;
 		$act_key = (!$act_key) ? $this->user_data['user_actkey'] : $act_key;
 
@@ -119,7 +150,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function test_acivateAfterDeactivate()
 	{
 		// User is active, actkey should not exist
-		$this->get_user_data();
+		$this->get_user_data('reset-password-test-user');
 		$this->assertEmpty($this->user_data['user_actkey']);
 
 		$this->login();
@@ -143,7 +174,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$crawler = self::request('GET', preg_replace('#(.+)(adm/index.php.+)#', '$2', $link->getUri()));
 
 		// Ensure again that actkey is empty after deactivation
-		$this->get_user_data();
+		$this->get_user_data('reset-password-test-user');
 		$this->assertEmpty($this->user_data['user_actkey']);
 
 		// Force reactivation of account and check that act key is not empty anymore
@@ -152,16 +183,16 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$crawler = self::submit($form, array('action' => 'reactivate'));
 		$this->assertContainsLang('FORCE_REACTIVATION_SUCCESS', $crawler->filter('html')->text());
 
-		$this->get_user_data();
+		$this->get_user_data('reset-password-test-user');
 		$this->assertNotEmpty($this->user_data['user_actkey']);
 	}
 
-	protected function get_user_data()
+	protected function get_user_data($username)
 	{
 		$db = $this->get_db();
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
-			WHERE username = 'reset-password-test-user'";
+			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);
 		$this->user_data = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
