@@ -2,7 +2,7 @@
 	"name": "phpbb/phpbb-style-prosilver",
 	"description": "phpBB Forum Software default style",
 	"type": "phpbb-style",
-	"version": "3.2.0-a1-dev",
+	"version": "3.3.0-a1-dev",
 	"homepage": "https://www.phpbb.com",
 	"license": "GPL-2.0",
 	"authors": [
@@ -23,6 +23,6 @@
 	},
 	"extra": {
 		"display-name": "prosilver",
-		"phpbb-version": "3.2.0-a3-dev"
+		"phpbb-version": "3.3.0-a1-dev"
 	}
 }
