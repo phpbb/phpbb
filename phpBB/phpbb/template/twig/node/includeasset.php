@@ -50,9 +50,9 @@ abstract class includeasset extends \Twig_Node
 					->write("\$asset->set_path(\$local_file, true);\n")
 				->outdent()
 				->write("}\n")
-				->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
 			->outdent()
 			->write("}\n")
+			->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
 			->write("\$this->getEnvironment()->get_assets_bag()->add_{$this->get_setters_name()}(\$asset);")
 		;
 	}
