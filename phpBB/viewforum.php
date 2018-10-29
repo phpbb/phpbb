@@ -285,6 +285,20 @@ $limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_last_post_time', 't.topic_last_post_id'), 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 'LOWER(t.topic_title)', 'v' => 't.topic_views');
 
+/**
+ * Modify the topic ordering if needed
+ *
+ * @event core.viewforum_modify_topic_ordering
+ * @var array	sort_by_text	Topic ordering options
+ * @var array	sort_by_sql		Topic ordering options
+ * @since 3.2.4
+ */
+$vars = array(
+	'sort_by_text',
+	'sort_by_sql',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topic_ordering', compact($vars)));
+
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
