@@ -52,7 +52,12 @@ abstract class includeasset extends \Twig_Node
 				->write("}\n")
 			->outdent()
 			->write("}\n")
+			->write("\n")
+			->write("if (\$asset->is_relative()) {\n")
+			->indent()
 			->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
+			->outdent()
+			->write("}\n")
 			->write("\$this->getEnvironment()->get_assets_bag()->add_{$this->get_setters_name()}(\$asset);")
 		;
 	}
