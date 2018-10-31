@@ -1,0 +1,11 @@
+Subject: Aţi fost adăugat în acest grup
+
+Felicitări,
+
+Aţi fost adăugat grupului „{GROUP_NAME}” de pe „{SITENAME}”.
+Acţiunea a fost efectuată de către liderul de grup sau de administrator, contactaţi-i pentru mai multe informaţii.
+
+Puteţi vizualiza informaţia grupului dumneavoastră aici:
+{U_GROUP}
+
+{EMAIL_SIG}

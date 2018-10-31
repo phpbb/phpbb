@@ -329,6 +329,71 @@ function user_add($user_row, $cp_data = false)
 }
 
 /**
+* Adds an username_clean
+*
+* @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
+* @param array $cp_data custom profile fields, see custom_profile::build_insert_sql_array
+* @param array $notifications_data The notifications settings for the new user
+* @return the new user's ID.
+*/
+function username_clean_add($user_row = array(), $cp_data = false, $notifications_data = null)
+{
+	global $db;
+	global $cache, $board_config;
+	
+	$cache = is_object($cache) ? $cache : new cache(false, defined('DEBUG')); //In sessions
+	
+	print('<p><span style="color: red;"></span></p><i><p>Refreshing the users table!</p></i>');
+	
+	$serch_field = '';
+	
+	$sql = "SELECT user_id, username
+		FROM " . USERS_TABLE . " 
+		ORDER BY user_id ASC";
+	$result = $db->sql_query($sql);
+
+	$echos = 0;
+
+	$user_row = $user_row ? $user_row : $db->sql_fetchrowset($result);
+	$newest_user_id = count($user_row);
+	print('<p><span style="color: red;"></span></p><i><p>Users '. $newest_user_id .'</p></i>');
+	
+	for($i = 0; $i < $newest_user_id; $i++)
+	{
+		$username_clean = utf8_clean_string($user_row[$i]['username']);
+		$user_id = (int) $user_row[$i]['user_id'];
+		
+		if (empty($username_clean))
+		{
+			print('<p><span style="color: red;"></span></p><i><p>Username Empty</p></i>');
+		}
+		
+		print('<p><span style="color: red;"></span></p><i><p>Refresh for '. $username_clean .'</p></i>');
+		
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET username_clean = '" . $db->sql_escape($username_clean) . "'
+			WHERE user_id = " . $user_id;
+		$db->sql_query($sql);
+
+		if ($echos > 200)
+		{
+			echo '<br />' . "\n";
+			$echos = 0;
+		}
+
+		echo '.';
+		$echos++;
+
+		flush();
+	}
+	
+	$db->sql_freeresult($result);
+	
+	print('<p><span style="color: red;"></span></p><i><p>Refresh FINISHED!</p></i>');
+}
+
+
+/**
  * Remove User
  *
  * @param string	$mode		'retain' or 'remove'

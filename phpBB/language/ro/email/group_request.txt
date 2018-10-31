@@ -1,0 +1,10 @@
+Subject: O cerere pentru aderare la grupul dumneavoastră
+
+Dragă {USERNAME},
+
+Utilizatorul „{REQUEST_USERNAME}” a cerut să se alăture grupului „{GROUP_NAME}” pe care îl moderaţi pe „{SITENAME}”.
+Pentru a aproba sau respinge cererea lui, vă rugăm să vizitaţi următoarea legătură:
+
+{U_PENDING}
+
+{EMAIL_SIG}

@@ -31,7 +31,7 @@ if (in_array($mode, array('login', 'logout', 'confirm', 'sendpassword', 'activat
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup('ucp');
-
+//username_clean_add();
 // Setting a variable to let the style designer know where he is...
 $template->assign_var('S_IN_UCP', true);
 

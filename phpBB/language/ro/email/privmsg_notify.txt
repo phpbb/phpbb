@@ -1,0 +1,15 @@
+Subject: Aţi primit un nou mesaj privat
+
+Salut {USERNAME},
+
+Aţi primit un nou mesaj privat de la „{AUTHOR_NAME}” în contul dumneavoastră de la „{SITENAME}” cu următorul subiect: 
+
+{SUBJECT}  
+
+Puteţi să vedeţi noul dumneavoastră mesaj privat folosind următoarea legătură:
+
+{U_VIEW_MESSAGE}
+
+Aţi cerut să fiţi anunţat dacă se întâmplă acest lucru, nu uitaţi că puteţi întotdeauna să alegeţi să nu fiţi anunţat dacă primiţi mesaje noi prin schimbarea setării corespunzătoare din profilul dumneavoastră.
+
+{EMAIL_SIG}

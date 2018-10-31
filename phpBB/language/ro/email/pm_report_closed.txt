@@ -1,0 +1,8 @@
+Subject: Raport închis - „{PM_SUBJECT}”
+
+Salut {USERNAME},
+
+Primiţi aceasta notificare datorita raportului pe care l-aţi trimis privind mesajul privat „{PM_SUBJECT}” la „{SITENAME}” ce a fost evaluat de către un moderator sau administrator. Raportul este închis acum. Dacă aveţi alte întrebări, vă rugăm să luaţi legătura cu {CLOSER_NAME} prin intermediul unui mesaj privat.
+
+
+{EMAIL_SIG}

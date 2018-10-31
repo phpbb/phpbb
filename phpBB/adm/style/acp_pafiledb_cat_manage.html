@@ -1,0 +1,49 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_CAT_TITLE}</h1>
+
+<p>{L_CAT_EXPLAIN}</p>
+
+<form id="acp_pafiledb" action="{U_ACTION}" method="post">
+<fieldset id="category_title">
+<table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline">
+  <tr>
+	<th class="thHead" colspan="5">{L_CAT_TITLE}</th>
+  </tr>
+<!-- BEGIN cat_row -->
+	<!-- IF cat_row.IS_HIGHER_CAT -->
+<tr>
+	<td class="cat" valign="middle" nowrap="nowrap">{cat_row.PRE}&nbsp;&raquo;&nbsp;<a href="{cat_row.U_CAT}" class="cattitle">{cat_row.CAT_NAME}</a></td>
+	<td class="cat" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_EDIT}">{L_EDIT}</a></span></td>
+	<td class="cat" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_DELETE}">{L_DELETE}</a></span></td>
+	<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{cat_row.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{cat_row.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
+	<td class="cat" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_RESYNC}">{L_RESYNC}</a></span></td>
+</tr>
+	<!-- ELSE -->
+<tr>
+	<td class="row1" valign="middle" nowrap="nowrap">{cat_row.PRE}&nbsp;&raquo;&nbsp;<a href="{cat_row.U_CAT}" class="cattitle">{cat_row.CAT_NAME}</a></td>
+	<td class="row1" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_EDIT}">{L_EDIT}</a></span></td>
+	<td class="row1" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_DELETE}">{L_DELETE}</a></span></td>
+	<td class="row1" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{cat_row.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{cat_row.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
+	<td class="row1" align="center" valign="middle"><span class="gen"><a href="{cat_row.U_CAT_RESYNC}">{L_RESYNC}</a></span></td>	
+</tr>
+	<!-- ENDIF -->
+<!-- END cat_row -->
+</fieldset> 
+</table>
+
+</form>
+
+<form id="acp_pafiledb" method="post" action="{U_ACTION}">
+
+<fieldset class="quick">
+	<input type="hidden" name="action" value="do_add" />
+	<input type="text" name="cat_name" value="" maxlength="255" />
+	<input class="button2" name="addcategory" type="submit" value="{L_CREATE_CATEGORY}" />
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

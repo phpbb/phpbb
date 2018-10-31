@@ -1,0 +1,8 @@
+Subject: Raport şters - „{POST_SUBJECT}”
+
+Salut {USERNAME},
+
+Primiţi această notificare pentru că raportul dumneavoastră pe care l-ţi completat la mesajul „{POST_SUBJECT}” în „{TOPIC_TITLE}” la „{SITENAME}” a fost şters de un moderator sau administrator.
+
+
+{EMAIL_SIG}

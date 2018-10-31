@@ -1,0 +1,20 @@
+Subject: Notificare de răspuns la subiectul - „{TOPIC_TITLE}”
+
+Salut {USERNAME},
+
+Primiţi acest mesaj deoarece urmăriţi răspunsurile din subiectul „{TOPIC_TITLE}” la „{SITENAME}”. Acest subiect a primit un răspuns<!-- IF AUTHOR_NAME !== '' --> din partea utilizatorului {AUTHOR_NAME}<!-- ENDIF --> de la ultima dumneavoastră vizită. Puteţi să vizualizaţi răspunsurile urmând legătura de mai jos. Nu vă vom mai trimite notificări până nu vizitaţi subiectul.
+
+Dacă doriţi să vizualizaţi mesajele scrise de la ultima dumneavoastră vizită, urmaţi legătura de mai jos:
+{U_NEWEST_POST}
+
+Dacă doriţi să vizualizaţi subiectul, urmaţi legătura de mai jos:
+{U_TOPIC}
+
+Dacă doriţi să vizualizaţi forumul, urmaţi legătura de mai jos:
+{U_FORUM}
+
+Dacă nu mai doriţi să urmăriţi acest subiect, puteţi să folosiţi legătura „Opreşte urmărirea acestui subiect” care poate fi găsită în josul topicului de mai sus sau folosiţi următoarea legătură:
+
+{U_STOP_WATCHING_TOPIC}
+
+{EMAIL_SIG}

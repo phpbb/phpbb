@@ -1,0 +1,17 @@
+Subject: „{SITENAME}” — E-mail către un prieten
+
+Salut {TO_USERNAME},
+
+Acest email a fost transmis de pe „{SITENAME}” de către {FROM_USERNAME} care crede că sunteţi interesat de următorul subiect:
+
+{TOPIC_NAME}
+
+Îl găsiţi la:
+
+{U_TOPIC}
+
+Un mesaj de la {FROM_USERNAME} poate fi inclus mai jos. Vă rugăm să reţineţi că acest mesaj nu a fost văzut sau acceptat de către administratorul forumului. Dacă vreţi să reclamaţi ceva în legătură cu acest e-mail, vă rugăm să contactaţi administratorul forumului la {BOARD_CONTACT}. Vă rugăm să includeţi header-ul mesajului când contactaţi administratorul.
+
+----------
+
+{MESSAGE}

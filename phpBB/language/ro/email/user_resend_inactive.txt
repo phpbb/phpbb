@@ -1,0 +1,20 @@
+Subject: Bine aţi venit la „{SITENAME}”
+
+{WELCOME_MSG}
+
+Vă rugăm să păstraţi acest e-mail. Informaţia pentru contul dumneavoastră urmează aici:
+
+----------------------------
+Utilizator: {USERNAME}
+----------------------------
+
+Parola a fost stocată în siguranţă în baza noastră de date şi nu poate fi extrasă. În cazul în care parola este uitată, veţi putea să o resetaţi folosind adresa de email asociată contului.
+
+Dacă doriţi să activaţi acest cont, vă rugăm să folosiţi următoarea legătură:
+
+{U_ACTIVATE}
+
+
+Mulţumim pentru înregistrare.
+
+{EMAIL_SIG}

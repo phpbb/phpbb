@@ -1,0 +1,8 @@
+Subject: Raport şters - „{PM_SUBJECT}”
+
+Salut {USERNAME},
+
+Primiţi aceasta notificare datorita raportului pe care l-aţi trimis privind mesajul privat „{PM_SUBJECT}” la „{SITENAME}” a fost şters de către un moderator sau administrator.
+
+
+{EMAIL_SIG}

@@ -50,7 +50,10 @@
 		<li id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
 			<!-- EVENT navbar_header_username_prepend -->
 			<div class="header-profile dropdown-container">
+				<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 				<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_SIMPLE}</a>
+				<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
+				<!-- ENDIF -->
 				<div class="dropdown hidden">
 					<div class="pointer"><div class="pointer-inner"></div></div>
 					<ul class="dropdown-contents" role="menu">

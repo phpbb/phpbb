@@ -1,0 +1,10 @@
+Subject: Cererea dumneavoastră de aderare a fost aprobată
+
+Felicitări,
+
+Cererea dumneavoastră de a vă alătura grupului „{GROUP_NAME}” pe „{SITENAME}” a fost aprobată.
+Folosiţi legătura de mai jos pentru a vedea informaţiile referitoare la apartenenţa la grup.
+
+{U_GROUP}
+
+{EMAIL_SIG}

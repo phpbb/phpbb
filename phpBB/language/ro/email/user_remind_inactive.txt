@@ -1,0 +1,11 @@
+Subject: Reamintire cont inactiv
+
+Salut {USERNAME},
+
+Acest mesaj este trimis pentru a vă reaminti că aveţi un cont inactiv la „{SITENAME}” creat în data de {REGISTER_DATE}. Dacă doriţi să activaţi acest cont, vă rugăm să folosiţi următoarea legătură:
+
+{U_ACTIVATE}
+
+Vă mulţumim că v-aţi înregistrat la „{SITENAME}”, aşteptăm în continuare participarea dumneavoastră.
+
+{EMAIL_SIG}

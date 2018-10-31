@@ -1,0 +1,9 @@
+Subject: Contul activat
+
+Salut {USERNAME},
+
+Contul dumneavoastră de pe „{SITENAME}” a fost activat de către un administrator. Acum puteţi să vă autentificaţi.
+
+Parola a fost stocată în siguranţă în baza noastră de date şi nu poate fi extrasă. În cazul în care este uitată, veţi putea să o resetaţi folosind adresa de email asociată cu contul propriu.
+
+{EMAIL_SIG}

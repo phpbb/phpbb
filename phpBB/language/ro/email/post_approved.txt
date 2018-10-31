@@ -1,0 +1,14 @@
+Subject: Mesaj aprobat — „{POST_SUBJECT}”
+
+Salut {USERNAME},
+
+Primiţi această notificare pentru că mesajul „{POST_SUBJECT}” la „{SITENAME}” a fost aprobat de un moderator sau administrator.
+
+Dacă doriţi să vizualizaţi mesajul, apăsaţi pe următoarea legătură:
+{U_VIEW_POST}
+
+Dacă doriţi să vizualizaţi subiectul, apăsaţi pe următoarea legătură:
+{U_VIEW_TOPIC}
+
+
+{EMAIL_SIG}

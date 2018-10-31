@@ -1,0 +1,9 @@
+Subject: Reactivaţi-vă contul
+
+Salut {USERNAME},
+
+Contul dumneavoastră de la „{SITENAME}” a fost dezactivat, cel mai probabil datorită unor modificări făcute profilului dumneavoastră. Pentru a vă reactiva contul, vă rugăm să folosiţi legătura de mai jos:
+
+{U_ACTIVATE}
+
+{EMAIL_SIG}

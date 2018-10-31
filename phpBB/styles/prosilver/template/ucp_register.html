@@ -7,21 +7,17 @@
 	*/
 	function change_language(lang_iso)
 	{
+		document.cookie = '{COOKIE_NAME}_lang=' + lang_iso + '; path={COOKIE_PATH}';
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
-
-	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_REFRESH -->
-	onload_functions.push('apply_onkeypress_event()');
-	<!-- ENDIF -->
-
 // ]]>
 </script>
 
-<form method="post" action="{S_UCP_ACTION}" id="register">
+<form id="register" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h2>{SITENAME} - {L_REGISTRATION}</h2>
 
@@ -30,44 +26,42 @@
 	<!-- IF L_REG_COND -->
 		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
 	<!-- ENDIF -->
+	<!-- EVENT ucp_register_credentials_before -->
 	<dl>
-		<dt><label for="username">{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
+		<dt><label for="username">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
 		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" title="{L_USERNAME}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
-		<dd><input type="text" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" /></dd>
+		<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
+		<dd><input type="email" tabindex="2" name="email" id="email" size="25" maxlength="100" value="{EMAIL}" class="inputbox autowidth" title="{L_EMAIL_ADDRESS}" autocomplete="off" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label></dt>
-		<dd><input type="text" tabindex="3" name="email_confirm" id="email_confirm" size="25" maxlength="100" value="{EMAIL_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_EMAIL}" /></dd>
+		<dt><label for="new_password">{L_PASSWORD}{L_COLON}</label><br /><span>{L_PASSWORD_EXPLAIN}</span></dt>
+		<dd><input type="password" tabindex="4" name="new_password" id="new_password" size="25" value="{PASSWORD}" class="inputbox autowidth" title="{L_NEW_PASSWORD}" autocomplete="off" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="new_password">{L_PASSWORD}:</label><br /><span>{L_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" tabindex="4" name="new_password" id="new_password" size="25" value="{PASSWORD}" class="inputbox autowidth" title="{L_NEW_PASSWORD}" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label></dt>
-		<dd><input type="password" tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
+		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}{L_COLON}</label></dt>
+		<dd><input type="password"  tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" autocomplete="off" /></dd>
 	</dl>
 
+	<!-- EVENT ucp_register_credentials_after -->
 	<hr />
 
+	<!-- EVENT ucp_register_options_before -->
 	<dl>
-		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
+		<dt><label for="lang">{L_LANGUAGE}{L_COLON}</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="tz">{L_TIMEZONE}:</label></dt>
-		<dd><select name="tz" id="tz" tabindex="7" class="autowidth">{S_TZ_OPTIONS}</select></dd>
-	</dl>
 
+	<!-- INCLUDE timezone_option.html -->
+
+	<!-- EVENT ucp_register_profile_fields_before -->
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
 
 	<!-- BEGIN profile_fields -->
 		<dl>
-			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}:<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
 			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF -->
 			<!-- IF profile_fields.ERROR --><br /><span class="error">{profile_fields.ERROR}</span><!-- ENDIF --></dt>
 			<dd>{profile_fields.FIELD}</dd>
@@ -75,8 +69,9 @@
 	<!-- END profile_fields -->
 	<!-- ENDIF -->
 
+	<!-- EVENT ucp_register_profile_fields_after -->
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- IF CAPTCHA_TEMPLATE -->
 	<!-- DEFINE $CAPTCHA_TAB_INDEX = 8 -->
@@ -84,20 +79,20 @@
 <!-- ENDIF -->
 
 <!-- IF S_COPPA -->
-
-
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h4>{L_COPPA_COMPLIANCE}</h4>
 
 	<p>{L_COPPA_EXPLAIN}</p>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 
+<!-- EVENT ucp_register_buttons_before -->
+
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
@@ -106,7 +101,7 @@
 		{S_FORM_TOKEN}
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 </form>
 

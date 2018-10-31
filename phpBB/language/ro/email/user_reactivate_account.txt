@@ -1,0 +1,19 @@
+Subject: Reactivarea contului de la „{SITENAME}”
+
+Administratorul forumului solicită reactivarea contului. Contul dumneavoastră este momentan inactiv.
+Vă rugăm să urmaţi paşii de mai jos pentru reactivarea contului.
+
+Vă rugăm să păstraţi acest e-mail în înregistrările personale. Informaţia despre contul dumneavoastră este:
+
+----------------------------
+Nume de utilizator: {USERNAME}
+----------------------------
+
+Parola a fost păstrată în siguranţă în baza noastră de date şi nu poate fi extrasă. În cazul în care este uitată, veţi putea să o resetaţi folosind adresa de email asociată cu contul propriu.
+
+Vă rugăm să vizitaţi legătura următoare pentru reactivarea contului:
+
+{U_ACTIVATE}
+
+
+{EMAIL_SIG}

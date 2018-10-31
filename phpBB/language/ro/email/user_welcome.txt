@@ -1,0 +1,17 @@
+Subject: Bine aţi venit la „{SITENAME}”
+
+{WELCOME_MSG}
+
+Vă rugăm să păstraţi acest e-mail. Informaţia pentru contul dumneavoastră urmează aici:
+
+-----------------------------
+Nume utilizator  : {USERNAME}
+
+Adresa forumului : {U_BOARD}
+-----------------------------
+
+Parola a fost stocată în siguranţă în baza noastră de date şi nu poate fi extrasă. În cazul în care este uitată, veţi putea să o resetaţi folosind adresa de email asociată cu contul propriu.
+
+Vă mulţumim pentru înregistrare.
+
+{EMAIL_SIG}

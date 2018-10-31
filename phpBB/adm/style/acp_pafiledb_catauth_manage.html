@@ -1,0 +1,55 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+	<tr>
+<!-- BEGIN pertype -->	
+	  <td class="cat" align="left" nowrap="nowrap"><a href="{pertype.U_NAME}">{pertype.L_NAME}</a></td> 
+<!-- END pertype -->
+	</tr>
+</table>  
+<br />
+
+<h1>{L_AUTH_TITLE}</h1>
+
+<p>{L_AUTH_EXPLAIN}</p>
+
+<h2>{L_CATEGORY}<!-- IF CATEGORY_NAME neq '' --> : {CATEGORY_NAME}<!-- ENDIF --></h2>
+
+<form id="acp_pafiledb" method="post" action="{S_CATAUTH_ACTION}">
+  <table cellspacing="1" cellpadding="4" border="0" align="center" class="forumline">
+	<tr>
+      <th class="thTop">{L_CATEGORY}</th>
+	  <!-- BEGIN cat_auth_titles -->
+	  <th class="thTop">{cat_auth_titles.CELL_TITLE}</th>
+	  <!-- END cat_auth_titles -->
+	</tr>
+	<!-- BEGIN cat_row -->
+	<tr>
+	  <!-- IF cat_row.IS_HIGHER_CAT -->	
+      	  <td class="cat" align="left" nowrap="nowrap">{cat_row.PRE}&nbsp;&raquo;&nbsp;<a href="{cat_row.U_CAT}">{cat_row.CATEGORY_NAME}</a></td> 
+	  <!-- ELSE -->
+		  <td class="row1" align="left" nowrap="nowrap">{cat_row.PRE}&nbsp;&raquo;&nbsp;<a href="{cat_row.U_CAT}">{cat_row.CATEGORY_NAME}</a></td> 
+	  <!-- ENDIF -->
+	  
+	  <!-- BEGIN cat_auth_data -->
+	  <!-- IF cat_row.IS_HIGHER_CAT -->	
+	  <td class="cat" align="center">{cat_row.cat_auth_data.S_AUTH_LEVELS_SELECT}</td>
+	  <!-- ELSE -->
+	  <td class="row1" align="center">{cat_row.cat_auth_data.S_AUTH_LEVELS_SELECT}</td>
+	  <!-- ENDIF -->
+	  <!-- END cat_auth_data -->
+	</tr>
+	<!-- END cat_row -->
+	<tr>
+	  <td colspan="{S_COLUMN_SPAN}" class="cat" align="center">{S_HIDDEN_FIELDS} 
+		<input type="submit" name="submit" value="{L_SUBMIT}" class="mainoption" />
+		&nbsp;&nbsp; 
+		<input type="reset" value="{L_RESET}" name="reset" class="liteoption" />
+	  </td>
+	</tr>
+  </table>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
