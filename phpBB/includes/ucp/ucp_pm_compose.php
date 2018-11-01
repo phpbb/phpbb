@@ -994,11 +994,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		if ($config['allow_post_links'])
 		{
-			$quote_username_text = '[url=' . generate_board_url() . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']]) . "]{$quote_username}[/url]";
+			$quote_username_text = '[url=' . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']], true, false, \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL) . "]{$quote_username}[/url]";
 		}
 		else
 		{
-			$quote_username_text = $quote_username . ' (' . generate_board_url() . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']]) . ")";
+			$quote_username_text = $quote_username . ' (' . $controller_helper->route('phpbb_members_profile', ['user_id' => $post['author_id']], true, false, \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL) . ")";
 		}
 
 		$forward_text = array();
