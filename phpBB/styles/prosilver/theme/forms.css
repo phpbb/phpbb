@@ -410,5 +410,30 @@ input.search {
 	width: 10%;
 }
 
+/* Honeypot
+--------------------------------------------- */
+.additional-question {
+	display: none;
+}
+
+.more-questions {
+	position: absolute;
+	top: -9999px;
+	left: -9999px;
+}
+
+.personal-data {
+	position: absolute;
+	clip: rect(1px, 1px, 1px, 1px);
+}
+
+.know-better {
+	overflow: hidden;
+	width: 0 !important;
+	height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */

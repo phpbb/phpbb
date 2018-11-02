@@ -57,3 +57,16 @@ services:
             - [set_name, [core.captcha.plugins.recaptcha]]
         tags:
             - { name: captcha.plugins }
+
+    core.captcha.plugins.honeypot:
+        class: phpbb\captcha\plugins\honeypot
+        shared: false
+        arguments:
+            - '@user'
+            - '@language'
+            - '@request'
+            - '@dbal.conn'
+            - '@template'
+            - '%tables.confirm%'
+        tags:
+            - { name: captcha.plugins }

@@ -1,0 +1,19 @@
+{% if S_TYPE == 1 %}
+<div class="panel {{ HONEYPOT_CLASS }}">
+	<div class="inner">
+
+	<fieldset class="fields2">
+{% endif %}
+
+	<dl>
+		<dt><label>{{ HONEYPOT_LABEL ~ lang('COLON') }}</label></dt>
+		<dd>
+			<input type="text" tabindex="{$CAPTCHA_TAB_INDEX}" name="{{ HONEYPOT_NAME }}" class="inputbox autowidth" title="{{ HONEYPOT_LABEL }}" />
+		</dd>
+	</dl>
+
+{% if S_TYPE == 1 %}
+	</fieldset>
+	</div>
+</div>
+{% endif %}
