@@ -233,16 +233,6 @@ class acp_attachments
 
 				$template->assign_var('S_ATTACHMENT_SETTINGS', true);
 
-				$supported_types = get_supported_image_types();
-
-				// Check Thumbnail Support
-				if (!isset($supported_types['format']) || !count($supported_types['format']))
-				{
-					$this->new_config['img_create_thumbnail'] = 0;
-				}
-
-				$template->assign_var('S_THUMBNAIL_SUPPORT', (!isset($supported_types['format']) || !count($supported_types['format'])) ? false : true);
-
 				// Secure Download Options - Same procedure as with banning
 				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
 

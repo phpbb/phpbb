@@ -133,7 +133,6 @@ $lang = array_merge($lang, array(
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No extension group specified.',
 	'NO_FILE_CAT'				=> 'None',
 	'NO_IMAGE'					=> 'No image',
-	'NO_THUMBNAIL_SUPPORT'		=> 'Thumbnail support has been disabled. For proper functionality the GD extension needs to be available.',
 	'NO_UPLOAD_DIR'				=> 'The upload directory you specified does not exist.',
 	'NO_WRITE_UPLOAD'			=> 'The upload directory you specified cannot be written to. Please alter the permissions to allow the webserver to write to it.',
 
