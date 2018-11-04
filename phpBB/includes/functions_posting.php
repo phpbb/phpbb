@@ -563,7 +563,7 @@ function create_thumbnail($source, $destination, $mimetype)
 	 * @var	float	new_width			Calculated thumbnail width
 	 * @var	float	new_height			Calculated thumbnail height
 	 * @var	bool	thumbnail_created	Set to true to skip default GD thumbnail creation
-	 * @since 3.2.4-RC1
+	 * @since 3.2.4
 	 */
 	$vars = array(
 		'source',
