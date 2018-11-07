@@ -11,12 +11,12 @@
 *
 */
 
-namespace phpbb\search;
+namespace phpbb\search\backend;
 
 /**
 * phpBB's own db driven fulltext search, version 2
 */
-class fulltext_native extends \phpbb\search\base
+class fulltext_native extends base implements search_backend_interface
 {
 	const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
 	const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
@@ -117,14 +117,15 @@ class fulltext_native extends \phpbb\search\base
 	* @param	\phpbb\user	$user	User object
 	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->db = $db;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 
 		$this->word_length = array('min' => (int) $this->config['fulltext_native_min_chars'], 'max' => (int) $this->config['fulltext_native_max_chars']);
 
@@ -135,14 +136,10 @@ class fulltext_native extends \phpbb\search\base
 		{
 			include($this->phpbb_root_path . 'includes/utf/utf_tools.' . $this->php_ext);
 		}
-
-		$error = false;
 	}
 
 	/**
-	* Returns the name of this search backend to be displayed to administrators
-	*
-	* @return string Name
+	 * {@inheritdoc}
 	*/
 	public function get_name()
 	{
@@ -150,9 +147,7 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	 * Returns the search_query
-	 *
-	 * @return string search query
+	 * {@inheritdoc}
 	 */
 	public function get_search_query()
 	{
@@ -160,9 +155,7 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	 * Returns the common_words array
-	 *
-	 * @return array common words that are ignored by search backend
+	 * {@inheritdoc}
 	 */
 	public function get_common_words()
 	{
@@ -170,9 +163,7 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	 * Returns the word_length array
-	 *
-	 * @return array min and max word length for searching
+	 * {@inheritdoc}
 	 */
 	public function get_word_length()
 	{
@@ -194,7 +185,7 @@ class fulltext_native extends \phpbb\search\base
 	* 	or 'any' (find all posts containing at least one of the given words)
 	* @return	boolean				false if no valid keywords were found and otherwise true
 	*/
-	public function split_keywords($keywords, $terms)
+	public function split_keywords(&$keywords, $terms)
 	{
 		$tokens = '+-|()* ';
 
@@ -514,25 +505,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
+	 * {@inheritdoc}
+	 */
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No keywords? No posts.
@@ -1016,24 +990,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
+	 * {@inheritdoc}
+	 */
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No author? No posts
@@ -1401,14 +1359,7 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Updates wordlist and wordmatch tables when a message is posted or changed
-	*
-	* @param	string	$mode		Contains the post mode: edit, post, reply, quote
-	* @param	int		$post_id	The id of the post which is modified/created
-	* @param	string	&$message	New or updated post content
-	* @param	string	&$subject	New or updated post subject
-	* @param	int		$poster_id	Post author's user id
-	* @param	int		$forum_id	The id of the forum in which the post is located
+	 * {@inheritdoc}
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
@@ -1597,8 +1548,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Removes entries from the wordmatch table for the specified post_ids
-	*/
+	 * {@inheritdoc}
+	 */
 	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		if (count($post_ids))
@@ -1654,9 +1605,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Tidy up indexes: Tag 'common words' and remove
-	* words no longer referenced in the match table
-	*/
+	 * {@inheritdoc}
+	 */
 	public function tidy()
 	{
 		// Is the fulltext indexer disabled? If yes then we need not
@@ -1718,8 +1668,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Deletes all words from the index
-	*/
+	 * {@inheritdoc}
+	 */
 	public function delete_index($acp_module, $u_action)
 	{
 		$sql_queries = [];
@@ -1762,7 +1712,7 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Returns true if both FULLTEXT indexes exist
+	 * {@inheritdoc}
 	*/
 	public function index_created()
 	{
@@ -1775,8 +1725,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Returns an associative array containing information about the indexes
-	*/
+	 * {@inheritdoc}
+	 */
 	public function index_stats()
 	{
 		if (!count($this->stats))
@@ -1788,7 +1738,10 @@ class fulltext_native extends \phpbb\search\base
 			$this->user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
 			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
 	}
-
+	
+	/**
+	 * Computes the stats and store them in the $this->stats associative array
+	 */
 	protected function get_stats()
 	{
 		$this->stats['total_words']		= $this->db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
@@ -2032,8 +1985,8 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Returns a list of options for the ACP to display
-	*/
+	 * {@inheritdoc}
+	 */
 	public function acp()
 	{
 		/**

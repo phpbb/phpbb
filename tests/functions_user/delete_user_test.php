@@ -33,7 +33,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 
 		$config = new \phpbb\config\config(array(
 			'load_online_time'	=> 5,
-			'search_type'		=> '\phpbb\search\fulltext_mysql',
+			'search_type'		=> '\phpbb\search\backend\fulltext_mysql',
 		));
 		$cache = new phpbb_mock_null_cache();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();

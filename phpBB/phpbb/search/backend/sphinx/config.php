@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\search\sphinx;
+namespace phpbb\search\backend\sphinx;
 
 /**
 * An object representing the sphinx configuration

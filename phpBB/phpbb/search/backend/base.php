@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\search;
+namespace phpbb\search\backend;
 
 /**
 * @ignore
@@ -24,17 +24,11 @@ define('SEARCH_RESULT_INCOMPLETE', 2);
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
 */
-class base
+abstract class base
 {
 	var $ignore_words = array();
 	var $match_synonym = array();
 	var $replace_synonym = array();
-
-	function search_backend(&$error)
-	{
-		// This class cannot be used as a search plugin
-		$error = true;
-	}
 
 	/**
 	* Retrieves cached search results

@@ -215,7 +215,7 @@ class convertor
 		// For conversions we are a bit less strict and set to a search backend we know exist...
 		if (!class_exists($search_type))
 		{
-			$search_type = '\phpbb\search\fulltext_native';
+			$search_type = 'phpbb\search\backend\fulltext_native';
 			$config->set('search_type', $search_type);
 		}
 
@@ -224,13 +224,7 @@ class convertor
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
-		{
-			trigger_error($error);
-		}
+		$convert->fulltext_search = new $search_type($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx);
 
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		$message_parser = new \parse_message();

@@ -646,11 +646,10 @@ class acp_main
 		}
 
 		// Warn if no search index is created
-		if ($config['num_posts'] && class_exists($config['search_type']))
+		if ($config['num_posts'])
 		{
-			$error = false;
-			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			$search_backend_factory = $phpbb_container->get('search.backend_factory');
+			$search = $search_backend_factory->get_active();
 
 			if (!$search->index_created())
 			{

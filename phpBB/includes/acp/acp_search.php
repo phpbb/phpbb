@@ -52,6 +52,7 @@ class acp_search
 	{
 		global $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx;
+		global $phpbb_container;
 
 		$submit = $request->is_set_post('submit');
 
@@ -60,7 +61,7 @@ class acp_search
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$search_types = $this->get_search_types();
+		$search_types = $phpbb_container->get('search.backend_collection');
 
 		$settings = [
 			'search_interval'				=> 'float',
@@ -74,14 +75,11 @@ class acp_search
 		];
 
 		$search = null;
-		$error = false;
 		$search_options = '';
-		foreach ($search_types as $type)
+
+		foreach ($search_types as $search)
 		{
-			if ($this->init_search($type, $search, $error))
-			{
-				continue;
-			}
+			$type = get_class($search);
 
 			$name = $search->get_name();
 
@@ -108,7 +106,6 @@ class acp_search
 			}
 		}
 		unset($search);
-		unset($error);
 
 		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : array();
 		$updated = $request->variable('updated', false);
@@ -240,7 +237,7 @@ class acp_search
 	function index($id, $mode)
 	{
 		global $db, $user, $template, $phpbb_log, $request;
-		global $config, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
@@ -285,12 +282,11 @@ class acp_search
 				$this->state[0] = $request->variable('search_type', '');
 			}
 
-			$this->search = null;
 			$error = false;
-			if ($this->init_search($this->state[0], $this->search, $error))
-			{
-				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
-			}
+
+			$search_backend_factory = $phpbb_container->get('search.backend_factory');
+			$this->search = $search_backend_factory->get($this->state[0]);
+
 			$name = $this->search->get_name();
 
 			$action = &$this->state[1];
@@ -454,16 +450,13 @@ class acp_search
 			}
 		}
 
-		$search_types = $this->get_search_types();
+		$search_types = $phpbb_container->get('search.backend_collection');
 
 		$search = null;
-		$error = false;
-		foreach ($search_types as $type)
+
+		foreach ($search_types as $search)
 		{
-			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
-			{
-				continue;
-			}
+			$type = get_class($search);
 
 			$name = $search->get_name();
 
@@ -508,7 +501,6 @@ class acp_search
 			}
 		}
 		unset($search);
-		unset($error);
 		unset($statistics);
 		unset($data);
 
@@ -562,19 +554,6 @@ class acp_search
 			"</script>\n";
 	}
 
-	function get_search_types()
-	{
-		global $phpbb_extension_manager;
-
-		$finder = $phpbb_extension_manager->get_finder();
-
-		return $finder
-			->extension_suffix('_backend')
-			->extension_directory('/search')
-			->core_path('phpbb/search/')
-			->get_classes();
-	}
-
 	function get_max_post_id()
 	{
 		global $db;
@@ -600,26 +579,5 @@ class acp_search
 		ksort($this->state);
 
 		$config->set('search_indexing_state', implode(',', $this->state), true);
-	}
-
-	/**
-	* Initialises a search backend object
-	*
-	* @return false if no error occurred else an error message
-	*/
-	function init_search($type, &$search, &$error)
-	{
-		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db, $phpbb_dispatcher;
-
-		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
-		{
-			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
-			return $error;
-		}
-
-		$error = false;
-		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		return $error;
 	}
 }

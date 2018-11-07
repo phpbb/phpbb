@@ -1401,15 +1401,8 @@ function mcp_fork_topic($topic_ids)
 			if (!isset($search_type) && $topic_row['enable_indexing'])
 			{
 				// Select the search method and do some additional checks to ensure it can actually be utilised
-				$search_type = $config['search_type'];
-
-				if (!class_exists($search_type))
-				{
-					trigger_error('NO_SUCH_SEARCH_MODULE');
-				}
-
-				$error = false;
-				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
 				$search_mode = 'post';
 
 				if ($error)

@@ -18,6 +18,6 @@ require_once __DIR__ . '/base.php';
 */
 class phpbb_functional_search_postgres_test extends phpbb_functional_search_base
 {
-	protected $search_backend = '\phpbb\search\fulltext_postgres';
+	protected $search_backend = '\phpbb\search\backend\fulltext_postgres';
 
 }

@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\search;
+namespace phpbb\search\backend;
 
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
@@ -20,7 +20,7 @@ define('SPHINX_CONNECT_WAIT_TIME', 300);
 /**
 * Fulltext search based on the sphinx search daemon
 */
-class fulltext_sphinx
+class fulltext_sphinx implements search_backend_interface
 {
 	/**
 	 * Associative array holding index stats
@@ -122,7 +122,7 @@ class fulltext_sphinx
 
 	/**
 	 * Constructor
-	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
+	 * Creates a new \phpbb\search\backend\fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 * @param string $phpbb_root_path Relative path to phpBB root
@@ -133,15 +133,16 @@ class fulltext_sphinx
 	 * @param \phpbb\user $user User object
 	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
+		$this->auth = $auth;
 		$this->config = $config;
+		$this->db = $db;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
-		$this->db = $db;
-		$this->auth = $auth;
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 
 		// Initialize \phpbb\db\tools\tools object
 		global $phpbb_container; // TODO inject into object
@@ -163,24 +164,18 @@ class fulltext_sphinx
 		$this->sphinx = new \SphinxClient();
 
 		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
-
-		$error = false;
 	}
 
 	/**
-	* Returns the name of this search backend to be displayed to administrators
-	*
-	* @return string Name
-	*/
+	 * {@inheritdoc}
+	 */
 	public function get_name()
 	{
 		return 'Sphinx Fulltext';
 	}
 
 	/**
-	 * Returns the search_query
-	 *
-	 * @return string search query
+	 * {@inheritdoc}
 	 */
 	public function get_search_query()
 	{
@@ -188,9 +183,7 @@ class fulltext_sphinx
 	}
 
 	/**
-	 * Returns false as there is no word_len array
-	 *
-	 * @return false
+	 * {@inheritdoc}
 	 */
 	public function get_word_length()
 	{
@@ -198,9 +191,7 @@ class fulltext_sphinx
 	}
 
 	/**
-	 * Returns an empty array as there are no common_words
-	 *
-	 * @return array common words that are ignored by search backend
+	 * {@inheritdoc}
 	 */
 	public function get_common_words()
 	{
@@ -426,13 +417,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Splits keywords entered by a user into an array of words stored in $this->split_words
-	* Stores the tidied search query in $this->search_query
-	*
-	* @param string $keywords Contains the keyword as entered by the user
-	* @param string $terms is either 'all' or 'any'
-	* @return false if no valid keywords were found and otherwise true
-	*/
+	 * {@inheritdoc}
+	 */
 	public function split_keywords(&$keywords, $terms)
 	{
 		// Keep quotes and new lines
@@ -521,25 +507,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
+	 * {@inheritdoc}
+	 */
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		global $user, $phpbb_log;
@@ -780,24 +749,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
+	 * {@inheritdoc}
+	 */
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		$this->search_query = '';
@@ -809,14 +762,7 @@ class fulltext_sphinx
 	}
 
 	/**
-	 * Updates wordlist and wordmatch tables when a message is posted or changed
-	 *
-	 * @param	string	$mode	Contains the post mode: edit, post, reply, quote
-	 * @param	int	$post_id	The id of the post which is modified/created
-	 * @param	string	&$message	New or updated post content
-	 * @param	string	&$subject	New or updated post subject
-	 * @param	int	$poster_id	Post author's user id
-	 * @param	int	$forum_id	The id of the forum in which the post is located
+	 * {@inheritdoc}
 	 */
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
@@ -882,8 +828,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Delete a post from the index after it was deleted
-	*/
+	 * {@inheritdoc}
+	 */
 	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		$values = array();
@@ -989,8 +935,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Collects stats that can be displayed on the index maintenance page
-	*/
+	 * Computes the stats and store them in the $this->stats associative array
+	 */
 	protected function get_stats()
 	{
 		if ($this->index_created())
@@ -1012,10 +958,8 @@ class fulltext_sphinx
 	}
 
 	/**
-	* Returns a list of options for the ACP to display
-	*
-	* @return associative array containing template and config variables
-	*/
+	 * {@inheritdoc}
+	 */
 	public function acp()
 	{
 		$config_vars = array(

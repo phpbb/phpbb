@@ -2291,21 +2291,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	// Index message contents
 	if ($update_search_index && $data_ary['enable_indexing'])
 	{
-		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = $config['search_type'];
-
-		if (!class_exists($search_type))
-		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
-		}
-
-		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
-		{
-			trigger_error($error);
-		}
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
 
 		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
 	}

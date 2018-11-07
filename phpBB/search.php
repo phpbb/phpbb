@@ -294,20 +294,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
-	$search_type = $config['search_type'];
-
-	if (!class_exists($search_type))
-	{
-		trigger_error('NO_SUCH_SEARCH_MODULE');
-	}
-	// We do some additional checks in the module to ensure it can actually be utilised
-	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-	if ($error)
-	{
-		trigger_error($error);
-	}
+	$search_backend_factory = $phpbb_container->get('search.backend_factory');
+	$search = $search_backend_factory->get_search();
 
 	// let the search module split up the keywords
 	if ($keywords)

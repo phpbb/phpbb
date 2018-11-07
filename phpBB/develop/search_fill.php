@@ -39,13 +39,7 @@ if (!class_exists($search_type))
 	trigger_error('NO_SUCH_SEARCH_MODULE');
 }
 
-$error = false;
-$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-if ($error)
-{
-	trigger_error($error);
-}
+$search = new $search_type($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx);
 
 print "<html>\n<body>\n";
 
@@ -74,7 +68,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchstart = $postcounter + 1;
 	$batchend = $postcounter + $batchsize;
 	$batchcount++;
-	
+
 	$sql = "SELECT *
 		FROM " . POSTS_TABLE . "
 		WHERE post_id
@@ -90,7 +84,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$db->sql_freeresult($result);
 
 	$post_rows = count($rowset);
-	
+
 	if( $post_rows )
 	{
 
