@@ -23,6 +23,7 @@ class v324rc1 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
+			'\phpbb\db\migration\data\v320\v323',
 			'\phpbb\db\migration\data\v32x\forum_topics_per_page_type',
 		);
 	}

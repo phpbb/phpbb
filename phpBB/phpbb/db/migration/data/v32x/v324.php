@@ -13,25 +13,26 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class v323rc1 extends \phpbb\db\migration\migration
+class v324 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return phpbb_version_compare($this->config['version'], '3.2.3-RC1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.2.4', '>=');
 	}
 
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v320\v322',
-			'\phpbb\db\migration\data\v32x\enable_accurate_pm_button',
+			'\phpbb\db\migration\data\v32x\v324rc1',
+			'\phpbb\db\migration\data\v32x\remove_imagick',
 		);
+
 	}
 
 	public function update_data()
 	{
 		return array(
-			array('config.update', array('version', '3.2.3-RC1')),
+			array('config.update', array('version', '3.2.4')),
 		);
 	}
 }
