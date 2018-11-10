@@ -111,8 +111,6 @@ $lang = array_merge($lang, array(
 
 	'IMAGE_LINK_SIZE'			=> 'Image link dimensions',
 	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'Display image attachment as an inline text link if image is larger than this. To disable this behaviour, set the values to 0px by 0px.',
-	'IMAGICK_PATH'				=> 'ImageMagick path',
-	'IMAGICK_PATH_EXPLAIN'		=> 'Full path to the imagemagick convert application, e.g. <samp>/usr/bin/</samp>.',
 
 	'MAX_ATTACHMENTS'				=> 'Maximum number of attachments per post',
 	'MAX_ATTACHMENTS_PM'			=> 'Maximum number of attachments per private message',
@@ -135,7 +133,6 @@ $lang = array_merge($lang, array(
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No extension group specified.',
 	'NO_FILE_CAT'				=> 'None',
 	'NO_IMAGE'					=> 'No image',
-	'NO_THUMBNAIL_SUPPORT'		=> 'Thumbnail support has been disabled. For proper functionality either the GD extension need to be available or imagemagick being installed. Both were not found.',
 	'NO_UPLOAD_DIR'				=> 'The upload directory you specified does not exist.',
 	'NO_WRITE_UPLOAD'			=> 'The upload directory you specified cannot be written to. Please alter the permissions to allow the webserver to write to it.',
 
@@ -147,7 +144,6 @@ $lang = array_merge($lang, array(
 	'REMOVE_DISALLOWED_IPS'			=> 'Remove or un-exclude <em>disallowed</em> IPs/hostnames',
 	'RESYNC_FILES_STATS_CONFIRM'	=> 'Are you sure you wish to resynchronise file statistics?',
 
-	'SEARCH_IMAGICK'				=> 'Search for ImageMagick',
 	'SECURE_ALLOW_DENY'				=> 'Allow/Deny list',
 	'SECURE_ALLOW_DENY_EXPLAIN'		=> 'Change the default behaviour when secure downloads are enabled of the Allow/Deny list to that of a <strong>whitelist</strong> (Allow) or a <strong>blacklist</strong> (Deny).',
 	'SECURE_DOWNLOADS'				=> 'Enable secure downloads',
