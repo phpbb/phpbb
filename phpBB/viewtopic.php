@@ -263,6 +263,20 @@ if (!$topic_data)
 
 $forum_id = (int) $topic_data['forum_id'];
 
+/**
+ * Modify the forum ID to handle the correct display of viewtopic if needed
+ *
+ * @event core.viewtopic_modify_forum_id
+ * @var string	forum_id		forum ID
+ * @var array	topic_data		array of topic's data
+ * @since 3.2.5-RC1
+ */
+$vars = array(
+	'forum_id',
+	'topic_data',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_forum_id', compact($vars)));
+
 // If the request is missing the f parameter, the forum id in the user session data is 0 at the moment.
 // Let's fix that now so that the user can't hide from the forum's Who Is Online list.
 $user->page['forum'] = $forum_id;
