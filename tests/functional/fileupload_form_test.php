@@ -99,7 +99,6 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 		$form = $crawler->selectButton('Submit')->form(array(
 			'config[check_attachment_content]'	=> 0,
-			'config[img_imagick]'				=> '',
 		));
 		self::submit($form);
 

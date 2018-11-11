@@ -23,6 +23,7 @@ class v322rc1 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
+			'\phpbb\db\migration\data\v32x\v321',
 			'\phpbb\db\migration\data\v32x\fix_user_styles',
 			'\phpbb\db\migration\data\v32x\update_prosilver_bitfield',
 			'\phpbb\db\migration\data\v32x\email_force_sender',
