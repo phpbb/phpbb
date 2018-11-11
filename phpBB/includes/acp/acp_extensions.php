@@ -57,7 +57,7 @@ class acp_extensions
 		$ext_name = $this->request->variable('ext_name', '');
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
-		$safe_time_limit = (ini_get('max_execution_time') / 2);
+		$safe_time_limit = ((int) ini_get('max_execution_time') / 2);
 		$start_time = time();
 
 		// Cancel action
