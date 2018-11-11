@@ -266,7 +266,7 @@ class acp_database
 						$file = $request->variable('file', '');
 						$download = $request->variable('download', '');
 
-						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
+						if (!preg_match('#^backup_\d{10,}_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
 						{
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -504,7 +504,7 @@ class acp_database
 
 						while ($row = $db->sql_fetchrow($result))
 						{
-							if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $row['filename'], $matches))
+							if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $row['filename'], $matches))
 							{
 								if (in_array($matches[2], $methods))
 								{

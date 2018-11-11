@@ -23,6 +23,7 @@ class v323rc1 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
+			'\phpbb\db\migration\data\v32x\v322',
 			'\phpbb\db\migration\data\v32x\enable_accurate_pm_button',
 		);
 	}

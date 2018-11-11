@@ -46,7 +46,6 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array(
 			'img_min_thumb_filesize' => 2,
 			'img_max_thumb_width' => 2,
-			'img_imagick' => '',
 		));
 
 		$this->db = $this->db = $this->new_dbal();
