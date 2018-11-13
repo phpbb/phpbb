@@ -44,13 +44,13 @@ class class_settings
 	*/
 	function setup_settings()
 	{
-		global $db, $cache, $board_config, $lang;
+		global $db, $cache, $board_config, $lang, $phpEx;
 
 		// Get all settings
 		$this->modules = array();
 		foreach ($cache->obtain_settings() as $settings_file)
 		{
-			include(PHPBB_ROOT_PATH . 'includes/' . SETTINGS_PATH . $settings_file . '.' . PHP_EXT);
+			include(PHPBB_ROOT_PATH . 'includes/' . SETTINGS_PATH . $settings_file . '.' . $phpEx);
 		}
 
 		return true;
@@ -411,7 +411,7 @@ class class_settings
 	*/
 	function setup_modules($modules_path, $modules_prefix = 'settings_')
 	{
-		global $db, $cache, $board_config, $lang;
+		global $db, $cache, $board_config, $lang, $phpEx;
 
 		// We need to reset the modules to avoid modules in memory to be parsed again
 		$this->modules = array();
@@ -428,7 +428,7 @@ class class_settings
 			{
 				while (($file = @readdir($dir)) !== false)
 				{
-					if ((strpos($file, $modules_prefix) === 0) && (substr($file, -(strlen(PHP_EXT) + 1)) === '.' . PHP_EXT))
+					if ((strpos($file, $modules_prefix) === 0) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
 					{
 						@include($modules_path . $file);
 					}
@@ -460,9 +460,9 @@ class class_settings
 			{
 				while (($file = @readdir($dir)) !== false)
 				{
-					if ((strpos($file, 'lang_' . $suffix) === 0) && (substr($file, -(strlen(PHP_EXT) + 1)) === '.' . PHP_EXT))
+					if ((strpos($file, 'lang_' . $suffix) === 0) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
 					{
-						$lang_files[] = substr($file, 0, -(strlen(PHP_EXT) + 1));
+						$lang_files[] = substr($file, 0, -(strlen($phpEx) + 1));
 					}
 				}
 				@closedir($dir);

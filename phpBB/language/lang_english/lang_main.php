@@ -88,10 +88,32 @@ $lang['No'] = 'No';
 $lang['Enabled'] = 'Enabled';
 $lang['Disabled'] = 'Disabled';
 $lang['Error'] = 'Error';
+// -------------------------------------------------
+$lang['Goto_page'] = 'Goto page';
 
+$lang['Post_by_author'] = 'by';
+$lang['Posted_on_date'] = 'on';
+$lang['In'] = 'in';
+
+$lang['Statistics'] = 'Statistics';
+$lang['Legend'] = 'Legend: ';
+$lang['Posted_articles_zero_total'] = 'No post'; // Number of posts
+$lang['Posted_articles_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Posted_article_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Registered_users_zero_total'] = 'No member'; // # registered users
+$lang['Registered_users_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Registered_user_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Newest_user'] = 'Our newest member <strong>%s%s%s</strong>'; // a href, username, /a  
+
+$lang['Rules_moderate'] = '%sModerate this forum%s'; // %s replaced by a href links, do not remove!
+
+$lang['Quick_mod'] = 'Quick-mod tools:';
+
+$lang['Search_forums'] = 'Search within';
+// -------------------------------------------------
 $lang['Next'] = 'Next';
 $lang['Previous'] = 'Previous';
-$lang['Goto_page'] = '';
+$lang['Goto_page'] = 'Goto page';
 $lang['Joined'] = 'Joined';
 $lang['IP_Address'] = 'IP Address';
 
@@ -1020,6 +1042,14 @@ $lang['General_Error'] = 'General Error';
 $lang['Critical_Error'] = 'Critical Error';
 $lang['An_error_occured'] = 'An Error Occurred';
 $lang['A_critical_error'] = 'A Critical Error Occurred';
+
+// Login
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
+$lang['Forgotten_password'] = 'I forgot my password';
+$lang['AUTOLOGIN'] = 'Log me on automatically each visit';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.'; 
 
 $lang['Admin_reauthenticate'] = 'To administer the board you must re-authenticate yourself.';
 $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';

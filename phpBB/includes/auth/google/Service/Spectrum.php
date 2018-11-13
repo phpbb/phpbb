@@ -23,7 +23,7 @@
  *
  * <p>
  * For more information about this service, see the API
- * <a href="http://developers.google.com/spectrum" target="_blank">Documentation</a>
+ * <a href="http://developers.google.com/spectrum" target="_blank"'.'>Documentation</a>
  * </p>
  *
  * @author Google, Inc.

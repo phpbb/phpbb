@@ -3,11 +3,11 @@
 <h2 class="viewonline-title">{TOTAL_REGISTERED_USERS_ONLINE}</h2>
 <p>{TOTAL_GUEST_USERS_ONLINE}<!-- IF S_SWITCH_GUEST_DISPLAY --> &bull; <a href="{U_SWITCH_GUEST_DISPLAY}">{L_SWITCH_GUEST_DISPLAY}</a><!-- ENDIF --></p>
 
-<div class="action-bar top">
+<div class="action-bar bar-top">
 	<div class="pagination">
-		<!-- IF .pagination --> 
+		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
-		<!-- ELSE --> 
+		<!-- ELSE -->
 			{PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
@@ -15,7 +15,7 @@
 
 <div class="forumbg forumbg-table">
 	<div class="inner">
-	
+
 	<table class="table1">
 
 	<!-- IF .user_row -->
@@ -43,17 +43,17 @@
 	<!-- ENDIF -->
 	</tbody>
 	</table>
-	
+
 	</div>
 </div>
 
 <!-- IF LEGEND --><p><em>{L_LEGEND}{L_COLON} {LEGEND}</em></p><!-- ENDIF -->
 
-<div class="action-bar bottom">
+<div class="action-bar bar-bottom">
 	<div class="pagination">
-		<!-- IF .pagination --> 
+		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
-		<!-- ELSE --> 
+		<!-- ELSE -->
 			{PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>

@@ -8,11 +8,11 @@
 				<option value="{timezone_date.VALUE}"<!-- IF timezone_date.SELECTED --> selected="selected"<!-- ENDIF -->>{timezone_date.TITLE}</option>
 			<!-- END timezone_date -->
 		</select>
-		<input type="button" id="tz_select_date_suggest" class="button2" style="display: none;" timezone-preselect="<!-- IF S_TZ_PRESELECT -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
+		<input type="button" id="tz_select_date_suggest" class="button1 button button-form-bold" style="display: none;" timezone-preselect="<!-- IF S_TZ_PRESELECT -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
 	</dd>
 	<!-- ENDIF -->
 	<dd>
-		<select name="tz" id="timezone" class="autowidth tz_select">
+		<select name="tz" id="timezone" class="autowidth tz_select timezone">
 			<option value="">{L_SELECT_TIMEZONE}</option>
 			<!-- BEGIN timezone_select -->
 			<optgroup label="{timezone_select.LABEL}" data-tz-value="{timezone_select.VALUE}">

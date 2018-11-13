@@ -12,24 +12,11 @@
 	<dl>
 	<dt><label>{L_CONFIRM_CODE}{L_COLON}</label><br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
 	<dd class="captcha">
-		<script>
-		var RecaptchaOptions = {
-			lang : '{LA_RECAPTCHA_LANG}',
-			theme : 'clean',
-			tabindex : <!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->
-		};
-		</script>
-		<script src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
-
 		<noscript>
-		<div>
-			<object data="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" type="text/html" height="300" width="500"></object><br />
-			<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-			<input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
-		</div>
+			<div>{L_RECAPTCHA_NOSCRIPT}</div>
 		</noscript>
-
-		<a href="http://www.google.com/intl/{LA_RECAPTCHA_LANG}/policies/" target="_blank" class="recaptcha-responsive" style="display: none"><img alt="" width="71" height="36" src="{RECAPTCHA_SERVER}/img/clean/logo.png"></a>
+		<script src="{RECAPTCHA_SERVER}.js?hl={LA_RECAPTCHA_LANG}" async defer></script>
+		<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-tabindex="<!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->"></div>
 	</dd>
 	</dl>
 <!-- ELSE -->

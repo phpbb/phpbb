@@ -981,6 +981,20 @@ $lang['General_Error'] = 'Fel';
 $lang['Critical_Error'] = 'Kritiskt Fel';
 $lang['An_error_occured'] = 'Ett Fel Inträffade';
 $lang['A_critical_error'] = 'Ett Kritiskt Fel Inträffade';
+// Login
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
+$lang['Forgotten_password'] = 'I forgot my password';
+$lang['AUTOLOGIN'] = 'Log me on automatically each visit';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.'; 
+// Login
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
+$lang['Forgotten_password'] = 'I forgot my password';
+$lang['AUTOLOGIN'] = 'Log me on automatically each visit';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.'; 
 
 $lang['Admin_reauthenticate'] = 'To administer the board you must re-authenticate yourself.';
 $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';

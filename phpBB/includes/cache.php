@@ -519,6 +519,8 @@ class cache extends base
 	*/
 	function save()
 	{
+		global $phpEx;
+		
 		if (!$this->is_modified)
 		{
 			return;
@@ -534,7 +536,7 @@ class cache extends base
 				exit;
 			}
 
-			die('Not able to open ' . $this->cache_dir . 'data_global.' . PHP_EXT);
+			die('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx);
 			exit;
 		}
 
@@ -546,6 +548,8 @@ class cache extends base
 	*/
 	function tidy()
 	{
+		global $phpEx;
+		
 		foreach ($this->cache_dirs as $cache_folder)
 		{
 			$cache_folder = $this->validate_cache_folder($cache_folder, false, true);
@@ -574,7 +578,7 @@ class cache extends base
 			closedir($dir);
 		}
 
-		if (file_exists($this->cache_dir . 'data_global.' . PHP_EXT))
+		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
 			if (!sizeof($this->vars))
 			{
@@ -676,6 +680,7 @@ class cache extends base
 	*/
 	function destroy($var_name, $table = '', $cache_folder = '')
 	{
+		global $phpEx;
 		if (($var_name == 'sql') && !empty($table))
 		{
 			if (!is_array($table))
@@ -727,7 +732,7 @@ class cache extends base
 
 		if ($var_name[0] == '_')
 		{
-			$this->remove_file('data' . $var_name . '.' . PHP_EXT, true, $this->cache_dir);
+			$this->remove_file('data' . $var_name . '.' . $phpEx, true, $this->cache_dir);
 		}
 		elseif (isset($this->vars[$var_name]))
 		{
@@ -745,6 +750,7 @@ class cache extends base
 	*/
 	function destroy_datafiles($datafiles, $cache_folder = '', $prefix = 'data', $prefix_lookup = false)
 	{
+		global $phpEx;
 		$deleted = 0;
 		if (empty($datafiles))
 		{
@@ -758,7 +764,7 @@ class cache extends base
 		{
 			foreach ($datafiles as $datafile)
 			{
-				$file_deleted = $this->remove_file($prefix . $datafile . '.' . PHP_EXT, false, $cache_folder);
+				$file_deleted = $this->remove_file($prefix . $datafile . '.' . $phpEx, false, $cache_folder);
 				$deleted = $file_deleted ? $deleted++ : $deleted;
 			}
 		}
@@ -775,7 +781,7 @@ class cache extends base
 			{
 				foreach ($datafiles as $datafile)
 				{
-					if ((strpos($entry, $prefix . $datafile) === 0) && (substr($entry, -(strlen(PHP_EXT) + 1)) === ('.' . PHP_EXT)))
+					if ((strpos($entry, $prefix . $datafile) === 0) && (substr($entry, -(strlen($phpEx) + 1)) === ('.' . $phpEx)))
 					{
 						$file_deleted = $this->remove_file($entry, false, $cache_folder);
 						$deleted = $file_deleted ? $deleted++ : $deleted;
@@ -793,9 +799,10 @@ class cache extends base
 	*/
 	function _exists($var_name)
 	{
+		global $phpEx;
 		if ($var_name[0] == '_')
 		{
-			return file_exists($this->cache_dir . 'data' . $var_name . '.' . PHP_EXT);
+			return file_exists($this->cache_dir . 'data' . $var_name . '.' . $phpEx);
 		}
 		else
 		{
@@ -944,13 +951,15 @@ class cache extends base
 	*/
 	function _read($filename, $cache_folder = '')
 	{
+		global $phpEx;
+		
 		if (!empty($this->use_old_ip_cache))
 		{
 			return $this->_read_ip($filename, $cache_folder);
 		}
 
 		$cache_folder = $this->validate_cache_folder($cache_folder, false, false);
-		$file = $cache_folder . $filename . '.' . PHP_EXT;
+		$file = $cache_folder . $filename . '.' . $phpEx;
 
 		$type = substr($filename, 0, strpos($filename, '_'));
 
@@ -1129,13 +1138,15 @@ class cache extends base
 	*/
 	function _write($filename, $data = null, $expires = 0, $query = '', $cache_folder = '')
 	{
+		global $phpEx;
+		
 		if (!empty($this->use_old_ip_cache))
 		{
 			return $this->_write_ip($filename, $data, $expires, $query, $cache_folder);
 		}
 
 		$cache_folder = $this->validate_cache_folder($cache_folder, false, false);
-		$file = $cache_folder . $filename . '.' . PHP_EXT;
+		$file = $cache_folder . $filename . '.' . $phpEx;
 
 		if ($handle = @fopen($file, 'wb'))
 		{
@@ -1186,7 +1197,7 @@ class cache extends base
 
 			if (!function_exists('phpbb_chmod'))
 			{
-				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
+				include(PHPBB_ROOT_PATH . 'includes/functions.' . $phpEx);
 			}
 
 			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
@@ -1206,15 +1217,17 @@ class cache extends base
 	*/
 	function _read_ip($filename, $cache_folder = '')
 	{
+		global $phpEx;
+		
 		$cache_folder = $this->validate_cache_folder($cache_folder, false, false);
-		$file = $cache_folder . $filename . '.' . PHP_EXT;
+		$file = $cache_folder . $filename . '.' . $phpEx;
 
 		if (file_exists($file))
 		{
 			@include($file);
 			if (!empty($expired))
 			{
-				$this->remove_file($filename . '.' . PHP_EXT, true, $cache_folder);
+				$this->remove_file($filename . '.' . $phpEx, true, $cache_folder);
 				return false;
 			}
 		}
@@ -1245,8 +1258,10 @@ class cache extends base
 	*/
 	function _write_ip($filename, $data = null, $expires = 0, $query = '', $cache_folder = '')
 	{
+		global $phpEx;
+		
 		$cache_folder = $this->validate_cache_folder($cache_folder, false, false);
-		$file = $cache_folder . $filename . '.' . PHP_EXT;
+		$file = $cache_folder . $filename . '.' . $phpEx;
 
 		if ($fp = @fopen($file, 'wb'))
 		{
@@ -1278,7 +1293,7 @@ class cache extends base
 
 			if (!function_exists('phpbb_chmod'))
 			{
-				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
+				include(PHPBB_ROOT_PATH . 'includes/functions.' . $phpEx);
 			}
 
 			phpbb_chmod($file, CHMOD_WRITE);
@@ -1753,9 +1768,9 @@ class cache extends base
 			{
 				while (($file = @readdir($dir)) !== false)
 				{
-					if ((strpos($file, 'settings_') === 0) && (substr($file, -(strlen(PHP_EXT) + 1)) === '.' . PHP_EXT))
+					if ((strpos($file, 'settings_') === 0) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
 					{
-						$settings_files[] = substr($file, 0, -(strlen(PHP_EXT) + 1));
+						$settings_files[] = substr($file, 0, -(strlen($phpEx) + 1));
 					}
 				}
 				@closedir($dir);
@@ -1772,7 +1787,7 @@ class cache extends base
 	*/
 	function obtain_lang_files()
 	{
-		global $board_config;
+		global $board_config, $phpEx;
 
 		if (($lang_files = $this->get('_lang_' . $board_config['default_lang'])) === false)
 		{
@@ -1785,9 +1800,9 @@ class cache extends base
 			{
 				while (($file = @readdir($dir)) !== false)
 				{
-					if ((strpos($file, 'lang_extend_') === 0) && (substr($file, -(strlen(PHP_EXT) + 1)) === '.' . PHP_EXT))
+					if ((strpos($file, 'lang_extend_') === 0) && (substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx))
 					{
-						$lang_files[] = substr($file, 0, -(strlen(PHP_EXT) + 1));
+						$lang_files[] = substr($file, 0, -(strlen($phpEx) + 1));
 					}
 				}
 				@closedir($dir);

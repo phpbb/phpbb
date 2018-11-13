@@ -20,6 +20,13 @@
  *
  ***************************************************************************/
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	die('Hacking attempt');
+}
 
 /**
  * Class: Template.
@@ -769,7 +776,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 //
 function session_pagestart($user_ip, $thispage_id)
 {
-	global $db, $lang, $board_config;
+	global $db, $lang, $board_config, $phpEx;
 	global $_COOKIE, $_GET, $SID;
 
 	$cookiename = $board_config['cookie_name'];
@@ -800,12 +807,29 @@ function session_pagestart($user_ip, $thispage_id)
 	}
 
 	$thispage_id = (int) $thispage_id;
-
+	
+	/*
+	* Redirect for fresh MX-Publisher install
+	*/
+	if( !defined('PHPBB_INSTALLED') || (PHPBB_INSTALLED === false) )
+	{
+		header('Location: ' . $phpbb_root_path . 'install/install.' . $phpEx);
+		exit;
+	}
+	
 	//
 	// Does a session exist?
 	//
 	if ( !empty($session_id) )
 	{
+		$sql = "SELECT username from " . $table_prefix . USERS_TABLE . " WHERE  user_id = '1'";
+		if(!$_result = $db->sql_query($sql))
+		{
+			print('phpBB not Installed; Configuration file or Dababase Error: '. basename( __DIR__  ) .  ', line: ' . __LINE__ . ', file: ' . __FILE__ . '<br /><br />SQL Error : ' . $db->sql_error('')['code'] . ' ' . $db->sql_error('')['message'] . '<br />');
+			header('Location: ' . $phpbb_root_path . 'install/install.' . $phpEx);
+			exit;
+		}
+		
 		//
 		// session_id exists so go ahead and attempt to grab all
 		// data in preparation
@@ -1198,6 +1222,7 @@ class user
 
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
+	protected $language;
 	protected $request;
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -1286,7 +1311,7 @@ class user
 	//
 	function user()
 	{
-		global $cache, $request, $template, $board_config, $db, $phpbb_root_path, $phpEx;
+		global $cache, $request, $template, $board_config, $db, $phpbb_root_path, $phpEx, $language;
  		
 		$this->cache             = $cache;
 		$this->request           = $request;
@@ -1294,6 +1319,7 @@ class user
 		$this->config            = $board_config;
 		$this->db                 = $db;
 		$this->user               = $this;
+		$this->language         = $language;
 
 		// Setup $this->db_tools
 		if (!class_exists('phpbb_db_tools') && !class_exists('tools'))
@@ -1476,7 +1502,7 @@ class user
 			$this->db_tools->sql_column_add(USERS_TABLE, 'user_sig', array('column_type_sql_default'	=> 'mediumtext ', 'column_type_sql' => 'mediumtext', 'null' => 'NOT NULL', 'default' => '""', 'after' => 'user_sig'), false);
 		}
 		
-		if (!isset($this->data['user_sig_bbcode_uid']))
+		if (!$this->db->sql_field_exists('user_sig_bbcode_uid', USERS_TABLE))
 		{
 			print('<p><span style="color: red;"></span></p><i><p>Cheching for user_sig_bbcode_uid column in USERS_TABLE schema!</p></i>');
 			$this->db_tools->sql_column_add(USERS_TABLE, 'user_sig_bbcode_uid', array('column_type_sql_default'	=> 'varchar(8)', 'column_type_sql' => 'varchar(8)', 'null' => 'NOT NULL', 'after' => 'user_sig'), false);
@@ -2619,14 +2645,24 @@ class user
 		}
 	}
 	
-	//
-	// Adds/updates a new session to the database for the given userid.
-	// Returns the new session ID on success.
-	//
+	/**
+	* Start session management
+	*
+	* This is where all session activity begins. We gather various pieces of
+	* information from the client and server. We test to see if a session already
+	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a
+	* new one ... pretty logical heh? We also examine the system load (if we're
+	* running on a system which makes such information readily available) and
+	* halt if it's above an admin definable limit.
+	*
+	* @param bool $update_session_page if true the session page gets updated.
+	*			This can be set to circumvent certain scripts to update the users last visited page.
+	*/
 	function session_begin($user_id = 1, $user_ip = false, $page_id = 1, $auto_create = 0, $enable_autologin = 0, $admin = 0)
 	{
 		global $db, $board_config, $backend;
 		global $request_vars, $SID;
+		
 		$user_ip = $user_ip ? $user_ip : $this->user_ip;
 		$cookiename = $this->config['cookie_name'];
 		$cookiepath = $this->config['cookie_path'];
@@ -2765,6 +2801,10 @@ class user
 				$login = 1;
 			}
 		}
+		elseif ($this->request->is_request('login'))
+		{
+			die('Invalid user_id to login: '.ANONYMOUS);
+		}
 		else
 		{
 			// Bot user, if they have a SID in the Request URI we need to get rid of it otherwise they'll index this page with the SID, duplicate content oh my!
@@ -2814,7 +2854,7 @@ class user
 		//
 		preg_match('/(..)(..)(..)(..)/', $user_ip, $user_ip_parts);
 
-		$sql = "SELECT ban_ip, ban_userid, ban_email
+		$sql = "SELECT *
 			FROM " . BANLIST_TABLE . "
 			WHERE ban_ip IN ('" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . $user_ip_parts[4] . "', '" . $user_ip_parts[1] . $user_ip_parts[2] . $user_ip_parts[3] . "ff', '" . $user_ip_parts[1] . $user_ip_parts[2] . "ffff', '" . $user_ip_parts[1] . "ffffff')
 				OR ban_userid = $user_id";
@@ -2835,7 +2875,13 @@ class user
 				message_die(CRITICAL_MESSAGE, 'You_been_banned');
 			}
 		}
-
+		
+		//
+		// Surfing with Google Translate ?
+		// Borowed from MetaBBv6
+		//
+		$robot = $this->data['is_bot'];
+		
 		//
 		// Create or update the session
 		//
@@ -3349,7 +3395,95 @@ class user
 			unset($auto_login_key);
 		}
 	}
+	
+	/*
+	* BOTS Parsing Function
+	* Thanks to Luca aka Mighty Gorgon
+	*/
+	function bots_parse($ip_address, $bot_color = '#888888', $browser = false, $check_inactive = false)
+	{
+		global $db, $lang;
+		/*
+		// Testing!!!
+		$browser = 'mgbot/ 1.0';
+		$bot_name = 'MG';
+		return $bot_name;
+		*/
 
+		$bot_name = false;
+		//return $bot_name;
+		//$bot_color = empty($bot_color) ? '#888888' : $bot_color;
+
+		if (!$this->isCrawler($this->request->server('HTTP_USER_AGENT'))) 
+		{
+		    $this->data['is_bot'] = 0;
+			return array('name' => false, 'id' => 0);
+		}
+
+		$active_bots = array();
+		$sql = "SELECT *
+			FROM " . BOTS_TABLE . "
+			ORDER BY bot_id";
+		$result = $this->db->sql_query($sql, 0, 'bots_list_');
+
+		while($row = $this->db->sql_fetchrow($result))
+		{
+			$active_bots[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		for ($i = 0; $i < sizeof($active_bots); $i++)
+		{
+			if (!empty($active_bots[$i]['bot_agent']) && preg_match('#' . str_replace('\*', '.*?', preg_quote($active_bots[$i]['bot_agent'], '#')) . '#i', $browser))
+			{
+				$bot_name = (!empty($active_bots[$i]['bot_color']) ? $active_bots[$i]['bot_color'] : ('<b style="color:' . $bot_color . '">' . $active_bots[$i]['bot_name'] . '</b>'));
+				if (!empty($check_inactive) && ($active_bots[$i]['bot_active'] == 0))
+				{
+					if (!defined('STATUS_503')) define('STATUS_503', true);
+					message_die(GENERAL_ERROR, $lang['Not_Authorized']);
+				}
+				return array('name' => $bot_name, 'id' => $active_bots[$i]['bot_id']);
+			}
+
+			if (!empty($ip_address) && !empty($active_bots[$i]['bot_ip']))
+			{
+				foreach (explode(',', $active_bots[$i]['bot_ip']) as $bot_ip)
+				{
+					$bot_ip = trim($bot_ip);
+					if (!empty($bot_ip) && (strpos($ip_address, $bot_ip) === 0))
+					{
+						$bot_name = (!empty($active_bots[$i]['bot_color']) ? $active_bots[$i]['bot_color'] : ('<b style="color:' . $bot_color . '">' . $active_bots[$i]['bot_name'] . '</b>'));
+						if (!empty($check_inactive) && ($active_bots[$i]['bot_active'] == 0))
+						{
+							if (!defined('STATUS_503')) define('STATUS_503', true);
+							message_die(GENERAL_ERROR, $lang['Not_Authorized']);
+						}
+						return array('name' => $bot_name, 'id' => $active_bots[$i]['bot_id']);
+					}
+				}
+			}
+		}
+
+		return array('name' => false, 'id' => 0);
+	}
+
+	/*
+	* Update bots table
+	* Thanks to Luca aka Mighty Gorgon
+	*/
+	function bots_table_update($bot_id)
+	{
+		global $db, $config;
+
+		$sql = "UPDATE " . BOTS_TABLE . "
+						SET bot_visit_counter = (bot_visit_counter + 1),
+							bot_last_visit = '" . time() . "'
+						WHERE bot_id = '" . $bot_id . "'";
+		$result = $this->db->sql_query($sql);
+
+		return true;
+	}
+	
 	/** *******************************************************************************************************
 	 * Include the User class
 	 ******************************************************************************************************* */
@@ -3830,7 +3964,7 @@ class user
 			{
 				$this->img_lang = (file_exists($phpbb_root_path . $this->template_path . $this->template_name . '/theme/' . 'lang_' . $this->user_language_name)) ? $this->user_language_name : $this->default_language_name;
 				$this->img_lang_dir = 'lang_' . $this->img_lang;
-				$this->imageset_backend = 'phpbb2';	
+				$this->imageset_backend = 'phpbb2';
 			}
 			if ((@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/{$this->user_language}")) || (@is_dir("{$phpbb_root_path}{$this->template_path}{$this->template_name}/theme/{$this->default_language}")))
 			{
@@ -3969,7 +4103,7 @@ class user
 			
 			/* Here we overwrite phpBB images from the template db or configuration file  */		
 			$rows = $this->image_rows($this->images);		
-			
+							
 			foreach ($rows as $row)
 			{
 				$row['image_filename'] = rawurlencode($row['image_filename']);
@@ -5586,7 +5720,7 @@ class user
 	/**
 	* Specify/Get image name , extension
 	*/
-	function img_name_ext($img, $prefix = 'img_', $new_prefix = '', $type = 'filename')
+	function img_name_ext($img, $prefix = '', $new_prefix = '', $type = 'filename')
 	{	
 		if (strpos($img, '.') !== false)
 		{
@@ -5633,7 +5767,7 @@ class user
 	// common phpBB images, this will have immedaite effect for all mxBB pages.
 	//
 	*/
-	function img($img, $alt = '', $width = false, $suffix = '', $type = '')
+	function img($img, $alt = '', $width = false, $prefix = '', $type = '')
 	{
 		static $imgs;
 		global $phpbb_root_path, $root_path, $theme;
@@ -5642,7 +5776,7 @@ class user
 
 		if ($alt)
 		{
-			$alt = $this->lang[$alt];
+			$alt = $this->language->lang($alt);
 			$title = ' title="' . $alt . '"';
 		}
 		
@@ -5778,6 +5912,10 @@ class user
 		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/images/lang_' . $this->default_language_name . '/') )
 		{		
 			$this->img_lang = $this->default_language_name;
+		}
+		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/lang_' . $this->default_language_name . '/') )
+		{		
+			$this->img_lang = $this->default_language_name;
 		}		
 		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/images/' . $this->default_language . '/') )
 		{		
@@ -5798,7 +5936,11 @@ class user
 		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/images/lang_' . $this->user_language_name . '/') )
 		{		
 			$this->img_lang = $this->user_language_name;
-		}		
+		}
+		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/lang_' . $this->user_language_name . '/') )
+		{		
+			$this->img_lang = $this->user_language_name;
+		}
 		else if ( file_exists($phpbb_root_path . $current_template_path  . '/theme/images/' . $this->user_language . '/') )
 		{		
 			$this->img_lang = $this->user_language;
@@ -5861,7 +6003,6 @@ class user
 			$img_data['height'] = !empty($height) ? $height : (!empty($this->img_array['image_height']) ? (!empty($this->img_array['image_width']['img_'.$img]) ? $this->img_array['image_height']['img_'.$img] : (!empty($this->img_array['image_height'][$img]) ? $this->img_array['image_height'][$img] : 47)) : 47);
 		}
 		
-		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
 		
 		$use_width = ($width === false) ? $img_data['width'] : $width;
 		
@@ -5878,14 +6019,14 @@ class user
 			case 'height':
 				return $img_data['height'];
 			break;
-							
+			
 			case 'filename':
 				return $img . '.' . $img_ext;
 			break;
 			
-			case 'class':			
-			case 'name':		
-				return $img;
+			case 'class':
+			case 'name':
+				return $prefix . $img;
 			break;
 			
 			case 'alt':
@@ -5897,12 +6038,16 @@ class user
 			break;
 			
 			case 'full_tag':
-				return '<img src="' . $img_data['src'] . '"' . (($use_width) ? ' width="' . $use_width . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				return '<img src="' . $img_data['src'] . '"' . (($use_width) ? ' width="' . $use_width . '"' : '') . (($use_width) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 			
-			case 'html':			
-			default:		
-				return '<span class="imageset ' . $img . '"' . $title . '>' . $alt . '</span>';						
+			case 'tag':
+				return '<img src="' . $img_data['src'] . '" '. ' width="' .  (($use_width) ? $use_width : $img_data['height']) . '"' . ' height="' .  (($use_width) ? $use_width : $img_data['height']) . '" alt="' . $user->lang[$alt] . '" />';
+			break;
+			
+			case 'html':	
+			default:
+				return '<span class="imageset ' . $img . '"' . $title . '>' . $alt . '</span>';
 			break;
 		}
 	}

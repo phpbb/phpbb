@@ -164,6 +164,12 @@ unset($dbpasswd);
 // make super globals inaccessible everywhere outside this function.
 $request = new request_vars('', false);
 
+/**
+* Instantiate the language class
+* $language->_load_lang($phpbb_root_path, 'lang_main');
+*/
+$language = new language();
+
 // this is needed to prevent unicode normalization
 $super_globals_disabled = $request->super_globals_disabled();
 // enable super globals to get literal value

@@ -678,7 +678,7 @@ class dbal_mysqli extends dbal
 	* return sql error array
 	* @access private
 	*/
-	function sql_error()
+	function sql_error($sql = '')
 	{
 		if ($this->db_connect_id)
 		{

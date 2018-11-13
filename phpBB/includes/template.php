@@ -2072,23 +2072,30 @@ class Template
 		/** Pull out all block/statement level elements and separate plain text **/
 		preg_match_all('#<!-- INCLUDE (\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$include_blocks = $matches[1];
-		
+	
 		//$code = preg_replace('#<!-- INCLUDE (?:\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', '<!-- INCLUDEX -->', $code);
-		
+	
 		/** Remove overall_header and overall_footer included in MX-PORTAL and phpBB2 and mx_phpbb3 Forum Integration 
 		via page_header.php and page_tail.php **/
 		$code = str_replace('<!-- INCLUDE overall', '<!-- INCLUDEX overall', $code);
-				
-		
-		
+	
+	
 		/** Pull out all block/statement level elements and separate plain text **/
 		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$includephp_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDEPHP [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDEPHP -->', $code);		
+		$code = preg_replace('#<!-- INCLUDEPHP [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDEPHP -->', $code);
 		
+		preg_match_all('#<!-- IINCLUDEJS ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
+		$includejs_blocks = $matches[1];
+		$code = preg_replace('#<!-- INCLUDEJS [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDEJS -->', $code);
+		
+		preg_match_all('#<!-- INCLUDECSS ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
+		$includecss_blocks = $matches[1];
+		$code = preg_replace('#<!-- INCLUDECSS [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDECSS -->', $code);
+	
 		/** Pull out all block/statement level elements and separate plain text ** /		
 		preg_match_all('#<!-- ([^<].*?) (.*?)? ?-->#', $code, $blocks, PREG_SET_ORDER);
-		
+	
 		/** Pull out all block/statement level elements and separate plain text ** /
 		$text_blocks = preg_split('#<!-- [^<].*? (?:.*?)? ?-->#', $code);		
 
@@ -2120,10 +2127,10 @@ class Template
 		//$code = $this->fix_begin_tokens($code);
 		//$code = $this->fix_tokens_begin($code);
 		$code = str_replace('{% else %}', '<!-- BEGINELSE -->', $code);
-		
-		$code = str_replace('{% set', '<!-- SET', $code);		
+
+		$code = str_replace('{% set', '<!-- SET', $code);
 		$code = str_replace('%}', '-->', $code);
-		//$code = str_replace('%', '--', $code);		
+		$code = str_replace('{%', '<!-- ', $code);
 		
 		/**Fix our IF tokens **/
 		// $code = $this->fix_if_tokens($code);

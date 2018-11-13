@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* @package Icy Phoenix
+* @package Auth
 * @version $Id$
-* @copyright (c) 2008 Icy Phoenix
+* @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -13,10 +13,13 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
+// NOT USED!
+//define('OAUTH2_PATH', PHPBB_ROOT_PATH . "includes/social_connect/oauth2/src/OAuth2/");
+
 class FacebookConnect extends SocialConnect
 {
 	private $client;
-	private $scope = 'email,user_website,user_location,user_birthday';
+	private $scope = 'email, user_website, user_location, user_birthday';
 
 	public function __construct($network_name)
 	{
@@ -24,7 +27,7 @@ class FacebookConnect extends SocialConnect
 
 		parent::__construct($network_name);
 		
-		require_once($phpbb_root_path . "includes/auth/facebook/Facebook." . $phpEx);
+		include_once($phpbb_root_path . "includes/auth/facebook/Facebook." . $phpEx);
 		//require_once($phpbb_root_path . "includes/social_connect/Facebook/autoload.php");
 		
 		$app_id = $board_config['facebook_app_id'];
@@ -64,7 +67,7 @@ class FacebookConnect extends SocialConnect
 		if ($confirm != 1 || $force_retry)
 		{
 			// Build the social network return url
-			$current_page = extract_current_page(IP_ROOT_PATH);
+			$current_page = extract_current_page(PHPBB_ROOT_PATH);
 			$return_url = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://';
 			$return_url .= extract_current_hostname() . $current_page['script_path'] . $current_page['page'];
 			$return_url .= (strpos($return_url, '?') ? '&' : '?') . 'redirect=' . $redirect . '&confirm=1';
@@ -102,8 +105,12 @@ class FacebookConnect extends SocialConnect
 
 	private function retrieve_user_basic_data($user_fb_id)
 	{
-		global $db;
-
+		global $db, $user;
+		if (!isset($user->data['user_facebook_id']))
+		{
+			print('<p><span style="color: red;"'.'>No user_facebook_id...</span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_facebook_id', array('column_type_sql' => 'varchar(255)', 'null' => 'NOT NULL', 'default' => '', 'after' => 'username'), false);
+		}
 		$sql = "SELECT user_id, user_level
 			FROM " . USERS_TABLE . "
 			WHERE user_facebook_id = '" . $db->sql_escape($user_fb_id) . "'
@@ -124,6 +131,8 @@ class FacebookConnect extends SocialConnect
 
 	public function get_user_data()
 	{
+		global $phpEx;
+		
 		$token = '';
 		$user_fb_data = array();
 
@@ -156,7 +165,7 @@ class FacebookConnect extends SocialConnect
 		{
 			if (!function_exists('mkrealdate'))
 			{
-				include($phpbb_root_path . 'includes/functions_profile.' . PHP_EXT);
+				include($phpbb_root_path . 'includes/functions_profile.' . $phpEx);
 			}
 
 			// FB birthday is in MM/DD/YYYY format

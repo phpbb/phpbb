@@ -24,7 +24,7 @@
  *
  * <p>
  * For more information about this service, see the API
- * <a href="https://developers.google.com/youtube/reporting/v1/reports/" target="_blank">Documentation</a>
+ * <a href="https://developers.google.com/youtube/reporting/v1/reports/" target="_blank"'.'>Documentation</a>
  * </p>
  *
  * @author Google, Inc.

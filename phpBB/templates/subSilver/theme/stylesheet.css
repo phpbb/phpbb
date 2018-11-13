@@ -1,9 +1,9 @@
 /*  phpBB3 Style Sheet
     --------------------------------------------------------------
-	Style name:			subsilver2
-	Based on style:		subSilver (the default phpBB 2.0.x style)
-	Original author:	Tom Beddard ( http://www.subblue.com/ )
-	Modified by:		phpBB Group ( https://www.phpbb.com/ )
+	Style name:		SwiftBlue
+	Based on style:	SwiftBlue Theme for phpBB2 by BitByBit, 	http://www.bitbybit.f2s.com
+	Original author:	OryNider, using subsilver2 Theme as a base.	
+	This is an alternative subsilver2 style with purple-blue colors.
     --------------------------------------------------------------
 */
 
@@ -15,29 +15,33 @@
 	padding: 0;
 }
 
+abbr {
+	text-decoration: none;
+}
+
 html {
 	font-size: 100%;
 }
 /* General page style. The scroll bar colours only visible in IE5.5+ */
 body {
-	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
-	font-family: Verdana, Geneva, 'Lucida Grande', Arial, Helvetica, sans-serif, droid-serif;
-	color: #323D4F;
-	background-color: #FFFFFF;
-	scrollbar-face-color: #BADBF5;
-	scrollbar-highlight-color: #E3F0FB;
-	scrollbar-shadow-color: #BADBF5;
-	scrollbar-3dlight-color: #80BBEC;
-	scrollbar-arrow-color:  #072978;
-	scrollbar-track-color: #DAECFA;
-	scrollbar-darkshadow-color: #4B8DF1;
-	padding-bottom: 0px;
- 	padding-top: 0px;
-	margin: 5px 10px 10px; 	
-	font-size: 62.5%; /* This sets the default font size to be equivalent to 10px */
-	margin: 0;
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+	padding-right: 0px; 
+	padding-left: 0px; 
+	background: url("./images/backgroundbluelight.gif"); 
+	padding-bottom: 0px; 
+	margin: 5px 10px 10px; 
+	font-family: "Roboto", Verdana, Geneva, 'Lucida Grande', Arial, "Helvetica Neue", Helvetica, sans-serif, droid-serif;  
+	padding-top: 0px;
+	font-size: 89.5%;
+	margin: 0;	
 }
-
 
 #wrapheader {
 	min-height: 120px;
@@ -68,11 +72,10 @@ body {
 }
 
 #logodesc {
-	background-color: #C1CAD2;
-	background-image: url('./images/background.gif');
-	background-repeat: repeat-x;
-	background-position: center bottom;
-	padding: 0 25px 15px 25px;
+	margin-bottom: 5px;
+	padding: 5px 25px;
+	background: transparent none 0 0 no-repeat;		
+	border-bottom: 1px solid #D9DFE4;
 }
 
 #menubar {
@@ -221,13 +224,13 @@ p.topicdetails {
 	margin: 1px 0;
 }
 
-.postreported, .postreported a:link, .postreported a:visited, .postreported a:hover, .postreported a:active {
+.postreported, .postreported a:visited, .postreported a:hover, .postreported a:link, .postreported a:active {
 	margin: 1px 0;
 	color: red;
 	font-weight:bold;
 }
 
-.postapprove, .postapprove a:link, .postapprove a:visited, .postapprove a:hover, .postapprove a:active {
+.postapprove, .postapprove a:visited, .postapprove a:hover, .postapprove a:link, .postapprove a:active {
 	color: green;
 	font-weight:bold;
 }
@@ -323,6 +326,7 @@ fa-fw {
 
 }
 
+/* General text */
 .gen {
 	margin: 1px 1px;
 	font-size: 1.2em;
@@ -1009,11 +1013,35 @@ th {
 	padding: 7px 5px;
 }
 
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #80BBEC 0px; border-top-width: 1px;}
+
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ 
+	background-color: #E3F0FB;
+	background-image: url("./images/bodyline.jpg");
+	padding-bottom: 40px; 	
+	border: 1px #4B8DF1 solid; 
+}
+
+/* This is the outline round the main subsilver-ish forum tables */
+.forumline	{ background-color: #E3F0FB; border: 2px #006699 solid; }
+.bodyline	{ border: 1px #98AAB1 solid; padding: 0px 0px 0px 0px; }
+.forumline	{ border: 2px #006699 solid; padding: 0px 0px 0px 0px; }
+
 td {
-	padding: 2px;
+	padding: 0.4px;
 }
 td.profile {
-	padding: 4px;
+	padding: 2px;
+}
+.profile {
+	padding: 2px;
 }
 
 .tablebg {
@@ -1052,6 +1080,13 @@ td.profile {
 	padding: 4px;	
 }
 
+/* Edit this colors for every subsilver-ish ported template */
+.row1, .bg1	{ background-color: #EFEFEF; } /* .bg1 */
+.row2, .bg2	{ background-color: #DEE3E7; } /* .bg2 */
+.row2, .bg3	{ background-color: #D1D7DC; } /* .bg3 */
+.row4, .bg4	{ background-color: #EFEFEF; }
+.row5, .bg5	{ background-color: #DEE3E7; }
+.row6, .bg6	{ background-color: #D1D7DC; }
 
 /*
   This is for the table cell above the Topics, Post & Last posts on the index.php page
@@ -1071,6 +1106,7 @@ td.profile {
 	border: 0;
 	background: white url('./images/cellpic2.jpg') repeat-y scroll top left;
 }
+
 .rtl .catdiv {
 	background: white url('./images/cellpic2_rtl.jpg') repeat-y scroll top right;
 }
@@ -1078,34 +1114,44 @@ td.profile {
 /* Header cells - the blue and silver gradient backgrounds */
 th	{
 	color: #FFA34F; font-size: 11px; font-weight : bold;
-	background-color: #006699; height: 25px;
+	background-color: #006699;
 	background-image: url('./images/cellpic3.gif');
 }
 
 .cat {
-	height: 28px;
-	margin: 0;
-	padding: 0;
-	border: 0;
 	background-color: #C7D0D7;
-	background-image: url('./images/cellpic1.gif');
 	text-indent: 4px;
 }
 
-.row1 {
-	background-color: #ECECEC;
-	padding: 4px;
+
+.cat,.catHead,.catSides,.catLeft,.catRight,.catBottom {
+			background-image: url('./images/cellpic1.gif');
+			background-color:#80BBEC; border: #E3F0FB; border-style: solid;
 }
 
-.row2 {
-	background-color: #DCE1E5;
-	padding: 4px;
-}
 
-.row3 {
-	background-color: #C0C8D0;
-	padding: 4px;
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
 }
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #E3F0FB; border-style: solid; height: 28px; }
+td.row3Right,td.spaceRow {
+	background-color: #80BBEC; border: #E3F0FB; border-style: solid; }
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; } 
 
 .spacer {
 	background-color: #D1D7DC;
@@ -1139,6 +1185,7 @@ a:link {
 	text-decoration: none;
 }
 
+a:active,
 a:visited {
 	color: #005784;
 	text-decoration: none;
@@ -1942,7 +1989,12 @@ a.imageset {
 table.table1 {
 	width: 100%;
 }
-
+table.table2 {
+	width: 100%;
+}
+table.table3 {
+	width: 100%;
+}
 .ucp-main table.table1 {
 	padding: 2px;
 }
@@ -1981,13 +2033,13 @@ table.table1 tbody th {
 /* Specific column styles */
 table.table1 .name		{ text-align: left; }
 table.table1 .center		{ text-align: center; }
-table.table1 .reportby	{ width: 15%; }
+table.table3 .reportby	{ width: 15%; }
 table.table1 .posts		{ text-align: center; width: 7%; }
 table.table1 .joined		{ text-align: left; width: 15%; }
 table.table1 .active		{ text-align: left; width: 15%; }
 table.table1 .mark		{ text-align: center; width: 7%; }
 table.table1 .info		{ text-align: left; width: 30%; }
-table.table1 .info div		{ width: 100%; white-space: normal; overflow: hidden; }
+table.table2 .info div		{ width: 100%; white-space: normal; overflow: hidden; }
 table.table1 .autocol		{ line-height: 2em; white-space: nowrap; }
 table.table1 thead .autocol { padding-left: 1em; }
 
@@ -2007,13 +2059,34 @@ table.info tbody th {
 	font-weight: normal;
 }
 
-table.table1 thead th {
-	color: #FFFFFF;
+
+.cat,.catHead,.catSides,.catLeft,.catRight,.catBottom {
+			background-image: url('./images/cellpic1.gif');
+			background-color:#80BBEC; border: #E3F0FB; border-style: solid; height: 28px;
 }
 
-table.table1 tbody tr {
-	border-color: #BFC1CF;
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
 }
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #E3F0FB; border-style: solid; height: 28px; }
+td.row3Right,td.spaceRow {
+	background-color: #80BBEC; border: #E3F0FB; border-style: solid; }
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; } 
 
 table.table1 tbody tr:hover, table.table1 tbody tr.hover {
 	background-color: #CFE1F6;
@@ -2101,6 +2174,30 @@ table.fixed-width-table {
 	border-collapse: separate;
 	border-spacing: 1px;
 }
+
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #E3F0FB; border-style: solid; height: 28px; }
+td.row3Right,td.spaceRow {
+	background-color: #80BBEC; border: #E3F0FB; border-style: solid; }
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; } 
  
 /* Misc layout styles
 ---------------------------------------- */
@@ -3036,4 +3133,3 @@ table.fixed-width-table {
 #memberlist tr.inactive, #team tr.inactive {
 	font-style: italic;
 }
-/* GYM Sitemaps & RSS - www.phpbb-seo.com */

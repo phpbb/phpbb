@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 function login_db(&$username, &$password, $user_id = false, $increase_attempts = true)
 {
-	global $db, $board_config;
+	global $db, $board_config, $phpEx;
 
 	// do not allow empty password
 	if (!$password)
@@ -112,7 +112,7 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 			);
 		}
 		*/
-		redirect(append_sid('login_captcha.' . PHP_EXT . '?uid=' . $row['user_id'], true));
+		redirect(append_sid('login_captcha.' . $phpEx . '?uid=' . $row['user_id'], true));
 	}
 
 	// If the last login is more than x minutes ago, then reset the login tries/time
@@ -138,7 +138,7 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 		{
 			if (!function_exists('utf8_to_cp1252'))
 			{
-				include(PHPBB_ROOT_PATH . 'includes/utf/data/recode_basic.' . PHP_EXT);
+				include(PHPBB_ROOT_PATH . 'includes/utf/data/recode_basic.' . $phpEx);
 			}
 
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
@@ -152,7 +152,7 @@ function login_db(&$username, &$password, $user_id = false, $increase_attempts =
 					'username' => $username,
 					'password' => $password_new_format
 				);
-				include_once(PHPBB_ROOT_PATH . 'includes/class_users.' . PHP_EXT);
+				include_once(PHPBB_ROOT_PATH . 'includes/class_users.' . $phpEx);
 				$class_users = new class_users();
 				$class_users->profile_update($target_profile_data);
 				unset($target_profile_data);

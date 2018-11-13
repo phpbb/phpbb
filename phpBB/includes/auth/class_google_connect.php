@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* @package Icy Phoenix
+* @package Auth
 * @version $Id$
-* @copyright (c) 2008 Icy Phoenix
+* @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -42,7 +42,7 @@ class GoogleConnect extends SocialConnect
 
 	public function do_login($redirect, $force_retry = false)
 	{
-		global $board_config;
+		global $board_config, $user;
 
 		$code = request_get_var('code', '');
 		$this->client->setRedirectUri($this->get_redirect_url('', true));
@@ -75,8 +75,12 @@ class GoogleConnect extends SocialConnect
 
 	private function retrieve_basic_user_data($user_google_id)
 	{
-		global $db;
-
+		global $db, $user;
+		if (!isset($user->data['user_google_id']))
+		{
+			print('<p><span style="color: red;"'.'>No user_google_id...</span></p><i><p>Refreshing the users table!</p></i>');
+			$this->db_tools->sql_column_add(USERS_TABLE, 'user_google_id', array('column_type_sql' => 'varchar(255)', 'null' => 'NOT NULL', 'default' => '', 'after' => 'username'), false);
+		}
 		$sql = "SELECT user_id, user_level
 			FROM " . USERS_TABLE . "
 			WHERE user_google_id = '" . $db->sql_escape($user_google_id) . "'
@@ -85,7 +89,8 @@ class GoogleConnect extends SocialConnect
 		if ($db->sql_numrows($result) > 0)
 		{
 			// User is registered
-			return $db->sql_fetchrow($result);
+			$user_data = $db->sql_fetchrow($result);
+			return $user_data;
 		}
 		else
 		{

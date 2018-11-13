@@ -23,7 +23,7 @@
  *
  * <p>
  * For more information about this service, see the API
- * <a href="https://developers.google.com/apps-script/execution/rest/v1/run" target="_blank">Documentation</a>
+ * <a href="https://developers.google.com/apps-script/execution/rest/v1/run" target="_blank"'.'>Documentation</a>
  * </p>
  *
  * @author Google, Inc.

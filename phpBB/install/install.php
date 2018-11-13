@@ -507,7 +507,7 @@ else
 }
 
 // Open config.php ... if it exists
-if (@file_exists(@phpbb_realpath('config.'.$phpEx)))
+if (is_file(phpbb_realpath('config.'.$phpEx)))
 {
 	include($phpbb_root_path.'config.'.$phpEx);
 }
@@ -754,7 +754,7 @@ else if ((empty($install_step) || $admin_pass1 != $admin_pass2 || empty($admin_p
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Name']; ?>: </span></td>
-						<td class="row2"><input type="text" name="dbname" value="<?php echo ($dbname != '') ? $dbname : ''; ?>" /></td>
+						<td class="row2"><input type="text" name="dbname" value="<?php echo isset($dbname) ? $dbname : ''; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="row1" align="right"><span class="gen"><?php echo $lang['DB_Username']; ?>: </span></td>

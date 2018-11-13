@@ -320,7 +320,9 @@ abstract class BaseFacebook
 	 */
     public function __construct($facebook_config)
     {
- 		require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/FacebookSDKException." . PHP_EXT);
+ 		global $phpEx;
+		
+		require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/FacebookSDKException." . $phpEx);
  	  
 	  if (!isset($facebook_config['app_id'])) 
 	   {

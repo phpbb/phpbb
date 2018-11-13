@@ -1022,8 +1022,17 @@ $lang['General_Error'] = 'Eroare generalã';
 $lang['Critical_Error'] = 'Eroare primejdioasã';
 $lang['An_error_occured'] = 'A apãrut o eroare';
 $lang['A_critical_error'] = 'A apãrut o eroare primejdioasã';
+// Login
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
+$lang['Forgotten_password'] = 'I forgot my password';
+$lang['AUTOLOGIN'] = 'Log me on automatically each visit';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.'; 
 
 $lang['Admin_reauthenticate'] = 'Pentru a administra forumul trebuie sã vã autentificaþi din nou.';
+$lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';
+$lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
 // Start add - Bin Mod
 $lang['Move_bin'] = 'Move this topic to bin';

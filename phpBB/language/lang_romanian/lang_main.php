@@ -68,7 +68,7 @@ $lang['Posted'] = 'Trimis';
 $lang['Username'] = 'Utilizator';
 $lang['Password'] = 'Parola';
 $lang['Email'] = 'Email';
-$lang['Poster'] = 'Autor';
+$lang['Poster'] = 'Trimis de';
 $lang['Author'] = 'Autor';
 $lang['Time'] = 'Timp';
 $lang['Hours'] = 'Ore';
@@ -95,6 +95,30 @@ $lang['No'] = 'Nu';
 $lang['Enabled'] = 'Activat';
 $lang['Disabled'] = 'Dezactivat';
 $lang['Error'] = 'Eroare';
+
+// -------------------------------------------------
+$lang['Goto_page'] = 'Goto page';
+
+$lang['Post_by_author'] = 'by';
+$lang['Posted_on_date'] = 'on';
+$lang['In'] = 'in';
+
+$lang['Statistics'] = 'Statistics';
+$lang['Legend'] = 'Legend: ';
+$lang['Posted_articles_zero_total'] = 'No post'; // Number of posts
+$lang['Posted_articles_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Posted_article_total'] = 'Total posts <strong>%d</strong>'; // Number of posts
+$lang['Registered_users_zero_total'] = 'No member'; // # registered users
+$lang['Registered_users_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Registered_user_total'] = 'Total members <strong>%d</strong>'; // # registered users
+$lang['Newest_user'] = 'Our newest member <strong>%s%s%s</strong>'; // a href, username, /a  
+
+$lang['Rules_moderate'] = '%sModerate this forum%s'; // %s replaced by a href links, do not remove!
+
+$lang['Quick_mod'] = 'Quick-mod tools:';
+
+$lang['Search_forums'] = 'Search within';
+// -------------------------------------------------
 
 $lang['Next'] = 'Următoare';
 $lang['Previous'] = 'Anterioară';
@@ -1027,8 +1051,17 @@ $lang['General_Error'] = 'Eroare generală';
 $lang['Critical_Error'] = 'Eroare primejdioasă';
 $lang['An_error_occured'] = 'A apărut o eroare';
 $lang['A_critical_error'] = 'A apărut o eroare primejdioasă';
+// Login
+$lang['Enter_password'] = 'Please enter your username and password to log in.';
+$lang['Login'] = 'Log in';
+$lang['Logout'] = 'Log out';
+$lang['Forgotten_password'] = 'I forgot my password';
+$lang['AUTOLOGIN'] = 'Log me on automatically each visit';
+$lang['Error_login'] = 'You have specified an incorrect or inactive username, or an invalid password.'; 
 
 $lang['Admin_reauthenticate'] = 'Pentru a administra forumul trebuie să vă autentificaţi din nou.';
+$lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';
+$lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
 // Start add - Bin Mod
 $lang['Move_bin'] = 'Move this topic to bin';

@@ -37,6 +37,7 @@ include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 //
 // Initial var setup
 $forum_id	= request_var('f', 0);
+$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? (int) $forum_id : 0;
 $topic_id	= request_var('t', 0);
 $post_id	= request_var('p', 0);
 $voted_id	= request_var('vote_id', array('' => 0));

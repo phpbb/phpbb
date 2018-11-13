@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 
 abstract class SocialConnect
 {
-	private static $social_networks = array("facebook", "google");
+	private static $social_networks = array("facebook", "twitter", "google");
 	private static $available_networks = array();
 
 	private $network_name;
@@ -34,16 +34,18 @@ abstract class SocialConnect
 
 		foreach (self::$social_networks as $network_name)
 		{
-			if (empty(self::$available_networks))
-			{
+			
+			//if (empty(self::$available_networks))
+			//{
 				if (in_array($network_name, self::$social_networks) && !empty($board_config['enable_' . $network_name . '_login']))
 				{
+					
 					include($phpbb_root_path . 'includes/auth/class_' . $network_name . '_connect.' . $phpEx);
 					$class_name = strtoupper(substr($network_name, 0, 1)) . substr($network_name, 1) . 'Connect';
 					$network = new $class_name($network_name);
 					self::$available_networks[$network_name] = $network;
 				}
-			}
+			//}
 		}
 		return self::$available_networks;
 	}

@@ -34,8 +34,10 @@
 				<dl class="faq">
 					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
 					<dd>{faq_block.faq_row.FAQ_ANSWER}</dd>
-					<dd><a href="#faqlinks" class="top2">{L_BACK_TO_TOP}</a></dd>
 				</dl>
+				<a href="#faqlinks" class="top">
+					<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
+				</a>
 				<!-- IF not faq_block.faq_row.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
 			<!-- END faq_row -->
 		</div>

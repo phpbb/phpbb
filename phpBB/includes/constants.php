@@ -394,7 +394,6 @@ define('BOTS_TABLE', $table_prefix . 'bots');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('DISALLOW_TABLE', $table_prefix.'disallow');
-define('FLAG_TABLE', $table_prefix . 'flags');
 define('FORUMS_TABLE', $table_prefix.'forums');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('IMAGES_TABLE', $table_prefix . 'images');
@@ -414,7 +413,8 @@ define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
 define('SESSIONS_KEYS_TABLE', $table_prefix.'sessions_keys');
 define('SMILIES_TABLE', $table_prefix.'smilies');
-define('FLAG_TABLE', $table_prefix.'flags');
+define('LANG_FLAGS_TABLE', $table_prefix . 'lang_flags');
+define('FLAG_TABLE', $table_prefix.'flags'); //Country Flags Table
 define('THEMES_TABLE', $table_prefix.'themes');
 define('THEMES_NAME_TABLE', $table_prefix.'themes_name');
 define('TOPICS_TABLE', $table_prefix.'topics');

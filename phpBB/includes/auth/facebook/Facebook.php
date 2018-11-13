@@ -29,7 +29,7 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
-require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/Base_Facebook." . PHP_EXT);
+require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/Base_Facebook." . $phpEx);
 
 /**
  * Extends the BaseFacebook class with the intent of using
@@ -60,6 +60,8 @@ class Facebook extends BaseFacebook
 	 */
 	public function __construct($facebook_config) 
 	{
+		global $phpEx;
+		
 		if (!session_id()) 
 		{
 			@session_start();
@@ -76,7 +78,7 @@ class Facebook extends BaseFacebook
 			);	          
         }
 	
-		require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/FacebookSDKException." . PHP_EXT);
+		require_once(PHPBB_ROOT_PATH . "includes/auth/facebook/FacebookSDKException." . $phpEx);
 		
 		if (!isset($facebook_config['app_id'])) 
 		{

@@ -26,7 +26,7 @@
 //
 define("IN_LOGIN", true);
 define('IN_PHPBB', true);
-define('IN_SOCIAL_CONNECT', false);
+define('IN_SOCIAL_CONNECT', true);
 
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -42,9 +42,18 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/auth_db_phpbb2.' . $phpEx);
 
 $board_config['enable_social_connect'] = IN_SOCIAL_CONNECT;
+
 $board_config['enable_facebook_login'] = IN_SOCIAL_CONNECT;
 $board_config['facebook_app_id'] = '1923638584362290';
 $board_config['facebook_app_secret'] = '93613186a2da77f4e2fec0a1b527f4c70';
+
+$board_config['enable_google_login'] = IN_SOCIAL_CONNECT;
+$board_config['google_app_id'] = '0000000000000000000000';
+$board_config['google_app_secret'] = '000000000000000000000';
+
+$board_config['enable_twitter_login'] = IN_SOCIAL_CONNECT;
+$board_config['twitter_app_id'] = '0000000000000000000000';
+$board_config['twitter_app_secret'] = '000000000000000000000';
 
 //
 // Start session management
@@ -82,9 +91,9 @@ if (strstr($redirect_url, "\n") || strstr($redirect_url, "\r") || strstr($redire
 $available_networks = array();
 if ($board_config['enable_social_connect'])
 {
-	include_once(PHPBB_ROOT_PATH . 'includes/class_social_connect.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/class_social_connect.' . $phpEx);
 	$available_networks = SocialConnect::get_available_networks();
-	
+
 	$login_admin = request_get_var('admin', 0);
 
 	$social_network = request_var('social_network', '');
@@ -95,7 +104,7 @@ if ($board_config['enable_social_connect'])
 	{
 		$social_network = $available_networks[$social_network];
 		$user_data = $social_network->do_login($return_url);
-
+print_r($social_network);
 		if ($user_data !== null && $user_data['user_id'] > 0)
 		{
 			$admin = ($login_admin == 1 && $user_data['user_level'] == ADMIN) ? 1 : 0;
@@ -119,7 +128,7 @@ if ($board_config['enable_social_connect'])
 			$template->assign_block_vars('social_connect_button', array(
 				'L_SOCIAL_CONNECT' => sprintf($lang['SOCIAL_CONNECT_LOGIN'], $social_network_name),
 				'U_SOCIAL_CONNECT' => append_sid(PHPBB_PAGE_LOGIN . '?social_network=' . $social_network_name_clean),
-				'IMG_SOCIAL_CONNECT' => '<img src="' . PHPBB_ROOT_PATH . 'images/social_connect/' . $social_network_name_clean . '_button_connect.png" alt="" title="" />'
+				'IMG_SOCIAL_CONNECT' => '<img src="' . $phpbb_root_path . 'images/social_connect/' . $social_network_name_clean . '_button_connect.png" alt="" title="" />'
 				)
 			);
 
@@ -255,10 +264,10 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 				}
 
 				$template->assign_vars(array(
-					'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
+					'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\"'.'>")
 				);
 
-				$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+				$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\"'.'>", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 				message_die(GENERAL_MESSAGE, $message);
 			}
@@ -274,10 +283,10 @@ if( isset($_POST['login']) || isset($_GET['login']) || isset($_POST['logout']) |
 			}
 
 			$template->assign_vars(array(
-				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
+				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\"'.'>")
 			);
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\"'.'>", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -327,8 +336,8 @@ else
 			'body' => 'login_body.tpl')
 		);
 
-		$forward_page = '';
-
+		$forward_page = ''; 
+		
 		if( isset($_POST['redirect']) || isset($_GET['redirect']) )
 		{
 			$forward_to = $_SERVER['QUERY_STRING'];
@@ -376,19 +385,18 @@ else
 		{
 			$s_hidden_fields['credential'] = $credential;
 		}		
-
-		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
-		$s_hidden_fields .= (isset($_GET['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
+		$s_hidden_fields =  ($forward_page) ? '<input type="hidden" name="edit" value="' . $forward_page . '" />' : '';
+		$s_hidden_fields .= (isset($_GET['admin'])) ? '<input type="hidden" name="admin" value="1"'.'></input>' : '';
 		
-		$s_hidden_fields = array('sid' => $user->session_id, $s_hidden_fields);		
-		$s_hidden_fields = build_hidden_fields($s_hidden_fields);		
+		$s_hidden_fields = array('sid' => $user->session_id, $s_hidden_fields);
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 		
-		make_jumpbox('viewforum.'.$phpEx);				
+		make_jumpbox('viewforum.'.$phpEx);
 		$template->assign_vars(array(
-			'LOGIN_ERROR'					=> '',
-			'LOGIN_EXPLAIN'					=> $l_explain,
+			'LOGIN_ERROR'		=> '',
+			'LOGIN_EXPLAIN'	=> $l_explain,
 			
-			'USERNAME'						=> ($admin) ? $username : '',
+			'USERNAME'	=> ($admin) ? $username : '',
 
 			'USERNAME_CREDENTIAL'	=> 'username',
 			'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
@@ -397,16 +405,16 @@ else
 			
 			'U_SEND_PASSWORD' 		=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=sendpassword"),
 			'U_RESEND_ACTIVATION'	=> ($board_config['require_activation'] == USER_ACTIVATION_SELF) ? append_sid("{$phpbb_root_path}profile.$phpEx?mode=resend_act") : '',
-			'U_TERMS_USE'				=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),
-			'U_PRIVACY'					=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=privacy"),
+			'U_TERMS_USE'					=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=terms"),
+			'U_PRIVACY'						=> append_sid("{$phpbb_root_path}profile.$phpEx?mode=privacy"),
 
 			'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 			'S_HIDDEN_FIELDS' 			=> $s_hidden_fields,
 			'S_CONFIRM_CODE'			=> false,
-			'S_SIMPLE_MESSAGE'		=> '',
+			'S_SIMPLE_MESSAGE'			=> '',
 			'S_ADMIN_AUTH'				=> $admin,
 						
-			'CAPTCHA_TEMPLATE'			=> '',			
+			'CAPTCHA_TEMPLATE'	=> '',
 		));
 
 		$template->pparse('body');

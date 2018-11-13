@@ -123,8 +123,7 @@ $l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $board_config['recor
 */
 if (defined('SHOW_ONLINE'))
 {
-
-	$user_forum_sql = ( !empty($forum_id) ) ? "AND s.session_page = " . intval($forum_id) : '';
+	$user_forum_sql = ( $request->is_set_get('f') ) ? "AND s.session_page = " . intval($forum_id) : '';
 	$sql = "SELECT u.username, u.user_id, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_ip
 		FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
 		WHERE u.user_id = s.session_user_id
@@ -135,7 +134,7 @@ if (defined('SHOW_ONLINE'))
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain user/online information', '', __LINE__, __FILE__, $sql);
 	}
-
+	
 	$userlist_ary = array();
 	$userlist_visible = array();
 
@@ -280,11 +279,10 @@ if (defined('SHOW_ONLINE'))
 	{
 		$l_g_user_s = $lang['Guest_users_total'];
 	}
-
 	$l_online_users = sprintf($l_t_user_s, $total_online_users);
 	$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
 	$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
-	$l_online_users .= sprintf($l_g_user_s, $guests_online);		
+	$l_online_users .= sprintf($l_g_user_s, $guests_online);	
 }
 
 //
@@ -665,7 +663,7 @@ $template->assign_vars(array(
 	'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 	'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),				
 	
-	'S_NOTIFICATIONS_DISPLAY'		=> true,	
+	'S_NOTIFICATIONS_DISPLAY'		=> false,	
 	'S_SHOW_COPPA'					=> false,
 	'S_REGISTRATION'				=> true,	
 	
@@ -693,22 +691,25 @@ $template->assign_vars(array(
 
 	'PRIVMSG_IMG' 			=> $icon_pm,
 
-	'L_USERNAME' 			=> $lang['Username'],
-	'L_PASSWORD' 			=> $lang['Password'],
-	'L_LOGIN_LOGOUT' 		=> $l_login_logout,
-	'L_LOGIN' 				=> $lang['Login'],
-	'L_LOG_ME_IN' 			=> $lang['Log_me_in'],
-	'L_AUTO_LOGIN' 			=> $lang['Log_me_in'],
-	'L_INDEX' 				=> sprintf($lang['Forum_Index'], $board_config['sitename']),
-	'L_REGISTER' 			=> $lang['Register'],
-	'L_PROFILE' 			=> $lang['Profile'],
-	'L_SEARCH' 				=> $lang['Search'],
-	'L_PRIVATEMSGS'			=> $lang['Private_Messages'],
-	'L_WHO_IS_ONLINE' 		=> $lang['Who_is_Online'],
-	'L_MEMBERLIST' 			=> $lang['Memberlist'],
-	'L_FAQ' 				=> $lang['FAQ'],
-	'L_USERGROUPS' 			=> $lang['Usergroups'],
-	'L_SEARCH_NEW' 			=> $lang['Search_new'],
+	'L_USERNAME' 					=> $lang['Username'],
+	'L_PASSWORD' 					=> $lang['Password'],
+	'L_LOGIN_LOGOUT' 			=> $l_login_logout,
+	'L_LOGIN' 							=> $lang['Login'],
+	'L_LOG_ME_IN' 					=> $lang['Log_me_in'],
+	'L_AUTO_LOGIN' 				=> $lang['Log_me_in'],
+	'L_INDEX' 							=> sprintf($lang['Forum_Index'], $board_config['sitename']),
+	'L_REGISTER' 					=> $lang['Register'],
+	'L_PROFILE' 						=> $lang['Profile'],
+	'L_ACP_SHORT'					=> $user->lang('ACP_SHORT'),
+	'L_MCP_SHORT'					=> $user->lang('MCP'),
+	'L_UCP'								=> $user->lang('UCP'),
+	'L_SEARCH' 						=> $lang['Search'],
+	'L_PRIVATEMSGS'				=> $lang['Private_Messages'],
+	'L_WHO_IS_ONLINE' 			=> $lang['Who_is_Online'],
+	'L_MEMBERLIST' 				=> $lang['Memberlist'],
+	'L_FAQ' 							=> $lang['FAQ'],
+	'L_USERGROUPS' 				=> $lang['Usergroups'],
+	'L_SEARCH_NEW' 				=> $lang['Search_new'],
 	'L_SEARCH_UNANSWERED' 	=> $lang['Search_unanswered'],
 	'L_SEARCH_SELF' 		=> $lang['Search_your_posts'],
 	'L_WHOSONLINE_ADMIN' 	=> sprintf($lang['Admin_online_color'], '<span style="color:#' . $theme['fontcolor3'] . '">', '</span>'),
@@ -732,7 +733,7 @@ $template->assign_vars(array(
 	'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx?search_id=active_topics"),
 	
 	'U_INDEX' 				=> append_sid("{$phpbb_root_path}index.$phpEx"),
-	'U_CANONICAL' 			=> generate_board_url() . '/' . 'index'.$phpEx,		
+	'U_CANONICAL' 			=> PHPBB_URL . 'index.'.$phpEx,		
 	'U_SITE_HOME'			=> (!empty($board_config['site_home_url'])) ? $board_config['site_home_url'] : append_sid('./../index.'.$phpEx),	
 	'U_REGISTER' 			=> append_sid('profile.'.$phpEx.'?mode=register'),
 	'U_PROFILE' 			=> append_sid('profile.'.$phpEx.'?mode=editprofile'),
@@ -830,11 +831,11 @@ $template->assign_vars(array(
 	'T_UPLOAD_PATH'			=> !empty($board_config['upload_path']) ? "{$web_path}{$board_config['upload_path']}/" : $web_path.'/cache/',	
 	
 	'T_STYLESHEET_LINK'		=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/stylesheet.css',
-	'T_STYLESHEET_LANG_LINK'=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/images/lang_' . $default_lang . '/stylesheet.css',
+	'T_STYLESHEET_LANG_LINK'=> "{$web_path}templates/" . rawurlencode($theme['template_name'] ? $theme['template_name'] : str_replace('.css', '', $theme['head_stylesheet'])) . '/theme/lang_' . $default_lang . '/stylesheet.css',
 	'T_FONT_AWESOME_LINK'	=> "{$web_path}assets/css/font-awesome.min.css",
-	'T_FONT_IONIC_LINK'			=> "{$web_path}assets/css/ionicons.min.css",	
+	'T_FONT_IONIC_LINK'			=> "{$web_path}assets/css/ionicons.min.css",
 	'T_JQUERY_LINK'			=> !empty($board_config['allow_cdn']) && !empty($board_config['load_jquery_url']) ? $board_config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $phpbb_major,
-	'S_ALLOW_CDN'			=> !empty($board_config['allow_cdn']),		
+	'S_ALLOW_CDN'			=> !empty($board_config['allow_cdn']),
 	
 	'T_THEME_NAME'				=> rawurlencode($theme['template_name']),
 	'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -891,7 +892,7 @@ $template->assign_vars(array(
 
 	'NAV_LINKS' => $nav_links_html,
 	
-	'L_ACP' => $lang['Admin_panel'],
+	'L_ACP' => $lang['ACP'],
 	'U_ACP' => ($user->data['user_level'] == ADMIN) ? "{$phpbb_root_path}admin/index.$phpEx?sid=" . $user->session_id : $admin_link)
 );
 

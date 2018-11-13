@@ -1,26 +1,68 @@
 <div class="navbar" role="navigation">
 	<div class="inner">
 
-	<ul id="nav-footer" class="linklist bulletin" role="menubar">
-		<li class="small-icon icon-home breadcrumbs">
-			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}" data-navbar-reference="home">{L_SITE_HOME}</a></span><!-- ENDIF -->
+	<ul id="nav-footer" class="nav-footer linklist" role="menubar">
+		<li class="breadcrumbs">
+			<!-- IF U_SITE_HOME -->
+				{% spaceless %}
+				<span class="crumb">
+					<a href="{U_SITE_HOME}" data-navbar-reference="home">
+						<i class="icon fa-home fa-fw" aria-hidden="true"></i><span>{L_SITE_HOME}</span>
+					</a>
+				</span>
+				{% endspaceless %}
+			<!-- ENDIF -->
 			<!-- EVENT overall_footer_breadcrumb_prepend -->
-			<span class="crumb"><a href="{U_INDEX}" data-navbar-reference="index">{L_INDEX}</a></span>
+			{% spaceless %}
+			<span class="crumb">
+				<a href="{U_INDEX}" data-navbar-reference="index">
+					<!-- IF not U_SITE_HOME --><i class="icon fa-home fa-fw" aria-hidden="true"></i><!-- ENDIF --><span>{L_INDEX}</span>
+				</a>
+			</span>
+			{% endspaceless %}
 			<!-- EVENT overall_footer_breadcrumb_append -->
 		</li>
-		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT --><li class="small-icon icon-<!-- IF S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-last-responsive="true"><a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon icon-<!-- IF not S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
+		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT -->
+			<li data-last-responsive="true">
+				<a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="icon <!-- IF S_WATCHING_FORUM -->fa-check-square-o<!-- ELSE -->fa-square-o<!-- ENDIF --> fa-fw" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">
+					<i class="icon <!-- IF S_WATCHING_FORUM -->fa-square-o<!-- ELSE -->fa-check-square-o<!-- ENDIF --> fa-fw" aria-hidden="true"></i><span>{S_WATCH_FORUM_TITLE}</span>
+				</a>
+			</li>
+		<!-- ENDIF -->
 
 		<!-- EVENT overall_footer_timezone_before -->
 		<li class="rightside">{S_TIMEZONE}</li>
 		<!-- EVENT overall_footer_timezone_after -->
 		<!-- IF not S_IS_BOT -->
-			<li class="small-icon icon-delete-cookies rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true" role="menuitem">{L_DELETE_COOKIES}</a></li>
-			<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside" data-last-responsive="true"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+			<li class="rightside">
+				<a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true" role="menuitem">
+					<i class="icon fa-trash fa-fw" aria-hidden="true"></i><span>{L_DELETE_COOKIES}</span>
+				</a>
+			</li>
+			<!-- IF S_DISPLAY_MEMBERLIST -->
+				<li class="rightside" data-last-responsive="true">
+					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">
+						<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
+					</a>
+				</li>
+			<!-- ENDIF -->
 		<!-- ENDIF -->
 		<!-- EVENT overall_footer_teamlink_before -->
-		<!-- IF U_TEAM --><li class="small-icon icon-team rightside" data-last-responsive="true"><a href="{U_TEAM}" role="menuitem">{L_THE_TEAM}</a></li><!-- ENDIF -->
+		<!-- IF U_TEAM -->
+			<li class="rightside" data-last-responsive="true">
+				<a href="{U_TEAM}" role="menuitem">
+					<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
+				</a>
+			</li>
+		<!-- ENDIF -->
 		<!-- EVENT overall_footer_teamlink_after -->
-		<!-- IF U_CONTACT_US --><li class="small-icon icon-contact rightside" data-last-responsive="true"><a href="{U_CONTACT_US}" role="menuitem">{L_CONTACT_US}</a></li><!-- ENDIF -->
+		<!-- IF U_CONTACT_US -->
+			<li class="rightside" data-last-responsive="true">
+				<a href="{U_CONTACT_US}" role="menuitem">
+					<i class="icon fa-envelope fa-fw" aria-hidden="true"></i><span>{L_CONTACT_US}</span>
+				</a>
+			</li>
+		<!-- ENDIF -->
 	</ul>
 
 	</div>

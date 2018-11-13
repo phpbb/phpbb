@@ -416,19 +416,90 @@ function is_empty_get($var)
 
 /** /
 *
-* by guillermogomezruiz@gmail.com ¶
+* Credit: https://stackoverflow.com/users/2456038/rafasashi
 /**/
-function file_exists_2($filePath)
+function phpbb_file_exists($file_path = '')
 {
-	if (!function_exists('curl_init')) 
+	// Assume failure.
+	 $file_exists = true;
+	 $status = "unknown";
+	
+	//$file_path = 'http://php.net/images/logos/php-logo.svg';
+	//clear cached results
+	//clearstatcache();
+	
+	//trim path
+	$file_dir = trim(dirname($file_path));
+	
+	//trim file name
+	$file_name = trim(basename($file_path));
+	
+	//rebuild path
+	$file_path = $file_dir . "/{$file_name}";
+	
+	global $phpbb_root_path;
+	
+	//If you simply want to check that some file (not directory) exists, 
+	//and concerned about performance, try is_file() instead.
+	//It seems like is_file() is almost 2x faster when a file exists 
+	//and about the same when it doesn't.
+		
+	$file = $file_dir . '/' . $file_name;
+	
+	if (function_exists('is_file') && @is_file($file)) 
 	{
-		//continue
+		$status = "is_file";
+		$file_exists = true;
 	}
-	else
+	
+	if (function_exists('curl_init')) 
 	{
-		return ($ch = curl_init($filePath)) ? @curl_close($ch) || true : false;		
-	}	
-
+		 // Assume failure.
+		 $data = -1;
+		 $ch = curl_init($file);
+		 // Issue a HEAD request and follow any redirects.
+		curl_setopt($ch, CURLOPT_NOBODY, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win32; x86; rv:63.0) Gecko/20100101 Firefox/63.0.68');  
+		$data = curl_exec($ch);
+		
+		//error check 
+		if (curl_errno($ch))
+		{
+			$file_exists = false;
+			return $file_exists;
+		}
+		curl_close($ch);
+		
+		 if ($data) 
+		 {
+		    $content_length = "unknown";
+		    $status = "curl_init";
+			
+		    if(preg_match("/^HTTP\/1\.[01] (\d\d\d)/", $data, $matches))
+			{
+				$status = (int)$matches[1];
+				$file_exists = ($status == '200') ? true : (($status == '404') ? false : false);
+				
+			}
+		}
+	}
+	
+	if (function_exists('file_exists') && @file_exists(str_replace(PHPBB_URL, $phpbb_root_path, $file_path))) 
+	{
+		$status = "file_exists";
+		$file_exists = true;
+	}
+		
+	if (function_exists('filesize') && @filesize(str_replace(PHPBB_URL, $phpbb_root_path, $file_path))) 
+	{
+		$status = "filesize";
+		$file_exists = true;
+	}
+	
+	return $file_exists;
 }
 
 /** /
@@ -437,44 +508,53 @@ function file_exists_2($filePath)
 /**/
 function custom_file_exists($file_path = '')
 {
-	if (function_exists('file_exists') && $file_exists = file_exists($file_path)) 
-	{
-		return $file_exists;
-	}
-	else
-	{
-		$file_exists = false;
-	}	
+	// Assume failure.
+	 $file_exists = true;
+	 $status = "unknown";
 	
+	//$file_path = 'http://php.net/images/logos/php-logo.svg';
 	//clear cached results
 	//clearstatcache();
 	
 	//trim path
 	$file_dir = trim(dirname($file_path));
 	
-	//normalize path separator
-    $file_dir = str_replace('/', DIRECTORY_SEPARATOR, $file_dir) . DIRECTORY_SEPARATOR;
-	
 	//trim file name
 	$file_name = trim(basename($file_path));
 	
 	//rebuild path
-	$file_path = $file_dir . "{$file_name}";
+	$file_path = $file_dir . "/{$file_name}";
+	
+	global $phpbb_root_path;
 	
 	//If you simply want to check that some file (not directory) exists, 
 	//and concerned about performance, try is_file() instead.
 	//It seems like is_file() is almost 2x faster when a file exists 
 	//and about the same when it doesn't.
-	if (!function_exists('curl_init')) 
+		
+	$file = $file_dir . '/' . $file_name;
+	
+	if (function_exists('is_file') && @is_file($file)) 
 	{
-		$file_exists = is_file($file_path);
+		$status = "is_file";
+		$file_exists = true;
 	}
-	else
+	
+	if (function_exists('file_exists') && @file_exists(str_replace(PHPBB_URL, $phpbb_root_path, $file_path))) 
 	{
-		$file_exists = is_file($file_path) ? true :  (($ch = @curl_init($file_path)) ? @curl_close($ch) || true : false);		
-	}	
+		$status = "file_exists";
+		$file_exists = true;
+	}
+		
+	if (function_exists('filesize') && @filesize(str_replace(PHPBB_URL, $phpbb_root_path, $file_path))) 
+	{
+		$status = "filesize";
+		$file_exists = true;
+	}
+	
 	return $file_exists;
 }
+
 
 /**
  * Is REQUEST empty (GET and POST) var?
@@ -493,23 +573,23 @@ function is_empty_request($var)
 /**
 * Set config value. Creates missing config entry.
 */
-function set_config($config_name, $config_value)
+function set_config($board_config_name, $board_config_value)
 {
 	global $db, $board_config;
 
 	$sql = 'UPDATE ' . CONFIG_TABLE . "
-		SET config_value = '" . $db->sql_escape($config_value) . "'
-		WHERE config_name = '" . $db->sql_escape($config_name) . "'";
+		SET config_value = '" . $db->sql_escape($board_config_value) . "'
+		WHERE config_name = '" . $db->sql_escape($board_config_name) . "'";
 	$db->sql_query($sql);
 
-	if (!$db->sql_affectedrows() && !isset($board_config[$config_name]))
+	if (!$db->sql_affectedrows() && !isset($board_config[$board_config_name]))
 	{
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'config_name'	=> $config_name,
-			'config_value'	=> $config_value));
+			'config_name'	=> $board_config_name,
+			'config_value'	=> $board_config_value));
 		$db->sql_query($sql);
 	}
-	$board_config[$config_name] = $config_value;
+	$board_config[$board_config_name] = $board_config_value;
 }
 
 function get_db_stat($mode)
@@ -1225,13 +1305,13 @@ function send_status_line($code, $message)
 */
 function setup_basic_lang()
 {
-	global $cache, $config, $lang;
+	global $cache, $board_config, $lang, $phpEx;
 
 	if (empty($lang))
 	{
-		if(!file_exists(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/lang_main.' . PHP_EXT))
+		if(!file_exists(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx))
 		{
-			$config['default_lang'] = 'english';
+			$board_config['default_lang'] = 'english';
 		}
 
 		$lang_files = array(
@@ -1243,7 +1323,7 @@ function setup_basic_lang()
 			'lang_main_cback_ctracker',
 		);
 
-		if (!empty($config['plugins']['cash']['enabled']) && defined('IN_CASHMOD'))
+		if (!empty($board_config['plugins']['cash']['enabled']) && defined('IN_CASHMOD'))
 		{
 			$lang_files = array_merge($lang_files, array('lang_cash'));
 		}
@@ -1280,11 +1360,11 @@ function setup_basic_lang()
 		foreach ($lang_files as $lang_file)
 		{
 			// Do not suppress error if in DEBUG_EXTRA mode
-			$include_result = (defined('DEBUG_EXTRA')) ? (include(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT)) : (@include(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT));
+			$include_result = (defined('DEBUG_EXTRA')) ? (include(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.' . $phpEx)) : (@include(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.' . $phpEx));
 
 			if ($include_result === false)
 			{
-				die('Language file ' . PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/' . $lang_file . '.' . PHP_EXT . ' couldn\'t be opened.');
+				die('Language file ' . PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/' . $lang_file . '.' . $phpEx . ' couldn\'t be opened.');
 			}
 		}
 	}
@@ -1296,7 +1376,7 @@ function setup_basic_lang()
 */
 function setup_extra_lang($lang_files_array, $lang_base_path = '', $lang_override = '')
 {
-	global $config, $lang, $images, $faq, $mtnc;
+	global $board_config, $lang, $images, $faq, $mtnc, $phpEx;
 
 	if (empty($lang_files_array))
 	{
@@ -1311,9 +1391,9 @@ function setup_extra_lang($lang_files_array, $lang_base_path = '', $lang_overrid
 	$lang_base_path = (empty($lang_base_path) ? (PHPBB_ROOT_PATH . 'language/') : $lang_base_path);
 	for ($i = 0; $i < sizeof($lang_files_array); $i++)
 	{
-		$lang_override = !empty($lang_override) ? $lang_override : $config['default_lang'];
-		$user_lang_file = $lang_base_path . 'lang_' . $lang_override . '/' . $lang_files_array[$i] . '.' . PHP_EXT;
-		$default_lang_file = $lang_base_path . 'lang_english/' . $lang_files_array[$i] . '.' . PHP_EXT;
+		$lang_override = !empty($lang_override) ? $lang_override : $board_config['default_lang'];
+		$user_lang_file = $lang_base_path . 'lang_' . $lang_override . '/' . $lang_files_array[$i] . '.' . $phpEx;
+		$default_lang_file = $lang_base_path . 'lang_english/' . $lang_files_array[$i] . '.' . $phpEx;
 		if (@file_exists($user_lang_file))
 		{
 			@include($user_lang_file);
@@ -1344,16 +1424,16 @@ function merge_user_lang()
 */
 function stopwords_synonyms_init()
 {
-	global $config, $stopwords_array, $synonyms_array;
+	global $board_config, $stopwords_array, $synonyms_array;
 
 	if (empty($stopwords_array))
 	{
-		$stopwords_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/search_stopwords.txt');
+		$stopwords_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt');
 	}
 
 	if (empty($synonyms_array))
 	{
-		$synonyms_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $config['default_lang'] . '/search_synonyms.txt');
+		$synonyms_array = @file(PHPBB_ROOT_PATH . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt');
 	}
 }
 
@@ -1949,7 +2029,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 */
 function phpbb_get_user_rank($user_data, $user_posts, &$rank_title = null, &$rank_img = null, &$rank_img_src = null)
 {
-	global $ranks, $config, $phpbb_root_path;
+	global $ranks, $board_config, $phpbb_root_path;
 
 	$user_rank_data = array(
 		'title'		=> $rank_title ? $rank_title : null,
@@ -1966,7 +2046,7 @@ function phpbb_get_user_rank($user_data, $user_posts, &$rank_title = null, &$ran
 	if (!empty($user_data))
 	{
 		$user_rank_data['title'] = (isset($ranks['special'][$user_data['user_rank']]['rank_title'])) ? $ranks['special'][$user_data['user_rank']]['rank_title'] : '';
-		$user_rank_data['img_src'] = (!empty($ranks['special'][$user_data['user_rank']]['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_data['user_rank']]['rank_image'] : '';
+		$user_rank_data['img_src'] = (!empty($ranks['special'][$user_data['user_rank']]['rank_image'])) ? $phpbb_root_path . $board_config['ranks_path'] . '/' . $ranks['special'][$user_data['user_rank']]['rank_image'] : '';
 		$user_rank_data['img'] = (!empty($ranks['special'][$user_data['user_rank']]['rank_image'])) ? '<img src="' . $user_rank_data['img_src'] . '" alt="' . $ranks['special'][$user_data['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_data['user_rank']]['rank_title'] . '" />' : '';
 	
 	}
@@ -1979,8 +2059,8 @@ function phpbb_get_user_rank($user_data, $user_posts, &$rank_title = null, &$ran
 				if ($user_posts >= $rank['rank_min'])
 				{
 					$user_rank_data['title'] = $rank['rank_title'];
-					$user_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$user_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					$user_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $phpbb_root_path . $board_config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$user_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $phpbb_root_path . $board_config['ranks_path'] . '/' . $rank['rank_image'] : '';
 					break;
 				}
 			}
@@ -2024,7 +2104,7 @@ function get_user_sn_im_array()
 */
 function build_im_link($im_type, $user_data, $im_icon_type = false, $im_img = false, $im_url = false, $im_status = false, $im_lang = false)
 {
-	global $config, $user, $lang, $images;
+	global $board_config, $user, $lang, $images;
 
 	$available_im = get_user_sn_im_array();
 	$extra_im = array(
@@ -2068,16 +2148,16 @@ function build_im_link($im_type, $user_data, $im_icon_type = false, $im_img = fa
 		if ($im_type == 'chat')
 		{
 			// JHL: No chat icon if the user is anonymous, or the profiled user is offline
-			if (empty($user->data['session_logged_in']) || empty($user_data['user_session_time']) || ($user_data['user_session_time'] < (time() - $config['online_time'])))
+			if (empty($user->data['session_logged_in']) || empty($user_data['user_session_time']) || ($user_data['user_session_time'] < (time() - $board_config['online_time'])))
 			{
 				return '';
 			}
 
-			$ajax_chat_page = !empty($config['ajax_chat_link_type']) ? CMS_PAGE_AJAX_CHAT : CMS_PAGE_AJAX_SHOUTBOX;
+			$ajax_chat_page = !empty($board_config['ajax_chat_link_type']) ? CMS_PAGE_AJAX_CHAT : CMS_PAGE_AJAX_SHOUTBOX;
 			$ajax_chat_room = 'chat_room=' . (min($user->data['user_id'], $user_data['user_id']) . '|' . max($user->data['user_id'], $user_data['user_id']));
 			$ajax_chat_link = append_sid($ajax_chat_page . '?' . $ajax_chat_room);
 
-			$im_ref = !empty($config['ajax_chat_link_type']) ? ($ajax_chat_link . '" target="_chat') : ('#" onclick="window.open(\'' . $ajax_chat_link . '\', \'_chat\', \'width=720,height=600,resizable=yes\'); return false;');
+			$im_ref = !empty($board_config['ajax_chat_link_type']) ? ($ajax_chat_link . '" target="_chat') : ('#" onclick="window.open(\'' . $ajax_chat_link . '\', \'_chat\', \'width=720,height=600,resizable=yes\'); return false;');
 		}
 
 		$im_img = (!empty($im_img) && !empty($im_icon)) ? $im_icon : false;
@@ -2901,20 +2981,20 @@ function setup_style($style)
 					{
 						$db->sql_freeresult($result);
 						
-						$config_name = 'default_style';
+						$board_config_name = 'default_style';
 						/** */
-						$board_config[$config_name] = $row['themes_id'];
+						$board_config[$board_config_name] = $row['themes_id'];
 						
 						$sql = 'UPDATE ' . CONFIG_TABLE . "
-							SET config_value = '" . $db->sql_escape($board_config[$config_name]) . "'
-							WHERE config_name = '" . $db->sql_escape($config_name) . "'";
+							SET config_value = '" . $db->sql_escape($board_config[$board_config_name]) . "'
+							WHERE config_name = '" . $db->sql_escape($board_config_name) . "'";
 						$db->sql_query($sql);				
 						
-						if (!$db->sql_affectedrows() && !isset($board_config[$config_name]))
+						if (!$db->sql_affectedrows() && !isset($board_config[$board_config_name]))
 						{
 							$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-								'config_name'	=> $config_name,
-								'config_value'	=> $board_config[$config_name]));
+								'config_name'	=> $board_config_name,
+								'config_value'	=> $board_config[$board_config_name]));
 							$db->sql_query($sql);
 						}
 						
@@ -3263,7 +3343,7 @@ function phpbb_email_hash($email)
 */
 function add_form_key($form_name, $template_variable_suffix = '')
 {
-	global $config, $template, $user;
+	global $board_config, $template, $user;
 
 	$now = time();
 	$token_sid = ($user->data['user_id'] == ANONYMOUS) ? $user->session_id : '';
@@ -3538,7 +3618,7 @@ function empty_cache_folders($cache_folder = '', $files_per_step = 0)
 		'.htaccess',
 		'index.htm',
 		'index.html',
-		'index.' . PHP_EXT,
+		'index.' . $phpEx,
 		'empty_cache.bat',
 	);
 
