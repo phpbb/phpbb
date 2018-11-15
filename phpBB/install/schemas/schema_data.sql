@@ -783,6 +783,7 @@ INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('PLAIN_TEXT', 0, 0, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('DOCUMENTS', 0, 0, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('DOWNLOADABLE_FILES', 0, 0, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('AUDIO_FILES', 7, 0, '', 0, '');
 
 # -- extensions
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'gif');
@@ -838,11 +839,14 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'rtf');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mp3');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpeg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogm');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mp3');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wav');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'm4a');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
 
 # Add default profile fields
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_location', 'profilefields.type.string', 'phpbb_location', '20', '2', '100', '', '', '.*', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, '', '');

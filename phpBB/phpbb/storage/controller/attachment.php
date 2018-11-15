@@ -254,7 +254,7 @@ class attachment extends controller
 		$response->headers->set('Content-Type', $attachment['mimetype']);
 
 		// Display images in browser and force download for other file types
-		if (strpos($attachment['mimetype'], 'image') !== false)
+		if (strpos($attachment['mimetype'], 'image') !== false || strpos($attachment['mimetype'], 'audio') !== false)
 		{
 			$disposition = $response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
