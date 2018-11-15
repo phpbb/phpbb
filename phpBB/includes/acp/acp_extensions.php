@@ -36,6 +36,7 @@ class acp_extensions
 	private $phpbb_dispatcher;
 	private $ext_manager;
 	private $phpbb_container;
+	private $php_ini;
 
 	function main()
 	{
