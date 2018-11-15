@@ -636,6 +636,7 @@ class acp_attachments
 				$cat_lang = array(
 					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
+					ATTACHMENT_CATEGORY_AUDIO		=> $user->lang['CAT_AUDIO_FILES'],
 				);
 
 				$group_id = $request->variable('g', 0);
