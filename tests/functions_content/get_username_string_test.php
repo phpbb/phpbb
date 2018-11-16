@@ -17,7 +17,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $auth, $phpbb_dispatcher, $user;
+		global $auth, $phpbb_dispatcher, $user, $lang;
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
@@ -27,7 +27,12 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 			)));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$user->data['user_id'] = ANONYMOUS;
-		$user->lang['GUEST'] = 'Guest';
+
+		$lang = $this->createMock('\phpbb\language\language');
+		$lang->expects($this->any())
+			->method('lang')
+			->with($this->equalTo('GUEST'))
+			->will($this->returnValue('Guest'));
 	}
 
 	public function get_username_string_profile_data()

@@ -60,7 +60,7 @@ switch ($search_id)
 		$author_id = $user->data['user_id'];
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
-			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
+			login_box('', $user->lang('LOGIN_EXPLAIN_EGOSEARCH'));
 		}
 	break;
 
@@ -73,7 +73,7 @@ switch ($search_id)
 		}
 		else if (!$config['load_anon_lastread'] && !$user->data['is_registered'])
 		{
-			login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+			login_box('', $user->lang('LOGIN_EXPLAIN_UNREADSEARCH'));
 		}
 	break;
 
@@ -81,7 +81,7 @@ switch ($search_id)
 	case 'newposts':
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
-			login_box('', $user->lang['LOGIN_EXPLAIN_NEWPOSTS']);
+			login_box('', $user->lang('LOGIN_EXPLAIN_NEWPOSTS'));
 		}
 	break;
 
@@ -117,8 +117,8 @@ if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'activ
 }
 
 // Define some vars
-$limit_days		= array(0 => $user->lang['ALL_RESULTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-$sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SORT_TIME'], 'f' => $user->lang['SORT_FORUM'], 'i' => $user->lang['SORT_TOPIC_TITLE'], 's' => $user->lang['SORT_POST_SUBJECT']);
+$limit_days		= array(0 => $user->lang('ALL_RESULTS'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+$sort_by_text	= array('a' => $user->lang('SORT_AUTHOR'), 't' => $user->lang('SORT_TIME'), 'f' => $user->lang('SORT_FORUM'), 'i' => $user->lang('SORT_TOPIC_TITLE'), 's' => $user->lang('SORT_POST_SUBJECT'));
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -316,7 +316,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$common_words = $search->get_common_words();
 		if (!$correct_query || (!$search->get_search_query() && !count($author_id_ary) && !$search_id))
 		{
-			$ignored = (count($common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $common_words)) . '<br />' : '';
+			$ignored = (count($common_words)) ? sprintf($user->lang('IGNORED_TERMS_EXPLAIN'), implode(' ', $common_words)) . '<br />' : '';
 			$word_length = $search->get_word_length();
 			if ($word_length)
 			{
@@ -372,7 +372,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		{
 			// Oh holy Bob, bring us some activity...
 			case 'active_topics':
-				$l_search_title = $user->lang['SEARCH_ACTIVE_TOPICS'];
+				$l_search_title = $user->lang('SEARCH_ACTIVE_TOPICS');
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
@@ -395,7 +395,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'unanswered':
-				$l_search_title = $user->lang['SEARCH_UNANSWERED'];
+				$l_search_title = $user->lang('SEARCH_UNANSWERED');
 				$show_results = $request->variable('sr', 'topics');
 				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
@@ -447,7 +447,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'unreadposts':
-				$l_search_title = $user->lang['SEARCH_UNREAD'];
+				$l_search_title = $user->lang('SEARCH_UNREAD');
 				// force sorting
 				$show_results = 'topics';
 				$sort_key = 't';
@@ -465,7 +465,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'newposts':
-				$l_search_title = $user->lang['SEARCH_NEW'];
+				$l_search_title = $user->lang('SEARCH_NEW');
 				// force sorting
 				$show_results = ($request->variable('sr', 'topics') == 'posts') ? 'posts' : 'topics';
 				$sort_key = 't';
@@ -513,7 +513,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'egosearch':
-				$l_search_title = $user->lang['SEARCH_SELF'];
+				$l_search_title = $user->lang('SEARCH_SELF');
 			break;
 		}
 
@@ -1114,12 +1114,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 					'TOPIC_IMG_STYLE'		=> $folder_img,
 					'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
+					'TOPIC_FOLDER_IMG_ALT'	=> $user->lang($folder_alt),
 
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_TYPE'			=> $row['topic_type'],
@@ -1147,7 +1147,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$template->assign_block_vars('searchresults', array(
 						'S_IGNORE_POST' => true,
 
-						'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
+						'L_IGNORE_POST' => sprintf($user->lang('POST_BY_FOE'), $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
 					);
 
 					continue;
@@ -1348,7 +1348,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	);
 	extract($phpbb_dispatcher->trigger_event('core.search_results_modify_search_title', compact($vars)));
 
-	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
+	page_header(($l_search_title) ? $l_search_title : $user->lang('SEARCH'));
 
 	$template->set_filenames(array(
 		'body' => 'search_results.html')
@@ -1469,7 +1469,7 @@ if (!$s_forums)
 }
 
 // Number of chars returned
-$s_characters = '<option value="-1">' . $user->lang['ALL_AVAILABLE'] . '</option>';
+$s_characters = '<option value="-1">' . $user->lang('ALL_AVAILABLE') . '</option>';
 $s_characters .= '<option value="0">0</option>';
 $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
@@ -1552,7 +1552,7 @@ if ($auth->acl_get('a_search'))
 }
 
 // Output the basic page
-page_header($user->lang['SEARCH']);
+page_header($user->lang('SEARCH'));
 
 $template->set_filenames(array(
 	'body' => 'search_body.html')

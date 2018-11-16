@@ -103,7 +103,7 @@ class acp_captcha
 
 				if (!check_form_key($form_key))
 				{
-					$error[] = $user->lang['FORM_INVALID'];
+					$error[] = $user->lang('FORM_INVALID');
 				}
 				if ($error)
 				{
@@ -134,10 +134,10 @@ class acp_captcha
 					}
 					else
 					{
-						trigger_error($user->lang['CAPTCHA_UNAVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('CAPTCHA_UNAVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
-				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 			}
 			else
 			{

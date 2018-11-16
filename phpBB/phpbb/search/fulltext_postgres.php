@@ -179,7 +179,7 @@ class fulltext_postgres extends \phpbb\search\base
 	{
 		if ($this->db->get_sql_layer() != 'postgres')
 		{
-			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
+			return $this->user->lang('FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE');
 		}
 
 		return false;
@@ -1081,7 +1081,7 @@ class fulltext_postgres extends \phpbb\search\base
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_POSTGRES_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->user->lang('FULLTEXT_POSTGRES_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -1133,11 +1133,11 @@ class fulltext_postgres extends \phpbb\search\base
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->user->lang['YES'] : $this->user->lang['NO']) . '</dd>
+			<dt><label>' . $this->user->lang('FULLTEXT_POSTGRES_VERSION_CHECK') . '</label><br /><span>' . $this->user->lang('FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN') . '</span></dt>
+			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->user->lang('YES') : $this->user->lang('NO')) . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang('FULLTEXT_POSTGRES_TS_NAME') . '</label><br /><span>' . $this->user->lang('FULLTEXT_POSTGRES_TS_NAME_EXPLAIN') . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
 		if ($this->db->get_sql_layer() == 'postgres')
@@ -1160,11 +1160,11 @@ class fulltext_postgres extends \phpbb\search\base
 		$tpl .= '</select></dd>
 		</dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang('FULLTEXT_POSTGRES_MIN_WORD_LEN') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN') . '</span></dt>
                         <dd><input id="fulltext_postgres_min_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
                 </dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang('FULLTEXT_POSTGRES_MAX_WORD_LEN') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN') . '</span></dt>
                         <dd><input id="fulltext_postgres_max_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
                 </dl>
 		';

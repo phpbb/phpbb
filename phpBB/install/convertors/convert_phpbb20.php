@@ -722,7 +722,7 @@ if (!$get_info)
 				'query_first'	=> array('target', $convert->truncate_statement . PRIVMSGS_FOLDER_TABLE),
 
 				array('user_id',				'users.user_id',						'phpbb_user_id'),
-				array('folder_name',			$user->lang['CONV_SAVED_MESSAGES'],		''),
+				array('folder_name',			$user->lang('CONV_SAVED_MESSAGES'),		''),
 				array('pm_count',				0,										''),
 
 				'where'			=> 'users.user_id <> -1',

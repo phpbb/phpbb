@@ -51,10 +51,10 @@ abstract class post_base extends attachments_base
 
 		if ($this->config['feed_item_statistics'])
 		{
-			$item_row['statistics'] = $this->user->lang['POSTED'] . ' ' . $this->user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+			$item_row['statistics'] = $this->user->lang('POSTED') . ' ' . $this->user->lang('POST_BY_AUTHOR') . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
-				. (($this->is_moderator_approve_forum($row['forum_id']) && (int) $row['post_visibility'] === ITEM_UNAPPROVED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POST_UNAPPROVED'] : '')
-				. (($this->is_moderator_approve_forum($row['forum_id']) && (int) $row['post_visibility'] === ITEM_DELETED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POST_DELETED'] : '');
+				. (($this->is_moderator_approve_forum($row['forum_id']) && (int) $row['post_visibility'] === ITEM_UNAPPROVED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang('POST_UNAPPROVED') : '')
+				. (($this->is_moderator_approve_forum($row['forum_id']) && (int) $row['post_visibility'] === ITEM_DELETED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang('POST_DELETED') : '');
 		}
 	}
 }

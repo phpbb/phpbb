@@ -52,19 +52,19 @@ switch ($mode)
 {
 	case 'activate':
 		$module->load('ucp', 'activate');
-		$module->display($user->lang['UCP_ACTIVATE']);
+		$module->display($user->lang('UCP_ACTIVATE'));
 
 		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	break;
 
 	case 'resend_act':
 		$module->load('ucp', 'resend');
-		$module->display($user->lang['UCP_RESEND']);
+		$module->display($user->lang('UCP_RESEND'));
 	break;
 
 	case 'sendpassword':
 		$module->load('ucp', 'remind');
-		$module->display($user->lang['UCP_REMIND']);
+		$module->display($user->lang('UCP_REMIND'));
 	break;
 
 	case 'register':
@@ -74,7 +74,7 @@ switch ($mode)
 		}
 
 		$module->load('ucp', 'register');
-		$module->display($user->lang['REGISTER']);
+		$module->display($user->lang('REGISTER'));
 	break;
 
 	case 'confirm':
@@ -97,7 +97,7 @@ switch ($mode)
 		}
 
 		$module->load('ucp', 'login_link');
-		$module->display($user->lang['UCP_LOGIN_LINK']);
+		$module->display($user->lang('UCP_LOGIN_LINK'));
 	break;
 
 	case 'logout':
@@ -109,7 +109,7 @@ switch ($mode)
 		{
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['LOGOUT_FAILED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
+			$message = $user->lang('LOGOUT_FAILED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
 			trigger_error($message);
 		}
 
@@ -122,7 +122,7 @@ switch ($mode)
 		$message = ($mode == 'terms') ? 'TERMS_OF_USE_CONTENT' : 'PRIVACY_POLICY';
 		$title = ($mode == 'terms') ? 'TERMS_USE' : 'PRIVACY';
 
-		if (empty($user->lang[$message]))
+		if (empty($user->lang($message)))
 		{
 			if ($user->data['is_registered'])
 			{
@@ -137,14 +137,14 @@ switch ($mode)
 		);
 
 		// Disable online list
-		page_header($user->lang[$title]);
+		page_header($user->lang($title));
 
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
-			'AGREEMENT_TITLE'		=> $user->lang[$title],
-			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], $config['sitename'], generate_board_url()),
+			'AGREEMENT_TITLE'		=> $user->lang($title),
+			'AGREEMENT_TEXT'		=> sprintf($user->lang($message), $config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
-			'L_BACK'				=> $user->lang['BACK_TO_PREV'],
+			'L_BACK'				=> $user->lang('BACK_TO_PREV'),
 		));
 
 		page_footer();
@@ -204,7 +204,7 @@ switch ($mode)
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = $user->lang('COOKIES_DELETED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -242,7 +242,7 @@ switch ($mode)
 
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_TRANSFER_PERMISSIONS', false, array($user_row['username']));
 
-		$message = sprintf($user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+		$message = sprintf($user->lang('PERMISSIONS_TRANSFERRED'), $user_row['username']) . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 
 		/**
 		* Event to run code after permissions are switched
@@ -278,7 +278,7 @@ switch ($mode)
 
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_RESTORE_PERMISSIONS', false, array($username));
 
-		$message = $user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+		$message = $user->lang('PERMISSIONS_RESTORED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 
 		/**
 		* Event to run code after permissions are restored
@@ -317,10 +317,10 @@ if (!$user->data['is_registered'])
 	if ($id == 'pm' && $mode == 'view' && isset($_GET['p']))
 	{
 		$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx?i=pm&p=" . $request->variable('p', 0));
-		login_box($redirect_url, $user->lang['LOGIN_EXPLAIN_UCP']);
+		login_box($redirect_url, $user->lang('LOGIN_EXPLAIN_UCP'));
 	}
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
+	login_box('', $user->lang('LOGIN_EXPLAIN_UCP'));
 }
 
 // Instantiate module system and generate list of available modules

@@ -82,8 +82,8 @@ class type_bool extends type_base
 		);
 
 		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_TYPE'], 'EXPLAIN' => $this->user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($field_data['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($field_data['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['CHECKBOX'] . '</label>'),
-			1 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row)),
+			0 => array('TITLE' => $this->user->lang('FIELD_TYPE'), 'EXPLAIN' => $this->user->lang('BOOL_TYPE_EXPLAIN'), 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($field_data['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang('RADIO_BUTTONS') . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($field_data['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang('CHECKBOX') . '</label>'),
+			1 => array('TITLE' => $this->user->lang('DEFAULT_VALUE'), 'FIELD' => $this->process_field_row('preview', $profile_row)),
 		);
 
 		return $options;
@@ -312,7 +312,7 @@ class type_bool extends type_base
 	{
 		if (empty($field_data['lang_options'][0]) || empty($field_data['lang_options'][1]))
 		{
-			$error[] = $this->user->lang['NO_FIELD_ENTRIES'];
+			$error[] = $this->user->lang('NO_FIELD_ENTRIES');
 		}
 
 		return $error;
@@ -407,7 +407,7 @@ class type_bool extends type_base
 
 		$template_vars = array_merge($template_vars, array(
 			'S_BOOL'					=> true,
-			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['BOOL_ENTRIES_EXPLAIN'],
+			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang('BOOL_ENTRIES_EXPLAIN'),
 			'FIRST_LANG_OPTION'			=> $field_data['lang_options'][0],
 			'SECOND_LANG_OPTION'		=> $field_data['lang_options'][1],
 		));

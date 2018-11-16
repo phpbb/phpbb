@@ -47,7 +47,7 @@ class acp_main
 				'S_RESTORE_PERMISSIONS'		=> true,
 				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang('PERMISSIONS_TRANSFERRED_EXPLAIN'), $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
 			));
 
 			return;
@@ -103,7 +103,7 @@ class acp_main
 
 				if ($confirm)
 				{
-					confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
+					confirm_box(false, $user->lang($confirm_lang), build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'action'	=> $action,
@@ -119,7 +119,7 @@ class acp_main
 						if (!$auth->acl_get('a_board'))
 						{
 							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$config->set('record_online_users', 1, false);
@@ -136,7 +136,7 @@ class acp_main
 						if (!$auth->acl_get('a_board'))
 						{
 							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'SELECT COUNT(post_id) AS stat
@@ -192,7 +192,7 @@ class acp_main
 						if (!$auth->acl_get('a_board'))
 						{
 							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						// Resync post counts
@@ -260,7 +260,7 @@ class acp_main
 						if (!$auth->acl_get('a_board'))
 						{
 							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$config->set('board_startdate', time() - 1);
@@ -376,7 +376,7 @@ class acp_main
 						if ((int) $user->data['user_type'] !== USER_FOUNDER)
 						{
 							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
@@ -433,7 +433,7 @@ class acp_main
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang('PHP_VERSION_OLD'), PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 
@@ -557,7 +557,7 @@ class acp_main
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'TOTAL_ORPHAN'		=> $total_orphan,
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
-			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang['ON'] : $user->lang['OFF'],
+			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang('ON') : $user->lang('OFF'),
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 			'PHP_VERSION_INFO'	=> PHP_VERSION,
 			'BOARD_VERSION'		=> $config['version'],

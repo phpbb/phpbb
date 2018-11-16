@@ -470,7 +470,7 @@ class bbcode
 				'i_close'	=> '</span>',
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
-				'img'		=> '<img src="$1" class="postimage" alt="' . $user->lang['IMAGE'] . '" />',
+				'img'		=> '<img src="$1" class="postimage" alt="' . $user->lang('IMAGE') . '" />',
 				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'

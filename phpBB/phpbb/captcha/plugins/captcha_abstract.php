@@ -201,7 +201,7 @@ abstract class captcha_abstract
 		$error = '';
 		if (!$this->confirm_id)
 		{
-			$error = $user->lang['CONFIRM_CODE_WRONG'];
+			$error = $user->lang('CONFIRM_CODE_WRONG');
 		}
 		else
 		{
@@ -211,7 +211,7 @@ abstract class captcha_abstract
 			}
 			else
 			{
-				$error = $user->lang['CONFIRM_CODE_WRONG'];
+				$error = $user->lang('CONFIRM_CODE_WRONG');
 			}
 		}
 

@@ -75,7 +75,7 @@ class ucp_attachments
 				unset($attachment_manager);
 
 				meta_refresh(3, $this->u_action);
-				$message = ((count($delete_ids) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+				$message = ((count($delete_ids) == 1) ? $user->lang('ATTACHMENT_DELETED') : $user->lang('ATTACHMENTS_DELETED')) . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -85,10 +85,10 @@ class ucp_attachments
 		}
 
 		// Select box eventually
-		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
+		$sort_key_text = array('a' => $user->lang('SORT_FILENAME'), 'b' => $user->lang('SORT_COMMENT'), 'c' => $user->lang('SORT_EXTENSION'), 'd' => $user->lang('SORT_SIZE'), 'e' => $user->lang('SORT_DOWNLOADS'), 'f' => $user->lang('SORT_POST_TIME'), 'g' => $user->lang('SORT_TOPIC_TITLE'));
 		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
-		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+		$sort_dir_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
@@ -182,7 +182,7 @@ class ucp_attachments
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 			'NUM_ATTACHMENTS'		=> $user->lang('NUM_ATTACHMENTS', $num_attachments),
 
-			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
+			'L_TITLE'				=> $user->lang('UCP_ATTACHMENTS'),
 
 			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),

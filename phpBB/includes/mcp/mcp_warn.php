@@ -142,8 +142,8 @@ class mcp_warn
 		$sk		= $request->variable('sk', 'b');
 		$sd		= $request->variable('sd', 'd');
 
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
+		$limit_days = array(0 => $user->lang('ALL_ENTRIES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+		$sort_by_text = array('a' => $user->lang('SORT_USERNAME'), 'b' => $user->lang('SORT_DATE'), 'c' => $user->lang('SORT_WARNINGS'));
 		$sort_by_sql = array('a' => 'username_clean', 'b' => 'user_last_warning', 'c' => 'user_warnings');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -292,7 +292,7 @@ class mcp_warn
 				if ($s_mcp_warn_post)
 				{
 					add_warning($user_row, $warning, $notify, $post_id);
-					$message = $user->lang['USER_WARNING_ADDED'];
+					$message = $user->lang('USER_WARNING_ADDED');
 
 					/**
 					* Event for after warning a user for a post.
@@ -317,14 +317,14 @@ class mcp_warn
 			}
 			else
 			{
-				$message = $user->lang['FORM_INVALID'];
+				$message = $user->lang('FORM_INVALID');
 			}
 
 			if (!empty($message))
 			{
 				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($message . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 
@@ -358,7 +358,7 @@ class mcp_warn
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $user_rank_data['img'],
 
-			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
+			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang('WARNING_POST_DEFAULT'), generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,
 		));
@@ -451,7 +451,7 @@ class mcp_warn
 				if ($s_mcp_warn_user)
 				{
 					add_warning($user_row, $warning, $notify);
-					$message = $user->lang['USER_WARNING_ADDED'];
+					$message = $user->lang('USER_WARNING_ADDED');
 
 					/**
 					* Event for after warning a user from MCP.
@@ -474,14 +474,14 @@ class mcp_warn
 			}
 			else
 			{
-				$message = $user->lang['FORM_INVALID'];
+				$message = $user->lang('FORM_INVALID');
 			}
 
 			if (!empty($message))
 			{
 				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($message . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 

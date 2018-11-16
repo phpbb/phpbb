@@ -154,12 +154,12 @@ class report
 				switch ($mode)
 				{
 					case 'pm':
-						$lang_return = $this->user->lang['RETURN_PM'];
-						$lang_success = $this->user->lang['PM_REPORTED_SUCCESS'];
+						$lang_return = $this->user->lang('RETURN_PM');
+						$lang_success = $this->user->lang('PM_REPORTED_SUCCESS');
 					break;
 					case 'post':
-						$lang_return = $this->user->lang['RETURN_TOPIC'];
-						$lang_success = $this->user->lang['POST_REPORTED_SUCCESS'];
+						$lang_return = $this->user->lang('RETURN_TOPIC');
+						$lang_success = $this->user->lang('POST_REPORTED_SUCCESS');
 					break;
 				}
 
@@ -181,12 +181,12 @@ class report
 			switch ($mode)
 			{
 				case 'pm':
-					$message = $this->user->lang['ALREADY_REPORTED_PM'];
-					$message .= '<br /><br />' . sprintf($this->user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
+					$message = $this->user->lang('ALREADY_REPORTED_PM');
+					$message .= '<br /><br />' . sprintf($this->user->lang('RETURN_PM'), '<a href="' . $redirect_url . '">', '</a>');
 				break;
 				case 'post':
-					$message = $this->user->lang['ALREADY_REPORTED'];
-					$message .= '<br /><br />' . sprintf($this->user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+					$message = $this->user->lang('ALREADY_REPORTED');
+					$message .= '<br /><br />' . sprintf($this->user->lang('RETURN_TOPIC'), '<a href="' . $redirect_url . '">', '</a>');
 				break;
 			}
 
@@ -197,7 +197,7 @@ class report
 			$message = $exception->getMessage();
 			if (isset($this->user->lang[$message]))
 			{
-				$message = $this->user->lang[$message];
+				$message = $this->user->lang($message);
 			}
 
 			throw new http_exception(403, $message);
@@ -207,14 +207,14 @@ class report
 			$message = $exception->getMessage();
 			if (isset($this->user->lang[$message]))
 			{
-				$message = $this->user->lang[$message];
+				$message = $this->user->lang($message);
 			}
 
 			throw new http_exception(404, $message);
 		}
 		catch (\phpbb\report\exception\empty_report_exception $exception)
 		{
-			$error[] = $this->user->lang['EMPTY_REPORT'];
+			$error[] = $this->user->lang('EMPTY_REPORT');
 		}
 		catch (\phpbb\report\exception\invalid_report_exception $exception)
 		{
@@ -222,7 +222,7 @@ class report
 		}
 
 		// Setting up an rendering template
-		$page_title = ($mode === 'pm') ? $this->user->lang['REPORT_MESSAGE'] : $this->user->lang['REPORT_POST'];
+		$page_title = ($mode === 'pm') ? $this->user->lang('REPORT_MESSAGE') : $this->user->lang('REPORT_POST');
 		$this->assign_template_data(
 			$mode,
 			$id,

@@ -69,12 +69,12 @@ class help
 		{
 			case 'faq':
 			case 'bbcode':
-				$page_title = ($mode === 'faq') ? $this->user->lang['FAQ_EXPLAIN'] : $this->user->lang['BBCODE_GUIDE'];
+				$page_title = ($mode === 'faq') ? $this->user->lang('FAQ_EXPLAIN') : $this->user->lang('BBCODE_GUIDE');
 				$this->user->add_lang($mode, false, true);
 			break;
 
 			default:
-				$page_title = $this->user->lang['FAQ_EXPLAIN'];
+				$page_title = $this->user->lang('FAQ_EXPLAIN');
 				$ext_name = $lang_file = '';
 
 				/**

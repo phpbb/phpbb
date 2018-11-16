@@ -100,12 +100,12 @@ class user_form extends form
 	{
 		if (!$this->subject)
 		{
-			$this->errors[] = $this->user->lang['EMPTY_SUBJECT_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_SUBJECT_EMAIL');
 		}
 
 		if (!$this->body)
 		{
-			$this->errors[] = $this->user->lang['EMPTY_MESSAGE_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_MESSAGE_EMAIL');
 		}
 
 		$this->message->set_template('profile_send_email');

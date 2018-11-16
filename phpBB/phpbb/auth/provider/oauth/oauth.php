@@ -173,7 +173,7 @@ class oauth extends \phpbb\auth\provider\base
 
 			if (($credentials['key'] && !$credentials['secret']) || (!$credentials['key'] && $credentials['secret']))
 			{
-				return $this->user->lang['AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'];
+				return $this->user->lang('AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING');
 			}
 		}
 		return false;
@@ -395,7 +395,7 @@ class oauth extends \phpbb\auth\provider\base
 				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $actual_name;
 				$login_data['BLOCK_VARS'][$service_name] = array(
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
-					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+					'SERVICE_NAME'	=> $this->user->lang('AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)),
 				);
 			}
 		}
@@ -436,7 +436,7 @@ class oauth extends \phpbb\auth\provider\base
 		{
 			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
 			$ret['BLOCK_VARS'][$actual_name] = array(
-				'ACTUAL_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+				'ACTUAL_NAME'	=> $this->user->lang('AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)),
 				'KEY'			=> $new_config['auth_oauth_' . $actual_name . '_key'],
 				'NAME'			=> $actual_name,
 				'SECRET'		=> $new_config['auth_oauth_' . $actual_name . '_secret'],
@@ -674,7 +674,7 @@ class oauth extends \phpbb\auth\provider\base
 						'oauth_service' => $actual_name,
 					),
 
-					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+					'SERVICE_NAME'	=> $this->user->lang('AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)),
 					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
 				);
 			}

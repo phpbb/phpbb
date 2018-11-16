@@ -34,7 +34,7 @@ class ucp_groups
 
 		$user->add_lang('groups');
 
-		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
+		$return_page = '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= $request->variable('mark', array(0));
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
@@ -82,19 +82,19 @@ class ucp_groups
 							// User already having this group set as default?
 							if ($group_id == $user->data['group_id'])
 							{
-								trigger_error($user->lang['ALREADY_DEFAULT_GROUP'] . $return_page);
+								trigger_error($user->lang('ALREADY_DEFAULT_GROUP') . $return_page);
 							}
 
 							if (!$auth->acl_get('u_chggrp'))
 							{
 								send_status_line(403, 'Forbidden');
-								trigger_error($user->lang['NOT_AUTHORISED'] . $return_page);
+								trigger_error($user->lang('NOT_AUTHORISED') . $return_page);
 							}
 
 							// User needs to be member of the group in order to make it default
 							if (!group_memberships($group_id, $user->data['user_id'], true))
 							{
-								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+								trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 							}
 
 							if (confirm_box(true))
@@ -103,11 +103,11 @@ class ucp_groups
 
 								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_CHANGE', false, array(
 									'reportee_id' => $user->data['user_id'],
-									sprintf($user->lang['USER_GROUP_CHANGE'], $group_row[$user->data['group_id']]['group_name'], $group_row[$group_id]['group_name'])
+									sprintf($user->lang('USER_GROUP_CHANGE'), $group_row[$user->data['group_id']]['group_name'], $group_row[$group_id]['group_name'])
 								));
 
 								meta_refresh(3, $this->u_action);
-								trigger_error($user->lang['CHANGED_DEFAULT_GROUP'] . $return_page);
+								trigger_error($user->lang('CHANGED_DEFAULT_GROUP') . $return_page);
 							}
 							else
 							{
@@ -116,7 +116,7 @@ class ucp_groups
 									'change_default'=> true
 								);
 
-								confirm_box(false, sprintf($user->lang['GROUP_CHANGE_DEFAULT'], $group_row[$group_id]['group_name']), build_hidden_fields($s_hidden_fields));
+								confirm_box(false, sprintf($user->lang('GROUP_CHANGE_DEFAULT'), $group_row[$group_id]['group_name']), build_hidden_fields($s_hidden_fields));
 							}
 
 						break;
@@ -126,12 +126,12 @@ class ucp_groups
 							// User tries to resign from default group but is not allowed to change it?
 							if ($group_id == $user->data['group_id'] && !$auth->acl_get('u_chggrp'))
 							{
-								trigger_error($user->lang['NOT_RESIGN_FROM_DEFAULT_GROUP'] . $return_page);
+								trigger_error($user->lang('NOT_RESIGN_FROM_DEFAULT_GROUP') . $return_page);
 							}
 
 							if (!($row = group_memberships($group_id, $user->data['user_id'])))
 							{
-								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+								trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 							}
 							list(, $row) = each($row);
 
@@ -144,7 +144,7 @@ class ucp_groups
 
 							if ($group_type != GROUP_OPEN && $group_type != GROUP_FREE)
 							{
-								trigger_error($user->lang['CANNOT_RESIGN_GROUP'] . $return_page);
+								trigger_error($user->lang('CANNOT_RESIGN_GROUP') . $return_page);
 							}
 
 							if (confirm_box(true))
@@ -187,16 +187,16 @@ class ucp_groups
 							{
 								if ($row['user_pending'])
 								{
-									trigger_error($user->lang['ALREADY_IN_GROUP_PENDING'] . $return_page);
+									trigger_error($user->lang('ALREADY_IN_GROUP_PENDING') . $return_page);
 								}
 
-								trigger_error($user->lang['ALREADY_IN_GROUP'] . $return_page);
+								trigger_error($user->lang('ALREADY_IN_GROUP') . $return_page);
 							}
 
 							// Check permission to join (open group or request)
 							if ($group_row[$group_id]['group_type'] != GROUP_OPEN && $group_row[$group_id]['group_type'] != GROUP_FREE)
 							{
-								trigger_error($user->lang['CANNOT_JOIN_GROUP'] . $return_page);
+								trigger_error($user->lang('CANNOT_JOIN_GROUP') . $return_page);
 							}
 
 							if (confirm_box(true))
@@ -235,13 +235,13 @@ class ucp_groups
 
 							if (!($row = group_memberships($group_id, $user->data['user_id'])))
 							{
-								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+								trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 							}
 							list(, $row) = each($row);
 
 							if (!$row['group_leader'])
 							{
-								trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+								trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 							}
 
 							if (confirm_box(true))
@@ -254,7 +254,7 @@ class ucp_groups
 								));
 
 								meta_refresh(3, $this->u_action);
-								trigger_error($user->lang['USER_GROUP_DEMOTED'] . $return_page);
+								trigger_error($user->lang('USER_GROUP_DEMOTED') . $return_page);
 							}
 							else
 							{
@@ -310,9 +310,9 @@ class ucp_groups
 					$template->assign_block_vars($block, array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> $group_helper->get_name($row['group_name']),
-						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $user->lang['GROUP_IS_SPECIAL'],
+						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $user->lang('GROUP_IS_SPECIAL'),
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
-						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
+						'GROUP_STATUS'	=> $user->lang('GROUP_IS_' . $group_status),
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
 						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
@@ -364,10 +364,10 @@ class ucp_groups
 					$template->assign_block_vars('nonmember', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> $group_helper->get_name($row['group_name']),
-						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $user->lang['GROUP_IS_SPECIAL'],
+						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $user->lang('GROUP_IS_SPECIAL'),
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
 						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || $auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
-						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
+						'GROUP_STATUS'	=> $user->lang('GROUP_IS_' . $group_status),
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
@@ -413,13 +413,13 @@ class ucp_groups
 
 					if (!$group_row)
 					{
-						trigger_error($user->lang['NO_GROUP'] . $return_page);
+						trigger_error($user->lang('NO_GROUP') . $return_page);
 					}
 
 					// Check if the user is allowed to manage this group if set to founder only.
 					if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
 					{
-						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
+						trigger_error($user->lang('NOT_ALLOWED_MANAGE_GROUP') . $return_page, E_USER_WARNING);
 					}
 
 					$group_name = $group_row['group_name'];
@@ -447,18 +447,18 @@ class ucp_groups
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . $return_page);
+							trigger_error($user->lang('NO_GROUP') . $return_page);
 						}
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
@@ -493,7 +493,7 @@ class ucp_groups
 								$cache->destroy('sql', GROUPS_TABLE);
 
 								$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-								trigger_error($user->lang[$message] . $return_page);
+								trigger_error($user->lang($message) . $return_page);
 							}
 							else
 							{
@@ -552,7 +552,7 @@ class ucp_groups
 
 							if (!check_form_key('ucp_groups'))
 							{
-								$error[] = $user->lang['FORM_INVALID'];
+								$error[] = $user->lang('FORM_INVALID');
 							}
 
 							// Validate submitted colour value
@@ -601,7 +601,7 @@ class ucp_groups
 									$cache->destroy('sql', TEAMPAGE_TABLE);
 
 									$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-									trigger_error($user->lang[$message] . $return_page);
+									trigger_error($user->lang($message) . $return_page);
 								}
 							}
 
@@ -641,7 +641,7 @@ class ucp_groups
 							ORDER BY rank_title';
 						$result = $db->sql_query($sql);
 
-						$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang['USER_DEFAULT'] . '</option>';
+						$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang('USER_DEFAULT') . '</option>';
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$selected = ($group_rank && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
@@ -741,18 +741,18 @@ class ucp_groups
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . $return_page);
+							trigger_error($user->lang('NO_GROUP') . $return_page);
 						}
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
@@ -842,7 +842,7 @@ class ucp_groups
 
 						foreach ($options as $option => $lang)
 						{
-							$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
+							$s_action_options .= '<option value="' . $option . '">' . $user->lang('GROUP_' . $lang) . '</option>';
 						}
 
 						/* @var $pagination \phpbb\pagination */
@@ -866,18 +866,18 @@ class ucp_groups
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . $return_page);
+							trigger_error($user->lang('NO_GROUP') . $return_page);
 						}
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$user->add_lang('acp/groups');
@@ -885,7 +885,7 @@ class ucp_groups
 						// Approve, demote or promote
 						group_user_attributes('approve', $group_id, $mark_ary, false, false);
 
-						trigger_error($user->lang['USERS_APPROVED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+						trigger_error($user->lang('USERS_APPROVED') . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
 					break;
 
@@ -893,18 +893,18 @@ class ucp_groups
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . $return_page);
+							trigger_error($user->lang('NO_GROUP') . $return_page);
 						}
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$group_row['group_name'] = $group_helper->get_name($group_row['group_name']);
@@ -951,13 +951,13 @@ class ucp_groups
 
 							$user->add_lang('acp/groups');
 
-							trigger_error($user->lang['GROUP_DEFS_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+							trigger_error($user->lang('GROUP_DEFS_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
 							$user->add_lang('acp/common');
 
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 								'mark'		=> $mark_ary,
 								'g'			=> $group_id,
 								'i'			=> $id,
@@ -977,13 +977,13 @@ class ucp_groups
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$group_row['group_name'] = $group_helper->get_name($group_row['group_name']);
@@ -992,21 +992,21 @@ class ucp_groups
 						{
 							if (!$group_id)
 							{
-								trigger_error($user->lang['NO_GROUP'] . $return_page);
+								trigger_error($user->lang('NO_GROUP') . $return_page);
 							}
 
 							$error = group_user_del($group_id, $mark_ary, false, $group_row['group_name']);
 
 							if ($error)
 							{
-								trigger_error($user->lang[$error] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+								trigger_error($user->lang($error) . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 							}
 
-							trigger_error($user->lang['GROUP_USERS_REMOVE'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+							trigger_error($user->lang('GROUP_USERS_REMOVE') . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 								'mark'		=> $mark_ary,
 								'g'			=> $group_id,
 								'i'			=> $id,
@@ -1028,23 +1028,23 @@ class ucp_groups
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . $return_page);
+							trigger_error($user->lang('NO_GROUP') . $return_page);
 						}
 
 						if (!$names)
 						{
-							trigger_error($user->lang['NO_USERS'] . $return_page);
+							trigger_error($user->lang('NO_USERS') . $return_page);
 						}
 
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
-							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_MEMBER_OF_GROUP') . $return_page);
 						}
 						list(, $row) = each($row);
 
 						if (!$row['group_leader'])
 						{
-							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+							trigger_error($user->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
 						$name_ary = array_unique(explode("\n", $names));
@@ -1057,10 +1057,10 @@ class ucp_groups
 							// Add user/s to group
 							if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
 							{
-								trigger_error($user->lang[$error] . $return_page);
+								trigger_error($user->lang($error) . $return_page);
 							}
 
-							trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+							trigger_error($user->lang('GROUP_USERS_ADDED') . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
@@ -1073,10 +1073,10 @@ class ucp_groups
 								'action'	=> $action
 							);
 
-							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', count($name_ary), implode($user->lang['COMMA_SEPARATOR'], $name_ary)), build_hidden_fields($s_hidden_fields));
+							confirm_box(false, $user->lang('GROUP_CONFIRM_ADD_USERS', count($name_ary), implode($user->lang('COMMA_SEPARATOR'), $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
-						trigger_error($user->lang['NO_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+						trigger_error($user->lang('NO_USERS_ADDED') . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
 					break;
 

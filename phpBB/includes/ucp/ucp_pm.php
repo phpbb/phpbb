@@ -258,13 +258,13 @@ class ucp_pm
 					mark_folder_read($user->data['user_id'], $folder_id);
 
 					meta_refresh(3, $this->u_action);
-					$message = $user->lang['PM_MARK_ALL_READ_SUCCESS'];
+					$message = $user->lang('PM_MARK_ALL_READ_SUCCESS');
 
 					if ($request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response();
 						$json_response->send(array(
-							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TITLE'	=> $user->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'success'		=> true,
 						));
@@ -346,7 +346,7 @@ class ucp_pm
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
 					'NUM_NOT_MOVED'			=> $num_not_moved,
 					'NUM_REMOVED'			=> $num_removed,
-					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
+					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang('RELEASE_MESSAGES'), '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
 					'NOT_MOVED_MESSAGES'	=> $user->lang('NOT_MOVED_MESSAGES', (int) $num_not_moved),
 					'RULE_REMOVED_MESSAGES'	=> $user->lang('RULE_REMOVED_MESSAGES', (int) $num_removed),
 
@@ -407,7 +407,7 @@ class ucp_pm
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_PM_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang('UCP_PM_' . strtoupper($mode)),
 			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : ''))
 		);
 

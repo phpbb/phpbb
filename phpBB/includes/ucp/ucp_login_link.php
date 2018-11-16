@@ -53,7 +53,7 @@ class ucp_login_link
 		// Ensure the person was sent here with login_link data
 		if (empty($data))
 		{
-			$login_link_error = $user->lang['LOGIN_LINK_NO_DATA_PROVIDED'];
+			$login_link_error = $user->lang('LOGIN_LINK_NO_DATA_PROVIDED');
 		}
 
 		// Use the auth_provider requested even if different from configured
@@ -68,7 +68,7 @@ class ucp_login_link
 		$result = $auth_provider->login_link_has_necessary_data($data);
 		if ($result !== null)
 		{
-			$login_link_error = $user->lang[$result];
+			$login_link_error = $user->lang($result);
 		}
 
 		// Perform link action if there is no error
@@ -94,7 +94,7 @@ class ucp_login_link
 
 					if ($result)
 					{
-						$login_link_error = $user->lang[$result];
+						$login_link_error = $user->lang($result);
 					}
 					else
 					{

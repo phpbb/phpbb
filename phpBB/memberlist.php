@@ -79,7 +79,7 @@ switch ($mode)
 				trigger_error('NO_VIEW_USERS');
 			}
 
-			login_box('', ((isset($user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)])) ? $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)] : $user->lang['LOGIN_EXPLAIN_MEMBERLIST']));
+			login_box('', ((isset($user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)])) ? $user->lang('LOGIN_EXPLAIN_' . strtoupper($mode)) : $user->lang('LOGIN_EXPLAIN_MEMBERLIST')));
 		}
 	break;
 }
@@ -110,7 +110,7 @@ switch ($mode)
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
-		$page_title = $user->lang['THE_TEAM'];
+		$page_title = $user->lang('THE_TEAM');
 		$template_html = 'memberlist_team.html';
 
 		$sql = 'SELECT *
@@ -144,7 +144,7 @@ switch ($mode)
 		{
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
 			{
-				$row['group_name'] = $user->lang['GROUP_UNDISCLOSED'];
+				$row['group_name'] = $user->lang('GROUP_UNDISCLOSED');
 				$row['u_group'] = '';
 			}
 			else
@@ -231,7 +231,7 @@ switch ($mode)
 					{
 						if (!$forum_id)
 						{
-							$user_ary[$id]['forums'] = $user->lang['ALL_FORUMS'];
+							$user_ary[$id]['forums'] = $user->lang('ALL_FORUMS');
 						}
 						else
 						{
@@ -370,13 +370,13 @@ switch ($mode)
 		));
 
 		$template->assign_vars(array(
-			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang('SEND_PRIVATE_MESSAGE')))
 		);
 	break;
 
 	case 'contact':
 
-		$page_title = $user->lang['IM_USER'];
+		$page_title = $user->lang('IM_USER');
 		$template_html = 'memberlist_im.html';
 
 		if (!$auth->acl_get('u_sendim'))
@@ -431,7 +431,7 @@ switch ($mode)
 
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
+						$subject = sprintf($user->lang('IM_JABBER_SUBJECT'), $user->data['username'], $config['server_name']);
 						$message = $request->variable('message', '', true);
 
 						if (empty($message))
@@ -482,8 +482,8 @@ switch ($mode)
 
 			'PRESENCE_IMG'		=> $presence_img,
 
-			'L_SEND_IM_EXPLAIN'	=> $user->lang['IM_' . $lang],
-			'L_IM_SENT_JABBER'	=> sprintf($user->lang['IM_SENT_JABBER'], $row['username']),
+			'L_SEND_IM_EXPLAIN'	=> $user->lang('IM_' . $lang),
+			'L_IM_SENT_JABBER'	=> sprintf($user->lang('IM_SENT_JABBER'), $row['username']),
 
 			$s_select			=> true,
 			'S_IM_ACTION'		=> $s_action)
@@ -721,11 +721,11 @@ switch ($mode)
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
-			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang('SEND_PRIVATE_MESSAGE')),
 			'L_SEND_EMAIL_USER'	=> $user->lang('SEND_EMAIL_USER', $member['username']),
-			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
-			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
+			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang('EMAIL')),
+			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang('JABBER')),
+			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang('SEARCH')),
 
 			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'	=> $group_options,
@@ -767,24 +767,24 @@ switch ($mode)
 		{
 			$user->add_lang('acp/common');
 
-			$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+			$inactive_reason = $user->lang('INACTIVE_REASON_UNKNOWN');
 
 			switch ($member['user_inactive_reason'])
 			{
 				case INACTIVE_REGISTER:
-					$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+					$inactive_reason = $user->lang('INACTIVE_REASON_REGISTER');
 				break;
 
 				case INACTIVE_PROFILE:
-					$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+					$inactive_reason = $user->lang('INACTIVE_REASON_PROFILE');
 				break;
 
 				case INACTIVE_MANUAL:
-					$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+					$inactive_reason = $user->lang('INACTIVE_REASON_MANUAL');
 				break;
 
 				case INACTIVE_REMIND:
-					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+					$inactive_reason = $user->lang('INACTIVE_REASON_REMIND');
 				break;
 			}
 
@@ -795,7 +795,7 @@ switch ($mode)
 		}
 
 		// Now generate page title
-		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
+		$page_title = sprintf($user->lang('VIEWING_PROFILE'), $member['username']);
 		$template_html = 'memberlist_view.html';
 
 		$template->assign_block_vars('navlinks', array(
@@ -925,7 +925,7 @@ switch ($mode)
 	case 'group':
 	default:
 		// The basic memberlist
-		$page_title = $user->lang['MEMBERLIST'];
+		$page_title = $user->lang('MEMBERLIST');
 		$template_html = 'memberlist_body.html';
 
 		$template->assign_block_vars('navlinks', array(
@@ -937,31 +937,31 @@ switch ($mode)
 		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT']);
+		$sort_key_text = array('a' => $user->lang('SORT_USERNAME'), 'c' => $user->lang('SORT_JOINED'), 'd' => $user->lang('SORT_POST_COUNT'));
 		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts');
 
 		if ($config['jab_enable'])
 		{
-			$sort_key_text['k'] = $user->lang['JABBER'];
+			$sort_key_text['k'] = $user->lang('JABBER');
 			$sort_key_sql['k'] = 'u.user_jabber';
 		}
 
 		if ($auth->acl_get('a_user'))
 		{
-			$sort_key_text['e'] = $user->lang['SORT_EMAIL'];
+			$sort_key_text['e'] = $user->lang('SORT_EMAIL');
 			$sort_key_sql['e'] = 'u.user_email';
 		}
 
 		if ($auth->acl_get('u_viewonline'))
 		{
-			$sort_key_text['l'] = $user->lang['SORT_LAST_ACTIVE'];
+			$sort_key_text['l'] = $user->lang('SORT_LAST_ACTIVE');
 			$sort_key_sql['l'] = 'u.user_lastvisit';
 		}
 
-		$sort_key_text['m'] = $user->lang['SORT_RANK'];
+		$sort_key_text['m'] = $user->lang('SORT_RANK');
 		$sort_key_sql['m'] = 'u.user_rank';
 
-		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+		$sort_dir_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
@@ -1011,7 +1011,7 @@ switch ($mode)
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
-			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
+			$find_count = array('lt' => $user->lang('LESS_THAN'), 'eq' => $user->lang('EQUAL_TO'), 'gt' => $user->lang('MORE_THAN'));
 			$s_find_count = '';
 			foreach ($find_count as $key => $value)
 			{
@@ -1019,7 +1019,7 @@ switch ($mode)
 				$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$find_time = array('lt' => $user->lang['BEFORE'], 'gt' => $user->lang['AFTER']);
+			$find_time = array('lt' => $user->lang('BEFORE'), 'gt' => $user->lang('AFTER'));
 			$s_find_join_time = '';
 			foreach ($find_time as $key => $value)
 			{
@@ -1381,12 +1381,12 @@ switch ($mode)
 		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
 
 		$first_characters = array();
-		$first_characters[''] = $user->lang['ALL'];
+		$first_characters[''] = $user->lang('ALL');
 		for ($i = 97; $i < 123; $i++)
 		{
 			$first_characters[chr($i)] = chr($i - 32);
 		}
-		$first_characters['other'] = $user->lang['OTHER'];
+		$first_characters['other'] = $user->lang('OTHER');
 
 		foreach ($first_characters as $char => $desc)
 		{
@@ -1646,11 +1646,11 @@ switch ($mode)
 		$template_vars = array(
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
-			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
-			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
-			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
-			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
+			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang('PROFILE')),
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang('SEND_PRIVATE_MESSAGE')),
+			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang('EMAIL')),
+			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang('JABBER')),
+			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang('SEARCH')),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',

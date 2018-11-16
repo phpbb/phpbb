@@ -63,8 +63,8 @@ class acp_inactive
 		$per_page = $request->variable('users_per_page', (int) $config['topics_per_page']);
 
 		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('i' => $user->lang['SORT_INACTIVE'], 'j' => $user->lang['SORT_REG_DATE'], 'l' => $user->lang['SORT_LAST_VISIT'], 'd' => $user->lang['SORT_LAST_REMINDER'], 'r' => $user->lang['SORT_REASON'], 'u' => $user->lang['SORT_USERNAME'], 'p' => $user->lang['SORT_POSTS'], 'e' => $user->lang['SORT_REMINDER']);
+		$limit_days = array(0 => $user->lang('ALL_ENTRIES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+		$sort_by_text = array('i' => $user->lang('SORT_INACTIVE'), 'j' => $user->lang('SORT_REG_DATE'), 'l' => $user->lang('SORT_LAST_VISIT'), 'd' => $user->lang('SORT_LAST_REMINDER'), 'r' => $user->lang('SORT_REASON'), 'u' => $user->lang('SORT_USERNAME'), 'p' => $user->lang('SORT_POSTS'), 'e' => $user->lang('SORT_REMINDER'));
 		$sort_by_sql = array('i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'd' => 'user_reminded_time', 'r' => 'user_inactive_reason', 'u' => 'username_clean', 'p' => 'user_posts', 'e' => 'user_reminded');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -74,7 +74,7 @@ class acp_inactive
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			switch ($action)
@@ -149,7 +149,7 @@ class acp_inactive
 								));
 							}
 
-							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error(sprintf($user->lang('LOG_INACTIVE_ACTIVATE'), implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
@@ -165,14 +165,14 @@ class acp_inactive
 							if (!$auth->acl_get('a_userdel'))
 							{
 								send_status_line(403, 'Forbidden');
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							user_delete('retain', $mark, true);
 
 							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
 
-							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error(sprintf($user->lang('LOG_INACTIVE_DELETE'), implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
@@ -183,7 +183,7 @@ class acp_inactive
 								'submit'		=> 1,
 								'start'			=> $start,
 							);
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+							confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
 						}
 					}
 
@@ -192,7 +192,7 @@ class acp_inactive
 				case 'remind':
 					if (empty($config['email_enable']))
 					{
-						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
@@ -247,7 +247,7 @@ class acp_inactive
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
 
-						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
+						trigger_error(sprintf($user->lang('LOG_INACTIVE_REMIND'), implode($user->lang('COMMA_SEPARATOR'), $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
 

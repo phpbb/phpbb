@@ -71,7 +71,7 @@ abstract class form
 	*/
 	public function get_page_title()
 	{
-		return $this->user->lang['SEND_EMAIL'];
+		return $this->user->lang('SEND_EMAIL');
 	}
 
 	/**
@@ -111,7 +111,7 @@ abstract class form
 	*/
 	public function get_return_message()
 	{
-		return sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->phpEx) . '">', '</a>');
+		return sprintf($this->user->lang('RETURN_INDEX'), '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->phpEx) . '">', '</a>');
 	}
 
 	/**
@@ -154,7 +154,7 @@ abstract class form
 			$this->message->send($messenger, phpbb_get_board_contact($this->config, $this->phpEx));
 
 			meta_refresh(3, append_sid($this->phpbb_root_path . 'index.' . $this->phpEx));
-			trigger_error($this->user->lang['EMAIL_SENT'] . '<br /><br />' . $this->get_return_message());
+			trigger_error($this->user->lang('EMAIL_SENT') . '<br /><br />' . $this->get_return_message());
 		}
 	}
 

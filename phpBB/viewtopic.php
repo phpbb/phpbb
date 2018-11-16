@@ -390,7 +390,7 @@ if (!$overrides_f_read_check && !$auth->acl_get('f_read', $forum_id))
 		trigger_error('SORRY_AUTH_READ');
 	}
 
-	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+	login_box('', $user->lang('LOGIN_VIEWFORUM'));
 }
 
 // Forum is passworded ... check whether access has been granted to this
@@ -403,7 +403,7 @@ if (!$overrides_forum_password_check && $topic_data['forum_password'])
 // Redirect to login upon emailed notification links if user is not logged in.
 if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
-	login_box(build_url('e') . '#unread', $user->lang['LOGIN_NOTIFY_TOPIC']);
+	login_box(build_url('e') . '#unread', $user->lang('LOGIN_NOTIFY_TOPIC'));
 }
 
 // What is start equal to?
@@ -431,9 +431,9 @@ if (!isset($topic_tracking_info))
 }
 
 // Post ordering options
-$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+$limit_days = array(0 => $user->lang('ALL_POSTS'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
 
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+$sort_by_text = array('a' => $user->lang('AUTHOR'), 't' => $user->lang('POST_TIME'), 's' => $user->lang('SUBJECT'));
 $sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => array('p.post_time', 'p.post_id'), 's' => array('p.post_subject', 'p.post_id'));
 $join_user_sql = array('a' => true, 't' => false, 's' => false);
 
@@ -550,7 +550,7 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->vari
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 		}
-		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']);
+		$message = (($topic_data['bookmarked']) ? $user->lang('BOOKMARK_REMOVED') : $user->lang('BOOKMARK_ADDED'));
 
 		if (!$request->is_ajax())
 		{
@@ -559,7 +559,7 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->vari
 	}
 	else
 	{
-		$message = $user->lang['BOOKMARK_ERR'];
+		$message = $user->lang('BOOKMARK_ERR');
 
 		if (!$request->is_ajax())
 		{
@@ -746,7 +746,7 @@ $template->assign_vars(array(
 
 	'TOTAL_POSTS'	=> $user->lang('VIEW_TOPIC_POSTS', (int) $total_posts),
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
-	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && count($forum_moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]) : '',
+	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && count($forum_moderators[$forum_id])) ? implode($user->lang('COMMA_SEPARATOR'), $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($topic_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', 'FORUM_LOCKED') : $user->img('button_topic_new', 'POST_NEW_TOPIC'),
 	'QUOTE_IMG' 		=> $user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
@@ -801,8 +801,8 @@ $template->assign_vars(array(
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
 	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
-	'S_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
-	'S_BOOKMARK_TOGGLE'		=> (!$user->data['is_registered'] || !$config['allow_bookmarks'] || !$topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	'S_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang('BOOKMARK_TOPIC_REMOVE') : $user->lang('BOOKMARK_TOPIC'),
+	'S_BOOKMARK_TOGGLE'		=> (!$user->data['is_registered'] || !$config['allow_bookmarks'] || !$topic_data['bookmarked']) ? $user->lang('BOOKMARK_TOPIC_REMOVE') : $user->lang('BOOKMARK_TOPIC'),
 	'S_BOOKMARKED_TOPIC'	=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? true : false,
 
 	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id") : '',
@@ -921,7 +921,7 @@ if (!empty($topic_data['poll_start']))
 				$message = 'FORM_INVALID';
 			}
 
-			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+			$message = $user->lang($message) . '<br /><br />' . sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $redirect_url . '">', '</a>');
 			trigger_error($message);
 		}
 
@@ -989,7 +989,7 @@ if (!empty($topic_data['poll_start']))
 		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
-		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $user->lang('VOTE_SUBMITTED') . '<br /><br />' . sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $redirect_url . '">', '</a>');
 
 		if ($request->is_ajax())
 		{
@@ -997,7 +997,7 @@ if (!empty($topic_data['poll_start']))
 			$valid_user_votes = array_intersect(array_keys($vote_counts), $voted_id);
 
 			$data = array(
-				'NO_VOTES'			=> $user->lang['NO_VOTES'],
+				'NO_VOTES'			=> $user->lang('NO_VOTES'),
 				'success'			=> true,
 				'user_votes'		=> array_flip($valid_user_votes),
 				'vote_counts'		=> $vote_counts,
@@ -1083,7 +1083,7 @@ if (!empty($topic_data['poll_start']))
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
 		'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $topic_data['poll_max_options']),
-		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang[($poll_end > time()) ? 'POLL_RUN_TILL' : 'POLL_ENDED_AT'], $user->format_date($poll_end)) : '',
+		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang(($poll_end > time()) ? 'POLL_RUN_TILL' : 'POLL_ENDED_AT'), $user->format_date($poll_end)) : '',
 
 		'S_HAS_POLL'		=> true,
 		'S_CAN_VOTE'		=> $s_can_vote,
@@ -1858,7 +1858,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		// It is safe to grab the username from the user cache array, we are at the last
 		// post and only the topic poster and last poster are allowed to bump.
 		// Admins and mods are bound to the above rules too...
-		$l_bumped_by = sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
+		$l_bumped_by = sprintf($user->lang('BUMPED_BY'), $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
 	}
 	else
 	{
@@ -2039,7 +2039,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'POST_ID'			=> $row['post_id'],
 		'POST_NUMBER'		=> $i + $start + 1,
 		'POSTER_ID'			=> $poster_id,
-		'MINI_POST'			=> ($post_unread) ? $user->lang['UNREAD_POST'] : $user->lang['POST'],
+		'MINI_POST'			=> ($post_unread) ? $user->lang('UNREAD_POST') : $user->lang('POST'),
 
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
@@ -2057,7 +2057,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'S_FIRST_POST'		=> ($topic_data['topic_first_post_id'] == $row['post_id']) ? true : false,
 
 		'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
+		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang('POST_BY_FOE'), get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		'S_POST_HIDDEN'		=> $row['hide_post'],
 		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 		'S_DELETE_PERMANENT'	=> $permanent_delete_allowed,
@@ -2120,17 +2120,17 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	$contact_fields = array(
 		array(
 			'ID'		=> 'pm',
-			'NAME' 		=> $user->lang['SEND_PRIVATE_MESSAGE'],
+			'NAME' 		=> $user->lang('SEND_PRIVATE_MESSAGE'),
 			'U_CONTACT'	=> $post_row['U_PM'],
 		),
 		array(
 			'ID'		=> 'email',
-			'NAME'		=> $user->lang['SEND_EMAIL'],
+			'NAME'		=> $user->lang('SEND_EMAIL'),
 			'U_CONTACT'	=> $user_cache[$poster_id]['email'],
 		),
 		array(
 			'ID'		=> 'jabber',
-			'NAME'		=> $user->lang['JABBER'],
+			'NAME'		=> $user->lang('JABBER'),
 			'U_CONTACT'	=> $user_cache[$poster_id]['jabber'],
 		),
 	);
@@ -2338,7 +2338,7 @@ if (!$request->variable('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
-$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['posts_per_page'], $start)) : '');
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang('PAGE_TITLE_NUMBER'), $pagination->get_on_page($config['posts_per_page'], $start)) : '');
 
 /**
 * You can use this event to modify the page title of the viewtopic page

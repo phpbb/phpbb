@@ -49,7 +49,7 @@ class ldap extends \phpbb\auth\provider\base
 	{
 		if (!@extension_loaded('ldap'))
 		{
-			return $this->user->lang['LDAP_NO_LDAP_EXTENSION'];
+			return $this->user->lang('LDAP_NO_LDAP_EXTENSION');
 		}
 
 		$this->config['ldap_port'] = (int) $this->config['ldap_port'];
@@ -64,7 +64,7 @@ class ldap extends \phpbb\auth\provider\base
 
 		if (!$ldap)
 		{
-			return $this->user->lang['LDAP_NO_SERVER_CONNECTION'];
+			return $this->user->lang('LDAP_NO_SERVER_CONNECTION');
 		}
 
 		@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -74,7 +74,7 @@ class ldap extends \phpbb\auth\provider\base
 		{
 			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user']), htmlspecialchars_decode($this->config['ldap_password'])))
 			{
-				return $this->user->lang['LDAP_INCORRECT_USER_PASSWORD'];
+				return $this->user->lang('LDAP_INCORRECT_USER_PASSWORD');
 			}
 		}
 
@@ -92,7 +92,7 @@ class ldap extends \phpbb\auth\provider\base
 
 		if ($search === false)
 		{
-			return $this->user->lang['LDAP_SEARCH_FAILED'];
+			return $this->user->lang('LDAP_SEARCH_FAILED');
 		}
 
 		$result = @ldap_get_entries($ldap, $search);
@@ -101,12 +101,12 @@ class ldap extends \phpbb\auth\provider\base
 
 		if (!is_array($result) || count($result) < 2)
 		{
-			return sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']);
+			return sprintf($this->user->lang('LDAP_NO_IDENTITY'), $this->user->data['username']);
 		}
 
 		if (!empty($this->config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['ldap_email'])]))
 		{
-			return $this->user->lang['LDAP_NO_EMAIL'];
+			return $this->user->lang('LDAP_NO_EMAIL');
 		}
 
 		return false;

@@ -267,7 +267,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . '&amp;i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
 
 		$topic_row = array(
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['img'] : '',
@@ -389,12 +389,12 @@ function mcp_resync_topics($topic_ids)
 	}
 	$db->sql_freeresult($result);
 
-	$msg = (count($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
+	$msg = (count($topic_ids) == 1) ? $user->lang('TOPIC_RESYNC_SUCCESS') : $user->lang('TOPICS_RESYNC_SUCCESS');
 
 	$redirect = $request->variable('redirect', $user->data['session_page']);
 
 	meta_refresh(3, $redirect);
-	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+	trigger_error($msg . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 
 	return;
 }
@@ -408,12 +408,12 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!count($topic_ids))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', $user->lang('NO_TOPIC_SELECTED'));
 		return;
 	}
 	if (!$to_topic_id)
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', $user->lang('NO_FINAL_TOPIC_SELECTED'));
 		return;
 	}
 
@@ -423,7 +423,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!count($all_topic_data) || empty($all_topic_data[$to_topic_id]))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', $user->lang('NO_FINAL_TOPIC_SELECTED'));
 		return;
 	}
 
@@ -457,7 +457,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!count($post_id_list))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		$template->assign_var('MESSAGE', $user->lang('NO_POST_SELECTED'));
 		return;
 	}
 
@@ -520,7 +520,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		sync('forum', 'forum_id', $sync_forums, true, true);
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang('RETURN_NEW_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
@@ -539,7 +539,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		extract($phpbb_dispatcher->trigger_event('core.mcp_forum_merge_topics_after', compact($vars)));
 
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+		trigger_error($user->lang($success_msg) . '<br /><br />' . $return_link);
 	}
 	else
 	{

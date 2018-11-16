@@ -83,7 +83,7 @@ $user->setup('viewforum', $forum_data['forum_style']);
 // Redirect to login upon emailed notification links
 if (isset($_GET['e']) && !$user->data['is_registered'])
 {
-	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
+	login_box('', $user->lang('LOGIN_NOTIFY_FORUM'));
 }
 
 // Permissions check
@@ -95,7 +95,7 @@ if (!$auth->acl_gets('f_list', 'f_list_topics', 'f_read', $forum_id) || ($forum_
 		trigger_error('SORRY_AUTH_READ');
 	}
 
-	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+	login_box('', $user->lang('LOGIN_VIEWFORUM'));
 }
 
 // Forum is passworded ... check whether access has been granted to this
@@ -220,17 +220,17 @@ if ($mark_read == 'topics')
 	{
 		// Tell the ajax script what language vars and URL need to be replaced
 		$data = array(
-			'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-			'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+			'NO_UNREAD_POSTS'	=> $user->lang('NO_UNREAD_POSTS'),
+			'UNREAD_POSTS'		=> $user->lang('UNREAD_POSTS'),
 			'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&f=$forum_id&mark=topics&mark_time=" . time()) : '',
-			'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-			'MESSAGE_TEXT'		=> $user->lang['TOPICS_MARKED']
+			'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
+			'MESSAGE_TEXT'		=> $user->lang('TOPICS_MARKED')
 		);
 		$json_response = new \phpbb\json_response();
 		$json_response->send($data);
 	}
 
-	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
+	trigger_error($user->lang('TOPICS_MARKED') . '<br /><br />' . sprintf($user->lang('RETURN_FORUM'), '<a href="' . $redirect_url . '">', '</a>'));
 }
 
 // Do the forum Prune thang - cron type job ...
@@ -280,9 +280,9 @@ $s_forum_rules = '';
 gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 
 // Topic ordering options
-$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+$limit_days = array(0 => $user->lang('ALL_TOPICS'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
 
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+$sort_by_text = array('a' => $user->lang('AUTHOR'), 't' => $user->lang('POST_TIME'), 'r' => $user->lang('REPLIES'), 's' => $user->lang('SUBJECT'), 'v' => $user->lang('VIEWS'));
 $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_last_post_time', 't.topic_last_post_id'), 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 'LOWER(t.topic_title)', 'v' => 't.topic_views');
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -347,7 +347,7 @@ else
 }
 
 // Basic pagewide vars
-$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
+$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang('FORUM_LOCKED') : $user->lang('POST_NEW_TOPIC');
 
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
@@ -368,7 +368,7 @@ if (!empty($_EXTRA_URL))
 }
 
 $template->assign_vars(array(
-	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
+	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode($user->lang('COMMA_SEPARATOR'), $moderators[$forum_id]) : '',
 
 	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', $post_alt) : $user->img('button_topic_new', $post_alt),
 	'NEWEST_POST_IMG'			=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
@@ -390,7 +390,7 @@ $template->assign_vars(array(
 	'POLL_IMG'					=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
 	'GOTO_PAGE_IMG'				=> $user->img('icon_post_target', 'GOTO_PAGE'),
 
-	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
+	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang('POST_FORUM_LOCKED') : $user->lang('NO_TOPICS'),
 
 	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
 
@@ -922,12 +922,12 @@ if (count($topic_list))
 
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
+			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang($folder_alt),
 
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],

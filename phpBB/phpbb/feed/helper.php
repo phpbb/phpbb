@@ -123,7 +123,7 @@ class helper
 		$content = generate_text_for_display($content, $uid, $bitfield, $options);
 
 		// Remove "Select all" link and mouse events
-		$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $this->user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
+		$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $this->user->lang('SELECT_ALL_CODE') . '</a>', '', $content);
 		$content = preg_replace('#(onkeypress|onclick)="(.*?)"#si', '', $content);
 
 		// Firefox does not support CSS for feeds, though

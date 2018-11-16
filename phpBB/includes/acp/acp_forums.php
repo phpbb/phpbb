@@ -45,7 +45,7 @@ class acp_forums
 		if ($update && !check_form_key($form_key))
 		{
 			$update = false;
-			$errors[] = $user->lang['FORM_INVALID'];
+			$errors[] = $user->lang('FORM_INVALID');
 		}
 
 		// Check additional permissions
@@ -62,7 +62,7 @@ class acp_forums
 
 				if (!$auth->acl_get('a_forumdel'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_PERMISSION_FORUM_DELETE') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 			break;
@@ -71,7 +71,7 @@ class acp_forums
 
 				if (!$auth->acl_get('a_forumadd'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_PERMISSION_FORUM_ADD') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 			break;
@@ -98,7 +98,7 @@ class acp_forums
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
-					trigger_error($user->lang['FORUM_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang('FORUM_DELETED') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 
 				break;
 
@@ -223,12 +223,12 @@ class acp_forums
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
-						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
+						$message = ($action == 'add') ? $user->lang('FORUM_CREATED') : $user->lang('FORUM_UPDATED');
 
 						// redirect directly to permission settings screen if authed
 						if ($action == 'add' && !$copied_permissions && $auth->acl_get('a_fauth'))
 						{
-							$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+							$message .= '<br /><br />' . sprintf($user->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
 							meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
 						}
@@ -247,7 +247,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -259,7 +259,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$move_forum_name = $this->move_forum_by($row, $action, 1);
@@ -281,7 +281,7 @@ class acp_forums
 			case 'sync':
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				@set_time_limit(0);
@@ -295,7 +295,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				if ($row['total_topics'])
@@ -340,7 +340,7 @@ class acp_forums
 							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
 							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['total_topics']))
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), $topics_done, $row['total_topics']))
 						);
 
 						return;
@@ -354,7 +354,7 @@ class acp_forums
 					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
 					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['total_topics']))
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), 0, $row['total_topics']))
 				);
 
 				return;
@@ -372,7 +372,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				sync('forum', 'forum_id', $forum_id, false, true);
@@ -381,7 +381,7 @@ class acp_forums
 
 				$cache->destroy('sql', FORUMS_TABLE);
 
-				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang['FORUM_RESYNCED'], $row['forum_name']));
+				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang('FORUM_RESYNCED'), $row['forum_name']));
 
 			break;
 
@@ -549,12 +549,12 @@ class acp_forums
 
 				foreach ($forum_type_ary as $value => $lang)
 				{
-					$forum_type_options .= '<option value="' . $value . '"' . (($value == $forum_data['forum_type']) ? ' selected="selected"' : '') . '>' . $user->lang['TYPE_' . $lang] . '</option>';
+					$forum_type_options .= '<option value="' . $value . '"' . (($value == $forum_data['forum_type']) ? ' selected="selected"' : '') . '>' . $user->lang('TYPE_' . $lang) . '</option>';
 				}
 
 				$styles_list = style_select($forum_data['forum_style'], true);
 
-				$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_data['forum_status'] == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['UNLOCKED'] . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_data['forum_status'] == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $user->lang['LOCKED'] . '</option>';
+				$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_data['forum_status'] == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $user->lang('UNLOCKED') . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_data['forum_status'] == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $user->lang('LOCKED') . '</option>';
 
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
@@ -617,7 +617,7 @@ class acp_forums
 
 				if (strlen($forum_data['forum_password']) == 32)
 				{
-					$errors[] = $user->lang['FORUM_PASSWORD_OLD'];
+					$errors[] = $user->lang('FORUM_PASSWORD_OLD');
 				}
 
 				$template_data = array(
@@ -630,8 +630,8 @@ class acp_forums
 					'U_BACK'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 					'U_EDIT_ACTION'	=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=$action&amp;f=$forum_id",
 
-					'L_COPY_PERMISSIONS_EXPLAIN'	=> $user->lang['COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'],
-					'L_TITLE'						=> $user->lang[$this->page_title],
+					'L_COPY_PERMISSIONS_EXPLAIN'	=> $user->lang('COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'),
+					'L_TITLE'						=> $user->lang($this->page_title),
 					'ERROR_MSG'						=> (count($errors)) ? implode('<br />', $errors) : '',
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
@@ -731,7 +731,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$forum_data = $this->get_forum_info($forum_id);
@@ -792,12 +792,12 @@ class acp_forums
 
 					$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_id;
 
-					$message = $user->lang['FORUM_UPDATED'];
+					$message = $user->lang('FORUM_UPDATED');
 
 					// Redirect to permissions
 					if ($auth->acl_get('a_fauth'))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+						$message .= '<br /><br />' . sprintf($user->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 					}
 
 					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
@@ -809,11 +809,11 @@ class acp_forums
 		// Default management page
 		if (!$this->parent_id)
 		{
-			$navigation = $user->lang['FORUM_INDEX'];
+			$navigation = $user->lang('FORUM_INDEX');
 		}
 		else
 		{
-			$navigation = '<a href="' . $this->u_action . '">' . $user->lang['FORUM_INDEX'] . '</a>';
+			$navigation = '<a href="' . $this->u_action . '">' . $user->lang('FORUM_INDEX') . '</a>';
 
 			$forums_nav = get_forum_branch($this->parent_id, 'parents', 'descending');
 			foreach ($forums_nav as $row)
@@ -868,18 +868,18 @@ class acp_forums
 
 				if ($row['forum_status'] == ITEM_LOCKED)
 				{
-					$folder_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['LOCKED'] . '" />';
+					$folder_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang('LOCKED') . '" />';
 				}
 				else
 				{
 					switch ($forum_type)
 					{
 						case FORUM_LINK:
-							$folder_image = '<img src="images/icon_folder_link.gif" alt="' . $user->lang['LINK'] . '" />';
+							$folder_image = '<img src="images/icon_folder_link.gif" alt="' . $user->lang('LINK') . '" />';
 						break;
 
 						default:
-							$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['FOLDER'] . '" />';
+							$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang('SUBFORUM') . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang('FOLDER') . '" />';
 						break;
 					}
 				}
@@ -983,17 +983,17 @@ class acp_forums
 
 		if ($forum_data_ary['forum_name'] == '')
 		{
-			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
+			$errors[] = $user->lang('FORUM_NAME_EMPTY');
 		}
 
 		if (utf8_strlen($forum_data_ary['forum_desc']) > 4000)
 		{
-			$errors[] = $user->lang['FORUM_DESC_TOO_LONG'];
+			$errors[] = $user->lang('FORUM_DESC_TOO_LONG');
 		}
 
 		if (utf8_strlen($forum_data_ary['forum_rules']) > 4000)
 		{
-			$errors[] = $user->lang['FORUM_RULES_TOO_LONG'];
+			$errors[] = $user->lang('FORUM_RULES_TOO_LONG');
 		}
 
 		if ($forum_data_ary['forum_password'] || $forum_data_ary['forum_password_confirm'])
@@ -1001,14 +1001,14 @@ class acp_forums
 			if ($forum_data_ary['forum_password'] != $forum_data_ary['forum_password_confirm'])
 			{
 				$forum_data_ary['forum_password'] = $forum_data_ary['forum_password_confirm'] = '';
-				$errors[] = $user->lang['FORUM_PASSWORD_MISMATCH'];
+				$errors[] = $user->lang('FORUM_PASSWORD_MISMATCH');
 			}
 		}
 
 		if ($forum_data_ary['prune_days'] < 0 || $forum_data_ary['prune_viewed'] < 0 || $forum_data_ary['prune_freq'] < 0)
 		{
 			$forum_data_ary['prune_days'] = $forum_data_ary['prune_viewed'] = $forum_data_ary['prune_freq'] = 0;
-			$errors[] = $user->lang['FORUM_DATA_NEGATIVE'];
+			$errors[] = $user->lang('FORUM_DATA_NEGATIVE');
 		}
 
 		$range_test_ary = array(
@@ -1017,7 +1017,7 @@ class acp_forums
 
 		if (!empty($forum_data_ary['forum_image']) && !file_exists($phpbb_root_path . $forum_data_ary['forum_image']))
 		{
-			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
+			$errors[] = $user->lang('FORUM_IMAGE_NO_EXIST');
 		}
 
 		validate_range($range_test_ary, $errors);
@@ -1111,12 +1111,12 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($user->lang('PARENT_NOT_EXIST') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				if ($row['forum_type'] == FORUM_LINK)
 				{
-					$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+					$errors[] = $user->lang('PARENT_IS_LINK_FORUM');
 					return $errors;
 				}
 
@@ -1161,7 +1161,7 @@ class acp_forums
 				// Has subforums and want to change into a link?
 				if ($row['right_id'] - $row['left_id'] > 1 && $forum_data_sql['forum_type'] == FORUM_LINK)
 				{
-					$errors[] = $user->lang['FORUM_WITH_SUBFORUMS_NOT_TO_LINK'];
+					$errors[] = $user->lang('FORUM_WITH_SUBFORUMS_NOT_TO_LINK');
 					return $errors;
 				}
 
@@ -1176,7 +1176,7 @@ class acp_forums
 					}
 					else
 					{
-						return array($user->lang['NO_DESTINATION_FORUM']);
+						return array($user->lang('NO_DESTINATION_FORUM'));
 					}
 				}
 				else if ($forum_data_sql['type_action'] == 'delete')
@@ -1185,7 +1185,7 @@ class acp_forums
 				}
 				else
 				{
-					return array($user->lang['NO_FORUM_ACTION']);
+					return array($user->lang('NO_FORUM_ACTION'));
 				}
 
 				$forum_data_sql['forum_posts_approved'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = $forum_data_sql['forum_topics_approved'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
@@ -1265,7 +1265,7 @@ class acp_forums
 					{
 						if (!$subforums_to_id)
 						{
-							return array($user->lang['NO_DESTINATION_FORUM']);
+							return array($user->lang('NO_DESTINATION_FORUM'));
 						}
 
 						$sql = 'SELECT forum_name
@@ -1277,7 +1277,7 @@ class acp_forums
 
 						if (!$_row)
 						{
-							return array($user->lang['NO_FORUM']);
+							return array($user->lang('NO_FORUM'));
 						}
 
 						$sql = 'SELECT forum_id
@@ -1406,7 +1406,7 @@ class acp_forums
 
 			if ($to_data['forum_type'] == FORUM_LINK)
 			{
-				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+				$errors[] = $user->lang('PARENT_IS_LINK_FORUM');
 			}
 		}
 
@@ -1601,7 +1601,7 @@ class acp_forums
 		{
 			if (!$posts_to_id)
 			{
-				$errors[] = $user->lang['NO_DESTINATION_FORUM'];
+				$errors[] = $user->lang('NO_DESTINATION_FORUM');
 			}
 			else
 			{
@@ -1616,7 +1616,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					$errors[] = $user->lang['NO_FORUM'];
+					$errors[] = $user->lang('NO_FORUM');
 				}
 				else
 				{
@@ -1665,7 +1665,7 @@ class acp_forums
 		{
 			if (!$subforums_to_id)
 			{
-				$errors[] = $user->lang['NO_DESTINATION_FORUM'];
+				$errors[] = $user->lang('NO_DESTINATION_FORUM');
 			}
 			else
 			{
@@ -1680,7 +1680,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					$errors[] = $user->lang['NO_FORUM'];
+					$errors[] = $user->lang('NO_FORUM');
 				}
 				else
 				{
@@ -2138,15 +2138,15 @@ class acp_forums
 	{
 		global $template, $user;
 
-		adm_page_header($user->lang['SYNC_IN_PROGRESS']);
+		adm_page_header($user->lang('SYNC_IN_PROGRESS'));
 
 		$template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
 		);
 
 		$template->assign_vars(array(
-			'L_PROGRESS'			=> $user->lang['SYNC_IN_PROGRESS'],
-			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $total) : $user->lang['SYNC_IN_PROGRESS'])
+			'L_PROGRESS'			=> $user->lang('SYNC_IN_PROGRESS'),
+			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), $start, $total) : $user->lang('SYNC_IN_PROGRESS'))
 		);
 
 		adm_page_footer();
@@ -2163,7 +2163,7 @@ class acp_forums
 		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
 
-		$l_acl = sprintf($user->lang['COPY_TO_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+		$l_acl = sprintf($user->lang('COPY_TO_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
 		$this->tpl_name = 'acp_forums_copy_perm';
 

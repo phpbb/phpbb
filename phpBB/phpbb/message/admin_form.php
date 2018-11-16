@@ -84,11 +84,11 @@ class admin_form extends form
 	{
 		if (!$this->subject)
 		{
-			$this->errors[] = $this->user->lang['EMPTY_SUBJECT_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_SUBJECT_EMAIL');
 		}
 		if (!$this->body)
 		{
-			$this->errors[] = $this->user->lang['EMPTY_MESSAGE_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_MESSAGE_EMAIL');
 		}
 
 		if ($this->user->data['is_registered'])
@@ -101,7 +101,7 @@ class admin_form extends form
 		{
 			if (!$this->sender_name)
 			{
-				$this->errors[] = $this->user->lang['EMPTY_SENDER_NAME'];
+				$this->errors[] = $this->user->lang('EMPTY_SENDER_NAME');
 			}
 
 			if (!function_exists('validate_data'))
@@ -123,7 +123,7 @@ class admin_form extends form
 
 			foreach ($validate_array as $error)
 			{
-				$this->errors[] = $this->user->lang[$error];
+				$this->errors[] = $this->user->lang($error);
 			}
 
 			$this->message->set_sender($this->user->ip, $this->sender_name, $this->sender_address, $this->user->lang_name);
@@ -134,7 +134,7 @@ class admin_form extends form
 		$this->message->set_subject($this->subject);
 		$this->message->set_body($this->body);
 		$this->message->add_recipient(
-			$this->user->lang['ADMINISTRATOR'],
+			$this->user->lang('ADMINISTRATOR'),
 			$this->config['board_contact'],
 			$this->config['default_lang'],
 			NOTIFY_EMAIL

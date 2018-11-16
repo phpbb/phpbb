@@ -303,12 +303,12 @@ class mcp_queue
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
-					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
-					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
-					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'RETURN_QUEUE'			=> sprintf($user->lang('RETURN_QUEUE'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
+					'RETURN_POST'			=> sprintf($user->lang('RETURN_POST'), '<a href="' . $post_url . '">', '</a>'),
+					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang('RETURN_TOPIC_SIMPLE'), '<a href="' . $topic_url . '">', '</a>'),
+					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
+					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
+					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang('EDIT_POST')),
 
 					'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
@@ -431,10 +431,10 @@ class mcp_queue
 					$forum_list = $forum_id;
 				}
 
-				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
+				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang('ALL_FORUMS') . '</option>';
 				foreach ($forum_list_approve as $row)
 				{
-					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $user->lang['ELLIPSIS']) . '</option>';
+					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $user->lang('ELLIPSIS')) . '</option>';
 				}
 
 				$sort_days = $total = 0;
@@ -608,7 +608,7 @@ class mcp_queue
 				{
 					if (empty($row['post_username']))
 					{
-						$row['post_username'] = $row['username'] ?: $user->lang['GUEST'];
+						$row['post_username'] = $row['username'] ?: $user->lang('GUEST');
 					}
 
 					$post_row = array(
@@ -625,7 +625,7 @@ class mcp_queue
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_ID'		=> $row['topic_id'],
 						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
-						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
+						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang('NO_SUBJECT'),
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'S_HAS_ATTACHMENTS'	=> $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
@@ -656,10 +656,10 @@ class mcp_queue
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_DISPLAY_ITEMS'		=> (!$is_topics) ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
-					'L_EXPLAIN'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'],
-					'L_TITLE'				=> $user->lang['MCP_QUEUE_' . strtoupper($mode)],
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+					'L_DISPLAY_ITEMS'		=> (!$is_topics) ? $user->lang('DISPLAY_POSTS') : $user->lang('DISPLAY_TOPICS'),
+					'L_EXPLAIN'				=> $user->lang('MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'),
+					'L_TITLE'				=> $user->lang('MCP_QUEUE_' . strtoupper($mode)),
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang('ONLY_TOPIC'), $topic_info['topic_title']) : '',
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
@@ -868,13 +868,13 @@ class mcp_queue
 			extract($phpbb_dispatcher->trigger_event('core.approve_posts_after', compact($vars)));
 
 			meta_refresh(3, $redirect);
-			$message = $user->lang[$success_msg];
+			$message = $user->lang($success_msg);
 
 			if ($request->is_ajax())
 			{
 				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
 					'MESSAGE_TEXT'		=> $message,
 					'REFRESH_DATA'		=> null,
 					'visible'			=> true,
@@ -1078,13 +1078,13 @@ class mcp_queue
 			extract($phpbb_dispatcher->trigger_event('core.approve_topics_after', compact($vars)));
 
 			meta_refresh(3, $redirect);
-			$message = $user->lang[$success_msg];
+			$message = $user->lang($success_msg);
 
 			if ($request->is_ajax())
 			{
 				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
 					'MESSAGE_TEXT'		=> $message,
 					'REFRESH_DATA'		=> null,
 					'visible'			=> true,
@@ -1177,7 +1177,7 @@ class mcp_queue
 
 			if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 			{
-				$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
+				$additional_msg = $user->lang('NO_REASON_DISAPPROVAL');
 
 				$request->overwrite('confirm', null, \phpbb\request\request_interface::POST);
 				$request->overwrite('confirm_key', null, \phpbb\request\request_interface::POST);
@@ -1468,13 +1468,13 @@ class mcp_queue
 			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
 
 			meta_refresh(3, $redirect);
-			$message = $user->lang[$success_msg];
+			$message = $user->lang($success_msg);
 
 			if ($request->is_ajax())
 			{
 				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
 					'MESSAGE_TEXT'		=> $message,
 					'REFRESH_DATA'		=> null,
 					'visible'			=> false,

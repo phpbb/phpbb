@@ -109,7 +109,7 @@ class convertor
 			!isset($convert->options['dbname']) ||
 			!isset($convert->options['table_prefix']))
 		{
-			$this->error($user->lang['NO_CONVERT_SPECIFIED'], __LINE__, __FILE__);
+			$this->error($user->lang('NO_CONVERT_SPECIFIED'), __LINE__, __FILE__);
 		}
 
 		$this->template->assign_var('S_CONV_IN_PROGRESS', true);
@@ -189,7 +189,7 @@ class convertor
 		// check security implications of direct inclusion
 		if (!file_exists('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx))
 		{
-			$this->error($user->lang['CONVERT_NOT_EXIST'], __LINE__, __FILE__);
+			$this->error($user->lang('CONVERT_NOT_EXIST'), __LINE__, __FILE__);
 		}
 
 		if (file_exists('./convertors/functions_' . $convert->convertor_tag . '.' . $phpEx))
@@ -217,7 +217,7 @@ class convertor
 		// The test_file is a file that should be present in the location of the old board.
 		if (!file_exists($convert->options['forum_path'] . '/' . $test_file))
 		{
-			$this->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
+			$this->error(sprintf($user->lang('COULD_NOT_FIND_PATH'), $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
 		$search_type = $config['search_type'];
@@ -295,14 +295,14 @@ class convertor
 						if (empty($convert->convertor['test_file']))
 						{
 							// test_file is mandantory at the moment so this should never be reached, but just in case...
-							$this->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
+							$this->error($user->lang('DEV_NO_TEST_FILE'), __LINE__, __FILE__);
 						}
 
 						if (!$local_path || !$this->filesystem->is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{
-								$bad_folders[] = sprintf($user->lang['CONFIG_PHPBB_EMPTY'], $folder);
+								$bad_folders[] = sprintf($user->lang('CONFIG_PHPBB_EMPTY'), $folder);
 							}
 							else
 							{
@@ -314,12 +314,12 @@ class convertor
 
 				if (count($bad_folders))
 				{
-					$msg = (count($bad_folders) == 1) ? $user->lang['MAKE_FOLDER_WRITABLE'] : $user->lang['MAKE_FOLDERS_WRITABLE'];
+					$msg = (count($bad_folders) == 1) ? $user->lang('MAKE_FOLDER_WRITABLE') : $user->lang('MAKE_FOLDERS_WRITABLE');
 					sort($bad_folders);
 					$this->error(sprintf($msg, implode('<br />', $bad_folders)), __LINE__, __FILE__, true);
 
 					$this->template->assign_vars(array(
-						'L_SUBMIT'	=> $user->lang['INSTALL_TEST'],
+						'L_SUBMIT'	=> $user->lang('INSTALL_TEST'),
 						'U_ACTION'	=> $this->controller_helper->route('phpbb_convert_convert', array('converter' => $converter)),
 					));
 					return;
@@ -414,23 +414,23 @@ class convertor
 
 				if (count($missing_tables) == count($tables_list))
 				{
-					$this->error($user->lang['NO_TABLES_FOUND'] . ' ' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->error($user->lang('NO_TABLES_FOUND') . ' ' . $user->lang('CHECK_TABLE_PREFIX'), __LINE__, __FILE__);
 				}
 				else if (count($missing_tables))
 				{
-					$this->error(sprintf($user->lang['TABLES_MISSING'], implode($user->lang['COMMA_SEPARATOR'], $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->error(sprintf($user->lang('TABLES_MISSING'), implode($user->lang('COMMA_SEPARATOR'), $missing_tables)) . '<br /><br />' . $user->lang('CHECK_TABLE_PREFIX'), __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress($converter, 'confirm=1');
-				$msg = $user->lang['PRE_CONVERT_COMPLETE'];
+				$msg = $user->lang('PRE_CONVERT_COMPLETE');
 
 				if ($convert->convertor_data['author_notes'])
 				{
-					$msg .= '</p><p>' . sprintf($user->lang['AUTHOR_NOTES'], $convert->convertor_data['author_notes']);
+					$msg .= '</p><p>' . sprintf($user->lang('AUTHOR_NOTES'), $convert->convertor_data['author_notes']);
 				}
 
 				$this->template->assign_vars(array(
-					'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+					'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 					'BODY'			=> $msg,
 					'U_ACTION'		=> $url,
 				));
@@ -440,7 +440,7 @@ class convertor
 
 			$this->template->assign_block_vars('checks', array(
 				'S_LEGEND'		=> true,
-				'LEGEND'		=> $user->lang['STARTING_CONVERT'],
+				'LEGEND'		=> $user->lang('STARTING_CONVERT'),
 			));
 
 			// Convert the config table and load the settings of the old board
@@ -456,8 +456,8 @@ class convertor
 			}
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['CONFIG_CONVERT'],
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> $user->lang('CONFIG_CONVERT'),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 
 			// Now process queries and execute functions that have to be executed prior to the conversion
@@ -503,14 +503,14 @@ class convertor
 			}
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['PREPROCESS_STEP'],
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> $user->lang('PREPROCESS_STEP'),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 		} // if (!$current_table && !$skip_rows)
 
 		$this->template->assign_block_vars('checks', array(
 			'S_LEGEND'		=> true,
-			'LEGEND'		=> $user->lang['FILLING_TABLES'],
+			'LEGEND'		=> $user->lang('FILLING_TABLES'),
 		));
 
 		// This loop takes one target table and processes it
@@ -526,7 +526,7 @@ class convertor
 			}
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'	=> sprintf($user->lang['FILLING_TABLE'], $schema['target']),
+				'TITLE'	=> sprintf($user->lang('FILLING_TABLE'), $schema['target']),
 			));
 
 			// This is only the case when we first start working on the tables.
@@ -687,7 +687,7 @@ class convertor
 
 				$this->template->assign_block_vars('checks', array(
 					'TITLE'		=> "skip_rows = $skip_rows",
-					'RESULT'	=> $rows . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
+					'RESULT'	=> $rows . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang('KIB') : ''),
 				));
 
 				$mtime = explode(' ', microtime());
@@ -775,7 +775,7 @@ class convertor
 										{
 											if (!$db->sql_query($insert_query . $waiting_sql))
 											{
-												$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+												$this->db_error($user->lang('DB_ERR_INSERT'), htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
 											}
 										}
 
@@ -794,7 +794,7 @@ class convertor
 
 								if (!$db->sql_query($insert_sql))
 								{
-									$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+									$this->db_error($user->lang('DB_ERR_INSERT'), htmlspecialchars($insert_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
 								}
 								$db->sql_return_on_error(false);
 
@@ -829,7 +829,7 @@ class convertor
 						foreach ($waiting_rows as $waiting_sql)
 						{
 							$db->sql_query($insert_query . $waiting_sql);
-							$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+							$this->db_error($user->lang('DB_ERR_INSERT'), htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
 						}
 
 						$db->sql_return_on_error(false);
@@ -888,11 +888,11 @@ class convertor
 				$current_table++;
 //				$percentage = ($skip_rows == 0) ? 0 : floor(100 / ($total_rows / $skip_rows));
 
-				$msg = sprintf($user->lang['STEP_PERCENT_COMPLETED'], $current_table, count($convert->convertor['schema']));
+				$msg = sprintf($user->lang('STEP_PERCENT_COMPLETED'), $current_table, count($convert->convertor['schema']));
 
 				$this->template->assign_vars(array(
 					'BODY'			=> $msg,
-					'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+					'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 					'U_ACTION'		=> $url,
 				));
 
@@ -905,7 +905,7 @@ class convertor
 		$url = $this->save_convert_progress($converter, 'jump=1');
 
 		$this->template->assign_vars(array(
-			'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
+			'L_SUBMIT'		=> $user->lang('FINAL_STEP'),
 			'U_ACTION'		=> $url,
 		));
 
@@ -926,7 +926,7 @@ class convertor
 
 		$this->template->assign_block_vars('checks', array(
 			'S_LEGEND'	=> true,
-			'LEGEND'	=> $user->lang['SYNC_TOPICS'],
+			'LEGEND'	=> $user->lang('SYNC_TOPICS'),
 		));
 
 		$batch_size = $convert->batch_size;
@@ -960,8 +960,8 @@ class convertor
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> sprintf($user->lang('SYNC_TOPIC_ID'), $sync_batch, ($sync_batch + $batch_size)) . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang('KIB') . ']' : ''),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 
 			$sync_batch += $batch_size;
@@ -972,7 +972,7 @@ class convertor
 			$url = $this->save_convert_progress($converter, 'final_jump=1');
 
 			$this->template->assign_vars(array(
-				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+				'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 				'U_ACTION'		=> $url,
 			));
 
@@ -987,7 +987,7 @@ class convertor
 		$url = $this->save_convert_progress($converter, 'sync_batch=' . $sync_batch);
 
 		$this->template->assign_vars(array(
-			'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+			'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 			'U_ACTION'		=> $url,
 		));
 
@@ -1050,7 +1050,7 @@ class convertor
 		$url = $this->controller_helper->route('phpbb_convert_finish');
 
 		$this->template->assign_vars(array(
-			'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
+			'L_SUBMIT'		=> $user->lang('FINAL_STEP'),
 			'U_ACTION'		=> $url,
 		));
 
@@ -1068,7 +1068,7 @@ class convertor
 
 		$this->template->assign_block_vars('checks', array(
 			'S_LEGEND'	=> true,
-			'LEGEND'	=> $user->lang['PROCESS_LAST'],
+			'LEGEND'	=> $user->lang('PROCESS_LAST'),
 		));
 
 		if ($final_jump == 1)
@@ -1078,16 +1078,16 @@ class convertor
 			update_topics_posted();
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['UPDATE_TOPICS_POSTED'],
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> $user->lang('UPDATE_TOPICS_POSTED'),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 
 			if ($db->get_sql_error_triggered())
 			{
 				$this->template->assign_vars(array(
 					'S_ERROR_BOX'	=> true,
-					'ERROR_TITLE'	=> $user->lang['UPDATE_TOPICS_POSTED'],
-					'ERROR_MSG'		=> $user->lang['UPDATE_TOPICS_POSTED_ERR'],
+					'ERROR_TITLE'	=> $user->lang('UPDATE_TOPICS_POSTED'),
+					'ERROR_MSG'		=> $user->lang('UPDATE_TOPICS_POSTED_ERR'),
 				));
 			}
 			$db->sql_return_on_error(false);
@@ -1111,7 +1111,7 @@ class convertor
 
 		$this->template->assign_block_vars('checks', array(
 			'S_LEGEND'	=> true,
-			'LEGEND'	=> $user->lang['PROCESS_LAST'],
+			'LEGEND'	=> $user->lang('PROCESS_LAST'),
 		));
 
 		if ($jump == 1)
@@ -1135,17 +1135,17 @@ class convertor
 
 						$this->template->assign_block_vars('checks', array(
 							'TITLE'		=> $convert->convertor['execute_last'][$last_statement],
-							'RESULT'	=> $user->lang['DONE'],
+							'RESULT'	=> $user->lang('DONE'),
 						));
 
 						$last_statement++;
 						$url = $this->save_convert_progress($converter, 'jump=1&amp;last=' . $last_statement);
 
 						$percentage = ($last_statement == 0) ? 0 : floor(100 / (count($convert->convertor['execute_last']) / $last_statement));
-						$msg = sprintf($user->lang['STEP_PERCENT_COMPLETED'], $last_statement, count($convert->convertor['execute_last']), $percentage);
+						$msg = sprintf($user->lang('STEP_PERCENT_COMPLETED'), $last_statement, count($convert->convertor['execute_last']), $percentage);
 
 						$this->template->assign_vars(array(
-							'L_SUBMIT'		=> $user->lang['CONTINUE_LAST'],
+							'L_SUBMIT'		=> $user->lang('CONTINUE_LAST'),
 							'BODY'			=> $msg,
 							'U_ACTION'		=> $url,
 						));
@@ -1211,14 +1211,14 @@ class convertor
 			update_dynamic_config();
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['CLEAN_VERIFY'],
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> $user->lang('CLEAN_VERIFY'),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 
 			$url = $this->save_convert_progress($converter, 'jump=2');
 
 			$this->template->assign_vars(array(
-				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+				'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 				'U_ACTION'		=> $url,
 			));
 
@@ -1236,15 +1236,15 @@ class convertor
 			$cache->destroy('sql', FORUMS_TABLE);
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['SYNC_FORUMS'],
-				'RESULT'	=> $user->lang['DONE'],
+				'TITLE'		=> $user->lang('SYNC_FORUMS'),
+				'RESULT'	=> $user->lang('DONE'),
 			));
 
 			// Continue with synchronizing the forums...
 			$url = $this->save_convert_progress($converter, 'sync_batch=0');
 
 			$this->template->assign_vars(array(
-				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+				'L_SUBMIT'		=> $user->lang('CONTINUE_CONVERT'),
 				'U_ACTION'		=> $url,
 			));
 
@@ -1353,14 +1353,14 @@ class convertor
 				// This won't handle concatened LEFT JOINs
 				if (!preg_match('/([a-z0-9_]+) LEFT JOIN ([a-z0-9_]+) A?S? ?([a-z0-9_]*?) ?(ON|USING)(.*)/i', $left_join, $m))
 				{
-					$this->error(sprintf($user->lang['NOT_UNDERSTAND'], 'LEFT JOIN', $left_join, $current_table, $schema['target']), __LINE__, __FILE__);
+					$this->error(sprintf($user->lang('NOT_UNDERSTAND'), 'LEFT JOIN', $left_join, $current_table, $schema['target']), __LINE__, __FILE__);
 				}
 
 				if (!empty($aliases[$m[2]]))
 				{
 					if (!empty($m[3]))
 					{
-						$this->error(sprintf($user->lang['NAMING_CONFLICT'], $m[2], $m[3], $schema['left_join']), __LINE__, __FILE__);
+						$this->error(sprintf($user->lang('NAMING_CONFLICT'), $m[2], $m[3], $schema['left_join']), __LINE__, __FILE__);
 					}
 
 					$m[2] = $aliases[$m[2]];

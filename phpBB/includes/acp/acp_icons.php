@@ -232,18 +232,18 @@ class acp_icons
 							$display_count++;
 						}
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-						$order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_lists[$row['display_on_posting']];
+						$order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang('AFTER_' . $lang), ' -&gt; ' . $after_txt) . '</option>' . $order_lists[$row['display_on_posting']];
 
 						if (!empty($default_row))
 						{
-							$add_order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $add_order_lists[$row['display_on_posting']];
+							$add_order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang('AFTER_' . $lang), ' -&gt; ' . $after_txt) . '</option>' . $add_order_lists[$row['display_on_posting']];
 						}
 					}
 				}
 				$db->sql_freeresult($result);
 
-				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>';
-				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>';
+				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang('FIRST') . '</option>';
+				$add_order_list = '<option value="1">' . $user->lang('FIRST') . '</option>';
 
 				if ($action == 'add')
 				{
@@ -263,15 +263,15 @@ class acp_icons
 					'S_ORDER_LIST_UNDISPLAY'	=> $order_list . $order_lists[0],
 					'S_ORDER_LIST_DISPLAY_COUNT'	=> $display_count + 1,
 
-					'L_TITLE'		=> $user->lang['ACP_' . $lang],
-					'L_EXPLAIN'		=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-					'L_CONFIG'		=> $user->lang[$lang . '_CONFIG'],
-					'L_URL'			=> $user->lang[$lang . '_URL'],
-					'L_LOCATION'	=> $user->lang[$lang . '_LOCATION'],
-					'L_WIDTH'		=> $user->lang[$lang . '_WIDTH'],
-					'L_HEIGHT'		=> $user->lang[$lang . '_HEIGHT'],
-					'L_ORDER'		=> $user->lang[$lang . '_ORDER'],
-					'L_NO_ICONS'	=> $user->lang['NO_' . $lang . '_' . strtoupper($action)],
+					'L_TITLE'		=> $user->lang('ACP_' . $lang),
+					'L_EXPLAIN'		=> $user->lang('ACP_' . $lang . '_EXPLAIN'),
+					'L_CONFIG'		=> $user->lang($lang . '_CONFIG'),
+					'L_URL'			=> $user->lang($lang . '_URL'),
+					'L_LOCATION'	=> $user->lang($lang . '_LOCATION'),
+					'L_WIDTH'		=> $user->lang($lang . '_WIDTH'),
+					'L_HEIGHT'		=> $user->lang($lang . '_HEIGHT'),
+					'L_ORDER'		=> $user->lang($lang . '_ORDER'),
+					'L_NO_ICONS'	=> $user->lang('NO_' . $lang . '_' . strtoupper($action)),
 
 					'COLSPAN'		=> $colspan,
 					'ID'			=> $icon_id,
@@ -331,7 +331,7 @@ class acp_icons
 
 				if (!check_form_key($form_key))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Get items to create/modify
@@ -509,7 +509,7 @@ class acp_icons
 				$errormsgs = '';
 				foreach ($errors as $img => $error)
 				{
-					$errormsgs .= '<br />' . sprintf($user->lang[$error], $img);
+					$errormsgs .= '<br />' . sprintf($user->lang($error), $img);
 				}
 				if ($action == 'modify')
 				{
@@ -533,12 +533,12 @@ class acp_icons
 
 					if (!check_form_key($form_key))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
 					{
-						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('PAK_FILE_NOT_READABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					// Make sure the pak_ary is valid
@@ -549,12 +549,12 @@ class acp_icons
 							if ((count($data[1]) != 4 && $mode == 'icons') ||
 								((count($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode == 'smilies' ))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($user->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 						}
 						else
 						{
-							trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 
@@ -619,7 +619,7 @@ class acp_icons
 							if ((count($data[1]) != 4 && $mode == 'icons') ||
 								(count($data[1]) != 6 && $mode == 'smilies'))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($user->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							// Stripslash here because it got addslashed before... (on export)
@@ -685,7 +685,7 @@ class acp_icons
 					$cache->destroy('sql', $table);
 					$phpbb_container->get('text_formatter.cache')->invalidate();
 
-					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
+					trigger_error($user->lang($lang . '_IMPORT_SUCCESS') . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -700,12 +700,12 @@ class acp_icons
 						'S_CHOOSE_PAK'		=> true,
 						'S_PAK_OPTIONS'		=> $pak_options,
 
-						'L_TITLE'			=> $user->lang['ACP_' . $lang],
-						'L_EXPLAIN'			=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-						'L_NO_PAK_OPTIONS'	=> $user->lang['NO_' . $lang . '_PAK'],
-						'L_CURRENT'			=> $user->lang['CURRENT_' . $lang],
-						'L_CURRENT_EXPLAIN'	=> $user->lang['CURRENT_' . $lang . '_EXPLAIN'],
-						'L_IMPORT_SUBMIT'	=> $user->lang['IMPORT_' . $lang],
+						'L_TITLE'			=> $user->lang('ACP_' . $lang),
+						'L_EXPLAIN'			=> $user->lang('ACP_' . $lang . '_EXPLAIN'),
+						'L_NO_PAK_OPTIONS'	=> $user->lang('NO_' . $lang . '_PAK'),
+						'L_CURRENT'			=> $user->lang('CURRENT_' . $lang),
+						'L_CURRENT_EXPLAIN'	=> $user->lang('CURRENT_' . $lang . '_EXPLAIN'),
+						'L_IMPORT_SUBMIT'	=> $user->lang('IMPORT_' . $lang),
 
 						'U_BACK'		=> $this->u_action,
 						'U_ACTION'		=> $this->u_action . '&amp;action=import',
@@ -720,8 +720,8 @@ class acp_icons
 				$this->tpl_name = 'message_body';
 
 				$template->assign_vars(array(
-					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
+					'MESSAGE_TITLE'		=> $user->lang('EXPORT_' . $lang),
+					'MESSAGE_TEXT'		=> sprintf($user->lang('EXPORT_' . $lang . '_EXPLAIN'), '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
 
 					'S_USER_NOTICE'		=> true,
 					)
@@ -735,7 +735,7 @@ class acp_icons
 
 				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = "SELECT *
@@ -777,7 +777,7 @@ class acp_icons
 				}
 				else
 				{
-					trigger_error($user->lang['NO_' . strtoupper($fields) . '_EXPORT'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_' . strtoupper($fields) . '_EXPORT') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			break;
@@ -807,7 +807,7 @@ class acp_icons
 						break;
 					}
 
-					$notice = $user->lang[$lang . '_DELETED'];
+					$notice = $user->lang($lang . '_DELETED');
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
@@ -817,7 +817,7 @@ class acp_icons
 					{
 						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
-							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TITLE'	=> $user->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $notice,
 							'REFRESH_DATA'	=> array(
 								'time'	=> 3
@@ -827,7 +827,7 @@ class acp_icons
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'id'		=> $icon_id,
@@ -842,7 +842,7 @@ class acp_icons
 
 				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Get current order id...
@@ -919,13 +919,13 @@ class acp_icons
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['ACP_' . $lang],
-			'L_EXPLAIN'			=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-			'L_IMPORT'			=> $user->lang['IMPORT_' . $lang],
-			'L_EXPORT'			=> $user->lang['EXPORT_' . $lang],
-			'L_NOT_DISPLAYED'	=> $user->lang[$lang . '_NOT_DISPLAYED'],
-			'L_ICON_ADD'		=> $user->lang['ADD_' . $lang],
-			'L_ICON_EDIT'		=> $user->lang['EDIT_' . $lang],
+			'L_TITLE'			=> $user->lang('ACP_' . $lang),
+			'L_EXPLAIN'			=> $user->lang('ACP_' . $lang . '_EXPLAIN'),
+			'L_IMPORT'			=> $user->lang('IMPORT_' . $lang),
+			'L_EXPORT'			=> $user->lang('EXPORT_' . $lang),
+			'L_NOT_DISPLAYED'	=> $user->lang($lang . '_NOT_DISPLAYED'),
+			'L_ICON_ADD'		=> $user->lang('ADD_' . $lang),
+			'L_ICON_EDIT'		=> $user->lang('EDIT_' . $lang),
 
 			'NOTICE'			=> $notice,
 			'COLSPAN'			=> ($mode == 'smilies') ? 5 : 3,

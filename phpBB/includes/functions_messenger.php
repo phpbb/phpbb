@@ -371,12 +371,12 @@ class messenger
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
+			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang('NO_EMAIL_SUBJECT'));
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
+			$this->subject = (($this->subject != '') ? $this->subject : $user->lang('NO_EMAIL_SUBJECT'));
 		}
 
 		if (preg_match('#^(List-Unsubscribe:(.*?))$#m', $this->msg, $match))
@@ -696,13 +696,13 @@ class messenger
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang('ERR_JAB_CONNECT') . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->login())
 			{
-				$this->error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang('ERR_JAB_AUTH') . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
@@ -895,14 +895,14 @@ class queue
 					if (!$this->jabber->connect())
 					{
 						$messenger = new messenger();
-						$messenger->error('JABBER', $user->lang['ERR_JAB_CONNECT']);
+						$messenger->error('JABBER', $user->lang('ERR_JAB_CONNECT'));
 						continue 2;
 					}
 
 					if (!$this->jabber->login())
 					{
 						$messenger = new messenger();
-						$messenger->error('JABBER', $user->lang['ERR_JAB_AUTH']);
+						$messenger->error('JABBER', $user->lang('ERR_JAB_AUTH'));
 						continue 2;
 					}
 
@@ -1118,13 +1118,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 
 	if (trim($subject) == '')
 	{
-		$err_msg = (isset($user->lang['NO_EMAIL_SUBJECT'])) ? $user->lang['NO_EMAIL_SUBJECT'] : 'No email subject specified';
+		$err_msg = (isset($user->lang['NO_EMAIL_SUBJECT'])) ? $user->lang('NO_EMAIL_SUBJECT') : 'No email subject specified';
 		return false;
 	}
 
 	if (trim($message) == '')
 	{
-		$err_msg = (isset($user->lang['NO_EMAIL_MESSAGE'])) ? $user->lang['NO_EMAIL_MESSAGE'] : 'Email message was blank';
+		$err_msg = (isset($user->lang['NO_EMAIL_MESSAGE'])) ? $user->lang('NO_EMAIL_MESSAGE') : 'Email message was blank';
 		return false;
 	}
 
@@ -1194,7 +1194,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 			$errstr = utf8_convert_message($errstr);
 		}
 
-		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		$err_msg .= ($error_contents) ? '<br /><br />' . htmlspecialchars($error_contents) : '';
 		return false;
 	}
@@ -1258,7 +1258,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	{
 		$user->session_begin();
 		$err_msg .= '<br /><br />';
-		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
+		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang('INVALID_EMAIL_LOG'), htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
 		$smtp->close_session($err_msg);
 		return false;
 	}
@@ -1372,7 +1372,7 @@ class smtp_class
 		{
 			if (!($this->server_response = fgets($this->socket, 256)))
 			{
-				return (isset($user->lang['NO_EMAIL_RESPONSE_CODE'])) ? $user->lang['NO_EMAIL_RESPONSE_CODE'] : 'Could not get mail server response codes';
+				return (isset($user->lang['NO_EMAIL_RESPONSE_CODE'])) ? $user->lang('NO_EMAIL_RESPONSE_CODE') : 'Could not get mail server response codes';
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
@@ -1383,7 +1383,7 @@ class smtp_class
 		if (!(substr($this->server_response, 0, 3) == $response))
 		{
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
-			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf($user->lang['EMAIL_SMTP_ERROR_RESPONSE'], $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
+			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf($user->lang('EMAIL_SMTP_ERROR_RESPONSE'), $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
 		}
 
 		return 0;
@@ -1456,7 +1456,7 @@ class smtp_class
 					$errstr = utf8_convert_message($errstr);
 				}
 
-				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 				return $err_msg;
 			}
 
@@ -1501,7 +1501,7 @@ class smtp_class
 
 		if (!isset($this->commands['AUTH']))
 		{
-			return (isset($user->lang['SMTP_NO_AUTH_SUPPORT'])) ? $user->lang['SMTP_NO_AUTH_SUPPORT'] : 'SMTP server does not support authentication';
+			return (isset($user->lang['SMTP_NO_AUTH_SUPPORT'])) ? $user->lang('SMTP_NO_AUTH_SUPPORT') : 'SMTP server does not support authentication';
 		}
 
 		// Get best authentication method
@@ -1529,7 +1529,7 @@ class smtp_class
 
 		if (!$method)
 		{
-			return (isset($user->lang['NO_SUPPORTED_AUTH_METHODS'])) ? $user->lang['NO_SUPPORTED_AUTH_METHODS'] : 'No supported authentication methods';
+			return (isset($user->lang['NO_SUPPORTED_AUTH_METHODS'])) ? $user->lang('NO_SUPPORTED_AUTH_METHODS') : 'No supported authentication methods';
 		}
 
 		$method = strtolower(str_replace('-', '_', $method));
@@ -1623,7 +1623,7 @@ class smtp_class
 				$errstr = utf8_convert_message($errstr);
 			}
 
-			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
 		$this->server_send("USER $username", true);
@@ -1808,7 +1808,7 @@ class smtp_class
 		}
 		else
 		{
-			return (isset($user->lang['INVALID_DIGEST_CHALLENGE'])) ? $user->lang['INVALID_DIGEST_CHALLENGE'] : 'Invalid digest challenge';
+			return (isset($user->lang['INVALID_DIGEST_CHALLENGE'])) ? $user->lang('INVALID_DIGEST_CHALLENGE') : 'Invalid digest challenge';
 		}
 
 		$base64_method_digest_md5 = base64_encode($input_string);

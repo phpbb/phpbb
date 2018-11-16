@@ -585,7 +585,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 			case 'retain':
 				if ($retain_username === false)
 				{
-					$post_username = $user->lang['GUEST'];
+					$post_username = $user->lang('GUEST');
 				}
 				else
 				{
@@ -2266,18 +2266,18 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	// Check data. Limit group name length.
 	if (!utf8_strlen($name) || utf8_strlen($name) > 60)
 	{
-		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
+		$error[] = (!utf8_strlen($name)) ? $user->lang('GROUP_ERR_USERNAME') : $user->lang('GROUP_ERR_USER_LONG');
 	}
 
 	$err = group_validate_groupname($group_id, $name);
 	if (!empty($err))
 	{
-		$error[] = $user->lang[$err];
+		$error[] = $user->lang($err);
 	}
 
 	if (!in_array($type, array(GROUP_OPEN, GROUP_CLOSED, GROUP_HIDDEN, GROUP_SPECIAL, GROUP_FREE)))
 	{
-		$error[] = $user->lang['GROUP_ERR_TYPE'];
+		$error[] = $user->lang('GROUP_ERR_TYPE');
 	}
 
 	$group_teampage = !empty($group_attributes['group_teampage']);

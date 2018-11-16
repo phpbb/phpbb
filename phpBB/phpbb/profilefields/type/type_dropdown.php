@@ -86,8 +86,8 @@ class type_dropdown extends type_base
 		$profile_row[1]['field_default_value']	= $field_data['field_novalue'];
 
 		$options = array(
-			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
-			1 => array('TITLE' => $this->user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $this->user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1])),
+			0 => array('TITLE' => $this->user->lang('DEFAULT_VALUE'), 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
+			1 => array('TITLE' => $this->user->lang('NO_VALUE_OPTION'), 'EXPLAIN' => $this->user->lang('NO_VALUE_OPTION_EXPLAIN'), 'FIELD' => $this->process_field_row('preview', $profile_row[1])),
 		);
 
 		return $options;
@@ -284,7 +284,7 @@ class type_dropdown extends type_base
 	{
 		if (!count($field_data['lang_options']))
 		{
-			$error[] = $this->user->lang['NO_FIELD_ENTRIES'];
+			$error[] = $this->user->lang('NO_FIELD_ENTRIES');
 		}
 
 		return $error;
@@ -318,7 +318,7 @@ class type_dropdown extends type_base
 
 		$template_vars = array_merge($template_vars, array(
 			'S_DROPDOWN'				=> true,
-			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['DROPDOWN_ENTRIES_EXPLAIN'],
+			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang('DROPDOWN_ENTRIES_EXPLAIN'),
 			'LANG_OPTIONS'				=> implode("\n", $field_data['lang_options']),
 		));
 	}

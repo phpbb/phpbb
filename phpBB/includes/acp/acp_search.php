@@ -57,7 +57,7 @@ class acp_search
 
 		if ($submit && !check_link_hash($request->variable('hash', ''), 'acp_search'))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$search_types = $this->get_search_types();
@@ -168,7 +168,7 @@ class acp_search
 							{
 								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 							}
-							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
+							$extra_message = '<br />' . $user->lang('SWITCHED_SEARCH_BACKEND') . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang('GO_TO_SEARCH_INDEX') . '</a>';
 						}
 						else
 						{
@@ -177,7 +177,7 @@ class acp_search
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
+						confirm_box(false, $user->lang('CONFIRM_SEARCH_BACKEND'), build_hidden_fields(array(
 							'i'			=> $id,
 							'mode'		=> $mode,
 							'submit'	=> true,
@@ -212,7 +212,7 @@ class acp_search
 				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
+			trigger_error($user->lang('CONFIG_UPDATED') . $extra_message . adm_back_link($this->u_action));
 		}
 		unset($cfg_array);
 
@@ -253,7 +253,7 @@ class acp_search
 
 		if (!check_link_hash($request->variable('hash', ''), 'acp_search') && in_array($action, array('create', 'delete')))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($action)
@@ -359,7 +359,7 @@ class acp_search
 					$this->save_state();
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
-					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error($user->lang('SEARCH_INDEX_REMOVED') . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 
 				case 'create':
@@ -447,7 +447,7 @@ class acp_search
 					$this->save_state();
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($name));
-					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error($user->lang('SEARCH_INDEX_CREATED') . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 			}
 		}
@@ -525,8 +525,8 @@ class acp_search
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
-				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
+				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang('CONTINUE_INDEXING') : $user->lang('CONTINUE_DELETING_INDEX'),
+				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang('CONTINUE_INDEXING_EXPLAIN') : $user->lang('CONTINUE_DELETING_INDEX_EXPLAIN'))
 			);
 		}
 	}
@@ -537,15 +537,15 @@ class acp_search
 
 		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
 
-		adm_page_header($user->lang[$l_type]);
+		adm_page_header($user->lang($l_type));
 
 		$template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
 		);
 
 		$template->assign_vars(array(
-			'L_PROGRESS'			=> $user->lang[$l_type],
-			'L_PROGRESS_EXPLAIN'	=> $user->lang[$l_type . '_EXPLAIN'])
+			'L_PROGRESS'			=> $user->lang($l_type),
+			'L_PROGRESS_EXPLAIN'	=> $user->lang($l_type . '_EXPLAIN'))
 		);
 
 		adm_page_footer();
@@ -611,7 +611,7 @@ class acp_search
 
 		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
-			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
+			$error = $user->lang('NO_SUCH_SEARCH_MODULE');
 			return $error;
 		}
 

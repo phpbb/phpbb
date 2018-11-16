@@ -322,7 +322,7 @@ abstract class base implements feed_interface
 		{
 			// Since we cannot link to a profile, we just return GUEST
 			// instead of $row['username']
-			return $this->user->lang['GUEST'];
+			return $this->user->lang('GUEST');
 		}
 
 		return '<a href="' . $this->helper->append_sid('memberlist.' . $this->phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';

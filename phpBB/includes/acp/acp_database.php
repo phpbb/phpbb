@@ -64,12 +64,12 @@ class acp_database
 
 						if (!count($table))
 						{
-							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('TABLE_SELECT_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (!check_form_key($form_key))
 						{
-							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -213,7 +213,7 @@ class acp_database
 							exit;
 						}
 
-						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
+						trigger_error($user->lang('BACKUP_SUCCESS') . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -268,14 +268,14 @@ class acp_database
 
 						if (!preg_match('#^backup_\d{10,}_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$file_name = $matches[0];
 
 						if (!$storage->exists($file_name))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
@@ -297,14 +297,14 @@ class acp_database
 								}
 								catch (\Exception $e)
 								{
-									trigger_error($user->lang['BACKUP_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+									trigger_error($user->lang('BACKUP_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
 								}
 
-								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+								trigger_error($user->lang('BACKUP_DELETE') . adm_back_link($this->u_action));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+								confirm_box(false, $user->lang('DELETE_SELECTED_BACKUP'), build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
 						else if ($download || confirm_box(true))
@@ -366,7 +366,7 @@ class acp_database
 							}
 							catch (\phpbb\storage\exception\exception $e)
 							{
-								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
+								trigger_error($user->lang('RESTORE_DOWNLOAD_FAIL') . adm_back_link($this->u_action));
 							}
 
 							switch ($matches[1])
@@ -441,7 +441,7 @@ class acp_database
 											{
 												if ($sub === false)
 												{
-													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+													trigger_error($user->lang('RESTORE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
 												}
 												pg_put_line($db->get_db_connect_id(), $sub . "\n");
 											}
@@ -475,12 +475,12 @@ class acp_database
 							$cache->purge();
 
 							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
-							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
+							trigger_error($user->lang('RESTORE_SUCCESS') . adm_back_link($this->u_action));
 							break;
 						}
 						else if (!$download)
 						{
-							confirm_box(false, $user->lang['RESTORE_SELECTED_BACKUP'], build_hidden_fields(array('file' => $file)));
+							confirm_box(false, $user->lang('RESTORE_SELECTED_BACKUP'), build_hidden_fields(array('file' => $file)));
 						}
 
 					default:

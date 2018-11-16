@@ -129,7 +129,7 @@ class ucp_prefs
 						$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang('PREFERENCES_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -139,10 +139,10 @@ class ucp_prefs
 
 				$dateformat_options = '';
 
-				foreach ($user->lang['dateformats'] as $format => $null)
+				foreach ($user->lang('dateformats') as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
+					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang('VARIANT_DATE_SEPARATOR') . $user->format_date(time(), $format, true) : '');
 					$dateformat_options .= '</option>';
 				}
 
@@ -154,7 +154,7 @@ class ucp_prefs
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
 				}
-				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+				$dateformat_options .= '>' . $user->lang('CUSTOM_DATEFORMAT') . '</option>';
 
 				phpbb_timezone_select($template, $user, $data['tz'], true);
 
@@ -318,7 +318,7 @@ class ucp_prefs
 						$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang('PREFERENCES_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -326,18 +326,18 @@ class ucp_prefs
 					$error = array_map(array($user, 'lang'), $error);
 				}
 
-				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+				$sort_dir_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 				// Topic ordering options
-				$limit_topic_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+				$limit_topic_days = array(0 => $user->lang('ALL_TOPICS'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
 
-				$sort_by_topic_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+				$sort_by_topic_text = array('a' => $user->lang('AUTHOR'), 't' => $user->lang('POST_TIME'), 'r' => $user->lang('REPLIES'), 's' => $user->lang('SUBJECT'), 'v' => $user->lang('VIEWS'));
 				$sort_by_topic_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_last_post_time', 't.topic_last_post_id'), 'r' => 't.topic_posts_approved', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 				// Post ordering options
-				$limit_post_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+				$limit_post_days = array(0 => $user->lang('ALL_POSTS'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
 
-				$sort_by_post_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+				$sort_by_post_text = array('a' => $user->lang('AUTHOR'), 't' => $user->lang('POST_TIME'), 's' => $user->lang('SUBJECT'));
 				$sort_by_post_sql = array('a' => 'u.username_clean', 't' => 'p.post_id', 's' => 'p.post_subject');
 
 				$_options = array('topic', 'post');
@@ -486,14 +486,14 @@ class ucp_prefs
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						$msg = $user->lang['PREFERENCES_UPDATED'];
+						$msg = $user->lang('PREFERENCES_UPDATED');
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = $user->lang('FORM_INVALID');
 					}
 					meta_refresh(3, $this->u_action);
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 					trigger_error($message);
 				}
 
@@ -525,7 +525,7 @@ class ucp_prefs
 		extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang('UCP_PREFS_' . strtoupper($mode)),
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action)

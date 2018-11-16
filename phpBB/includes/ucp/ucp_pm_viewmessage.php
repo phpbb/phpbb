@@ -38,9 +38,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	if ($message_row['pm_deleted'])
 	{
 		$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
-		$message = $user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
+		$message = $user->lang('NO_AUTH_READ_REMOVED_MESSAGE');
 
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
 		send_status_line(403, 'Forbidden');
 		trigger_error($message);
 	}
@@ -206,17 +206,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_AUTHOR_POSTS'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$author_id&amp;sr=posts") : '',
 		'CONTACT_USER'		=> $user->lang('CONTACT_USER', get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username'])),
 
-		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang('ONLINE')) : $user->img('icon_user_offline', $user->lang('OFFLINE'))),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
-		'DELETE_IMG'		=> $user->img('icon_post_delete', $user->lang['DELETE_MESSAGE']),
-		'INFO_IMG'			=> $user->img('icon_post_info', $user->lang['VIEW_PM_INFO']),
-		'PROFILE_IMG'		=> $user->img('icon_user_profile', $user->lang['READ_PROFILE']),
-		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
-		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
-		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
+		'DELETE_IMG'		=> $user->img('icon_post_delete', $user->lang('DELETE_MESSAGE')),
+		'INFO_IMG'			=> $user->img('icon_post_info', $user->lang('VIEW_PM_INFO')),
+		'PROFILE_IMG'		=> $user->img('icon_user_profile', $user->lang('READ_PROFILE')),
+		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang('SEND_EMAIL')),
+		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang('POST_QUOTE_PM')),
+		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang('POST_REPLY_PM')),
 		'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_PM'),
-		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
-		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
+		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang('POST_EDIT_PM')),
+		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang('PM')),
 
 		'SENT_DATE'			=> ($view == 'print') ? $user->format_date($message_row['message_time'], false, true) : $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
@@ -316,17 +316,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$contact_fields = array(
 		array(
 			'ID'		=> 'pm',
-			'NAME'		=> $user->lang['SEND_PRIVATE_MESSAGE'],
+			'NAME'		=> $user->lang('SEND_PRIVATE_MESSAGE'),
 			'U_CONTACT' => $u_pm,
 		),
 		array(
 			'ID'		=> 'email',
-			'NAME'		=> $user->lang['SEND_EMAIL'],
+			'NAME'		=> $user->lang('SEND_EMAIL'),
 			'U_CONTACT'	=> $user_info['email'],
 		),
 		array(
 			'ID'		=> 'jabber',
-			'NAME'		=> $user->lang['JABBER'],
+			'NAME'		=> $user->lang('JABBER'),
 			'U_CONTACT'	=> $u_jabber,
 		),
 	);

@@ -105,7 +105,7 @@ function phpbb_insert_forums()
 	{
 		$sql_ary = array(
 			'forum_id'		=> (int) $max_forum_id,
-			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_default_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
+			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_default_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang('CATEGORY'),
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -156,7 +156,7 @@ function phpbb_insert_forums()
 
 		$sql_ary = array(
 			'forum_id'		=> (int) $max_forum_id,
-			'forum_name'	=> (string) $user->lang['CATEGORY'],
+			'forum_name'	=> (string) $user->lang('CATEGORY'),
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -1270,7 +1270,7 @@ function phpbb_prepare_message($message)
 	if (count($message_parser->warn_msg))
 	{
 		$msg_id = isset($convert->row['post_id']) ? $convert->row['post_id'] : $convert->row['privmsgs_id'];
-		$convert->p_master->error('<span style="color:red">' . $user->lang['POST_ID'] . ': ' . $msg_id . ' ' . $user->lang['CONV_ERROR_MESSAGE_PARSER'] . ': <br /><br />' . implode('<br />', $message_parser->warn_msg), __LINE__, __FILE__, true);
+		$convert->p_master->error('<span style="color:red">' . $user->lang('POST_ID') . ': ' . $msg_id . ' ' . $user->lang('CONV_ERROR_MESSAGE_PARSER') . ': <br /><br />' . implode('<br />', $message_parser->warn_msg), __LINE__, __FILE__, true);
 	}
 
 	$convert->row['mp_bbcode_bitfield'] = $convert_row['mp_bbcode_bitfield'] = $message_parser->bbcode_bitfield;
@@ -1345,7 +1345,7 @@ function phpbb_get_files_dir()
 
 	if ($ftp_upload)
 	{
-		$convert->p_master->error($user->lang['CONV_ERROR_ATTACH_FTP_DIR'], __LINE__, __FILE__);
+		$convert->p_master->error($user->lang('CONV_ERROR_ATTACH_FTP_DIR'), __LINE__, __FILE__);
 	}
 
 	return $upload_path;
@@ -1890,15 +1890,15 @@ function phpbb_check_username_collisions()
 		$list = '';
 		foreach ($colliding_users as $username_clean => $users)
 		{
-			$list .= sprintf($user->lang['COLLIDING_CLEAN_USERNAME'], $username_clean) . "<br />\n";
+			$list .= sprintf($user->lang('COLLIDING_CLEAN_USERNAME'), $username_clean) . "<br />\n";
 			foreach ($users as $i => $row)
 			{
-				$list .= sprintf($user->lang['COLLIDING_USER'], $row['user_id'], phpbb_set_default_encoding($row['username']), $row['user_posts']) . "<br />\n";
+				$list .= sprintf($user->lang('COLLIDING_USER'), $row['user_id'], phpbb_set_default_encoding($row['username']), $row['user_posts']) . "<br />\n";
 			}
 		}
 
-		$lang['INST_ERR_FATAL'] = $user->lang['CONV_ERR_FATAL'];
-		$convert->p_master->error('<span style="color:red">' . $user->lang['COLLIDING_USERNAMES_FOUND'] . '</span></b><br /><br />' . $list . '<b>', __LINE__, __FILE__);
+		$lang['INST_ERR_FATAL'] = $user->lang('CONV_ERR_FATAL');
+		$convert->p_master->error('<span style="color:red">' . $user->lang('COLLIDING_USERNAMES_FOUND') . '</span></b><br /><br />' . $list . '<b>', __LINE__, __FILE__);
 	}
 
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;

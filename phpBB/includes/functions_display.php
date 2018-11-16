@@ -68,24 +68,24 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			{
 				// Tell the ajax script what language vars and URL need to be replaced
 				$data = array(
-					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'NO_UNREAD_POSTS'	=> $user->lang('NO_UNREAD_POSTS'),
+					'UNREAD_POSTS'		=> $user->lang('UNREAD_POSTS'),
 					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+					'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
+					'MESSAGE_TEXT'		=> $user->lang('FORUMS_MARKED')
 				);
 				$json_response = new \phpbb\json_response();
 				$json_response->send($data);
 			}
 
 			trigger_error(
-				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
-				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
+				$user->lang('FORUMS_MARKED') . '<br /><br />' .
+				sprintf($user->lang('RETURN_INDEX'), '<a href="' . $redirect . '">', '</a>')
 			);
 		}
 		else
 		{
-			trigger_error(sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error(sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 		}
 	}
 
@@ -346,28 +346,28 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if (check_link_hash($token, 'global'))
 		{
 			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
-			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
+			$message = sprintf($user->lang('RETURN_FORUM'), '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
 			if ($request->is_ajax())
 			{
 				// Tell the ajax script what language vars and URL need to be replaced
 				$data = array(
-					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'NO_UNREAD_POSTS'	=> $user->lang('NO_UNREAD_POSTS'),
+					'UNREAD_POSTS'		=> $user->lang('UNREAD_POSTS'),
 					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time()) : '',
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+					'MESSAGE_TITLE'		=> $user->lang('INFORMATION'),
+					'MESSAGE_TEXT'		=> $user->lang('FORUMS_MARKED')
 				);
 				$json_response = new \phpbb\json_response();
 				$json_response->send($data);
 			}
 
-			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
+			trigger_error($user->lang('FORUMS_MARKED') . '<br /><br />' . $message);
 		}
 		else
 		{
-			$message = sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
+			$message = sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 			trigger_error($message);
 		}
@@ -426,7 +426,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 				'FORUM_FOLDER_IMG'		=> '',
 				'FORUM_FOLDER_IMG_SRC'	=> '',
-				'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
+				'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang('FORUM_CAT') . '" />' : '',
 				'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 			);
@@ -506,7 +506,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				}
 			}
 
-			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'];
+			$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang('SUBFORUM') : $user->lang('SUBFORUMS');
 			$folder_image = ($forum_unread) ? 'forum_unread_subforum' : 'forum_read_subforum';
 		}
 		else
@@ -540,7 +540,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			if ($row['forum_password_last_post'] === '' && $auth->acl_gets('f_read', 'f_list_topics', $row['forum_id_last_post']))
 			{
 				$last_post_subject = censor_text($row['forum_last_post_subject']);
-				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang['ELLIPSIS']);
+				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang('ELLIPSIS'));
 			}
 			else
 			{
@@ -558,8 +558,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$l_moderator = $moderators_list = '';
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
-			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
-			$moderators_list = implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]);
+			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang('MODERATOR') : $user->lang('MODERATORS');
+			$moderators_list = implode($user->lang('COMMA_SEPARATOR'), $forum_moderators[$forum_id]);
 		}
 
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
@@ -568,7 +568,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = $subforums_row = array();
 		foreach ($subforums_list as $subforum)
 		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['UNREAD_POSTS'] : $user->lang['NO_UNREAD_POSTS']) . '">' . $subforum['name'] . '</a>';
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang('UNREAD_POSTS') : $user->lang('NO_UNREAD_POSTS')) . '">' . $subforum['name'] . '</a>';
 			$subforums_row[] = array(
 				'U_SUBFORUM'	=> $subforum['link'],
 				'SUBFORUM_NAME'	=> $subforum['name'],
@@ -576,7 +576,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'IS_LINK'		=> $subforum['type'] == FORUM_LINK,
 			);
 		}
-		$s_subforums_list = (string) implode($user->lang['COMMA_SEPARATOR'], $s_subforums_list);
+		$s_subforums_list = (string) implode($user->lang('COMMA_SEPARATOR'), $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
 
 		if ($row['forum_type'] != FORUM_LINK)
@@ -616,8 +616,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$l_post_click_count		=> $post_click_count,
 			'FORUM_IMG_STYLE'		=> $folder_image,
 			'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
-			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',
-			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang($folder_alt) : '',
+			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang($folder_alt) . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 			'LAST_POST_SUBJECT'		=> $last_post_subject,
 			'LAST_POST_SUBJECT_TRUNCATED'	=> $last_post_subject_truncated,
@@ -688,7 +688,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$template->assign_vars(array(
 		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
-		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
+		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang('SUBFORUM') : $user->lang('SUBFORUMS'),
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPICS_UNAPPROVED'),
 		'UNAPPROVED_POST_IMG'	=> $user->img('icon_topic_unapproved', 'POSTS_UNAPPROVED_FORUM'),
@@ -979,15 +979,15 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
 
 	$rules = array(
-		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
-		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($user->data['is_registered'] && ($auth->acl_gets('f_delete', 'm_delete', $forum_id) || $auth->acl_gets('f_softdelete', 'm_softdelete', $forum_id)) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang('RULES_POST_CAN') : $user->lang('RULES_POST_CANNOT'),
+		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang('RULES_REPLY_CAN') : $user->lang('RULES_REPLY_CANNOT'),
+		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang('RULES_EDIT_CAN') : $user->lang('RULES_EDIT_CANNOT'),
+		($user->data['is_registered'] && ($auth->acl_gets('f_delete', 'm_delete', $forum_id) || $auth->acl_gets('f_softdelete', 'm_softdelete', $forum_id)) && !$locked) ? $user->lang('RULES_DELETE_CAN') : $user->lang('RULES_DELETE_CANNOT'),
 	);
 
 	if ($config['allow_attachments'])
 	{
-		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT'];
+		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang('RULES_ATTACH_CAN') : $user->lang('RULES_ATTACH_CANNOT');
 	}
 
 	foreach ($rules as $rule)
@@ -1007,7 +1007,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{
-		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
+		$topic_type = $user->lang('VIEW_TOPIC_MOVED');
 		$folder_img = 'topic_moved';
 		$folder_alt = 'TOPIC_MOVED';
 	}
@@ -1016,19 +1016,19 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		switch ($topic_row['topic_type'])
 		{
 			case POST_GLOBAL:
-				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$topic_type = $user->lang('VIEW_TOPIC_GLOBAL');
 				$folder = 'global_read';
 				$folder_new = 'global_unread';
 			break;
 
 			case POST_ANNOUNCE:
-				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
+				$topic_type = $user->lang('VIEW_TOPIC_ANNOUNCEMENT');
 				$folder = 'announce_read';
 				$folder_new = 'announce_unread';
 			break;
 
 			case POST_STICKY:
-				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
+				$topic_type = $user->lang('VIEW_TOPIC_STICKY');
 				$folder = 'sticky_read';
 				$folder_new = 'sticky_unread';
 			break;
@@ -1049,7 +1049,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 		if ($topic_row['topic_status'] == ITEM_LOCKED)
 		{
-			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+			$topic_type = $user->lang('VIEW_TOPIC_LOCKED');
 			$folder .= '_locked';
 			$folder_new .= '_locked';
 		}
@@ -1066,7 +1066,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 	if ($topic_row['poll_start'] && $topic_row['topic_status'] != ITEM_MOVED)
 	{
-		$topic_type = $user->lang['VIEW_TOPIC_POLL'];
+		$topic_type = $user->lang('VIEW_TOPIC_POLL');
 	}
 }
 
@@ -1264,7 +1264,7 @@ function display_user_activity(&$userdata_ary)
 		$active_t_pct = ($userdata_ary['user_posts']) ? ($active_t_count / $userdata_ary['user_posts']) * 100 : 0;
 	}
 
-	$l_active_pct = ($userdata_ary['user_id'] != ANONYMOUS && $userdata_ary['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
+	$l_active_pct = ($userdata_ary['user_id'] != ANONYMOUS && $userdata_ary['user_id'] == $user->data['user_id']) ? $user->lang('POST_PCT_ACTIVE_OWN') : $user->lang('POST_PCT_ACTIVE');
 
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
@@ -1323,7 +1323,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					if ($uid != $user_id || $request->variable('unwatch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-						$message = $user->lang['ERR_UNWATCHING'];
+						$message = $user->lang('ERR_UNWATCHING');
 
 						if (!$request->is_ajax())
 						{
@@ -1338,7 +1338,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)];
+					$message = $user->lang('NOT_WATCHING_' . strtoupper($mode));
 
 					if (!$request->is_ajax())
 					{
@@ -1397,7 +1397,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					if ($uid != $user_id || $request->variable('watch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-						$message = $user->lang['ERR_WATCHING'];
+						$message = $user->lang('ERR_WATCHING');
 
 						if (!$request->is_ajax())
 						{
@@ -1413,7 +1413,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)];
+					$message = $user->lang('ARE_WATCHING_' . strtoupper($mode));
 
 					if (!$request->is_ajax())
 					{
@@ -1463,8 +1463,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	{
 		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
 		$s_watching['link_toggle'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . ((!$is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
-		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
-		$s_watching['title_toggle'] = $user->lang[((!$is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
+		$s_watching['title'] = $user->lang((($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode));
+		$s_watching['title_toggle'] = $user->lang(((!$is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode));
 		$s_watching['is_watching'] = $is_watching;
 	}
 

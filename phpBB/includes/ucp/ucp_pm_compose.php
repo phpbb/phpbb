@@ -518,10 +518,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			// jump to next message in "history"? nope, not for the moment. But able to be included later.
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
-			$message = $user->lang['MESSAGE_DELETED'];
+			$message = $user->lang('MESSAGE_DELETED');
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -572,7 +572,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
 	{
 		$address_list = array();
-		$error[] = $user->lang['NO_AUTH_GROUP_MESSAGE'];
+		$error[] = $user->lang('NO_AUTH_GROUP_MESSAGE');
 	}
 
 	// Check mass pm to users permission
@@ -651,7 +651,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
 		$subject = $request->variable('subject', '', true);
-		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
+		$subject = (!$subject && $action != 'post') ? $user->lang('NEW_MESSAGE') : $subject;
 		$message = $request->variable('message', '', true);
 
 		if ($subject && $message)
@@ -675,7 +675,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 
 				meta_refresh(3, $redirect_url);
-				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+				$message = $user->lang('DRAFT_SAVED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
 
 				trigger_error($message);
 			}
@@ -700,12 +700,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (utf8_clean_string($subject) === '')
 			{
-				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+				$error[] = $user->lang('EMPTY_MESSAGE_SUBJECT');
 			}
 
 			if (utf8_clean_string($message) === '')
 			{
-				$error[] = $user->lang['TOO_FEW_CHARS'];
+				$error[] = $user->lang('TOO_FEW_CHARS');
 			}
 		}
 
@@ -747,7 +747,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	{
 		if (($submit || $preview) && !check_form_key('ucp_pm_compose'))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = $user->lang('FORM_INVALID');
 		}
 		$subject = $request->variable('subject', '', true);
 		$message_parser->message = $request->variable('message', '', true);
@@ -814,7 +814,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			{
 				if ($last_post_time && ($current_time - $last_post_time) < intval($config['flood_interval']))
 				{
-					$error[] = $user->lang['FLOOD_ERROR'];
+					$error[] = $user->lang('FLOOD_ERROR');
 				}
 			}
 		}
@@ -824,12 +824,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (utf8_clean_string($subject) === '')
 			{
-				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+				$error[] = $user->lang('EMPTY_MESSAGE_SUBJECT');
 			}
 
 			if (!count($address_list))
 			{
-				$error[] = $user->lang['NO_RECIPIENT'];
+				$error[] = $user->lang('NO_RECIPIENT');
 			}
 		}
 
@@ -872,16 +872,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
 			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
 
-			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
+			$save_message = ($action === 'edit') ? $user->lang('MESSAGE_EDITED') : $user->lang('MESSAGE_STORED');
 			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
 
 			$last_click_type = 'CLICK_RETURN_FOLDER';
 			if ($folder_url)
 			{
-				$message .= '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+				$message .= '<br /><br />' . sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
 				$last_click_type = 'CLICK_GOTO_FOLDER';
 			}
-			$message .= '<br /><br />' . sprintf($user->lang[$last_click_type], '<a href="' . $return_box_url . '">', '</a>', $user->lang[$return_box_lang]);
+			$message .= '<br /><br />' . sprintf($user->lang($last_click_type), '<a href="' . $return_box_url . '">', '</a>', $user->lang($return_box_lang));
 
 			meta_refresh(3, $return_message_url);
 			trigger_error($message);
@@ -957,7 +957,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			if ($config['allow_post_links'])
 			{
 				$message_link = generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}";
-				$message_link_subject = "{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}";
+				$message_link_subject = "{$user->lang('SUBJECT')}{$user->lang('COLON')} {$message_subject}";
 				if ($bbcode_status)
 				{
 					$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
@@ -969,7 +969,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			}
 			else
 			{
-				$message_link = $user->lang['SUBJECT'] . $user->lang['COLON'] . ' ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
+				$message_link = $user->lang('SUBJECT') . $user->lang('COLON') . ' ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
 		else
@@ -1008,11 +1008,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		$forward_text = array();
-		$forward_text[] = $user->lang['FWD_ORIGINAL_MESSAGE'];
-		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
-		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time, false, true));
-		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
-		$forward_text[] = sprintf($user->lang['FWD_TO'], implode($user->lang['COMMA_SEPARATOR'], $fwd_to_field['to']));
+		$forward_text[] = $user->lang('FWD_ORIGINAL_MESSAGE');
+		$forward_text[] = sprintf($user->lang('FWD_SUBJECT'), censor_text($message_subject));
+		$forward_text[] = sprintf($user->lang('FWD_DATE'), $user->format_date($message_time, false, true));
+		$forward_text[] = sprintf($user->lang('FWD_FROM'), $quote_username_text);
+		$forward_text[] = sprintf($user->lang('FWD_TO'), implode($user->lang('COMMA_SEPARATOR'), $fwd_to_field['to']));
 
 		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
 			censor_text($message_parser->message),
@@ -1154,27 +1154,27 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	switch ($action)
 	{
 		case 'post':
-			$page_title = $user->lang['POST_NEW_PM'];
+			$page_title = $user->lang('POST_NEW_PM');
 		break;
 
 		case 'quote':
-			$page_title = $user->lang['POST_QUOTE_PM'];
+			$page_title = $user->lang('POST_QUOTE_PM');
 		break;
 
 		case 'quotepost':
-			$page_title = $user->lang['POST_PM_POST'];
+			$page_title = $user->lang('POST_PM_POST');
 		break;
 
 		case 'reply':
-			$page_title = $user->lang['POST_REPLY_PM'];
+			$page_title = $user->lang('POST_REPLY_PM');
 		break;
 
 		case 'edit':
-			$page_title = $user->lang['POST_EDIT_PM'];
+			$page_title = $user->lang('POST_EDIT_PM');
 		break;
 
 		case 'forward':
-			$page_title = $user->lang['POST_FORWARD_PM'];
+			$page_title = $user->lang('POST_FORWARD_PM');
 		break;
 
 		default:
@@ -1193,18 +1193,18 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
-		'L_ICON'					=> $user->lang['PM_ICON'],
+		'L_ICON'					=> $user->lang('PM_ICON'),
 		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
 		'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
-		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+		'IMG_STATUS'			=> ($img_status) ? $user->lang('IMAGES_ARE_ON') : $user->lang('IMAGES_ARE_OFF'),
+		'FLASH_STATUS'			=> ($flash_status) ? $user->lang('FLASH_IS_ON') : $user->lang('FLASH_IS_OFF'),
+		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang('SMILIES_ARE_ON') : $user->lang('SMILIES_ARE_OFF'),
+		'URL_STATUS'			=> ($url_status) ? $user->lang('URL_IS_ON') : $user->lang('URL_IS_OFF'),
 		'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
-		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
+		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang('PM')),
 		'ERROR'					=> (count($error)) ? implode('<br />', $error) : '',
 		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
@@ -1348,7 +1348,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			// If there are users not existing, we will at least print a notice...
 			if (!count($user_id_ary))
 			{
-				$error[] = $user->lang['PM_NO_USERS'];
+				$error[] = $user->lang('PM_NO_USERS');
 			}
 		}
 
@@ -1406,13 +1406,13 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		// print a notice about users not being added who do not want to receive pms
 		if ($removed_no_pm)
 		{
-			$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+			$error[] = $user->lang('PM_USERS_REMOVED_NO_PM');
 		}
 
 		// print a notice about users not being added who do not have permission to receive PMs
 		if ($removed_no_permission)
 		{
-			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+			$error[] = $user->lang('PM_USERS_REMOVED_NO_PERMISSION');
 		}
 
 		if (!count(array_keys($address_list['u'])))
@@ -1431,7 +1431,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				unset($address_list['u'][$cannot_read]);
 			}
 
-			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+			$error[] = $user->lang('PM_USERS_REMOVED_NO_PERMISSION');
 		}
 
 		// Check if users are banned
@@ -1443,7 +1443,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 				unset($address_list['u'][$banned_user]);
 			}
 
-			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+			$error[] = $user->lang('PM_USERS_REMOVED_NO_PERMISSION');
 		}
 	}
 

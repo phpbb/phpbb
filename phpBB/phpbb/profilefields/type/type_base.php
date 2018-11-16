@@ -84,7 +84,7 @@ abstract class type_base implements type_interface
 	*/
 	public function get_field_name($field_name)
 	{
-		return isset($this->user->lang[$field_name]) ? $this->user->lang[$field_name] : $field_name;
+		return isset($this->user->lang[$field_name]) ? $this->user->lang($field_name) : $field_name;
 	}
 
 	/**

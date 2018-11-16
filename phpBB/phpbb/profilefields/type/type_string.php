@@ -61,10 +61,10 @@ class type_string extends type_string_common
 	public function get_options($default_lang_id, $field_data)
 	{
 		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'),
-			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options($field_data) . '</select>'),
+			0 => array('TITLE' => $this->user->lang('FIELD_LENGTH'),		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'),
+			1 => array('TITLE' => $this->user->lang('MIN_FIELD_CHARS'),	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang('MAX_FIELD_CHARS'),	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
+			3 => array('TITLE' => $this->user->lang('FIELD_VALIDATION'),	'FIELD' => '<select name="field_validation">' . $this->validate_options($field_data) . '</select>'),
 		);
 
 		return $options;
@@ -152,7 +152,7 @@ class type_string extends type_string_common
 	{
 		$template_vars = array_merge($template_vars, array(
 			'S_STRING'					=> true,
-			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang['STRING_DEFAULT_VALUE_EXPLAIN'],
+			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang('STRING_DEFAULT_VALUE_EXPLAIN'),
 			'LANG_DEFAULT_VALUE'		=> $field_data['lang_default_value'],
 		));
 	}

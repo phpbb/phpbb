@@ -426,7 +426,7 @@ class user extends \phpbb\session
 	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
 	*
 	* If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
-	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
+	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang('datetime')['AGO'] as language entry.
 	*
 	* @deprecated 3.2.0-dev (To be removed 4.0.0)
 	*/

@@ -271,13 +271,13 @@ if (!$auth->acl_get('f_read', $forum_id))
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
-	$message = $user->lang['LOGIN_EXPLAIN_POST'];
+	$message = $user->lang('LOGIN_EXPLAIN_POST');
 
 	if ($request->is_ajax())
 	{
 		$json = new phpbb\json_response();
 		$json->send(array(
-			'title'		=> $user->lang['INFORMATION'],
+			'title'		=> $user->lang('INFORMATION'),
 			'message'	=> $message,
 		));
 	}
@@ -394,13 +394,13 @@ if (!$is_authed || !empty($error))
 	{
 		trigger_error(empty($error) ? 'USER_CANNOT_' . strtoupper($check_auth) : implode('<br/>', $error));
 	}
-	$message = $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)];
+	$message = $user->lang('LOGIN_EXPLAIN_' . strtoupper($mode));
 
 	if ($request->is_ajax())
 	{
 		$json = new phpbb\json_response();
 		$json->send(array(
-			'title'		=> $user->lang['INFORMATION'],
+			'title'		=> $user->lang('INFORMATION'),
 			'message'	=> $message,
 		));
 	}
@@ -489,7 +489,7 @@ if ($mode == 'bump')
 	{
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
-		$message = $user->lang['TOPIC_BUMPED'];
+		$message = $user->lang('TOPIC_BUMPED');
 
 		if (!$request->is_ajax())
 		{
@@ -512,7 +512,7 @@ if ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == 
 // Determine some vars
 if (isset($post_data['poster_id']) && $post_data['poster_id'] == ANONYMOUS)
 {
-	$post_data['quote_username'] = (!empty($post_data['post_username'])) ? $post_data['post_username'] : $user->lang['GUEST'];
+	$post_data['quote_username'] = (!empty($post_data['post_username'])) ? $post_data['post_username'] : $user->lang('GUEST');
 }
 else
 {
@@ -724,9 +724,9 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 
 			meta_refresh(3, $meta_info);
 
-			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
-			$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
-			$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			$message = $user->lang('DRAFT_SAVED') . '<br /><br />';
+			$message .= ($mode != 'post') ? sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
+			$message .= sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 			trigger_error($message);
 		}
@@ -791,12 +791,12 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	{
 		if (utf8_clean_string($subject) === '')
 		{
-			$error[] = $user->lang['EMPTY_SUBJECT'];
+			$error[] = $user->lang('EMPTY_SUBJECT');
 		}
 
 		if (utf8_clean_string($message) === '')
 		{
-			$error[] = $user->lang['TOO_FEW_CHARS'];
+			$error[] = $user->lang('TOO_FEW_CHARS');
 		}
 	}
 	unset($subject, $message);
@@ -1012,8 +1012,8 @@ if ($submit || $preview || $refresh)
 				$template->assign_vars(array(
 					'S_POST_REVIEW'			=> true,
 
-					'L_POST_REVIEW'			=> $user->lang['POST_REVIEW_EDIT'],
-					'L_POST_REVIEW_EXPLAIN'	=> $user->lang['POST_REVIEW_EDIT_EXPLAIN'],
+					'L_POST_REVIEW'			=> $user->lang('POST_REVIEW_EDIT'),
+					'L_POST_REVIEW_EXPLAIN'	=> $user->lang('POST_REVIEW_EDIT_EXPLAIN'),
 				));
 			}
 
@@ -1079,7 +1079,7 @@ if ($submit || $preview || $refresh)
 
 		if ($last_post_time && ($current_time - $last_post_time) < intval($config['flood_interval']))
 		{
-			$error[] = $user->lang['FLOOD_ERROR'];
+			$error[] = $user->lang('FLOOD_ERROR');
 		}
 	}
 
@@ -1095,13 +1095,13 @@ if ($submit || $preview || $refresh)
 
 		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
-			$error[] = $user->lang[$result . '_USERNAME'];
+			$error[] = $user->lang($result . '_USERNAME');
 		}
 
 		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
 		{
 			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
-			$error[] = $user->lang('FIELD_' . $result, $min_max_amount, $user->lang['USERNAME']);
+			$error[] = $user->lang('FIELD_' . $result, $min_max_amount, $user->lang('USERNAME'));
 		}
 	}
 
@@ -1122,7 +1122,7 @@ if ($submit || $preview || $refresh)
 	// check form
 	if (($submit || $preview) && !check_form_key('posting'))
 	{
-		$error[] = $user->lang['FORM_INVALID'];
+		$error[] = $user->lang('FORM_INVALID');
 	}
 
 	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
@@ -1141,7 +1141,7 @@ if ($submit || $preview || $refresh)
 	// Parse subject
 	if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
-		$error[] = $user->lang['EMPTY_SUBJECT'];
+		$error[] = $user->lang('EMPTY_SUBJECT');
 	}
 
 	// Check for out-of-bounds characters that are currently
@@ -1180,7 +1180,7 @@ if ($submit || $preview || $refresh)
 		/* We reset votes, therefore also allow removing options
 		if ($post_data['poll_last_vote'] && ($poll['poll_options_size'] < $orig_poll_options_size))
 		{
-			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
+			$message_parser->warn_msg[] = $user->lang('NO_DELETE_POLL_OPTIONS');
 		}*/
 	}
 	else if ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && $auth->acl_get('f_poll', $forum_id))
@@ -1260,7 +1260,7 @@ if ($submit || $preview || $refresh)
 			}
 			else
 			{
-				$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
+				$error[] = $user->lang('CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option)));
 			}
 		}
 	}
@@ -1275,7 +1275,7 @@ if ($submit || $preview || $refresh)
 	{
 		if (($dnsbl = $user->check_dnsbl('post')) !== false)
 		{
-			$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+			$error[] = sprintf($user->lang('IP_BLACKLISTED'), $user->ip, $dnsbl[1]);
 		}
 	}
 
@@ -1495,9 +1495,9 @@ if ($submit || $preview || $refresh)
 			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
 			{
 				meta_refresh(10, $redirect_url);
-				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
-				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang['POST_APPROVAL_NOTIFY']);
-				$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+				$message = ($mode == 'edit') ? $user->lang('POST_EDITED_MOD') : $user->lang('POST_STORED_MOD');
+				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang('POST_APPROVAL_NOTIFY'));
+				$message .= '<br /><br />' . sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
 				trigger_error($message);
 			}
 
@@ -1554,7 +1554,7 @@ if (!count($error) && $preview)
 
 			'POLL_QUESTION'		=> $parse_poll->message,
 
-			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
+			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang('POLL_RUN_TILL'), $user->format_date($poll_end)) : '',
 			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
 		));
 
@@ -1707,17 +1707,17 @@ $s_action .= ($post_id) ? "&amp;p=$post_id" : '';
 switch ($mode)
 {
 	case 'post':
-		$page_title = $user->lang['POST_TOPIC'];
+		$page_title = $user->lang('POST_TOPIC');
 	break;
 
 	case 'quote':
 	case 'reply':
-		$page_title = $user->lang['POST_REPLY'];
+		$page_title = $user->lang('POST_REPLY');
 	break;
 
 	case 'delete':
 	case 'edit':
-		$page_title = $user->lang['EDIT_POST'];
+		$page_title = $user->lang('EDIT_POST');
 	break;
 }
 
@@ -1763,24 +1763,24 @@ $controller_helper = $phpbb_container->get('controller.helper');
 // Build array of variables for main posting page
 $page_data = array(
 	'L_POST_A'					=> $page_title,
-	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
+	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang('POST_ICON') : $user->lang('TOPIC_ICON'),
 	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 	'L_DELETE_POST_PERMANENTLY'	=> $user->lang('DELETE_POST_PERMANENTLY', 1),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
 	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
-	'MODERATORS'			=> (count($moderators)) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
+	'MODERATORS'			=> (count($moderators)) ? implode($user->lang('COMMA_SEPARATOR'), $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
 	'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
-	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+	'IMG_STATUS'			=> ($img_status) ? $user->lang('IMAGES_ARE_ON') : $user->lang('IMAGES_ARE_OFF'),
+	'FLASH_STATUS'			=> ($flash_status) ? $user->lang('FLASH_IS_ON') : $user->lang('FLASH_IS_OFF'),
+	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang('SMILIES_ARE_ON') : $user->lang('SMILIES_ARE_OFF'),
+	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang('URL_IS_ON') : $user->lang('URL_IS_OFF'),
 	'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
-	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
+	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang('POST')),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (count($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],

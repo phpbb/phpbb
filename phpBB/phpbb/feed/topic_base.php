@@ -51,24 +51,24 @@ abstract class topic_base extends attachments_base
 
 		if ($this->config['feed_item_statistics'])
 		{
-			$item_row['statistics'] = $this->user->lang['POSTED'] . ' ' . $this->user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+			$item_row['statistics'] = $this->user->lang('POSTED') . ' ' . $this->user->lang('POST_BY_AUTHOR') . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
-				. ' ' . $this->separator_stats . ' ' . $this->user->lang['REPLIES'] . ' ' . ($this->content_visibility->get_count('topic_posts', $row, $row['forum_id']) - 1)
-				. ' ' . $this->separator_stats . ' ' . $this->user->lang['VIEWS'] . ' ' . $row['topic_views'];
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang('REPLIES') . ' ' . ($this->content_visibility->get_count('topic_posts', $row, $row['forum_id']) - 1)
+				. ' ' . $this->separator_stats . ' ' . $this->user->lang('VIEWS') . ' ' . $row['topic_views'];
 
 			if ($this->is_moderator_approve_forum($row['forum_id']))
 			{
 				if ((int) $row['topic_visibility'] === ITEM_DELETED)
 				{
-					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang['TOPIC_DELETED'];
+					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang('TOPIC_DELETED');
 				}
 				else if ((int) $row['topic_visibility'] === ITEM_UNAPPROVED)
 				{
-					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang['TOPIC_UNAPPROVED'];
+					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang('TOPIC_UNAPPROVED');
 				}
 				else if ($row['topic_posts_unapproved'])
 				{
-					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang['POSTS_UNAPPROVED'];
+					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang('POSTS_UNAPPROVED');
 				}
 			}
 		}

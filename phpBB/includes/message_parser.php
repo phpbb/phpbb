@@ -70,7 +70,7 @@ class bbcode_firstpass extends bbcode
 				{
 					if (preg_match($regexp, $this->message))
 					{
-						$this->warn_msg[] = sprintf($user->lang['UNAUTHORISED_BBCODE'] , '[' . $bbcode_name . ']');
+						$this->warn_msg[] = sprintf($user->lang('UNAUTHORISED_BBCODE') , '[' . $bbcode_name . ']');
 						continue;
 					}
 				}
@@ -409,7 +409,7 @@ class bbcode_firstpass extends bbcode
 			if ($size_info === false)
 			{
 				$error = true;
-				$this->warn_msg[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+				$this->warn_msg[] = $user->lang('UNABLE_GET_IMAGE_SIZE');
 			}
 			else
 			{
@@ -1195,7 +1195,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : ($user->lang('CHARS_POST_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_FEW_CHARS_LIMIT', (int) $config['min_post_chars']));
+				$this->warn_msg[] = (!$message_length) ? $user->lang('TOO_FEW_CHARS') : ($user->lang('CHARS_POST_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_FEW_CHARS_LIMIT', (int) $config['min_post_chars']));
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1286,7 +1286,7 @@ class parse_message extends bbcode_firstpass
 		// The maximum length check happened before any parsings.
 		if ($mode === 'post' && utf8_clean_string($this->message) === '')
 		{
-			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
+			$this->warn_msg[] = $user->lang('TOO_FEW_CHARS');
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1511,7 +1511,7 @@ class parse_message extends bbcode_firstpass
 
 				if ($num_matches !== false && $num_matches > $max_smilies)
 				{
-					$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
+					$this->warn_msg[] = sprintf($user->lang('TOO_MANY_SMILIES'), $max_smilies);
 					return;
 				}
 			}
@@ -1903,32 +1903,32 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_title'];
 		if (!$poll['poll_title'] && $poll['poll_options_size'])
 		{
-			$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
+			$this->warn_msg[] = $user->lang('NO_POLL_TITLE');
 		}
 		else
 		{
 			if (utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message)) > 100)
 			{
-				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
+				$this->warn_msg[] = $user->lang('POLL_TITLE_TOO_LONG');
 			}
 			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
 			if (strlen($poll['poll_title']) > 255)
 			{
-				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
+				$this->warn_msg[] = $user->lang('POLL_TITLE_COMP_TOO_LONG');
 			}
 		}
 
 		if (count($poll['poll_options']) == 1)
 		{
-			$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
+			$this->warn_msg[] = $user->lang('TOO_FEW_POLL_OPTIONS');
 		}
 		else if ($poll['poll_options_size'] > (int) $config['max_poll_options'])
 		{
-			$this->warn_msg[] = $user->lang['TOO_MANY_POLL_OPTIONS'];
+			$this->warn_msg[] = $user->lang('TOO_MANY_POLL_OPTIONS');
 		}
 		else if ($poll_max_options > $poll['poll_options_size'])
 		{
-			$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
+			$this->warn_msg[] = $user->lang('TOO_MANY_USER_OPTIONS');
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);

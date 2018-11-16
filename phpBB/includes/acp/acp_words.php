@@ -53,7 +53,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -84,7 +84,7 @@ class acp_words
 
 				if (!check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$word_id		= $request->variable('id', 0);
@@ -93,7 +93,7 @@ class acp_words
 
 				if ($word === '' || $replacement === '')
 				{
-					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('ENTER_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Replace multiple consecutive asterisks with single one as those are not needed
@@ -120,7 +120,7 @@ class acp_words
 
 				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($word));
 
-				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
+				$message = ($word_id) ? $user->lang('WORD_UPDATED') : $user->lang('WORD_ADDED');
 				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
@@ -131,7 +131,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -152,11 +152,11 @@ class acp_words
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
 
-					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('WORD_REMOVED') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'id'		=> $word_id,

@@ -95,11 +95,11 @@ class recaptcha extends captcha_abstract
 			}
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
+			trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($module->u_action));
 		}
 		else if ($submit)
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			trigger_error($user->lang('FORM_INVALID') . adm_back_link($module->u_action));
 		}
 		else
 		{
@@ -206,7 +206,7 @@ class recaptcha extends captcha_abstract
 		//discard spam submissions
 		if ($this->response == null || strlen($this->response) == 0)
 		{
-			return $user->lang['RECAPTCHA_INCORRECT'];
+			return $user->lang('RECAPTCHA_INCORRECT');
 		}
 
 		$recaptcha = new \ReCaptcha\ReCaptcha($config['recaptcha_privkey']);
@@ -219,7 +219,7 @@ class recaptcha extends captcha_abstract
 		}
 		else
 		{
-			return $user->lang['RECAPTCHA_INCORRECT'];
+			return $user->lang('RECAPTCHA_INCORRECT');
 		}
 	}
 }

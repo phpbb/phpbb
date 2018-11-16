@@ -99,7 +99,7 @@ class ucp_resend
 				$messenger->anti_abuse_headers($config, $user);
 
 				$messenger->assign_vars(array(
-					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang('WELCOME_SUBJECT'), $config['sitename'])),
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
@@ -146,8 +146,8 @@ class ucp_resend
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACTIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang('ACTIVATION_EMAIL_SENT_ADMIN') : $user->lang('ACTIVATION_EMAIL_SENT');
+			$message .= '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 

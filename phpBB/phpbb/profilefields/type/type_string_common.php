@@ -39,7 +39,7 @@ abstract class type_string_common extends type_base
 		foreach ($this->validation_options as $lang => $value)
 		{
 			$selected = ($field_data['field_validation'] == $value) ? ' selected="selected"' : '';
-			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $this->user->lang[$lang] . '</option>';
+			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $this->user->lang($lang) . '</option>';
 		}
 
 		return $validate_options;

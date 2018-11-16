@@ -544,9 +544,9 @@ class diff3 extends diff
 	{
 		global $user;
 
-		$label1 = (!empty($user->lang[$label1])) ? $user->lang[$label1] : $label1;
-		$label2 = (!empty($user->lang[$label2])) ? $user->lang[$label2] : $label2;
-		$label_sep = (!empty($user->lang[$label_sep])) ? $user->lang[$label_sep] : $label_sep;
+		$label1 = (!empty($user->lang[$label1])) ? $user->lang($label1) : $label1;
+		$label2 = (!empty($user->lang[$label2])) ? $user->lang($label2) : $label2;
+		$label_sep = (!empty($user->lang($label_sep))) ? $user->lang($label_sep) : $label_sep;
 
 		$lines = array();
 

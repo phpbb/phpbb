@@ -65,7 +65,7 @@ class ucp_main
 					$sql_select .= ', ft.mark_time AS forum_mark_time';
 				}
 
-				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$topic_type = $user->lang('VIEW_TOPIC_GLOBAL');
 				$folder = 'global_read';
 				$folder_new = 'global_unread';
 
@@ -290,18 +290,18 @@ class ucp_main
 
 								$l_unwatch .= '_TOPICS';
 							}
-							$msg = $user->lang['UNWATCHED' . $l_unwatch];
+							$msg = $user->lang('UNWATCHED' . $l_unwatch);
 						}
 						else
 						{
-							$msg = $user->lang['NO_WATCHED_SELECTED'];
+							$msg = $user->lang('NO_WATCHED_SELECTED');
 						}
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = $user->lang('FORM_INVALID');
 					}
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed") . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed") . '">', '</a>');
 					meta_refresh(3, append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed"));
 					trigger_error($message);
 				}
@@ -404,7 +404,7 @@ class ucp_main
 							'FORUM_ID'				=> $forum_id,
 							'FORUM_IMG_STYLE'		=> $folder_image,
 							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
-							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang($folder_alt) . '" />' : '',
 							'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 							'FORUM_NAME'			=> $row['forum_name'],
 							'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
@@ -509,7 +509,7 @@ class ucp_main
 						$db->sql_query($sql);
 
 						meta_refresh(3, $url);
-						$message = $user->lang['BOOKMARKS_REMOVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $url . '">', '</a>');
+						$message = $user->lang('BOOKMARKS_REMOVED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $url . '">', '</a>');
 						trigger_error($message);
 					}
 					else
@@ -556,14 +556,14 @@ class ucp_main
 									AND user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 						}
-						$msg = $user->lang['DRAFTS_DELETED'];
+						$msg = $user->lang('DRAFTS_DELETED');
 						unset($drafts);
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = $user->lang('FORM_INVALID');
 					}
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 					meta_refresh(3, $this->u_action);
 					trigger_error($message);
 				}
@@ -597,19 +597,19 @@ class ucp_main
 									AND user_id = " . $user->data['user_id'];
 							$db->sql_query($sql);
 
-							$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang('DRAFT_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 
 							meta_refresh(3, $this->u_action);
 							trigger_error($message);
 						}
 						else
 						{
-							$template->assign_var('ERROR', ($draft_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+							$template->assign_var('ERROR', ($draft_message == '') ? $user->lang('EMPTY_DRAFT') : (($draft_subject == '') ? $user->lang('EMPTY_DRAFT_TITLE') : ''));
 						}
 					}
 					else
 					{
-						$template->assign_var('ERROR', $user->lang['FORM_INVALID']);
+						$template->assign_var('ERROR', $user->lang('FORM_INVALID'));
 					}
 				}
 
@@ -730,7 +730,7 @@ class ucp_main
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang('UCP_MAIN_' . strtoupper($mode)),
 
 			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
@@ -966,11 +966,11 @@ class ucp_main
 
 				'TOPIC_IMG_STYLE'		=> $folder_img,
 				'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-				'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
+				'TOPIC_FOLDER_IMG_ALT'	=> $user->lang($folder_alt),
 				'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
 				'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,

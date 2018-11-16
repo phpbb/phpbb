@@ -54,7 +54,7 @@ class apache extends \phpbb\auth\provider\base
 	{
 		if (!$this->request->is_set('PHP_AUTH_USER', \phpbb\request\request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
 		{
-			return $this->user->lang['APACHE_SETUP_BEFORE_USE'];
+			return $this->user->lang('APACHE_SETUP_BEFORE_USE');
 		}
 		return false;
 	}

@@ -50,7 +50,7 @@ function generate_smilies($mode, $forum_id)
 			$user->setup('posting');
 		}
 
-		page_header($user->lang['SMILIES']);
+		page_header($user->lang('SMILIES'));
 
 		$sql = 'SELECT COUNT(smiley_id) AS item_count
 			FROM ' . SMILIES_TABLE . '
@@ -373,7 +373,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 		$topic_type_array = array_merge(array(0 => array(
 			'VALUE'			=> POST_NORMAL,
 			'S_CHECKED'		=> ($cur_topic_type == POST_NORMAL) ? ' checked="checked"' : '',
-			'L_TOPIC_TYPE'	=> $user->lang['POST_NORMAL'])),
+			'L_TOPIC_TYPE'	=> $user->lang('POST_NORMAL'))),
 
 			$topic_type_array
 		);
@@ -1076,12 +1076,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang('POST_BY_FOE'), get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 			'L_DELETE_POST'		=> $l_deleted_message,
 
 			'POST_SUBJECT'		=> $post_subject,
-			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
+			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang('POST')),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
 			'MESSAGE'			=> $message,
 			'DECODED_MESSAGE'	=> $decoded_message,
@@ -1137,7 +1137,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	if ($mode == 'topic_review')
 	{
-		$template->assign_var('QUOTE_IMG', $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']));
+		$template->assign_var('QUOTE_IMG', $user->img('icon_post_quote', $user->lang('REPLY_WITH_QUOTE')));
 	}
 
 	return true;
@@ -1637,7 +1637,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					'topic_id' => $data_ary['topic_id'],
 					'post_id'  => $data_ary['post_id'],
 					$log_subject,
-					(!empty($username)) ? $username : $user->lang['GUEST'],
+					(!empty($username)) ? $username : $user->lang('GUEST'),
 					$data_ary['post_edit_reason']
 				));
 			}
@@ -2561,14 +2561,14 @@ function phpbb_upload_popup($forum_style = 0)
 
 	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
-	page_header($user->lang['PROGRESS_BAR']);
+	page_header($user->lang('PROGRESS_BAR'));
 
 	$template->set_filenames(array(
 			'popup'	=> 'posting_progress_bar.html')
 	);
 
 	$template->assign_vars(array(
-			'PROGRESS_BAR'	=> $user->img('upload_bar', $user->lang['UPLOAD_IN_PROGRESS']))
+			'PROGRESS_BAR'	=> $user->img('upload_bar', $user->lang('UPLOAD_IN_PROGRESS')))
 	);
 
 	$template->display('popup');
@@ -2665,7 +2665,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
-				$message = $user->lang['POST_DELETED'];
+				$message = $user->lang('POST_DELETED');
 			}
 			else
 			{
@@ -2679,7 +2679,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
-				$message = $user->lang['POST_DELETED'];
+				$message = $user->lang('POST_DELETED');
 
 				if (!$request->is_ajax())
 				{

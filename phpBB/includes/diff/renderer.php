@@ -606,10 +606,10 @@ class diff_renderer_side_by_side extends diff_renderer
 		$output = '';
 		$output .= '<table cellspacing="0" class="hrdiff">
 <caption>
-	<span class="unmodified">&nbsp;</span> ' . $user->lang['LINE_UNMODIFIED'] . '
-	<span class="added">&nbsp;</span> ' . $user->lang['LINE_ADDED'] . '
-	<span class="modified">&nbsp;</span> ' . $user->lang['LINE_MODIFIED'] . '
-	<span class="removed">&nbsp;</span> ' . $user->lang['LINE_REMOVED'] . '
+	<span class="unmodified">&nbsp;</span> ' . $user->lang('LINE_UNMODIFIED') . '
+	<span class="added">&nbsp;</span> ' . $user->lang('LINE_ADDED') . '
+	<span class="modified">&nbsp;</span> ' . $user->lang('LINE_MODIFIED') . '
+	<span class="removed">&nbsp;</span> ' . $user->lang('LINE_REMOVED') . '
 </caption>
 <tbody>
 ';
@@ -619,14 +619,14 @@ class diff_renderer_side_by_side extends diff_renderer
 		// Is the diff empty?
 		if (!count($this->lines))
 		{
-			$output .= '<tr><th colspan="2">' . $user->lang['NO_VISIBLE_CHANGES'] . '</th></tr>';
+			$output .= '<tr><th colspan="2">' . $user->lang('NO_VISIBLE_CHANGES') . '</th></tr>';
 		}
 		else
 		{
 			// Iterate through every header block of changes
 			foreach ($this->lines as $header)
 			{
-				$output .= '<tr><th>' . $user->lang['LINE'] . ' ' . $header['oldline'] . '</th><th>' . $user->lang['LINE'] . ' ' . $header['newline'] . '</th></tr>';
+				$output .= '<tr><th>' . $user->lang('LINE') . ' ' . $header['oldline'] . '</th><th>' . $user->lang('LINE') . ' ' . $header['newline'] . '</th></tr>';
 
 				// Each header block consists of a number of changes (add, remove, change).
 				$current_context = '';

@@ -114,7 +114,7 @@ class acp_styles
 
 			if (!$is_valid_request)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -183,7 +183,7 @@ class acp_styles
 				$this->show_available();
 				return;
 		}
-		trigger_error($this->user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
+		trigger_error($this->user->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
 	}
 
 	/**
@@ -225,12 +225,12 @@ class acp_styles
 					$found = true;
 					$installed_names[] = $style['style_name'];
 					$installed_dirs[] = $style['style_path'];
-					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
+					$messages[] = sprintf($this->user->lang('STYLE_INSTALLED'), htmlspecialchars($style['style_name']));
 				}
 			}
 			if (!$found)
 			{
-				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
+				$messages[] = sprintf($this->user->lang('STYLE_NOT_INSTALLED'), htmlspecialchars($dir));
 			}
 		}
 
@@ -243,7 +243,7 @@ class acp_styles
 		// Show message
 		if (!count($messages))
 		{
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$message = implode('<br />', $messages);
 		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=style' . '">&laquo; ' . $this->user->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
@@ -273,7 +273,7 @@ class acp_styles
 			'ids'		=> $ids
 		));
 		$this->template->assign_var('S_CONFIRM_DELETE', true);
-		confirm_box(false, $this->user->lang['CONFIRM_UNINSTALL_STYLES'], $s_hidden, 'acp_styles.html');
+		confirm_box(false, $this->user->lang('CONFIRM_UNINSTALL_STYLES'), $s_hidden, 'acp_styles.html');
 
 		// Canceled - show styles list
 		$this->frontend();
@@ -298,11 +298,11 @@ class acp_styles
 		{
 			if (!$id)
 			{
-				trigger_error($this->user->lang['INVALID_STYLE_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->user->lang('INVALID_STYLE_ID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			if ($id == $default)
 			{
-				trigger_error($this->user->lang['UNINSTALL_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->user->lang('UNINSTALL_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			$uninstalled[$id] = false;
 		}
@@ -329,7 +329,7 @@ class acp_styles
 				$messages[] = $result;
 				continue;
 			}
-			$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], $style['style_name']);
+			$messages[] = sprintf($this->user->lang('STYLE_UNINSTALLED'), $style['style_name']);
 			$uninstalled[] = $style['style_name'];
 
 			// Attempt to delete files
@@ -342,7 +342,7 @@ class acp_styles
 		if (empty($messages))
 		{
 			// Nothing to uninstall?
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Log action
@@ -392,7 +392,7 @@ class acp_styles
 		{
 			if ($id == $this->default_style)
 			{
-				trigger_error($this->user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->user->lang('DEACTIVATE_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -425,7 +425,7 @@ class acp_styles
 		$id = $this->request->variable('id', 0);
 		if (!$id)
 		{
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Get all styles
@@ -445,7 +445,7 @@ class acp_styles
 
 		if ($style === false)
 		{
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Read style configuration file
@@ -463,7 +463,7 @@ class acp_styles
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$update = array(
@@ -478,13 +478,13 @@ class acp_styles
 			{
 				if (!strlen($update['style_name']))
 				{
-					trigger_error($this->user->lang['STYLE_ERR_STYLE_NAME'] . adm_back_link($update_action), E_USER_WARNING);
+					trigger_error($this->user->lang('STYLE_ERR_STYLE_NAME') . adm_back_link($update_action), E_USER_WARNING);
 				}
 				foreach ($styles as $row)
 				{
 					if ($row['style_name'] == $update['style_name'])
 					{
-						trigger_error($this->user->lang['STYLE_ERR_NAME_EXIST'] . adm_back_link($update_action), E_USER_WARNING);
+						trigger_error($this->user->lang('STYLE_ERR_NAME_EXIST') . adm_back_link($update_action), E_USER_WARNING);
 					}
 				}
 			}
@@ -510,7 +510,7 @@ class acp_styles
 					}
 					if (!$found)
 					{
-						trigger_error($this->user->lang['STYLE_ERR_INVALID_PARENT'] . adm_back_link($update_action), E_USER_WARNING);
+						trigger_error($this->user->lang('STYLE_ERR_INVALID_PARENT') . adm_back_link($update_action), E_USER_WARNING);
 					}
 				}
 				else
@@ -528,7 +528,7 @@ class acp_styles
 			{
 				if (!$update['style_active'] && $this->default_style == $style['style_id'])
 				{
-					trigger_error($this->user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($update_action), E_USER_WARNING);
+					trigger_error($this->user->lang('DEACTIVATE_DEFAULT') . adm_back_link($update_action), E_USER_WARNING);
 				}
 			}
 			else
@@ -566,7 +566,7 @@ class acp_styles
 			{
 				if (!$style['style_active'])
 				{
-					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
+					trigger_error($this->user->lang('STYLE_DEFAULT_CHANGE_INACTIVE') . adm_back_link($update_action), E_USER_WARNING);
 				}
 				$this->config->set('default_style', $id);
 				$this->cache->purge();
@@ -617,7 +617,7 @@ class acp_styles
 
 		if (!count($styles))
 		{
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		usort($styles, array($this, 'sort_styles'));
@@ -644,7 +644,7 @@ class acp_styles
 		{
 			if (empty($style['_shown']))
 			{
-				$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($style['style_parent_tree']));
+				$style['_note'] = sprintf($this->user->lang('REQUIRES_STYLE'), htmlspecialchars($style['style_parent_tree']));
 				$this->list_style($style, 0);
 			}
 		}
@@ -652,13 +652,13 @@ class acp_styles
 		// Add buttons
 		$this->template->assign_block_vars('extra_actions', array(
 				'ACTION_NAME'	=> 'activate',
-				'L_ACTION'		=> $this->user->lang['STYLE_ACTIVATE'],
+				'L_ACTION'		=> $this->user->lang('STYLE_ACTIVATE'),
 			)
 		);
 
 		$this->template->assign_block_vars('extra_actions', array(
 				'ACTION_NAME'	=> 'deactivate',
-				'L_ACTION'		=> $this->user->lang['STYLE_DEACTIVATE'],
+				'L_ACTION'		=> $this->user->lang('STYLE_DEACTIVATE'),
 			)
 		);
 
@@ -666,7 +666,7 @@ class acp_styles
 		{
 			$this->template->assign_block_vars('extra_actions', array(
 					'ACTION_NAME'	=> 'uninstall',
-					'L_ACTION'		=> $this->user->lang['STYLE_UNINSTALL'],
+					'L_ACTION'		=> $this->user->lang('STYLE_UNINSTALL'),
 				)
 			);
 		}
@@ -683,7 +683,7 @@ class acp_styles
 		// Show styles
 		if (empty($styles))
 		{
-			trigger_error($this->user->lang['NO_UNINSTALLED_STYLE'] . adm_back_link($this->u_base_action), E_USER_NOTICE);
+			trigger_error($this->user->lang('NO_UNINSTALLED_STYLE') . adm_back_link($this->u_base_action), E_USER_NOTICE);
 		}
 
 		usort($styles, array($this, 'sort_styles'));
@@ -732,7 +732,7 @@ class acp_styles
 		{
 			$this->template->assign_block_vars('extra_actions', array(
 					'ACTION_NAME'	=> 'install',
-					'L_ACTION'		=> $this->user->lang['INSTALL_STYLES'],
+					'L_ACTION'		=> $this->user->lang('INSTALL_STYLES'),
 				)
 			);
 		}
@@ -813,7 +813,7 @@ class acp_styles
 				{
 					// Parent style is not installed yet
 					$style['_available'] = false;
-					$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($parent));
+					$style['_note'] = sprintf($this->user->lang('REQUIRES_STYLE'), htmlspecialchars($parent));
 				}
 			}
 
@@ -981,7 +981,7 @@ class acp_styles
 			// Details
 			$actions[] = array(
 				'U_ACTION'	=> $this->u_action . '&amp;action=details&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['DETAILS']
+				'L_ACTION'	=> $this->user->lang('DETAILS')
 			);
 
 			// Activate/Deactive
@@ -989,25 +989,25 @@ class acp_styles
 
 			$actions[] = array(
 				'U_ACTION'	=> $this->u_action . '&amp;action=' . $action_name . '&amp;hash=' . generate_link_hash($action_name) . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE']
+				'L_ACTION'	=> $this->user->lang('STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE')
 			);
 
 /*			// Export
 			$actions[] = array(
 				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;hash=' . generate_link_hash('export') . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['EXPORT']
+				'L_ACTION'	=> $this->user->lang('EXPORT')
 			); */
 
 			// Uninstall
 			$actions[] = array(
 				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['STYLE_UNINSTALL']
+				'L_ACTION'	=> $this->user->lang('STYLE_UNINSTALL')
 			);
 
 			// Preview
 			$actions[] = array(
 				'U_ACTION'	=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'style=' . $style['style_id']),
-				'L_ACTION'	=> $this->user->lang['PREVIEW']
+				'L_ACTION'	=> $this->user->lang('PREVIEW')
 			);
 		}
 		else
@@ -1016,14 +1016,14 @@ class acp_styles
 			if (empty($style['_available']))
 			{
 				$actions[] = array(
-					'HTML'		=> $this->user->lang['CANNOT_BE_INSTALLED']
+					'HTML'		=> $this->user->lang('CANNOT_BE_INSTALLED')
 				);
 			}
 			else
 			{
 				$actions[] = array(
 					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
-					'L_ACTION'	=> $this->user->lang['INSTALL_STYLE']
+					'L_ACTION'	=> $this->user->lang('INSTALL_STYLE')
 				);
 			}
 		}
@@ -1062,8 +1062,8 @@ class acp_styles
 	protected function welcome_message($title, $description)
 	{
 		$this->template->assign_vars(array(
-			'L_TITLE'	=> $this->user->lang[$title],
-			'L_EXPLAIN'	=> (isset($this->user->lang[$description])) ? $this->user->lang[$description] : ''
+			'L_TITLE'	=> $this->user->lang($title),
+			'L_EXPLAIN'	=> (isset($this->user->lang[$description])) ? $this->user->lang($description) : ''
 			)
 		);
 	}
@@ -1245,7 +1245,7 @@ class acp_styles
 
 		if ($conflict !== false)
 		{
-			return sprintf($this->user->lang['STYLE_UNINSTALL_DEPENDENT'], $style['style_name']);
+			return sprintf($this->user->lang('STYLE_UNINSTALL_DEPENDENT'), $style['style_name']);
 		}
 
 		// Change default style for users
@@ -1334,7 +1334,7 @@ class acp_styles
 
 		if ($error && !count($items))
 		{
-			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->user->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		return $items;

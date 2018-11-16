@@ -94,7 +94,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 	*/
 	public function test_redirect($test, $disable_cd_check, $expected_error, $expected_result)
 	{
-		global $user, $phpbb_root_path, $phpbb_path_helper;
+		global $user, $lang, $phpbb_root_path, $phpbb_path_helper;
 
 		$phpbb_path_helper = $this->path_helper;
 
@@ -108,7 +108,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 
 		if ($expected_error !== false)
 		{
-			$this->setExpectedTriggerError(E_USER_WARNING, $user->lang[$expected_error]);
+			$this->setExpectedTriggerError(E_USER_WARNING, $expected_error);
 		}
 
 		$result = redirect($test, true, $disable_cd_check);

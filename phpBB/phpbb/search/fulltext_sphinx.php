@@ -216,7 +216,7 @@ class fulltext_sphinx
 	{
 		if ($this->db->get_sql_layer() != 'mysql' && $this->db->get_sql_layer() != 'mysql4' && $this->db->get_sql_layer() != 'mysqli' && $this->db->get_sql_layer() != 'postgres')
 		{
-			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
+			return $this->user->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
 		}
 
 		// Move delta to main index each hour
@@ -916,9 +916,9 @@ class fulltext_sphinx
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_SPHINX_MAIN_POSTS']			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
-			$this->user->lang['FULLTEXT_SPHINX_DELTA_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
-			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->user->lang('FULLTEXT_SPHINX_MAIN_POSTS')			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
+			$this->user->lang('FULLTEXT_SPHINX_DELTA_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
+			$this->user->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -960,25 +960,25 @@ class fulltext_sphinx
 		);
 
 		$tpl = '
-		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE']. '</span>
+		<span class="error">' . $this->user->lang('FULLTEXT_SPHINX_CONFIGURE'). '</span>
 		<dl>
-			<dt><label for="fulltext_sphinx_data_path">' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_data_path">' . $this->user->lang('FULLTEXT_SPHINX_DATA_PATH') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_SPHINX_DATA_PATH_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $this->config['fulltext_sphinx_data_path'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_host">' . $this->user->lang['FULLTEXT_SPHINX_HOST'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_HOST_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_host">' . $this->user->lang('FULLTEXT_SPHINX_HOST') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_SPHINX_HOST_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_port">' . $this->user->lang('FULLTEXT_SPHINX_PORT') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_SPHINX_PORT_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_port" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
+			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang('MIB') . '</dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang('FULLTEXT_SPHINX_CONFIG_FILE') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN') . '</span></dt>
 			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="6" id="sphinx_config_data">' . htmlspecialchars($this->config_file_data) . '</textarea>' : $this->config_file_data) . '</dd>
 		<dl>
 		';

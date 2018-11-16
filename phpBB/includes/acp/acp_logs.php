@@ -79,7 +79,7 @@ class acp_logs
 			}
 			else
 			{
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+				confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 					'f'			=> $forum_id,
 					'start'		=> $start,
 					'delmarked'	=> $deletemark,
@@ -96,8 +96,8 @@ class acp_logs
 		}
 
 		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+		$limit_days = array(0 => $user->lang('ALL_ENTRIES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+		$sort_by_text = array('u' => $user->lang('SORT_USERNAME'), 't' => $user->lang('SORT_DATE'), 'i' => $user->lang('SORT_IP'), 'o' => $user->lang('SORT_ACTION'));
 		$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -110,15 +110,15 @@ class acp_logs
 		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
-		$l_title = $user->lang['ACP_' . strtoupper($mode) . '_LOGS'];
-		$l_title_explain = $user->lang['ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN'];
+		$l_title = $user->lang('ACP_' . strtoupper($mode) . '_LOGS');
+		$l_title_explain = $user->lang('ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN');
 
 		$this->page_title = $l_title;
 
 		// Define forum list if we're looking @ mod logs
 		if ($mode == 'mod')
 		{
-			$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
+			$forum_box = '<option value="0">' . $user->lang('ALL_FORUMS') . '</option>' . make_forum_select($forum_id);
 
 			$template->assign_vars(array(
 				'S_SHOW_FORUMS'			=> true,
@@ -156,7 +156,7 @@ class acp_logs
 			{
 				if (isset($row[$check]) && $row[$check])
 				{
-					$data[] = '<a href="' . $row[$check] . '">' . $user->lang['LOGVIEW_' . strtoupper($check)] . '</a>';
+					$data[] = '<a href="' . $row[$check] . '">' . $user->lang('LOGVIEW_' . strtoupper($check)) . '</a>';
 				}
 			}
 

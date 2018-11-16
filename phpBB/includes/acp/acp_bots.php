@@ -48,7 +48,7 @@ class acp_bots
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = $user->lang('FORM_INVALID');
 		}
 
 		// User wants to do something, how inconsiderate of them!
@@ -125,11 +125,11 @@ class acp_bots
 						$cache->destroy('_bots');
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_DELETE', false, array(implode(', ', $bot_name_ary)));
-						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang('BOT_DELETED') . adm_back_link($this->u_action));
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 							'mark'		=> $mark,
 							'id'		=> $bot_id,
 							'mode'		=> $mode,
@@ -160,14 +160,14 @@ class acp_bots
 				{
 					if (!$bot_row['bot_agent'] && !$bot_row['bot_ip'])
 					{
-						$error[] = $user->lang['ERR_BOT_NO_MATCHES'];
+						$error[] = $user->lang('ERR_BOT_NO_MATCHES');
 					}
 
 					if ($bot_row['bot_ip'] && !preg_match('#^[\d\.,:]+$#', $bot_row['bot_ip']))
 					{
 						if (!$ip_list = gethostbynamel($bot_row['bot_ip']))
 						{
-							$error[] = $user->lang['ERR_BOT_NO_IP'];
+							$error[] = $user->lang('ERR_BOT_NO_IP');
 						}
 						else
 						{
@@ -179,7 +179,7 @@ class acp_bots
 					// Make sure the admin is not adding a bot with an user agent similar to his one
 					if ($bot_row['bot_agent'] && substr($user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
 					{
-						$error[] = $user->lang['ERR_BOT_AGENT_MATCHES_UA'];
+						$error[] = $user->lang('ERR_BOT_AGENT_MATCHES_UA');
 					}
 
 					$bot_name = false;
@@ -195,7 +195,7 @@ class acp_bots
 
 						if (!$bot_row)
 						{
-							$error[] = $user->lang['NO_BOT'];
+							$error[] = $user->lang('NO_BOT');
 						}
 						else
 						{
@@ -204,7 +204,7 @@ class acp_bots
 					}
 					if (!$this->validate_botname($bot_row['bot_name'], $bot_name))
 					{
-						$error[] = $user->lang['BOT_NAME_TAKEN'];
+						$error[] = $user->lang('BOT_NAME_TAKEN');
 					}
 
 					if (!count($error))
@@ -222,7 +222,7 @@ class acp_bots
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error($user->lang('NO_BOT_GROUP') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$user_id = user_add(array(
@@ -260,7 +260,7 @@ class acp_bots
 
 							if (!$row)
 							{
-								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error($user->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$sql_ary = array(
@@ -297,7 +297,7 @@ class acp_bots
 						$cache->destroy('_bots');
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_' . $log, false, array($bot_row['bot_name']));
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
+						trigger_error($user->lang('BOT_' . $log) . adm_back_link($this->u_action));
 
 					}
 				}
@@ -313,7 +313,7 @@ class acp_bots
 
 					if (!$bot_row)
 					{
-						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+						trigger_error($user->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];
@@ -326,7 +326,7 @@ class acp_bots
 				foreach ($_options as $value => $lang)
 				{
 					$selected = ($bot_row['bot_active'] == $value) ? ' selected="selected"' : '';
-					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang($lang) . '</option>';
 				}
 
 				$style_select = style_select($bot_row['bot_style'], true);
@@ -335,7 +335,7 @@ class acp_bots
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
 				$template->assign_vars(array(
-					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
+					'L_TITLE'		=> $user->lang('BOT_' . $l_title),
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (count($error)) ? implode('<br />', $error) : '',
@@ -361,7 +361,7 @@ class acp_bots
 		{
 			$json_response = new \phpbb\json_response;
 			$json_response->send(array(
-				'text'	=> $user->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
+				'text'	=> $user->lang('BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'),
 			));
 		}
 
@@ -369,7 +369,7 @@ class acp_bots
 		$_options = array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE');
 		foreach ($_options as $value => $lang)
 		{
-			$s_options .= '<option value="' . $value . '">' . $user->lang[$lang] . '</option>';
+			$s_options .= '<option value="' . $value . '">' . $user->lang($lang) . '</option>';
 		}
 
 		$template->assign_vars(array(
@@ -391,10 +391,10 @@ class acp_bots
 			$template->assign_block_vars('bots', array(
 				'BOT_NAME'		=> $row['bot_name'],
 				'BOT_ID'		=> $row['bot_id'],
-				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
+				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang('BOT_NEVER'),
 
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
-				'L_ACTIVATE_DEACTIVATE'	=> $user->lang[$active_lang],
+				'L_ACTIVATE_DEACTIVATE'	=> $user->lang($active_lang),
 				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
 				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
 			);

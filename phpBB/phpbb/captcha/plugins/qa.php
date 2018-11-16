@@ -404,7 +404,7 @@ class qa
 
 		if (!$this->confirm_id)
 		{
-			$error = $user->lang['CONFIRM_QUESTION_WRONG'];
+			$error = $user->lang('CONFIRM_QUESTION_WRONG');
 		}
 		else
 		{
@@ -414,7 +414,7 @@ class qa
 			}
 			else
 			{
-				$error = $user->lang['CONFIRM_QUESTION_WRONG'];
+				$error = $user->lang('CONFIRM_QUESTION_WRONG');
 			}
 		}
 
@@ -681,11 +681,11 @@ class qa
 				{
 					$this->acp_delete_question($question_id);
 
-					trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+					trigger_error($user->lang('QUESTION_DELETED') . adm_back_link($list_url));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 						'question_id'		=> $question_id,
 						'action'			=> $action,
 						'configure'			=> 1,
@@ -696,7 +696,7 @@ class qa
 			}
 			else
 			{
-				trigger_error($user->lang['QA_LAST_QUESTION'] . adm_back_link($list_url), E_USER_WARNING);
+				trigger_error($user->lang('QA_LAST_QUESTION') . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 		else
@@ -730,7 +730,7 @@ class qa
 				}
 				else
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($list_url));
 				}
 			}
 			else
@@ -763,12 +763,12 @@ class qa
 					}
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($list_url));
+					trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($list_url));
 				}
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url), E_USER_WARNING);
+				trigger_error($user->lang('FORM_INVALID') . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 	}

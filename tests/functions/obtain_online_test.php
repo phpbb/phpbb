@@ -158,10 +158,10 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		$this->db->sql_query('DELETE FROM phpbb_sessions');
 
-		global $config, $user, $auth, $phpbb_dispatcher;
+		global $config, $lang, $auth, $phpbb_dispatcher;
 		$config['load_online_guests'] = $display_guests;
-		$user = new phpbb_mock_lang();
-		$user->lang = $this->load_language();
+		$lang = new phpbb_mock_lang();
+		$lang->lang = $this->load_language();
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$acl_get_map = array(
 			array('u_viewonline', true),

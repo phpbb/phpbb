@@ -41,7 +41,7 @@ class acp_disallow
 
 		if (($allow || $disallow) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($disallow)
@@ -50,7 +50,7 @@ class acp_disallow
 
 			if (!$disallowed_user)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'SELECT disallow_id
@@ -62,7 +62,7 @@ class acp_disallow
 
 			if ($row)
 			{
-				trigger_error($user->lang['DISALLOWED_ALREADY'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('DISALLOWED_ALREADY') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
@@ -70,7 +70,7 @@ class acp_disallow
 
 			$cache->destroy('_disallowed_usernames');
 
-			$message = $user->lang['DISALLOW_SUCCESSFUL'];
+			$message = $user->lang('DISALLOW_SUCCESSFUL');
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_ADD', false, array(str_replace('%', '*', $disallowed_user)));
 
 			trigger_error($message . adm_back_link($this->u_action));
@@ -81,7 +81,7 @@ class acp_disallow
 
 			if (!$disallowed_id)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
@@ -92,7 +92,7 @@ class acp_disallow
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_DELETE');
 
-			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
+			trigger_error($user->lang('DISALLOWED_DELETED') . adm_back_link($this->u_action));
 		}
 
 		// Grab the current list of disallowed usernames...

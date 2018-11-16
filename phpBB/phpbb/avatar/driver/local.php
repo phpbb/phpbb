@@ -134,7 +134,7 @@ class local extends \phpbb\avatar\driver\driver
 		}
 
 		return array(
-			'avatar' => ($category != $user->lang['NO_AVATAR_CATEGORY']) ? $category . '/' . $file : $file,
+			'avatar' => ($category != $user->lang('NO_AVATAR_CATEGORY')) ? $category . '/' . $file : $file,
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
@@ -184,9 +184,9 @@ class local extends \phpbb\avatar\driver\driver
 					{
 						$dims = array($dims['width'], $dims['height']);
 					}
-					$cat = ($path == $file_path) ? $user->lang['NO_AVATAR_CATEGORY'] : str_replace("$path/", '', $file_path);
+					$cat = ($path == $file_path) ? $user->lang('NO_AVATAR_CATEGORY') : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(
-						'file'      => ($cat != $user->lang['NO_AVATAR_CATEGORY']) ? str_replace('%2F', '/', rawurlencode($cat)) . '/' . rawurlencode($image) : rawurlencode($image),
+						'file'      => ($cat != $user->lang('NO_AVATAR_CATEGORY')) ? str_replace('%2F', '/', rawurlencode($cat)) . '/' . rawurlencode($image) : rawurlencode($image),
 						'filename'  => rawurlencode($image),
 						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
 						'width'     => $dims[0],

@@ -59,9 +59,9 @@ function mcp_post_details($id, $mode, $action)
 				}
 
 				$template->assign_vars(array(
-					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'RETURN_POST'	=> sprintf($user->lang('RETURN_POST'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 					'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
-					'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
+					'L_RETURN_POST'	=> sprintf($user->lang('RETURN_POST'), '', ''),
 					'WHOIS'			=> user_ipwhois($ip),
 				));
 			}
@@ -247,13 +247,13 @@ function mcp_post_details($id, $mode, $action)
 
 		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
-		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
-		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
-		'DELETED_IMG'			=> $user->img('icon_topic_deleted', $user->lang['POST_DELETED']),
-		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
-		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
+		'RETURN_TOPIC'			=> sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
+		'RETURN_FORUM'			=> sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
+		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
+		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
+		'DELETED_IMG'			=> $user->img('icon_topic_deleted', $user->lang('POST_DELETED')),
+		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang('EDIT_POST')),
+		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang('SEARCH')),
 
 		'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
@@ -434,7 +434,7 @@ function mcp_post_details($id, $mode, $action)
 				$template->assign_block_vars('userrow', array(
 					'USERNAME'		=> get_username_string('username', $user_id, $user_row['username']),
 					'NUM_POSTS'		=> $user_row['postings'],
-					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
+					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang('POST') : $user->lang('POSTS'),
 
 					'U_PROFILE'		=> get_username_string('profile', $user_id, $user_row['username']),
 					'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user_id . '&amp;sr=topics'))
@@ -473,7 +473,7 @@ function mcp_post_details($id, $mode, $action)
 				'IP'			=> $row['poster_ip'],
 				'HOSTNAME'		=> $hostname,
 				'NUM_POSTS'		=> $row['postings'],
-				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
+				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang('POST') : $user->lang('POSTS'),
 
 				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
 				'U_WHOIS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))

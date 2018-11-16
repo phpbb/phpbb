@@ -430,7 +430,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 	// check for trailing slash
 	if (rtrim($convert->convertor['avatar_gallery_path'], '/') === '')
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_GALLERY_PATH'], 'import_avatar_gallery()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_GALLERY_PATH'), 'import_avatar_gallery()'), __LINE__, __FILE__);
 	}
 
 	$src_path = relative_base(path($convert->convertor['avatar_gallery_path'], $relative_path), $relative_path);
@@ -505,7 +505,7 @@ function import_attachment_files($category_name = '')
 
 	if (empty($convert->convertor['upload_path']))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_UPLOAD_DIR'], 'import_attachment_files()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_UPLOAD_DIR'), 'import_attachment_files()'), __LINE__, __FILE__);
 	}
 
 	if (is_dir(relative_base(path($convert->convertor['upload_path'], $relative_path), $relative_path)))
@@ -595,7 +595,7 @@ function import_attachment($source, $use_target = false)
 	// check for trailing slash
 	if (rtrim($convert->convertor['upload_path'], '/') === '')
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_UPLOAD_DIR'], 'import_attachment()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_UPLOAD_DIR'), 'import_attachment()'), __LINE__, __FILE__);
 	}
 
 	$result = _import_check('upload_path', $source, $use_target);
@@ -636,7 +636,7 @@ function import_rank($source, $use_target = false)
 
 	if (!isset($convert->convertor['ranks_path']))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_RANKS_PATH'], 'import_rank()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_RANKS_PATH'), 'import_rank()'), __LINE__, __FILE__);
 	}
 
 	$result = _import_check('ranks_path', $source, $use_target);
@@ -655,7 +655,7 @@ function import_smiley($source, $use_target = false)
 	// check for trailing slash
 	if (rtrim($convert->convertor['smilies_path'], '/') === '')
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_SMILIES_PATH'], 'import_smiley()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_SMILIES_PATH'), 'import_smiley()'), __LINE__, __FILE__);
 	}
 
 	$result = _import_check('smilies_path', $source, $use_target);
@@ -676,7 +676,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 	// check for trailing slash
 	if (rtrim($convert->convertor['avatar_path'], '/') === '')
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'import_avatar()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_AVATAR_PATH'), 'import_avatar()'), __LINE__, __FILE__);
 	}
 
 	if ($use_target === false && $user_id !== false)
@@ -756,7 +756,7 @@ function get_smiley_dim($source, $axis)
 
 	if (!isset($convert->convertor['smilies_path']))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_SMILIES_PATH'], 'get_smiley_dim()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_SMILIES_PATH'), 'get_smiley_dim()'), __LINE__, __FILE__);
 	}
 
 	if (!empty($convert->convertor['smilies_path']) && strpos($source, $convert->convertor['smilies_path']) !== 0)
@@ -867,7 +867,7 @@ function get_upload_avatar_dim($source, $axis)
 
 	if (!isset($convert->convertor['avatar_path']))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'get_upload_avatar_dim()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_AVATAR_PATH'), 'get_upload_avatar_dim()'), __LINE__, __FILE__);
 	}
 
 	if (!empty($convert->convertor['avatar_path']) && strpos($source, $convert->convertor['avatar_path']) !== 0)
@@ -911,7 +911,7 @@ function get_gallery_avatar_dim($source, $axis)
 
 	if (!isset($convert->convertor['avatar_gallery_path']))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_GALLERY_PATH'], 'get_gallery_avatar_dim()'), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_GALLERY_PATH'), 'get_gallery_avatar_dim()'), __LINE__, __FILE__);
 	}
 
 	if (!empty($convert->convertor['avatar_gallery_path']) && strpos($source, $convert->convertor['avatar_gallery_path']) !== 0)
@@ -1144,7 +1144,7 @@ function user_group_auth($group, $select_query, $use_src_db)
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_WRONG_GROUP'], $group, 'user_group_auth()'), __LINE__, __FILE__, true);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_WRONG_GROUP'), $group, 'user_group_auth()'), __LINE__, __FILE__, true);
 		return;
 	}
 
@@ -1157,7 +1157,7 @@ function user_group_auth($group, $select_query, $use_src_db)
 
 	if (!$group_id)
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_GROUP'], $group, 'user_group_auth()'), __LINE__, __FILE__, true);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_NO_GROUP'), $group, 'user_group_auth()'), __LINE__, __FILE__, true);
 		return;
 	}
 
@@ -1212,7 +1212,7 @@ function get_config()
 
 		if (!$row)
 		{
-			$convert->p_master->error($user->lang['CONV_ERROR_GET_CONFIG'], __LINE__, __FILE__);
+			$convert->p_master->error($user->lang('CONV_ERROR_GET_CONFIG'), __LINE__, __FILE__);
 		}
 	}
 
@@ -1263,7 +1263,7 @@ function get_config()
 
 	if (!count($convert_config))
 	{
-		$convert->p_master->error($user->lang['CONV_ERROR_CONFIG_EMPTY'], __LINE__, __FILE__);
+		$convert->p_master->error($user->lang('CONV_ERROR_CONFIG_EMPTY'), __LINE__, __FILE__);
 	}
 
 	return $convert_config;
@@ -1843,7 +1843,7 @@ function add_bots()
 		if (!$group_id)
 		{
 			global $install;
-			$install->error($user->lang['CONV_ERROR_INCONSISTENT_GROUPS'], __LINE__, __FILE__);
+			$install->error($user->lang('CONV_ERROR_INCONSISTENT_GROUPS'), __LINE__, __FILE__);
 		}
 	}
 
@@ -2354,7 +2354,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 	if (!@copy($src_path, $phpbb_root_path . $trg_path))
 	{
-		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
+		$convert->p_master->error(sprintf($user->lang('COULD_NOT_COPY'), $src_path, $phpbb_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
 		return;
 	}
 
@@ -2432,7 +2432,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 	}
 	else
 	{
-		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_COULD_NOT_READ'], relative_base($src, $source_relative_path)), __LINE__, __FILE__);
+		$convert->p_master->error(sprintf($user->lang('CONV_ERROR_COULD_NOT_READ'), relative_base($src, $source_relative_path)), __LINE__, __FILE__);
 	}
 
 	if ($copy_subdirs)
@@ -2467,7 +2467,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 	if (count($bad_dirs))
 	{
-		$str = (count($bad_dirs) == 1) ? $user->lang['MAKE_FOLDER_WRITABLE'] : $user->lang['MAKE_FOLDERS_WRITABLE'];
+		$str = (count($bad_dirs) == 1) ? $user->lang('MAKE_FOLDER_WRITABLE') : $user->lang('MAKE_FOLDERS_WRITABLE');
 		sort($bad_dirs);
 		$convert->p_master->error(sprintf($str, implode('<br />', $bad_dirs)), __LINE__, __FILE__);
 	}
@@ -2492,7 +2492,7 @@ function relative_base($path, $is_relative = true, $line = false, $file = false)
 		$line = $line ? $line : __LINE__;
 		$file = $file ? $file : __FILE__;
 
-		$convert->p_master->error($user->lang['CONV_ERROR_NO_FORUM_PATH'], $line, $file);
+		$convert->p_master->error($user->lang('CONV_ERROR_NO_FORUM_PATH'), $line, $file);
 	}
 
 	return $convert->options['forum_path'] . '/' . $path;

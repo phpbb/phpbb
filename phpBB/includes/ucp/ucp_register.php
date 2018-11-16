@@ -118,7 +118,7 @@ class ucp_register
 			$result = $auth_provider->login_link_has_necessary_data($login_link_data);
 			if ($result !== null)
 			{
-				$error[] = $user->lang[$result];
+				$error[] = $user->lang($result);
 			}
 
 			$s_hidden_fields = array_merge($s_hidden_fields, $this->get_login_link_data_for_hidden_fields($login_link_data));
@@ -163,13 +163,13 @@ class ucp_register
 				$coppa_birthday = $user->create_datetime()
 					->setDate($now['year'] - 13, $now['mon'], $now['mday'] - 1)
 					->setTime(0, 0, 0)
-					->format($user->lang['DATE_FORMAT'], true);
+					->format($user->lang('DATE_FORMAT'), true);
 				unset($now);
 
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
-					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
+					'L_COPPA_NO'		=> sprintf($user->lang('UCP_COPPA_BEFORE'), $coppa_birthday),
+					'L_COPPA_YES'		=> sprintf($user->lang('UCP_COPPA_ON_AFTER'), $coppa_birthday),
 
 					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
 					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
@@ -186,7 +186,7 @@ class ucp_register
 			{
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
+					'L_TERMS_OF_USE'	=> sprintf($user->lang('TERMS_OF_USE_CONTENT'), $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
@@ -287,7 +287,7 @@ class ucp_register
 
 			if (!check_form_key('ucp_register'))
 			{
-				$error[] = $user->lang['FORM_INVALID'];
+				$error[] = $user->lang('FORM_INVALID');
 			}
 
 			// Replace "error" strings with their real, localised form
@@ -303,7 +303,7 @@ class ucp_register
 
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
 				{
-					$error[] = $user->lang['TOO_MANY_REGISTERS'];
+					$error[] = $user->lang('TOO_MANY_REGISTERS');
 				}
 			}
 
@@ -312,7 +312,7 @@ class ucp_register
 			{
 				if (($dnsbl = $user->check_dnsbl('register')) !== false)
 				{
-					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+					$error[] = sprintf($user->lang('IP_BLACKLISTED'), $user->ip, $dnsbl[1]);
 				}
 			}
 
@@ -323,7 +323,7 @@ class ucp_register
 			{
 				if ($data['new_password'] != $data['password_confirm'])
 				{
-					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
+					$error[] = $user->lang('NEW_PASSWORD_ERROR');
 				}
 			}
 			/**
@@ -434,22 +434,22 @@ class ucp_register
 
 				if ($coppa && $config['email_enable'])
 				{
-					$message = $user->lang['ACCOUNT_COPPA'];
+					$message = $user->lang('ACCOUNT_COPPA');
 					$email_template = 'coppa_welcome_inactive';
 				}
 				else if ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable'])
 				{
-					$message = $user->lang['ACCOUNT_INACTIVE'];
+					$message = $user->lang('ACCOUNT_INACTIVE');
 					$email_template = 'user_welcome_inactive';
 				}
 				else if ($config['require_activation'] == USER_ACTIVATION_ADMIN && $config['email_enable'])
 				{
-					$message = $user->lang['ACCOUNT_INACTIVE_ADMIN'];
+					$message = $user->lang('ACCOUNT_INACTIVE_ADMIN');
 					$email_template = 'admin_welcome_inactive';
 				}
 				else
 				{
-					$message = $user->lang['ACCOUNT_ADDED'];
+					$message = $user->lang('ACCOUNT_ADDED');
 					$email_template = 'user_welcome';
 
 					// Autologin after registration
@@ -469,7 +469,7 @@ class ucp_register
 					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
-						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang('WELCOME_SUBJECT'), $config['sitename'])),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
@@ -533,7 +533,7 @@ class ucp_register
 
 					if ($result)
 					{
-						$message = $message . '<br /><br />' . $user->lang[$result];
+						$message = $message . '<br /><br />' . $user->lang($result);
 					}
 				}
 
@@ -561,7 +561,7 @@ class ucp_register
 				);
 				extract($phpbb_dispatcher->trigger_event('core.ucp_register_register_after', compact($vars)));
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -594,11 +594,11 @@ class ucp_register
 		switch ($config['require_activation'])
 		{
 			case USER_ACTIVATION_SELF:
-				$l_reg_cond = $user->lang['UCP_EMAIL_ACTIVATE'];
+				$l_reg_cond = $user->lang('UCP_EMAIL_ACTIVATE');
 			break;
 
 			case USER_ACTIVATION_ADMIN:
-				$l_reg_cond = $user->lang['UCP_ADMIN_ACTIVATE'];
+				$l_reg_cond = $user->lang('UCP_ADMIN_ACTIVATE');
 			break;
 		}
 

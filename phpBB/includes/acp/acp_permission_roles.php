@@ -57,7 +57,7 @@ class acp_permission_roles
 
 		if (!$role_id && in_array($action, array('remove', 'edit', 'move_up', 'move_down')))
 		{
-			trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		switch ($mode)
@@ -88,8 +88,8 @@ class acp_permission_roles
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'])
+			'L_TITLE'		=> $user->lang($this->page_title),
+			'L_EXPLAIN'		=> $user->lang($this->page_title . '_EXPLAIN'))
 		);
 
 		// Take action... admin submitted something
@@ -108,7 +108,7 @@ class acp_permission_roles
 
 					if (!$role_row)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if (confirm_box(true))
@@ -117,7 +117,7 @@ class acp_permission_roles
 
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, array($role_name));
-						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang('ROLE_DELETED') . adm_back_link($this->u_action));
 					}
 					else
 					{
@@ -143,7 +143,7 @@ class acp_permission_roles
 
 					if (!$role_row)
 					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 				// no break;
@@ -152,7 +152,7 @@ class acp_permission_roles
 
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$role_name = $request->variable('role_name', '', true);
@@ -161,12 +161,12 @@ class acp_permission_roles
 
 					if (!$role_name)
 					{
-						trigger_error($user->lang['NO_ROLE_NAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_ROLE_NAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if (utf8_strlen($role_description) > 4000)
 					{
-						trigger_error($user->lang['ROLE_DESCRIPTION_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('ROLE_DESCRIPTION_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					// if we add/edit a role we check the name to be unique among the settings...
@@ -181,7 +181,7 @@ class acp_permission_roles
 					// Make sure we only print out the error if we add the role or change it's name
 					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name'] != $role_name)))
 					{
-						trigger_error(sprintf($user->lang['ROLE_NAME_ALREADY_EXIST'], $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(sprintf($user->lang('ROLE_NAME_ALREADY_EXIST'), $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql_ary = array(
@@ -218,10 +218,10 @@ class acp_permission_roles
 					// Now add the auth settings
 					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
-					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
+					$role_name = (!empty($user->lang[$role_name])) ? $user->lang($role_name) : $role_name;
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, array($role_name));
 
-					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('ROLE_' . strtoupper($action) . '_SUCCESS') . adm_back_link($this->u_action));
 
 				break;
 			}
@@ -303,7 +303,7 @@ class acp_permission_roles
 
 				if (!$role_row)
 				{
-					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				/* @var $phpbb_permissions \phpbb\permissions */
@@ -354,7 +354,7 @@ class acp_permission_roles
 
 						$template->assign_vars(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
+							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang('ROLE_ASSIGNED_TO'), $role_name))
 						);
 
 						$this->auth_admin->display_role_mask($hold_ary);
@@ -369,7 +369,7 @@ class acp_permission_roles
 
 				if (!check_link_hash($request->variable('hash', ''), 'acp_permission_roles'))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT role_order
@@ -456,7 +456,7 @@ class acp_permission_roles
 			if ($display_item == $row['role_id'])
 			{
 				$template->assign_vars(array(
-					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
+					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang('ROLE_ASSIGNED_TO'), $role_name))
 				);
 			}
 		}

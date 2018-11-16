@@ -162,7 +162,7 @@ function size_select_options($size_compare)
 {
 	global $user;
 
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KIB'], $user->lang['MIB']);
+	$size_types_text = array($user->lang('BYTES'), $user->lang('KIB'), $user->lang('MIB'));
 	$size_types = array('b', 'kb', 'mb');
 
 	$s_size_options = '';
@@ -2743,23 +2743,23 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$row['inactive_reason'] = $user->lang['INACTIVE_REASON_UNKNOWN'];
+		$row['inactive_reason'] = $user->lang('INACTIVE_REASON_UNKNOWN');
 		switch ($row['user_inactive_reason'])
 		{
 			case INACTIVE_REGISTER:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REGISTER'];
+				$row['inactive_reason'] = $user->lang('INACTIVE_REASON_REGISTER');
 			break;
 
 			case INACTIVE_PROFILE:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_PROFILE'];
+				$row['inactive_reason'] = $user->lang('INACTIVE_REASON_PROFILE');
 			break;
 
 			case INACTIVE_MANUAL:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_MANUAL'];
+				$row['inactive_reason'] = $user->lang('INACTIVE_REASON_MANUAL');
 			break;
 
 			case INACTIVE_REMIND:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
+				$row['inactive_reason'] = $user->lang('INACTIVE_REASON_REMIND');
 			break;
 		}
 
@@ -2931,7 +2931,7 @@ function get_database_size()
 		break;
 	}
 
-	$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $user->lang['NOT_AVAILABLE'];
+	$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $user->lang('NOT_AVAILABLE');
 
 	return $database_size;
 }

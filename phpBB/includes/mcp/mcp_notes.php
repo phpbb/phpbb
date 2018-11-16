@@ -54,7 +54,7 @@ class mcp_notes
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
 					'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes'),
 
-					'L_TITLE'			=> $user->lang['MCP_NOTES'],
+					'L_TITLE'			=> $user->lang('MCP_NOTES'),
 				));
 
 				$this->tpl_name = 'mcp_notes_front';
@@ -154,7 +154,7 @@ class mcp_notes
 				}
 				$redirect = $this->u_action . '&amp;u=' . $user_id;
 				meta_refresh(3, $redirect);
-				trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($user->lang($msg) . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 
@@ -173,16 +173,16 @@ class mcp_notes
 					$usernote
 				));
 
-				$msg = $user->lang['USER_FEEDBACK_ADDED'];
+				$msg = $user->lang('USER_FEEDBACK_ADDED');
 			}
 			else
 			{
-				$msg = $user->lang['FORM_INVALID'];
+				$msg = $user->lang('FORM_INVALID');
 			}
 			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
 
-			trigger_error($msg .  '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg .  '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at
@@ -190,8 +190,8 @@ class mcp_notes
 		$rank_title = $rank_img = '';
 		$avatar_img = phpbb_get_user_avatar($userrow);
 
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
+		$limit_days = array(0 => $user->lang('ALL_ENTRIES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+		$sort_by_text = array('a' => $user->lang('SORT_USERNAME'), 'b' => $user->lang('SORT_DATE'), 'c' => $user->lang('SORT_IP'), 'd' => $user->lang('SORT_ACTION'));
 		$sort_by_sql = array('a' => 'u.username_clean', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -235,7 +235,7 @@ class mcp_notes
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 			'S_KEYWORDS'			=> $keywords,
 
-			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
+			'L_TITLE'			=> $user->lang('MCP_NOTES_USER'),
 
 			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 

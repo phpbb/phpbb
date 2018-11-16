@@ -442,7 +442,7 @@ class fulltext_native extends \phpbb\search\base
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && count($non_common_words))
 				{
-					trigger_error(sprintf($this->user->lang['WORDS_IN_NO_POST'], implode($this->user->lang['COMMA_SEPARATOR'], $non_common_words)));
+					trigger_error(sprintf($this->user->lang('WORDS_IN_NO_POST'), implode($this->user->lang('COMMA_SEPARATOR'), $non_common_words)));
 				}
 				unset($non_common_words);
 			}
@@ -1759,8 +1759,8 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		return array(
-			$this->user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
-			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
+			$this->user->lang('TOTAL_WORDS')		=> $this->stats['total_words'],
+			$this->user->lang('TOTAL_MATCHES')	=> $this->stats['total_matches']);
 	}
 
 	protected function get_stats()
@@ -2016,19 +2016,19 @@ class fulltext_native extends \phpbb\search\base
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_native_load_upd">' . $this->user->lang['YES_SEARCH_UPDATE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
+			<dt><label for="fulltext_native_load_upd">' . $this->user->lang('YES_SEARCH_UPDATE') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('YES_SEARCH_UPDATE_EXPLAIN') . '</span></dt>
+			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang('YES') . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang('NO') . '</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_min_chars">' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_min_chars">' . $this->user->lang('MIN_SEARCH_CHARS') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_min_chars" type="number" min="0" max="255" name="config[fulltext_native_min_chars]" value="' . (int) $this->config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_max_chars">' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_max_chars">' . $this->user->lang('MAX_SEARCH_CHARS') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="number" min="0" max="255" name="config[fulltext_native_max_chars]" value="' . (int) $this->config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_common_thres">' . $this->user->lang['COMMON_WORD_THRESHOLD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_common_thres">' . $this->user->lang('COMMON_WORD_THRESHOLD') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('COMMON_WORD_THRESHOLD_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_common_thres" type="text" name="config[fulltext_native_common_thres]" value="' . (double) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';

@@ -95,22 +95,22 @@ function adm_page_header($page_title)
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 
-		'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_EDIT'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_DELETE'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete_disabled.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_SYNC'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
-		'ICON_SYNC_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up.gif" alt="' . $user->lang('MOVE_UP') . '" title="' . $user->lang('MOVE_UP') . '" />',
+		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_up_disabled.gif" alt="' . $user->lang('MOVE_UP') . '" title="' . $user->lang('MOVE_UP') . '" />',
+		'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down.gif" alt="' . $user->lang('MOVE_DOWN') . '" title="' . $user->lang('MOVE_DOWN') . '" />',
+		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_down_disabled.gif" alt="' . $user->lang('MOVE_DOWN') . '" title="' . $user->lang('MOVE_DOWN') . '" />',
+		'ICON_EDIT'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit.gif" alt="' . $user->lang('EDIT') . '" title="' . $user->lang('EDIT') . '" />',
+		'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_edit_disabled.gif" alt="' . $user->lang('EDIT') . '" title="' . $user->lang('EDIT') . '" />',
+		'ICON_DELETE'				=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete.gif" alt="' . $user->lang('DELETE') . '" title="' . $user->lang('DELETE') . '" />',
+		'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_delete_disabled.gif" alt="' . $user->lang('DELETE') . '" title="' . $user->lang('DELETE') . '" />',
+		'ICON_SYNC'					=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync.gif" alt="' . $user->lang('RESYNC') . '" title="' . $user->lang('RESYNC') . '" />',
+		'ICON_SYNC_DISABLED'		=> '<img src="' . htmlspecialchars($phpbb_admin_path) . 'images/icon_sync_disabled.gif" alt="' . $user->lang('RESYNC') . '" title="' . $user->lang('RESYNC') . '" />',
 
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_USER_LANG'			=> $user->lang('USER_LANG'),
+		'S_CONTENT_DIRECTION'	=> $user->lang('DIRECTION'),
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang('DIRECTION') == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang('DIRECTION') == 'ltr') ? 'right' : 'left',
 
 		'CONTAINER_EXCEPTION'	=> $phpbb_container->hasParameter('container_exception') ? $phpbb_container->getParameter('container_exception') : false,
 	));
@@ -176,7 +176,7 @@ function adm_page_footer($copyright_html = true)
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
-		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
+		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang('TRANSLATION_INFO') : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery.min.js",
@@ -196,7 +196,7 @@ function adm_page_footer($copyright_html = true)
 function adm_back_link($u_action)
 {
 	global $user;
-	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>';
+	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang('BACK_TO_PREV') . '</a>';
 }
 
 /**
@@ -210,7 +210,7 @@ function build_select($option_ary, $option_default = false)
 	foreach ($option_ary as $value => $title)
 	{
 		$selected = ($option_default !== false && $value == $option_default) ? ' selected="selected"' : '';
-		$html .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$title] . '</option>';
+		$html .= '<option value="' . $value . '"' . $selected . '>' . $user->lang($title) . '</option>';
 	}
 
 	return $html;
@@ -228,7 +228,7 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 	foreach ($input_ary as $value => $title)
 	{
 		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>' . $separator;
+		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang($title) . '</label>' . $separator;
 		$id_assigned = true;
 	}
 
@@ -321,8 +321,8 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']) . '</label>';
-			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']) . '</label>';
+			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $user->lang('NO') : $user->lang('DISABLED')) . '</label>';
+			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $user->lang('YES') : $user->lang('ENABLED')) . '</label>';
 
 			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . $tpl_no : $tpl_no . $tpl_yes;
 		break;
@@ -453,11 +453,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $length < $validator[$min])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf($user->lang('SETTING_TOO_SHORT'), $user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $length > $validator[2])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf($user->lang('SETTING_TOO_LONG'), $user->lang[$config_definition['lang']], $validator[$max]);
 				}
 			break;
 
@@ -470,11 +470,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $cfg_array[$config_name] < $validator[$min])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf($user->lang('SETTING_TOO_LOW'), $user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $cfg_array[$config_name] > $validator[$max])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf($user->lang('SETTING_TOO_BIG'), $user->lang[$config_definition['lang']], $validator[$max]);
 				}
 
 				if (strpos($config_name, '_max') !== false)
@@ -487,7 +487,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					if (isset($cfg_array[$min_name]) && is_numeric($cfg_array[$min_name]) && $cfg_array[$config_name] < $cfg_array[$min_name])
 					{
 						// A minimum value exists and the maximum value is less than it
-						$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
+						$error[] = sprintf($user->lang('SETTING_TOO_LOW'), $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
 					}
 				}
 			break;
@@ -495,7 +495,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 			case 'email':
 				if (!preg_match('/^' . get_preg_expression('email') . '$/i', $cfg_array[$config_name]))
 				{
-					$error[] = $user->lang['EMAIL_INVALID_EMAIL'];
+					$error[] = $user->lang('EMAIL_INVALID_EMAIL');
 				}
 			break;
 
@@ -539,7 +539,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (!file_exists($phpbb_root_path . 'language/' . $cfg_array[$config_name] . '/'))
 				{
-					$error[] = $user->lang['WRONG_DATA_LANG'];
+					$error[] = $user->lang('WRONG_DATA_LANG');
 				}
 			break;
 
@@ -589,12 +589,12 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (!file_exists($path))
 				{
-					$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
+					$error[] = sprintf($user->lang('DIRECTORY_DOES_NOT_EXIST'), $cfg_array[$config_name]);
 				}
 
 				if (file_exists($path) && !is_dir($path))
 				{
-					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
+					$error[] = sprintf($user->lang('DIRECTORY_NOT_DIR'), $cfg_array[$config_name]);
 				}
 
 				// Check if the path is writable
@@ -602,7 +602,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				{
 					if (file_exists($path) && !$phpbb_filesystem->is_writable($path))
 					{
-						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
+						$error[] = sprintf($user->lang('DIRECTORY_NOT_WRITABLE'), $cfg_array[$config_name]);
 					}
 				}
 
@@ -671,7 +671,7 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
 				if (utf8_strlen($value['value']) > $max)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
+					$error[] = sprintf($user->lang('SETTING_TOO_LONG'), $user->lang[$value['lang']], $max);
 				}
 			break;
 
@@ -680,11 +680,11 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
 				if ($value['value'] < $min)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$value['lang']], $min);
+					$error[] = sprintf($user->lang('SETTING_TOO_LOW'), $user->lang[$value['lang']], $min);
 				}
 				else if ($value['value'] > $max)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$value['lang']], $max);
+					$error[] = sprintf($user->lang('SETTING_TOO_BIG'), $user->lang[$value['lang']], $max);
 				}
 			break;
 		}

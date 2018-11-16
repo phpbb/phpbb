@@ -43,7 +43,7 @@ class acp_ban
 
 		if (($bansubmit || $unbansubmit) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Ban submitted?
@@ -117,7 +117,7 @@ class acp_ban
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_ban_after', compact($vars)));
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 			}
 		}
 		else if ($unbansubmit)
@@ -128,31 +128,31 @@ class acp_ban
 			{
 				user_unban($mode, $ban);
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 			}
 		}
 
 		// Define language vars
-		$this->page_title = $user->lang[strtoupper($mode) . '_BAN'];
+		$this->page_title = $user->lang(strtoupper($mode) . '_BAN');
 
-		$l_ban_explain = $user->lang[strtoupper($mode) . '_BAN_EXPLAIN'];
-		$l_ban_exclude_explain = $user->lang[strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang[strtoupper($mode) . '_UNBAN'];
-		$l_unban_explain = $user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
-		$l_no_ban_cell = $user->lang[strtoupper($mode) . '_NO_BANNED'];
+		$l_ban_explain = $user->lang(strtoupper($mode) . '_BAN_EXPLAIN');
+		$l_ban_exclude_explain = $user->lang(strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN');
+		$l_unban_title = $user->lang(strtoupper($mode) . '_UNBAN');
+		$l_unban_explain = $user->lang(strtoupper($mode) . '_UNBAN_EXPLAIN');
+		$l_no_ban_cell = $user->lang(strtoupper($mode) . '_NO_BANNED');
 
 		switch ($mode)
 		{
 			case 'user':
-				$l_ban_cell = $user->lang['USERNAME'];
+				$l_ban_cell = $user->lang('USERNAME');
 			break;
 
 			case 'ip':
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+				$l_ban_cell = $user->lang('IP_HOSTNAME');
 			break;
 
 			case 'email':
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+				$l_ban_cell = $user->lang('EMAIL_ADDRESS');
 			break;
 		}
 
@@ -182,7 +182,7 @@ class acp_ban
 		global $user, $db, $template;
 
 		// Ban length options
-		$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['UNTIL'] . ' -&gt; ');
+		$ban_end_text = array(0 => $user->lang('PERMANENT'), 30 => $user->lang('30_MINS'), 60 => $user->lang('1_HOUR'), 360 => $user->lang('6_HOURS'), 1440 => $user->lang('1_DAY'), 10080 => $user->lang('7_DAYS'), 20160 => $user->lang('2_WEEKS'), 40320 => $user->lang('1_MONTH'), -1 => $user->lang('UNTIL') . ' -&gt; ');
 
 		$ban_end_options = '';
 		foreach ($ban_end_text as $length => $text)
@@ -249,7 +249,7 @@ class acp_ban
 			if ($time_length == 0)
 			{
 				// Banned permanently
-				$ban_length = $user->lang['PERMANENT'];
+				$ban_length = $user->lang('PERMANENT');
 			}
 			else if (isset($ban_end_text[$time_length]))
 			{
@@ -277,14 +277,14 @@ class acp_ban
 		$options = '';
 		if ($excluded_options)
 		{
-			$options .= '<optgroup label="' . $user->lang['OPTIONS_EXCLUDED'] . '">';
+			$options .= '<optgroup label="' . $user->lang('OPTIONS_EXCLUDED') . '">';
 			$options .= implode('', $excluded_options);
 			$options .= '</optgroup>';
 		}
 
 		if ($banned_options)
 		{
-			$options .= '<optgroup label="' . $user->lang['OPTIONS_BANNED'] . '">';
+			$options .= '<optgroup label="' . $user->lang('OPTIONS_BANNED') . '">';
 			$options .= implode('', $banned_options);
 			$options .= '</optgroup>';
 		}

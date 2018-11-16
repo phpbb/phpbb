@@ -267,12 +267,12 @@ class mcp_reports
 					'U_VIEW_POST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang('EDIT_POST')),
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
-					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
+					'RETURN_REPORTS'			=> sprintf($user->lang('RETURN_REPORTS'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
+					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
 					'REPORT_DATE'				=> $user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,
 					'REPORT_REASON_TITLE'		=> $reason['title'],
@@ -290,7 +290,7 @@ class mcp_reports
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
 					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
+					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang('NO_SUBJECT'),
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
@@ -380,7 +380,7 @@ class mcp_reports
 				$forum_list[] = 0;
 				$forum_data = array();
 
-				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
+				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang('ALL_FORUMS') . '</option>';
 				foreach ($forum_list_reports as $row)
 				{
 					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . $row['forum_name'] . '</option>';
@@ -480,12 +480,12 @@ class mcp_reports
 
 							'FORUM_NAME'	=> $forum_data[$row['forum_id']]['forum_name'],
 							'POST_ID'		=> $row['post_id'],
-							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
+							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang('NO_SUBJECT'),
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
 							'TOPIC_TITLE'	=> $row['topic_title'],
-							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 						));
 					}
 					$db->sql_freeresult($result);
@@ -497,9 +497,9 @@ class mcp_reports
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN'] : $user->lang['MCP_REPORTS_CLOSED'],
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang('MCP_REPORTS_OPEN_EXPLAIN') : $user->lang('MCP_REPORTS_CLOSED_EXPLAIN'),
+					'L_TITLE'				=> ($mode == 'reports') ? $user->lang('MCP_REPORTS_OPEN') : $user->lang('MCP_REPORTS_CLOSED'),
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang('ONLY_TOPIC'), $topic_info['topic_title']) : '',
 
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_FORUM_OPTIONS'		=> $forum_options,
@@ -770,7 +770,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	}
 	else
 	{
-		confirm_box(false, $user->lang[strtoupper($action) . "_{$pm_prefix}REPORT" . ((count($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
+		confirm_box(false, $user->lang(strtoupper($action) . "_{$pm_prefix}REPORT" . ((count($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'), $s_hidden_fields);
 	}
 
 	$redirect = $request->variable('redirect', "index.$phpEx");
@@ -791,15 +791,15 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		{
 			if (count($forum_ids) === 1)
 			{
-				$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+				$return_forum = sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 
 			if (count($topic_ids) === 1)
 			{
-				$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+				$return_topic = sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		trigger_error($user->lang($success_msg) . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang('RETURN_PAGE'), "<a href=\"$redirect\">", '</a>'));
 	}
 }

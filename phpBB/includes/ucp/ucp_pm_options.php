@@ -68,7 +68,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 			$user->data['user_full_folder'] = $set_folder_id;
 
-			$message = $user->lang['FULL_FOLDER_OPTION_CHANGED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+			$message = $user->lang('FULL_FOLDER_OPTION_CHANGED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
 			meta_refresh(3, $redirect_url);
 			trigger_error($message);
 		}
@@ -93,7 +93,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 				if ($row)
 				{
-					trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
+					trigger_error(sprintf($user->lang('FOLDER_NAME_EXIST'), $folder_name));
 				}
 
 				$sql = 'SELECT COUNT(folder_id) as num_folder
@@ -113,18 +113,18 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 					'folder_name'	=> $folder_name)
 				);
 				$db->sql_query($sql);
-				$msg = $user->lang['FOLDER_ADDED'];
+				$msg = $user->lang('FOLDER_ADDED');
 			}
 			else
 			{
-				$msg = $user->lang['FOLDER_NAME_EMPTY'];
+				$msg = $user->lang('FOLDER_NAME_EMPTY');
 			}
 		}
 		else
 		{
-			$msg = $user->lang['FORM_INVALID'];
+			$msg = $user->lang('FORM_INVALID');
 		}
-		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -161,14 +161,14 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				WHERE folder_id = $rename_folder_id
 					AND user_id = {$user->data['user_id']}";
 			$db->sql_query($sql);
-			$msg = $user->lang['FOLDER_RENAMED'];
+			$msg = $user->lang('FOLDER_RENAMED');
 		}
 		else
 		{
-			$msg = $user->lang['FORM_INVALID'];
+			$msg = $user->lang('FORM_INVALID');
 		}
 
-		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
 
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
@@ -273,10 +273,10 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$db->sql_query($sql);
 
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
-			$message = $user->lang['FOLDER_REMOVED'];
+			$message = $user->lang('FOLDER_REMOVED');
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -356,13 +356,13 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				WHERE user_id = ' . $user->data['user_id'];
 			$db->sql_query($sql);
 
-			$msg = $user->lang['RULE_ADDED'];
+			$msg = $user->lang('RULE_ADDED');
 		}
 		else
 		{
-			$msg = $user->lang['FORM_INVALID'];
+			$msg = $user->lang('FORM_INVALID');
 		}
-		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -387,7 +387,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$db->sql_query($sql);
 
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=' . $mode);
-			$message = $user->lang['RULE_DELETED'];
+			$message = $user->lang('RULE_DELETED');
 
 			// Reset user_message_rules if no more assigned
 			$sql = 'SELECT rule_id
@@ -407,7 +407,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			}
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -427,7 +427,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$db->sql_freeresult($result);
 
 	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'		=> $user->lang['PM_INBOX'],
+		'folder_name'		=> $user->lang('PM_INBOX'),
 		'message_status'	=> $user->lang('FOLDER_MESSAGE_STATUS', $user->lang('MESSAGES_COUNT', (int) $user->data['message_limit']), $num_messages),
 	);
 
@@ -498,7 +498,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= $config['pm_max_boxes']) ? true : false,
 		'S_MAX_FOLDER_ZERO'		=> ($config['pm_max_boxes'] == 0) ? true : false,
 
-		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
+		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang('DELETE_OLDEST_MESSAGES') : $user->lang('HOLD_NEW_MESSAGES'),
 
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string&amp;select_single=true'),
 	));

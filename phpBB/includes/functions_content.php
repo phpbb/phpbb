@@ -19,7 +19,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
+/**ctions_content.php:1519
+
 * gen_sort_selects()
 * make_jumpbox()
 * bump_topic_allowed()
@@ -49,7 +50,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 {
 	global $user, $phpbb_dispatcher;
 
-	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+	$sort_dir_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 	$sorts = array(
 		'st'	=> array(
@@ -227,7 +228,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		{
 			$tpl_ary[] = array(
 				'FORUM_ID'		=> ($select_all) ? 0 : -1,
-				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
+				'FORUM_NAME'	=> ($select_all) ? $user->lang('ALL_FORUMS') : $user->lang('SELECT_FORUM'),
 				'S_FORUM_COUNT'	=> $iteration,
 				'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
 			);
@@ -1202,7 +1203,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 			$block_array += array(
 				'S_DENIED'			=> true,
-				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
+				'DENIED_MESSAGE'	=> sprintf($user->lang('EXTENSION_DISABLED_AFTER_POSTING'), $attachment['extension'])
 			);
 		}
 
@@ -1347,7 +1348,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		$index = $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
-		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
+		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang('MISSING_INLINE_ATTACHMENT'), $matches[2][array_search($index, $matches[1])]);
 
 		$unset_tpl[] = $index;
 	}
@@ -1490,7 +1491,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		$_profile_cache['tpl_profile_colour'] = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
 	}
 
-	global $user, $auth;
+	global $user, $lang, $auth;
 
 	// This switch makes sure we only run code required for the mode
 	switch ($mode)
@@ -1516,11 +1517,11 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			// Build correct username
 			if ($guest_username === false)
 			{
-				$username = ($username) ? $username : $user->lang['GUEST'];
+				$username = ($username) ? $username : $lang->lang('GUEST');
 			}
 			else
 			{
-				$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+				$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $lang->lang('GUEST'));
 			}
 
 			// Return username
@@ -1645,7 +1646,7 @@ function phpbb_generate_string_list($items, $user)
 	{
 		$lang_key = 'STRING_LIST_SIMPLE';
 	}
-	$list = implode($user->lang['COMMA_SEPARATOR'], $items);
+	$list = implode($user->lang('COMMA_SEPARATOR'), $items);
 
 	return $user->lang($lang_key, $list, $last_item);
 }
@@ -1776,7 +1777,7 @@ function phpbb_format_quote($bbcode_status, $quote_attributes, $text_formatter_u
 		$message = $quote_string . $message;
 		$message = str_replace("\n", "\n" . $quote_string, $message);
 
-		$message_parser->message = $quote_attributes['author'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
+		$message_parser->message = $quote_attributes['author'] . " " . $user->lang('WROTE') . ":\n" . $message . "\n";
 	}
 
 	if ($message_link)

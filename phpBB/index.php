@@ -37,7 +37,7 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 		{
 			trigger_error('LOGIN_REQUIRED');
 		}
-		login_box('', $user->lang['LOGIN_REQUIRED']);
+		login_box('', $user->lang('LOGIN_REQUIRED'));
 	}
 
 	if (check_link_hash($request->variable('hash', ''), 'mark_notification_read'))
@@ -120,7 +120,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
+$legend = implode($user->lang('COMMA_SEPARATOR'), $legend);
 
 // Generate birthday list if required ...
 $show_birthdays = ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
@@ -208,7 +208,7 @@ $template->assign_vars(array(
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
 	'LEGEND'		=> $legend,
-	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),
+	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang('COMMA_SEPARATOR'), $birthday_list),
 
 	'FORUM_IMG'				=> $user->img('forum_read', 'NO_UNREAD_POSTS'),
 	'FORUM_UNREAD_IMG'			=> $user->img('forum_unread', 'UNREAD_POSTS'),
@@ -224,7 +224,7 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 
-$page_title = ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['INDEX'];
+$page_title = ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang('INDEX');
 
 /**
 * You can use this event to modify the page title and load data for the index

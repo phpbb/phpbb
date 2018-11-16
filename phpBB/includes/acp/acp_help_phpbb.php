@@ -45,7 +45,7 @@ class acp_help_phpbb
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = $user->lang('FORM_INVALID');
 		}
 		// Do not write values if there is an error
 		if (count($error))

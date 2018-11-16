@@ -156,7 +156,7 @@ class fulltext_mysql extends \phpbb\search\base
 	{
 		if ($this->db->get_sql_layer() != 'mysql4' && $this->db->get_sql_layer() != 'mysqli')
 		{
-			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
+			return $this->user->lang('FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE');
 		}
 
 		$result = $this->db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
@@ -184,7 +184,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 		if (!$fulltext_supported)
 		{
-			return $this->user->lang['FULLTEXT_MYSQL_NOT_SUPPORTED'];
+			return $this->user->lang('FULLTEXT_MYSQL_NOT_SUPPORTED');
 		}
 
 		$sql = 'SHOW VARIABLES
@@ -1155,7 +1155,7 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->user->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -1209,11 +1209,11 @@ class fulltext_mysql extends \phpbb\search\base
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang('MIN_SEARCH_CHARS') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->user->lang('MAX_SEARCH_CHARS') . $this->user->lang('COLON') . '</label><br /><span>' . $this->user->lang('FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_max_word_len'] . '</dd>
 		</dl>
 		';

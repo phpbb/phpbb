@@ -112,12 +112,12 @@ class topic_form extends form
 	{
 		if (!$this->recipient_address || !preg_match('/^' . get_preg_expression('email') . '$/i', $this->recipient_address))
 		{
-			$this->errors[] = $this->user->lang['EMPTY_ADDRESS_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_ADDRESS_EMAIL');
 		}
 
 		if (!$this->recipient_name)
 		{
-			$this->errors[] = $this->user->lang['EMPTY_NAME_EMAIL'];
+			$this->errors[] = $this->user->lang('EMPTY_NAME_EMAIL');
 		}
 
 		$this->message->set_template('email_notify');
@@ -142,7 +142,7 @@ class topic_form extends form
 	*/
 	public function get_return_message()
 	{
-		return sprintf($this->user->lang['RETURN_TOPIC'],  '<a href="' . append_sid($this->phpbb_root_path . 'viewtopic.' . $this->phpEx, 'f=' . $this->topic_row['forum_id'] . '&amp;t=' . $this->topic_id) . '">', '</a>');
+		return sprintf($this->user->lang('RETURN_TOPIC'),  '<a href="' . append_sid($this->phpbb_root_path . 'viewtopic.' . $this->phpEx, 'f=' . $this->topic_row['forum_id'] . '&amp;t=' . $this->topic_id) . '">', '</a>');
 	}
 
 	/**
@@ -159,7 +159,7 @@ class topic_form extends form
 			'S_LANG_OPTIONS'	=> language_select($this->recipient_lang),
 			'MESSAGE'			=> $this->body,
 
-			'L_EMAIL_BODY_EXPLAIN'	=> $this->user->lang['EMAIL_TOPIC_EXPLAIN'],
+			'L_EMAIL_BODY_EXPLAIN'	=> $this->user->lang('EMAIL_TOPIC_EXPLAIN'),
 			'S_POST_ACTION'			=> append_sid($this->phpbb_root_path . 'memberlist.' . $this->phpEx, 'mode=email&amp;t=' . $this->topic_id))
 		);
 	}

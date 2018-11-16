@@ -65,7 +65,7 @@ class ucp_activate
 		{
 			if (!$user->data['is_registered'])
 			{
-				login_box('', $user->lang['NO_AUTH_OPERATION']);
+				login_box('', $user->lang('NO_AUTH_OPERATION'));
 			}
 			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_OPERATION');
@@ -163,6 +163,6 @@ class ucp_activate
 		extract($phpbb_dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
 
 		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-		trigger_error($user->lang[$message]);
+		trigger_error($user->lang($message));
 	}
 }

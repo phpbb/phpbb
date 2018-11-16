@@ -110,7 +110,7 @@ class ucp_zebra
 
 						if (count($data['add']) < $n && $mode == 'foes')
 						{
-							$error[] = $user->lang['NOT_ADDED_FOES_FRIENDS'];
+							$error[] = $user->lang('NOT_ADDED_FOES_FRIENDS');
 						}
 
 						// remove foes from the username array
@@ -119,7 +119,7 @@ class ucp_zebra
 
 						if (count($data['add']) < $n && $mode == 'friends')
 						{
-							$error[] = $user->lang['NOT_ADDED_FRIENDS_FOES'];
+							$error[] = $user->lang('NOT_ADDED_FRIENDS_FOES');
 						}
 
 						// remove the user himself from the username array
@@ -128,7 +128,7 @@ class ucp_zebra
 
 						if (count($data['add']) < $n)
 						{
-							$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
+							$error[] = $user->lang('NOT_ADDED_' . $l_mode . '_SELF');
 						}
 
 						unset($friends, $foes, $n);
@@ -150,11 +150,11 @@ class ucp_zebra
 								}
 								else if ($row['user_id'] != ANONYMOUS)
 								{
-									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_BOTS'];
+									$error[] = $user->lang('NOT_ADDED_' . $l_mode . '_BOTS');
 								}
 								else
 								{
-									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
+									$error[] = $user->lang('NOT_ADDED_' . $l_mode . '_ANONYMOUS');
 								}
 							}
 							$db->sql_freeresult($result);
@@ -177,7 +177,7 @@ class ucp_zebra
 
 									if (count($perms))
 									{
-										$error[] = $user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
+										$error[] = $user->lang('NOT_ADDED_FOES_MOD_ADMIN');
 									}
 
 									// This may not be right ... it may yield true when perms equate to deny
@@ -220,20 +220,20 @@ class ucp_zebra
 							}
 							else if (!count($error))
 							{
-								$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
+								$error[] = $user->lang('USER_NOT_FOUND_OR_INACTIVE');
 							}
 						}
 					}
 
 					if ($request->is_ajax())
 					{
-						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
+						$message = ($updated) ? $user->lang($l_mode . '_UPDATED') : implode('<br />', $error);
 
 						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
 							'success' => $updated,
 
-							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TITLE'	=> $user->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'REFRESH_DATA'	=> array(
 								'time'	=> 3,
@@ -244,7 +244,7 @@ class ucp_zebra
 					else if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang($l_mode . '_UPDATED') . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 					else
@@ -254,7 +254,7 @@ class ucp_zebra
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 						'mode'		=> $mode,
 						'submit'	=> true,
 						'usernames'	=> $data['usernames'],
@@ -281,7 +281,7 @@ class ucp_zebra
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
+			'L_TITLE'			=> $user->lang('UCP_ZEBRA_' . $l_mode),
 
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'),
 

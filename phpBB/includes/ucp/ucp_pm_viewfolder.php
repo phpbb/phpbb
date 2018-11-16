@@ -59,7 +59,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 			$template->assign_block_vars('pm_colour_info', array(
 				'IMG'	=> $user->img("pm_{$var}", ''),
 				'CLASS'	=> "pm_{$var}_colour",
-				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
+				'LANG'	=> $user->lang(strtoupper($var) . '_MESSAGE'))
 			);
 		}
 
@@ -74,7 +74,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$s_mark_options = '';
 		foreach ($mark_options as $mark_option)
 		{
-			$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang[strtoupper($mark_option)] . '</option>';
+			$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang(strtoupper($mark_option)) . '</option>';
 		}
 
 		// We do the folder moving options here too, for template authors to use...
@@ -89,7 +89,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				$s_folder_move_options .= '<option' . (($f_id != PRIVMSGS_INBOX) ? ' class="sep"' : '') . ' value="' . $f_id . '">';
-				$s_folder_move_options .= sprintf($user->lang['MOVE_MARKED_TO_FOLDER'], $folder_ary['folder_name']);
+				$s_folder_move_options .= sprintf($user->lang('MOVE_MARKED_TO_FOLDER'), $folder_ary['folder_name']);
 				$s_folder_move_options .= (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 			}
 		}
@@ -167,7 +167,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_STYLE'	=> $folder_img,
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang('TOTAL_ATTACHMENTS')) : '',
 
 					'S_PM_UNREAD'		=> ($row['pm_unread']) ? true : false,
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
@@ -177,7 +177,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang('COMMA_SEPARATOR'), $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
@@ -274,7 +274,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				{
 					$address[$message_id]['u'] = array();
 					$address[$message_id]['u']['to'] = array();
-					$address[$message_id]['u']['to'][] = $user->lang['UNDISCLOSED_RECIPIENT'];
+					$address[$message_id]['u']['to'][] = $user->lang('UNDISCLOSED_RECIPIENT');
 				}
 
 				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
@@ -407,18 +407,18 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$pagination = $phpbb_container->get('pagination');
 
 	// PM ordering options
-	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+	$limit_days = array(0 => $user->lang('ALL_MESSAGES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
 
 	// No sort by Author for sentbox/outbox (already only author available)
 	// Also, sort by msg_id for the time - private messages are not as prone to errors as posts are.
 	if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 	{
-		$sort_by_text = array('t' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by_text = array('t' => $user->lang('POST_TIME'), 's' => $user->lang('SUBJECT'));
 		$sort_by_sql = array('t' => 'p.message_time', 's' => array('p.message_subject', 'p.message_time'));
 	}
 	else
 	{
-		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by_text = array('a' => $user->lang('AUTHOR'), 't' => $user->lang('POST_TIME'), 's' => $user->lang('SUBJECT'));
 		$sort_by_sql = array('a' => array('u.username_clean', 'p.message_time'), 't' => 'p.message_time', 's' => array('p.message_subject', 'p.message_time'));
 	}
 

@@ -46,7 +46,7 @@ if (!$user->data['is_registered'])
 		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	}
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
+	login_box('', $user->lang('LOGIN_EXPLAIN_MCP'));
 }
 
 $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;

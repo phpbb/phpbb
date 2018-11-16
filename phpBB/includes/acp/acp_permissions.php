@@ -64,7 +64,7 @@ class acp_permissions
 
 			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
 			{
-				$this->page_title = sprintf($user->lang['TRACE_PERMISSION'], $this->permissions->get_permission_lang($permission));
+				$this->page_title = sprintf($user->lang('TRACE_PERMISSION'), $this->permissions->get_permission_lang($permission));
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
@@ -137,7 +137,7 @@ class acp_permissions
 
 			if (!count($user_id))
 			{
-				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('SELECTED_USER_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		unset($username);
@@ -232,8 +232,8 @@ class acp_permissions
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'])
+			'L_TITLE'		=> $user->lang($this->page_title),
+			'L_EXPLAIN'		=> $user->lang($this->page_title . '_EXPLAIN'))
 		);
 
 		// Get permission type
@@ -241,7 +241,7 @@ class acp_permissions
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
-			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('WRONG_PERMISSION_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Handle actions
@@ -276,7 +276,7 @@ class acp_permissions
 						}
 						else
 						{
-							trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('NO_USER_GROUP_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					else
@@ -308,7 +308,7 @@ class acp_permissions
 						{
 							$s_hidden_fields['all_groups'] = 1;
 						}
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+						confirm_box(false, $user->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
 					}
 				break;
 
@@ -316,11 +316,11 @@ class acp_permissions
 					if (!isset($_POST['setting']))
 					{
 						send_status_line(403, 'Forbidden');
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -330,11 +330,11 @@ class acp_permissions
 					if (!isset($_POST['setting']))
 					{
 						send_status_line(403, 'Forbidden');
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -511,7 +511,7 @@ class acp_permissions
 
 				$template->assign_vars(array(
 					'S_FORUM_NAMES'		=> (count($forum_names)) ? true : false,
-					'FORUM_NAMES'		=> implode($user->lang['COMMA_SEPARATOR'], $forum_names))
+					'FORUM_NAMES'		=> implode($user->lang('COMMA_SEPARATOR'), $forum_names))
 				);
 			}
 
@@ -529,7 +529,7 @@ class acp_permissions
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (count($forum_id) && !count($user_id) && !count($group_id))
 		{
-			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('ONLY_FORUM_DEFINED') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$template->assign_vars(array(
@@ -595,7 +595,7 @@ class acp_permissions
 
 			if ($branch_there)
 			{
-				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
+				$s_options .= ' [' . $user->lang('PLUS_SUBFORUMS') . ']';
 			}
 
 			$s_options .= '</option>';
@@ -669,7 +669,7 @@ class acp_permissions
 
 		if (!count($ids))
 		{
-			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('SELECTED_' . strtoupper($mode) . '_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 
@@ -690,7 +690,7 @@ class acp_permissions
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// We loop through the auth settings defined in our submit
@@ -759,7 +759,7 @@ class acp_permissions
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
 
 		meta_refresh(5, $this->u_action);
-		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 	}
 
 	/**
@@ -777,7 +777,7 @@ class acp_permissions
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
@@ -831,12 +831,12 @@ class acp_permissions
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
 			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids));
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
+			trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
 		}
 		else
 		{
 			meta_refresh(5, $this->u_action);
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+			trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 		}
 	}
 
@@ -892,7 +892,7 @@ class acp_permissions
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (count($forum_id) ? $forum_id : false), $permission_type);
@@ -908,12 +908,12 @@ class acp_permissions
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
 			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id));
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
+			trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
 		}
 		else
 		{
 			meta_refresh(5, $this->u_action);
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+			trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 		}
 	}
 
@@ -1024,8 +1024,8 @@ class acp_permissions
 		);
 
 		$template->assign_block_vars('trace', array(
-			'WHO'			=> $user->lang['DEFAULT'],
-			'INFORMATION'	=> $user->lang['TRACE_DEFAULT'],
+			'WHO'			=> $user->lang('DEFAULT'),
+			'INFORMATION'	=> $user->lang('TRACE_DEFAULT'),
 
 			'S_SETTING_NO'		=> true,
 			'S_TOTAL_NO'		=> true)
@@ -1069,16 +1069,16 @@ class acp_permissions
 				switch ($row['auth_setting'])
 				{
 					case ACL_NO:
-						$information = $user->lang['TRACE_GROUP_NO' . $add_key];
+						$information = $user->lang('TRACE_GROUP_NO' . $add_key);
 					break;
 
 					case ACL_YES:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_YES_TOTAL_NO' . $add_key]);
+						$information = ($total == ACL_YES) ? $user->lang('TRACE_GROUP_YES_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $user->lang('TRACE_GROUP_YES_TOTAL_NEVER' . $add_key) : $user->lang('TRACE_GROUP_YES_TOTAL_NO' . $add_key));
 						$total = ($total == ACL_NO) ? ACL_YES : $total;
 					break;
 
 					case ACL_NEVER:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_NEVER_TOTAL_NO' . $add_key]);
+						$information = ($total == ACL_YES) ? $user->lang('TRACE_GROUP_NEVER_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $user->lang('TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key) : $user->lang('TRACE_GROUP_NEVER_TOTAL_NO' . $add_key));
 						$total = ACL_NEVER;
 					break;
 				}
@@ -1104,17 +1104,17 @@ class acp_permissions
 		switch ($auth_setting)
 		{
 			case ACL_NO:
-				$information = ($total == ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO' . $add_key] : $user->lang['TRACE_USER_KEPT' . $add_key];
+				$information = ($total == ACL_NO) ? $user->lang('TRACE_USER_NO_TOTAL_NO' . $add_key) : $user->lang('TRACE_USER_KEPT' . $add_key);
 				$total = ($total == ACL_NO) ? ACL_NEVER : $total;
 			break;
 
 			case ACL_YES:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_YES_TOTAL_NO' . $add_key]);
+				$information = ($total == ACL_YES) ? $user->lang('TRACE_USER_YES_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $user->lang('TRACE_USER_YES_TOTAL_NEVER' . $add_key) : $user->lang('TRACE_USER_YES_TOTAL_NO' . $add_key));
 				$total = ($total == ACL_NO) ? ACL_YES : $total;
 			break;
 
 			case ACL_NEVER:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_NEVER_TOTAL_NO' . $add_key]);
+				$information = ($total == ACL_YES) ? $user->lang('TRACE_USER_NEVER_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $user->lang('TRACE_USER_NEVER_TOTAL_NEVER' . $add_key) : $user->lang('TRACE_USER_NEVER_TOTAL_NO' . $add_key));
 				$total = ACL_NEVER;
 			break;
 		}
@@ -1146,19 +1146,19 @@ class acp_permissions
 
 			if ($auth_setting)
 			{
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_YES'] : $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_NEVER'];
+				$information = ($total == ACL_YES) ? $user->lang('TRACE_USER_GLOBAL_YES_TOTAL_YES') : $user->lang('TRACE_USER_GLOBAL_YES_TOTAL_NEVER');
 				$total = ACL_YES;
 			}
 			else
 			{
-				$information = $user->lang['TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'];
+				$information = $user->lang('TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT');
 			}
 
 			// If there is no auth information we do not need to worry the user by showing non-relevant data.
 			if ($auth_setting)
 			{
 				$template->assign_block_vars('trace', array(
-					'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
+					'WHO'			=> sprintf($user->lang('TRACE_GLOBAL_SETTING'), $userdata['username']),
 					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
 					'S_SETTING_NO'		=> false,
@@ -1176,7 +1176,7 @@ class acp_permissions
 		{
 			$template->assign_block_vars('trace', array(
 				'WHO'			=> $userdata['username'],
-				'INFORMATION'	=> $user->lang['TRACE_USER_FOUNDER'],
+				'INFORMATION'	=> $user->lang('TRACE_USER_FOUNDER'),
 
 				'S_SETTING_NO'		=> ($auth_setting == ACL_NO) ? true : false,
 				'S_SETTING_YES'		=> ($auth_setting == ACL_YES) ? true : false,
@@ -1222,11 +1222,11 @@ class acp_permissions
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
-					trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang['SELECTED_FORUM_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('SELECTED_FORUM_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 			else
@@ -1239,7 +1239,7 @@ class acp_permissions
 
 				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-				confirm_box(false, $user->lang['COPY_PERMISSIONS_CONFIRM'], $s_hidden_fields);
+				confirm_box(false, $user->lang('COPY_PERMISSIONS_CONFIRM'), $s_hidden_fields);
 			}
 		}
 

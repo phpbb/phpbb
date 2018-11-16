@@ -160,7 +160,7 @@ function get_folder($user_id, $folder_id = false)
 	$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
 
 	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'		=> $user->lang['PM_INBOX'],
+		'folder_name'		=> $user->lang('PM_INBOX'),
 		'num_messages'		=> $num_messages[PRIVMSGS_INBOX],
 		'unread_messages'	=> $num_unread[PRIVMSGS_INBOX]
 	);
@@ -182,13 +182,13 @@ function get_folder($user_id, $folder_id = false)
 	$db->sql_freeresult($result);
 
 	$folder[PRIVMSGS_OUTBOX] = array(
-		'folder_name'		=> $user->lang['PM_OUTBOX'],
+		'folder_name'		=> $user->lang('PM_OUTBOX'),
 		'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
 		'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
 	);
 
 	$folder[PRIVMSGS_SENTBOX] = array(
-		'folder_name'		=> $user->lang['PM_SENTBOX'],
+		'folder_name'		=> $user->lang('PM_SENTBOX'),
 		'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
 		'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
 	);
@@ -807,8 +807,8 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if ($message_limit && $row['pm_count'] + count($move_msg_ids) > $message_limit)
 			{
-				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $row['folder_name']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
+				$message = sprintf($user->lang('NOT_ENOUGH_SPACE_FOLDER'), $row['folder_name']) . '<br /><br />';
+				$message .= sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
 				trigger_error($message);
 			}
 		}
@@ -824,8 +824,8 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if ($message_limit && $num_messages + count($move_msg_ids) > $message_limit)
 			{
-				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
+				$message = sprintf($user->lang('NOT_ENOUGH_SPACE_FOLDER'), $user->lang('PM_INBOX')) . '<br /><br />';
+				$message .= sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang('PM_INBOX'));
 				trigger_error($message);
 			}
 		}
@@ -985,7 +985,7 @@ function handle_mark_actions($user_id, $mark_action)
 				$redirect = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $cur_folder_id);
 
 				meta_refresh(3, $redirect);
-				trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($user->lang($success_msg) . '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $redirect . '">', '</a>'));
 			}
 			else
 			{
@@ -2026,11 +2026,11 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	{
 		$folder_id = (int) $row['folder_id'];
 
-		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang('UNKNOWN_FOLDER');
 
 		if (isset($rowset[$row['msg_id']]))
 		{
-			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang('UNKNOWN_FOLDER');
 		}
 		else
 		{
@@ -2099,7 +2099,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'SUBJECT'			=> $subject,
 			'SENT_DATE'			=> $user->format_date($row['message_time']),
 			'MESSAGE'			=> $message,
-			'FOLDER'			=> implode($user->lang['COMMA_SEPARATOR'], $row['folder']),
+			'FOLDER'			=> implode($user->lang('COMMA_SEPARATOR'), $row['folder']),
 			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
@@ -2118,7 +2118,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	}
 
 	$template->assign_vars(array(
-		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
+		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang('REPLY_WITH_QUOTE')),
 		'HISTORY_TITLE'		=> $title,
 
 		'U_VIEW_NEXT_HISTORY'		=> ($next_history_pm) ? "$url&amp;p=" . $next_history_pm : '',
@@ -2203,7 +2203,7 @@ function get_recipient_strings($pm_by_id)
 			{
 				foreach ($address[$message_id][$ug_type] as $ug_id => $in_to)
 				{
-					$recipient_list[$ug_type][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+					$recipient_list[$ug_type][$ug_id] = array('name' => $user->lang('NA'), 'colour' => '');
 				}
 			}
 		}

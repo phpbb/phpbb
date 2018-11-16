@@ -254,7 +254,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				$this->module_manager->update_module_data($module_data);
 
 				// Success
-				$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
+				$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang($data['module_langname']) : $data['module_langname']);
 				$phpbb_log->add('admin', (isset($user->data['user_id'])) ? $user->data['user_id'] : ANONYMOUS, $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
 
 				// Move the module if requested above/below an existing one

@@ -93,7 +93,7 @@ class acp_contact
 					'contact_admin_info_flags'		=> $contact_admin_info_flags,
 				));
 
-				trigger_error($user->lang['CONTACT_US_INFO_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('CONTACT_US_INFO_UPDATED') . adm_back_link($this->u_action));
 			}
 		}
 
@@ -120,10 +120,10 @@ class acp_contact
 			'S_MAGIC_URL_DISABLE_CHECKED'	=> !$contact_admin_edit['allow_urls'],
 
 			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
-			'SMILIES_STATUS'		=> $user->lang['SMILIES_ARE_ON'],
-			'IMG_STATUS'			=> $user->lang['IMAGES_ARE_ON'],
-			'FLASH_STATUS'			=> $user->lang['FLASH_IS_ON'],
-			'URL_STATUS'			=> $user->lang['URL_IS_ON'],
+			'SMILIES_STATUS'		=> $user->lang('SMILIES_ARE_ON'),
+			'IMG_STATUS'			=> $user->lang('IMAGES_ARE_ON'),
+			'FLASH_STATUS'			=> $user->lang('FLASH_IS_ON'),
+			'URL_STATUS'			=> $user->lang('URL_IS_ON'),
 
 			'S_BBCODE_ALLOWED'		=> true,
 			'S_SMILIES_ALLOWED'		=> true,

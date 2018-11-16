@@ -155,7 +155,7 @@ function phpbb_gmgetdate($time = false)
 */
 function get_formatted_filesize($value, $string_only = true, $allowed_units = false)
 {
-	global $user;
+	global $lang;
 
 	$available_units = array(
 		'tb' => array(
@@ -213,8 +213,8 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 	$value = round($value, 2);
 
 	// Lookup units in language dictionary
-	$unit_info['si_unit'] = (isset($user->lang[$unit_info['si_unit']])) ? $user->lang[$unit_info['si_unit']] : $unit_info['si_unit'];
-	$unit_info['iec_unit'] = (isset($user->lang[$unit_info['iec_unit']])) ? $user->lang[$unit_info['iec_unit']] : $unit_info['iec_unit'];
+	$unit_info['si_unit'] = (isset($user->lang[$unit_info['si_unit']])) ? $lang->lang($unit_info['si_unit']) : $unit_info['si_unit'];
+	$unit_info['iec_unit'] = (isset($user->lang[$unit_info['iec_unit']])) ? $lang->lang($unit_info['iec_unit']) : $unit_info['iec_unit'];
 
 	// Default to IEC
 	$unit_info['unit'] = $unit_info['iec_unit'];
@@ -488,7 +488,7 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 			$tz = new DateTimeZone($timezone);
 			$dt = $user->create_datetime('now', $tz);
 			$offset = $dt->getOffset();
-			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
+			$current_time = $dt->format($user->lang('DATETIME_FORMAT'), true);
 			$offset_string = phpbb_format_timezone_offset($offset, true);
 			$timezones['UTC' . $offset_string . ' - ' . $timezone] = array(
 				'tz'		=> $timezone,
@@ -1716,11 +1716,11 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $user, $phpbb_path_helper, $phpbb_dispatcher;
+	global $user, $lang, $phpbb_path_helper, $phpbb_dispatcher;
 
 	if (!$user->is_setup())
 	{
-		$user->add_lang('common');
+		$lang->add_lang('common');
 	}
 
 	// Make sure no &amp;'s are in, this will break the redirect
@@ -1824,15 +1824,15 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		header('Refresh: 0; URL=' . $url);
 
 		echo '<!DOCTYPE html>';
-		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
+		echo '<html dir="' . $lang->lang('DIRECTION') . '" lang="' . $lang->lang('USER_LANG') . '">';
 		echo '<head>';
 		echo '<meta charset="utf-8">';
 		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
-		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
+		echo '<title>' . $lang->lang('REDIRECT') . '</title>';
 		echo '</head>';
 		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
+		echo '<div style="text-align: center;">' . sprintf($lang->lang('URL_REDIRECT'), '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
 		echo '</body>';
 		echo '</html>';
 
@@ -2128,7 +2128,7 @@ function check_form_key($form_name, $timespan = false)
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $user, $template, $db, $request;
+	global $user, $lang, $lang, $template, $db, $request;
 	global $config, $phpbb_path_helper;
 
 	if (isset($_POST['cancel']))
@@ -2136,7 +2136,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
+	$confirm = ($lang->lang('YES') === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -2172,11 +2172,11 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
-		adm_page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		adm_page_header((!isset($user->lang[$title])) ? $lang->lang('CONFIRM') : $lang->lang($title));
 	}
 	else
 	{
-		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		page_header((!isset($user->lang[$title])) ? $lang->lang('CONFIRM') : $lang->lang($title));
 	}
 
 	$template->set_filenames(array(
@@ -2196,10 +2196,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang($title, 1),
-		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $lang->lang('CONFIRM') : $lang->lang($title, 1),
+		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $lang->lang($title . '_CONFIRM'),
 
-		'YES_VALUE'			=> $user->lang['YES'],
+		'YES_VALUE'			=> $lang->lang('YES'),
 		'S_CONFIRM_ACTION'	=> $u_action,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields,
 		'S_AJAX_REQUEST'	=> $request->is_ajax(),
@@ -2215,10 +2215,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$json_response = new \phpbb\json_response;
 		$json_response->send(array(
 			'MESSAGE_BODY'		=> $template->assign_display('body'),
-			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
-			'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $lang->lang('CONFIRM') : $lang->lang($title),
+			'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $lang->lang($title . '_CONFIRM'),
 
-			'YES_VALUE'			=> $user->lang['YES'],
+			'YES_VALUE'			=> $lang->lang('YES'),
 			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
 			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields
 		));
@@ -2239,7 +2239,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
+	global $user, $lang, $template, $auth, $phpEx, $phpbb_root_path, $config;
 	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 	$err = '';
@@ -2382,7 +2382,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
-					$user->lang[$result['error_msg']],
+					$lang->lang($result['error_msg']),
 					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
 					'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
@@ -2403,12 +2403,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			// Username, password, etc...
 			default:
-				$err = $user->lang[$result['error_msg']];
+				$err = $lang->lang($result['error_msg']);
 
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = sprintf($user->lang[$result['error_msg']], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
+					$err = sprintf($lang->lang($result['error_msg']), '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 				}
 
 			break;
@@ -2514,7 +2514,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$template->assign_vars($login_box_template_data);
 
-	page_header($user->lang['LOGIN']);
+	page_header($lang->lang('LOGIN'));
 
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
@@ -2529,7 +2529,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $phpbb_container, $request, $template, $user, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+	global $db, $phpbb_container, $request, $template, $user, $lang, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 	$password = $request->variable('password', '', true);
 
@@ -2588,7 +2588,7 @@ function login_forum_box($forum_data)
 			return true;
 		}
 
-		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
+		$template->assign_var('LOGIN_ERROR', $lang->lang('WRONG_PASSWORD'));
 	}
 
 	/**
@@ -2602,7 +2602,7 @@ function login_forum_box($forum_data)
 	$vars = array('forum_data', 'password');
 	extract($phpbb_dispatcher->trigger_event('core.login_forum_box', compact($vars)));
 
-	page_header($user->lang['LOGIN']);
+	page_header($lang->lang('LOGIN'));
 
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
@@ -3267,7 +3267,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $cache, $db, $auth, $template, $config, $user, $request;
+	global $cache, $db, $auth, $template, $config, $user, $lang, $request;
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
 
 	// Do not display notices if we suppress them via @
@@ -3317,15 +3317,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!empty($user) && $user->is_setup())
 			{
-				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+				$msg_text = (!empty($user->lang[$msg_text])) ? $lang->lang($msg_text) : $msg_text;
+				$msg_title = (!isset($msg_title)) ? $lang->lang('GENERAL_ERROR') : ((!empty($user->lang[$msg_title])) ? $lang->lang($msg_title) : $msg_title);
 
-				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_return_index = sprintf($lang->lang('RETURN_INDEX'), '<a href="' . $phpbb_root_path . '">', '</a>');
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
 				{
-					$l_notify = '<p>' . sprintf($user->lang['NOTIFY_ADMIN_EMAIL'], $config['board_contact']) . '</p>';
+					$l_notify = '<p>' . sprintf($lang->lang('NOTIFY_ADMIN_EMAIL'), $config['board_contact']) . '</p>';
 				}
 			}
 			else
@@ -3446,8 +3446,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				send_status_line(404, 'Not Found');
 			}
 
-			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+			$msg_text = (!empty($user->lang[$msg_text])) ? $lang->lang($msg_text) : $msg_text;
+			$msg_title = (!isset($msg_title)) ? $lang->lang('INFORMATION') : ((!empty($user->lang[$msg_title])) ? $lang->lang($msg_title) : $msg_title);
 
 			if (!defined('HEADER_INC'))
 			{
@@ -3657,7 +3657,7 @@ function obtain_users_online($item_id = 0, $item = 'forum')
 */
 function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum')
 {
-	global $config, $db, $user, $auth, $phpbb_dispatcher;
+	global $config, $db, $user, $lang, $auth, $phpbb_dispatcher;
 
 	$user_online_link = $rowset = array();
 	// Need caps version of $item for language-strings
@@ -3740,33 +3740,33 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 
 	if (!$online_userlist)
 	{
-		$online_userlist = $user->lang['NO_ONLINE_USERS'];
+		$online_userlist = $lang->lang('NO_ONLINE_USERS');
 	}
 
 	if ($item_id === 0)
 	{
-		$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
+		$online_userlist = $lang->lang('REGISTERED_USERS') . ' ' . $online_userlist;
 	}
 	else if ($config['load_online_guests'])
 	{
-		$online_userlist = $user->lang('BROWSING_' . $item_caps . '_GUESTS', $online_users['guests_online'], $online_userlist);
+		$online_userlist = $lang->lang('BROWSING_' . $item_caps . '_GUESTS', $online_users['guests_online'], $online_userlist);
 	}
 	else
 	{
-		$online_userlist = sprintf($user->lang['BROWSING_' . $item_caps], $online_userlist);
+		$online_userlist = sprintf($lang->lang('BROWSING_' . $item_caps), $online_userlist);
 	}
 	// Build online listing
-	$visible_online = $user->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
-	$hidden_online = $user->lang('HIDDEN_USERS_TOTAL', (int) $online_users['hidden_online']);
+	$visible_online = $lang->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
+	$hidden_online = $lang->lang('HIDDEN_USERS_TOTAL', (int) $online_users['hidden_online']);
 
 	if ($config['load_online_guests'])
 	{
-		$guests_online = $user->lang('GUEST_USERS_TOTAL', (int) $online_users['guests_online']);
-		$l_online_users = $user->lang('ONLINE_USERS_TOTAL_GUESTS', (int) $online_users['total_online'], $visible_online, $hidden_online, $guests_online);
+		$guests_online = $lang->lang('GUEST_USERS_TOTAL', (int) $online_users['guests_online']);
+		$l_online_users = $lang->lang('ONLINE_USERS_TOTAL_GUESTS', (int) $online_users['total_online'], $visible_online, $hidden_online, $guests_online);
 	}
 	else
 	{
-		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
+		$l_online_users = $lang->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
 	}
 
 	/**
@@ -4079,7 +4079,7 @@ function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config
 */
 function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 {
-	global $user, $config;
+	global $user, $lang, $config;
 	global $phpbb_container, $phpbb_dispatcher;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
@@ -4134,7 +4134,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 		$html = '<img class="avatar" ' . $src . ' ' .
 			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
 			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
-			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+			'alt="' . ((!empty($user->lang[$alt])) ? $lang->lang($alt) : $alt) . '" />';
 	}
 
 	/**
@@ -4159,7 +4159,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 */
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
-	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
+	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $lang, $auth, $phpEx, $phpbb_root_path;
 	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
 
 	if (defined('HEADER_INC'))
@@ -4223,13 +4223,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
-		$l_login_logout = $user->lang['LOGOUT'];
+		$l_login_logout = $lang->lang('LOGOUT');
 	}
 	else
 	{
 		$redirect = $request->variable('redirect', rawurlencode($user->page['page']));
 		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
-		$l_login_logout = $user->lang['LOGIN'];
+		$l_login_logout = $lang->lang('LOGIN');
 	}
 
 	// Last visit date/time
@@ -4259,9 +4259,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 			$config->set('record_online_date', time(), false);
 		}
 
-		$l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
+		$l_online_record = $lang->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));
 
-		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
+		$l_online_time = $lang->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
 	$s_privmsg_new = false;
@@ -4318,7 +4318,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
-	$user_lang = $user->lang['USER_LANG'];
+	$user_lang = $lang->lang('USER_LANG');
 	if (strpos($user_lang, '-x-') !== false)
 	{
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
@@ -4340,7 +4340,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	$dt = $user->create_datetime();
-	$timezone_offset = $user->lang(array('timezones', 'UTC_OFFSET'), phpbb_format_timezone_offset($dt->getOffset()));
+	$timezone_offset = $lang->lang(array('timezones', 'UTC_OFFSET'), phpbb_format_timezone_offset($dt->getOffset()));
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
@@ -4378,9 +4378,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
 		'SCRIPT_NAME'					=> str_replace('.' . $phpEx, '', $user->page['page_name']),
-		'LAST_VISIT_DATE'				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
+		'LAST_VISIT_DATE'				=> sprintf($lang->lang('YOU_LAST_VISIT'), $s_last_visit),
 		'LAST_VISIT_YOU'				=> $s_last_visit,
-		'CURRENT_TIME'					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
+		'CURRENT_TIME'					=> sprintf($lang->lang('CURRENT_TIME'), $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
@@ -4409,8 +4409,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'PHPBB_MAJOR'		=> $phpbb_major,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
-		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
-		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
+		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $lang->lang('FORUM_INDEX'),
+		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $lang->lang('HOME'),
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
@@ -4446,13 +4446,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_REGISTERED_USER'		=> (!empty($user->data['is_registered'])) ? true : false,
 		'S_IS_BOT'				=> (!empty($user->data['is_bot'])) ? true : false,
 		'S_USER_LANG'			=> $user_lang,
-		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
+		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $lang->lang('UNKNOWN_BROWSER'),
 		'S_USERNAME'			=> $user->data['username'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_DIRECTION'	=> $lang->lang('DIRECTION'),
+		'S_CONTENT_FLOW_BEGIN'	=> ($lang->lang('DIRECTION') == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($lang->lang('DIRECTION') == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_TIMEZONE'			=> sprintf($user->lang['ALL_TIMES'], $timezone_offset, $timezone_name),
+		'S_TIMEZONE'			=> sprintf($lang->lang('ALL_TIMES'), $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && !empty($user->data['is_registered']) && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
@@ -4643,7 +4643,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $phpEx;
+	global $db, $config, $template, $user, $lang, $auth, $cache, $phpEx;
 	global $request, $phpbb_dispatcher, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
@@ -4670,8 +4670,8 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
-		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
+		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $lang->lang('TRANSLATION_INFO') : '',
+		'CREDIT_LINE'			=> $lang->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
 		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
 	);

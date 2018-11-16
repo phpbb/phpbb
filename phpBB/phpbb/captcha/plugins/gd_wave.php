@@ -37,6 +37,6 @@ class gd_wave extends captcha_abstract
 	{
 		global $user;
 
-		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
+		trigger_error($user->lang('CAPTCHA_NO_OPTIONS') . adm_back_link($module->u_action));
 	}
 }

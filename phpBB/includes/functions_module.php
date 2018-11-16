@@ -976,7 +976,7 @@ class p_master
 			return '';
 		}
 
-		return (isset($user->lang[$this->module->page_title])) ? $user->lang[$this->module->page_title] : $this->module->page_title;
+		return (isset($user->lang[$this->module->page_title])) ? $user->lang($this->module->page_title) : $this->module->page_title;
 	}
 
 	/**
