@@ -627,7 +627,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 			}
 			else
 			{
-				$bbcode->bbcode($bitfield);
+				$bbcode->bbcode_set_bitfield($bitfield);
 			}
 
 			$bbcode->bbcode_second_pass($text, $uid);
