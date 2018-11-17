@@ -1832,7 +1832,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '<title>' . $lang->lang('REDIRECT') . '</title>';
 		echo '</head>';
 		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($lang->lang('URL_REDIRECT'), '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
+		echo '<div style="text-align: center;">' . $lang->lang('URL_REDIRECT', '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
 		echo '</body>';
 		echo '</html>';
 
@@ -2408,7 +2408,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = sprintf($lang->lang($result['error_msg']), '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
+					$err = $lang->lang($result['error_msg'], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 				}
 
 			break;
@@ -3320,12 +3320,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$msg_text = (!empty($user->lang[$msg_text])) ? $lang->lang($msg_text) : $msg_text;
 				$msg_title = (!isset($msg_title)) ? $lang->lang('GENERAL_ERROR') : ((!empty($user->lang[$msg_title])) ? $lang->lang($msg_title) : $msg_title);
 
-				$l_return_index = sprintf($lang->lang('RETURN_INDEX'), '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_return_index = $lang->lang('RETURN_INDEX', '<a href="' . $phpbb_root_path . '">', '</a>');
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
 				{
-					$l_notify = '<p>' . sprintf($lang->lang('NOTIFY_ADMIN_EMAIL'), $config['board_contact']) . '</p>';
+					$l_notify = '<p>' . $lang->lang('NOTIFY_ADMIN_EMAIL', $config['board_contact']) . '</p>';
 				}
 			}
 			else
@@ -3753,7 +3753,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	}
 	else
 	{
-		$online_userlist = sprintf($lang->lang('BROWSING_' . $item_caps), $online_userlist);
+		$online_userlist = $lang->lang('BROWSING_' . $item_caps, $online_userlist);
 	}
 	// Build online listing
 	$visible_online = $lang->lang('REG_USERS_TOTAL', (int) $online_users['visible_online']);
@@ -4378,9 +4378,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
 		'SCRIPT_NAME'					=> str_replace('.' . $phpEx, '', $user->page['page_name']),
-		'LAST_VISIT_DATE'				=> sprintf($lang->lang('YOU_LAST_VISIT'), $s_last_visit),
+		'LAST_VISIT_DATE'				=> $lang->lang('YOU_LAST_VISIT', $s_last_visit),
 		'LAST_VISIT_YOU'				=> $s_last_visit,
-		'CURRENT_TIME'					=> sprintf($lang->lang('CURRENT_TIME'), $user->format_date(time(), false, true)),
+		'CURRENT_TIME'					=> $lang->lang('CURRENT_TIME', $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
@@ -4452,7 +4452,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_CONTENT_FLOW_BEGIN'	=> ($lang->lang('DIRECTION') == 'ltr') ? 'left' : 'right',
 		'S_CONTENT_FLOW_END'	=> ($lang->lang('DIRECTION') == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_TIMEZONE'			=> sprintf($lang->lang('ALL_TIMES'), $timezone_offset, $timezone_name),
+		'S_TIMEZONE'			=> $lang->lang('ALL_TIMES', $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && !empty($user->data['is_registered']) && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
