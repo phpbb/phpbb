@@ -453,11 +453,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $length < $validator[$min])
 				{
-					$error[] = $user->lang('SETTING_TOO_SHORT', $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $length > $validator[2])
 				{
-					$error[] = $user->lang('SETTING_TOO_LONG', $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
 				}
 			break;
 
@@ -470,11 +470,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $cfg_array[$config_name] < $validator[$min])
 				{
-					$error[] = $user->lang('SETTING_TOO_LOW', $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $cfg_array[$config_name] > $validator[$max])
 				{
-					$error[] = $user->lang('SETTING_TOO_BIG', $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$config_definition['lang']], $validator[$max]);
 				}
 
 				if (strpos($config_name, '_max') !== false)
@@ -487,7 +487,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					if (isset($cfg_array[$min_name]) && is_numeric($cfg_array[$min_name]) && $cfg_array[$config_name] < $cfg_array[$min_name])
 					{
 						// A minimum value exists and the maximum value is less than it
-						$error[] = $user->lang('SETTING_TOO_LOW', $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
+						$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
 					}
 				}
 			break;
@@ -589,12 +589,12 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (!file_exists($path))
 				{
-					$error[] = $user->lang('DIRECTORY_DOES_NOT_EXIST', $cfg_array[$config_name]);
+					$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
 				}
 
 				if (file_exists($path) && !is_dir($path))
 				{
-					$error[] = $user->lang('DIRECTORY_NOT_DIR', $cfg_array[$config_name]);
+					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
 				}
 
 				// Check if the path is writable
@@ -602,7 +602,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				{
 					if (file_exists($path) && !$phpbb_filesystem->is_writable($path))
 					{
-						$error[] = $user->lang('DIRECTORY_NOT_WRITABLE', $cfg_array[$config_name]);
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}
 				}
 
@@ -671,7 +671,7 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
 				if (utf8_strlen($value['value']) > $max)
 				{
-					$error[] = $user->lang('SETTING_TOO_LONG', $user->lang[$value['lang']], $max);
+					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
 				}
 			break;
 
@@ -680,11 +680,11 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
 				if ($value['value'] < $min)
 				{
-					$error[] = $user->lang('SETTING_TOO_LOW', $user->lang[$value['lang']], $min);
+					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$value['lang']], $min);
 				}
 				else if ($value['value'] > $max)
 				{
-					$error[] = $user->lang('SETTING_TOO_BIG', $user->lang[$value['lang']], $max);
+					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$value['lang']], $max);
 				}
 			break;
 		}

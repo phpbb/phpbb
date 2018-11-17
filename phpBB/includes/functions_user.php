@@ -585,7 +585,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 			case 'retain':
 				if ($retain_username === false)
 				{
-					$post_username = $user->lang('GUEST');
+					$post_username = $user->lang['GUEST'];
 				}
 				else
 				{
