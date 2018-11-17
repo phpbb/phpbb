@@ -230,7 +230,7 @@ if ($mark_read == 'topics')
 		$json_response->send($data);
 	}
 
-	trigger_error($user->lang('TOPICS_MARKED') . '<br /><br />' . sprintf($user->lang('RETURN_FORUM'), '<a href="' . $redirect_url . '">', '</a>'));
+	trigger_error($user->lang('TOPICS_MARKED') . '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . $redirect_url . '">', '</a>'));
 }
 
 // Do the forum Prune thang - cron type job ...

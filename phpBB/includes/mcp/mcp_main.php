@@ -729,9 +729,9 @@ function mcp_move_topic($topic_ids)
 		meta_refresh(3, $redirect);
 
 		$message = $user->lang($success_msg);
-		$message .= '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id") . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang('RETURN_NEW_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$to_forum_id") . '">', '</a>');
+		$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+		$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id") . '">', '</a>');
+		$message .= '<br /><br />' . $user->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$to_forum_id") . '">', '</a>');
 
 		trigger_error($message);
 	}
@@ -1067,9 +1067,9 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$return_link = array();
 		if ($affected_topics == 1 && $topic_id)
 		{
-			$return_link[] = sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+			$return_link[] = $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
 		}
-		$return_link[] = sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		$return_link[] = $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 	}
 	else if (confirm_box(true))
@@ -1128,9 +1128,9 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$return_link = array();
 		if ($affected_topics == 1 && !$deleted_topics && $topic_id)
 		{
-			$return_link[] = sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+			$return_link[] = $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
 		}
-		$return_link[] = sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		$return_link[] = $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 		if (count($post_ids) == 1)
 		{
@@ -1213,7 +1213,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		}
 
 		meta_refresh(3, $redirect);
-		trigger_error($success_msg . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
+		trigger_error($success_msg . '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 	}
 }
 
@@ -1643,11 +1643,11 @@ function mcp_fork_topic($topic_ids)
 	{
 		$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 		meta_refresh(3, $redirect_url);
-		$return_link = sprintf($user->lang('RETURN_FORUM'), '<a href="' . $redirect_url . '">', '</a>');
+		$return_link = $user->lang('RETURN_FORUM', '<a href="' . $redirect_url . '">', '</a>');
 
 		if ($forum_id != $to_forum_id)
 		{
-			$return_link .= '<br /><br />' . sprintf($user->lang('RETURN_NEW_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $to_forum_id) . '">', '</a>');
+			$return_link .= '<br /><br />' . $user->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $to_forum_id) . '">', '</a>');
 		}
 
 		trigger_error($user->lang($success_msg) . '<br /><br />' . $return_link);

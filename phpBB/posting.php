@@ -725,8 +725,8 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 			meta_refresh(3, $meta_info);
 
 			$message = $user->lang('DRAFT_SAVED') . '<br /><br />';
-			$message .= ($mode != 'post') ? sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
-			$message .= sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			$message .= ($mode != 'post') ? $user->lang('RETURN_TOPIC', '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
+			$message .= $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 			trigger_error($message);
 		}
@@ -1275,7 +1275,7 @@ if ($submit || $preview || $refresh)
 	{
 		if (($dnsbl = $user->check_dnsbl('post')) !== false)
 		{
-			$error[] = sprintf($user->lang('IP_BLACKLISTED'), $user->ip, $dnsbl[1]);
+			$error[] = $user->lang('IP_BLACKLISTED', $user->ip, $dnsbl[1]);
 		}
 	}
 
@@ -1497,7 +1497,7 @@ if ($submit || $preview || $refresh)
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang('POST_EDITED_MOD') : $user->lang('POST_STORED_MOD');
 				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang('POST_APPROVAL_NOTIFY'));
-				$message .= '<br /><br />' . sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+				$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
 				trigger_error($message);
 			}
 
@@ -1554,7 +1554,7 @@ if (!count($error) && $preview)
 
 			'POLL_QUESTION'		=> $parse_poll->message,
 
-			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang('POLL_RUN_TILL'), $user->format_date($poll_end)) : '',
+			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? $user->lang('POLL_RUN_TILL', $user->format_date($poll_end)) : '',
 			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
 		));
 

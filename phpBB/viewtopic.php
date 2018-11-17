@@ -921,7 +921,7 @@ if (!empty($topic_data['poll_start']))
 				$message = 'FORM_INVALID';
 			}
 
-			$message = $user->lang($message) . '<br /><br />' . sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $redirect_url . '">', '</a>');
+			$message = $user->lang($message) . '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $redirect_url . '">', '</a>');
 			trigger_error($message);
 		}
 
@@ -989,7 +989,7 @@ if (!empty($topic_data['poll_start']))
 		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
-		$message = $user->lang('VOTE_SUBMITTED') . '<br /><br />' . sprintf($user->lang('RETURN_TOPIC'), '<a href="' . $redirect_url . '">', '</a>');
+		$message = $user->lang('VOTE_SUBMITTED') . '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $redirect_url . '">', '</a>');
 
 		if ($request->is_ajax())
 		{
@@ -1858,7 +1858,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		// It is safe to grab the username from the user cache array, we are at the last
 		// post and only the topic poster and last poster are allowed to bump.
 		// Admins and mods are bound to the above rules too...
-		$l_bumped_by = sprintf($user->lang('BUMPED_BY'), $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
+		$l_bumped_by = $user->lang('BUMPED_BY', $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
 	}
 	else
 	{
@@ -2057,7 +2057,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'S_FIRST_POST'		=> ($topic_data['topic_first_post_id'] == $row['post_id']) ? true : false,
 
 		'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang('POST_BY_FOE'), get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
+		'L_IGNORE_POST'		=> ($row['foe']) ? $user->lang('POST_BY_FOE', get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		'S_POST_HIDDEN'		=> $row['hide_post'],
 		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 		'S_DELETE_PERMANENT'	=> $permanent_delete_allowed,
@@ -2338,7 +2338,7 @@ if (!$request->variable('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
-$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang('PAGE_TITLE_NUMBER'), $pagination->get_on_page($config['posts_per_page'], $start)) : '');
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . $user->lang('PAGE_TITLE_NUMBER', $pagination->get_on_page($config['posts_per_page'], $start)) : '');
 
 /**
 * You can use this event to modify the page title of the viewtopic page

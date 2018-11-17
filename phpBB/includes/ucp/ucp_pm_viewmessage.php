@@ -40,7 +40,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 		$message = $user->lang('NO_AUTH_READ_REMOVED_MESSAGE');
 
-		$message .= '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
+		$message .= '<br /><br />' . $user->lang('RETURN_FOLDER', '<a href="' . $meta_info . '">', '</a>');
 		send_status_line(403, 'Forbidden');
 		trigger_error($message);
 	}

@@ -229,7 +229,7 @@ class acp_language
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, array($row['lang_english_name']));
 
-					$delete_message = sprintf($user->lang('LANGUAGE_PACK_DELETED'), $row['lang_english_name']);
+					$delete_message = $user->lang('LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 					$lang_iso = $row['lang_iso'];
 					/**
 					 * Run code after language deleted
@@ -352,7 +352,7 @@ class acp_language
 
 				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_INSTALLED', false, array($lang_pack['name']));
 
-				$message = sprintf($user->lang('LANGUAGE_PACK_INSTALLED'), $lang_pack['name']);
+				$message = $user->lang('LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang('LANGUAGE_PACK_CPF_UPDATE') : '';
 				trigger_error($message . adm_back_link($this->u_action));
 

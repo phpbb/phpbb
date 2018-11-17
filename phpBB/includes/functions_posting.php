@@ -1076,7 +1076,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang('POST_BY_FOE'), get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'L_IGNORE_POST'		=> ($row['foe']) ? $user->lang('POST_BY_FOE', get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 			'L_DELETE_POST'		=> $l_deleted_message,
 

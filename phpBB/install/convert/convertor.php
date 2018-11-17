@@ -217,7 +217,7 @@ class convertor
 		// The test_file is a file that should be present in the location of the old board.
 		if (!file_exists($convert->options['forum_path'] . '/' . $test_file))
 		{
-			$this->error(sprintf($user->lang('COULD_NOT_FIND_PATH'), $convert->options['forum_path']), __LINE__, __FILE__);
+			$this->error($user->lang('COULD_NOT_FIND_PATH', $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
 		$search_type = $config['search_type'];
@@ -302,7 +302,7 @@ class convertor
 						{
 							if (!$local_path)
 							{
-								$bad_folders[] = sprintf($user->lang('CONFIG_PHPBB_EMPTY'), $folder);
+								$bad_folders[] = $user->lang('CONFIG_PHPBB_EMPTY', $folder);
 							}
 							else
 							{
@@ -418,7 +418,7 @@ class convertor
 				}
 				else if (count($missing_tables))
 				{
-					$this->error(sprintf($user->lang('TABLES_MISSING'), implode($user->lang('COMMA_SEPARATOR'), $missing_tables)) . '<br /><br />' . $user->lang('CHECK_TABLE_PREFIX'), __LINE__, __FILE__);
+					$this->error($user->lang('TABLES_MISSING', implode($user->lang('COMMA_SEPARATOR'), $missing_tables)) . '<br /><br />' . $user->lang('CHECK_TABLE_PREFIX'), __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress($converter, 'confirm=1');
@@ -426,7 +426,7 @@ class convertor
 
 				if ($convert->convertor_data['author_notes'])
 				{
-					$msg .= '</p><p>' . sprintf($user->lang('AUTHOR_NOTES'), $convert->convertor_data['author_notes']);
+					$msg .= '</p><p>' . $user->lang('AUTHOR_NOTES', $convert->convertor_data['author_notes']);
 				}
 
 				$this->template->assign_vars(array(
@@ -526,7 +526,7 @@ class convertor
 			}
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'	=> sprintf($user->lang('FILLING_TABLE'), $schema['target']),
+				'TITLE'	=> $user->lang('FILLING_TABLE', $schema['target']),
 			));
 
 			// This is only the case when we first start working on the tables.
@@ -888,7 +888,7 @@ class convertor
 				$current_table++;
 //				$percentage = ($skip_rows == 0) ? 0 : floor(100 / ($total_rows / $skip_rows));
 
-				$msg = sprintf($user->lang('STEP_PERCENT_COMPLETED'), $current_table, count($convert->convertor['schema']));
+				$msg = $user->lang('STEP_PERCENT_COMPLETED', $current_table, count($convert->convertor['schema']));
 
 				$this->template->assign_vars(array(
 					'BODY'			=> $msg,
@@ -960,7 +960,7 @@ class convertor
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$this->template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang('SYNC_TOPIC_ID'), $sync_batch, ($sync_batch + $batch_size)) . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang('KIB') . ']' : ''),
+				'TITLE'		=> $user->lang('SYNC_TOPIC_ID', $sync_batch, ($sync_batch + $batch_size)) . (($phpbb_container->getParameter('debug.memory') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang('KIB') . ']' : ''),
 				'RESULT'	=> $user->lang('DONE'),
 			));
 
@@ -1142,7 +1142,7 @@ class convertor
 						$url = $this->save_convert_progress($converter, 'jump=1&amp;last=' . $last_statement);
 
 						$percentage = ($last_statement == 0) ? 0 : floor(100 / (count($convert->convertor['execute_last']) / $last_statement));
-						$msg = sprintf($user->lang('STEP_PERCENT_COMPLETED'), $last_statement, count($convert->convertor['execute_last']), $percentage);
+						$msg = $user->lang('STEP_PERCENT_COMPLETED', $last_statement, count($convert->convertor['execute_last']), $percentage);
 
 						$this->template->assign_vars(array(
 							'L_SUBMIT'		=> $user->lang('CONTINUE_LAST'),
@@ -1353,14 +1353,14 @@ class convertor
 				// This won't handle concatened LEFT JOINs
 				if (!preg_match('/([a-z0-9_]+) LEFT JOIN ([a-z0-9_]+) A?S? ?([a-z0-9_]*?) ?(ON|USING)(.*)/i', $left_join, $m))
 				{
-					$this->error(sprintf($user->lang('NOT_UNDERSTAND'), 'LEFT JOIN', $left_join, $current_table, $schema['target']), __LINE__, __FILE__);
+					$this->error($user->lang('NOT_UNDERSTAND', 'LEFT JOIN', $left_join, $current_table, $schema['target']), __LINE__, __FILE__);
 				}
 
 				if (!empty($aliases[$m[2]]))
 				{
 					if (!empty($m[3]))
 					{
-						$this->error(sprintf($user->lang('NAMING_CONFLICT'), $m[2], $m[3], $schema['left_join']), __LINE__, __FILE__);
+						$this->error($user->lang('NAMING_CONFLICT', $m[2], $m[3], $schema['left_join']), __LINE__, __FILE__);
 					}
 
 					$m[2] = $aliases[$m[2]];

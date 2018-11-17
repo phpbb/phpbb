@@ -295,7 +295,7 @@ class acp_email
 				}
 				else
 				{
-					$message = sprintf($user->lang('EMAIL_SEND_ERROR'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
+					$message = $user->lang('EMAIL_SEND_ERROR', '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}

@@ -80,12 +80,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			trigger_error(
 				$user->lang('FORUMS_MARKED') . '<br /><br />' .
-				sprintf($user->lang('RETURN_INDEX'), '<a href="' . $redirect . '">', '</a>')
+				$user->lang('RETURN_INDEX', '<a href="' . $redirect . '">', '</a>')
 			);
 		}
 		else
 		{
-			trigger_error(sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 		}
 	}
 
@@ -346,7 +346,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if (check_link_hash($token, 'global'))
 		{
 			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
-			$message = sprintf($user->lang('RETURN_FORUM'), '<a href="' . $redirect . '">', '</a>');
+			$message = $user->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
 			if ($request->is_ajax())
@@ -367,7 +367,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else
 		{
-			$message = sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>');
+			$message = $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 			trigger_error($message);
 		}

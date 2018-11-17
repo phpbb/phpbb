@@ -1203,7 +1203,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 			$block_array += array(
 				'S_DENIED'			=> true,
-				'DENIED_MESSAGE'	=> sprintf($user->lang('EXTENSION_DISABLED_AFTER_POSTING'), $attachment['extension'])
+				'DENIED_MESSAGE'	=> $user->lang('EXTENSION_DISABLED_AFTER_POSTING', $attachment['extension'])
 			);
 		}
 
@@ -1348,7 +1348,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		$index = $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
-		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang('MISSING_INLINE_ATTACHMENT'), $matches[2][array_search($index, $matches[1])]);
+		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : $user->lang('MISSING_INLINE_ATTACHMENT', $matches[2][array_search($index, $matches[1])]);
 
 		$unset_tpl[] = $index;
 	}

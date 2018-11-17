@@ -181,7 +181,7 @@ class acp_permission_roles
 					// Make sure we only print out the error if we add the role or change it's name
 					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name'] != $role_name)))
 					{
-						trigger_error(sprintf($user->lang('ROLE_NAME_ALREADY_EXIST'), $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('ROLE_NAME_ALREADY_EXIST', $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql_ary = array(
@@ -354,7 +354,7 @@ class acp_permission_roles
 
 						$template->assign_vars(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang('ROLE_ASSIGNED_TO'), $role_name))
+							'L_ROLE_ASSIGNED_TO'	=> $user->lang('ROLE_ASSIGNED_TO', $role_name))
 						);
 
 						$this->auth_admin->display_role_mask($hold_ary);
@@ -456,7 +456,7 @@ class acp_permission_roles
 			if ($display_item == $row['role_id'])
 			{
 				$template->assign_vars(array(
-					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang('ROLE_ASSIGNED_TO'), $role_name))
+					'L_ROLE_ASSIGNED_TO'	=> $user->lang('ROLE_ASSIGNED_TO', $role_name))
 				);
 			}
 		}

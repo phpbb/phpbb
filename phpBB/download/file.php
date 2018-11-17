@@ -250,7 +250,7 @@ else
 		if (!extension_allowed($post_row['forum_id'], $attachment['extension'], $extensions))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error(sprintf($user->lang('EXTENSION_DISABLED_AFTER_POSTING'), $attachment['extension']));
+			trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $attachment['extension']));
 		}
 	}
 

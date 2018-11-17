@@ -149,7 +149,7 @@ class acp_inactive
 								));
 							}
 
-							trigger_error(sprintf($user->lang('LOG_INACTIVE_ACTIVATE'), implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error($user->lang('LOG_INACTIVE_ACTIVATE', implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
@@ -172,7 +172,7 @@ class acp_inactive
 
 							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
 
-							trigger_error(sprintf($user->lang('LOG_INACTIVE_DELETE'), implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error($user->lang('LOG_INACTIVE_DELETE', implode($user->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
@@ -247,7 +247,7 @@ class acp_inactive
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
 
-						trigger_error(sprintf($user->lang('LOG_INACTIVE_REMIND'), implode($user->lang('COMMA_SEPARATOR'), $usernames) . ' ' . adm_back_link($this->u_action)));
+						trigger_error($user->lang('LOG_INACTIVE_REMIND', implode($user->lang('COMMA_SEPARATOR'), $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
 

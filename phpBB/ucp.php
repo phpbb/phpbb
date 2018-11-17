@@ -109,7 +109,7 @@ switch ($mode)
 		{
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang('LOGOUT_FAILED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
+			$message = $user->lang('LOGOUT_FAILED') . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
 			trigger_error($message);
 		}
 
@@ -204,7 +204,7 @@ switch ($mode)
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang('COOKIES_DELETED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = $user->lang('COOKIES_DELETED') . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -242,7 +242,7 @@ switch ($mode)
 
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_TRANSFER_PERMISSIONS', false, array($user_row['username']));
 
-		$message = sprintf($user->lang('PERMISSIONS_TRANSFERRED'), $user_row['username']) . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+		$message = $user->lang('PERMISSIONS_TRANSFERRED', $user_row['username']) . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 
 		/**
 		* Event to run code after permissions are switched
@@ -278,7 +278,7 @@ switch ($mode)
 
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_RESTORE_PERMISSIONS', false, array($username));
 
-		$message = $user->lang('PERMISSIONS_RESTORED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+		$message = $user->lang('PERMISSIONS_RESTORED') . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 
 		/**
 		* Event to run code after permissions are restored

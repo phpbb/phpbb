@@ -244,7 +244,7 @@ class ucp_zebra
 					else if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang($l_mode . '_UPDATED') . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang($l_mode . '_UPDATED') . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 					else

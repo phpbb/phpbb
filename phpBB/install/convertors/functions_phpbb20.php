@@ -1890,10 +1890,10 @@ function phpbb_check_username_collisions()
 		$list = '';
 		foreach ($colliding_users as $username_clean => $users)
 		{
-			$list .= sprintf($user->lang('COLLIDING_CLEAN_USERNAME'), $username_clean) . "<br />\n";
+			$list .= $user->lang('COLLIDING_CLEAN_USERNAME', $username_clean) . "<br />\n";
 			foreach ($users as $i => $row)
 			{
-				$list .= sprintf($user->lang('COLLIDING_USER'), $row['user_id'], phpbb_set_default_encoding($row['username']), $row['user_posts']) . "<br />\n";
+				$list .= $user->lang('COLLIDING_USER', $row['user_id'], phpbb_set_default_encoding($row['username']), $row['user_posts']) . "<br />\n";
 			}
 		}
 

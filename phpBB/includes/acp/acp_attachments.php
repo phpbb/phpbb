@@ -392,7 +392,7 @@ class acp_attachments
 
 							if ($row = $db->sql_fetchrow($result))
 							{
-								$error[] = sprintf($user->lang('EXTENSION_EXIST'), $add_extension);
+								$error[] = $user->lang('EXTENSION_EXIST', $add_extension);
 							}
 							$db->sql_freeresult($result);
 
@@ -516,7 +516,7 @@ class acp_attachments
 
 						if ($db->sql_fetchrow($result))
 						{
-							$error[] = sprintf($user->lang('EXTENSION_GROUP_EXIST'), $new_group_name);
+							$error[] = $user->lang('EXTENSION_GROUP_EXIST', $new_group_name);
 						}
 						$db->sql_freeresult($result);
 					}
@@ -918,7 +918,7 @@ class acp_attachments
 						$db->sql_query($sql);
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_ORPHAN_DEL', false, array(implode(', ', $delete_files)));
-						$notify[] = sprintf($user->lang('LOG_ATTACH_ORPHAN_DEL'), implode($user->lang('COMMA_SEPARATOR'), $delete_files));
+						$notify[] = $user->lang('LOG_ATTACH_ORPHAN_DEL', implode($user->lang('COMMA_SEPARATOR'), $delete_files));
 					}
 
 					$upload_list = array();
@@ -971,9 +971,9 @@ class acp_attachments
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
 
 							$template->assign_block_vars('upload', array(
-								'FILE_INFO'		=> sprintf($user->lang('UPLOADING_FILE_TO'), $row['real_filename'], $post_row['post_id']),
+								'FILE_INFO'		=> $user->lang('UPLOADING_FILE_TO', $row['real_filename'], $post_row['post_id']),
 								'S_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? true : false,
-								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? sprintf($user->lang('UPLOAD_DENIED_FORUM'), $forum_names[$row['forum_id']]) : '')
+								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? $user->lang('UPLOAD_DENIED_FORUM', $forum_names[$row['forum_id']]) : '')
 							);
 
 							if (!$auth->acl_get('f_attach', $post_row['forum_id']))
@@ -1106,7 +1106,7 @@ class acp_attachments
 							}
 
 							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode(', ', $deleted_filenames)));
-							$notify[] = sprintf($user->lang('LOG_ATTACHMENTS_DELETED'), implode($user->lang('COMMA_SEPARATOR'), $deleted_filenames));
+							$notify[] = $user->lang('LOG_ATTACHMENTS_DELETED', implode($user->lang('COMMA_SEPARATOR'), $deleted_filenames));
 						}
 						else
 						{

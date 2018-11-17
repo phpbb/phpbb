@@ -47,7 +47,7 @@ class acp_main
 				'S_RESTORE_PERMISSIONS'		=> true,
 				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang('PERMISSIONS_TRANSFERRED_EXPLAIN'), $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $user->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
 			));
 
 			return;
@@ -433,7 +433,7 @@ class acp_main
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang('PHP_VERSION_OLD'), PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> $user->lang('PHP_VERSION_OLD', PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 

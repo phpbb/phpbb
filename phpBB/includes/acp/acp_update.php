@@ -66,7 +66,7 @@ class acp_update
 
 			'CURRENT_VERSION'		=> $config['version'],
 
-			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang('UPDATE_INSTRUCTIONS'), $update_link),
+			'UPDATE_INSTRUCTIONS'	=> $user->lang('UPDATE_INSTRUCTIONS', $update_link),
 			'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
 			'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
 		));

@@ -645,7 +645,7 @@ class acp_profile
 							'FIELD_CONTACT_DESC'=> $cp->vars['field_contact_desc'],
 							'FIELD_CONTACT_URL'	=> $cp->vars['field_contact_url'],
 
-							'L_LANG_SPECIFIC'	=> sprintf($user->lang('LANG_SPECIFIC_OPTIONS'), $config['default_lang']),
+							'L_LANG_SPECIFIC'	=> $user->lang('LANG_SPECIFIC_OPTIONS', $config['default_lang']),
 							'FIELD_TYPE'		=> $profile_field->get_name(),
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],

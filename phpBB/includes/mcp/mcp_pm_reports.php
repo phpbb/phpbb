@@ -179,7 +179,7 @@ class mcp_pm_reports
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang('EDIT_POST')),
 					'MINI_POST_IMG'			=> $user->img('icon_post_target', 'POST'),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang('RETURN_REPORTS'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports' . (($pm_info['message_reported']) ? '&amp;mode=pm_reports' : '&amp;mode=pm_reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
+					'RETURN_REPORTS'			=> $user->lang('RETURN_REPORTS', '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports' . (($pm_info['message_reported']) ? '&amp;mode=pm_reports' : '&amp;mode=pm_reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
 					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
 					'REPORT_DATE'				=> $user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,

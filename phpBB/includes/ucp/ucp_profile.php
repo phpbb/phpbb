@@ -238,7 +238,7 @@ class ucp_profile
 						if (!empty($sql_ary['user_actkey']))
 						{
 							meta_refresh(5, append_sid($phpbb_root_path . 'index.' . $phpEx));
-							$message = $user->lang($message) . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
+							$message = $user->lang($message) . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
 
 							// Because the user gets deactivated we log him out too, killing his session
 							$user->session_kill();
@@ -246,7 +246,7 @@ class ucp_profile
 						else
 						{
 							meta_refresh(3, $this->u_action);
-							$message = $user->lang($message) . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang($message) . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 						}
 
 						trigger_error($message);
@@ -407,7 +407,7 @@ class ucp_profile
 						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -577,7 +577,7 @@ class ucp_profile
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 				}
@@ -680,7 +680,7 @@ class ucp_profile
 									$db->sql_query($sql);
 
 									meta_refresh(3, $this->u_action);
-									$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+									$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 									trigger_error($message);
 								}
 							}
@@ -707,7 +707,7 @@ class ucp_profile
 							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, USERS_TABLE, 'user_');
 
 							meta_refresh(3, $this->u_action);
-							$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang('PROFILE_UPDATED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 							trigger_error($message);
 						}
 					}
@@ -794,7 +794,7 @@ class ucp_profile
 							$db->sql_query($sql);
 
 							meta_refresh(3, $this->u_action);
-							$message = $user->lang('AUTOLOGIN_SESSION_KEYS_DELETED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang('AUTOLOGIN_SESSION_KEYS_DELETED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 							trigger_error($message);
 						}
 					}

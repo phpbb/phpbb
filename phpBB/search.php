@@ -316,7 +316,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$common_words = $search->get_common_words();
 		if (!$correct_query || (!$search->get_search_query() && !count($author_id_ary) && !$search_id))
 		{
-			$ignored = (count($common_words)) ? sprintf($user->lang('IGNORED_TERMS_EXPLAIN'), implode(' ', $common_words)) . '<br />' : '';
+			$ignored = (count($common_words)) ? $user->lang('IGNORED_TERMS_EXPLAIN', implode(' ', $common_words)) . '<br />' : '';
 			$word_length = $search->get_word_length();
 			if ($word_length)
 			{
@@ -1147,7 +1147,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$template->assign_block_vars('searchresults', array(
 						'S_IGNORE_POST' => true,
 
-						'L_IGNORE_POST' => sprintf($user->lang('POST_BY_FOE'), $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
+						'L_IGNORE_POST' => $user->lang('POST_BY_FOE', $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
 					);
 
 					continue;

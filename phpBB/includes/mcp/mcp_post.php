@@ -59,9 +59,9 @@ function mcp_post_details($id, $mode, $action)
 				}
 
 				$template->assign_vars(array(
-					'RETURN_POST'	=> sprintf($user->lang('RETURN_POST'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'RETURN_POST'	=> $user->lang('RETURN_POST', '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 					'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
-					'L_RETURN_POST'	=> sprintf($user->lang('RETURN_POST'), '', ''),
+					'L_RETURN_POST'	=> $user->lang('RETURN_POST', '', ''),
 					'WHOIS'			=> user_ipwhois($ip),
 				));
 			}
@@ -247,8 +247,8 @@ function mcp_post_details($id, $mode, $action)
 
 		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-		'RETURN_TOPIC'			=> sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
-		'RETURN_FORUM'			=> sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
+		'RETURN_TOPIC'			=> $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
+		'RETURN_FORUM'			=> $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
 		'DELETED_IMG'			=> $user->img('icon_topic_deleted', $user->lang('POST_DELETED')),

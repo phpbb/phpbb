@@ -228,7 +228,7 @@ class acp_forums
 						// redirect directly to permission settings screen if authed
 						if ($action == 'add' && !$copied_permissions && $auth->acl_get('a_fauth'))
 						{
-							$message .= '<br /><br />' . sprintf($user->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+							$message .= '<br /><br />' . $user->lang('REDIRECT_ACL', '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
 							meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
 						}
@@ -340,7 +340,7 @@ class acp_forums
 							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
 							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), $topics_done, $row['total_topics']))
+							'L_PROGRESS_EXPLAIN'	=> $user->lang('SYNC_IN_PROGRESS_EXPLAIN', $topics_done, $row['total_topics']))
 						);
 
 						return;
@@ -354,7 +354,7 @@ class acp_forums
 					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
 					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), 0, $row['total_topics']))
+					'L_PROGRESS_EXPLAIN'	=> $user->lang('SYNC_IN_PROGRESS_EXPLAIN', 0, $row['total_topics']))
 				);
 
 				return;
@@ -381,7 +381,7 @@ class acp_forums
 
 				$cache->destroy('sql', FORUMS_TABLE);
 
-				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang('FORUM_RESYNCED'), $row['forum_name']));
+				$template->assign_var('L_FORUM_RESYNCED', $user->lang('FORUM_RESYNCED', $row['forum_name']));
 
 			break;
 
@@ -797,7 +797,7 @@ class acp_forums
 					// Redirect to permissions
 					if ($auth->acl_get('a_fauth'))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+						$message .= '<br /><br />' . $user->lang('REDIRECT_ACL', '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 					}
 
 					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
@@ -2146,7 +2146,7 @@ class acp_forums
 
 		$template->assign_vars(array(
 			'L_PROGRESS'			=> $user->lang('SYNC_IN_PROGRESS'),
-			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang('SYNC_IN_PROGRESS_EXPLAIN'), $start, $total) : $user->lang('SYNC_IN_PROGRESS'))
+			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? $user->lang('SYNC_IN_PROGRESS_EXPLAIN', $start, $total) : $user->lang('SYNC_IN_PROGRESS'))
 		);
 
 		adm_page_footer();
@@ -2163,7 +2163,7 @@ class acp_forums
 		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
 
-		$l_acl = sprintf($user->lang('COPY_TO_ACL'), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+		$l_acl = $user->lang('COPY_TO_ACL', '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
 		$this->tpl_name = 'acp_forums_copy_perm';
 

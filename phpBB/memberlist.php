@@ -431,7 +431,7 @@ switch ($mode)
 
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-						$subject = sprintf($user->lang('IM_JABBER_SUBJECT'), $user->data['username'], $config['server_name']);
+						$subject = $user->lang('IM_JABBER_SUBJECT', $user->data['username'], $config['server_name']);
 						$message = $request->variable('message', '', true);
 
 						if (empty($message))
@@ -483,7 +483,7 @@ switch ($mode)
 			'PRESENCE_IMG'		=> $presence_img,
 
 			'L_SEND_IM_EXPLAIN'	=> $user->lang('IM_' . $lang),
-			'L_IM_SENT_JABBER'	=> sprintf($user->lang('IM_SENT_JABBER'), $row['username']),
+			'L_IM_SENT_JABBER'	=> $user->lang('IM_SENT_JABBER', $row['username']),
 
 			$s_select			=> true,
 			'S_IM_ACTION'		=> $s_action)
@@ -795,7 +795,7 @@ switch ($mode)
 		}
 
 		// Now generate page title
-		$page_title = sprintf($user->lang('VIEWING_PROFILE'), $member['username']);
+		$page_title = $user->lang('VIEWING_PROFILE', $member['username']);
 		$template_html = 'memberlist_view.html';
 
 		$template->assign_block_vars('navlinks', array(

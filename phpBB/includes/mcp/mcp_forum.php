@@ -394,7 +394,7 @@ function mcp_resync_topics($topic_ids)
 	$redirect = $request->variable('redirect', $user->data['session_page']);
 
 	meta_refresh(3, $redirect);
-	trigger_error($msg . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+	trigger_error($msg . '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 
 	return;
 }
@@ -520,7 +520,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		sync('forum', 'forum_id', $sync_forums, true, true);
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang('RETURN_NEW_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . $user->lang('RETURN_NEW_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 

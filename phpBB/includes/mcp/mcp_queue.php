@@ -303,9 +303,9 @@ class mcp_queue
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-					'RETURN_QUEUE'			=> sprintf($user->lang('RETURN_QUEUE'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
-					'RETURN_POST'			=> sprintf($user->lang('RETURN_POST'), '<a href="' . $post_url . '">', '</a>'),
-					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang('RETURN_TOPIC_SIMPLE'), '<a href="' . $topic_url . '">', '</a>'),
+					'RETURN_QUEUE'			=> $user->lang('RETURN_QUEUE', '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
+					'RETURN_POST'			=> $user->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>'),
+					'RETURN_TOPIC_SIMPLE'	=> $user->lang('RETURN_TOPIC_SIMPLE', '<a href="' . $topic_url . '">', '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang('EDIT_POST')),
@@ -659,7 +659,7 @@ class mcp_queue
 					'L_DISPLAY_ITEMS'		=> (!$is_topics) ? $user->lang('DISPLAY_POSTS') : $user->lang('DISPLAY_TOPICS'),
 					'L_EXPLAIN'				=> $user->lang('MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'),
 					'L_TITLE'				=> $user->lang('MCP_QUEUE_' . strtoupper($mode)),
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang('ONLY_TOPIC'), $topic_info['topic_title']) : '',
+					'L_ONLY_TOPIC'			=> ($topic_id) ? $user->lang('ONLY_TOPIC', $topic_info['topic_title']) : '',
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),

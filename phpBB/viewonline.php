@@ -270,7 +270,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
 				{
-					$location = sprintf($user->lang('READING_LINK'), $forum_data[$forum_id]['forum_name']);
+					$location = $user->lang('READING_LINK', $forum_data[$forum_id]['forum_name']);
 					break;
 				}
 
@@ -284,21 +284,21 @@ while ($row = $db->sql_fetchrow($result))
 						{
 							case 'reply':
 							case 'quote':
-								$location = sprintf($user->lang('REPLYING_MESSAGE'), $forum_data[$forum_id]['forum_name']);
+								$location = $user->lang('REPLYING_MESSAGE', $forum_data[$forum_id]['forum_name']);
 							break;
 
 							default:
-								$location = sprintf($user->lang('POSTING_MESSAGE'), $forum_data[$forum_id]['forum_name']);
+								$location = $user->lang('POSTING_MESSAGE', $forum_data[$forum_id]['forum_name']);
 							break;
 						}
 					break;
 
 					case 'viewtopic':
-						$location = sprintf($user->lang('READING_TOPIC'), $forum_data[$forum_id]['forum_name']);
+						$location = $user->lang('READING_TOPIC', $forum_data[$forum_id]['forum_name']);
 					break;
 
 					case 'viewforum':
-						$location = sprintf($user->lang('READING_FORUM'), $forum_data[$forum_id]['forum_name']);
+						$location = $user->lang('READING_FORUM', $forum_data[$forum_id]['forum_name']);
 					break;
 				}
 			}

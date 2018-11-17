@@ -75,7 +75,7 @@ class ucp_attachments
 				unset($attachment_manager);
 
 				meta_refresh(3, $this->u_action);
-				$message = ((count($delete_ids) == 1) ? $user->lang('ATTACHMENT_DELETED') : $user->lang('ATTACHMENTS_DELETED')) . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
+				$message = ((count($delete_ids) == 1) ? $user->lang('ATTACHMENT_DELETED') : $user->lang('ATTACHMENTS_DELETED')) . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 				trigger_error($message);
 			}
 			else

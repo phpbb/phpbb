@@ -70,7 +70,7 @@ class acp_users
 			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'		=> sprintf($user->lang('IP_WHOIS_FOR'), $domain),
+				'MESSAGE_TITLE'		=> $user->lang('IP_WHOIS_FOR', $domain),
 				'MESSAGE_TEXT'		=> nl2br($ipwhois))
 			);
 
@@ -402,7 +402,7 @@ class acp_users
 								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
-									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang('WELCOME_SUBJECT'), $config['sitename'])),
+									'WELCOME_MSG'	=> htmlspecialchars_decode($user->lang('WELCOME_SUBJECT', $config['sitename'])),
 									'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);

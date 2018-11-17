@@ -521,7 +521,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$message = $user->lang('MESSAGE_DELETED');
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_FOLDER', '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -675,7 +675,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 
 				meta_refresh(3, $redirect_url);
-				$message = $user->lang('DRAFT_SAVED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+				$message = $user->lang('DRAFT_SAVED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 
 				trigger_error($message);
 			}
@@ -878,7 +878,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$last_click_type = 'CLICK_RETURN_FOLDER';
 			if ($folder_url)
 			{
-				$message .= '<br /><br />' . sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+				$message .= '<br /><br />' . $user->lang('CLICK_RETURN_FOLDER', '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
 				$last_click_type = 'CLICK_GOTO_FOLDER';
 			}
 			$message .= '<br /><br />' . sprintf($user->lang($last_click_type), '<a href="' . $return_box_url . '">', '</a>', $user->lang($return_box_lang));
@@ -1009,10 +1009,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		$forward_text = array();
 		$forward_text[] = $user->lang('FWD_ORIGINAL_MESSAGE');
-		$forward_text[] = sprintf($user->lang('FWD_SUBJECT'), censor_text($message_subject));
-		$forward_text[] = sprintf($user->lang('FWD_DATE'), $user->format_date($message_time, false, true));
-		$forward_text[] = sprintf($user->lang('FWD_FROM'), $quote_username_text);
-		$forward_text[] = sprintf($user->lang('FWD_TO'), implode($user->lang('COMMA_SEPARATOR'), $fwd_to_field['to']));
+		$forward_text[] = $user->lang('FWD_SUBJECT', censor_text($message_subject));
+		$forward_text[] = $user->lang('FWD_DATE', $user->format_date($message_time, false, true));
+		$forward_text[] = $user->lang('FWD_FROM', $quote_username_text);
+		$forward_text[] = $user->lang('FWD_TO', implode($user->lang('COMMA_SEPARATOR'), $fwd_to_field['to']));
 
 		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
 			censor_text($message_parser->message),

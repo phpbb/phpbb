@@ -154,7 +154,7 @@ class mcp_notes
 				}
 				$redirect = $this->u_action . '&amp;u=' . $user_id;
 				meta_refresh(3, $redirect);
-				trigger_error($user->lang($msg) . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($user->lang($msg) . '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 
@@ -182,7 +182,7 @@ class mcp_notes
 			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
 
-			trigger_error($msg .  '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg .  '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at

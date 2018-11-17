@@ -93,7 +93,7 @@ class ucp_remind
 			}
 			else
 			{
-				$message = $user->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $user->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 
 				if (empty($rowset))
 				{

@@ -271,7 +271,7 @@ class mcp_reports
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang('POST_UNAPPROVED')),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang('RETURN_REPORTS'), '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
+					'RETURN_REPORTS'			=> $user->lang('RETURN_REPORTS', '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
 					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang('POST_REPORTED')),
 					'REPORT_DATE'				=> $user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,
@@ -499,7 +499,7 @@ class mcp_reports
 				$template->assign_vars(array(
 					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang('MCP_REPORTS_OPEN_EXPLAIN') : $user->lang('MCP_REPORTS_CLOSED_EXPLAIN'),
 					'L_TITLE'				=> ($mode == 'reports') ? $user->lang('MCP_REPORTS_OPEN') : $user->lang('MCP_REPORTS_CLOSED'),
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang('ONLY_TOPIC'), $topic_info['topic_title']) : '',
+					'L_ONLY_TOPIC'			=> ($topic_id) ? $user->lang('ONLY_TOPIC', $topic_info['topic_title']) : '',
 
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_FORUM_OPTIONS'		=> $forum_options,
@@ -791,15 +791,15 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		{
 			if (count($forum_ids) === 1)
 			{
-				$return_forum = sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+				$return_forum = $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 
 			if (count($topic_ids) === 1)
 			{
-				$return_topic = sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+				$return_topic = $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 		}
 
-		trigger_error($user->lang($success_msg) . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang('RETURN_PAGE'), "<a href=\"$redirect\">", '</a>'));
+		trigger_error($user->lang($success_msg) . '<br /><br />' . $return_forum . $return_topic . $user->lang('RETURN_PAGE', "<a href=\"$redirect\">", '</a>'));
 	}
 }

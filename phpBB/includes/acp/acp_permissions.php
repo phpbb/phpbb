@@ -64,7 +64,7 @@ class acp_permissions
 
 			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
 			{
-				$this->page_title = sprintf($user->lang('TRACE_PERMISSION'), $this->permissions->get_permission_lang($permission));
+				$this->page_title = $user->lang('TRACE_PERMISSION', $this->permissions->get_permission_lang($permission));
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
@@ -1158,7 +1158,7 @@ class acp_permissions
 			if ($auth_setting)
 			{
 				$template->assign_block_vars('trace', array(
-					'WHO'			=> sprintf($user->lang('TRACE_GLOBAL_SETTING'), $userdata['username']),
+					'WHO'			=> $user->lang('TRACE_GLOBAL_SETTING', $userdata['username']),
 					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
 					'S_SETTING_NO'		=> false,

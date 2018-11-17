@@ -68,7 +68,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 			$user->data['user_full_folder'] = $set_folder_id;
 
-			$message = $user->lang('FULL_FOLDER_OPTION_CHANGED') . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+			$message = $user->lang('FULL_FOLDER_OPTION_CHANGED') . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 			meta_refresh(3, $redirect_url);
 			trigger_error($message);
 		}
@@ -93,7 +93,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 				if ($row)
 				{
-					trigger_error(sprintf($user->lang('FOLDER_NAME_EXIST'), $folder_name));
+					trigger_error($user->lang('FOLDER_NAME_EXIST', $folder_name));
 				}
 
 				$sql = 'SELECT COUNT(folder_id) as num_folder
@@ -124,7 +124,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			$msg = $user->lang('FORM_INVALID');
 		}
-		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -168,7 +168,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$msg = $user->lang('FORM_INVALID');
 		}
 
-		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
@@ -276,7 +276,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$message = $user->lang('FOLDER_REMOVED');
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -362,7 +362,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			$msg = $user->lang('FORM_INVALID');
 		}
-		$message = $msg . '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -407,7 +407,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			}
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang('RETURN_UCP'), '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else

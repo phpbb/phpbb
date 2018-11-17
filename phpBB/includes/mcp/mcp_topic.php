@@ -252,7 +252,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
-			'RETURN_TOPIC'	=> sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
+			'RETURN_TOPIC'	=> $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
 
 			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
@@ -358,7 +358,7 @@ function mcp_topic_view($id, $mode, $action)
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
-		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang('YOU_SELECTED_TOPIC'), $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
+		'TO_TOPIC_INFO'		=> ($to_topic_id) ? $user->lang('YOU_SELECTED_TOPIC', $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,
@@ -390,8 +390,8 @@ function mcp_topic_view($id, $mode, $action)
 
 		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 
-		'RETURN_TOPIC'		=> sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
-		'RETURN_FORUM'		=> sprintf($user->lang('RETURN_FORUM'), '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
+		'RETURN_TOPIC'		=> $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
+		'RETURN_FORUM'		=> $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
 		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
 	));
@@ -660,7 +660,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$config->increment('num_topics', 1, false);
 
 		// Link back to both topics
-		$return_link = sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang('RETURN_NEW_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link = $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . $user->lang('RETURN_NEW_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
@@ -757,7 +757,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if ($row)
 		{
-			$return_link .= sprintf($user->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
+			$return_link .= $user->lang('RETURN_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 		else
 		{
@@ -780,7 +780,7 @@ function merge_posts($topic_id, $to_topic_id)
 		sync('forum', 'forum_id', $sync_forums, true, true);
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang('RETURN_NEW_TOPIC'), '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . $user->lang('RETURN_NEW_TOPIC', '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 

@@ -1194,7 +1194,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 			$errstr = utf8_convert_message($errstr);
 		}
 
-		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? $user->lang('NO_CONNECT_TO_SMTP_HOST', $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		$err_msg .= ($error_contents) ? '<br /><br />' . htmlspecialchars($error_contents) : '';
 		return false;
 	}
@@ -1258,7 +1258,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	{
 		$user->session_begin();
 		$err_msg .= '<br /><br />';
-		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang('INVALID_EMAIL_LOG'), htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
+		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? $user->lang('INVALID_EMAIL_LOG', htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
 		$smtp->close_session($err_msg);
 		return false;
 	}
@@ -1383,7 +1383,7 @@ class smtp_class
 		if (!(substr($this->server_response, 0, 3) == $response))
 		{
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
-			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf($user->lang('EMAIL_SMTP_ERROR_RESPONSE'), $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
+			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? $user->lang('EMAIL_SMTP_ERROR_RESPONSE', $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
 		}
 
 		return 0;
@@ -1456,7 +1456,7 @@ class smtp_class
 					$errstr = utf8_convert_message($errstr);
 				}
 
-				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? $user->lang('NO_CONNECT_TO_SMTP_HOST', $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 				return $err_msg;
 			}
 
@@ -1623,7 +1623,7 @@ class smtp_class
 				$errstr = utf8_convert_message($errstr);
 			}
 
-			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang('NO_CONNECT_TO_SMTP_HOST'), $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? $user->lang('NO_CONNECT_TO_SMTP_HOST', $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
 		$this->server_send("USER $username", true);

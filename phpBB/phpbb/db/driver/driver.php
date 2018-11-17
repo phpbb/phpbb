@@ -997,11 +997,11 @@ abstract class driver implements driver_interface
 				{
 					if (!empty($config['board_contact']))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang('SQL_ERROR_OCCURRED'), '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+						$message .= '<br /><br />' . $user->lang('SQL_ERROR_OCCURRED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 					}
 					else
 					{
-						$message .= '<br /><br />' . sprintf($user->lang('SQL_ERROR_OCCURRED'), '', '');
+						$message .= '<br /><br />' . $user->lang('SQL_ERROR_OCCURRED', '', '');
 					}
 				}
 			}

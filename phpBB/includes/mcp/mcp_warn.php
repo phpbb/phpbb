@@ -324,7 +324,7 @@ class mcp_warn
 			{
 				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($message . '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 
@@ -358,7 +358,7 @@ class mcp_warn
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $user_rank_data['img'],
 
-			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang('WARNING_POST_DEFAULT'), generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
+			'L_WARNING_POST_DEFAULT'	=> $user->lang('WARNING_POST_DEFAULT', generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,
 		));
@@ -481,7 +481,7 @@ class mcp_warn
 			{
 				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . sprintf($user->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($message . '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 

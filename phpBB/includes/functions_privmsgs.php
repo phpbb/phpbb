@@ -807,8 +807,8 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if ($message_limit && $row['pm_count'] + count($move_msg_ids) > $message_limit)
 			{
-				$message = sprintf($user->lang('NOT_ENOUGH_SPACE_FOLDER'), $row['folder_name']) . '<br /><br />';
-				$message .= sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
+				$message = $user->lang('NOT_ENOUGH_SPACE_FOLDER', $row['folder_name']) . '<br /><br />';
+				$message .= $user->lang('CLICK_RETURN_FOLDER', '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
 				trigger_error($message);
 			}
 		}
@@ -824,8 +824,8 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if ($message_limit && $num_messages + count($move_msg_ids) > $message_limit)
 			{
-				$message = sprintf($user->lang('NOT_ENOUGH_SPACE_FOLDER'), $user->lang('PM_INBOX')) . '<br /><br />';
-				$message .= sprintf($user->lang('CLICK_RETURN_FOLDER'), '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang('PM_INBOX'));
+				$message = $user->lang('NOT_ENOUGH_SPACE_FOLDER', $user->lang('PM_INBOX')) . '<br /><br />';
+				$message .= $user->lang('CLICK_RETURN_FOLDER', '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang('PM_INBOX'));
 				trigger_error($message);
 			}
 		}
@@ -985,7 +985,7 @@ function handle_mark_actions($user_id, $mark_action)
 				$redirect = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $cur_folder_id);
 
 				meta_refresh(3, $redirect);
-				trigger_error($user->lang($success_msg) . '<br /><br />' . sprintf($user->lang('RETURN_FOLDER'), '<a href="' . $redirect . '">', '</a>'));
+				trigger_error($user->lang($success_msg) . '<br /><br />' . $user->lang('RETURN_FOLDER', '<a href="' . $redirect . '">', '</a>'));
 			}
 			else
 			{

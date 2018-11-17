@@ -168,8 +168,8 @@ class ucp_register
 
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_COPPA_NO'		=> sprintf($user->lang('UCP_COPPA_BEFORE'), $coppa_birthday),
-					'L_COPPA_YES'		=> sprintf($user->lang('UCP_COPPA_ON_AFTER'), $coppa_birthday),
+					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
+					'L_COPPA_YES'		=> $user->lang('UCP_COPPA_ON_AFTER', $coppa_birthday),
 
 					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
 					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
@@ -186,7 +186,7 @@ class ucp_register
 			{
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_TERMS_OF_USE'	=> sprintf($user->lang('TERMS_OF_USE_CONTENT'), $config['sitename'], generate_board_url()),
+					'L_TERMS_OF_USE'	=> $user->lang('TERMS_OF_USE_CONTENT', $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
@@ -312,7 +312,7 @@ class ucp_register
 			{
 				if (($dnsbl = $user->check_dnsbl('register')) !== false)
 				{
-					$error[] = sprintf($user->lang('IP_BLACKLISTED'), $user->ip, $dnsbl[1]);
+					$error[] = $user->lang('IP_BLACKLISTED', $user->ip, $dnsbl[1]);
 				}
 			}
 
@@ -469,7 +469,7 @@ class ucp_register
 					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
-						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang('WELCOME_SUBJECT'), $config['sitename'])),
+						'WELCOME_MSG'	=> htmlspecialchars_decode($user->lang('WELCOME_SUBJECT', $config['sitename'])),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
@@ -561,7 +561,7 @@ class ucp_register
 				);
 				extract($phpbb_dispatcher->trigger_event('core.ucp_register_register_after', compact($vars)));
 
-				$message = $message . '<br /><br />' . sprintf($user->lang('RETURN_INDEX'), '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . $user->lang('RETURN_INDEX', '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}
