@@ -598,6 +598,18 @@ else
 	$sql_start = $start;
 }
 
+/**
+ * Modify the topics sort ordering if needed
+ *
+ * @event core.viewforum_modify_sort_direction
+ * @var string	direction	Topics sort order
+ * @since 3.2.5-RC1
+ */
+$vars = array(
+	'direction',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_sort_direction', compact($vars)));
+
 if (is_array($sort_by_sql[$sort_key]))
 {
 	$sql_sort_order = implode(' ' . $direction . ', ', $sort_by_sql[$sort_key]) . ' ' . $direction;
