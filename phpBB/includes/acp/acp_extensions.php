@@ -35,11 +35,13 @@ class acp_extensions
 	private $request;
 	private $phpbb_dispatcher;
 	private $ext_manager;
+	private $phpbb_container;
+	private $php_ini;
 
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
 
 		$this->config = $config;
 		$this->template = $template;
@@ -48,6 +50,8 @@ class acp_extensions
 		$this->log = $phpbb_log;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->ext_manager = $phpbb_extension_manager;
+		$this->phpbb_container = $phpbb_container;
+		$this->php_ini = $this->phpbb_container->get('php_ini');
 
 		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
 
@@ -57,7 +61,7 @@ class acp_extensions
 		$ext_name = $this->request->variable('ext_name', '');
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
-		$safe_time_limit = (ini_get('max_execution_time') / 2);
+		$safe_time_limit = ($this->php_ini->getNumeric('max_execution_time') / 2);
 		$start_time = time();
 
 		// Cancel action
