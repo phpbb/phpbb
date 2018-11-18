@@ -246,7 +246,10 @@ class mcp_reports
 				$parse_flags = ($post_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 				$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 
-				$template->assign_vars(array(
+				$topic_id = (int) $post_info['topic_id'];
+
+				// So it can be sent through the event below.
+				$report_template = array(
 					'S_MCP_REPORT'			=> true,
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
@@ -298,7 +301,33 @@ class mcp_reports
 					'SIGNATURE'				=> $post_info['user_sig'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
-				));
+				);
+
+				/**
+				 * Event to add/modify MCP report details template data.
+				 *
+				 * @event core.mcp_report_template_data
+				 * @var int		forum_id					The forum_id, the number in the f GET parameter
+				 * @var int		topic_id					The topic_id of the report being viewed
+				 * @var int		post_id						The post_id of the report being viewed (if 0, it is meaningless)
+				 * @var int		report_id					The report_id of the report being viewed
+				 * @var array	report						Array with the report data
+				 * @var	array	report_template				Array with the report template data
+				 * @var array	post_info					Array with the reported post data
+				 * @since 3.2.5-RC1
+				 */
+				$vars = array(
+					'forum_id',
+					'topic_id',
+					'post_id',
+					'report_id',
+					'report',
+					'report_template',
+					'post_info',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_report_template_data', compact($vars)));
+
+				$template->assign_vars($report_template);
 
 				$this->tpl_name = 'mcp_post';
 
