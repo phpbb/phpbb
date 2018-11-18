@@ -290,7 +290,7 @@ $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_l
  *
  * @event core.viewforum_modify_topic_ordering
  * @var array	sort_by_text	Topic ordering options
- * @var array	sort_by_sql		Topic ordering options
+ * @var array	sort_by_sql		Topic orderings options SQL equivalent
  * @since 3.2.5-RC1
  */
 $vars = array(
