@@ -296,7 +296,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	 * @var	array	cp_row		Array with senders custom profile field data
 	 * @var	array	msg_data	Template array with message data
 	 * @var array	user_info	User data of the sender
+	 * @var array	attachments	Attachments data
 	 * @since 3.2.2-RC1
+	 * @changed 3.2.5-RC1 Added attachments
 	 */
 	$vars = array(
 		'id',
@@ -308,6 +310,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'cp_row',
 		'msg_data',
 		'user_info',
+		'attachments',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_message', compact($vars)));
 
