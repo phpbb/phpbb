@@ -1196,15 +1196,52 @@ function display_user_activity(&$userdata_ary)
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		// Obtain active forum
-		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $userdata_ary['user_id'] . '
-				AND post_postcount = 1
-				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
-			GROUP BY forum_id
-			ORDER BY num_posts DESC';
-		$result = $db->sql_query_limit($sql, 1);
+		$forum_sql_ary = array(
+			'SELECT'	=> 'forum_id, COUNT(post_id) AS num_posts',
+			'FROM'		=> array(
+				POSTS_TABLE	=> 'p',
+			),
+			'WHERE'		=> array(
+				'poster_id = ' . $userdata_ary['user_id'],
+				'AND post_postcount = 1',
+				'AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary),
+			),
+			'GROUP_BY'	=> 'forum_id',
+			'ORDER_BY'	=> 'num_posts DESC',
+		);
+
+		// Obtain active topic
+		$topic_sql_ary = array(
+			'SELECT'	=> 'topic_id, COUNT(post_id) AS num_posts',
+			'FROM'		=> array(
+				POSTS_TABLE	=> 'p',
+			),
+			'WHERE'		=> array(
+				'poster_id = ' . $userdata_ary['user_id'],
+				'AND post_postcount = 1',
+				'AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary),
+			),
+			'GROUP_BY'	=> 'topic_id',
+			'ORDER_BY'	=> 'num_posts DESC',
+		);
+
+		/**
+		* Event to modify the SQL arrays to get the user's most active topic/forum when viewing their profile
+		*
+		* @event core.display_user_activity_modify_sql
+		* @var	array	forum_sql_ary		SQL array to get the user's most active forum
+		* @var	array	topic_sql_ary		SQL array to get the user's most active topic
+		* @since 3.2.5-RC1
+		*/
+		$vars = array('forum_sql_ary', 'topic_sql_ary');
+		extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_sql', compact($vars)));
+
+		$result = $db->sql_query_limit($db->sql_build_query('SELECT', $forum_sql_ary), 1);
 		$active_f_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$result = $db->sql_query_limit($db->sql_build_query('SELECT', $topic_sql_ary), 1);
+		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		if (!empty($active_f_row))
@@ -1216,18 +1253,6 @@ function display_user_activity(&$userdata_ary)
 			$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
 			$db->sql_freeresult($result);
 		}
-
-		// Obtain active topic
-		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $userdata_ary['user_id'] . '
-				AND post_postcount = 1
-				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
-			GROUP BY topic_id
-			ORDER BY num_posts DESC';
-		$result = $db->sql_query_limit($sql, 1);
-		$active_t_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
 
 		if (!empty($active_t_row))
 		{
