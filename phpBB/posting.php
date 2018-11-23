@@ -611,10 +611,12 @@ $attachment_user_id = $post_data['poster_id'];
 * This event allows you to modify the poster_id used in get_submitted_attachment_data
 *
 * @event core.posting_modify_attachment_user_id
+* @var	array	post_data	Array with post data
 * @var	int		attachment_user_id	Poster ID used to get attachment data
 * @since 3.2.5-RC1
 */
 $vars = array(
+	'post_data',
 	'attachment_user_id',
 );
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_attachment_user_id', compact($vars)));
