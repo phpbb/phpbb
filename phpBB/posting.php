@@ -600,6 +600,7 @@ $uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], '
 /**
 * This event allows you to modify the default variables for post_data, and unset them in post_data if needed
 *
+<<<<<<< HEAD
 * @event core.posting_modify_uninit_data
 * @var	array	post_data	Array with post data
 * @var	array	uninit		Array with default vars to put into post_data, if they aren't there
@@ -608,6 +609,14 @@ $uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], '
 $vars = array(
 	'post_data',
 	'uninit',
+=======
+* @event core.posting_modify_attachment_user_id
+* @var	int		attachment_user_id	Poster ID used to get attachment data
+* @since 3.2.5-RC1
+*/
+$vars = array(
+	'attachment_user_id',
+>>>>>>> parent of 838b5159a... add $post_data to event
 );
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_uninit_data', compact($vars)));
 
