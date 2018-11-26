@@ -1057,7 +1057,19 @@ class ucp_groups
 							// Add user/s to group
 							if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
 							{
-								trigger_error($user->lang[$error] . $return_page);
+								$display_message = $user->lang[$error];
+
+								if ($error == 'GROUP_USERS_INVALID')
+								{
+									// Find which users don't exist
+									$actual_name_ary = $name_ary;
+									$actual_user_id_ary = false;
+									user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
+
+									$display_message = sprintf($user->lang['GROUP_USERS_INVALID'], implode($user->lang['COMMA_SEPARATOR'], array_diff($name_ary, $actual_name_ary)));
+								}
+
+								trigger_error($display_message . $return_page);
 							}
 
 							trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

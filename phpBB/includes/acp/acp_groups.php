@@ -293,7 +293,19 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					$display_message = $user->lang[$error];
+
+					if ($error == 'GROUP_USERS_INVALID')
+					{
+						// Find which users don't exist
+						$actual_name_ary = $name_ary;
+						$actual_user_id_ary = false;
+						user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
+
+						$display_message = sprintf($user->lang['GROUP_USERS_INVALID'], implode($user->lang['COMMA_SEPARATOR'], array_diff($name_ary, $actual_name_ary)));
+					}
+
+					trigger_error($display_message . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
