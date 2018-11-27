@@ -1114,6 +1114,27 @@ mcp_warn_user_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
 
+memberlist_body_memberlist_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the last row in the memberlist.
+
+memberlist_body_leaders_set_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the last row in the memberlist mode leaders.
+
+memberlist_body_show_group_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the last row in the memberlist mode group.
+
 memberlist_body_rank_append
 ===
 * Locations:
@@ -1145,6 +1166,13 @@ memberlist_body_username_prepend
 * Since: 3.1.0-a1
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
+
+memberlist_body_memberrow_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the last memberrow in the memberlist.
 
 memberlist_email_before
 ===
