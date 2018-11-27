@@ -60,6 +60,7 @@
 			<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
 			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+			{% EVENT memberlist_body_memberlist_append %}
 		</tr>
 		</thead>
 		<tbody>
@@ -91,12 +92,14 @@
 			<th class="info">{% for field in custom_fields %}{% if not loop.first %}{L_COMMA_SEPARATOR} {% endif %}{{ field.PROFILE_FIELD_NAME }}{% endfor %}</th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
 			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+			{% EVENT memberlist_body_leaders_set_append %}
 	<!-- ELSEIF S_SHOW_GROUP -->
 		<th class="name">{L_GROUP_MEMBERS}</th>
 		<th class="posts">{L_POSTS}</th>
 		<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
 		<th class="joined">{L_JOINED}</th>
 		<!-- IF U_SORT_ACTIVE --><th class="active">{L_LAST_ACTIVE}</th><!-- ENDIF -->
+		{% EVENT memberlist_body_show_group_append %}
 	<!-- ENDIF -->
 	</tr>
 	</thead>
@@ -111,6 +114,7 @@
 		<td class="info"><!-- BEGIN custom_fields --><div>{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td>
 		<td>{memberrow.JOINED}</td>
 		<!-- IF S_VIEWONLINE --><td>{memberrow.LAST_ACTIVE}&nbsp;</td><!-- ENDIF -->
+		{% EVENT memberlist_body_memberrow_append %}
 	</tr>
 		<!-- BEGINELSE -->
 	<tr class="bg1">
