@@ -1114,21 +1114,56 @@ mcp_warn_user_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
 
-memberlist_body_memberlist_append
+memberlist_body_group_name_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data before the group name in the group profile page.
+
+memberlist_body_group_name_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the group name in the group profile page.
+
+memberlist_body_group_desc_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the the group description in the group profile page.
+
+memberlist_body_group_rank_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data before the group rank in the group profile page.
+
+memberlist_body_group_rank_desc
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.5-RC1
+* Purpose: Add data after the group rank in the group profile page.
+
+memberlist_body_memberlist_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
 * Since: 3.2.5-RC1
 * Purpose: Add data after the last row in the memberlist.
 
-memberlist_body_leaders_set_append
+memberlist_body_leaders_set_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
 * Since: 3.2.5-RC1
 * Purpose: Add data after the last row in the memberlist mode leaders.
 
-memberlist_body_show_group_append
+memberlist_body_show_group_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
@@ -1167,7 +1202,7 @@ memberlist_body_username_prepend
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
 
-memberlist_body_memberrow_append
+memberlist_body_memberrow_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
