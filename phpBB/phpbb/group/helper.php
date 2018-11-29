@@ -15,25 +15,25 @@ namespace phpbb\group;
 
 class helper
 {
-	/** @var  \phpbb\auth\auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var  \phpbb\cache\service */
+	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	/** @var  \phpbb\config\config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var  \phpbb\language\language */
+	/** @var \phpbb\language\language */
 	protected $language;
 
-	/** @var  \phpbb\event\dispatcher_interface */
+	/** @var \phpbb\event\dispatcher_interface */
 	protected $phpbb_dispatcher;
 
-	/** @var  \phpbb\path_helper */
+	/** @var \phpbb\path_helper */
 	protected $phpbb_path_helper;
 
-	/** @var  \phpbb\user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/** @var string phpBB root path */
@@ -41,9 +41,6 @@ class helper
 
 	/** @var string PHP file extension */
 	protected $php_ext;
-
-	/** @var array Default group name string templates */
-	protected $default_templates = array();
 
 	/**
 	 * Constructor
@@ -58,7 +55,7 @@ class helper
 	 * @param string $phpbb_root_path phpBB root path
 	 * @param string $php_ext PHP file extension
 	 */
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\event\dispatcher_interface $phpbb_dispatcher,  \phpbb\path_helper $phpbb_path_helper, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\path_helper $phpbb_path_helper, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -69,14 +66,7 @@ class helper
 		$this->user = $user;
 
 		$this->phpbb_root_path = $phpbb_root_path;
-
-		$this->default_templates = array(
-			'base_url'				=> append_sid("{$phpbb_root_path}memberlist.$php_ext", 'mode=group&amp;g={GROUP_ID}'),
-			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
-			'tpl_noprofile_colour'	=> '<span style="color: {GROUP_COLOUR};" class="username-coloured">{GROUP_NAME}</span>',
-			'tpl_profile'			=> '<a href="{PROFILE_URL}" class="username">{GROUP_NAME}</a>',
-			'tpl_profile_colour'	=> '<a href="{PROFILE_URL}" style="color: {GROUP_COLOUR};" class="username-coloured">{GROUP_NAME}</a>',
-		);
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -102,6 +92,14 @@ class helper
 	 */
 	public function get_name_string($mode, $group_id, $group_name, $group_colour = '', $custom_profile_url = false)
 	{
+		$_profile_cache = array(
+			'base_url'				=> append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g={GROUP_ID}'),
+			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
+			'tpl_noprofile_colour'	=> '<span class="username-coloured" style="color: {GROUP_COLOUR};">{GROUP_NAME}</span>',
+			'tpl_profile'			=> '<a class="username" href="{PROFILE_URL}">{GROUP_NAME}</a>',
+			'tpl_profile_colour'	=> '<a class="username-coloured" href="{PROFILE_URL}" style="color: {GROUP_COLOUR};">{GROUP_NAME}</a>',
+		);
+
 		// This switch makes sure we only run code required for the mode
 		switch ($mode)
 		{
@@ -141,7 +139,7 @@ class helper
 				// For anonymous the link leads to a login page.
 				if ($group_id && ($this->user->data['user_id'] == ANONYMOUS || $this->auth->acl_get('u_viewprofile')))
 				{
-					$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;g=' . (int) $group_id : str_replace(array('={GROUP_ID}', '=%7BGROUP_ID%7D'), '=' . (int) $group_id, $this->default_templates['base_url']);
+					$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;g=' . (int) $group_id : str_replace(array('={GROUP_ID}', '=%7BGROUP_ID%7D'), '=' . (int) $group_id, $_profile_cache['base_url']);
 				}
 				else
 				{
@@ -162,11 +160,11 @@ class helper
 		{
 			if (($mode === 'full' && !$profile_url) || $mode === 'no_profile')
 			{
-				$group_name_string = str_replace(array('{GROUP_COLOUR}', '{GROUP_NAME}'), array($group_colour, $group_name), (!$group_colour) ? $this->default_templates['tpl_noprofile'] : $this->default_templates['tpl_noprofile_colour']);
+				$group_name_string = str_replace(array('{GROUP_COLOUR}', '{GROUP_NAME}'), array($group_colour, $group_name), (!$group_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
 			}
 			else
 			{
-				$group_name_string = str_replace(array('{PROFILE_URL}', '{GROUP_COLOUR}', '{GROUP_NAME}'), array($profile_url, $group_colour, $group_name), (!$group_colour) ? $this->default_templates['tpl_profile'] : $this->default_templates['tpl_profile_colour']);
+				$group_name_string = str_replace(array('{PROFILE_URL}', '{GROUP_COLOUR}', '{GROUP_NAME}'), array($profile_url, $group_colour, $group_name), (!$group_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
 			}
 		}
 
@@ -202,7 +200,7 @@ class helper
 	 *
 	 * @param array		$group_data		the current stored group data
 	 *
-	 * @return array                    An associative array containing the rank title (title),
+	 * @return array					An associative array containing the rank title (title),
 	 * 									the rank image as full img tag (img) and the rank image source (img_src)
 	 */
 	public function get_rank($group_data)
