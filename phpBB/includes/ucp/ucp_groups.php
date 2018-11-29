@@ -32,6 +32,9 @@ class ucp_groups
 		global $db, $user, $auth, $cache, $template;
 		global $request, $phpbb_container, $phpbb_log;
 
+		/** @var \phpbb\language\language $language Language object */
+		$language = $phpbb_container->get('language');
+
 		$user->add_lang('groups');
 
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
@@ -1054,10 +1057,12 @@ class ucp_groups
 
 						if (confirm_box(true))
 						{
+							$return_manage_page = '<br /><br />' . $language->lang('RETURN_PAGE', '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>');
+
 							// Add user/s to group
 							if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
 							{
-								$display_message = $user->lang[$error];
+								$display_message = $language->lang($error);
 
 								if ($error == 'GROUP_USERS_INVALID')
 								{
@@ -1066,13 +1071,13 @@ class ucp_groups
 									$actual_user_id_ary = false;
 									user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
 
-									$display_message = sprintf($user->lang['GROUP_USERS_INVALID'], implode($user->lang['COMMA_SEPARATOR'], array_diff($name_ary, $actual_name_ary)));
+									$display_message = $language->lang('GROUP_USERS_INVALID', implode($language->lang('COMMA_SEPARATOR'), array_udiff($name_ary, $actual_name_ary, 'strcasecmp')));
 								}
 
-								trigger_error($display_message . $return_page);
+								trigger_error($display_message . $return_manage_page);
 							}
 
-							trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
+							trigger_error($language->lang('GROUP_USERS_ADDED') . $return_manage_page);
 						}
 						else
 						{
