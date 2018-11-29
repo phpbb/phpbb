@@ -49,9 +49,17 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 			$this->cache->get_driver()
 		));
 		$this->container->set('group_helper', new \phpbb\group\helper(
+			$this->getMock('\phpbb\auth\auth'),
+			$this->cache,
+			$this->config,
 			new \phpbb\language\language(
 				new phpbb\language\language_file_loader($phpbb_root_path, $phpEx)
-			)
+			),
+			new phpbb_mock_event_dispatcher(),
+			$this->getMock('\phpbb\path_helper'),
+			$this->user,
+			$phpbb_root_path,
+			$phpEx
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$phpbb_log = new \phpbb\log\dummy();
