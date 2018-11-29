@@ -1133,7 +1133,7 @@ memberlist_body_group_desc_after
 * Locations:
     + styles/prosilver/template/memberlist_body.html
 * Since: 3.2.5-RC1
-* Purpose: Add data after the the group description in the group profile page.
+* Purpose: Add data after the group descdiption and type in the group profile page.
 
 memberlist_body_group_rank_before
 ===
@@ -1142,12 +1142,12 @@ memberlist_body_group_rank_before
 * Since: 3.2.5-RC1
 * Purpose: Add data before the group rank in the group profile page.
 
-memberlist_body_group_desc_after
+memberlist_body_group_rank_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
 * Since: 3.2.5-RC1
-* Purpose: Add data after the group desc and type in the group profile page.
+* Purpose: Add data after the group rank in the group profile page.
 
 memberlist_body_memberlist_after
 ===
