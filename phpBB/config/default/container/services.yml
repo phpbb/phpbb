@@ -122,7 +122,15 @@ services:
     group_helper:
         class: phpbb\group\helper
         arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
             - '@language'
+            - '@dispatcher'
+            - '@path_helper'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
 
     log:
         class: phpbb\log\log
