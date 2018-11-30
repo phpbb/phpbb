@@ -1522,6 +1522,7 @@ switch ($mode)
 
 			$db->sql_freeresult($result);
 
+			// Load custom profile fields if required
 			if ($config['load_cpf_memberlist'])
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
