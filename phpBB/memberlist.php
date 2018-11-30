@@ -1480,7 +1480,7 @@ switch ($mode)
 			else
 			{
 				$sql_array = array(
-					'SELECT'	=> '*',
+					'SELECT'	=> 'u.*',
 					'FROM'		=> array(
 						USERS_TABLE		=> 'u'
 					),
