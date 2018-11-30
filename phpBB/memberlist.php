@@ -1487,6 +1487,27 @@ switch ($mode)
 					'WHERE'		=> $db->sql_in_set('u.user_id', $user_list),
 				);
 			}
+
+			/**
+			 * Modify user data SQL before member row is created
+			 *
+			 * @event core.memberlist_modify_memberrow_sql
+			 * @var string	mode				group
+			 * @var string	sql_select			Additional select statement
+			 * @var string	sql_from			Additional from statement
+			 * @var array	sql_array			Array containing the main query
+			 * @var array	user_list			Array containing list of users
+			 * @since 3.2.6-RC1
+			 */
+			$vars = array(
+				'mode',
+				'sql_select',
+				'sql_from',
+				'sql_array',
+				'user_list',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_memberrow_sql', compact($vars)));
+
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 
@@ -1498,28 +1519,6 @@ switch ($mode)
 
 				$id_cache[$row['user_id']] = $row;
 			}
-
-			/**
-			 * Modify user data SQL before member row is created
-			 *
-			 * @event core.memberlist_modify_memberrow_sql
-			 * @var string	mode				group
-			 * @var string	sql_select			Additional select statement
-			 * @var string	sql_from			Additional from statement
-			 * @var array	sql_array			Array containing the main query
-			 * @var array	user_list			Array containing the user IDs
-			 * @var array	id_cache			Temp. Array of users data
-			 * @since 3.2.6-RC1
-			 */
-			$vars = array(
-				'mode',
-				'sql_select',
-				'sql_from',
-				'sql_array',
-				'user_list',
-				'id_cache',
-			);
-			extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_memberrow_sql', compact($vars)));
 
 			$db->sql_freeresult($result);
 
