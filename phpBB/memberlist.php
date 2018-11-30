@@ -1507,7 +1507,7 @@ switch ($mode)
 			 * @var string	sql_select			Additional select statement
 			 * @var string	sql_from			Additional from statement
 			 * @var array	sql_array			Array containing the main query
-			 * @var array	row					Array containing the user_ID data
+			 * @var array	id_cache			Array of temp user ID data
 			 * @since 3.2.6-RC1
 			 */
 			$vars = array(
@@ -1515,7 +1515,7 @@ switch ($mode)
 				'sql_select',
 				'sql_from',
 				'sql_array',
-				'row'
+				'id_cache',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_memberrow_sql', compact($vars)));
 
