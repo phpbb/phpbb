@@ -12,6 +12,8 @@
 
 <!-- ENDIF -->
 
+{% EVENT memberlist_body_page_header_after %}
+
 	<!-- IF S_SHOW_GROUP -->
 		{% EVENT memberlist_body_group_name_before %}
 		<h2 class="group-title"<!-- IF GROUP_COLOR --> style="color:#{GROUP_COLOR};"<!-- ENDIF -->>{GROUP_NAME}</h2>
@@ -31,6 +33,7 @@
 			{% EVENT memberlist_body_group_rank_after %}
 		</p>
 	<!-- ELSE -->
+		{% EVENT memberlist_body_page_title_before %}
 		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 
 		<div class="action-bar bar-top">
@@ -165,6 +168,8 @@
 		<!-- ENDIF -->
 	</div>
 </div>
+
+{% EVENT memberlist_body_page_footer_before %}
 
 <!-- IF S_IN_SEARCH_POPUP -->
 	<!-- INCLUDE simple_footer.html -->
