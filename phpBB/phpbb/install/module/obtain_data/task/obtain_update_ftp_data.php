@@ -85,10 +85,10 @@ class obtain_update_ftp_data extends task_base
 				$method = $methods[0];
 			}
 
-			$ftp_host = $this->iohandler->get_input('ftp_host', '');
-			$ftp_user = $this->iohandler->get_input('ftp_user', '');
-			$ftp_pass = htmlspecialchars_decode($this->iohandler->get_input('ftp_pass', ''));
-			$ftp_path = $this->iohandler->get_input('ftp_path', '');
+			$ftp_host = $this->iohandler->get_input('ftp_host', '', true);
+			$ftp_user = $this->iohandler->get_input('ftp_user', '', true);
+			$ftp_pass = htmlspecialchars_decode($this->iohandler->get_input('ftp_pass', '', true));
+			$ftp_path = $this->iohandler->get_input('ftp_path', '', true);
 			$ftp_port = $this->iohandler->get_input('ftp_port', 21);
 			$ftp_time = $this->iohandler->get_input('ftp_timeout', 10);
 
