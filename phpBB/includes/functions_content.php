@@ -1088,7 +1088,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	global $extensions, $config, $phpbb_root_path, $phpEx;
 	global $phpbb_container;
 
-	$attachment_storage = $phpbb_container->get('storage.attachment');
+	$storage_attachment = $phpbb_container->get('storage.attachment');
 
 	//
 	$compiled_attachments = array();
