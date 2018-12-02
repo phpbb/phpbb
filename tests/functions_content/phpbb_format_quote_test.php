@@ -15,13 +15,16 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/message_parser.php';
 
 class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 {
+	/** @var \phpbb\language\language */
+	protected $lang;
+
 	public function setUp()
 	{
 		global $cache, $user, $phpbb_root_path, $phpEx;
 
 		$lang_file_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_file_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->lang = new \phpbb\language\language($lang_file_loader);
+		$user = new \phpbb\user($this->lang, '\phpbb\datetime');
 		$cache = new phpbb_mock_cache();
 
 		parent::setUp();
@@ -30,8 +33,10 @@ class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 	public function data_phpbb_format_quote()
 	{
 		return [
-			[true, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', "[quote=admin user_id=2][quote=&quot;username&quot;]quoted[/quote][/quote]\n\n"],
-			[false, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', "admin wrote:\n&gt; [quote=&quot;username&quot;]quoted[/quote]\n"]
+			[true, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', '', "[quote=admin user_id=2][quote=&quot;username&quot;]quoted[/quote][/quote]\n\n"],
+			[false, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', '', "admin wrote:\n&gt; [quote=&quot;username&quot;]quoted[/quote]\n"],
+			[true, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', "[url=http://viewtopic.php?p=1#p1]Subject: Foo[/url]\n\n", "[url=http://viewtopic.php?p=1#p1]Subject: Foo[/url]\n\n[quote=admin user_id=2][quote=&quot;username&quot;]quoted[/quote][/quote]\n\n"],
+			[false, ['author' => 'admin', 'user_id' => 2],  '[quote=&quot;username&quot;]quoted[/quote]', "http://viewtopic.php?p=1#p1 - Subject: Foo\n\n", "http://viewtopic.php?p=1#p1 - Subject: Foo\n\nadmin wrote:\n&gt; [quote=&quot;username&quot;]quoted[/quote]\n"],
 		];
 	}
 
@@ -39,13 +44,13 @@ class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 	/**
 	 * @dataProvider data_phpbb_format_quote
 	 */
-	public function test_phpbb_format_quote($bbcode_status, $quote_attributes, $message, $expected)
+	public function test_phpbb_format_quote($bbcode_status, $quote_attributes, $message, $message_link, $expected)
 	{
 		$text_formatter_utils = new \phpbb\textformatter\s9e\utils();
 
 		$message_parser = new parse_message($message);
 
-		phpbb_format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, $message_parser);
+		phpbb_format_quote($this->lang, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
 
 		$this->assertEquals($expected, $message_parser->message);
 	}

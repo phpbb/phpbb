@@ -986,7 +986,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
 
-		phpbb_format_quote($bbcode_status, $quote_attributes, $phpbb_container->get('text_formatter.utils'), $message_parser, $message_link);
+		/** @var \phpbb\language\language $language */
+		$language = $phpbb_container->get('language');
+		/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */
+		$text_formatter_utils = $phpbb_container->get('text_formatter.utils');
+		phpbb_format_quote($language, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
