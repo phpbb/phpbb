@@ -1006,7 +1006,7 @@ mcp_post_text_before
 ===
 * Locations:
     + styles/prosilver/template/mcp_post.html
-* Since 3.2.6-RC1
+* Since: 3.2.6-RC1
 * Purpose: Add content before the post text
 
 mcp_post_report_buttons_top_after
