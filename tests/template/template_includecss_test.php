@@ -25,8 +25,6 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		$auth = $this->getMock('\phpbb\auth\auth');
-
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
@@ -70,7 +68,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$twig,
 			$cache_path,
 			$this->user,
-			array(new \phpbb\template\twig\extension($auth, $context, $twig, $this->user)),
+			array(new \phpbb\template\twig\extension($context, $twig, $this->user)),
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',
 				array(

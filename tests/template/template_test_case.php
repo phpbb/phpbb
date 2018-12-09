@@ -73,8 +73,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$auth = $this->getMock('\phpbb\auth\auth');
-
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
@@ -115,7 +113,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($auth, $context, $twig, $this->user)));
+		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}

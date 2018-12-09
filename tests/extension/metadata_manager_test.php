@@ -36,8 +36,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$auth = $this->getMock('\phpbb\auth\auth');
-
 		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
@@ -113,7 +111,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
-		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($auth, $context, $twig, $this->user)));
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 
