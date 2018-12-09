@@ -89,6 +89,8 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
+			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
+			new \Twig_SimpleFunction('get_class', 'get_class'),
 		);
 	}
 
@@ -185,5 +187,15 @@ class extension extends \Twig_Extension
 		// need to check for it
 
 		return call_user_func_array(array($this->language, 'lang'), $args);
+	}
+
+	/**
+	 * Check if a language variable exists
+	 *
+	 * @return bool
+	 */
+	public function lang_defined($key)
+	{
+		return call_user_func_array([$this->language, 'is_set'], [$key]);
 	}
 }
