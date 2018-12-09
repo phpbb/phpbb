@@ -37,16 +37,10 @@ services:
     template.twig.extensions.phpbb:
         class: phpbb\template\twig\extension
         arguments:
+            - '@auth'
             - '@template_context'
             - '@template.twig.environment'
             - '@language'
-        tags:
-            - { name: twig.extension }
-
-    template.twig.extensions.auth:
-        class: phpbb\template\twig\extension\auth
-        arguments:
-            - '@auth'
         tags:
             - { name: twig.extension }
 

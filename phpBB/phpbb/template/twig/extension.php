@@ -15,6 +15,9 @@ namespace phpbb\template\twig;
 
 class extension extends \Twig_Extension
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
 	/** @var \phpbb\template\context */
 	protected $context;
 
@@ -27,13 +30,14 @@ class extension extends \Twig_Extension
 	/**
 	* Constructor
 	*
+	* @param \phpbb\auth\auth $auth
 	* @param \phpbb\template\context $context
 	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
-	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
+		$this->auth = $auth;
 		$this->context = $context;
 		$this->environment = $environment;
 		$this->language = $language;
@@ -91,6 +95,8 @@ class extension extends \Twig_Extension
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
 			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
+			new \Twig_SimpleFunction('auth', array($this, 'get_auth')),
+			new \Twig_SimpleFunction('auth_global', array($this, 'get_auth_global')),
 		);
 	}
 
@@ -197,5 +203,43 @@ class extension extends \Twig_Extension
 	public function lang_defined($key)
 	{
 		return call_user_func_array([$this->language, 'is_set'], [$key]);
+	}
+
+	/**
+	 * Look up permission option(s).
+	 *
+	 * How to use in a template:
+	 * - {{ auth(options, forum_id) }}
+	 *
+	 * The options are required, either as a single string 'a_' or as a twig array ['a_', 'm_'].
+	 * The forum identifier is optional.
+	 *
+	 * @return bool
+	 */
+	public function get_auth()
+	{
+		$args = func_get_args();
+
+		$options = $args[0];
+		$forum_id = isset($args[1]) ? (int) $args[1] : 0;
+
+		return is_array($options) ? $this->auth->acl_gets($options, $forum_id) : $this->auth->acl_get($options, $forum_id);
+	}
+
+	/**
+	 * Look up permission option(s) for any forum
+	 *
+	 * How to use in a template:
+	 * - {{ auth_global(options) }}
+	 *
+	 * The options are required, either as a single string 'a_' or as a twig array ['a_', 'm_'].
+	 *
+	 * @return bool
+	 */
+	public function get_auth_global()
+	{
+		$args = func_get_args();
+
+		return $this->auth->acl_getf_global($args);
 	}
 }

@@ -131,6 +131,8 @@ Zeta test event in all',
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
+		$auth = $this->getMock('\phpbb\auth\auth');
+
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
@@ -169,7 +171,7 @@ Zeta test event in all',
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)), $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($auth, $context, $twig, $this->user)), $this->extension_manager);
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));

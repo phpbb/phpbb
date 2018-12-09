@@ -79,7 +79,6 @@ class username extends \Twig_Extension
 			$custom_profile_url = isset($args[5]) ? $args[5] : false;
 		}
 
-
 		return get_username_string($mode, $user_id, $username, $user_colour, $guest_username, $custom_profile_url);
 	}
 }
