@@ -79,7 +79,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
-	private function set_reflection_property(&$class, $property_name, $value)
+	private function set_reflection_property($class, $property_name, $value)
 	{
 		$property = new ReflectionProperty($class, $property_name);
 		$property->setAccessible(true);

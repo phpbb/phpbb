@@ -845,7 +845,7 @@ class acp_profile
 	/**
 	* Build all Language specific options
 	*/
-	function build_language_options(&$cp, $field_type, $action = 'create')
+	function build_language_options($cp, $field_type, $action = 'create')
 	{
 		global $user, $config, $db, $request;
 
@@ -942,7 +942,7 @@ class acp_profile
 	/**
 	* Save Profile Field
 	*/
-	function save_profile_field(&$cp, $field_type, $action = 'create')
+	function save_profile_field($cp, $field_type, $action = 'create')
 	{
 		global $db, $config, $user, $phpbb_container, $phpbb_log, $request, $phpbb_dispatcher;
 

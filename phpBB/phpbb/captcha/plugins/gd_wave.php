@@ -33,7 +33,7 @@ class gd_wave extends captcha_abstract
 		return '\\phpbb\\captcha\\gd_wave';
 	}
 
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $user;
 
