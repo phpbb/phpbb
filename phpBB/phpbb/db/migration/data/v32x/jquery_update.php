@@ -17,7 +17,7 @@ class jquery_update extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return $this->config['load_jquery_url'] !== '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js';
+		return $this->config['load_jquery_url'] === '//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js';
 	}
 
 	static public function depends_on()
