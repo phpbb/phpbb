@@ -524,7 +524,7 @@ switch ($mode)
 
 		// Do the SQL thang
 		$sql_ary = [
-			'SELECT'	=> 'g.group_id, g.group_name, g.group_type, g.group_rank, ug.user_id',
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_type, ug.user_id',
 
 			'FROM'		=> [
 				GROUPS_TABLE => 'g',
