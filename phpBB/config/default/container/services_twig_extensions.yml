@@ -1,6 +1,8 @@
+# Twig extensions don't needed by the installer
+
 services:
-    jumpbox.twig.extension:
-        class: phpbb\jumpbox\twig\extension
+    template.twig.extensions.jumpbox:
+        class: phpbb\template\twig\extension\jumpbox
         arguments:
             - '@auth'
             - '@dbal.conn'

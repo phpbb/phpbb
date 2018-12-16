@@ -15,7 +15,6 @@ imports:
     - { resource: services_help.yml }
     - { resource: services_hook.yml }
     - { resource: services_http.yml }
-    - { resource: services_jumpbox.yml }
     - { resource: services_language.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
@@ -30,6 +29,7 @@ imports:
     - { resource: services_text_formatter.yml }
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
+    - { resource: services_twig_extensions.yml }
     - { resource: services_user.yml }
 
     - { resource: tables.yml }

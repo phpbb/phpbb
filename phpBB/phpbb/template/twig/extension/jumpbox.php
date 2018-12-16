@@ -11,14 +11,14 @@
 *
 */
 
-namespace phpbb\jumpbox\twig;
+namespace phpbb\template\twig\extension;
 
 use phpbb\auth\auth;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\path_helper;
 
-class extension extends \Twig_Extension
+class jumpbox extends \Twig_Extension
 {
 	/**
 	 * Constructor
