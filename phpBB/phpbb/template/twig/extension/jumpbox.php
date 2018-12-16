@@ -120,7 +120,11 @@ class jumpbox extends \Twig_Extension
 			$tpl_ary = array(
 				'FORUM_ID'		=> $row['forum_id'],
 				'FORUM_NAME'	=> $row['forum_name'],
+				'SELECTED'		=> ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '',
+				'S_FORUM_COUNT'	=> $iteration,
 				'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
+				'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
+				'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false,
 				'LINK'			=> $this->path_helper->append_url_params("viewforum.php", array('f' => $row['forum_id'])),
 			);
 
