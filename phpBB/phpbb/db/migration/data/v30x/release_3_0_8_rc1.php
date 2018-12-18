@@ -61,7 +61,9 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (empty($row['lang_dir']))
+			{
 				continue;
+			}
 
 			$lang_dir = basename($row['lang_dir']);
 
