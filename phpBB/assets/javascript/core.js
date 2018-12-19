@@ -20,6 +20,13 @@ var phpbbAlertTimer = null;
 
 phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
 
+// Add ajax pre-filter to prevent cross-domain script execution
+$.ajaxPrefilter(function(s) {
+	if (s.crossDomain) {
+		s.contents.script = false;
+	}
+});
+
 /**
  * Display a loading screen
  *
