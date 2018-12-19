@@ -65,7 +65,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function is_available(type_interface $notification_type = null)
 	{
-		return parent::is_available($notification_type) && $this->config['email_enable'] && $this->user->data['user_email'];
+		return parent::is_available($notification_type) && $this->config['email_enable'] && !empty($this->user->data['user_email']);
 	}
 
 	/**
