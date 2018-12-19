@@ -1693,6 +1693,34 @@ overall_header_stylesheets_after
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
 
+posting_attach_body_attach_row_after
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content after attachment row in the file list
+
+posting_attach_body_attach_row_before
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content before attachment row in the file list
+
+posting_attach_body_attach_row_append
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content appending the attachment row in the file list
+
+posting_attach_body_attach_row_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content prepending attachment row in the file list
+
 posting_attach_body_attach_row_controls_append
 ===
 * Locations:
@@ -1706,6 +1734,20 @@ posting_attach_body_attach_row_controls_prepend
     + styles/prosilver/template/posting_attach_body.html
 * Since: 3.2.2-RC1
 * Purpose: Add content before attachment control elements 
+
+posting_attach_body_file_list_after
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content after attachments list 
+
+posting_attach_body_file_list_before
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content before attachments list 
 
 posting_editor_add_panel_tab
 ===
