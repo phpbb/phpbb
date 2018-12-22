@@ -58,9 +58,14 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 		$result = $this->db->sql_query($sql);
 
 		$extension_groups_updated = array();
-		while ($lang_dir = $this->db->sql_fetchfield('lang_dir'))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$lang_dir = basename($lang_dir);
+			if (empty($row['lang_dir']))
+			{
+				continue;
+			}
+
+			$lang_dir = basename($row['lang_dir']);
 
 			// The language strings we need are either in language/.../acp/attachments.php
 			// in the update package if we're updating to 3.0.8-RC1 or later,

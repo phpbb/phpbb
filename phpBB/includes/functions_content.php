@@ -1744,13 +1744,14 @@ class bitfield
 /**
  * Formats the quote according to the given BBCode status setting
  *
- * @param bool 						$bbcode_status The status of the BBCode setting
- * @param array 					$quote_attributes The attributes of the quoted post
- * @param phpbb\textformatter\utils $text_formatter_utils Text formatter utilities
- * @param parse_message 			$message_parser Message parser class
- * @param string 					$message_link Link of the original quoted post
+ * @param phpbb\language\language				$language Language class
+ * @param parse_message 						$message_parser Message parser class
+ * @param phpbb\textformatter\utils_interface	$text_formatter_utils Text formatter utilities
+ * @param bool 									$bbcode_status The status of the BBCode setting
+ * @param array 								$quote_attributes The attributes of the quoted post
+ * @param string 								$message_link Link of the original quoted post
  */
-function phpbb_format_quote($bbcode_status, $quote_attributes, $text_formatter_utils, $message_parser, $message_link = '')
+function phpbb_format_quote($language, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link = '')
 {
 	if ($bbcode_status)
 	{
@@ -1776,7 +1777,7 @@ function phpbb_format_quote($bbcode_status, $quote_attributes, $text_formatter_u
 		$message = $quote_string . $message;
 		$message = str_replace("\n", "\n" . $quote_string, $message);
 
-		$message_parser->message = $quote_attributes['author'] . " " . $user->lang['WROTE'] . ":\n" . $message . "\n";
+		$message_parser->message = $quote_attributes['author'] . " " . $language->lang('WROTE') . ":\n" . $message . "\n";
 	}
 
 	if ($message_link)
