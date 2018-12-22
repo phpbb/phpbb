@@ -546,7 +546,7 @@ switch ($mode)
 		*
 		* @event core.modify_memberlist_viewprofile_group_sql
 		* @var array	sql_ary			Array containing the query
-		* @since 3.2.5
+		* @since 3.2.6-RC1
 		*/
 		$vars = array(
 			'sql_ary',
@@ -598,7 +598,7 @@ switch ($mode)
 		* @event core.modify_memberlist_viewprofile_group_data
 		* @var array	group_data			Array containing the group data
 		* @var array	group_sort			Array containing the sorted group data
-		* @since 3.2.5
+		* @since 3.2.6-RC1
 		*/
 		$vars = array(
 			'group_data',
