@@ -846,6 +846,7 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+/** @var \phpbb\textformatter\utils_interface $bbcode_utils */
 $bbcode_utils = $phpbb_container->get('text_formatter.utils');
 
 if ($submit || $preview || $refresh)
@@ -1648,7 +1649,9 @@ if ($generate_quote)
 						'user_id' => $post_data['poster_id'],
 	);
 
-	phpbb_format_quote($config['allow_bbcode'], $quote_attributes, $bbcode_utils, $message_parser);
+	/** @var \phpbb\language\language $language */
+	$language = $phpbb_container->get('language');
+	phpbb_format_quote($language, $message_parser, $bbcode_utils, $bbcode_status, $quote_attributes);
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
