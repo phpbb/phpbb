@@ -638,7 +638,7 @@ class qa
 	/**
 	*  API function - The ACP backend, this marks the end of the easy methods
 	*/
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $config, $request, $phpbb_log, $template, $user;
 
@@ -776,7 +776,7 @@ class qa
 	/**
 	*  This handles the list overview
 	*/
-	function acp_question_list(&$module)
+	function acp_question_list($module)
 	{
 		global $db, $template;
 

@@ -22,12 +22,12 @@ if (!defined('IN_PHPBB'))
 /**
 * Functions used to generate additional URL paramters
 */
-function phpbb_module__url($mode, &$module_row)
+function phpbb_module__url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }
 
-function phpbb_module_notes_url($mode, &$module_row)
+function phpbb_module_notes_url($mode, $module_row)
 {
 	if ($mode == 'front')
 	{
@@ -38,7 +38,7 @@ function phpbb_module_notes_url($mode, &$module_row)
 	return ($user_id) ? "&amp;u=$user_id" : '';
 }
 
-function phpbb_module_warn_url($mode, &$module_row)
+function phpbb_module_warn_url($mode, $module_row)
 {
 	if ($mode == 'front' || $mode == 'list')
 	{
@@ -64,27 +64,27 @@ function phpbb_module_warn_url($mode, &$module_row)
 	}
 }
 
-function phpbb_module_main_url($mode, &$module_row)
+function phpbb_module_main_url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }
 
-function phpbb_module_logs_url($mode, &$module_row)
+function phpbb_module_logs_url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }
 
-function phpbb_module_ban_url($mode, &$module_row)
+function phpbb_module_ban_url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }
 
-function phpbb_module_queue_url($mode, &$module_row)
+function phpbb_module_queue_url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }
 
-function phpbb_module_reports_url($mode, &$module_row)
+function phpbb_module_reports_url($mode, $module_row)
 {
 	return phpbb_extra_url();
 }

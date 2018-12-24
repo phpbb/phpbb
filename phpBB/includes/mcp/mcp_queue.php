@@ -28,9 +28,9 @@ class mcp_queue
 	var $p_master;
 	var $u_action;
 
-	public function __construct(&$p_master)
+	public function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	public function main($id, $mode)

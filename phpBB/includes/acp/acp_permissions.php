@@ -676,7 +676,7 @@ class acp_permissions
 	/**
 	* Apply permissions
 	*/
-	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
+	function set_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
 		global $db, $cache, $user, $auth;
 		global $request;
@@ -765,7 +765,7 @@ class acp_permissions
 	/**
 	* Apply all permissions
 	*/
-	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
+	function set_all_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
 		global $db, $cache, $user, $auth;
 		global $request;
@@ -881,7 +881,7 @@ class acp_permissions
 	/**
 	* Remove permissions
 	*/
-	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
+	function remove_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
 		global $user, $db, $cache, $auth;
 
