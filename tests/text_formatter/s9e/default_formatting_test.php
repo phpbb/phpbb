@@ -298,7 +298,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				"Emoji: \xF0\x9F\x98\x80",
-				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/emojione/assets/3.1/png/64/1f600.png">'
+				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/emojione/assets/4.0/png/64/1f600.png">'
 			),
 			array(
 				"Emoji: \xF0\x9F\x98\x80",
