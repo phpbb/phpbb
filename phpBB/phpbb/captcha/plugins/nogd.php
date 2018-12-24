@@ -33,7 +33,7 @@ class nogd extends captcha_abstract
 		return '\\phpbb\\captcha\\non_gd';
 	}
 
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $user;
 

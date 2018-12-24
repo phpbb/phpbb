@@ -391,7 +391,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
  *
  * @deprecated 3.1.0 (To be removed: 3.3.0)
  */
-function get_tables(&$db)
+function get_tables($db)
 {
 	$db_tools_factory = new \phpbb\db\tools\factory();
 	$db_tools = $db_tools_factory->get($db);
