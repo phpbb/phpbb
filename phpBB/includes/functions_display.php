@@ -1241,6 +1241,7 @@ function display_user_activity(&$userdata_ary)
 	}
 
 	$userdata = $userdata_ary;
+	$show_user_activity = true;
 	/**
 	* Alter list of forums and topics to display as active
 	*
@@ -1248,9 +1249,11 @@ function display_user_activity(&$userdata_ary)
 	* @var	array	userdata						User's data
 	* @var	array	active_f_row					List of active forums
 	* @var	array	active_t_row					List of active posts
+	* @var	bool	show_user_activity				Show user forum and topic activity
 	* @since 3.1.0-RC3
+	* @changed 3.2.5-RC1 Added show_user_activity into event
 	*/
-	$vars = array('userdata', 'active_f_row', 'active_t_row');
+	$vars = array('userdata', 'active_f_row', 'active_t_row', 'show_user_activity');
 	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));
 	$userdata_ary = $userdata;
 	unset($userdata);
@@ -1287,7 +1290,7 @@ function display_user_activity(&$userdata_ary)
 		'ACTIVE_TOPIC_PCT'		=> sprintf($l_active_pct, $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
 		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id),
-		'S_SHOW_ACTIVITY'		=> true)
+		'S_SHOW_ACTIVITY'		=> $show_user_activity)
 	);
 }
 
