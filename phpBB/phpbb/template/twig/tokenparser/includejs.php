@@ -20,7 +20,7 @@ class includejs extends \Twig_TokenParser
 	*
 	* @param \Twig_Token $token A Twig_Token instance
 	*
-	* @return \Twig_NodeInterface A Twig_NodeInterface instance
+	* @return \Twig_Node A Twig_Node instance
 	*/
 	public function parse(\Twig_Token $token)
 	{
@@ -29,7 +29,7 @@ class includejs extends \Twig_TokenParser
 		$stream = $this->parser->getStream();
 		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includejs($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includejs($expr, $token->getLine(), $this->getTag());
 	}
 
 	/**

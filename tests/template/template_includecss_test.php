@@ -67,7 +67,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$twig,
 			$cache_path,
 			$this->user,
-			array(new \phpbb\template\twig\extension($context, $this->user)),
+			array(new \phpbb\template\twig\extension($context, $twig, $this->user)),
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',
 				array(

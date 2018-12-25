@@ -110,7 +110,7 @@ class loader extends \Twig_Loader_Filesystem
 	* Override for Twig_Loader_Filesystem::findTemplate to add support
 	*	for loading from safe directories.
 	*/
-	protected function findTemplate($name)
+	protected function findTemplate($name, $throw = true)
 	{
 		$name = (string) $name;
 
@@ -126,12 +126,12 @@ class loader extends \Twig_Loader_Filesystem
 
 		// First, find the template name. The override above of validateName
 		//	causes the validateName process to be skipped for this call
-		$file = parent::findTemplate($name);
+		$file = parent::findTemplate($name, $throw);
 
 		try
 		{
 			// Try validating the name (which may throw an exception)
-			parent::validateName($name);
+			$this->validateName($name);
 		}
 		catch (\Twig_Error_Loader $e)
 		{
