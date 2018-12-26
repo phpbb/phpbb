@@ -108,9 +108,13 @@
 			</p>
 		<!-- ENDIF -->
 
+		{% EVENT mcp_post_text_before %}
+
 		<div id="post_details" class="content post_details">
 			{POST_PREVIEW}
 		</div>
+
+		{% EVENT mcp_post_text_after %}
 
 		<!-- IF S_HAS_ATTACHMENTS -->
 			<dl class="attachbox">
