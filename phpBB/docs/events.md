@@ -1149,19 +1149,19 @@ memberlist_body_group_rank_before
 * Since: 3.2.6-RC1
 * Purpose: Add data before the group rank in the group profile page.
 
-memberlist_body_memberlist_after
-===
-* Locations:
-    + styles/prosilver/template/memberlist_body.html
-* Since: 3.2.6-RC1
-* Purpose: Add data after the last row in the memberlist.
-
 memberlist_body_leaders_set_after
 ===
 * Locations:
     + styles/prosilver/template/memberlist_body.html
 * Since: 3.2.6-RC1
 * Purpose: Add data after the last row in the memberlist mode leaders.
+
+memberlist_body_memberlist_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the last row in the memberlist.
 
 memberlist_body_memberrow_after
 ===
