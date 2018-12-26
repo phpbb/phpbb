@@ -104,3 +104,6 @@ Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 MIT licenced:
 Symfony2 (c) 2004-2011 Fabien Potencier, https://symfony.com/
 Cookie Consent (c) 2015 Silktide Ltd, https://cookieconsent.insites.com
+
+Emoji by:
+Twemoji (c) 2018 Twitter, Inc, https://twemoji.twitter.com/
