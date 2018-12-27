@@ -41,6 +41,13 @@ services:
         tags:
             - { name: twig.extension }
 
+    template.twig.extensions.icon:
+        class: phpbb\template\twig\extension\icon
+        arguments:
+            - '@user'
+        tags:
+            - { name: twig.extension }
+
     template.twig.extensions.routing:
         class: phpbb\template\twig\extension\routing
         arguments:
