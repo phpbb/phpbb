@@ -265,7 +265,7 @@ class compose
 			case 'post':
 				if (!$this->auth->acl_get('u_sendpm'))
 				{
-					return $this->helper->error('NO_AUTH_SEND_MESSAGE', 403);
+					throw new http_exception(403, 'NO_AUTH_SEND_MESSAGE');
 				}
 			break;
 
@@ -275,12 +275,12 @@ class compose
 			case 'quotepost':
 				if (!$msg_id)
 				{
-					return $this->helper->error('NO_MESSAGE', 404);
+					throw new http_exception(404, 'NO_MESSAGE');
 				}
 
 				if (!$this->auth->acl_get('u_sendpm'))
 				{
-					return $this->helper->error('NO_AUTH_SEND_MESSAGE', 403);
+					throw new http_exception(403, 'NO_AUTH_SEND_MESSAGE');
 				}
 
 				if ($action == 'quotepost')
@@ -305,7 +305,7 @@ class compose
 			case 'edit':
 				if (!$msg_id)
 				{
-					return $this->helper->error('NO_MESSAGE', 404);
+					throw new http_exception(404, 'NO_MESSAGE');
 				}
 
 				// check for outbox (not read) status, we do not allow editing if one user already having the message
@@ -319,12 +319,12 @@ class compose
 			case 'delete':
 				if (!$this->auth->acl_get('u_pm_delete'))
 				{
-					return $this->helper->error('NO_AUTH_DELETE_MESSAGE', 403);
+					throw new http_exception(403, 'NO_AUTH_DELETE_MESSAGE');
 				}
 
 				if (!$msg_id)
 				{
-					return $this->helper->error('NO_MESSAGE', 404);
+					throw new http_exception(404, 'NO_MESSAGE');
 				}
 
 				$sql = 'SELECT msg_id, pm_unread, pm_new, author_id
@@ -340,12 +340,12 @@ class compose
 
 		if ($action == 'forward' && (!$this->config['forward_pm'] || !$this->auth->acl_get('u_pm_forward')))
 		{
-			return $this->helper->error('NO_AUTH_FORWARD_MESSAGE', 403);
+			throw new http_exception(403, 'NO_AUTH_FORWARD_MESSAGE');
 		}
 
 		if ($action == 'edit' && !$this->auth->acl_get('u_pm_edit'))
 		{
-			return $this->helper->error('NO_AUTH_EDIT_MESSAGE', 403);
+			throw new http_exception(403, 'NO_AUTH_EDIT_MESSAGE');
 		}
 
 		if ($sql)
@@ -399,18 +399,18 @@ class compose
 
 					if ($post)
 					{
-						return $this->helper->error('NO_EDIT_READ_MESSAGE', 403);
+						throw new http_exception(403, 'NO_EDIT_READ_MESSAGE');
 					}
 				}
 
-				return $this->helper->error('NO_MESSAGE', 404);
+				throw new http_exception(404, 'NO_MESSAGE');
 			}
 
 			if ($action == 'quotepost')
 			{
 				if (($post['forum_id'] && !$this->auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$this->auth->acl_getf_global('f_read')))
 				{
-					return $this->helper->error('NOT_AUTHORISED', 403);
+					throw new http_exception(403, 'NOT_AUTHORISED');
 				}
 
 				/**
@@ -466,7 +466,7 @@ class compose
 
 			if ((!$post['author_id'] || ($post['author_id'] == ANONYMOUS && $action != 'delete')) && $msg_id)
 			{
-				return $this->helper->error('NO_AUTHOR', 404);
+				throw new http_exception(404, 'NO_AUTHOR');
 			}
 
 			if ($action == 'quotepost')
@@ -560,14 +560,14 @@ class compose
 
 		if (($to_group_id || isset($address_list['g'])) && (!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm_group')))
 		{
-			return $this->helper->error('NO_AUTH_GROUP_MESSAGE', 403);
+			throw new http_exception(403, 'NO_AUTH_GROUP_MESSAGE');
 		}
 
 		if ($action == 'edit' && !$refresh && !$preview && !$submit)
 		{
 			if (!($message_time > time() - ($this->config['pm_edit_time'] * 60) || !$this->config['pm_edit_time']))
 			{
-				return $this->helper->error('CANNOT_EDIT_MESSAGE_TIME', 403);
+				throw new http_exception(403, 'CANNOT_EDIT_MESSAGE_TIME');
 			}
 		}
 
