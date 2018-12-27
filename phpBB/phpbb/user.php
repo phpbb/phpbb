@@ -343,7 +343,7 @@ class user extends \phpbb\session
 		}
 
 		// Is board disabled and user not an admin or moderator?
-		if ($config['board_disable'] && !defined('IN_LOGIN') && !defined('SKIP_CHECK_DISABLED') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		if ($config['board_disable'] && !defined('IN_INSTALL') && !defined('IN_LOGIN') && !defined('SKIP_CHECK_DISABLED') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
 			if ($this->data['is_bot'])
 			{
