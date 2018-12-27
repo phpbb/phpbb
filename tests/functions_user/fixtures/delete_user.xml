@@ -215,12 +215,10 @@
 		<column>message_edit_user</column>
 		<column>message_text</column>
 		<column>to_address</column>
-		<column>bcc_address</column>
 		<row>
 			<value>1</value>
 			<value>3</value>
 			<value>3</value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -228,7 +226,6 @@
 			<value>2</value>
 			<value>2</value>
 			<value>2</value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -515,29 +512,20 @@
 	</table>
 	<table name="phpbb_privmsgs_folder">
 		<column>user_id</column>
-		<column>folder_id</column>
 		<row>
 			<value>2</value>
-			<value>1</value>
 		</row>
 		<row>
 			<value>3</value>
-			<value>2</value>
 		</row>
 	</table>
 	<table name="phpbb_privmsgs_rules">
 		<column>user_id</column>
-		<column>rule_string</column>
-		<column>rule_id</column>
 		<row>
 			<value>2</value>
-			<value></value>
-			<value>1</value>
 		</row>
 		<row>
 			<value>3</value>
-			<value></value>
-			<value>2</value>
 		</row>
 	</table>
 	<table name="phpbb_drafts">

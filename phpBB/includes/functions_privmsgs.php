@@ -947,10 +947,7 @@ function phpbb_delete_users_pms($user_ids)
 		// received them.
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE ' . $author_id_sql . '
-				AND folder_id <> ' . PRIVMSGS_NO_BOX . '
-				AND folder_id <> ' . PRIVMSGS_OUTBOX . '
-				AND folder_id <> ' . PRIVMSGS_SENTBOX;
+			WHERE ' . $author_id_sql;
 		$result = $db->sql_query($sql);
 
 		$delivered_msg = array();
@@ -962,66 +959,13 @@ function phpbb_delete_users_pms($user_ids)
 		}
 		$db->sql_freeresult($result);
 
-		$undelivered_user = array();
-
-		// Count the messages we delete, so we can correct the user pm data
-		$sql = 'SELECT user_id, COUNT(msg_id) as num_undelivered_privmsgs
-			FROM ' . PRIVMSGS_TO_TABLE . '
-			WHERE ' . $author_id_sql . '
-				AND folder_id = ' . PRIVMSGS_NO_BOX . '
-					AND ' . $db->sql_in_set('msg_id', array_merge($undelivered_msg, $delivered_msg)) . '
-			GROUP BY user_id';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$num_pms = (int) $row['num_undelivered_privmsgs'];
-			$undelivered_user[$num_pms][] = (int) $row['user_id'];
-
-			if (count($undelivered_user[$num_pms]) > 50)
-			{
-				// If there are too many users affected the query might get
-				// too long, so we update the value for the first bunch here.
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
-						user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
-					WHERE ' . $db->sql_in_set('user_id', $undelivered_user[$num_pms]);
-				$db->sql_query($sql);
-				unset($undelivered_user[$num_pms]);
-			}
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($undelivered_user as $num_pms => $undelivered_user_set)
-		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_new_privmsg = user_new_privmsg - ' . $num_pms . ',
-					user_unread_privmsg = user_unread_privmsg - ' . $num_pms . '
-				WHERE ' . $db->sql_in_set('user_id', $undelivered_user_set);
-			$db->sql_query($sql);
-		}
-
 		if (!empty($delivered_msg))
 		{
 			$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE folder_id = ' . PRIVMSGS_NO_BOX . '
-					AND ' . $db->sql_in_set('msg_id', $delivered_msg);
+				WHERE ' . $db->sql_in_set('msg_id', $delivered_msg);
 			$db->sql_query($sql);
 
 			$phpbb_notifications->delete_notifications('notification.type.pm', $delivered_msg);
-		}
-
-		if (!empty($undelivered_msg))
-		{
-			$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-			$db->sql_query($sql);
-
-			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-				WHERE ' . $db->sql_in_set('msg_id', $undelivered_msg);
-			$db->sql_query($sql);
-
-			$phpbb_notifications->delete_notifications('notification.type.pm', $undelivered_msg);
 		}
 	}
 
