@@ -21,12 +21,9 @@ class pm_text extends \phpbb\textreparser\row_based_plugin
 	public function get_columns()
 	{
 		return array(
-			'id'               => 'msg_id',
-			'enable_bbcode'    => 'enable_bbcode',
-			'enable_smilies'   => 'enable_smilies',
-			'enable_magic_url' => 'enable_magic_url',
-			'text'             => 'message_text',
-			'bbcode_uid'       => 'bbcode_uid',
+			'id'			=> 'msg_id',
+			'text'			=> 'message_text',
+			'bbcode_uid'	=> 'bbcode_uid',
 		);
 	}
 }
