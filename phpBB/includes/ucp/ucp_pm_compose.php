@@ -1195,7 +1195,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// Start assigning vars for main posting page ...
-	$template->assign_vars(array(
+	$template_ary = array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
 		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
@@ -1240,7 +1240,19 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
 		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
-	));
+	);
+
+	/**
+	* Modify the default template vars
+	*
+	* @event core.ucp_pm_compose_template
+	* @var	array	template_ary	Template variables
+	* @since 3.2.6-RC1
+	*/
+	$vars = array('template_ary');
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
+
+	$template->assign_vars($template_ary);
 
 	// Build custom bbcodes array
 	display_custom_bbcodes();
