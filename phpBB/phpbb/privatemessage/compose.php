@@ -13,67 +13,80 @@
 
 namespace phpbb\privatemessage;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\controller;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\exception\http_exception;
+use phpbb\group;
+use phpbb\language\language;
+use phpbb\plupload\plupload;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\textformatter\s9e;
+use phpbb\user;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class compose
 {
 	/**
-	 * @var \phpbb\controller\helper
+	 * @var controller\helper
 	 */
 	protected $helper;
 
 	/**
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
 	/**
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
-	 * @var \phpbb\language\language
+	 * @var language
 	 */
 	protected $language;
 
 	/**
-	 * @var \phpbb\template\template
+	 * @var template
 	 */
 	protected $template;
 
 	/**
-	 * @var \phpbb\request\request
+	 * @var request_interface
 	 */
 	protected $request;
 
 	/**
-	 * @var \phpbb\auth\auth
+	 * @var auth
 	 */
 	protected $auth;
 
 	/**
-	 * @var \phpbb\group\helper
+	 * @var group\helper
 	 */
 	protected $group_helper;
 
 	/**
-	 * @var \phpbb\textformatter\s9e\utils
+	 * @var s9e\utils
 	 */
 	protected $text_formatter_utils;
 
 	/**
-	 * @var \phpbb\plupload\plupload
+	 * @var plupload
 	 */
 	protected $plupload;
 
 	/**
-	 * @var \phpbb\event\dispatcher
+	 * @var dispatcher_interface
 	 */
 	protected $dispatcher;
 
@@ -87,7 +100,10 @@ class compose
 	 */
 	protected $php_ext;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\auth\auth $auth, \phpbb\group\helper $group_helper, \phpbb\textformatter\s9e\utils $text_formatter_utils, \phpbb\plupload\plupload $plupload, \phpbb\event\dispatcher $dispatcher, $root_path, $php_ext)
+	public function __construct(controller\helper $helper, user $user, config $config, driver_interface $db,
+								language $language, template $template, request_interface $request, auth $auth,
+								group\helper $group_helper, s9e\utils $text_formatter_utils, plupload $plupload,
+								dispatcher_interface $dispatcher, $root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
@@ -109,22 +125,15 @@ class compose
 	{
 		if (!$this->user->data['is_registered'])
 		{
-			return $this->helper->error('NO_MESSAGE', 401);
+			throw new http_exception(401, 'NO_MESSAGE');
 		}
 
 		if (!$this->config['allow_privmsg'])
 		{
-			return $this->helper->error('PM_DISABLED', 403);
+			throw new http_exception(403, 'PM_DISABLED');
 		}
 
 		$this->language->add_lang(array('privatemessage', 'ucp', 'posting'));
-
-
-
-
-
-
-
 
 		$action = $this->request->variable('action', '');
 		if (!$action)
@@ -170,9 +179,9 @@ class compose
 		{
 			if ($msg_id)
 			{
-				redirect($controller_helper->route('phpbb_privatemessage_conversation', array('id' => $msg_id)));
+				redirect($this->helper->route('phpbb_privatemessage_conversation', array('id' => $msg_id)));
 			}
-			redirect($controller_helper->route('phpbb_privatemessage_index'));
+			redirect($this->helper->route('phpbb_privatemessage_index'));
 		}
 
 		/**
@@ -209,7 +218,7 @@ class compose
 			{
 				$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g';
-				
+
 				if (!$this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 				{
 					$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
@@ -499,9 +508,9 @@ class compose
 						$address_list['u'][$post['author_id']] = 'to';
 
 						// Now, make sure the user itself is not listed. ;)
-						if (isset($address_list['u'][$user->data['user_id']]))
+						if (isset($address_list['u'][$this->user->data['user_id']]))
 						{
-							unset($address_list['u'][$user->data['user_id']]);
+							unset($address_list['u'][$this->user->data['user_id']]);
 						}
 					}
 				}
@@ -733,14 +742,13 @@ class compose
 						)
 					);
 					$this->db->sql_query($sql);
-	
+
 					$redirect_url = $this->helper->route('phpbb_privatemessage_index');
 					return $this->helper->message($this->language->lang('DRAFT_SAVED') . '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>'));
 				}
 				else
 				{
 					$s_hidden_fields = \build_hidden_fields(array(
-						'mode'		=> $mode,
 						'action'	=> $action,
 						'save'		=> true,
 						'subject'	=> $subject,
@@ -1188,7 +1196,7 @@ class compose
 			case 'post':
 				$page_title = $this->language->lang('POST_NEW_PM');
 			break;
-			
+
 			case 'quote':
 				$page_title = $this->language->lang('POST_QUOTE_PM');
 			break;
@@ -1298,18 +1306,18 @@ class compose
 	public function rebuild_header($check_ary)
 	{
 		$address = array();
-	
+
 		foreach ($check_ary as $check_type => $address_field)
 		{
 			// Split Addresses into users and groups
 			preg_match_all('/:?(u|g)_([0-9]+):?/', $address_field, $match);
-	
+
 			$u = $g = array();
 			foreach ($match[1] as $id => $type)
 			{
 				${$type}[] = (int) $match[2][$id];
 			}
-	
+
 			$_types = array('u', 'g');
 			foreach ($_types as $type)
 			{
@@ -1322,7 +1330,7 @@ class compose
 				}
 			}
 		}
-	
+
 		return $address;
 	}
 
@@ -1351,57 +1359,57 @@ class compose
 		if ($remove_u && $this->request->variable('remove_u', array(0 => '')))
 		{
 			$remove_user_id = array_keys($this->request->variable('remove_u', array(0 => '')));
-	
+
 			if (isset($remove_user_id[0]))
 			{
 				unset($address_list['u'][(int) $remove_user_id[0]]);
 			}
 		}
-	
+
 		// Delete Group [TO/BCC]
 		if ($remove_g && $this->request->variable('remove_g', array(0 => '')))
 		{
 			$remove_group_id = array_keys($this->request->variable('remove_g', array(0 => '')));
-	
+
 			if (isset($remove_group_id[0]))
 			{
 				unset($address_list['g'][(int) $remove_group_id[0]]);
 			}
 		}
-	
+
 		// Add Selected Groups
 		$group_list = $this->request->variable('group_list', array(0));
-	
+
 		// Build usernames to add
 		$usernames = $this->request->variable('username', '', true);
 		$usernames = (empty($usernames)) ? array() : array($usernames);
-	
+
 		$username_list = $this->request->variable('username_list', '', true);
 		if ($username_list)
 		{
 			$usernames = array_merge($usernames, explode("\n", $username_list));
 		}
-	
+
 		// If add to or add bcc not pressed, users could still have usernames listed they want to add...
 		if (!$add_to && !$add_bcc && (count($group_list) || count($usernames)))
 		{
 			$add_to = true;
-	
+
 			$refresh = true;
 			$submit = false;
-	
+
 			// Preview is only true if there was also a message entered
 			if ($this->request->variable('message', ''))
 			{
 				$preview = true;
 			}
 		}
-	
+
 		// Add User/Group [TO]
 		if ($add_to || $add_bcc)
 		{
 			$type = ($add_to) ? 'to' : 'bcc';
-	
+
 			if (count($group_list))
 			{
 				foreach ($group_list as $group_id)
@@ -1409,48 +1417,48 @@ class compose
 					$address_list['g'][$group_id] = $type;
 				}
 			}
-	
+
 			// User ID's to add...
 			$user_id_ary = array();
-	
+
 			// Reveal the correct user_ids
 			if (count($usernames))
 			{
 				$user_id_ary = array();
 				if (!function_exists('user_get_id_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
 				}
 
 				\user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
-	
+
 				// If there are users not existing, we will at least print a notice...
 				if (!count($user_id_ary))
 				{
 					$error[] = $this->language->lang('PM_NO_USERS');
 				}
 			}
-	
+
 			// Add Friends if specified
 			$friend_list = array_keys($this->request->variable('add_' . $type, array(0)));
 			$user_id_ary = array_merge($user_id_ary, $friend_list);
-	
+
 			foreach ($user_id_ary as $user_id)
 			{
 				if ($user_id == ANONYMOUS)
 				{
 					continue;
 				}
-	
+
 				$address_list['u'][$user_id] = $type;
 			}
 		}
-	
+
 		// Check for disallowed recipients
 		if (!empty($address_list['u']))
 		{
 			$can_ignore_allow_pm = $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_');
-	
+
 			// Administrator deactivated users check and we need to check their
 			//		PM status (do they want to receive PM's?)
 			// 		Only check PM status if not a moderator or admin, since they
@@ -1463,9 +1471,9 @@ class compose
 							AND user_inactive_reason = ' . INACTIVE_MANUAL . ')
 							' . ($can_ignore_allow_pm ? '' : ' OR user_allow_pm = 0') . '
 						)';
-	
+
 			$result = $this->db->sql_query($sql);
-	
+
 			$removed_no_pm = $removed_no_permission = false;
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -1477,28 +1485,28 @@ class compose
 				{
 					$removed_no_permission = true;
 				}
-	
+
 				unset($address_list['u'][$row['user_id']]);
 			}
 			$this->db->sql_freeresult($result);
-	
+
 			// print a notice about users not being added who do not want to receive pms
 			if ($removed_no_pm)
 			{
 				$error[] = $this->language->lang('PM_USERS_REMOVED_NO_PM');
 			}
-	
+
 			// print a notice about users not being added who do not have permission to receive PMs
 			if ($removed_no_permission)
 			{
 				$error[] = $this->language->lang('PM_USERS_REMOVED_NO_PERMISSION');
 			}
-	
+
 			if (!count(array_keys($address_list['u'])))
 			{
 				return;
 			}
-	
+
 			// Check if users have permission to read PMs
 			$can_read = $this->auth->acl_get_list(array_keys($address_list['u']), 'u_readpm');
 			$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
@@ -1509,14 +1517,14 @@ class compose
 				{
 					unset($address_list['u'][$cannot_read]);
 				}
-	
+
 				$error[] = $this->language->lang('PM_USERS_REMOVED_NO_PERMISSION');
 			}
-	
+
 			// Check if users are banned
 			if (!function_exists('phpbb_get_banned_user_ids'))
 			{
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
 			}
 
 			$banned_user_list = \phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
@@ -1526,7 +1534,7 @@ class compose
 				{
 					unset($address_list['u'][$banned_user]);
 				}
-	
+
 				$error[] = $this->language->lang('PM_USERS_REMOVED_NO_PERMISSION');
 			}
 		}
@@ -1535,19 +1543,19 @@ class compose
 	public function num_recipients($address_list)
 	{
 		$num_recipients = 0;
-	
+
 		foreach ($address_list as $field => $adr_ary)
 		{
 			$num_recipients += count($adr_ary);
 		}
-	
+
 		return $num_recipients;
 	}
 
 	public function get_recipients($address_list, $num_recipients = 1)
 	{
 		$recipient = array();
-	
+
 		$count = 0;
 		foreach ($address_list as $field => $adr_ary)
 		{
@@ -1561,7 +1569,7 @@ class compose
 				$count++;
 			}
 		}
-	
+
 		return $recipient;
 	}
 
