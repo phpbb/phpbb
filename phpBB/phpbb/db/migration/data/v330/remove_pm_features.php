@@ -17,42 +17,47 @@ class remove_pm_features extends \phpbb\db\migration\migration
 {
 	public function update_schema()
 	{
-		return array(
-			'drop_tables'	=> array(
+		return [
+			'drop_tables'	=> [
 				$this->table_prefix . 'privmsgs_folder',
 				$this->table_prefix . 'privmsgs_rules',
-			),
-			'drop_columns'	=> array(
-				$this->table_prefix . 'privmsgs'	=> array(
+			],
+			'drop_keys' => [
+				$this->table_prefix . 'privmsgs_to'	=> [
+					'usr_flder_id',
+				],
+			],
+			'drop_columns'	=> [
+				$this->table_prefix . 'privmsgs'	=> [
 					'icon_id',
 					'enable_bbcode',
 					'enable_smilies',
 					'enable_magic_url',
 					'enable_sig',
 					'bcc_address', // TODO: move 'bcc_address' to 'to_address'
-				),
+				],
 				// TODO: we also need to remove duplicates from the table now
-				$this->table_prefix . 'privmsgs_to'	=> array(
+				$this->table_prefix . 'privmsgs_to'	=> [
 					'folder_id',
-				),
-				$this->table_prefix . 'users'	=> array(
+				],
+				$this->table_prefix . 'users'	=> [
 					'user_message_rules',
 					'user_full_folder'
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('config.remove', array('pm_max_boxes')),
-			array('config.remove', array('pm_max_msgs')),
-			array('config.remove', array('full_folder_action')),
-			array('config.remove', array('auth_smilies_pm')),
-			array('config.remove', array('allow_sig_pm')),
-			array('config.remove', array('auth_flash_pm')),
-			array('config.remove', array('enable_pm_icons')),
-		);
+		return [
+			['config.remove', ['pm_max_boxes']],
+			['config.remove', ['pm_max_msgs']],
+			['config.remove', ['full_folder_action']],
+			['config.remove', ['auth_smilies_pm']],
+			['config.remove', ['allow_sig_pm']],
+			['config.remove', ['auth_flash_pm']],
+			['config.remove', ['enable_pm_icons']],
+		];
 	}
 }
