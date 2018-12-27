@@ -523,12 +523,37 @@ switch ($mode)
 		$sql_uid_ary = ($auth_hidden_groups) ? array($user_id) : array($user_id, (int) $user->data['user_id']);
 
 		// Do the SQL thang
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type, ug.user_id
-			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-			WHERE ' . $db->sql_in_set('ug.user_id', $sql_uid_ary) . '
-				AND g.group_id = ug.group_id
-				AND ug.user_pending = 0';
-		$result = $db->sql_query($sql);
+		$sql_ary = [
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_type, ug.user_id',
+
+			'FROM'		=> [
+				GROUPS_TABLE => 'g',
+			],
+
+			'LEFT_JOIN' => [
+				[
+					'FROM' => [USER_GROUP_TABLE => 'ug'],
+					'ON'   => 'g.group_id = ug.group_id',
+				],
+			],
+
+			'WHERE'		=> $db->sql_in_set('ug.user_id', $sql_uid_ary) . '
+				AND ug.user_pending = 0',
+		];
+
+		/**
+		* Modify the query used to get the group data
+		*
+		* @event core.modify_memberlist_viewprofile_group_sql
+		* @var array	sql_ary			Array containing the query
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'sql_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.modify_memberlist_viewprofile_group_sql', compact($vars)));
+
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 		// Divide data into profile data and current user data
 		$profile_groups = $user_groups = array();
@@ -566,6 +591,20 @@ switch ($mode)
 		unset($profile_groups);
 		unset($user_groups);
 		asort($group_sort);
+
+		/**
+		* Modify group data before options is created and data is unset
+		*
+		* @event core.modify_memberlist_viewprofile_group_data
+		* @var array	group_data			Array containing the group data
+		* @var array	group_sort			Array containing the sorted group data
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'group_data',
+			'group_sort',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.modify_memberlist_viewprofile_group_data', compact($vars)));
 
 		$group_options = '';
 		foreach ($group_sort as $group_id => $null)
