@@ -98,19 +98,16 @@
         <column>message_text</column>
         <column>message_attachment</column>
         <column>to_address</column>
-        <column>bcc_address</column>
         <row>
             <value>1</value>
             <value>foo</value>
             <value>1</value>
-            <value>2</value>
             <value>2</value>
         </row>
         <row>
             <value>2</value>
             <value>foo</value>
             <value>1</value>
-            <value>2</value>
             <value>2</value>
         </row>
     </table>
