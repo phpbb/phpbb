@@ -22,8 +22,6 @@ class icon extends \Twig_Extension
 	 * Constructor.
 	 *
 	 * @param \phpbb\user	$user	User object
-	 * @return void
-	 * @access public
 	 */
 	public function __construct(\phpbb\user $user)
 	{
@@ -49,22 +47,22 @@ class icon extends \Twig_Extension
 	}
 
 	/**
-	 * @todo
+	 * Generate icon HTML for use in the template, depending on the mode.
 	 *
-	 * @param \phpbb\template\twig\environment	$environment
-	 * @param string	$type				Icon type (font|png|svg)
-	 * @param string	$icon				Icon name (eg. "bold")
-	 * @param string	$classes			Additional classes (eg. "fa-fw")
-	 * @param string	$title				Icon title
-	 * @param bool		$hidden				Hide the icon title from view
-	 * @param array		$attributes			Additional attributes for the icon, where key is the attribute.
-	 *                             			{'data-ajax': 'mark_forums'} results in ' data-ajax="mark_forums"'
+	 * @param \phpbb\template\twig\environment	$environment	Environment object
+	 * @param string							$type			Icon type (font|png|svg)
+	 * @param string							$icon			Icon name (eg. "bold")
+	 * @param string							$classes		Additional classes (eg. "fa-fw")
+	 * @param string							$title			Icon title
+	 * @param bool								$hidden			Hide the icon title from view
+	 * @param array								$attributes		Additional attributes for the icon, where key is the attribute.
+	 *                             								{'data-ajax': 'mark_forums'} results in ' data-ajax="mark_forums"'
 	 * @return string
 	 */
 	public function icon($environment, $type = '', $icon = '', $classes = '', $title = '', $hidden = false, $attributes = array())
 	{
-		$path = $s_attributes = '';
-		$icon_path = 'icons/' . $type . '/' . $icon . '.' . $type;
+		$path = $s_title = $s_attributes = '';
+		$icon_path = 'imgs/icons/' . $type . '/' . $icon . '.' . $type;
 
 		switch ($type)
 		{
@@ -74,8 +72,9 @@ class icon extends \Twig_Extension
 
 			case 'png':
 				$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $environment->get_web_root_path();
-				$theme_path = 'styles/' . rawurlencode($this->user->style['style_path']) . '/theme/';
-				$path = $root_path . $theme_path . $icon_path;
+				//$style_path = 'styles/' . rawurlencode($this->user->style['style_path']) . '/'; @todo
+				$style_path = 'styles/all/';
+				$path = $root_path . $style_path . $icon_path;
 			break;
 
 			case 'svg':
@@ -85,9 +84,9 @@ class icon extends \Twig_Extension
 				// Try and render the svg file
 				try
 				{
-					$svg = $environment->render($icon_path);
-					preg_match('/d="([a-zA-Z0-9., ]+)"/', $svg, $match);
-					$path = $match[1];
+					$svg = $environment->render('../' . $icon_path); // @todo ../ to get outside of /template and into /imgs
+					preg_match('/d=(["\'])([^"\']+?)\1/', $svg, $match);
+					$path = $match[2];
 				}
 				catch (\Twig_Error $e)
 				{
@@ -97,7 +96,7 @@ class icon extends \Twig_Extension
 			break;
 
 			default:
-				// Not a supported type, return an empty string
+				// Not a supported type (font|png|svg), return an empty string
 				return '';
 			break;
 		}
@@ -114,7 +113,7 @@ class icon extends \Twig_Extension
 		// Try and render the icon
 		try
 		{
-			return $environment->render('icon.html', array(
+			return $environment->render('../views/macros/icons.twig', array(
 				'TYPE'			=> $type,
 				'ICON'			=> $icon,
 
@@ -130,7 +129,7 @@ class icon extends \Twig_Extension
 				'T_PATH'		=> $path,
 			));
 		}
-		catch(\Twig_Error $e)
+		catch (\Twig_Error $e)
 		{
 			// If rendering was not possible, we return an empty string
 			return '';

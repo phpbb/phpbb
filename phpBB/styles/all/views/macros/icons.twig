@@ -1,0 +1,10 @@
+{% if TYPE == 'png' %}
+<img class="icon png-{{ ICON ~ S_CLASSES }}" src="{{ T_PATH }}"{% if TITLE %} alt="{{ TITLE }}"{% endif %}>
+{% elseif TYPE == 'font' %}
+<i class="icon fa-{{ ICON ~ S_CLASSES }}"{% if TITLE %} aria-hidden="true"{% endif %}{{ S_ATTRIBUTES }}></i>{% if TITLE %}<span{% if S_HIDDEN %} class="sr-only"{% endif %}>{{ TITLE }}</span>{% endif %}
+{% elseif TYPE == 'svg' %}
+<svg class="icon svg-{{ ICON ~ S_CLASSES }}" viewBox="0 0 24 24"{% if TITLE %} aria-hidden="true" aria-labeled-by="{{ TITLE_CLEAN }}"{% endif %}>
+	{% if TITLE %}<title id="{{ TITLE_CLEAN }}">{{ TITLE }}</title>{% endif %}
+	<path fill-rule="evenodd" d="{{ T_PATH }}" />
+</svg>
+{% endif %}
