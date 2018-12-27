@@ -13,6 +13,18 @@
 
 namespace phpbb\privatemessage;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\controller;
+use phpbb\db\driver\driver_interface;
+use phpbb\exception\http_exception;
+use phpbb\group;
+use phpbb\language\language;
+use phpbb\request\request;
+use phpbb\template\template;
+use phpbb\user;
+use phpbb\user_loader;
+
 class view
 {
 	/**
@@ -100,7 +112,10 @@ class view
 	 */
 	protected $php_ext;
 
-	public function __construct(\phpbb\privatemessage\helper $pm_helper, \phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\user_loader $user_loader, \phpbb\group\helper  $group_helper, $privmsgs_table, $privmsgs_to_table, $users_table, $groups_table, $root_path, $php_ext)
+	public function __construct(helper $pm_helper, controller\helper $helper, user $user, config $config, auth $auth,
+								driver_interface $db, language $language, template $template, request $request,
+								user_loader $user_loader, group\helper $group_helper, $privmsgs_table, $privmsgs_to_table,
+								$users_table, $groups_table, $root_path, $php_ext)
 	{
 		$this->pm_helper = $pm_helper;
 		$this->helper = $helper;
@@ -219,7 +234,7 @@ class view
 			),
 			'WHERE'		=> 't.user_id = ' . $this->user->data['user_id'] . '
 				AND p.root_level = 0',
-			'GROUP_BY'	=> 't.msg_id',
+			'GROUP_BY'	=> 't.msg_id, t.author_id, t.pm_deleted, t.pm_new, t.pm_unread, t.pm_replied, t.pm_marked, t.pm_forwarded',
 			'ORDER_BY'	=> 'newest_message DESC',
 		);
 
@@ -266,7 +281,7 @@ class view
 			{
 				$to_groups[$row['group_id']] = $row;
 			}
-			$this->db->sql_freeresult($result);	
+			$this->db->sql_freeresult($result);
 		}
 
 		foreach ($rowset as $row)
@@ -329,8 +344,8 @@ class view
 
 		$newest_start = $start - $this->config['topics_per_page'] < 0 ? 0 : $start - $this->config['topics_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_CONVERSATIONS'	=> $start + $this->config['topics_per_page'] >= $num_conversations ? false : $this->get_patination_url($msg_id, $start + $this->config['topics_per_page'], $mstart),
-			'U_NEWER_CONVERSATIONS'	=> $start == 0 ? false : $this->get_patination_url($msg_id, $newest_start, $mstart),
+			'U_OLDER_CONVERSATIONS'	=> $start + $this->config['topics_per_page'] >= $num_conversations ? false : $this->get_pagination_url($msg_id, $start + $this->config['topics_per_page'], $mstart),
+			'U_NEWER_CONVERSATIONS'	=> $start == 0 ? false : $this->get_pagination_url($msg_id, $newest_start, $mstart),
 		));
 	}
 
@@ -369,7 +384,7 @@ class view
 
 		// reverse the order
 		$rowset = array_reverse($rowset);
-		
+
 		foreach ($rowset as $row)
 		{
 			$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
@@ -392,29 +407,29 @@ class view
 
 		$newest_start = $start - $this->config['posts_per_page'] < 0 ? 0 : $start - $this->config['posts_per_page'];
 		$this->template->assign_vars(array(
-			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_patination_url($root_msg_id, $cstart, $start + $this->config['posts_per_page']),
-			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_patination_url($root_msg_id, $cstart, $newest_start),
+			'U_OLDER_MESSAGES'	=> $rowset[0]['msg_id'] == $root_msg_id ? false : $this->get_pagination_url($root_msg_id, $cstart, $start + $this->config['posts_per_page']),
+			'U_NEWER_MESSAGES'	=> $rowset[count($rowset) - 1]['msg_id'] == $newest_msg_id ? false : $this->get_pagination_url($root_msg_id, $cstart, $newest_start),
 		));
 	}
 
 	public function check_permissions()
 	{
+		$this->language->add_lang('privatemessage');
+
 		if (!$this->user->data['is_registered'])
 		{
-			return $this->helper->error('NO_MESSAGE', 401);
+			throw new http_exception(401, 'NO_MESSAGE');
 		}
 
 		if (!$this->config['allow_privmsg'])
 		{
-			return $this->helper->error('PM_DISABLED', 403);
+			throw new http_exception(403, 'PM_DISABLED');
 		}
 
 		if (!$this->auth->acl_get('u_readpm'))
 		{
-			return $this->helper->error('NO_AUTH_READ_MESSAGE', 403);
+			throw new http_exception(403, 'NO_AUTH_READ_MESSAGE');
 		}
-
-		$this->language->add_lang('privatemessage');
 	}
 
 	public function get_message_subject($msg_id)
@@ -456,7 +471,7 @@ class view
 		$this->db->sql_query($sql);
 	}
 
-	public function get_patination_url($id, $cstart, $mstart)
+	public function get_pagination_url($id, $cstart, $mstart)
 	{
 		return $this->helper->route('phpbb_privatemessage_conversation', array('id' => $id, 'cstart' => $cstart, 'mstart' => $mstart));
 	}
