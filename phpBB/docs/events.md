@@ -2224,113 +2224,12 @@ ucp_pm_history_review_before
 * Since: 3.1.6-RC1
 * Purpose: Add content before the private messages history review.
 
-ucp_pm_viewmessage_avatar_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC3
-* Purpose: Add content right after the avatar when viewing a private message
-
-ucp_pm_viewmessage_avatar_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC3
-* Purpose: Add content right before the avatar when viewing a private message
-
-ucp_pm_viewmessage_contact_fields_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-b1
-* Purpose: Add data after the contact fields on the user profile when viewing
-a private message
-
-ucp_pm_viewmessage_contact_fields_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-b1
-* Purpose: Add data before the contact fields on the user profile when viewing
-a private message
-
-ucp_pm_viewmessage_custom_fields_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-a1
-* Purpose: Add data after the custom fields on the user profile when viewing
-a private message
-
-ucp_pm_viewmessage_custom_fields_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-a1
-* Purpose: Add data before the custom fields on the user profile when viewing
-a private message
-
-ucp_pm_viewmessage_options_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.11-RC1
-* Purpose: Add content right before display options
-
-ucp_pm_viewmessage_post_buttons_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at
-the end of the list.
-
-ucp_pm_viewmessage_post_buttons_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at
-the start of the list.
-
-ucp_pm_viewmessage_post_buttons_list_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.6-RC1
-* Purpose: Add post button custom list to private messages (next to edit, quote etc),
-after the original list.
-
-ucp_pm_viewmessage_post_buttons_list_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.6-RC1
-* Purpose: Add post button custom list to private messages (next to edit, quote etc),
-before the original list.
-
 ucp_pm_viewmessage_print_head_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
-
-ucp_pm_viewmessage_rank_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.6-RC1
-* Purpose: Add data after the rank on the user profile when viewing
-a private message
-
-ucp_pm_viewmessage_rank_before
-===
-* Locations:
-    + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.6-RC1
-* Purpose: Add data before the rank on the user profile when viewing
-a private message
 
 ucp_prefs_personal_prepend
 ===

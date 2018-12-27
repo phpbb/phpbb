@@ -919,8 +919,7 @@ function phpbb_delete_users_pms($user_ids)
 	// whether another user already received and read the message.
 	$sql = 'SELECT msg_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE ' . $author_id_sql . '
-			AND folder_id = ' . PRIVMSGS_NO_BOX;
+		WHERE ' . $author_id_sql;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
