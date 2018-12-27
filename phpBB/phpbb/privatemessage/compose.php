@@ -216,7 +216,7 @@ class compose
 			// Add groups to PM box
 			if ($this->config['allow_mass_pm'] && $this->auth->acl_get('u_masspm_group'))
 			{
-				$sql = 'SELECT g.group_id, g.group_name, g.group_type
+				$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 					FROM ' . GROUPS_TABLE . ' g';
 
 				if (!$this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -242,6 +242,7 @@ class compose
 						'CLASS'	=> $row['group_type'] == GROUP_SPECIAL ? 'sep' : '',
 						'VALUE'	=> $row['group_id'],
 						'TEXT'	=> $this->group_helper->get_name($row['group_name']),
+						'COLOR'	=> $row['group_colour'],
 					));
 				}
 				$this->db->sql_freeresult($result);
@@ -732,13 +733,16 @@ class compose
 			{
 				if (\confirm_box(true))
 				{
+					$message_parser->message = $message;
+					$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
+
 					$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 						'user_id'		=> $this->user->data['user_id'],
 						'topic_id'		=> 0,
 						'forum_id'		=> 0,
 						'save_time'		=> $current_time,
 						'draft_subject'	=> $subject,
-						'draft_message'	=> $message
+						'draft_message'	=> $message_parser->message,
 						)
 					);
 					$this->db->sql_query($sql);
@@ -1008,7 +1012,16 @@ class compose
 				$post_id = $this->request->variable('p', 0);
 				if ($this->config['allow_post_links'])
 				{
-					$message_link = "[url=" . generate_board_url() . "/viewtopic.{$this->php_ext}?p={$post_id}#p{$post_id}]{$this->language->lang('SUBJECT')}{$this->language->lang('COLON')} {$message_subject}[/url]\n\n";
+					$message_link = generate_board_url() . "/viewtopic.{$this->php_ext}?p={$post_id}#p{$post_id}";
+					$message_link_subject = "{$this->language->lang('SUBJECT')}{$this->language->lang('COLON')} {$message_subject}";
+					if ($bbcode_status)
+					{
+						$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
+					}
+					else
+					{
+						$message_link = $message_link . " - " . $message_link_subject . "\n\n";
+					}
 				}
 				else
 				{
@@ -1033,6 +1046,7 @@ class compose
 				$quote_attributes
 			);
 			$message_parser->message = $message_link . $quote_text . "\n\n";
+			\phpbb_format_quote($this->language, $message_parser, $this->text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
 		}
 
 		if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
@@ -1229,7 +1243,7 @@ class compose
 		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_pm_attach'] || !$this->auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
 		// Start assigning vars for main posting page ...
-		$this->template->assign_vars(array(
+		$template_ary = array(
 			'L_POST_A'					=> $page_title,
 			'L_ICON'					=> $this->user->lang['PM_ICON'],
 			'L_MESSAGE_BODY_EXPLAIN'	=> $this->language->lang('MESSAGE_BODY_EXPLAIN', (int) $this->config['max_post_chars']),
@@ -1273,7 +1287,18 @@ class compose
 			'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 			'U_PROGRESS_BAR'			=> append_sid("{$this->root_path}posting.{$this->php_ext}", 'f=0&amp;mode=popup'),
 			'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$this->root_path}posting.{$this->php_ext}", 'f=0&amp;mode=popup')),
-		));
+		);
+
+		/**
+		 * Modify the default template vars
+		 *
+		 * @event core.ucp_pm_compose_template
+		 * @var	array	template_ary	Template variables
+		 * @since 3.2.6-RC1
+		 */
+		$vars = array('template_ary');
+		extract($this->dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
+		$this->template->assign_vars($template_ary);
 
 		if (!function_exists('display_custom_bbcodes'))
 		{
@@ -1427,7 +1452,7 @@ class compose
 				$user_id_ary = array();
 				if (!function_exists('user_get_id_name'))
 				{
-					include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+					include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 				}
 
 				\user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
@@ -1524,7 +1549,7 @@ class compose
 			// Check if users are banned
 			if (!function_exists('phpbb_get_banned_user_ids'))
 			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 			}
 
 			$banned_user_list = \phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
@@ -1538,6 +1563,21 @@ class compose
 				$error[] = $this->language->lang('PM_USERS_REMOVED_NO_PERMISSION');
 			}
 		}
+
+		/**
+		 * Event for additional message list actions
+		 *
+		 * @event core.message_list_actions
+		 * @var	array	address_list		The assoc array with the recipient user/group ids
+		 * @var	array	error				The array containing error data
+		 * @var	bool	remove_u			The variable for removing a user
+		 * @var	bool	remove_g			The variable for removing a group
+		 * @var	bool	add_to				The variable for adding a user to the [TO] field
+		 * @var	bool	add_bcc				The variable for adding a user to the [BCC] field
+		 * @since 3.2.4-RC1
+		 */
+		$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
+		extract($this->dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 	}
 
 	public function num_recipients($address_list)

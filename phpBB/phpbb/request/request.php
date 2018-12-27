@@ -19,7 +19,7 @@ namespace phpbb\request;
 * It provides a method to disable access to input data through super globals.
 * This should force MOD authors to read about data validation.
 */
-class request implements \phpbb\request\request_interface
+class request implements request_interface
 {
 	/**
 	* @var	array	The names of super global variables that this class should protect if super globals are disabled.

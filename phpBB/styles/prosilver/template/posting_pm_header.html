@@ -6,7 +6,7 @@
 				<label for="group_list"><strong>{L_TO_ADD_GROUPS}{L_COLON}</strong></label><br />
 				<select name="group_list[]" id="group_list" multiple="multiple" size="3" class="inputbox">
 					{% for option in group_options %}
-						<option value="{{ option.VALUE }}"{% if option.CLASS %} class="{{ option.CLASS }}"{% endif %}>{{ option.TEXT }}</option>
+						<option value="{{ option.VALUE }}"{% if option.CLASS %} class="{{ option.CLASS }}"{% endif %}{% if option.COLOR %} style="color: #{{ option.COLOR }}"{% endif %}>{{ option.TEXT }}</option>
 					{% endfor %}
 				</select><br />
 			</div>
