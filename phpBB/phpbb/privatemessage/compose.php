@@ -933,7 +933,7 @@ class compose
 
 				if (!function_exists('submit_pm'))
 				{
-					includes($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
+					include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
 				}
 
 				$subject = \utf8_clean_string($subject);

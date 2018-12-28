@@ -1330,20 +1330,14 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			$sql_data = array(
 				'root_level'		=> $root_level,
 				'author_id'			=> $data_ary['from_user_id'],
-				'icon_id'			=> $data_ary['icon_id'],
 				'author_ip'			=> $data_ary['from_user_ip'],
 				'message_time'		=> $current_time,
-				'enable_bbcode'		=> $data_ary['enable_bbcode'],
-				'enable_smilies'	=> $data_ary['enable_smilies'],
-				'enable_magic_url'	=> $data_ary['enable_urls'],
-				'enable_sig'		=> $data_ary['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text'		=> $data_ary['message'],
 				'message_attachment'=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
 				'bbcode_uid'		=> $data_ary['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
-				'bcc_address'		=> implode(':', $bcc),
 				'message_reported'	=> 0,
 			);
 		break;
@@ -1396,7 +1390,6 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 				'msg_id'		=> (int) $data_ary['msg_id'],
 				'user_id'		=> (int) $user_id,
 				'author_id'		=> (int) $data_ary['from_user_id'],
-				'folder_id'		=> PRIVMSGS_NO_BOX,
 				'pm_new'		=> 1,
 				'pm_unread'		=> 1,
 				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0
@@ -1417,7 +1410,6 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 				'msg_id'		=> (int) $data_ary['msg_id'],
 				'user_id'		=> (int) $data_ary['from_user_id'],
 				'author_id'		=> (int) $data_ary['from_user_id'],
-				'folder_id'		=> PRIVMSGS_OUTBOX,
 				'pm_new'		=> 0,
 				'pm_unread'		=> 0,
 				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
