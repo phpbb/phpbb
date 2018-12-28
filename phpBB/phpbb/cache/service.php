@@ -13,6 +13,8 @@
 
 namespace phpbb\cache;
 
+use phpbb\json_sanitizer;
+
 /**
 * Class for grabbing/handling cached entries
 */
@@ -355,7 +357,7 @@ class service
 		{
 			// Re-parse cfg file
 			$json = file_get_contents($filename);
-			$parsed_array = json_decode($json, true);
+			$parsed_array = json_sanitizer::decode($json);
 			$parsed_array['filetime'] = @filemtime($filename);
 
 			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);

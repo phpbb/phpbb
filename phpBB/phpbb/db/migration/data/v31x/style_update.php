@@ -49,8 +49,11 @@ class style_update extends \phpbb\db\migration\migration
 		// Install prosilver if no style is available and prosilver can be installed
 		if (empty($style_paths) && in_array('prosilver', $styles))
 		{
-			// Stop running this if prosilver composer.json file can't be read
-			if (file_exists($this->phpbb_root_path . 'styles/prosilver/composer.json'))
+			// Try to parse config file
+			$cfg = parse_cfg_file($this->phpbb_root_path . 'styles/prosilver/style.cfg');
+
+			// Stop running this if both prosilver cfg file and composer.json file can't be read
+			if (empty($cfg) && !file_exists($this->phpbb_root_path . 'styles/prosilver/composer.json'))
 			{
 				throw new \RuntimeException('No styles available and could not fall back to prosilver.');
 			}
@@ -120,7 +123,7 @@ class style_update extends \phpbb\db\migration\migration
 					continue;
 				}
 
-				if (file_exists("{$dir}/composer.json"))
+				if (file_exists("{$dir}/composer.json") || file_exists("{$dir}/style.cfg"))
 				{
 					$styles[] = $file;
 				}

@@ -390,7 +390,7 @@ class version_helper
 			}
 
 			// Sanitize any data we retrieve from a server
-			$info = \phpbb\json_sanitizer::sanitize(json_decode($info, true));
+			$info = json_sanitizer::decode($info);
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{

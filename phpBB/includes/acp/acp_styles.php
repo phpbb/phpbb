@@ -1191,6 +1191,7 @@ class acp_styles
 	 * Read style composer.json file
 	 *
 	 * @param string $dir style directory
+	 *
 	 * @return array Style data
 	 * @throws \DomainException in case of error
 	 */
@@ -1203,7 +1204,7 @@ class acp_styles
 		}
 
 		$json = file_get_contents($this->styles_path . $dir . '/composer.json');
-		$style_data = \phpbb\json_sanitizer::sanitize(json_decode($json, true));
+		$style_data = \phpbb\json_sanitizer::decode($json);
 
 		if (!is_array($style_data) || !isset($style_data['type']) || $style_data['type'] !== 'phpbb-style')
 		{

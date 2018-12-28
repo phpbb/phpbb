@@ -13,6 +13,7 @@
 
 namespace phpbb\language;
 
+use phpbb\json_sanitizer;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -54,7 +55,7 @@ class language_file_helper
 		foreach ($finder as $file)
 		{
 			$json = $file->getContents();
-			$data = \phpbb\json_sanitizer::sanitize(json_decode($json, true));
+			$data = json_sanitizer::decode($json);
 
 			$available_languages[] = $this->get_language_data_from_json($data);
 		}
@@ -71,7 +72,7 @@ class language_file_helper
 	public function get_language_data_from_composer_file($path)
 	{
 		$json_data = file_get_contents($path);
-		return $this->get_language_data_from_json(json_decode($json_data, true));
+		return $this->get_language_data_from_json(json_sanitizer::decode($json_data));
 	}
 
 	/**
@@ -101,7 +102,6 @@ class language_file_helper
 
 		return array(
 			'iso' => $data['extra']['language-iso'],
-
 			'name' => $data['extra']['english-name'],
 			'local_name' => $data['extra']['local-name'],
 			'author' => implode(', ', $authors),
