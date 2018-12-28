@@ -2669,68 +2669,6 @@ function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = f
 }
 
 /**
- * Parse cfg file
- * @param string $filename
- * @param bool|array $lines
- * @return array
- *
- * @deprecated Will be removed in the future as *.cfg files are being replaced by composer.json files
- */
-function parse_cfg_file($filename, $lines = false)
-{
-	$parsed_items = array();
-
-	if ($lines === false)
-	{
-		$lines = file($filename);
-	}
-
-	foreach ($lines as $line)
-	{
-		$line = trim($line);
-
-		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
-		{
-			continue;
-		}
-
-		// Determine first occurrence, since in values the equal sign is allowed
-		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))), ENT_COMPAT);
-		$value = trim(substr($line, $delim_pos + 1));
-
-		if (in_array($value, array('off', 'false', '0')))
-		{
-			$value = false;
-		}
-		else if (in_array($value, array('on', 'true', '1')))
-		{
-			$value = true;
-		}
-		else if (!trim($value))
-		{
-			$value = '';
-		}
-		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
-		{
-			$value = htmlspecialchars(substr($value, 1, strlen($value)-2), ENT_COMPAT);
-		}
-		else
-		{
-			$value = htmlspecialchars($value, ENT_COMPAT);
-		}
-
-		$parsed_items[$key] = $value;
-	}
-
-	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
-	{
-		unset($parsed_items['parent']);
-	}
-
-	return $parsed_items;
-}
-
-/**
 * Return a nicely formatted backtrace.
 *
 * Turns the array returned by debug_backtrace() into HTML markup.
