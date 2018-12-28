@@ -121,15 +121,29 @@ class acp_language
 
 				$lang_iso = $lang_entries['lang_iso'];
 
-				$template->assign_vars(array(
-					'S_DETAILS'			=> true,
-					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
-					'U_BACK'			=> $this->u_action,
+				/** @var \phpbb\language\language_file_helper $language_helper */
+				$language_helper = $phpbb_container->get('language.helper.language_file');
 
-					'LANG_LOCAL_NAME'	=> $lang_entries['lang_local_name'],
-					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
-					'LANG_ISO'			=> $lang_iso,
-					'LANG_AUTHOR'		=> $lang_entries['lang_author'],
+				try
+				{
+					$lang_cfg = $language_helper->get_language_data_from_composer_file("{$phpbb_root_path}language/$lang_iso/composer.json");
+				}
+				catch (\DomainException $e)
+				{
+					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				$template->assign_vars(array(
+					'S_DETAILS'					=> true,
+					'U_ACTION'					=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
+					'U_BACK'					=> $this->u_action,
+
+					'LANG_LOCAL_NAME'			=> $lang_entries['lang_local_name'],
+					'LANG_ENGLISH_NAME'			=> $lang_entries['lang_english_name'],
+					'LANG_ISO'					=> $lang_iso,
+					'LANG_VERSION'				=> $lang_cfg['version'],
+					'LANG_PHPBB_VERSION'		=> $lang_cfg['phpbb_version'],
+					'LANG_AUTHOR'				=> $lang_entries['lang_author'],
 					'L_MISSING_FILES'			=> $user->lang('THOSE_MISSING_LANG_FILES', $lang_entries['lang_local_name']),
 					'L_MISSING_VARS_EXPLAIN'	=> $user->lang('THOSE_MISSING_LANG_VARIABLES', $lang_entries['lang_local_name']),
 				));

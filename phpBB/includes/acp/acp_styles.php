@@ -462,7 +462,7 @@ class acp_styles
 		}
 
 		// Read style configuration file
-		$style_cfg = $this->read_style_cfg($style['style_path']);
+		$style_cfg = $this->read_style_composer_file($style['style_path']);
 
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
@@ -611,13 +611,12 @@ class acp_styles
 			'STYLE_ID'			=> $style['style_id'],
 			'STYLE_NAME'		=> htmlspecialchars($style['style_name'], ENT_COMPAT),
 			'STYLE_PATH'		=> htmlspecialchars($style['style_path'], ENT_COMPAT),
-			'STYLE_VERSION'		=> htmlspecialchars($style_cfg['style_version'], ENT_COMPAT),
+			'STYLE_VERSION'		=> htmlspecialchars($style_cfg['version'], ENT_COMPAT),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
 			'S_STYLE_DEFAULT'	=> ($style['style_id'] == $this->default_style)
-			)
-		);
+		));
 	}
 
 	/**
@@ -985,7 +984,7 @@ class acp_styles
 			'STYLE_ID'				=> $style['style_id'],
 			'STYLE_NAME'			=> htmlspecialchars($style['style_name'], ENT_COMPAT),
 			'STYLE_VERSION'			=> $style_cfg['style_version'] ?? '-',
-			'STYLE_PHPBB_VERSION'	=> $style_cfg['phpbb_version'],
+			'STYLE_PHPBB_VERSION'	=> $this->read_style_composer_file($style['style_path'])['extra']['phpbb-version'],
 			'STYLE_PATH'			=> htmlspecialchars($style['style_path'], ENT_COMPAT),
 			'STYLE_COPYRIGHT'		=> strip_tags($style['style_copyright']),
 			'STYLE_ACTIVE'			=> $style['style_active'],

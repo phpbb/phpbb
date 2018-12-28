@@ -101,10 +101,12 @@ class language_file_helper
 		}
 
 		return array(
-			'iso' => $data['extra']['language-iso'],
-			'name' => $data['extra']['english-name'],
-			'local_name' => $data['extra']['local-name'],
-			'author' => implode(', ', $authors),
+			'iso'			=> $data['extra']['language-iso'],
+			'name'			=> $data['extra']['english-name'],
+			'local_name'	=> $data['extra']['local-name'],
+			'author'		=> implode(', ', $authors),
+			'version'		=> $data['version'],
+			'phpbb_version'	=> $data['extra']['phpbb-version'],
 		);
 	}
 }
