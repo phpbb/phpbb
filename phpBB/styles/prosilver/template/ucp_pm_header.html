@@ -2,13 +2,13 @@
 
 <link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_color.scss" rel="stylesheet">
 <link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_default.scss" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/dist/assets/css/core.0.15.0.css" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/phpbb/dist/assets/css/theme.0.15.0.css" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/dist/assets/css/utilities.0.15.0.css" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_type.scss" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_center.scss" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_shadows.scss" rel="stylesheet">
-<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixins/_rtl.scss" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/hanakin/base-l@master/dist/assets/css/core.0.16.0.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/phpbb/chameleon@303fb0684f4d038f759cdda031c01d176a482c23/all/css/theme.0.1.0.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/hanakin/base-l@master/dist/assets/css/utilities.0.16.0.css" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_type.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_center.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_shadows.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_rtl.scss" rel="stylesheet">
 <style>
 .cp-menu {
 	display: none;
@@ -108,9 +108,9 @@
 										</li>
 									{% endif %}
 								</ul>
-							</div>	
+							</div>
 						</li>
-						
+
 						{% if not S_COMPOSE_PM %}
 							<li class="o-bar-item u-hidden-md-down">
 								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
