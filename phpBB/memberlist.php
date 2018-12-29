@@ -1469,11 +1469,23 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
+				$sql_from_ary = explode(',', $sql_from);
+				$extra_tables = [];
+				foreach ($sql_from_ary as $entry)
+				{
+					$table_data = explode(' ', trim($entry));
+
+					if (empty($table_data[0]) || empty($table_data[1]))
+					{
+						continue;
+					}
+
+					$extra_tables[$table_data[0]] = $table_data[1];
+				}
+
 				$sql_array = array(
 					'SELECT'	=> 'u.*' . $sql_select,
-					'FROM'		=> array(
-						USERS_TABLE		=> 'u' . $sql_from
-					),
+					'FROM'		=> array_merge([USERS_TABLE => 'u'], $extra_tables),
 					'WHERE'		=> $db->sql_in_set('u.user_id', $user_list) . $sql_where_data . '',
 				);
 			}
