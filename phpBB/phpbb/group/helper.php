@@ -14,7 +14,7 @@
 namespace phpbb\group;
 
 use phpbb\auth\auth;
-use phpbb\cache;
+use phpbb\cache\service as cache;
 use phpbb\config\config;
 use phpbb\language\language;
 use phpbb\event\dispatcher_interface;
@@ -26,7 +26,7 @@ class helper
 	/** @var auth */
 	protected $auth;
 
-	/** @var cache\service */
+	/** @var cache */
 	protected $cache;
 
 	/** @var config */
@@ -36,10 +36,10 @@ class helper
 	protected $language;
 
 	/** @var dispatcher_interface */
-	protected $phpbb_dispatcher;
+	protected $dispatcher;
 
 	/** @var path_helper */
-	protected $phpbb_path_helper;
+	protected $path_helper;
 
 	/** @var user */
 	protected $user;
@@ -47,40 +47,34 @@ class helper
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	/** @var string PHP file extension */
-	protected $php_ext;
-
 	/** @var array Return templates for a group name string */
 	protected $name_strings;
 
 	/**
 	 * Constructor
 	 *
-	 * @param auth					$auth				Authentication object
-	 * @param cache\service			$cache				Cache service object
-	 * @param config				$config				Configuration object
-	 * @param language				$language			Language object
-	 * @param dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
-	 * @param path_helper			$phpbb_path_helper	Path helper object
-	 * @param user					$user				User object
-	 * @param string				$phpbb_root_path	phpBB root path
-	 * @param string				$php_ext			PHP file extension
+	 * @param auth					$auth			Authentication object
+	 * @param cache					$cache			Cache service object
+	 * @param config				$config			Configuration object
+	 * @param language				$language		Language object
+	 * @param dispatcher_interface	$dispatcher		Event dispatcher object
+	 * @param path_helper			$path_helper	Path helper object
+	 * @param user					$user			User object
 	 */
-	public function __construct(auth $auth, cache\service $cache, config $config, language $language, dispatcher_interface $phpbb_dispatcher, path_helper $phpbb_path_helper, user $user, $phpbb_root_path, $php_ext)
+	public function __construct(auth $auth, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->language = $language;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->phpbb_path_helper = $phpbb_path_helper;
+		$this->dispatcher = $dispatcher;
+		$this->path_helper = $path_helper;
 		$this->user = $user;
 
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
 
 		$this->name_strings = array(
-			'base_url'				=> append_sid("{$phpbb_root_path}memberlist.{$php_ext}", 'mode=group&amp;g={GROUP_ID}'),
+			'base_url'				=> append_sid("{$path_helper->get_phpbb_root_path()}memberlist.{$path_helper->get_php_ext()}", 'mode=group&amp;g={GROUP_ID}'),
 			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
 			'tpl_noprofile_colour'	=> '<span class="username-coloured" style="color: {GROUP_COLOUR};">{GROUP_NAME}</span>',
 			'tpl_profile'			=> '<a class="username" href="{PROFILE_URL}">{GROUP_NAME}</a>',
@@ -207,7 +201,7 @@ class helper
 			'group_name_string',
 			'name_strings',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.modify_group_name_string', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.modify_group_name_string', compact($vars)));
 
 		return $group_name_string;
 	}
@@ -237,7 +231,7 @@ class helper
 		 */
 
 		$vars = array('group_data');
-		extract($this->phpbb_dispatcher->trigger_event('core.get_group_rank_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.get_group_rank_before', compact($vars)));
 
 		if (!empty($group_data['group_rank']))
 		{
@@ -250,7 +244,7 @@ class helper
 
 				$group_rank_data['title'] = $rank['rank_title'];
 
-				$group_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $this->phpbb_path_helper->update_web_root_path($this->phpbb_root_path . $this->config['ranks_path'] . '/' . $rank['rank_image']) : '';
+				$group_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $this->path_helper->update_web_root_path($this->phpbb_root_path . $this->config['ranks_path'] . '/' . $rank['rank_image']) : '';
 
 				$group_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $group_rank_data['img_src'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
 			}
@@ -269,7 +263,7 @@ class helper
 			'group_data',
 			'group_rank_data',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.get_group_rank_after', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.get_group_rank_after', compact($vars)));
 
 		return $group_rank_data;
 	}

@@ -129,8 +129,6 @@ services:
             - '@dispatcher'
             - '@path_helper'
             - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
 
     log:
         class: phpbb\log\log

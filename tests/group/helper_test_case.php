@@ -56,7 +56,7 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 
 	protected function setup_engine(array $new_config = array())
 	{
-		global $cache, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		// Set up authentication data for testing
 		$auth = $this->getMock('\phpbb\auth\auth');
@@ -113,7 +113,7 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = ANONYMOUS;
 
-		$this->group_helper = new \phpbb\group\helper($auth, $cache_service, $config, $lang, $phpbb_dispatcher, $path_helper, $user, $phpbb_root_path, $phpEx);
+		$this->group_helper = new \phpbb\group\helper($auth, $cache_service, $config, $lang, $phpbb_dispatcher, $path_helper, $user);
 	}
 
 	public function setUp()

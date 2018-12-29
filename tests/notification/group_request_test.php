@@ -65,9 +65,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 				$phpbb_root_path,
 				$phpEx
 			),
-			$this->user,
-			$phpbb_root_path,
-			$phpEx
+			$this->user
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$phpbb_log = new \phpbb\log\dummy();
