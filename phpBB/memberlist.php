@@ -499,9 +499,31 @@ switch ($mode)
 		}
 
 		// Get user...
-		$sql = 'SELECT *
-			FROM ' . USERS_TABLE . '
-			WHERE ' . (($username) ? "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "user_id = $user_id");
+		$sql_array = array(
+			'SELECT'	=> 'u.*',
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u'
+			),
+			'WHERE'		=> (($username) ? "u.username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "u.user_id = $user_id"),
+		);
+
+		/**
+		 * Modify user data SQL before member profile row is created
+		 *
+		 * @event core.memberlist_modify_viewprofile_sql
+		 * @var int		user_id				The user ID
+		 * @var string	username			The username
+		 * @var array	sql_array			Array containing the main query
+		 * @since 3.2.6-RC1
+		 */
+		$vars = array(
+			'user_id',
+			'username',
+			'sql_array',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_viewprofile_sql', compact($vars)));
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
 		$member = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
