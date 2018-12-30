@@ -21,11 +21,6 @@ then
 	travis/setup-unbuffer.sh
 fi
 
-if [ "$DB" == "mariadb" ]
-then
-	travis/setup-mariadb.sh
-fi
-
 if [ "$NOTESTS" != '1' ]
 then
 	travis/setup-php-extensions.sh
