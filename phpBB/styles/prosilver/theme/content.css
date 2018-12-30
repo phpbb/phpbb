@@ -328,6 +328,15 @@ dd.option {
 	overflow-x: auto;
 }
 
+.postbody .content p {
+	font-size: 13px;
+	line-height: 18px;
+}
+
+.postbody .content p:last-child {
+	margin-bottom: 0;
+}
+
 .postbody img.postimage {
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;

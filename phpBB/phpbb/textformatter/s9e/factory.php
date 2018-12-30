@@ -227,6 +227,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Don't automatically ignore text in places where text is not allowed
 		$configurator->rulesGenerator->remove('IgnoreTextIfDisallowed');
 
+		// Use paragraphs when rendering.
+		$configurator->rulesGenerator->add('ManageParagraphs');
+
 		// Don't remove comments and instead convert them to xsl:comment elements
 		$configurator->templateNormalizer->remove('RemoveComments');
 		$configurator->templateNormalizer->add('TransposeComments');
