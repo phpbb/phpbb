@@ -81,28 +81,36 @@
 				--ignore=${project.basedir}/phpBB/phpbb/db/migration/data/v30x/*
 				phpBB/phpbb"
 			dir="." returnProperty="retval-php-strict" passthru="true" />
+		<php function="preg_replace" returnProperty="sniffIgnoreList">
+			<param value="/\s+/"/>
+			<param value=""/>
+			<param value="${project.basedir}/phpBB/cache/*,
+				${project.basedir}/phpBB/develop/*,
+				${project.basedir}/phpBB/ext/*,
+				${project.basedir}/phpBB/includes/diff/*.php,
+				${project.basedir}/phpBB/includes/sphinxapi.php,
+					${project.basedir}/phpBB/includes/utf/data/*,
+					${project.basedir}/phpBB/install/data/*,
+					${project.basedir}/phpBB/install/database_update.php,
+					${project.basedir}/phpBB/phpbb/*,
+					${project.basedir}/phpBB/vendor/*,
+					${project.basedir}/phpBB/vendor-ext/*,
+					${project.basedir}/phpBB/config.php,
+					${project.basedir}/phpBB/config_dev.php,
+					${project.basedir}/phpBB/config_test.php"/>
+		</php>
 		<exec command="phpBB/vendor/bin/phpcs
 				-s -p
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-legacy-core.xml
-				--ignore=${project.basedir}/phpBB/cache/*
-				--ignore=${project.basedir}/phpBB/develop/*
-				--ignore=${project.basedir}/phpBB/ext/*
-				--ignore=${project.basedir}/phpBB/includes/diff/*.php
-				--ignore=${project.basedir}/phpBB/includes/sphinxapi.php
-				--ignore=${project.basedir}/phpBB/includes/utf/data/*
-				--ignore=${project.basedir}/phpBB/install/data/*
-				--ignore=${project.basedir}/phpBB/install/database_update.php
-				--ignore=${project.basedir}/phpBB/phpbb/*
-				--ignore=${project.basedir}/phpBB/vendor/*
+				--ignore=${sniffIgnoreList}
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
 				-s -p
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-extensions.xml
-				--ignore=${project.basedir}/phpBB/ext/*/tests/*
-				--ignore=${project.basedir}/phpBB/ext/*/vendor/*
+				--ignore=${project.basedir}/phpBB/ext/*/tests/*,${project.basedir}/phpBB/ext/*/vendor/*
 				phpBB/ext"
 			dir="." returnProperty="retval-php-ext" passthru="true" />
 		<if>
