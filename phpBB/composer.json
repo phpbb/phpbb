@@ -26,6 +26,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
+		"ext-json": "*",
 		"bantu/ini-get-wrapper": "~1.0",
 		"composer/composer": "^1.6",
 		"composer/installers": "^1.4",
