@@ -12,7 +12,7 @@
 */
 
 /**
-* Minimum Requirement: PHP 5.4.0
+* Minimum Requirement: PHP 7.1.0
 */
 
 if (!defined('IN_PHPBB'))
