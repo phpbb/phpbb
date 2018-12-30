@@ -49,7 +49,7 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 		);
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

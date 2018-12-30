@@ -81,17 +81,17 @@ class phpbb_test_case_helpers
 		{
 			case E_NOTICE:
 			case E_STRICT:
-				PHPUnit_Framework_Error_Notice::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Notice';
+				PHPUnit\Framework\Error\Notice::$enabled = true;
+				$exceptionName = 'PHPUnit\Framework\Error\Notice';
 			break;
 
 			case E_WARNING:
-				PHPUnit_Framework_Error_Warning::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Warning';
+				PHPUnit\Framework\Error\Warning::$enabled = true;
+				$exceptionName = 'PHPUnit\Framework\Error\Warning';
 			break;
 
 			default:
-				$exceptionName = 'PHPUnit_Framework_Error';
+				$exceptionName = 'PHPUnit\Framework\Error\Error';
 			break;
 		}
 		$this->expectedTriggerError = true;

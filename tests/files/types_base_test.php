@@ -35,7 +35,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

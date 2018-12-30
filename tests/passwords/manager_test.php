@@ -19,7 +19,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 
 	protected $default_pw = 'foobar';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());

@@ -18,7 +18,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 	/**
 	* Set up the required user object and server variables for the suites
 	*/
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $user, $phpbb_root_path, $phpEx, $request, $symfony_request, $phpbb_filesystem;
 
@@ -60,7 +60,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$user->page = \phpbb\session::extract_current_page($phpbb_root_path);
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		global $user;
 		$user = NULL;

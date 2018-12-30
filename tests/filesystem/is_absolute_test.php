@@ -16,7 +16,7 @@ class phpbb_filesystem_is_absolute_test extends phpbb_test_case
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

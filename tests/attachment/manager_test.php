@@ -17,7 +17,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 	protected $resync;
 	protected $upload;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->delete = $this->getMockBuilder('\phpbb\attachment\delete')
 			->disableOriginalConstructor()

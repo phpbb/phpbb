@@ -16,7 +16,7 @@ class reverse_update_data_test extends phpbb_test_case
 	/** @var \phpbb\db\migration\helper */
 	protected $helper;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

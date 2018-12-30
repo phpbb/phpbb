@@ -20,7 +20,6 @@ require_once dirname(__FILE__) . '/common_test_case.php';
 class phpbb_cache_apcu_driver_test extends phpbb_cache_common_test_case
 {
 	protected static $config;
-	protected $driver;
 
 	public function getDataSet()
 	{
@@ -45,9 +44,11 @@ class phpbb_cache_apcu_driver_test extends phpbb_cache_common_test_case
 		{
 			self::markTestSkipped('APCu is not enabled for CLI. Set apc.enable_cli=1 in php.ini');
 		}
+
+		parent::setUpBeforeClass();
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_container, $phpbb_root_path;
 

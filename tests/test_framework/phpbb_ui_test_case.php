@@ -100,7 +100,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!self::$install_success)
 		{
@@ -132,7 +132,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -419,7 +419,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->disable_ext($extension);
 		$this->delete_ext_data($extension);
 	}
-	
+
 	protected function get_cache_driver()
 	{
 		if (!$this->cache)

@@ -20,7 +20,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	static public $init_values = array();
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->purge_cache();

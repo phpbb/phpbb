@@ -25,7 +25,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -77,7 +77,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->table_exists = true;
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		if ($this->table_exists)
 		{

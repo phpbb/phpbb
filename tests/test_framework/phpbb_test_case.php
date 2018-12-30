@@ -11,7 +11,9 @@
 *
 */
 
-class phpbb_test_case extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class phpbb_test_case extends TestCase
 {
 	protected $test_case_helpers;
 

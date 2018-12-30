@@ -43,7 +43,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		if ($throws_exception)
 		{
-			$this->setExpectedException($throws_exception);
+			$this->expectException($throws_exception);
 		}
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);

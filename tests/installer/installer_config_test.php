@@ -20,7 +20,7 @@ class phpbb_installer_config_test extends phpbb_test_case
 	 */
 	private $config;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');

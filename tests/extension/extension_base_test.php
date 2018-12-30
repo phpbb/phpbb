@@ -30,7 +30,7 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 		self::$reflection_method_get_migration_file_list->setAccessible(true);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$container = new phpbb_mock_container_builder();
 		$migrator = new phpbb_mock_migrator();

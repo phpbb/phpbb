@@ -41,12 +41,12 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
-		
+
 		$this->get_db();
-		
+
 		$acl_ary = array(
 			'auth_option'	=> 'u_foo',
 			'is_global'		=> 1,

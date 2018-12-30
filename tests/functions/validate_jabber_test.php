@@ -18,7 +18,7 @@ class phpbb_functions_validate_jabber_test extends phpbb_test_case
 {
 	protected $helper;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -32,7 +32,7 @@ class phpbb_functions_validate_jabber_test extends phpbb_test_case
 				array(),
 				'',
 				array('jabber'),
-			),	
+			),
 			'no_seperator' => array(
 				array('WRONG_DATA'),
 				'testjabber.ccc',

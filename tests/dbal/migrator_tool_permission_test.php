@@ -24,7 +24,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator_permission.xml');
 	}
 
-	public function setup()
+	public function setUp(): void
 	{
 		// Global $db and $cache are needed in acp/auth.php constructor
 		global $phpbb_root_path, $phpEx, $db, $cache;

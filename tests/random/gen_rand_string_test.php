@@ -17,7 +17,7 @@ class phpbb_random_gen_rand_string_test extends phpbb_test_case
 	const MIN_STRING_LENGTH = 1;
 	const MAX_STRING_LENGTH = 15;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config;
 

@@ -117,7 +117,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Test the engine can be used
 		$this->setup_engine();
@@ -129,7 +129,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		if ($this->template)
 		{

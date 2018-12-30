@@ -13,7 +13,7 @@
 
 class phpbb_error_collector_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

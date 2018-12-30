@@ -11,7 +11,9 @@
 *
 */
 
-abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_TestCase
+use PHPUnit\DbUnit\TestCase;
+
+abstract class phpbb_database_test_case extends TestCase
 {
 	static private $already_connected;
 
@@ -99,7 +101,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		parent::tearDownAfterClass();
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -113,7 +115,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		}
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

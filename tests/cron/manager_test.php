@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/tasks/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends \phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->manager = $this->create_cron_manager(array(
 			new phpbb_cron_task_core_dummy_task(),

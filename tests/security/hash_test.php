@@ -13,7 +13,7 @@
 
 class phpbb_security_hash_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_container;
 

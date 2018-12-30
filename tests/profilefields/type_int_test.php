@@ -22,7 +22,7 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 	* @access public
 	* @return null
 	*/
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

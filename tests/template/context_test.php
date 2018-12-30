@@ -14,7 +14,7 @@
 class context_test extends phpbb_test_case
 {
 	protected $context;
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$this->context = new \phpbb\template\context();
 
@@ -31,7 +31,7 @@ class context_test extends phpbb_test_case
 					'SUBFOO'	=> 'subfoo' . $j,
 					'SUBBAR'	=> 'subbar' . $j,
 				));
-				
+
 				for ($k = 0; $k < 10; $k++)
 				{
 					$this->context->assign_block_vars('block' . $i . '.subblock.subsubblock', array(

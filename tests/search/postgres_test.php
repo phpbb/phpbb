@@ -23,7 +23,7 @@ class phpbb_search_postgres_test extends phpbb_search_common_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx, $config, $user, $cache;
 

@@ -15,7 +15,7 @@ class phpbb_generate_string_list_test extends phpbb_test_case
 {
 	public $user;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

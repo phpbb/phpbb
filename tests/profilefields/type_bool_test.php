@@ -23,7 +23,7 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 	* @access public
 	* @return void
 	*/
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

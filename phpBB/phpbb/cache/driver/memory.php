@@ -25,7 +25,7 @@ abstract class memory extends \phpbb\cache\driver\base
 	*/
 	function __construct()
 	{
-		global $phpbb_root_path, $dbname, $table_prefix, $phpbb_container;
+		global $dbname, $table_prefix, $phpbb_container;
 
 		$this->cache_dir	= $phpbb_container->getParameter('core.cache_dir');
 		$this->key_prefix	= substr(md5($dbname . $table_prefix), 0, 8) . '_';

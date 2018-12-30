@@ -19,7 +19,7 @@ class phpbb_request_test extends phpbb_test_case
 	/** @var \phpbb\request\request */
 	private $request;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// populate super globals
 		$_POST['test'] = 1;
@@ -264,7 +264,7 @@ class phpbb_request_test extends phpbb_test_case
 	/**
 	* Makes sure super globals work properly after these tests
 	*/
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$this->request->enable_super_globals();
 	}

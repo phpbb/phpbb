@@ -27,7 +27,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 		self::$filesystem_own_realpath->setAccessible(true);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

@@ -20,7 +20,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	protected $command_name;
 	protected $user;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

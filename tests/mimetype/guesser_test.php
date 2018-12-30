@@ -27,7 +27,7 @@ class guesser_test extends \phpbb_test_case
 
 	protected $fileinfo_supported = false;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path;
 
@@ -181,7 +181,7 @@ class guesser_test extends \phpbb_test_case
 
 		if (!$supported)
 		{
-			$this->setExpectedException('\LogicException');
+			$this->expectException('\LogicException');
 		}
 
 		$guesser = new \phpbb\mimetype\guesser($guessers);

@@ -15,7 +15,7 @@ class phpbb_regex_ipv6_test extends phpbb_test_case
 {
 	protected $regex;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->regex = get_preg_expression('ipv6');
 	}

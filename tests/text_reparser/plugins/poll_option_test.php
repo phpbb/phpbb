@@ -39,7 +39,7 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 		return $rows;
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config;
 		if (!isset($config))
