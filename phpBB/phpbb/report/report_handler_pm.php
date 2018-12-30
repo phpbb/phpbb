@@ -77,7 +77,6 @@ class report_handler_pm extends report_handler
 			'pm_replied'	=> 0,
 			'pm_marked'		=> 0,
 			'pm_forwarded'	=> 0,
-			'folder_id'		=> PRIVMSGS_INBOX,
 		);
 
 		$sql = 'INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);

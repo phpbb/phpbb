@@ -312,7 +312,6 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 				array(
 					array('msg_id' => 1, 'author_id' => 3, 'message_edit_user' => 3),
-					array('msg_id' => 2, 'author_id' => 1, 'message_edit_user' => 1),
 				),
 			),
 			array(
@@ -327,7 +326,6 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 				array(
 					array('msg_id' => 1, 'author_id' => 3, 'message_edit_user' => 3),
-					array('msg_id' => 2, 'author_id' => 1, 'message_edit_user' => 1),
 				),
 			),
 		);

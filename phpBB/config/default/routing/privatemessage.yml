@@ -1,0 +1,37 @@
+phpbb_privatemessage_compose:
+    path: /compose
+    defaults:
+        _controller: phpbb.privatemessage.compose:handle
+
+phpbb_privatemessage_index:
+    path: /index
+    defaults:
+        _controller: phpbb.privatemessage.view:index
+
+phpbb_privatemessage_conversation_action_important:
+    path: /conversation_action/important/{id}
+    defaults:
+        _controller: phpbb.privatemessage.conversation_action:important
+    requirements:
+        id: '\d+'
+
+phpbb_privatemessage_conversation_action_edit_title:
+    path: /conversation_action/edit_title/{id}
+    defaults:
+        _controller: phpbb.privatemessage.conversation_action:edit_title
+    requirements:
+        id: '\d+'
+
+phpbb_privatemessage_conversation_action_delete:
+    path: /conversation_action/delete/{id}
+    defaults:
+        _controller: phpbb.privatemessage.conversation_action:delete
+    requirements:
+        id: '\d+'
+
+phpbb_privatemessage_conversation:
+    path: /conversation/{id}
+    defaults:
+        _controller: phpbb.privatemessage.view:conversation
+    requirements:
+        id: '\d+'

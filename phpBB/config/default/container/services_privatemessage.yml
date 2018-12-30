@@ -1,0 +1,52 @@
+services:
+    phpbb.privatemessage.compose:
+        class: phpbb\privatemessage\compose
+        arguments:
+            - '@controller.helper'
+            - '@user'
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '@request'
+            - '@auth'
+            - '@group_helper'
+            - '@text_formatter.utils'
+            - '@plupload'
+            - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.privatemessage.conversation_action:
+        class: phpbb\privatemessage\conversation_action
+        arguments:
+            - '@controller.helper'
+            - '@user'
+            - '@dbal.conn'
+            - '@request'
+            - '%tables.privmsgs%'
+            - '%tables.privmsgs_to%'
+
+    phpbb.privatemessage.view:
+        class: phpbb\privatemessage\view
+        arguments:
+            - '@phpbb.privatemessage.helper'
+            - '@controller.helper'
+            - '@user'
+            - '@config'
+            - '@auth'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+            - '@request'
+            - '@user_loader'
+            - '@group_helper'
+            - '%tables.privmsgs%'
+            - '%tables.privmsgs_to%'
+            - '%tables.users%'
+            - '%tables.groups%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.privatemessage.helper:
+        class: phpbb\privatemessage\helper

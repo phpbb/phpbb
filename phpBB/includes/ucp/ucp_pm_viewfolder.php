@@ -54,15 +54,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 			$color_rows = array_merge($color_rows, array('friend', 'foe'));
 		}
 
-		foreach ($color_rows as $var)
-		{
-			$template->assign_block_vars('pm_colour_info', array(
-				'IMG'	=> $user->img("pm_{$var}", ''),
-				'CLASS'	=> "pm_{$var}_colour",
-				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
-			);
-		}
-
 		$mark_options = array('mark_important', 'delete_marked');
 
 		// Minimise edits
@@ -105,6 +96,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		{
 			$friend[$row['zebra_id']] = $row['friend'];
 			$foe[$row['zebra_id']] = $row['foe'];
+			($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : '';
 		}
 		$db->sql_freeresult($result);
 
@@ -113,13 +105,27 @@ function view_folder($id, $mode, $folder_id, $folder)
 			'S_MOVE_MARKED_OPTIONS'	=> $s_folder_move_options)
 		);
 
+		// Get avatars
+		$avatars = array();
+		$sql = 'SELECT user_avatar,user_avatar_type, user_avatar_width, user_avatar_height, user_id
+					FROM ' . USERS_TABLE ;
+		$result = $db->sql_query($sql);
+
+		while ($user_row = $db->sql_fetchrow($result))
+		{
+			$friend[$row['zebra_id']] = $row['friend'];
+			$foe[$row['zebra_id']] = $row['foe'];
+			$avatars[$user_row['user_id']] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
+		}
+		$db->sql_freeresult($result);
+
 		// Okay, lets dump out the page ...
 		if (count($folder_info['pm_list']))
 		{
 			$address_list = array();
 
 			// Build Recipient List if in outbox/sentbox - max two additional queries
-			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
+			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX)
 			{
 				$address_list = get_recipient_strings($folder_info['rowset']);
 			}
@@ -132,7 +138,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
-				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
+				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;action=reply&amp;f=$folder_id&amp;p=$message_id");
 				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
 
 				$row_indicator = '';
@@ -166,6 +172,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_STYLE'	=> $folder_img,
+					'PM_ICON'           => $avatars[$row['author_id']],
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
@@ -173,22 +180,22 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 					'S_PM_REPORTED'		=> (isset($row['report_id'])) ? true : false,
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
+					'S_PM_MARKED'		=> $row['pm_marked'],
+					'S_AUTHOR_FOE'		=> ($row_indicator == 'foe') ? true : false,
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_INBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
 
 			$template->assign_vars(array(
-				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
-				'S_SHOW_COLOUR_LEGEND'	=> true,
+				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_INBOX) ? true : false,
 
 				'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'PM_REPORTED'),
-				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
-			);
+			));
 		}
 	}
 	else
@@ -469,7 +476,6 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
 		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose') : '',
 		'S_PM_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')),
@@ -534,16 +540,30 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported',
+		'SELECT'	=> 't.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour, p.message_reported, (
+			SELECT SUM(tu.pm_unread)
+			FROM ' . PRIVMSGS_TO_TABLE . ' tu
+			LEFT JOIN ' . PRIVMSGS_TABLE . ' pu
+				ON (tu.msg_id = pu.msg_id)
+			WHERE pu.root_level = p.msg_id
+				OR pu.msg_id = p.msg_id
+		) AS pm_unread',
 		'FROM'		=> array(
 			PRIVMSGS_TO_TABLE	=> 't',
-			PRIVMSGS_TABLE		=> 'p',
-			USERS_TABLE			=> 'u',
+		),
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(PRIVMSGS_TABLE => 'p'),
+				'ON'	=> 't.msg_id = p.msg_id',
+			),
+			array(
+				'FROM'	=> array(USERS_TABLE => 'u'),
+				'ON'	=> 'p.author_id = u.user_id',
+			),
 		),
 		'WHERE'		=> "t.user_id = $user_id
-			AND p.author_id = u.user_id
+			AND p.root_level = 0
 			AND $folder_sql
-			AND t.msg_id = p.msg_id
 			$sql_limit_time",
 		'ORDER_BY'	=> $sql_sort_order,
 	);
@@ -567,8 +587,12 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), $sql_limit, $sql_start);
 
 	$pm_reported = array();
+
 	while ($row = $db->sql_fetchrow($result))
 	{
+		// Gets number of unread messages in each conversation
+		$pm_unread[$row['msg_id']]  = $row['pm_unread'];
+
 		$rowset[$row['msg_id']] = $row;
 		$pm_list[] = $row['msg_id'];
 		if ($row['message_reported'])
@@ -576,6 +600,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 			$pm_reported[] = $row['msg_id'];
 		}
 	}
+
 	$db->sql_freeresult($result);
 
 	// Fetch the report_ids, if there are any reported pms.

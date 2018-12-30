@@ -47,19 +47,18 @@ class ucp_pm
 	{
 		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config, $request;
 
-		if (!$user->data['is_registered'])
-		{
-			trigger_error('NO_MESSAGE');
-		}
-
-		// Is PM disabled?
-		if (!$config['allow_privmsg'])
-		{
-			trigger_error('PM_DISABLED');
-		}
-
 		$user->add_lang('posting');
 		$template->assign_var('S_PRIVMSGS', true);
+
+
+
+
+
+
+
+
+
+
 
 		// Folder directly specified?
 		$folder_specified = $request->variable('folder', '');
@@ -110,16 +109,6 @@ class ucp_pm
 				$tpl_file = 'posting_body';
 			break;
 
-			case 'options':
-				set_user_message_limit();
-				get_folder($user->data['user_id']);
-
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
-				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
-
-				$tpl_file = 'ucp_pm_options';
-			break;
-
 			case 'drafts':
 
 				get_folder($user->data['user_id']);
@@ -141,41 +130,6 @@ class ucp_pm
 			break;
 
 			case 'view':
-
-				set_user_message_limit();
-
-				if ($folder_specified)
-				{
-					$folder_id = $folder_specified;
-					$action = 'view_folder';
-				}
-				else
-				{
-					$folder_id = $request->variable('f', PRIVMSGS_NO_BOX);
-					$action = $request->variable('action', 'view_folder');
-				}
-
-				$msg_id = $request->variable('p', 0);
-				$view	= $request->variable('view', '');
-
-				// View message if specified
-				if ($msg_id)
-				{
-					$action = 'view_message';
-				}
-
-				if (!$auth->acl_get('u_readpm'))
-				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_READ_MESSAGE');
-				}
-
-				if ($view == 'print' && (!$config['print_pm'] || !$auth->acl_get('u_pm_printpm')))
-				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_PRINT_MESSAGE');
-				}
-
 				// Do not allow hold messages to be seen
 				if ($folder_id == PRIVMSGS_HOLD_BOX)
 				{
@@ -184,34 +138,14 @@ class ucp_pm
 
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
-				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
 				$mark_option	= $request->variable('mark_option', '');
 				$dest_folder	= $request->variable('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
 				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
 				{
-					$move_pm = true;
 					$dest_folder = (int) $mark_option;
 					$submit_mark = false;
-				}
-
-				// Move PM
-				if ($move_pm)
-				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
-					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
-
-					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
-					{
-						// Return to folder view if single message moved
-						if ($action == 'view_message')
-						{
-							$msg_id		= 0;
-							$folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
-							$action		= 'view_folder';
-						}
-					}
 				}
 
 				// Message Mark Options
@@ -234,23 +168,6 @@ class ucp_pm
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)
 				{
 					$folder_id = PRIVMSGS_INBOX;
-				}
-				else if ($msg_id && $folder_id == PRIVMSGS_NO_BOX)
-				{
-					$sql = 'SELECT folder_id
-						FROM ' . PRIVMSGS_TO_TABLE . "
-						WHERE msg_id = $msg_id
-							AND folder_id <> " . PRIVMSGS_NO_BOX . '
-							AND user_id = ' . $user->data['user_id'];
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if (!$row)
-					{
-						trigger_error('NO_MESSAGE');
-					}
-					$folder_id = (int) $row['folder_id'];
 				}
 
 				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_pms_read'))
@@ -336,7 +253,6 @@ class ucp_pm
 					$s_to_folder_options .= ($f_id != PRIVMSGS_OUTBOX && $f_id != PRIVMSGS_SENTBOX) ? $option : '';
 					$s_folder_options .= $option;
 				}
-				clean_sentbox($folder[PRIVMSGS_SENTBOX]['num_messages']);
 
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
@@ -378,6 +294,12 @@ class ucp_pm
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
 					view_folder($id, $mode, $folder_id, $folder);
 
+					//After displaying messages on the left we set it up for composing a new message on the right
+					$user_folders = get_folder($user->data['user_id']);
+
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+					compose_pm($id, 'compose', 'post', $user_folders);
+
 					$tpl_file = 'ucp_pm_viewfolder';
 				}
 				else if ($action == 'view_message')
@@ -393,10 +315,19 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
+					$action = $request->variable('action', 'post');
+					$user_folders = get_folder($user->data['user_id']);
+
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+					compose_pm($id, $mode, $action, $user_folders);
+
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+					view_folder($id, $mode, $folder_id, $folder);
+
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
-					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
+					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewfolder';
 				}
 
 			break;

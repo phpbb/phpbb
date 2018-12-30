@@ -1,0 +1,140 @@
+{% include 'ucp_header.html' %}
+
+<link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_color.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/phpbb/src/scss/settings/_default.scss" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/hanakin/base-l@master/dist/assets/css/core.0.16.0.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/phpbb/chameleon@303fb0684f4d038f759cdda031c01d176a482c23/all/css/theme.0.1.0.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/hanakin/base-l@master/dist/assets/css/utilities.0.16.0.css" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_type.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_center.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_shadows.scss" rel="stylesheet">
+<link href="https://rawgit.com/hanakin/base-l/master/src/scss/tools/mixin/_rtl.scss" rel="stylesheet">
+<style>
+.cp-menu {
+	display: none;
+}
+</style>
+
+<div class="c-pm-container">
+	<div id="pm-conversations-list">
+		{% if U_NEWER_CONVERSATIONS %}
+			<div class="pm-pagination-item">
+				<a id="pm-conversation-pagination-newer" href="{{ U_NEWER_CONVERSATIONS }}">{{ lang('LOAD_NEWER_CONVERSATIONS') }}</a>
+			</div>
+		{% endif %}
+		<ul class="o-list c-pm-list">
+			{% for conversation in conversations %}
+				<li class="o-list-item c-pm-item{% if conversation.S_CURRENT_CONVERSATION %} is-active{% endif %}">
+					<a class="o-list-media c-pm-media" href="{{ conversation.U_MESSAGE_AUTHOR }}">
+						<span class="o-avatar-wrap o-list-avatar">
+							{{ conversation.MESSAGE_AVATAR }}
+							{% if conversation.S_AUTHOR_ONLINE %}<span class="o-avatar-online o-action-bar-avatar-online"></span>{% endif %}
+							{% if conversation.S_PM_UNREAD %}<span class="o-tag c-pm-badge">{{ conversation.PM_UNREAD_COUNT }}</span>{% endif %}
+						</span>
+					</a>
+					<span class="o-list-primary c-pm-primary">
+						<span class="o-list-secondary c-pm-secondary">
+								{% if conversation.S_PM_MARKED %}<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#important"></use></svg>{% endif %}
+							<a class="o-list-title c-pm-item-url" href="{{ conversation.U_VIEW_PM }}"><strong>{{ conversation.SUBJECT }}</strong></a>
+						</span>
+						<span class="o-list-secondary c-pm-secondary">
+							{% for item in conversation.to %}
+								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#{{ item.TYPE }}"></use></svg>
+								<a class="o-list-secondary-item-link" href="{{ item.U_LINK }}">{{ item.NAME }}</a>
+							{% endfor %}
+						</span>
+						<span class="o-list-secondary c-pm-secondary">
+							<span class="o-list-secondary-item">
+								<svg class="o-icon o-list-secondary-item-icon"><use xlink:href="#time"></use></svg>
+								<time datetime="" title="" data-short="">{{ conversation.SENT_TIME }}</time>
+							</span>
+						</span>
+					</span>
+				</li>
+			{% else %}
+				<li class="o-list-item">
+					{{ lang('NO_CONVERSATIONS') }}
+				</li>
+			{% endfor %}
+		</ul>
+		{% if U_OLDER_CONVERSATIONS %}
+			<div class="pm-pagination-item">
+				<a id="pm-conversation-pagination-older" href="{{ U_OLDER_CONVERSATIONS }}">{{ lang('LOAD_OLDER_CONVERSATIONS') }}</a>
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="c-pm-viewer">
+			<div class="o-bar c-pm-viewer-header">
+					<ul class="o-bar-left">
+						<li class="o-bar-item">
+							<h2 class="o-bar-title c-pm-title">{{ CONVERSATION_SUBJECT }}</h2>
+						</li>
+					</ul>
+					<ul class="o-bar-right">
+						<li class="o-bar-item c-menu-toggle u-hidden-lg-up">
+							<a class="o-bar-action c-menu-button" href="#" data-toggle="menu" title="{{ lang('CONVERSATION_ACTIONS') }}">
+								<svg class="o-icon o-bar-action-icon"><use xlink:href="#more-v"></use></svg>
+							</a>
+							<div class="c-menu-container t-menu-container" data-container="menu">
+								<ul class="c-menu t-menu">
+									{% if S_PM_CONVERSATION %}
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="{{ lang('MAKE_IMPORTANT') }}" data-ajax="true">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#important"></use></svg>
+												<span class="c-menu-text t-forum-text">{{ lang('MAKE_IMPORTANT') }}</span>
+											</a>
+										</li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="{{ lang('EDIT_TITLE') }}">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#edit-full"></use></svg>
+												<span class="c-menu-text t-forum-text">{{ lang('EDIT_TITLE') }}</span>
+											</a>
+										</li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_DELETE }}" data-toggle="tooltip" title="{{ lang('DELETE_CONVERSATION') }}" data-ajax="true">
+												<svg class="o-icon c-menu-link-icon"><use xlink:href="#trash"></use></svg>
+												<span class="c-menu-text t-forum-text">{{ lang('DELETE_CONVERSATION') }}</span>
+											</a>
+										</li>
+									{% endif %}
+									{% if not S_COMPOSE_PM %}
+										<li class="c-menu-item c-menu-divider t-menu-item t-menu-divider"></li>
+										<li class="c-menu-item t-menu-item">
+											<a class="c-menu-link c-pm-menu-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
+												<svg class="o-icon c-menu-link-icon t-menu-forum-icon"><use xlink:href="#add"></use></svg>
+												<span class="c-menu-text t-forum-text">{{ lang('NEW_CONVERSATION') }}</span>
+											</a>
+										</li>
+									{% endif %}
+								</ul>
+							</div>
+						</li>
+
+						{% if not S_COMPOSE_PM %}
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_COMPOSE }}" data-toggle="tooltip" title="{{ lang('NEW_CONVERSATION') }}">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#add"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item o-bar-divider u-hidden-md-down"></li>
+						{% endif %}
+						{% if S_PM_CONVERSATION %}
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_DELETE }}" data-toggle="tooltip" data-placement="top" title="{{ lang('DELETE_CONVERSATION') }}" data-ajax="true">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#trash"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action c-pm-menu-action-edit-title" href="{{ U_EDIT_TITLE }}" data-toggle="tooltip" title="{{ lang('EDIT_TITLE') }}">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#edit-full"></use></svg>
+								</a>
+							</li>
+							<li class="o-bar-item u-hidden-md-down">
+								<a class="o-bar-action c-pm-viewer-action" href="{{ U_MARK_IMPORTANT }}" data-toggle="tooltip" title="{{ lang('MAKE_IMPORTANT') }}" data-ajax="true">
+									<svg class="o-icon o-bar-action-icon"><use xlink:href="#important"></use></svg>
+								</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>

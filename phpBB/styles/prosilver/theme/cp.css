@@ -15,8 +15,8 @@
 }
 
 .cp-main {
-	float: left;
-	width: 81%;
+	float: none;
+	width: 100%;
 }
 
 .cp-main .content {
@@ -89,6 +89,10 @@ ul.cplist {
 
 .cp-main ul.linklist {
 	margin: 0;
+}
+
+.cp-wrap {
+	width: 100%;
 }
 
 /* MCP Specific tweaks */

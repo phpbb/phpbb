@@ -35,8 +35,10 @@ class ucp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 		global $request;
+
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		switch ($mode)
 		{
@@ -682,12 +684,12 @@ class ucp_main
 						$view_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $draft['forum_id']);
 						$title = $draft['forum_name'];
 
-						$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id']);
+						$insert_url = $controller_helper->route('phpbb_privatemessage_compose', array('d' => $draft['draft_id'], 'f' => $draft['forum_id']));
 					}
 					else if ($pm_drafts)
 					{
 						$link_pm = true;
-						$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d=" . $draft['draft_id']);
+						$insert_url = $controller_helper->route('phpbb_privatemessage_compose', array('d' => $draft['draft_id']));
 					}
 
 					if (!$submit)
