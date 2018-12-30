@@ -45,13 +45,6 @@ class asset
 	*/
 	public function set_url($url)
 	{
-		if (version_compare(PHP_VERSION, '5.4.7') < 0 && substr($url, 0, 2) === '//')
-		{
-			// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
-			$this->components = parse_url('http:' . $url);
-			$this->components['scheme'] = '';
-			return;
-		}
 		$this->components = parse_url($url);
 	}
 
