@@ -15,20 +15,10 @@ namespace phpbb\template\twig;
 
 class lexer extends \Twig_Lexer
 {
-	public function set_environment(\Twig_Environment $env)
+	public function tokenize(\Twig_Source $source)
 	{
-		$this->env = $env;
-	}
-
-	public function tokenize($code, $filename = null)
-	{
-		// Handle \Twig_Source format input
-		if ($code instanceof \Twig_Source)
-		{
-			$source = $code;
-			$code = $source->getCode();
-			$filename = $source->getName();
-		}
+		$code = $source->getCode();
+		$filename = $source->getName();
 
 		// Our phpBB tags
 		// Commented out tokens are handled separately from the main replace
