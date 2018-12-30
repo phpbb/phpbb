@@ -29,7 +29,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	private   $router;
 	private   $routing_helper;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 

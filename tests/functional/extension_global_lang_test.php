@@ -41,10 +41,10 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
-		
+
 		$this->get_db();
 
 		$this->phpbb_extension_manager = $this->get_extension_manager();
@@ -52,7 +52,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		parent::tearDown();
 

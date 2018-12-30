@@ -28,7 +28,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Global $config required by unique_id
 		global $config, $phpbb_root_path, $phpEx;
@@ -101,7 +101,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$this->config = array();
 

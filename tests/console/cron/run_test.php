@@ -32,7 +32,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $db, $config, $phpbb_root_path, $phpEx;
 

@@ -40,7 +40,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $db;
 

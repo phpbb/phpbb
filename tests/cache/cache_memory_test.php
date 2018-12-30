@@ -23,7 +23,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/cache_memory.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $db;
 		parent::setUp();

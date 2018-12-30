@@ -30,7 +30,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	protected $command_tester;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

@@ -16,21 +16,17 @@ require_once dirname(__FILE__) . '/common_test_case.php';
 class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 {
 	private $cache_dir;
-	protected $driver;
-
-	public function __construct()
-	{
-		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache/';
-	}
 
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
+
+		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache/';
 
 		if (file_exists($this->cache_dir))
 		{
@@ -43,7 +39,7 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$this->driver = new \phpbb\cache\driver\file($this->cache_dir);
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		if (file_exists($this->cache_dir))
 		{

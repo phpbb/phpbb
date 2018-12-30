@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 {
 	protected $item_type = 'notification.type.quote';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

@@ -34,7 +34,7 @@ class phpbb_compress_test extends phpbb_test_case
 		'dir/2_1.txt',
 	);
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Required for compress::add_file
 		global $phpbb_root_path;
@@ -54,7 +54,7 @@ class phpbb_compress_test extends phpbb_test_case
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		foreach (array(dirname(__FILE__) . self::EXTRACT_DIR, dirname(__FILE__) . self::ARCHIVE_DIR) as $dir)
 		{

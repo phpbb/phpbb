@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class phpbb_controller_controller_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
@@ -128,7 +128,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		if (!empty($exception))
 		{
-			$this->setExpectedException($exception, $exception_message);
+			$this->expectException($exception);
+			$this->expectExceptionMessage($exception_message);
 		}
 
 		$this->assertEquals($expected, $resolver->getArguments($symfony_request, $input));

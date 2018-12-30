@@ -13,6 +13,9 @@
 
 abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 {
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $driver;
+
 	public function test_get_put_exists()
 	{
 		$this->assertFalse($this->driver->_exists('test_key'));

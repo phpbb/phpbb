@@ -25,7 +25,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function setUp()
+	function setUp(): void
 	{
 		parent::setUp();
 

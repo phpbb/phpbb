@@ -24,7 +24,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 	protected $finder;
 	protected $module_manager;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_extension_manager;
 

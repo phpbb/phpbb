@@ -39,7 +39,7 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 		return $rows;
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config;
 		if (!isset($config))

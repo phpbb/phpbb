@@ -24,6 +24,9 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\filesystem\filesystem */
 	protected $filesystem;
 
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $dispatcher;
+
 	/** @var \phpbb\attachment\resync */
 	protected $resync;
 
@@ -37,9 +40,9 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
-		global $db, $phpbb_root_path;
+		global $phpbb_root_path;
 
 		parent::setUp();
 

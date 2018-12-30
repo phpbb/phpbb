@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $cache, $user, $phpbb_dispatcher;
 

@@ -17,6 +17,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 {
 	protected $user_id = 4;
 	protected $key_id = 4;
+	/** @var \phpbb\session */
 	protected $session;
 	protected $backup_cache;
 
@@ -37,7 +38,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		// Get session here so that config is mocked correctly
@@ -59,7 +60,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		parent::tearDown();
 		// Set cache back to what it was before the test changed it
@@ -75,7 +76,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			$ban = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
 			$is_banned = !empty($ban);
 		}
-		catch (PHPUnit_Framework_Error_Notice $e)
+		catch (PHPUnit\Framework\Error\Notice $e)
 		{
 			// User error was triggered, user must have been banned
 			$is_banned = true;

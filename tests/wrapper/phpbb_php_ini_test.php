@@ -18,7 +18,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 	/** @var \phpbb_php_ini_fake php_ini */
 	protected $php_ini;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->php_ini = new phpbb_php_ini_fake;
 	}

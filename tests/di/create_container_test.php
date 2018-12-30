@@ -26,7 +26,7 @@ namespace
 		protected $phpbb_root_path;
 		protected $filename;
 
-		public function setUp()
+		public function setUp(): void
 		{
 			$this->phpbb_root_path = dirname(__FILE__) . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');

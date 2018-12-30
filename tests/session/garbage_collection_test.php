@@ -22,7 +22,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_garbage.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->session = $this->session_factory->get_session($this->db);

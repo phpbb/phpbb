@@ -13,14 +13,12 @@
 
 class phpbb_cache_dummy_driver_test extends phpbb_database_test_case
 {
-	protected $driver;
-
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

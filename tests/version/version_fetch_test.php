@@ -16,7 +16,7 @@
 */
 class phpbb_version_helper_fetch_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

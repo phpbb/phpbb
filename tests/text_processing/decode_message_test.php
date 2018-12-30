@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_decode_message_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

@@ -19,7 +19,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_user.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

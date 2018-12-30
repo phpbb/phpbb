@@ -72,13 +72,13 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 		}
 	}
 
-	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
+	public function checkVar(PHPUnit\Framework\Assert $test, $var_name, $data)
 	{
 		$test->assertTrue(isset($this->data[$var_name]));
 		$test->assertEquals($data, $this->data[$var_name]);
 	}
 
-	public function checkAssociativeVar(PHPUnit_Framework_Assert $test, $var_name, $data, $sort = true)
+	public function checkAssociativeVar(PHPUnit\Framework\Assert $test, $var_name, $data, $sort = true)
 	{
 		$test->assertTrue(isset($this->data[$var_name]));
 
@@ -93,12 +93,12 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 		$test->assertEquals($data, $this->data[$var_name]);
 	}
 
-	public function checkVarUnset(PHPUnit_Framework_Assert $test, $var_name)
+	public function checkVarUnset(PHPUnit\Framework\Assert $test, $var_name)
 	{
 		$test->assertFalse(isset($this->data[$var_name]));
 	}
 
-	public function check(PHPUnit_Framework_Assert $test, $data, $ignore_db_info = true)
+	public function check(PHPUnit\Framework\Assert $test, $data, $ignore_db_info = true)
 	{
 		$cache_data = $this->data;
 

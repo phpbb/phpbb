@@ -27,7 +27,7 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 		);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

@@ -75,7 +75,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		return $this->path_helper;
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_dispatcher;
 
