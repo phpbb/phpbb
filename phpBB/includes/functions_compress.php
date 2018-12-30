@@ -305,8 +305,8 @@ class compress_zip extends compress
 								}
 							}
 						}
-						// This is a directory, we are not writting files
-						continue;
+						// This is a directory, we are not writing files
+						continue 2;
 					}
 					else
 					{
