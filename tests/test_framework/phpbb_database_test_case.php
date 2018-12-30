@@ -148,7 +148,7 @@ abstract class phpbb_database_test_case extends TestCase
 	 * Create xml data set for insertion into database
 	 *
 	 * @param string $path Path to fixture XML
-	 * @return PHPUnit_Extensions_Database_DataSet_DefaultDataSet|PHPUnit_Extensions_Database_DataSet_XmlDataSet
+	 * @return PHPUnit\DbUnit\DataSet\DefaultDataSet|PHPUnit\DbUnit\DataSet\XmlDataSet
 	 */
 	public function createXMLDataSet($path)
 	{
@@ -157,11 +157,11 @@ abstract class phpbb_database_test_case extends TestCase
 		// Extend XML data set on MSSQL
 		if (strpos($this->get_database_config()['dbms'], 'mssql') !== false)
 		{
-			$newXmlData = new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
+			$newXmlData = new PHPUnit\DbUnit\DataSet\DefaultDataSet([]);
 			$db = $this->new_dbal();
 			foreach ($this->fixture_xml_data as $key => $value)
 			{
-				/** @var \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData $tableMetaData */
+				/** @var PHPUnit\DbUnit\DataSet\DefaultTableMetaData $tableMetaData */
 				$tableMetaData = $value->getTableMetaData();
 				$columns = $tableMetaData->getColumns();
 				$primaryKeys = $tableMetaData->getPrimaryKeys();
@@ -203,8 +203,8 @@ abstract class phpbb_database_test_case extends TestCase
 						$columns[] = 'mssqlindex';
 					}
 
-					$newMetaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($key, $columns, $primaryKeys);
-					$newTable = new PHPUnit_Extensions_Database_DataSet_DefaultTable($newMetaData);
+					$newMetaData = new PHPUnit\DbUnit\DataSet\DefaultTableMetaData($key, $columns, $primaryKeys);
+					$newTable = new PHPUnit\DbUnit\DataSet\DefaultTable($newMetaData);
 					for ($i = 0; $i < $value->getRowCount(); $i++)
 					{
 						$dataRow = $value->getRow($i);
