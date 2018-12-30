@@ -15,8 +15,6 @@ matrix:
       env: DB=mysqli;SLOWTESTS=1
     - php: 7.1
       env: DB=mysqli # MyISAM
-    - php: 7.1
-      env: DB=mysql
     - php: 7.2
       env: DB=mysqli
     - php: 7.2
