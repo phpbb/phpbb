@@ -54,5 +54,4 @@ cat $DIR/../phpBB/docs/nginx.sample.conf \
 | sudo tee $NGINX_SITE_CONF
 sudo sed -i "s/user www-data;/user $USER;/g" $NGINX_CONF
 
-sudo nginx -t
 sudo service nginx start
