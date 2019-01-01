@@ -50,6 +50,7 @@ class json_sanitizer
 	 */
 	static public function decode($json)
 	{
-		return self::sanitize(json_decode($json, true));
+		$data = json_decode($json, true);
+		return !empty($data) ? self::sanitize($data) : [];
 	}
 }
