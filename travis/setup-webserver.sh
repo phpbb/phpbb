@@ -19,7 +19,8 @@ sudo service nginx stop
 DIR=$(dirname "$0")
 USER=$(whoami)
 PHPBB_ROOT_PATH=$(realpath "$DIR/../phpBB")
-NGINX_CONF="/etc/nginx/sites-enabled/default"
+NGINX_SITE_CONF="/etc/nginx/sites-enabled/default"
+NGINX_CONF="/etc/nginx/nginx.conf"
 APP_SOCK=$(realpath "$DIR")/php-app.sock
 
 # php-fpm
@@ -50,6 +51,7 @@ cat $DIR/../phpBB/docs/nginx.sample.conf \
 | sed -e '/If running php as fastcgi/,$d' \
 | sed -e "s/fastcgi_pass php;/fastcgi_pass unix:$(echo $APP_SOCK | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g');/g" \
 | sed -e 's/#listen 80/listen 80/' \
-| sudo tee $NGINX_CONF
+| sudo tee $NGINX_SITE_CONF
+sudo sed -i "s/user www-data;/user $USER;/g" $NGINX_CONF
 
 sudo service nginx start
