@@ -18,9 +18,6 @@
 		"wiki": "https://wiki.phpbb.com",
 		"irc": "irc://irc.freenode.org/phpbb"
 	},
-	"require": {
-		"php": ">=5.3.3"
-	},
 	"extra": {
 		"display-name": "prosilver",
 		"phpbb-version": "3.3.0-a1-dev"
