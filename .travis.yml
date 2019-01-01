@@ -36,9 +36,6 @@ matrix:
 services:
   - redis-server
 
-addons:
-  mariadb: '10.0'
-
 install:
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
 
