@@ -42,16 +42,9 @@ function install_php_extension
 
 php_ini_file=$(find_php_ini)
 
-# apc
-if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.5.0-dev', '<');"` == "1" ]
-then
-	echo 'Enabling APC PHP extension'
-	printf "\n" | pecl install apc
-	echo 'apc.enable_cli=1' >> "$php_ini_file"
-else
-	echo 'Disabling Opcache'
-	echo 'opcache.enable=0' >> "$php_ini_file"
-fi
+# Disable opcache for testing
+echo 'Disabling Opcache'
+echo 'opcache.enable=0' >> "$php_ini_file"
 
 # APCu
 if [ `php -r "echo (int) (version_compare(PHP_VERSION, '7.0.0-dev', '>=') && version_compare(PHP_VERSION, '7.3.0-dev', '<'));"` == "1" ]
