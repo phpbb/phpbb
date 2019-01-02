@@ -109,6 +109,8 @@ class helper
 	 */
 	public function get_name_string($mode, $group_id, $group_name, $group_colour = '', $custom_profile_url = false)
 	{
+		$s_is_bots = ($group_name === 'BOTS');
+
 		// This switch makes sure we only run code required for the mode
 		switch ($mode)
 		{
@@ -117,7 +119,7 @@ class helper
 			case 'colour':
 
 				// Build correct group colour
-				$group_colour = ($group_colour) ? '#' . $group_colour : '';
+				$group_colour = $group_colour ? '#' . $group_colour : '';
 
 				// Return colour
 				if ($mode === 'colour')
@@ -146,7 +148,7 @@ class helper
 
 				// Build correct profile url - only show if not anonymous and permission to view profile if registered user
 				// For anonymous the link leads to a login page.
-				if ($group_id && ($this->user->data['user_id'] == ANONYMOUS || $this->auth->acl_get('u_viewprofile')))
+				if ($group_id && !$s_is_bots && ($this->user->data['user_id'] == ANONYMOUS || $this->auth->acl_get('u_viewprofile')))
 				{
 					$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;g=' . (int) $group_id : str_replace(array('={GROUP_ID}', '=%7BGROUP_ID%7D'), '=' . (int) $group_id, $this->name_strings['base_url']);
 				}
@@ -167,7 +169,7 @@ class helper
 
 		if (!isset($group_name_string))
 		{
-			if (($mode === 'full' && empty($profile_url)) || $mode === 'no_profile')
+			if (($mode === 'full' && empty($profile_url)) || $mode === 'no_profile' || $s_is_bots)
 			{
 				$group_name_string = str_replace(array('{GROUP_COLOUR}', '{GROUP_NAME}'), array($group_colour, $group_name), (!$group_colour) ? $this->name_strings['tpl_noprofile'] : $this->name_strings['tpl_noprofile_colour']);
 			}
