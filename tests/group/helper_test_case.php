@@ -99,16 +99,16 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Set up path helper
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$path_helper = new \phpbb\path_helper(
-			new \phpbb\symfony_request(
-				new phpbb_mock_request()
-			),
-			$filesystem,
-			$this->getMock('\phpbb\request\request'),
-			$phpbb_root_path,
-			$phpEx
-		);
+		$path_helper = $this->getMockBuilder('\phpbb\path_helper')
+			->disableOriginalConstructor()
+			->setMethods(array())
+			->getMock();
+		$path_helper->method('get_phpbb_root_path')
+			->willReturn($phpbb_root_path);
+		$path_helper->method('get_php_ext')
+			->willReturn($phpEx);
+		$path_helper->method('update_web_root_path')
+			->will($this->returnArgument(0));
 
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = ANONYMOUS;
