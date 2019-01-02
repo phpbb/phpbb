@@ -1207,18 +1207,18 @@ switch ($mode)
 			$avatar_img = phpbb_get_group_avatar($group_row);
 
 			// ... same for group rank
-			$user_rank_data = array(
+			$group_rank_data = array(
 				'title'		=> null,
 				'img'		=> null,
 				'img_src'	=> null,
 			);
 			if ($group_row['group_rank'])
 			{
-				$user_rank_data = phpbb_get_user_rank($group_row, false);
+				$group_rank_data = $group_helper->get_rank($group_row);
 
-				if ($user_rank_data['img'])
+				if ($group_rank_data['img'])
 				{
-					$user_rank_data['img'] .= '<br />';
+					$group_rank_data['img'] .= '<br />';
 				}
 			}
 			// include modules for manage groups link display or not
@@ -1245,11 +1245,11 @@ switch ($mode)
 				'GROUP_NAME'	=> $group_helper->get_name($group_row['group_name']),
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
-				'GROUP_RANK'	=> $user_rank_data['title'],
+				'GROUP_RANK'	=> $group_rank_data['title'],
 
 				'AVATAR_IMG'	=> $avatar_img,
-				'RANK_IMG'		=> $user_rank_data['img'],
-				'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
+				'RANK_IMG'		=> $group_rank_data['img'],
+				'RANK_IMG_SRC'	=> $group_rank_data['img_src'],
 
 				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',
 				'U_MANAGE'		=> ($can_manage_group) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_groups&amp;mode=manage') : false,)
