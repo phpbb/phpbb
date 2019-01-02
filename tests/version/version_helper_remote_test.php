@@ -17,7 +17,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	protected $cache;
 	protected $version_helper;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

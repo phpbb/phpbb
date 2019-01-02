@@ -26,7 +26,7 @@ class module_base_test extends phpbb_test_case
 	 */
 	protected $container;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		// DI container mock
 		$this->container = new phpbb_mock_container_builder();

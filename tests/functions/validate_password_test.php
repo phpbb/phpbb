@@ -18,7 +18,7 @@ class phpbb_functions_validate_password_test extends phpbb_test_case
 {
 	protected $helper;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

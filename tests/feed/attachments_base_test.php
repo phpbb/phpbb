@@ -25,7 +25,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../extension/fixtures/extensions.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -98,7 +98,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 
 		if ($expected_exception !== false)
 		{
-			$this->setExpectedException($expected_exception);
+			$this->expectException($expected_exception);
 
 			$this->attachments_mocks_feed->get_sql();
 		}

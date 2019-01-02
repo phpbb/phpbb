@@ -20,7 +20,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 	/** @var \phpbb\language\language */
 	protected $language;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->template = $this->getMockBuilder('\phpbb\template\template')
 			->disableOriginalConstructor()

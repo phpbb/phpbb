@@ -16,7 +16,7 @@
 */
 class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

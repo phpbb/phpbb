@@ -20,7 +20,6 @@ require_once dirname(__FILE__) . '/common_test_case.php';
 class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 {
 	protected static $config;
-	protected $driver;
 
 	public function getDataSet()
 	{
@@ -47,7 +46,7 @@ class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 		}
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

@@ -25,14 +25,11 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	protected $db;
 	protected $config;
 
-	public function __construct()
-	{
-		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
-	}
-
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
+
+		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 
 		if (file_exists($this->cache_dir))
 		{

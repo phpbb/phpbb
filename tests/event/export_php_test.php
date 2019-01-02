@@ -16,7 +16,7 @@ class phpbb_event_export_php_test extends phpbb_test_case
 	/** @var \phpbb\event\php_exporter */
 	protected $exporter;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

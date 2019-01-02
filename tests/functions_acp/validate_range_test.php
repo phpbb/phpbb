@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

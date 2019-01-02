@@ -20,7 +20,7 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 	/** @var string Path to fixtures */
 	protected $path;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->imagesize = new \FastImageSize\FastImageSize();

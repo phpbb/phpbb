@@ -75,7 +75,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -114,7 +114,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -502,7 +502,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->disable_ext($extension);
 		$this->delete_ext_data($extension);
 	}
-	
+
 	static private function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
@@ -911,7 +911,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 * @param string $haystack	Search this
 	 * @param string $message	Optional failure message
 	 */
-	public function assertContainsLang($needle, $haystack, $message = null)
+	public function assertContainsLang($needle, $haystack, $message = '')
 	{
 		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
@@ -923,7 +923,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $haystack	Search this
 	* @param string $message	Optional failure message
 	*/
-	public function assertNotContainsLang($needle, $haystack, $message = null)
+	public function assertNotContainsLang($needle, $haystack, $message = '')
 	{
 		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}

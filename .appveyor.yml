@@ -9,13 +9,13 @@ environment:
   matrix:
   - db: mssql
     db_version: sql2012sp1
-    php: 7.0
+    php: 7.1
   - db: mssql
     db_version: sql2014
-    php: 7.0
+    php: 7.1
   - db: mssql
     db_version: sql2016
-    php: 7.1.12
+    php: 7.2
 #  - db: mssql
 #    db_version: sql2017
 #    php: 7.1
@@ -63,10 +63,11 @@ before_test:
       # Get MSSQL driver
       if ($env:db -eq "mssql") {
         cd c:\tools\php\ext
-        $DLLVersion = "4.1.6.1"
-        curl -o php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        $DLLVersion = "5.3.0"
+        $VCVersion = If ([System.Version]"$($env:php)" -ge [System.Version]"7.2") {"vc15"} Else {"vc14"}
+        curl -o php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-$($VCVersion)-x64.zip
         7z x -y php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
-        curl -o php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        curl -o php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-$($VCVersion)-x64.zip
         7z x -y php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
         Remove-Item c:\tools\php\* -include .zip
         cd c:\tools\php

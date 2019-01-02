@@ -13,7 +13,7 @@
 
 class get_callable_from_step_test extends phpbb_database_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $php_ext, $table_prefix, $phpbb_log;
 

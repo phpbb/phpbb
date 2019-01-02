@@ -43,13 +43,13 @@ class phpbb_get_banned_user_ids_test extends phpbb_database_test_case
 		);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $db;
 
 		$db = $this->new_dbal();
 
-		return parent::setUp();
+		parent::setUp();
 	}
 
 	/**

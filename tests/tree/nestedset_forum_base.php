@@ -48,7 +48,7 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		$lock,
 		$db;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

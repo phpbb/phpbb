@@ -15,7 +15,7 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 {
 	protected  $field;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

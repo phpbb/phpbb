@@ -18,7 +18,7 @@ class phpbb_ordered_service_collection_test extends \phpbb_test_case
 	 */
 	protected $service_collection;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$container = new phpbb_mock_container_builder();
 		$container->set('foo', new StdClass);

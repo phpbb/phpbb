@@ -521,7 +521,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$this->setExpectedException('Twig_Error_Loader');
+		$this->expectException('Twig_Error_Loader');
 
 		$this->display('test');
 	}
@@ -529,7 +529,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 	public function test_invalid_handle()
 	{
-		$this->setExpectedException('Twig_Error_Loader');
+		$this->expectException('Twig_Error_Loader');
 
 		$this->display('test');
 	}

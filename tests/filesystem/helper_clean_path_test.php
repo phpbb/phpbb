@@ -16,7 +16,7 @@ use phpbb\filesystem\helper as filesystem_helper;
 class phpbb_filesystem_helper_clean_path_test extends phpbb_test_case
 {
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 	}

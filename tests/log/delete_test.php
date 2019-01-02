@@ -20,7 +20,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_log.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher, $auth;
 

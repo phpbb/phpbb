@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 {
 	protected $item_type = 'notification.type.post_in_queue';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

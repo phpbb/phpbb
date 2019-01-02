@@ -11,6 +11,9 @@
 *
 */
 
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
 * Checks that each PHP source file contains a valid header as defined by the
 * phpBB Coding Guidelines.
@@ -18,7 +21,7 @@
 * @package code_sniffer
 * @author Manuel Pichler <mapi@phpundercontrol.org>
 */
-class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
+class phpbb_Sniffs_Commenting_FileCommentSniff implements Sniff
 {
 	/**
 	* Returns an array of tokens this test wants to listen for.
@@ -33,13 +36,13 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	/**
 	* Processes this test, when one of its tokens is encountered.
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+	* @param File $phpcsFile The file being scanned.
 	* @param int				  $stackPtr  The position of the current token
 	*										in the stack passed in $tokens.
 	*
-	* @return null
+	* @return void
 	*/
-	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+	public function process(File $phpcsFile, $stackPtr): void
 	{
 		// We are only interested in the first file comment.
 		if ($stackPtr !== 0)
@@ -62,7 +65,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 		// Mark as error if this is not a doc comment
 		else if ($start === false || $tokens[$start]['code'] !== T_DOC_COMMENT_OPEN_TAG)
 		{
-			$phpcsFile->addError('Missing required file doc comment.', $stackPtr);
+			$phpcsFile->addError('Missing required file doc comment.', $stackPtr, 'MissingComment');
 			return;
 		}
 
@@ -82,7 +85,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 			if ($tokens[$token]['column'] === 1 && (($tokens[$token]['content'] !== '*' && $tokens[$token]['content'] !== ' ') || ($tokens[$token]['content'] === ' ' && $tokens[$token + 1]['content'] !== '*')))
 			{
 				$message = 'The file doc comment should not be indented.';
-				$phpcsFile->addWarning($message, $token);
+				$phpcsFile->addWarning($message, $token, 'CommentIndented');
 			}
 		}
 
@@ -95,13 +98,13 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 		if (!(($tokens[$start + 2]['content'] !== '*' && $tokens[$start + 4]['content'] !== '*') || ($tokens[$start + 3]['content'] !== '*' && $tokens[$start + 6]['content'] !== '*')))
 		{
 			$message = 'The first file comment line should be empty.';
-			$phpcsFile->addWarning($message, ($start + 1));
+			$phpcsFile->addWarning($message, ($start + 1), 'CommentFirstNotEmpty');
 		}
 
 		if ($tokens[$end - 3]['content'] !== '*' && $tokens[$end - 6]['content'] !== '*')
 		{
 			$message = 'The last file comment line should be empty.';
-			$phpcsFile->addWarning($message, $end - 1);
+			$phpcsFile->addWarning($message, $end - 1, 'CommentLastNotEmpty');
 		}
 
 		//$this->processPackage($phpcsFile, $start, $tags);
@@ -113,59 +116,59 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	/**
 	* Checks that the tags array contains a valid package tag
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The context source file instance.
+	* @param File $phpcsFile The context source file instance.
 	* @param integer The stack pointer for the first comment token.
 	* @param array(string=>array) $tags The found file doc comment tags.
 	*
-	* @return null
+	* @return void
 	*/
-	protected function processPackage(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
+	protected function processPackage(File $phpcsFile, $ptr, $tags): void
 	{
 		if (!isset($tags['package']))
 		{
 			$message = 'Missing require @package tag in file doc comment.';
-			$phpcsFile->addError($message, $ptr);
+			$phpcsFile->addError($message, $ptr, 'MissingTagPackage');
 		}
 		else if (preg_match('/^([\w]+)$/', $tags['package'][0]) === 0)
 		{
 			$message = 'Invalid content found for @package tag.';
-			$phpcsFile->addWarning($message, $tags['package'][1]);
+			$phpcsFile->addWarning($message, $tags['package'][1], 'InvalidTagPackage');
 		}
 	}
 
 	/**
 	* Checks that the tags array contains a valid version tag
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The context source file instance.
+	* @param File $phpcsFile The context source file instance.
 	* @param integer The stack pointer for the first comment token.
 	* @param array(string=>array) $tags The found file doc comment tags.
 	*
-	* @return null
+	* @return void
 	*/
-	protected function processVersion(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
+	protected function processVersion(File $phpcsFile, $ptr, $tags): void
 	{
 		if (!isset($tags['version']))
 		{
 			$message = 'Missing require @version tag in file doc comment.';
-			$phpcsFile->addError($message, $ptr);
+			$phpcsFile->addError($message, $ptr, 'MissingTagVersion');
 		}
 		else if (preg_match('/^\$Id:[^\$]+\$$/', $tags['version'][0]) === 0)
 		{
 			$message = 'Invalid content found for @version tag, use "$Id: $".';
-			$phpcsFile->addError($message, $tags['version'][1]);
+			$phpcsFile->addError($message, $tags['version'][1], 'InvalidTagVersion');
 		}
 	}
 
 	/**
 	* Checks that the tags array contains a valid copyright tag
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The context source file instance.
+	* @param File $phpcsFile The context source file instance.
 	* @param integer The stack pointer for the first comment token.
 	* @param array(string=>array) $tags The found file doc comment tags.
 	*
-	* @return null
+	* @return void
 	*/
-	protected function processCopyright(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
+	protected function processCopyright(File $phpcsFile, $ptr, $tags): void
 	{
 		$copyright = '(c) phpBB Limited <https://www.phpbb.com>';
 		$tokens = $phpcsFile->getTokens();
@@ -177,7 +180,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 				if ($tokens[$tag + 2]['content'] !== $copyright)
 				{
 					$message = 'Invalid content found for the first @copyright tag, use "' . $copyright . '".';
-					$phpcsFile->addError($message, $tags['copyright'][0][1]);
+					$phpcsFile->addError($message, $tags['copyright'][0][1], 'InvalidTagCopyright');
 				}
 
 				return;
@@ -185,19 +188,19 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 		}
 
 		$message = 'Missing require @copyright tag in file doc comment.';
-		$phpcsFile->addError($message, $ptr);
+		$phpcsFile->addError($message, $ptr, 'MissingTagCopyright');
 	}
 
 	/**
 	* Checks that the tags array contains a valid license tag
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The context source file instance.
+	* @param File $phpcsFile The context source file instance.
 	* @param integer The stack pointer for the first comment token.
 	* @param array(string=>array) $tags The found file doc comment tags.
 	*
-	* @return null
+	* @return void
 	*/
-	protected function processLicense(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
+	protected function processLicense(File $phpcsFile, $ptr, $tags): void
 	{
 		$license = 'GNU General Public License, version 2 (GPL-2.0)';
 		$tokens = $phpcsFile->getTokens();
@@ -210,7 +213,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 				if ($found)
 				{
 					$message = 'It must be only one @license tag in file doc comment.';
-					$phpcsFile->addError($message, $ptr);
+					$phpcsFile->addError($message, $ptr, 'MultiTagVersion');
 				}
 
 				$found = true;
@@ -218,7 +221,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 				if ($tokens[$tag + 2]['content'] !== $license)
 				{
 					$message = 'Invalid content found for @license tag, use "' . $license . '".';
-					$phpcsFile->addError($message, $tags['license'][0][1]);
+					$phpcsFile->addError($message, $tags['license'][0][1], 'InvalidTagLicense');
 				}
 			}
 		}
@@ -226,7 +229,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 		if (!$found)
 		{
 			$message = 'Missing require @license tag in file doc comment.';
-			$phpcsFile->addError($message, $ptr);
+			$phpcsFile->addError($message, $ptr, 'MissingTagLicense');
 		}
 	}
 }

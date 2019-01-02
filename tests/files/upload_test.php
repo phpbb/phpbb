@@ -35,7 +35,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Global $config required by unique_id
 		global $config, $phpbb_root_path, $phpEx;

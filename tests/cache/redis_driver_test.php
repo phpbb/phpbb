@@ -13,10 +13,9 @@
 
 require_once dirname(__FILE__) . '/common_test_case.php';
 
-class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
+class phpbb_cache_redis_driver_test extends \phpbb_cache_common_test_case
 {
 	protected static $config;
-	protected $driver;
 
 	public function getDataSet()
 	{
@@ -41,12 +40,18 @@ class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
 		{
 			self::markTestSkipped('Test redis host/port is not specified');
 		}
+
+		parent::setUpBeforeClass();
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
+		global $phpbb_root_path, $phpbb_container;
+
 		parent::setUp();
 
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
 		$this->driver = new \phpbb\cache\driver\redis(self::$config['host'], self::$config['port']);
 		$this->driver->purge();
 	}
