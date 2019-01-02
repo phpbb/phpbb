@@ -100,7 +100,7 @@ class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_ca
 		return array(
 			array(0, 'BOTS', '000000', false, '<span class="username-coloured" style="color: #000000;">Bots</span>'),
 			array(1, 'new_group', '', false, '<span class="username">Some new group</span>'),
-			arraY(2, 'not_uppercase', 'FF0000', false, '<span class="username-coloured" style="color: #FF0000;">not_uppercase</span>'),
+			array(2, 'not_uppercase', 'FF0000', false, '<span class="username-coloured" style="color: #FF0000;">not_uppercase</span>'),
 			array(5, 'Awesome group', '', 'http://www.example.org/group.php?mode=show', '<span class="username">Awesome group</span>'),
 		);
 	}
