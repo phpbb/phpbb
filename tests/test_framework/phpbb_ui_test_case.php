@@ -52,15 +52,10 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
-		if (version_compare(PHP_VERSION, '5.3.19', '<'))
-		{
-			self::markTestSkipped('UI test case requires at least PHP 5.3.19.');
-		}
-		else if (!class_exists('\Facebook\WebDriver\Remote\RemoteWebDriver'))
+		if (!class_exists('\Facebook\WebDriver\Remote\RemoteWebDriver'))
 		{
 			self::markTestSkipped(
-				'Could not find RemoteWebDriver class. ' .
-				'Run "php ../composer.phar install" from the tests folder.'
+				'Could not find RemoteWebDriver class.'
 			);
 		}
 
