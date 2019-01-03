@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 {
 	protected $item_type = 'notification.type.mention';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
