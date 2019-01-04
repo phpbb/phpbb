@@ -46,7 +46,7 @@ gulp.task('clean', () => {
 
 gulp.task('minify', () => {
 	const css = gulp
-	.src(build.css + '/bidi.css')
+	.src(build.css + '/stylesheet.css')
 	.pipe(sourcemaps.init())
 	.pipe(
 		postcss([
@@ -65,7 +65,7 @@ gulp.task('minify', () => {
 });
 
 gulp.task('watch', () => {
-	gulp.watch('phpBB/styles/prosilver/theme/*.css', ['css']);
+	gulp.watch(['phpBB/styles/prosilver/theme/*.css', '!phpBB/styles/prosilver/theme/*.min.*'], gulp.series('minify'));
 });
 
-gulp.task('default', ['css', 'watch']);
+gulp.task('default', gulp.series('css', 'watch'));
