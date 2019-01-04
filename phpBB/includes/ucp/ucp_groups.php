@@ -1068,7 +1068,7 @@ class ucp_groups
 								{
 									// Find which users don't exist
 									$actual_name_ary = $name_ary;
-									$actual_user_id_ary = false;
+									$actual_user_id_ary = [];
 									user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
 
 									$display_message = $language->lang('GROUP_USERS_INVALID', implode($language->lang('COMMA_SEPARATOR'), array_udiff($name_ary, $actual_name_ary, 'strcasecmp')));

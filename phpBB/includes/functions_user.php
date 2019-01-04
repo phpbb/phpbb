@@ -27,6 +27,7 @@ if (!defined('IN_PHPBB'))
 * @param array &$username_ary The usernames to check or empty if user ids used
 * @param mixed $user_type Array of user types to check, false if not restricting by user type
 * @param bool $update_references If false, the supplied array is unset and appears unchanged from where it was called
+* @return null
 */
 function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false, $update_references = false)
 {
