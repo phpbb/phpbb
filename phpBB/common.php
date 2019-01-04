@@ -91,6 +91,7 @@ $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_ro
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);

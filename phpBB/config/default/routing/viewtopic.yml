@@ -1,0 +1,17 @@
+phpbb_viewtopic_controller:
+    path:             topic/{topic_id}/{slug}
+    methods:          GET
+    defaults:
+        _controller:  phpbb.viewtopic.controller:show_topic
+    requirements:
+        topic_id: \d+
+        slug: .*
+
+phpbb_viewpost_controller:
+    path:             post/{post_id}/{slug}
+    methods:          GET
+    defaults:
+        _controller:  phpbb.viewtopic.controller:show_post
+    requirements:
+        post_id: \d+
+        slug: .*

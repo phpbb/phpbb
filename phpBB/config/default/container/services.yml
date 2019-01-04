@@ -30,6 +30,7 @@ imports:
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
+    - { resource: services_viewtopic.yml }
 
     - { resource: tables.yml }
     - { resource: parameters.yml }

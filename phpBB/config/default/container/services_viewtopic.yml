@@ -1,0 +1,80 @@
+services:
+# ----- View topic controller -----
+    phpbb.viewtopic.controller:
+        class: phpbb\viewtopic\controller\viewtopic
+        arguments:
+            - '@phpbb.viewtopic.parameter_handler'
+            - '@phpbb.viewtopic.poll_retriever'
+            - '@phpbb.viewtopic.post_retriever'
+            - '@phpbb.viewtopic.topic_retriever'
+            - '@phpbb.viewtopic.visibility_manager'
+            - '@user'
+
+# ----- View topic services -----
+    phpbb.viewtopic.parameter_handler:
+        class: phpbb\viewtopic\parameter_handler
+        arguments:
+            - '@dispatcher'
+            - '@user'
+
+    phpbb.viewtopic.poll_retriever:
+        class: phpbb\viewtopic\poll_retriever
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@request'
+            - '@user'
+            - '%tables.poll_options%'
+            - '%tables.poll_votes%'
+            - '%tables.posts%'
+            - '%tables.topics%'
+
+    phpbb.viewtopic.post_retriever:
+        class: phpbb\viewtopic\post_retriever
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@pagination'
+            - '@user'
+            - '%tables.posts%'
+            - '%tables.users%'
+            - '%tables.zebra%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.viewtopic.topic_retriever:
+        class: phpbb\viewtopic\topic_retriever
+        arguments:
+            - '@config'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@user'
+            - '%tables.bookmarks%'
+            - '%tables.forums%'
+            - '%tables.forums_track%'
+            - '%tables.posts%'
+            - '%tables.topics%'
+            - '%tables.topics_track%'
+            - '%tables.topics_watch%'
+
+    phpbb.viewtopic.visibility_manager:
+        class: phpbb\viewtopic\topic_visibility_manager
+        arguments:
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '@request'
+            - '@user'
+
+    phpbb.viewtopic.render_helper:
+        class: phpbb\viewtopic\render_helper
+        arguments:
+            - '@dispatcher'
+            - '@language'
+            - '@template'
+            - '@user'
