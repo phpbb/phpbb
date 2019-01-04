@@ -1,6 +1,6 @@
 /*  phpBB3 Style Sheet
     --------------------------------------------------------------
-	Style name:			prosilver (the default phpBB 3.2.x style)
+	Style name:			prosilver (the default phpBB 3.3.x style)
 	Based on style:
 	Original author:	Tom Beddard ( http://www.subblue.com/ )
 	Modified by:		phpBB Limited ( https://www.phpbb.com/ )
@@ -19,4 +19,5 @@
 @import url("icons.css?v=3.3");
 @import url("colours.css?v=3.3");
 @import url("responsive.css?v=3.3");
+@import url("bidi.css?v=3.3");
 @import url("tweaks.css?v=3.3");
