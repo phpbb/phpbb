@@ -4,6 +4,7 @@
 	],
 	"ignoreFiles": [
 		"./phpBB/styles/prosilver/theme/normalize.css",
+		"./phpBB/styles/prosilver/theme/stylesheet.css",
 		"./phpBB/styles/prosilver/theme/stylesheet.min.css"
 	],
 	"rules": {

@@ -25,7 +25,7 @@ const AUTOPREFIXER_BROWSERS = [
 	'last 2 versions'
 ];
 
-gulp.task('css', () => {
+gulp.task('css:fix', () => {
 	const css = gulp
 	.src(build.css + '*.css')
 	.pipe(autoprefixer(AUTOPREFIXER_BROWSERS))
@@ -35,6 +35,27 @@ gulp.task('css', () => {
 		])
 	)
 	.pipe(stylefmt())
+	.pipe(rename({
+		basename: 'stylesheet',
+		extname: '.css'
+	}))
+	.pipe(gulp.dest(build.css));
+
+	return css;
+});
+
+gulp.task('css:build', () => {
+	const css = gulp
+	.src(build.css + 'theme.css')
+	.pipe(
+		postcss([
+			atimport()
+		])
+	)
+	.pipe(rename({
+		basename: 'stylesheet',
+		extname: '.css'
+	}))
 	.pipe(gulp.dest(build.css));
 
 	return css;
@@ -48,11 +69,6 @@ gulp.task('minify', () => {
 	const css = gulp
 	.src(build.css + '/stylesheet.css')
 	.pipe(sourcemaps.init())
-	.pipe(
-		postcss([
-			atimport()
-		])
-	)
 	.pipe(cssnano())
 	.pipe(rename({
 		suffix: '.min',
@@ -68,4 +84,4 @@ gulp.task('watch', () => {
 	gulp.watch(['phpBB/styles/prosilver/theme/*.css', '!phpBB/styles/prosilver/theme/*.min.*'], gulp.series('minify'));
 });
 
-gulp.task('default', gulp.series('css', 'watch'));
+gulp.task('default', gulp.series('css:fix', 'css:build', 'watch'));
