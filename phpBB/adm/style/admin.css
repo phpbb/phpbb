@@ -728,14 +728,10 @@ td {
 	border-collapse: separate;
 }
 
-.lside .table1 {
-	float: left;
-	clear: none;
-}
-
 @media only screen and (min-width: 1100px), only screen and (min-device-width: 1100px) {
 	.lside .table1 {
-		width: 50%;
+		display: inline-table;
+		width: 49.7%;
 	}
 }
 
