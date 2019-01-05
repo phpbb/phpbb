@@ -1836,7 +1836,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 5: Retrieve last_post infos
 			if (count($post_ids))
 			{		
-				$sql_аry = array(
+				$sql_ary = array(
 					'SELECT'	=> 'p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour',
 					'FROM'		=> array(
 						POSTS_TABLE	=> 'p',
@@ -1850,12 +1850,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				* Event to modify the SQL array to get the post and user data from all forums' last posts
 				*
 				* @event core.sync_forum_last_post_info_sql
-				* @var	array	sql_аry		SQL array with some post and user data from the last posts list
+				* @var	array	sql_ary		SQL array with some post and user data from the last posts list
 				* @since 3.2.6-RC1
 				*/
-				$vars = array('sql_аry');
+				$vars = array('sql_ary');
 				extract($phpbb_dispatcher->trigger_event('core.sync_forum_last_post_info_sql', compact($vars)));
-				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_аry));
+				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 				while ($row = $db->sql_fetchrow($result))
 				{
