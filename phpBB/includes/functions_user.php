@@ -26,8 +26,10 @@ if (!defined('IN_PHPBB'))
 * @param array &$user_id_ary The user ids to check or empty if usernames used
 * @param array &$username_ary The usernames to check or empty if user ids used
 * @param mixed $user_type Array of user types to check, false if not restricting by user type
+* @param boolean $update_references If false, the supplied array is unset and appears unchanged from where it was called
+* @return boolean|string Returns false on success, error string on failure
 */
-function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
+function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false, $update_references = false)
 {
 	global $db;
 
@@ -50,7 +52,13 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 	}
 
 	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', ${$which_ary}) : array_map('utf8_clean_string', ${$which_ary});
-	unset(${$which_ary});
+
+	// By unsetting the array here, the values passed in at the point user_get_id_name() was called will be retained.
+	// Otherwise, if we don't unset (as the array was passed by reference) the original array will be updated below.
+	if ($update_references === false)
+	{
+		unset(${$which_ary});
+	}
 
 	$user_id_ary = $username_ary = array();
 
@@ -2710,6 +2718,13 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	if (empty($user_id_ary) || $result !== false)
 	{
 		return 'NO_USER';
+	}
+
+	// Because the item that gets passed into the previous function is unset, the reference is lost and our original
+	// array is retained - so we know there's a problem if there's a different number of ids to usernames now.
+	if (count($user_id_ary) != count($username_ary))
+	{
+		return 'GROUP_USERS_INVALID';
 	}
 
 	// Remove users who are already members of this group

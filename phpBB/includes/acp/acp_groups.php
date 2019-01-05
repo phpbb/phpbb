@@ -29,6 +29,9 @@ class acp_groups
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
+		/** @var \phpbb\language\language $language Language object */
+		$language = $phpbb_container->get('language');
+
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
@@ -293,7 +296,19 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					$display_message = $language->lang($error);
+
+					if ($error == 'GROUP_USERS_INVALID')
+					{
+						// Find which users don't exist
+						$actual_name_ary = $name_ary;
+						$actual_user_id_ary = [];
+						user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
+
+						$display_message = $language->lang('GROUP_USERS_INVALID', implode($language->lang('COMMA_SEPARATOR'), array_udiff($name_ary, $actual_name_ary, 'strcasecmp')));
+					}
+
+					trigger_error($display_message . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
