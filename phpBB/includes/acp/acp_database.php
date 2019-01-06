@@ -24,6 +24,7 @@ class acp_database
 	protected $db_tools;
 	protected $temp;
 	public $u_action;
+	public $page_title;
 
 	function main($id, $mode)
 	{
@@ -32,6 +33,7 @@ class acp_database
 
 		$this->db_tools = $phpbb_container->get('dbal.tools');
 		$this->temp = $phpbb_container->get('filesystem.temp');
+		/** @var \phpbb\storage\storage $storage */
 		$storage = $phpbb_container->get('storage.backup');
 
 		$user->add_lang('acp/database');
@@ -72,16 +74,11 @@ class acp_database
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$store = $download = $structure = $schema_data = false;
+						$store = $structure = $schema_data = false;
 
-						if ($where == 'store_and_download' || $where == 'store')
+						if ($where == 'store')
 						{
 							$store = true;
-						}
-
-						if ($where == 'store_and_download' || $where == 'download')
-						{
-							$download = true;
 						}
 
 						if ($type == 'full' || $type == 'structure')
@@ -103,8 +100,9 @@ class acp_database
 
 						try
 						{
+							/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
 							$extractor = $phpbb_container->get('dbal.extractor');
-							$extractor->init_extractor($format, $filename, $time, $download, $store);
+							$extractor->init_extractor($format, $filename, $time, false, $store);
 
 							$extractor->write_start($table_prefix);
 
@@ -208,11 +206,6 @@ class acp_database
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
 
-						if ($download == true)
-						{
-							exit;
-						}
-
 						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
@@ -264,16 +257,10 @@ class acp_database
 					case 'submit':
 						$delete = $request->variable('delete', '');
 						$file = $request->variable('file', '');
-						$download = $request->variable('download', '');
 
-						if (!preg_match('#^backup_\d{10,}_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
-						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
+						$backup_info = $this->get_backup_file($db, $file);
 
-						$file_name = $matches[0];
-
-						if (!$storage->exists($file_name))
+						if (empty($backup_info))
 						{
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -285,14 +272,14 @@ class acp_database
 								try
 								{
 									// Delete from storage
-									$storage->delete($file_name);
+									$storage->delete($backup_info['file_name']);
 
 									// Add log entry
 									$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
 
 									// Remove from database
 									$sql = "DELETE FROM " . $table_prefix . "backups
-										WHERE filename = '" . $db->sql_escape($file_name) . "';";
+										WHERE filename = '" . $db->sql_escape($backup_info['file_name']) . "';";
 									$db->sql_query($sql);
 								}
 								catch (\Exception $e)
@@ -307,56 +294,14 @@ class acp_database
 								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
-						else if ($download || confirm_box(true))
+						else if (confirm_box(true))
 						{
-							if ($download)
-							{
-								$name = $matches[0];
-
-								switch ($matches[1])
-								{
-									case 'sql':
-										$mimetype = 'text/x-sql';
-									break;
-									case 'sql.bz2':
-										$mimetype = 'application/x-bzip2';
-									break;
-									case 'sql.gz':
-										$mimetype = 'application/x-gzip';
-									break;
-								}
-
-								header('Cache-Control: private, no-cache');
-								header("Content-Type: $mimetype; name=\"$name\"");
-								header("Content-disposition: attachment; filename=$name");
-
-								@set_time_limit(0);
-
-								try
-								{
-									$fp = $storage->read_stream($file_name);
-
-									while (!feof($fp))
-									{
-										echo fread($fp, 8192);
-									}
-									fclose($fp);
-								}
-								catch (\phpbb\storage\exception\exception $e)
-								{
-									// If open fails, just finish
-								}
-
-								flush();
-								exit;
-							}
-
 							// Copy file to temp folder to decompress it
-							$temp_file_name = $this->temp->get_dir() . '/' . $file_name;
+							$temp_file_name = $this->temp->get_dir() . '/' . $backup_info['file_name'];
 
 							try
 							{
-								$stream = $storage->read_stream($file_name);
+								$stream = $storage->read_stream($backup_info['file_name']);
 								$fp = fopen($temp_file_name, 'w+b');
 
 								stream_copy_to_stream($stream, $fp);
@@ -369,7 +314,7 @@ class acp_database
 								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
 							}
 
-							switch ($matches[1])
+							switch ($backup_info['extensions'])
 							{
 								case 'sql':
 									$fp = fopen($temp_file_name, 'rb');
@@ -397,6 +342,11 @@ class acp_database
 									$close = 'gzclose';
 									$fgetd = 'fgetd';
 								break;
+
+								default:
+									@unlink($temp_file_name);
+									trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+									return;
 							}
 
 							switch ($db->get_sql_layer())
@@ -478,42 +428,13 @@ class acp_database
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}
-						else if (!$download)
+						else
 						{
 							confirm_box(false, $user->lang['RESTORE_SELECTED_BACKUP'], build_hidden_fields(array('file' => $file)));
 						}
 
 					default:
-						$methods = array('sql');
-						$available_methods = array('sql.gz' => 'zlib', 'sql.bz2' => 'bz2');
-
-						foreach ($available_methods as $type => $module)
-						{
-							if (!@extension_loaded($module))
-							{
-								continue;
-							}
-							$methods[] = $type;
-						}
-
-						$sql = 'SELECT filename
-							FROM ' . BACKUPS_TABLE;
-						$result = $db->sql_query($sql);
-
-						$backup_files = array();
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $row['filename'], $matches))
-							{
-								if (in_array($matches[2], $methods))
-								{
-									$backup_files[(int) $matches[1]] = $row['filename'];
-								}
-							}
-						}
-
-						$db->sql_freeresult($result);
+						$backup_files = $this->get_file_list($db);
 
 						if (!empty($backup_files))
 						{
@@ -522,8 +443,8 @@ class acp_database
 							foreach ($backup_files as $name => $file)
 							{
 								$template->assign_block_vars('files', array(
-									'FILE'		=> $file,
-									'NAME'		=> $user->format_date($name, 'd-m-Y H:i:s', true),
+									'FILE'		=> sha1($file),
+									'NAME'		=> $user->format_date($name, 'd-m-Y H:i', true),
 									'SUPPORTED'	=> true,
 								));
 							}
@@ -536,6 +457,91 @@ class acp_database
 				}
 			break;
 		}
+	}
+
+	/**
+	 * Get backup file from file hash
+	 *
+	 * @param \phpbb\db\driver\driver_interface $db Database driver
+	 * @param string $file_hash Hash of selected file
+	 *
+	 * @return array Backup file data or empty array if unable to find file
+	 */
+	protected function get_backup_file($db, $file_hash)
+	{
+		$backup_data = [];
+
+		$file_list = $this->get_file_list($db);
+		$supported_extensions = $this->get_supported_extensions();
+
+		foreach ($file_list as $file)
+		{
+			preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches);
+			if (sha1($file) === $file_hash && in_array($matches[2], $supported_extensions))
+			{
+				$backup_data = [
+					'file_name' => $file,
+					'extension' => $matches[2],
+				];
+				break;
+			}
+		}
+
+		return $backup_data;
+	}
+
+	/**
+	 * Get backup file list for directory
+	 *
+	 * @param \phpbb\db\driver\driver_interface $db Database driver
+	 *
+	 * @return array List of backup files in specified directory
+	 */
+	protected function get_file_list($db)
+	{
+		$supported_extensions = $this->get_supported_extensions();
+
+		$backup_files = [];
+
+		$sql = 'SELECT filename
+			FROM ' . BACKUPS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $row['filename'], $matches))
+			{
+				if (in_array($matches[2], $supported_extensions))
+				{
+					$backup_files[(int) $matches[1]] = $row['filename'];
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+
+		return $backup_files;
+	}
+
+	/**
+	 * Get supported extensions for backup
+	 *
+	 * @return array List of supported extensions
+	 */
+	protected function get_supported_extensions()
+	{
+		$extensions = ['sql'];
+		$available_methods = ['sql.gz' => 'zlib', 'sql.bz2' => 'bz2'];
+
+		foreach ($available_methods as $type => $module)
+		{
+			if (!@extension_loaded($module))
+			{
+				continue;
+			}
+			$extensions[] = $type;
+		}
+
+		return $extensions;
 	}
 }
 
