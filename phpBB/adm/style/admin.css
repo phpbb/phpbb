@@ -750,14 +750,16 @@ td {
 }
 
 .table1 {
-	display: inline-block;
+	clear: both;
 	border-spacing: 1px;
 	border-collapse: separate;
 }
 
-.lside {
-	display: inline-block;
-	width: 40%;
+@media only screen and (min-width: 1100px), only screen and (min-device-width: 1100px) {
+	.lside .table1 {
+		display: inline-table;
+		width: 49.7%;
+	}
 }
 
 .tabled {
