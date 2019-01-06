@@ -597,6 +597,20 @@ if (isset($post_data['post_text']))
 // Set some default variables
 $uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
 
+/**
+* This event allows you to modify the default variables for post_data, and unset them in post_data if needed
+*
+* @event core.posting_modify_default_variables
+* @var	array	post_data	Array with post data
+* @var	array	uninit		Array with default vars to put into post_data, if they aren't there
+* @since 3.2.5-RC1
+*/
+$vars = array(
+	'post_data',
+	'uninit',
+);
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_default_variables', compact($vars)));
+
 foreach ($uninit as $var_name => $default_value)
 {
 	if (!isset($post_data[$var_name]))
@@ -832,6 +846,7 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+/** @var \phpbb\textformatter\utils_interface $bbcode_utils */
 $bbcode_utils = $phpbb_container->get('text_formatter.utils');
 
 if ($submit || $preview || $refresh)
@@ -1634,7 +1649,9 @@ if ($generate_quote)
 						'user_id' => $post_data['poster_id'],
 	);
 
-	phpbb_format_quote($config['allow_bbcode'], $quote_attributes, $bbcode_utils, $message_parser);
+	/** @var \phpbb\language\language $language */
+	$language = $phpbb_container->get('language');
+	phpbb_format_quote($language, $message_parser, $bbcode_utils, $bbcode_status, $quote_attributes);
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)

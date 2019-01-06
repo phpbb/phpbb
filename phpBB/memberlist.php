@@ -173,7 +173,7 @@ switch ($mode)
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(USERS_TABLE => 'u'),
-					'ON'	=> 'ug.user_id = u.user_id AND ug.user_pending = 0',
+					'ON'	=> 'ug.user_id = u.user_id',
 				),
 				array(
 					'FROM'	=> array(GROUPS_TABLE => 'g'),
@@ -181,7 +181,7 @@ switch ($mode)
 				),
 			),
 
-			'WHERE'		=> $db->sql_in_set('g.group_id', $group_ids, false, true),
+			'WHERE'		=> $db->sql_in_set('g.group_id', $group_ids, false, true) . ' AND ug.user_pending = 0',
 
 			'ORDER_BY'	=> 'u.username_clean ASC',
 		);
