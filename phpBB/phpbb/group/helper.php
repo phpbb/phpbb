@@ -74,7 +74,7 @@ class helper
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
 
 		$this->name_strings = array(
-			'base_url'				=> append_sid("{$path_helper->get_phpbb_root_path()}memberlist.{$path_helper->get_php_ext()}", 'mode=group&amp;g={GROUP_ID}'),
+			'base_url'				=> "{$path_helper->get_phpbb_root_path()}memberlist.{$path_helper->get_php_ext()}?mode=group&amp;g={GROUP_ID}",
 			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
 			'tpl_noprofile_colour'	=> '<span class="username-coloured" style="color: {GROUP_COLOUR};">{GROUP_NAME}</span>',
 			'tpl_profile'			=> '<a class="username" href="{PROFILE_URL}">{GROUP_NAME}</a>',
@@ -150,7 +150,7 @@ class helper
 				// For anonymous the link leads to a login page.
 				if ($group_id && !$s_is_bots && ($this->user->data['user_id'] == ANONYMOUS || $this->auth->acl_get('u_viewprofile')))
 				{
-					$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;g=' . (int) $group_id : str_replace(array('={GROUP_ID}', '=%7BGROUP_ID%7D'), '=' . (int) $group_id, $this->name_strings['base_url']);
+					$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;g=' . (int) $group_id : str_replace(array('={GROUP_ID}', '=%7BGROUP_ID%7D'), '=' . (int) $group_id, append_sid($this->name_strings['base_url']));
 				}
 				else
 				{
