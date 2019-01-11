@@ -1,0 +1,18 @@
+services:
+    read_tracking.tracker:
+        class: phpbb\reader_tracking\reader_tracker
+        arguments:
+            - '@config'
+            - '@request'
+            - '@user'
+
+    read_tracking.controller:
+        class: phpbb\reader_tracking\controller\mark_read
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '@forum.retriever'
+            - '@forum.visibility_helper'

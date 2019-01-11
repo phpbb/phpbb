@@ -568,3 +568,218 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	return $file;
 }
+
+/**
+ * Generate forum login box
+ */
+function login_forum_box($forum_data)
+{
+	global $phpbb_container, $request;
+
+	$forum_name = isset($forum_data['forum_id']) ? $forum_data['forum_id'] : '';
+	$form_key_name = 'forum_password_' . $forum_name;
+
+	if (check_form_key($form_key_name))
+	{
+		$password = $request->variable('password', '', true);
+	}
+	else
+	{
+		$password = false;
+	}
+
+	if (empty($password))
+	{
+		$password = false;
+	}
+
+	/** @var \phpbb\forum\visibility_helper $forum_visibility_manager */
+	$forum_visibility_manager = $phpbb_container->get('forum.visibility_helper');
+
+	if ($forum_visibility_manager->check_forum_password($forum_data, $password))
+	{
+		return true;
+	}
+
+	/** @var \phpbb\forum\render\helper $forum_render_helper */
+	$forum_render_helper = $phpbb_container->get('forum.render_helper');
+
+	$return_url = build_url(array('f'));
+
+	$response = $forum_render_helper->render_forum_password_box(
+		$forum_data,
+		$password,
+		$return_url
+	);
+
+	$response->send();
+	exit;
+}
+
+/**
+ * Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
+ */
+function get_forum_parents(&$forum_data)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\forum\forum_retriever $forum_retriever */
+	$forum_retriever = $phpbb_container->get('forum.retriever');
+	$forum_parents = $forum_retriever->get_forum_parents($forum_data);
+	$forum_data['forum_parents'] = serialize($forum_parents);
+
+	return $forum_parents;
+}
+
+
+/**
+ * Create forum navigation links for given forum, create parent
+ * list if currently null, assign basic forum info to template
+ */
+function generate_forum_nav(&$forum_data_ary)
+{
+	global $auth, $phpbb_container;
+
+	if (!$auth->acl_get('f_list', $forum_data_ary['forum_id']))
+	{
+		return;
+	}
+
+	/** @var \phpbb\forum\visibility_helper $forum_visibility */
+	$forum_visibility = $phpbb_container->get('forum.visibility_helper');
+
+	/** @var \phpbb\forum\render\helper $render_helper */
+	$render_helper = $phpbb_container->get('forum.render_helper');
+
+	// Get forum parents
+	$forum_parents = get_forum_parents($forum_data_ary);
+	$forum_parents = $forum_visibility->filter_forum_parents($forum_parents);
+
+	$render_helper->generate_navigation($forum_data_ary, $forum_parents);
+}
+
+/**
+ * Create forum rules for given forum
+ */
+function generate_forum_rules(&$forum_data)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\forum\render\helper $forum_renderer */
+	$forum_renderer = $phpbb_container->get('forum.render_helper');
+	$forum_renderer->render_forum_rules($forum_data);
+	$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
+}
+
+/**
+ * Display Forums
+ */
+function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
+{
+	global $user;
+	global $phpbb_root_path, $phpEx, $config;
+	global $request, $phpbb_container;
+
+	$forum_moderators = [];
+
+	// Mark forums read?
+	$mark_read = $request->variable('mark', '');
+
+	if ($mark_read == 'all')
+	{
+		$mark_read = '';
+	}
+
+	if (!$root_data)
+	{
+		if ($mark_read == 'forums')
+		{
+			$mark_read = 'all';
+		}
+
+		$root_data = array('forum_id' => 0);
+	}
+
+	// Handle marking everything read
+	if ($mark_read == 'all')
+	{
+		$redirect = build_url(array('mark', 'hash', 'mark_time'));
+		meta_refresh(3, $redirect);
+		if (check_link_hash($request->variable('hash', ''), 'global'))
+		{
+			markread('all', false, false, $request->variable('mark_time', 0));
+			if ($request->is_ajax())
+			{
+				// Tell the ajax script what language vars and URL need to be replaced
+				$data = array(
+					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
+					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
+				);
+				$json_response = new \phpbb\json_response();
+				$json_response->send($data);
+			}
+			trigger_error(
+				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
+				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
+			);
+		}
+		else
+		{
+			trigger_error(sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+		}
+	}
+
+	/** @var \phpbb\forum\forum_retriever $phpbb_forum_retriever */
+	$phpbb_forum_retriever = $phpbb_container->get('forum.retriever');
+
+	/** @var \phpbb\forum\visibility_helper $phpbb_forum_visibility */
+	$phpbb_forum_visibility = $phpbb_container->get('forum.visibility_helper');
+
+	/** @var \phpbb\forum\render\helper $phpbb_forum_renderer */
+	$phpbb_forum_renderer = $phpbb_container->get('forum.render_helper');
+
+	$rows = $phpbb_forum_retriever->get_subforums($root_data);
+	$rows = $phpbb_forum_visibility->filter_subforums($rows);
+
+	list($forum_rows, $subforums, $valid_categories, $forum_ids_moderator, $forum_tracking_info) = $phpbb_forum_retriever->get_subforum_hierarchy(
+		$root_data,
+		$rows
+	);
+
+	$active_forum_ary = $phpbb_forum_retriever->get_active_topic_array($root_data, $rows);
+
+	// Grab moderators ... if necessary
+	if ($display_moderators)
+	{
+		if ($return_moderators)
+		{
+			$forum_ids_moderator[] = $root_data['forum_id'];
+		}
+
+		if (!function_exists('get_moderators'))
+		{
+			include ($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		}
+
+		get_moderators($forum_moderators, $forum_ids_moderator);
+	}
+
+	$phpbb_forum_renderer->render_subforums(
+		$root_data,
+		$forum_rows,
+		$subforums,
+		$valid_categories,
+		$forum_tracking_info,
+		$forum_moderators
+	);
+
+	if ($return_moderators)
+	{
+		return [$active_forum_ary, $forum_moderators];
+	}
+
+	return [$active_forum_ary, []];
+}

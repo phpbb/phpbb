@@ -1,0 +1,52 @@
+services:
+# ----- Forum related controllers -----
+    forum.view_controller:
+        class: phpbb\forum\controller\viewforum
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@dispatcher'
+            - '@forum.retriever'
+            - '@language'
+            - '@forum.render_helper'
+            - '@request'
+            - '@user'
+            - '@forum.visibility_helper'
+
+# ----- Forum related services -----
+    forum.retriever:
+        class: phpbb\forum\forum_retriever
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@read_tracking.tracker'
+            - '@user'
+            - '%tables.forums%'
+            - '%tables.forums_access%'
+            - '%tables.forums_track%'
+            - '%tables.forums_watch%'
+
+    forum.render_helper:
+        class: phpbb\forum\render\helper
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@dispatcher'
+            - '@language'
+            - '@path_helper'
+            - '@template'
+            - '@user'
+
+    forum.visibility_helper:
+        class: phpbb\forum\visibility_helper
+        arguments:
+            - '@auth'
+            - '@content.visibility'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@passwords.manager'
+            - '@user'
+            - '%tables.forums_access%'
+            - '%tables.sessions%'

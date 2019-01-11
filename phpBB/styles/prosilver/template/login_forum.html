@@ -2,7 +2,7 @@
 
 <!-- IF FORUM_NAME --><h2 class="forum-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2><!-- ENDIF -->
 
-<form id="login_forum" method="post" action="{S_LOGIN_ACTION}">
+<form id="login_forum" method="post" action="{S_FORUM_LOGIN_ACTION}">
 {S_FORM_TOKEN}
 <div class="panel">
 	<div class="inner">
@@ -25,9 +25,12 @@
 				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" autocomplete="off" /></dd>
 			</dl>
 			{S_LOGIN_REDIRECT}
+			{% for name, value in S_HIDDEN_FIELDS %}
+				<input type="hidden" name="{{ name }}" value="{{ value }}">
+			{% endfor %}
 			<dl>
 				<dt>&nbsp;</dt>
-				<dd>{S_HIDDEN_FIELDS}<input type="submit" name="login" id="login" class="button1 button button-form" value="{L_LOGIN}" tabindex="2" /></dd>
+				<dd><input type="submit" name="login" id="login" class="button1 button button-form" value="{L_LOGIN}" tabindex="2" /></dd>
 			</dl>
 		</fieldset>
 	</div>

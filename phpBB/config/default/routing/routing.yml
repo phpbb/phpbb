@@ -26,3 +26,11 @@ phpbb_help_routing:
 
 phpbb_report_routing:
     resource: report.yml
+
+phpbb_forum_routing:
+    resource: forum.yml
+    prefix: /forum
+
+phpbb_mark_read_routing:
+    resource: mark_read.yml
+    prefix: /mark-read

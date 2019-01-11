@@ -1,0 +1,8 @@
+phpbb_view_forum:
+    path:       /{forum_id}/{parameters}
+    methods:    [GET, POST]
+    defaults:
+        _controller: forum.view_controller:show_forum
+    requirements:
+        forum_id:   '\d+'
+        parameters: '.*'

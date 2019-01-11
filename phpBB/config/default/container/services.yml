@@ -12,6 +12,7 @@ imports:
     - { resource: services_feed.yml }
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
+    - { resource: services_forum.yml }
     - { resource: services_help.yml }
     - { resource: services_hook.yml }
     - { resource: services_http.yml }
@@ -23,6 +24,7 @@ imports:
     - { resource: services_password.yml }
     - { resource: services_php.yml }
     - { resource: services_profilefield.yml }
+    - { resource: services_read_tracking.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
     - { resource: services_storage.yml }
