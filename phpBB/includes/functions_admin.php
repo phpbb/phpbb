@@ -2072,11 +2072,31 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-					AND u.user_id = p.poster_id';
-			$result = $db->sql_query($sql);
+			$sql_ary = array(
+				'SELECT'	=> 'p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour',
+				'FROM'		=> array(
+					POSTS_TABLE	=> 'p',
+					USERS_TABLE => 'u',
+				),
+				'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+					AND u.user_id = p.poster_id',
+			);
+
+			$custom_fieldnames = array();
+			/**
+			* Event to modify the SQL array to get the post and user data from all topics' last posts
+			*
+			* @event core.sync_topic_last_post_info_sql
+			* @var	array	sql_ary					SQL array with some post and user data from the last posts list
+			* @var	array	custom_fieldnames		Empty array for custom fieldnames to update the topics_table with
+			* @since 3.2.6-RC1
+			*/
+			$vars = array(
+				'sql_ary',
+				'custom_fieldnames',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.sync_topic_last_post_info_sql', compact($vars)));
+			$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -2212,6 +2232,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// These are fields that will be synchronised
 			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+
+			// Add custom fieldnames
+			$fieldnames = array_merge($fieldnames, $custom_fieldnames);
 
 			if ($sync_extra)
 			{
