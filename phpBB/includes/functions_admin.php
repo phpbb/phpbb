@@ -1877,7 +1877,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						}
 					}
 				}
-				unset($post_info);
 			}
 
 			// 6: Now do that thing
@@ -1887,6 +1886,23 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				array_push($fieldnames, 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'topics_approved', 'topics_unapproved', 'topics_softdeleted');
 			}
+
+			/**
+			* Event to modify the SQL array to get the post and user data from all forums' last posts
+			*
+			* @event core.sync_modify_forum_data
+			* @var	array	forum_data		Array with data to update for all forum ids
+			* @var	array	post_info		Array with some post and user data from the last posts list
+			* @var	array	fieldnames		Array with the partial column names that are being updated
+			* @since 3.2.6-RC1
+			*/
+			$vars = array(
+				'forum_data',
+				'post_info',
+				'fieldnames',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.sync_modify_forum_data', compact($vars)));
+			unset($post_info);
 
 			foreach ($forum_data as $forum_id => $row)
 			{
