@@ -2118,6 +2118,22 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 					$topic_data[$topic_id]['last_poster_colour'] = $row['user_colour'];
 				}
+
+				/**
+				* Event to modify the topic_data when syncing topics
+				*
+				* @event core.sync_modify_topic_data
+				* @var	array	topic_data		Array with the topics' data we are syncing
+				* @var	array	row				Array with some of the current user and post data
+				* @var	int		topic_id		The current topic_id of $row
+				* @since 3.2.6-RC1
+				*/
+				$vars = array(
+					'topic_data',
+					'row',
+					'topic_id',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.sync_modify_topic_data', compact($vars)));
 			}
 			$db->sql_freeresult($result);
 
