@@ -1324,7 +1324,7 @@ function update_posted_info(&$topic_ids)
 */
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false, $sync_extra = false)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (is_array($where_ids))
 	{
@@ -1826,11 +1826,26 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 5: Retrieve last_post infos
 			if (count($post_ids))
 			{
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour
-					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-						AND p.poster_id = u.user_id';
-				$result = $db->sql_query($sql);
+				$sql_ary = array(
+					'SELECT'	=> 'p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour',
+					'FROM'		=> array(
+						POSTS_TABLE	=> 'p',
+						USERS_TABLE => 'u',
+					),
+					'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+						AND p.poster_id = u.user_id',
+				);
+
+				/**
+				* Event to modify the SQL array to get the post and user data from all forums' last posts
+				*
+				* @event core.sync_forum_last_post_info_sql
+				* @var	array	sql_ary		SQL array with some post and user data from the last posts list
+				* @since 3.2.6-RC1
+				*/
+				$vars = array('sql_ary');
+				extract($phpbb_dispatcher->trigger_event('core.sync_forum_last_post_info_sql', compact($vars)));
+				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 				while ($row = $db->sql_fetchrow($result))
 				{
