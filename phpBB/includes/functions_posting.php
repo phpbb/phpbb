@@ -365,8 +365,10 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		extract($phpbb_dispatcher->trigger_event('core.update_post_info_modify_posts_sql', compact($vars)));
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
+		$rowset = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$rowset[] = $row;
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
 			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
@@ -375,6 +377,22 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
 		}
 		$db->sql_freeresult($result);
+
+		/**
+		* Event to modify the update_sql array to add new update data for forum or topic last posts
+		*
+		* @event core.update_post_info_modify_sql
+		* @var	string	type				The table being updated (forum or topic)
+		* @var	array	rowset				Array with the posts data
+		* @var	array	update_sql			Array with SQL data to update the forums or topics table with
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'type',
+			'rowset',
+			'update_sql',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.update_post_info_modify_sql', compact($vars)));
 	}
 	unset($empty_forums, $ids, $last_post_ids);
 
