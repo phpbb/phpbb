@@ -256,7 +256,7 @@ function generate_smilies($mode, $forum_id)
 */
 function update_post_information($type, $ids, $return_update_sql = false)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (empty($ids))
 	{
@@ -340,11 +340,30 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	if (count($last_post_ids))
 	{
-		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
-			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-			WHERE p.poster_id = u.user_id
-				AND ' . $db->sql_in_set('p.post_id', $last_post_ids);
-		$result = $db->sql_query($sql);
+		$sql_ary = array(
+			'SELECT'	=> 'p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour',
+			'FROM'		=> array(
+				POSTS_TABLE	=> 'p',
+				USERS_TABLE => 'u',
+			),
+			'WHERE'		=> $db->sql_in_set('p.post_id', $last_post_ids) . '
+				AND p.poster_id = u.user_id',
+		);
+
+		/**
+		* Event to modify the SQL array to get the post and user data from all last posts
+		*
+		* @event core.update_post_info_modify_posts_sql
+		* @var	string	type				The table being updated (forum or topic)
+		* @var	array	sql_ary				SQL array to get some of the last posts' data
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'type',
+			'sql_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.update_post_info_modify_posts_sql', compact($vars)));
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 		while ($row = $db->sql_fetchrow($result))
 		{
