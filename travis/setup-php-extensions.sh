@@ -49,10 +49,13 @@ echo 'opcache.enable=0' >> "$php_ini_file"
 # APCu
 if [ `php -r "echo (int) (version_compare(PHP_VERSION, '7.0.0-dev', '>=') && version_compare(PHP_VERSION, '7.3.0-dev', '<'));"` == "1" ]
 then
-	echo 'Enabling APCu PHP extension'
-	printf "\n" | pecl install apcu
-	echo 'apc.enabled=1' >> "$php_ini_file"
-	echo 'apc.enable_cli=1' >> "$php_ini_file"
+	if ! [ "$(pecl info pecl/apcu)" ]
+	then
+		echo 'Enabling APCu PHP extension'
+		printf "\n" | pecl install apcu
+		echo 'apc.enabled=1' >> "$php_ini_file"
+		echo 'apc.enable_cli=1' >> "$php_ini_file"
+	fi
 fi
 
 
