@@ -933,7 +933,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		$l_confirm = (count($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
 		if ($only_softdeleted)
 		{
-			$l_confirm .= '_PERMANENTLY';
+			$l_confirm = array($l_confirm . '_PERMANENTLY', count($topic_ids));
 			$s_hidden_fields['delete_permanent'] = '1';
 		}
 		else if ($only_shadow || !$auth->acl_get('m_softdelete', $forum_id))
@@ -1187,7 +1187,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$l_confirm = (count($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
 		if ($only_softdeleted)
 		{
-			$l_confirm .= '_PERMANENTLY';
+			$l_confirm = array($l_confirm . '_PERMANENTLY', (int) count($post_ids));
 			$s_hidden_fields['delete_permanent'] = '1';
 		}
 		else if (!$auth->acl_get('m_softdelete', $forum_id))
