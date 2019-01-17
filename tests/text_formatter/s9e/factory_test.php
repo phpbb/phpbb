@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../test_framework/phpbb_database_test_case.php';
 
 class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->cache = new phpbb_mock_cache;
 		$this->dispatcher = new phpbb_mock_event_dispatcher;
@@ -286,7 +286,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	*/
 	public function test_configure_events()
 	{
-		$this->dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$this->dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$this->dispatcher
 			->expects($this->at(0))
 			->method('trigger_event')

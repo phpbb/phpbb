@@ -16,12 +16,25 @@ namespace phpbb\template\twig\tokenparser;
 
 class includephp extends \Twig_TokenParser
 {
+	/** @var \phpbb\template\twig\environment */
+	protected $environment;
+
+	/**
+	* Constructor
+	*
+	* @param \phpbb\template\twig\environment $environment
+	*/
+	public function __construct(\phpbb\template\twig\environment $environment)
+	{
+		$this->environment = $environment;
+	}
+
 	/**
 	* Parses a token and returns a node.
 	*
 	* @param \Twig_Token $token A Twig_Token instance
 	*
-	* @return \Twig_NodeInterface A Twig_NodeInterface instance
+	* @return \Twig_Node A Twig_Node instance
 	*/
 	public function parse(\Twig_Token $token)
 	{
@@ -40,7 +53,7 @@ class includephp extends \Twig_TokenParser
 
 		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includephp($expr, $this->parser->getEnvironment(), $token->getLine(), $ignoreMissing, $this->getTag());
+		return new \phpbb\template\twig\node\includephp($expr, $this->environment, $token->getLine(), $ignoreMissing, $this->getTag());
 	}
 
 	/**

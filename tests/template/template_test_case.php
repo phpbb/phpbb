@@ -86,8 +86,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -97,7 +96,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -113,12 +112,12 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Test the engine can be used
 		$this->setup_engine();
@@ -130,7 +129,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		if ($this->template)
 		{

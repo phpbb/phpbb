@@ -1,0 +1,97 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('STORAGE_TITLE') }}</h1>
+
+<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
+
+<table class="table1 zebra-table">
+	<thead>
+		<tr>
+			<th>{{ lang('STORAGE_NAME') }}</th>
+			<th>{{ lang('STORAGE_NUM_FILES') }}</th>
+			<th>{{ lang('STORAGE_SIZE') }}</th>
+			<th>{{ lang('STORAGE_FREE') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for storage in STORAGE_STATS %}
+		<tr>
+			<td>{{ storage.name }}</td>
+			<td>{{ storage.files }}</td>
+			<td>{{ storage.size }}</td>
+			<td>{{ storage.free_space }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+<form id="acp_storage" method="post" action="{{ U_ACTION }}">
+
+	{% for storage in STORAGES %}
+		<fieldset>
+			<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
+			<dl>
+				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
+				<dd>
+					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
+						{% for provider in PROVIDERS if provider.is_available %}
+							<option value="{{ get_class(provider) }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  get_class(provider) ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
+								{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
+							</option>
+						{% endfor %}
+					</select>
+				</dd>
+			</dl>
+		</fieldset>
+
+		{% for provider in PROVIDERS if provider.is_available %}
+			<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
+				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
+				{% for name, options in provider.get_options %}
+					{% set title = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
+					{% set description = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper ~ '_EXPLAIN' %}
+					{% set input_id = storage.get_name ~ '_' ~ provider.get_name ~ '_' ~ name %}
+					{% set input_type = options['type'] %}
+					{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
+					{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
+					<dl>
+						<dt>
+							<label for="{{ input_id }}}">{{ lang(title) }}{{ lang('COLON') }}</label>
+							{% if lang_defined(description) %}
+								<br /><span>{{ lang(description) }}</span>
+							{% endif %}
+						</dt>
+						<dd>
+							{% if input_type in ['text', 'password', 'email'] %}
+								<input id="{{ input_id }}" type="{{ input_type }}" name="{{ input_name }}" value="{{ input_value }}" maxlength="{{ options['maxlength'] ?: 255 }}" />
+							{% elseif input_type == 'textarea' %}
+								<textarea id="{{ input_id }}" name="{{ input_name }}">{{ input_value }}</textarea>
+							{% elseif input_type == 'radio' %}
+								{% for option_name, option_value in options['options'] %}
+									<input type="radio" name="{{ input_name }}" value="{{ option_value }}" class="radio"{% if loop.first %} id="{{ input_id }}"{% endif %}{{ (option_value == input_value) ? ' checked="checked"' }}> {{ lang(option_name) }}
+								{% endfor %}
+							{% elseif input_type == 'select' %}
+								<select name="{{ input_name }}" id="{{ input_id }}">
+									{% for option_name, option_value in options['options'] %}
+										<option value="{{ option_value }}"{{ (option_value == input_value) ? ' selected' }}>{{ lang(option_name) }}</option>
+									{% endfor %}
+								</select>
+							{% endif %}
+						</dd>
+					</dl>
+				{% endfor %}
+			</fieldset>
+		{% endfor %}
+	{% endfor %}
+
+	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

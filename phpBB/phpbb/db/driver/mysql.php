@@ -171,12 +171,11 @@ class mysql extends \phpbb\db\driver\mysql_base
 		{
 			global $cache;
 
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG'))
+			if ($this->debug_sql_explain)
 			{
 				$this->sql_report('start', $query);
 			}
-			else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+			else if ($this->debug_load_time)
 			{
 				$this->curtime = microtime(true);
 			}
@@ -191,11 +190,11 @@ class mysql extends \phpbb\db\driver\mysql_base
 					$this->sql_error($query);
 				}
 
-				if (defined('DEBUG'))
+				if ($this->debug_sql_explain)
 				{
 					$this->sql_report('stop', $query);
 				}
-				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+				else if ($this->debug_load_time)
 				{
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
@@ -215,7 +214,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else if (defined('DEBUG'))
+			else if ($this->debug_sql_explain)
 			{
 				$this->sql_report('fromcache', $query);
 			}
@@ -390,7 +389,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	{
 		static $test_prof;
 
-		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
+		// current detection method, might just switch to see the existence of INFORMATION_SCHEMA.PROFILING
 		if ($test_prof === null)
 		{
 			$test_prof = false;

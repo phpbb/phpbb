@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 {
 	protected $item_type = 'notification.type.topic';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -42,7 +42,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 				),
 			)));
 
-		$phpbb_log = $this->getMock('\phpbb\log\dummy');
+		$phpbb_log = $this->createMock('\phpbb\log\dummy');
 	}
 
 	/**

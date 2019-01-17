@@ -34,8 +34,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -45,7 +44,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -68,7 +67,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$twig,
 			$cache_path,
 			$this->user,
-			array(new \phpbb\template\twig\extension($context, $this->user)),
+			array(new \phpbb\template\twig\extension($context, $twig, $this->user)),
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',
 				array(

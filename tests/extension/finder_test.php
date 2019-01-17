@@ -18,7 +18,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	/** @var \phpbb\finder */
 	protected $finder;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
@@ -239,11 +239,11 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 	/**
 	* These do not work because of changes with PHPBB3-11386
-	* They do not seem neccessary to me, so I am commenting them out for now
+	* They do not seem necessary to me, so I am commenting them out for now
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder = new \phpbb\finder(dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
 		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$files = $finder->suffix('_class.php')->get_files();
 
@@ -283,7 +283,6 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 
 		$finder = new \phpbb\finder(
-			new \phpbb\filesystem\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache(array(
 				'_ext_finder' => array(

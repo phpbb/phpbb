@@ -50,7 +50,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		);
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

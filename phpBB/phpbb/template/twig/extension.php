@@ -18,6 +18,9 @@ class extension extends \Twig_Extension
 	/** @var \phpbb\template\context */
 	protected $context;
 
+	/** @var \phpbb\template\twig\environment */
+	protected $environment;
+
 	/** @var \phpbb\language\language */
 	protected $language;
 
@@ -25,12 +28,14 @@ class extension extends \Twig_Extension
 	* Constructor
 	*
 	* @param \phpbb\template\context $context
+	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
 	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(\phpbb\template\context $context, $language)
+	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
 		$this->context = $context;
+		$this->environment = $environment;
 		$this->language = $language;
 	}
 
@@ -56,9 +61,9 @@ class extension extends \Twig_Extension
 			new \phpbb\template\twig\tokenparser\includeparser,
 			new \phpbb\template\twig\tokenparser\includejs,
 			new \phpbb\template\twig\tokenparser\includecss,
-			new \phpbb\template\twig\tokenparser\event,
-			new \phpbb\template\twig\tokenparser\includephp,
-			new \phpbb\template\twig\tokenparser\php,
+			new \phpbb\template\twig\tokenparser\event($this->environment),
+			new \phpbb\template\twig\tokenparser\includephp($this->environment),
+			new \phpbb\template\twig\tokenparser\php($this->environment),
 		);
 	}
 
@@ -85,6 +90,8 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
+			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
+			new \Twig_SimpleFunction('get_class', 'get_class'),
 		);
 	}
 
@@ -136,7 +143,7 @@ class extension extends \Twig_Extension
 	*
 	* @return mixed The sliced variable
 	*/
-	function loop_subset(\Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
+	public function loop_subset(\Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
 	{
 		// We do almost the same thing as Twig's slice (array_slice), except when $end is positive
 		if ($end >= 1)
@@ -165,7 +172,7 @@ class extension extends \Twig_Extension
 	*
 	* @return string
 	*/
-	function lang()
+	public function lang()
 	{
 		$args = func_get_args();
 		$key = $args[0];
@@ -181,5 +188,15 @@ class extension extends \Twig_Extension
 		// need to check for it
 
 		return call_user_func_array(array($this->language, 'lang'), $args);
+	}
+
+	/**
+	 * Check if a language variable exists
+	 *
+	 * @return bool
+	 */
+	public function lang_defined($key)
+	{
+		return call_user_func_array([$this->language, 'is_set'], [$key]);
 	}
 }

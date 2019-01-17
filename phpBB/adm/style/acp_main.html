@@ -94,90 +94,113 @@
 
 	<!-- EVENT acp_main_notice_after -->
 
-	<table class="table1 two-columns no-header" data-no-responsive-header="true">
-		<caption>{L_FORUM_STATS}</caption>
-		<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
-	<thead>
-	<tr>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
-	</tr>
-	</thead>
-	<tbody>
-	<tr>
-		<td>{L_NUMBER_POSTS}{L_COLON} </td>
-		<td><strong>{TOTAL_POSTS}</strong></td>
-		<td>{L_POSTS_PER_DAY}{L_COLON} </td>
-		<td><strong>{POSTS_PER_DAY}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_NUMBER_TOPICS}{L_COLON} </td>
-		<td><strong>{TOTAL_TOPICS}</strong></td>
-		<td>{L_TOPICS_PER_DAY}{L_COLON} </td>
-		<td><strong>{TOPICS_PER_DAY}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_NUMBER_USERS}{L_COLON} </td>
-		<td><strong>{TOTAL_USERS}</strong></td>
-		<td>{L_USERS_PER_DAY}{L_COLON} </td>
-		<td><strong>{USERS_PER_DAY}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_NUMBER_FILES}{L_COLON} </td>
-		<td><strong>{TOTAL_FILES}</strong></td>
-		<td>{L_FILES_PER_DAY}{L_COLON} </td>
-		<td><strong>{FILES_PER_DAY}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_BOARD_STARTED}{L_COLON} </td>
-		<td><strong>{START_DATE}</strong></td>
-		<td>{L_AVATAR_DIR_SIZE}{L_COLON} </td>
-		<td><strong>{AVATAR_DIR_SIZE}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_DATABASE_SIZE}{L_COLON} </td>
-		<td><strong>{DBSIZE}</strong></td>
-		<td>{L_UPLOAD_DIR_SIZE}{L_COLON} </td>
-		<td><strong>{UPLOAD_DIR_SIZE}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_DATABASE_SERVER_INFO}{L_COLON} </td>
-		<td><strong>{DATABASE_INFO}</strong></td>
-		<td>{L_GZIP_COMPRESSION}{L_COLON} </td>
-		<td><strong>{GZIP_COMPRESSION}</strong></td>
-	</tr>
-	<tr>
-		<td>{L_PHP_VERSION}{L_COLON} </td>
-		<td><strong>{PHP_VERSION_INFO}</strong></td>
-	<!-- IF S_TOTAL_ORPHAN -->
-		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
-		<td>
-		<!-- IF TOTAL_ORPHAN > 0 -->
-			<a href="{U_ATTACH_ORPHAN}" title="{L_MORE_INFORMATION}"><strong>{TOTAL_ORPHAN}</strong></a>
-		<!-- ELSE -->
-			<strong>{TOTAL_ORPHAN}</strong>
-		<!-- ENDIF -->
-		</td>
-		<!-- ELSE -->
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	<!-- ENDIF -->
-	</tr>
-	<!-- IF S_VERSIONCHECK -->
-	<tr>
-		<td>{L_BOARD_VERSION}{L_COLON} </td>
-		<td>
-			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;" <!-- ELSEIF not S_VERSIONCHECK_FAIL -->style="color: #BC2A4D;" <!-- ENDIF -->title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
-		</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<!-- ENDIF -->
-	</tbody>
-	</table>
-
+		<div class="lside">
+			<table class="table1 zebra-table no-header" data-no-responsive-header="true">
+				<thead>
+					<tr>
+						<th>{L_STATISTIC}</th>
+						<th>{L_VALUE}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="tabled">{L_NUMBER_POSTS}{L_COLON}</td>
+						<td class="tabled"><strong>{TOTAL_POSTS}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_POSTS_PER_DAY}{L_COLON}</td>
+						<td class="tabled"><strong>{POSTS_PER_DAY}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_NUMBER_TOPICS}{L_COLON}</td>
+						<td class="tabled"><strong>{TOTAL_TOPICS}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_TOPICS_PER_DAY}{L_COLON}</td>
+						<td class="tabled"><strong>{TOPICS_PER_DAY}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_NUMBER_USERS}{L_COLON}</td>
+						<td class="tabled"><strong>{TOTAL_USERS}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_USERS_PER_DAY}{L_COLON}</td>
+						<td class="tabled"><strong>{USERS_PER_DAY}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_NUMBER_FILES}{L_COLON}</td>
+						<td class="tabled"><strong>{TOTAL_FILES}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_FILES_PER_DAY}{L_COLON}</td>
+						<td class="tabled"><strong>{FILES_PER_DAY}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">&nbsp;</td>
+						<td class="tabled">&nbsp;</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table1 zebra-table no-header" data-no-responsive-header="true">
+				<thead>
+					<tr>
+						<th>{L_STATISTIC}</th>
+						<th>{L_VALUE}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="tabled">{L_BOARD_STARTED}{L_COLON}</td>
+						<td class="tabled"><strong>{START_DATE}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_AVATAR_DIR_SIZE}{L_COLON}</td>
+						<td class="tabled"><strong>{AVATAR_DIR_SIZE}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_DATABASE_SIZE}{L_COLON}</td>
+						<td class="tabled"><strong>{DBSIZE}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_UPLOAD_DIR_SIZE}{L_COLON}</td>
+						<td class="tabled"><strong>{UPLOAD_DIR_SIZE}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_DATABASE_SERVER_INFO}{L_COLON}</td>
+						<td class="tabled"><strong>{DATABASE_INFO}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_GZIP_COMPRESSION}{L_COLON}</td>
+						<td class="tabled"><strong>{GZIP_COMPRESSION}</strong></td>
+					</tr>
+					<tr>
+						<td class="tabled">{L_PHP_VERSION}{L_COLON}</td>
+						<td class="tabled"><strong>{PHP_VERSION_INFO}</strong></td>
+					</tr>
+					<tr>
+					<!-- IF S_TOTAL_ORPHAN -->
+						<td class="tabled">{L_NUMBER_ORPHAN}{L_COLON}</td>
+						<td class="tabled">
+						<!-- IF TOTAL_ORPHAN > 0 -->
+							<a href="{U_ATTACH_ORPHAN}" title="{L_MORE_INFORMATION}"><strong>{TOTAL_ORPHAN}</strong></a>
+						<!-- ELSE -->
+							<strong>{TOTAL_ORPHAN}</strong>
+						<!-- ENDIF -->
+						</td>
+						<!-- ELSE -->
+					<!-- ENDIF -->
+					</tr>
+					<!-- IF S_VERSIONCHECK -->
+					<tr>
+						<td class="tabled">{L_BOARD_VERSION}{L_COLON}</td>
+						<td class="tabled">
+							<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;" <!-- ELSEIF not S_VERSIONCHECK_FAIL -->style="color: #BC2A4D;" <!-- ENDIF -->title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+						</td>
+					</tr>
+					<!-- ENDIF -->
+				</tbody>
+			</table>
+		</div>
 	<!-- IF S_ACTION_OPTIONS -->
 		<fieldset>
 			<legend>{L_STATISTIC_RESYNC_OPTIONS}</legend>

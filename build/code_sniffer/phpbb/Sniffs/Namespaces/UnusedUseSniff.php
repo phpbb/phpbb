@@ -11,10 +11,13 @@
 *
 */
 
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
 * Checks that each use statement is used.
 */
-class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
+class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 {
 	/**
 	* {@inheritdoc}
@@ -24,7 +27,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 		return array(T_USE);
 	}
 
-	protected function check($phpcsFile, $found_name, $full_name, $short_name, $line)
+	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $line)
 	{
 
 		if ($found_name === $full_name)
@@ -44,7 +47,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 	/**
 	* {@inheritdoc}
 	*/
-	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+	public function process(File $phpcsFile, $stackPtr)
 	{
 		if ($this->should_ignore_use($phpcsFile, $stackPtr) === true)
 		{
@@ -179,13 +182,13 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 	/**
 	* Check if this use statement is part of the namespace block.
 	*
-	* @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+	* @param File $phpcsFile The file being scanned.
 	* @param int                  $stackPtr  The position of the current token in
 	*                                        the stack passed in $tokens.
 	*
 	* @return bool
 	*/
-	private function should_ignore_use(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+	private function should_ignore_use(File $phpcsFile, $stackPtr)
 	{
 		$tokens = $phpcsFile->getTokens();
 
@@ -207,7 +210,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 	}
 
 	/**
-	 * @param PHP_CodeSniffer_File $phpcsFile
+	 * @param File $phpcsFile
 	 * @param int $field
 	 * @param array $tokens
 	 * @param string $class_name_full
@@ -216,7 +219,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 	 *
 	 * @return bool
 	 */
-	private function checkDocblock(PHP_CodeSniffer_File $phpcsFile, $comment_end, $tokens, $class_name_full, $class_name_short)
+	private function checkDocblock(File $phpcsFile, $comment_end, $tokens, $class_name_full, $class_name_short)
 	{
 		$ok = false;
 

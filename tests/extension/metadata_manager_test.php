@@ -32,7 +32,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/extensions.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -52,14 +52,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $this->phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			$this->phpEx
 		);
@@ -97,7 +96,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new \phpbb\filesystem\filesystem(),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,
@@ -111,7 +109,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
-		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 

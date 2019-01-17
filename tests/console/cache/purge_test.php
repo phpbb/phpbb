@@ -25,14 +25,11 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	protected $db;
 	protected $config;
 
-	public function __construct()
-	{
-		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
-	}
-
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
+
+		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 
 		if (file_exists($this->cache_dir))
 		{
@@ -44,10 +41,10 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 
 		$this->cache = new \phpbb\cache\driver\file($this->cache_dir);
 
-		$this->db = $this->getMock('\phpbb\db\driver\driver_interface');
+		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));
-		$this->user = $this->getMock('\phpbb\user', array(), array(
+		$this->user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime')
 		);
@@ -91,7 +88,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new purge($this->user, $this->cache, $this->db, $this->getMock('\phpbb\auth\auth'), new \phpbb\log\dummy(), $this->config));
+		$application->add(new purge($this->user, $this->cache, $this->db, $this->createMock('\phpbb\auth\auth'), new \phpbb\log\dummy(), $this->config));
 
 		$command = $application->find('cache:purge');
 		$this->command_name = $command->getName();

@@ -35,7 +35,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Global $config required by unique_id
 		global $config, $phpbb_root_path, $phpEx;
@@ -48,7 +48,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));

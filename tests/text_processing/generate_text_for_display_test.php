@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $cache, $user, $phpbb_dispatcher;
 
@@ -77,7 +77,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$config = new \phpbb\config\config(array('allow_nocensors' => true));
 
-		$auth = $this->getMock('phpbb\\auth\\auth');
+		$auth = $this->createMock('phpbb\\auth\\auth');
 		$auth->expects($this->any())
 			 ->method('acl_get')
 			 ->with('u_chgcensors')

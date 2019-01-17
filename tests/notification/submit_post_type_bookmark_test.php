@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_bookmark_test extends phpbb_notificati
 {
 	protected $item_type = 'notification.type.bookmark';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

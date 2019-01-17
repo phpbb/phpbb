@@ -13,7 +13,7 @@
 
 class phpbb_build_url_test extends phpbb_test_case
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpbb_path_helper;
 
@@ -27,8 +27,7 @@ class phpbb_build_url_test extends phpbb_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			'php'
 		);

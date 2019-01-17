@@ -266,6 +266,17 @@ $lang = array_merge($lang, array(
 	'FSOCK_DISABLED'		=> 'The operation could not be completed because the <var>fsockopen</var> function has been disabled or the server being queried could not be found.',
 	'FSOCK_TIMEOUT'			=> 'A timeout occurred while reading from the network stream.',
 
+	'FILESYSTEM_CANNOT_CHANGE_FILE_GROUP'		=> 'Unable to change file group',
+	'FILESYSTEM_CANNOT_CHANGE_FILE_PERMISSIONS'	=> 'Unable to change file permissions',
+	'FILESYSTEM_CANNOT_COPY_FILES'				=> 'Unable to copy files',
+	'FILESYSTEM_CANNOT_CREATE_SYMLINK'			=> 'Unable to create a symlink',
+	'FILESYSTEM_CANNOT_CREATE_DIRECTORY'		=> 'Unable to create directory',
+	'FILESYSTEM_CANNOT_DELETE_FILES'			=> 'Unable to delete files from the system',
+	'FILESYSTEM_CANNOT_DUMP_FILE'				=> 'Unable to dump file',
+	'FILESYSTEM_CANNOT_MIRROR_DIRECTORY'		=> 'Unable to mirror directory',
+	'FILESYSTEM_CANNOT_RENAME_FILE'				=> 'Unable to rename a file from the system',
+	'FILESYSTEM_CANNOT_TOUCH_FILES'				=> 'Unable to determine if the file exists',
+
 	'FTP_FSOCK_HOST'				=> 'FTP host',
 	'FTP_FSOCK_HOST_EXPLAIN'		=> 'FTP server used to connect your site.',
 	'FTP_FSOCK_PASSWORD'			=> 'FTP password',
@@ -371,7 +382,7 @@ $lang = array_merge($lang, array(
 	'LDAP_SEARCH_FAILED'				=> 'An error occurred while searching the LDAP directory.',
 	'LEGEND'							=> 'Legend',
 	'LIVE_SEARCHES_NOT_ALLOWED'			=> 'Live searches are not allowed.',
-	'LOADING'							=> 'Loading',
+	'LOADING'							=> 'Loading...',
 	'LOCATION'							=> 'Location',
 	'LOCK_POST'							=> 'Lock post',
 	'LOCK_POST_EXPLAIN'					=> 'Prevent editing',
@@ -483,7 +494,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TOPIC_IN_QUEUE'		=> '<strong>Topic approval</strong> request by %1$s:',
 	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFICATION_ADMIN_ACTIVATE_USER'	=> '<strong>Activation required</strong> for deactivated or newly registered user: “%1$s”',
-	// Used in conjuction with NOTIFICATION_BOOKMARK and NOTIFICATION_POST.
+	// Used in conjunction with NOTIFICATION_BOOKMARK and NOTIFICATION_POST.
 	'NOTIFICATION_MANY_OTHERS'			=> 'others',
 	'NOTIFICATION_X_OTHERS'				=> array(
 		2	=> '%d others',
@@ -730,6 +741,20 @@ $lang = array_merge($lang, array(
 	'SUBFORUMS'					=> 'Subforums',
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
+
+	'STORAGE_ADAPTER_NOT_AVAILABLE'	=> 'Selected storage is not available.',
+	'STORAGE_FILE_EXISTS'			=> 'File already exists.',
+	'STORAGE_FILE_NO_EXIST'			=> 'File does not exist.',
+	'STORAGE_CANNOT_WRITE_FILE'		=> 'Can not write to file.',
+	'STORAGE_CANNOT_READ_FILE'		=> 'Can not read file.',
+	'STORAGE_CANNOT_DELETE'			=> 'Can not delete file or folder.',
+	'STORAGE_CANNOT_RENAME'			=> 'Can not rename file or folder.',
+	'STORAGE_CANNOT_COPY'			=> 'Can not copy file or folder.',
+	'STORAGE_CANNOT_COPY_RESOURCE'	=> 'Can not copy resource.',
+	'STORAGE_CANNOT_CREATE_DIR'		=> 'Can not create directory.',
+	'STORAGE_CANNOT_OPEN_FILE'		=> 'Can not open file.',
+	'STORAGE_CANNOT_CREATE_FILE'	=> 'Can not create file.',
+	'STORAGE_INVALID_RESOURCE'		=> 'Resource is invalid.',
 
 	'TB'				=> 'TB',
 	'TERMS_LINK'		=> 'Terms',

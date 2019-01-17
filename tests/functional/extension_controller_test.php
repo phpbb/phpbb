@@ -45,7 +45,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -87,6 +87,15 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$crawler = self::request('GET', 'app.php/foo/template');
 		$this->assertContains("I am a variable", $crawler->filter('#content')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
+	}
+
+	/**
+	* Check includejs/includecss when the request_uri is a subdirectory
+	*/
+	public function test_controller_template_include_js_css()
+	{
+		$crawler = self::request('GET', 'app.php/help/faq');
+		$this->assertContains("./../../assets/javascript/core.js", $crawler->filter('body')->html());
 	}
 
 	/**

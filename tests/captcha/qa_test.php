@@ -23,7 +23,7 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $db, $request, $phpbb_container;
 

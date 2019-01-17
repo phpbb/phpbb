@@ -16,7 +16,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	/** @var \phpbb\event\php_exporter */
 	protected $exporter;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->exporter = new \phpbb\event\php_exporter(dirname(__FILE__) . '/fixtures/');
@@ -122,7 +122,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	static public function crawl_php_file_throws_data()
 	{
 		return array(
-			array('missing_var.test', null),
+			array('missing_var.test', 2),
 			array('duplicate_event.test', 10),
 		);
 	}
@@ -132,7 +132,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_crawl_php_file_throws($file, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 		$this->exporter->crawl_php_file($file);
 	}
 
@@ -206,7 +207,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_validate_event_throws($event_name, $event, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 		$this->exporter->validate_event($event_name, $event);
 	}
 
@@ -461,7 +463,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_vars_from_array_throws($lines, $event_line, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 
 		$this->exporter->set_current_event('', $event_line);
 		$this->exporter->set_content($lines);
@@ -546,7 +549,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_vars_from_docblock_throws($lines, $event_line, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 
 		$this->exporter->set_current_event('', $event_line);
 		$this->exporter->set_content($lines);
@@ -649,7 +653,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_find_since_throws($lines, $event_line, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 
 		$this->exporter->set_current_event('', $event_line);
 		$this->exporter->set_content($lines);
@@ -750,7 +755,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_find_description_throws($lines, $event_line, $exception_code)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
+		$this->expectException('LogicException');
+		$this->expectExceptionCode($exception_code);
 
 		$this->exporter->set_current_event('', $event_line);
 		$this->exporter->set_content($lines);

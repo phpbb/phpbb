@@ -1,0 +1,84 @@
+services:
+
+# Storages
+    storage.attachment:
+        class: phpbb\storage\storage
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@storage.adapter.factory'
+            - 'attachment'
+            - '%tables.storage%'
+        tags:
+            - { name: storage }
+
+    storage.avatar:
+        class: phpbb\storage\storage
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@storage.adapter.factory'
+            - 'avatar'
+            - '%tables.storage%'
+        tags:
+            - { name: storage }
+
+    storage.backup:
+        class: phpbb\storage\storage
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@storage.adapter.factory'
+            - 'backup'
+            - '%tables.storage%'
+        tags:
+            - { name: storage }
+
+# Factory
+    storage.adapter.factory:
+        class: phpbb\storage\adapter_factory
+        arguments:
+            - '@config'
+            - '@storage.adapter_collection'
+            - '@storage.provider_collection'
+
+# Collections
+    storage.storage_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: storage }
+
+    storage.adapter_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: storage.adapter, class_name_aware: true }
+
+    storage.provider_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: storage.provider, class_name_aware: true }
+
+# Adapters
+    storage.adapter.local:
+        class: phpbb\storage\adapter\local
+        shared: false
+        arguments:
+            - '@filesystem'
+            - '@upload_imagesize'
+            - '@mimetype.guesser'
+            - '%core.root_path%'
+        tags:
+            - { name: storage.adapter }
+
+# Providers
+    storage.provider.local:
+        class: phpbb\storage\provider\local
+        arguments:
+        tags:
+            - { name: storage.provider }

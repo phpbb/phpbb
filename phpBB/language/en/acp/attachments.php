@@ -68,7 +68,6 @@ $lang = array_merge($lang, array(
 	'ATTACH_QUOTA_EXPLAIN'				=> 'Maximum drive space available for attachments for the whole board, with 0 being unlimited.',
 	'ATTACH_TO_POST'					=> 'Attach file to post',
 
-	'CAT_FLASH_FILES'			=> 'Flash files',
 	'CAT_IMAGES'				=> 'Images',
 	'CHECK_CONTENT'				=> 'Check attachment files',
 	'CHECK_CONTENT_EXPLAIN'		=> 'Some browsers can be tricked to assume an incorrect mimetype for uploaded files. This option ensures that such files likely to cause this are rejected.',
@@ -99,7 +98,6 @@ $lang = array_merge($lang, array(
 	'EXT_GROUP_ARCHIVES'			=> 'Archives',
 	'EXT_GROUP_DOCUMENTS'			=> 'Documents',
 	'EXT_GROUP_DOWNLOADABLE_FILES'	=> 'Downloadable Files',
-	'EXT_GROUP_FLASH_FILES'			=> 'Flash Files',
 	'EXT_GROUP_IMAGES'				=> 'Images',
 	'EXT_GROUP_PLAIN_TEXT'			=> 'Plain Text',
 

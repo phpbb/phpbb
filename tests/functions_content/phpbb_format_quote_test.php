@@ -18,7 +18,7 @@ class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 	/** @var \phpbb\language\language */
 	protected $lang;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $cache, $user, $phpbb_root_path, $phpEx;
 

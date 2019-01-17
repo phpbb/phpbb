@@ -15,7 +15,7 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 {
 	private $type_cast_helper;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 	}

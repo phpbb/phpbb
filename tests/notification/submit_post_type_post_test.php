@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 {
 	protected $item_type = 'notification.type.post';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

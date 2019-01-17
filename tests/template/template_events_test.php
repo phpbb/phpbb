@@ -144,8 +144,7 @@ Zeta test event in all',
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -153,7 +152,7 @@ Zeta test event in all',
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -169,7 +168,7 @@ Zeta test event in all',
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)), $this->extension_manager);
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));

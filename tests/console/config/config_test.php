@@ -20,13 +20,13 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	protected $command_name;
 	protected $user;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
 		$this->config = new \phpbb\config\config(array());
 
-		$this->user = $this->getMock('\phpbb\user', array(), array(
+		$this->user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime')
 		);

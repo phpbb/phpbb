@@ -37,7 +37,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Global $config required by unique_id
 		global $config, $phpbb_root_path, $phpEx;
@@ -50,7 +50,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
@@ -83,13 +83,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 			$this->php_ini,
 			$plupload,
 			$this->request
-		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		));
 		$this->container->set('files.types.local', new \phpbb\files\types\local(
 			$this->factory,
 			$this->language,
 			$this->php_ini,
 			$this->request
-		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		));
 
 		$this->path = __DIR__ . '/fixture/';
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -107,7 +107,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		return $filespec;
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		// Clear globals
 		global $config, $user;

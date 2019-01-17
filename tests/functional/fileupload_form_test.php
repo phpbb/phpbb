@@ -18,14 +18,14 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 {
 	private $path;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)

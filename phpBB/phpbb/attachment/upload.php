@@ -20,6 +20,8 @@ use \phpbb\event\dispatcher;
 use \phpbb\language\language;
 use \phpbb\mimetype\guesser;
 use \phpbb\plupload\plupload;
+use \phpbb\storage\storage;
+use \phpbb\filesystem\temp;
 use \phpbb\user;
 
 /**
@@ -51,6 +53,12 @@ class upload
 	/** @var plupload Plupload */
 	protected $plupload;
 
+	/** @var storage */
+	protected $storage;
+
+	/** @var temp */
+	protected $temp;
+
 	/** @var user */
 	protected $user;
 
@@ -76,10 +84,10 @@ class upload
 	 * @param guesser $mimetype_guesser
 	 * @param dispatcher $phpbb_dispatcher
 	 * @param plupload $plupload
+	 * @param temp $temp
 	 * @param user $user
-	 * @param $phpbb_root_path
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, user $user, $phpbb_root_path)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -89,8 +97,9 @@ class upload
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->plupload = $plupload;
+		$this->storage = $storage;
+		$this->temp = $temp;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -118,7 +127,7 @@ class upload
 			return $this->file_data;
 		}
 
-		$this->file = ($local) ? $this->files_upload->handle_upload('files.types.local', $local_storage, $local_filedata) : $this->files_upload->handle_upload('files.types.form', $form_name);
+		$this->file = ($local) ? $this->files_upload->handle_upload('files.types.local_storage', $local_storage, $local_filedata) : $this->files_upload->handle_upload('files.types.form_storage', $form_name);
 
 		if ($this->file->init_error())
 		{
@@ -152,10 +161,6 @@ class upload
 
 		$this->file->clean_filename('unique', $this->user->data['user_id'] . '_');
 
-		// Are we uploading an image *and* this image being within the image category?
-		// Only then perform additional image checks.
-		$this->file->move_file($this->config['upload_path'], false, !$is_image);
-
 		// Do we have to create a thumbnail?
 		$this->file_data['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
 
@@ -164,7 +169,7 @@ class upload
 
 		if (count($this->file->error))
 		{
-			$this->file->remove();
+			$this->file->remove($this->storage);
 			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
 			$this->file_data['post_attach'] = false;
 
@@ -194,11 +199,33 @@ class upload
 		// Check for attachment quota and free space
 		if (!$this->check_attach_quota() || !$this->check_disk_space())
 		{
+			$this->file->remove($this->storage);
 			return $this->file_data;
 		}
 
 		// Create Thumbnail
 		$this->create_thumbnail();
+
+		// Are we uploading an image *and* this image being within the image category?
+		// Only then perform additional image checks.
+		$this->file->move_file($this->storage, false, !$is_image);
+
+		if (count($this->file->error))
+		{
+			$this->file->remove($this->storage);
+
+			// Remove thumbnail if exists
+			$thumbnail_file = 'thumb_' . $this->file->get('realname');
+			if ($this->storage->exists($thumbnail_file))
+			{
+				$this->storage->delete($thumbnail_file);
+			}
+
+			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
+			$this->file_data['post_attach'] = false;
+
+			return $this->file_data;
+		}
 
 		return $this->file_data;
 	}
@@ -212,10 +239,23 @@ class upload
 	{
 		if ($this->file_data['thumbnail'])
 		{
-			$source = $this->file->get('destination_file');
-			$destination = $this->file->get('destination_path') . '/thumb_' . $this->file->get('realname');
+			$source = $this->file->get('filename');
+			$destination_name = 'thumb_' . $this->file->get('realname');
+			$destination = $this->temp->get_dir() . '/' . $destination_name;
 
-			if (!create_thumbnail($source, $destination, $this->file->get('mimetype')))
+			if (create_thumbnail($source, $destination, $this->file->get('mimetype')))
+			{
+				// Move the thumbnail from temp folder to the storage
+				$fp = fopen($destination, 'rb');
+
+				$this->storage->write_stream($destination_name, $fp);
+
+				if (is_resource($fp))
+				{
+					fclose($fp);
+				}
+			}
+			else
 			{
 				$this->file_data['thumbnail'] = 0;
 			}
@@ -253,7 +293,7 @@ class upload
 		// Make sure the image category only holds valid images...
 		if ($is_image && !$this->file->is_image())
 		{
-			$this->file->remove();
+			$this->file->remove($this->storage);
 
 			if ($this->plupload && $this->plupload->is_active())
 			{
@@ -280,8 +320,6 @@ class upload
 				$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				$this->file_data['post_attach'] = false;
 
-				$this->file->remove();
-
 				return false;
 			}
 		}
@@ -292,12 +330,14 @@ class upload
 	/**
 	 * Check if there is enough free space available on disk
 	 *
-	 * @return bool True if disk space is available, false if not
+	 * @return bool True if disk space is available or not limited, false if not
 	 */
 	protected function check_disk_space()
 	{
-		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
+		try
 		{
+			$free_space = $this->storage->free_space();
+
 			if ($free_space <= $this->file->get('filesize'))
 			{
 				if ($this->auth->acl_get('a_'))
@@ -308,12 +348,15 @@ class upload
 				{
 					$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				}
-				$this->file_data['post_attach'] = false;
 
-				$this->file->remove();
+				$this->file_data['post_attach'] = false;
 
 				return false;
 			}
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
+			// Do nothing
 		}
 
 		return true;

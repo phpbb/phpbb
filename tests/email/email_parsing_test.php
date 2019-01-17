@@ -19,7 +19,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 	/** @var \ReflectionProperty */
 	protected $reflection_template_property;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user;
 
@@ -39,7 +39,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			$filesystem,
 			$request,
 			$phpbb_root_path,
 			$phpEx
@@ -67,20 +66,13 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('ext.manager', $extension_manager);
 
 		$context = new \phpbb\template\context();
-		$twig_extension = new \phpbb\template\twig\extension($context, $lang);
-		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
-
-		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
-		$twig_extensions_collection->add('template.twig.extensions.phpbb');
-		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
-
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
 			$phpbb_path_helper,
 			$cache_path,
 			null,
-			new \phpbb\template\twig\loader($filesystem, ''),
+			new \phpbb\template\twig\loader(''),
 			new \phpbb\event\dispatcher($phpbb_container),
 			array(
 				'cache'			=> false,
@@ -89,6 +81,13 @@ class phpbb_email_parsing_test extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
+		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
+
+		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
+		$twig_extensions_collection->add('template.twig.extensions.phpbb');
+		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
+
 		$twig->addExtension($twig_extension);
 		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 

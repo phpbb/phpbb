@@ -75,7 +75,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -114,7 +114,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -259,7 +259,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
@@ -416,9 +415,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(0, $crawler->filter('.submit-buttons')->count());
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
-		$form = $crawler->selectButton('Enable')->form();
+		$form = $crawler->selectButton('confirm')->form();
 		$crawler = self::submit($form);
 		$this->add_lang('acp/extensions');
 
@@ -436,6 +435,72 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
+	}
+
+	public function disable_ext($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
+
+		$form = $crawler->selectButton('confirm')->form();
+		$crawler = self::submit($form);
+		$this->add_lang('acp/extensions');
+
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+		// Wait for extension to be fully enabled
+		while (count($meta_refresh))
+		{
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			$url = $match[1];
+			$crawler = self::request('POST', $url);
+			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		}
+
+		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('div.successbox')->text());
+
+		$this->logout();
+	}
+
+	public function delete_ext_data($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
+
+		$form = $crawler->selectButton('confirm')->form();
+		$crawler = self::submit($form);
+		$this->add_lang('acp/extensions');
+
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+		// Wait for extension to be fully enabled
+		while (count($meta_refresh))
+		{
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			$url = $match[1];
+			$crawler = self::request('POST', $url);
+			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		}
+
+		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('div.successbox')->text());
+
+		$this->logout();
+	}
+
+	public function uninstall_ext($extension)
+	{
+		$this->disable_ext($extension);
+		$this->delete_ext_data($extension);
 	}
 
 	static private function recreate_database($config)
@@ -624,11 +689,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
@@ -666,17 +731,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
 			->method('get')
@@ -846,7 +911,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 * @param string $haystack	Search this
 	 * @param string $message	Optional failure message
 	 */
-	public function assertContainsLang($needle, $haystack, $message = null)
+	public function assertContainsLang($needle, $haystack, $message = '')
 	{
 		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
@@ -858,7 +923,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $haystack	Search this
 	* @param string $message	Optional failure message
 	*/
-	public function assertNotContainsLang($needle, $haystack, $message = null)
+	public function assertNotContainsLang($needle, $haystack, $message = '')
 	{
 		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}

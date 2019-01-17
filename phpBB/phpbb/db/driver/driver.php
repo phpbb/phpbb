@@ -76,6 +76,16 @@ abstract class driver implements driver_interface
 	const SUBQUERY_BUILD = 5;
 
 	/**
+	* @var bool
+	*/
+	protected $debug_load_time = false;
+
+	/**
+	* @var bool
+	*/
+	protected $debug_sql_explain = false;
+
+	/**
 	* Constructor
 	*/
 	function __construct()
@@ -93,6 +103,22 @@ abstract class driver implements driver_interface
 		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
 		$this->any_char = chr(0) . '%';
 		$this->one_char = chr(0) . '_';
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_debug_load_time($value)
+	{
+		$this->debug_load_time = $value;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_debug_sql_explain($value)
+	{
+		$this->debug_sql_explain = $value;
 	}
 
 	/**
@@ -955,7 +981,7 @@ abstract class driver implements driver_interface
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
 			// The DEBUG constant is for development only!
-			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG'))
+			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || $this->debug_sql_explain)
 			{
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
 			}

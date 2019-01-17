@@ -13,7 +13,7 @@
 
 class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 {
-	public function setup()
+	public function setUp(): void
 	{
 		$this->config = new \phpbb\config\config(array());
 

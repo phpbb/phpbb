@@ -88,6 +88,11 @@ $lang = array_merge($lang, array(
 	'ACP_EXTENSION_GROUPS'		=> 'Manage attachment extension groups',
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Manage extensions',
+	'ACP_EXTENSIONS_CATALOG'	=> 'Extensions catalog',
+	'ACP_EXTENSIONS_INSTALL'	=> 'Install extensions',
+	'ACP_EXTENSIONS_REMOVE'		=> 'Remove extensions',
+	'ACP_EXTENSIONS_UPDATE'		=> 'Update extensions',
+	'ACP_EXTENSIONS_MANAGE'		=> 'Manage extension automatically',
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
@@ -173,6 +178,9 @@ $lang = array_merge($lang, array(
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
 	'ACP_SMILIES'				=> 'Smilies',
+
+	'ACP_STORAGE_SETTINGS'		=> 'Storage settings',
+
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
 	'ACP_STYLES_CACHE'			=> 'Purge Cache',
@@ -226,20 +234,21 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
-	'CANNOT_CHANGE_FILE_GROUP'	=> 'Unable to change file group',
-	'CANNOT_CHANGE_FILE_PERMISSIONS'	=> 'Unable to change file permissions',
-	'CANNOT_COPY_FILES'		=> 'Unable to copy files',
-	'CANNOT_CREATE_SYMLINK'	=> 'Unable to create a symlink',
-	'CANNOT_DELETE_FILES'	=> 'Unable to delete files from the system',
-	'CANNOT_DUMP_FILE'		=> 'Unable to dump file',
-	'CANNOT_MIRROR_DIRECTORY'	=> 'Unable to mirror directory',
-	'CANNOT_RENAME_FILE'	=> 'Unable to rename a file from the system',
-	'CANNOT_TOUCH_FILES'	=> 'Unable to determine if the file exists',
-
 	'CONTAINER_EXCEPTION' => 'phpBB encountered an error building the container due to an installed extension. For this reason, all extensions have been temporarily disabled. Please try purging your forum cache. All extensions will automatically be re-enabled once the container error is resolved. If this error continues, please visit <a href="https://www.phpbb.com/support">phpBB.com</a> for support.',
 	'EXCEPTION' => 'Exception',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
+
+	'COMPOSER_UNSUPPORTED_OPERATION'	=> 'Operation unsupported for the package type “%s”.',
+	'COMPOSER_UPDATING_DEPENDENCIES'	=> 'Updating packages',
+	'COMPOSER_LOADING_REPOSITORIES'		=> 'Loading remote repositories with package information',
+	'COMPOSER_ERROR_CONFLICT'			=> 'Your requirements could not be resolved to an installable set of packages.',
+	'COMPOSER_REPOSITORY_UNAVAILABLE'	=> 'An error occurred while fetching the repository %s.',
+	'COMPOSER_INSTALLING_PACKAGE'		=> '  - Installing %1$s (%2$s)',
+	'COMPOSER_DELETING'					=> '  - Deleting %s',
+	'COMPOSER_UPDATE_NOTHING'			=> 'Nothing to update',
+	'COMPOSER_OUTPUT'					=> 'Composer output',
+
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
@@ -372,7 +381,7 @@ $lang = array_merge($lang, array(
 	'DATABASE_SERVER_INFO'	=> 'Database server',
 	'DATABASE_SIZE'			=> 'Database size',
 
-	// Enviroment configuration checks, mbstring related
+	// Environment configuration checks, mbstring related
 	'ERROR_MBSTRING_FUNC_OVERLOAD'					=> 'Function overloading is improperly configured',
 	'ERROR_MBSTRING_FUNC_OVERLOAD_EXPLAIN'			=> '<var>mbstring.func_overload</var> must be set to either 0 or 4. You can check the current value on the <samp>PHP information</samp> page.',
 	'ERROR_MBSTRING_ENCODING_TRANSLATION'			=> 'Transparent character encoding is improperly configured',

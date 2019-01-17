@@ -15,9 +15,14 @@ require_once dirname(__FILE__) . '/type_foo.php';
 
 class phpbb_files_types_remote_test extends phpbb_test_case
 {
+	/** @var string */
 	private $path;
 
+	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
+
+	/** @var \phpbb\filesystem\temp */
+	private $temp;
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -40,16 +45,18 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $config, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
 		$this->config = $config;
 		$this->config->set('remote_upload_verify', 0);
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 
+		$cache_path = $phpbb_root_path . 'cache/files';
 		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->temp = new \phpbb\filesystem\temp($this->filesystem, $cache_path);
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
@@ -71,7 +78,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 	public function test_upload_fsock_fail()
 	{
-		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->temp, $this->language, $this->php_ini, $this->request);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
@@ -102,11 +109,11 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	 */
 	public function test_get_max_file_size($max_file_size, $link, $expected = array('URL_NOT_FOUND'))
 	{
-		$php_ini = $this->getMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
+		$php_ini = $this->createMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
 		$php_ini->expects($this->any())
 			->method('getString')
 			->willReturn($max_file_size);
-		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->language, $php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->temp, $this->language, $php_ini, $this->request);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
@@ -118,7 +125,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 	public function test_upload_wrong_path()
 	{
-		$type_remote = new \phpbb\files\types\foo($this->config, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\foo($this->config, $this->factory, $this->temp, $this->language, $this->php_ini, $this->request);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);

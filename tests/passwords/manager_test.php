@@ -19,7 +19,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 
 	protected $default_pw = 'foobar';
 
-	public function setUp()
+	public function setUp(): void
 	{
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
@@ -361,13 +361,13 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	{
 		if ($use_new_interface)
 		{
-			$test_driver = $this->getMock('\phpbb\passwords\driver\rehashable_driver_interface', array('needs_rehash', 'get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\rehashable_driver_interface', array('needs_rehash', 'get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
 			$test_driver->method('needs_rehash')
 				->willReturn($needs_rehash);
 		}
 		else
 		{
-			$test_driver = $this->getMock('\phpbb\passwords\driver\driver_interface', array('get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\driver_interface', array('get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
 		}
 		$config = new \phpbb\config\config(array());
 

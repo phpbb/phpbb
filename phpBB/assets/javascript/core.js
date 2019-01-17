@@ -34,11 +34,7 @@ $.ajaxPrefilter(function(s) {
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', {
-			'id': 'loading_indicator',
-			'class': 'loading_indicator'
-		});
-		$loadingIndicator.appendTo('#page-footer');
+		$loadingIndicator = $('#loading_indicator');
 	}
 
 	if (!$loadingIndicator.is(':visible')) {
@@ -1492,7 +1488,7 @@ phpbb.colorPalette = function(dir, width, height) {
 * @param {jQuery} el jQuery object for the palette container.
 */
 phpbb.registerPalette = function(el) {
-	var	orientation	= el.attr('data-orientation'),
+	var	orientation	= el.attr('data-color-palette'),
 		height		= el.attr('data-height'),
 		width		= el.attr('data-width'),
 		target		= el.attr('data-target'),
@@ -1662,7 +1658,7 @@ $(function() {
 
 	phpbb.registerPageDropdowns();
 
-	$('[data-orientation]').each(function() {
+	$('[data-color-palette]').each(function() {
 		phpbb.registerPalette($(this));
 	});
 

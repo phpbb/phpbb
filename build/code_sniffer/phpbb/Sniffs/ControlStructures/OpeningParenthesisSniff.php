@@ -11,11 +11,14 @@
  *
  */
 
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+
 /**
  * Checks that there is exactly one space between the keyword and the opening
  * parenthesis of a control structures.
  */
-class phpbb_Sniffs_ControlStructures_OpeningParenthesisSniff implements PHP_CodeSniffer_Sniff
+class phpbb_Sniffs_ControlStructures_OpeningParenthesisSniff implements Sniff
 {
 	/**
 	 * Registers the tokens that this sniff wants to listen for.
@@ -36,13 +39,13 @@ class phpbb_Sniffs_ControlStructures_OpeningParenthesisSniff implements PHP_Code
 	/**
 	 * Processes this test, when one of its tokens is encountered.
 	 *
-	 * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+	 * @param File $phpcsFile The file being scanned.
 	 * @param int                  $stackPtr  The position of the current token in the
 	 *                                        stack passed in $tokens.
 	 *
 	 * @return void
 	 */
-	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+	public function process(File $phpcsFile, $stackPtr)
 	{
 		$tokens = $phpcsFile->getTokens();
 

@@ -12,7 +12,7 @@
 */
 
 /**
-* Minimum Requirement: PHP 5.4.0
+* Minimum Requirement: PHP 7.1.0
 */
 
 if (!defined('IN_PHPBB'))
@@ -65,8 +65,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb\filesystem\filesystem();
-	$script_path = $phpbb_filesystem->clean_path($script_path);
+	$script_path = \phpbb\filesystem\helper::clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -132,9 +131,17 @@ catch (InvalidArgumentException $e)
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
+$phpbb_container->get('dbal.conn')->set_debug_sql_explain($phpbb_container->getParameter('debug.sql_explain'));
+$phpbb_container->get('dbal.conn')->set_debug_load_time($phpbb_container->getParameter('debug.load_time'));
+
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
+
+if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+{
+	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+}
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

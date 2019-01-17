@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config, $phpbb_container, $phpbb_dispatcher;
 

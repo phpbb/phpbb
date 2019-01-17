@@ -30,7 +30,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		$db->sql_query($query);
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->purge_cache();
@@ -40,7 +40,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		$this->login();
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		$this->set_extension_group_permission(0);
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');

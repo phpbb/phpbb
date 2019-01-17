@@ -52,15 +52,10 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
-		if (version_compare(PHP_VERSION, '5.3.19', '<'))
-		{
-			self::markTestSkipped('UI test case requires at least PHP 5.3.19.');
-		}
-		else if (!class_exists('\Facebook\WebDriver\Remote\RemoteWebDriver'))
+		if (!class_exists('\Facebook\WebDriver\Remote\RemoteWebDriver'))
 		{
 			self::markTestSkipped(
-				'Could not find RemoteWebDriver class. ' .
-				'Run "php ../composer.phar install" from the tests folder.'
+				'Could not find RemoteWebDriver class.'
 			);
 		}
 
@@ -100,7 +95,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!self::$install_success)
 		{
@@ -132,7 +127,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -317,9 +312,9 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertNotEmpty(count($this->find_element('cssSelector', '.submit-buttons')));
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
 
-		$this->find_element('cssSelector', "input[value='Enable']")->submit();
+		$this->find_element('cssSelector', "input[value='Yes']")->submit();
 		$this->add_lang('acp/extensions');
 
 		try
@@ -342,6 +337,82 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $this->find_element('cssSelector', 'div.successbox')->getText());
 
 		$this->logout();
+	}
+
+	public function disable_ext($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
+
+		$this->find_element('cssSelector', "input[value='Yes']")->submit();
+		$this->add_lang('acp/extensions');
+
+		try
+		{
+			$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+
+			// Wait for extension to be fully enabled
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
+				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+			}
+		}
+		catch (\Facebook\WebDriver\Exception\NoSuchElementException $e)
+		{
+			// Probably no refresh triggered
+		}
+
+		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $this->find_element('cssSelector', 'div.successbox')->getText());
+
+		$this->logout();
+	}
+
+	public function delete_ext_data($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
+
+		$this->find_element('cssSelector', "input[value='Yes']")->submit();
+		$this->add_lang('acp/extensions');
+
+		try
+		{
+			$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+
+			// Wait for extension to be fully enabled
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
+				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+			}
+		}
+		catch (\Facebook\WebDriver\Exception\NoSuchElementException $e)
+		{
+			// Probably no refresh triggered
+		}
+
+		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $this->find_element('cssSelector', 'div.successbox')->getText());
+
+		$this->logout();
+	}
+
+	public function uninstall_ext($extension)
+	{
+		$this->disable_ext($extension);
+		$this->delete_ext_data($extension);
 	}
 
 	protected function get_cache_driver()
@@ -398,7 +469,6 @@ class phpbb_ui_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem(),
 			$user,
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',

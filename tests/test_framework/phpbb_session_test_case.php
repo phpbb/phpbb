@@ -25,19 +25,17 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function setUp()
+	function setUp(): void
 	{
 		parent::setUp();
 
-		global $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $request, $phpbb_root_path, $phpEx;
+		global $symfony_request, $phpbb_path_helper, $request, $phpbb_root_path, $phpEx;
 		$symfony_request = new \phpbb\symfony_request(
 			new phpbb_mock_request()
 		);
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			$phpbb_filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);

@@ -16,7 +16,7 @@ class phpbb_group_helper_test extends phpbb_test_case
 	/** @var  \phpbb\group\helper */
 	protected $group_helper;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

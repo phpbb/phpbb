@@ -23,7 +23,7 @@ class phpbb_functions_privmsgs_get_max_setting_from_group_test extends phpbb_dat
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

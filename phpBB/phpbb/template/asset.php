@@ -13,6 +13,8 @@
 
 namespace phpbb\template;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 class asset
 {
 	protected $components = array();
@@ -20,20 +22,15 @@ class asset
 	/** @var \phpbb\path_helper **/
 	protected $path_helper;
 
-	/** @var \phpbb\filesystem\filesystem */
-	protected $filesystem;
-
 	/**
 	* Constructor
 	*
 	* @param string $url URL
 	* @param \phpbb\path_helper $path_helper Path helper object
-	* @param \phpbb\filesystem\filesystem $filesystem
 	*/
-	public function __construct($url, \phpbb\path_helper $path_helper, \phpbb\filesystem\filesystem $filesystem)
+	public function __construct($url, \phpbb\path_helper $path_helper)
 	{
 		$this->path_helper = $path_helper;
-		$this->filesystem = $filesystem;
 
 		$this->set_url($url);
 	}
@@ -45,13 +42,6 @@ class asset
 	*/
 	public function set_url($url)
 	{
-		if (version_compare(PHP_VERSION, '5.4.7') < 0 && substr($url, 0, 2) === '//')
-		{
-			// Workaround for PHP 5.4.6 and older bug #62844 - add fake scheme and then remove it
-			$this->components = parse_url('http:' . $url);
-			$this->components['scheme'] = '';
-			return;
-		}
 		$this->components = parse_url($url);
 	}
 
@@ -158,7 +148,7 @@ class asset
 	public function set_path($path, $urlencode = false)
 	{
 		// Since 1.7.0 Twig returns the real path of the file. We need it to be relative.
-		$real_root_path = $this->filesystem->realpath($this->path_helper->get_phpbb_root_path()) . DIRECTORY_SEPARATOR;
+		$real_root_path = filesystem_helper::realpath($this->path_helper->get_phpbb_root_path()) . DIRECTORY_SEPARATOR;
 
 		// If the asset is under the phpBB root path we need to remove its path and then prepend $phpbb_root_path
 		if ($real_root_path && substr($path . DIRECTORY_SEPARATOR, 0, strlen($real_root_path)) === $real_root_path)
@@ -168,7 +158,7 @@ class asset
 		else
 		{
 			// Else we make the path relative to the current working directory
-			$real_root_path = $this->filesystem->realpath('.') . DIRECTORY_SEPARATOR;
+			$real_root_path = filesystem_helper::realpath('.') . DIRECTORY_SEPARATOR;
 			if ($real_root_path && substr($path . DIRECTORY_SEPARATOR, 0, strlen($real_root_path)) === $real_root_path)
 			{
 				$path = str_replace('\\', '/', substr($path, strlen($real_root_path)));

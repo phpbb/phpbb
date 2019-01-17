@@ -395,34 +395,6 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 //
 // Attachment related functions
 //
-
-/**
-* Upload Attachment - filedata is generated here
-* Uses upload class
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*
-* @param string			$form_name		The form name of the file upload input
-* @param int			$forum_id		The id of the forum
-* @param bool			$local			Whether the file is local or not
-* @param string			$local_storage	The path to the local file
-* @param bool			$is_message		Whether it is a PM or not
-* @param array			$local_filedata	A filespec object created for the local file
-*
-* @return array File data array
-*/
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$file = $attachment_manager->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
-	unset($attachment_manager);
-
-	return $file;
-}
-
 /**
 * Calculate the needed size for Thumbnail
 */
@@ -637,12 +609,6 @@ function create_thumbnail($source, $destination, $mimetype)
 				@imagesavealpha($new_image, true);
 
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-			}
-
-			// If we are in safe mode create the destination file prior to using the gd functions to circumvent a PHP bug
-			if (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on')
-			{
-				@touch($destination);
 			}
 
 			switch ($type['format'])
@@ -1476,6 +1442,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 {
 	global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
+	$attachment_storage = $phpbb_container->get('storage.attachment');
+
 	$poll = $poll_ary;
 	$data = $data_ary;
 	/**
@@ -2064,7 +2032,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!$attachment_storage->exists(utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}

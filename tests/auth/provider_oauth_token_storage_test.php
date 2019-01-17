@@ -25,7 +25,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	protected $state_table;
 	protected $user;
 
-	protected function setup()
+	protected function setup(): void
 	{
 		parent::setUp();
 
@@ -73,7 +73,10 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 			$token = $cache_token;
 		}
 
-		$this->setExpectedException($exception);
+		if (!empty($exception))
+		{
+			$this->expectException($exception);
+		}
 
 		$stored_token = $this->token_storage->retrieveAccessToken($this->service_name);
 		$this->assertEquals($token, $stored_token);
@@ -120,7 +123,10 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 			$token = $cache_token;
 		}
 
-		$this->setExpectedException($exception);
+		if (!empty($exception))
+		{
+			$this->expectException($exception);
+		}
 
 		$stored_token = $this->token_storage->retrieve_access_token_by_session($this->service_name);
 		$this->assertEquals($token, $stored_token);

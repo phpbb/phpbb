@@ -26,7 +26,7 @@ class module_base_test extends phpbb_test_case
 	 */
 	protected $container;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		// DI container mock
 		$this->container = new phpbb_mock_container_builder();
@@ -42,7 +42,7 @@ class module_base_test extends phpbb_test_case
 
 		$this->module = new test_installer_module($module_collection, true, false);
 
-		$iohandler = $this->getMock('\phpbb\install\helper\iohandler\iohandler_interface');
+		$iohandler = $this->createMock('\phpbb\install\helper\iohandler\iohandler_interface');
 		$config = new \phpbb\install\helper\config(new \phpbb\filesystem\filesystem(), new \bantu\IniGetWrapper\IniGetWrapper(), '', 'php');
 		$this->module->setup($config, $iohandler);
 	}

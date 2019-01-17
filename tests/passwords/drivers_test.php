@@ -13,7 +13,7 @@
 
 class phpbb_passwords_helper_test extends \phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		// Prepare dependencies for drivers
 		$config =  new \phpbb\config\config(array());
@@ -23,6 +23,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
+			'passwords.driver.argon2i'	=> new \phpbb\passwords\driver\argon2i($config, $this->driver_helper),
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
 			'passwords.driver.bcrypt'	=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper, 10),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
@@ -422,6 +423,10 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			array('passwords.driver.salted_md5', 'foobar', false),
 			array('passwords.driver.bcrypt_2y', '$2y$9$somerandomhash', true),
 			array('passwords.driver.bcrypt', '$2a$04$somerandomhash', true),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=2$NEF0S1JSN04yNGQ1UVRKdA$KYGNI9CbjoKh1UEu1PpdlqbuLbveGwkMcwcT2Un9pPM', false),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
 		);
 	}
 
@@ -430,6 +435,10 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	 */
 	public function test_needs_rehash($driver, $hash, $expected)
 	{
-		$this->assertSame($this->passwords_drivers[$driver]->needs_rehash($hash), $expected);
+		if (!$this->passwords_drivers[$driver]->is_supported())
+		{
+			$this->markTestSkipped($driver . ' is not supported');
+		}
+		$this->assertSame($expected, $this->passwords_drivers[$driver]->needs_rehash($hash));
 	}
 }

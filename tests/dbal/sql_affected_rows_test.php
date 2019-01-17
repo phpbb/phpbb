@@ -16,7 +16,7 @@ class phpbb_dbal_sql_affected_rows_test extends phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->db = $this->new_dbal();

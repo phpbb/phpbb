@@ -19,6 +19,9 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
+	/** @var \phpbb\filesystem\temp */
+	protected $temp;
+
 	/** @var \phpbb\files\factory */
 	protected $factory;
 
@@ -34,7 +37,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		// Only doing this within the functional framework because we need a
@@ -53,19 +56,20 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$config['remote_upload_verify'] = 0;
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$container = new phpbb_mock_container_builder();
 		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path));
 		$this->factory = new \phpbb\files\factory($container);
 		$container->set('files.factory', $this->factory);
-		$container->set('files.types.remote', new \phpbb\files\types\remote($config, $this->factory, $this->language, $this->php_ini, $this->request, $phpbb_root_path));
+		$container->set('files.types.remote', new \phpbb\files\types\remote($config, $this->factory, $this->temp, $this->language, $this->php_ini, $this->request));
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		global $config, $user;
 		$user = null;

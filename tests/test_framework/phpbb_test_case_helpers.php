@@ -81,21 +81,26 @@ class phpbb_test_case_helpers
 		{
 			case E_NOTICE:
 			case E_STRICT:
-				PHPUnit_Framework_Error_Notice::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Notice';
+				PHPUnit\Framework\Error\Notice::$enabled = true;
+				$exceptionName = 'PHPUnit\Framework\Error\Notice';
 			break;
 
 			case E_WARNING:
-				PHPUnit_Framework_Error_Warning::$enabled = true;
-				$exceptionName = 'PHPUnit_Framework_Error_Warning';
+				PHPUnit\Framework\Error\Warning::$enabled = true;
+				$exceptionName = 'PHPUnit\Framework\Error\Warning';
 			break;
 
 			default:
-				$exceptionName = 'PHPUnit_Framework_Error';
+				$exceptionName = 'PHPUnit\Framework\Error\Error';
 			break;
 		}
 		$this->expectedTriggerError = true;
-		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
+		$this->test_case->expectException($exceptionName);
+		$this->test_case->expectExceptionCode($errno);
+		if ($message)
+		{
+			$this->test_case->expectExceptionMessage((string) $message);
+		}
 	}
 
 	public function makedirs($path)
@@ -382,10 +387,16 @@ class phpbb_test_case_helpers
 		}
 
 		// Mock the DAL, make it return data from the fixture
+		$db_driver = $this->test_case->getMockBuilder('phpbb\\db\\driver\\driver')
+			->disableOriginalConstructor()
+			->disableOriginalClone()
+			->disableArgumentCloning()
+			->disallowMockingUnknownTypes()
+			->getMock();
 		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
 		$mb->setMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
 		$mb->setConstructorArgs(array(
-			$this->test_case->getMockBuilder('phpbb\\db\\driver\\driver')->getMock(),
+			$db_driver,
 			'phpbb_bbcodes',
 			'phpbb_smilies',
 			'phpbb_styles',

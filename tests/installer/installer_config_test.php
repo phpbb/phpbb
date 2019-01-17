@@ -20,11 +20,12 @@ class phpbb_installer_config_test extends phpbb_test_case
 	 */
 	private $config;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
-		$filesystem = $this->getMock('\phpbb\filesystem\filesystem');
+		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
 		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
+			->setMethods(array('getInt', 'getBytes'))
 			->getMock();
 		$php_ini->method('getInt')
 			->willReturn(-1);

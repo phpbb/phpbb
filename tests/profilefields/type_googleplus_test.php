@@ -15,7 +15,7 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 {
 	protected  $field;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -25,8 +25,8 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->add_lang('ucp');
-		$request = $this->getMock('\phpbb\request\request');
-		$template = $this->getMock('\phpbb\template\template');
+		$request = $this->createMock('\phpbb\request\request');
+		$template = $this->createMock('\phpbb\template\template');
 
 		$this->field = new \phpbb\profilefields\type\type_googleplus(
 			$request,

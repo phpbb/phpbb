@@ -17,7 +17,7 @@ class phpbb_textreparser_base_test extends phpbb_database_test_case
 {
 	protected $db;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config;
 		if (!isset($config))

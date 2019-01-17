@@ -30,14 +30,14 @@ class phpbb_mock_session_testable extends \phpbb\session
 	/**
 	* Checks if the cookies were set correctly.
 	*
-	* @param PHPUnit_Framework_Assert test    The test from which this is called
+	* @param PHPUnit\Framework\Assert test    The test from which this is called
 	* @param array(string => mixed)   cookies The cookie data to check against.
 	*				The keys are cookie names, the values can either be null to
-	*				check only the existance of the cookie, or an array(d, t),
+	*				check only the existence of the cookie, or an array(d, t),
 	*				where d is the cookie data to check, or null to skip the
 	*				check and t is the cookie time to check, or null to skip.
 	*/
-	public function check_cookies(PHPUnit_Framework_Assert $test, $cookies)
+	public function check_cookies(PHPUnit\Framework\Assert $test, $cookies)
 	{
 		$test->assertEquals(array_keys($cookies), array_keys($this->_cookies), 'Incorrect cookies were set');
 

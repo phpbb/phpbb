@@ -19,7 +19,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_user.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -34,8 +34,11 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+
+		$storage = $this->createMock('\phpbb\storage\storage');
+
 		// Works as a workaround for tests
-		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path));
+		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage));
 		$phpbb_container->set(
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()

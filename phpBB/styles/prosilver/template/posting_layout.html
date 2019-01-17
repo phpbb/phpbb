@@ -38,27 +38,6 @@
 
 <!-- IF S_POST_REVIEW --><!-- INCLUDE posting_review.html --><!-- ENDIF -->
 
-<!-- IF S_UNGLOBALISE -->
-	<div class="panel bg3">
-		<div class="inner">
-		<fieldset class="fields1">
-			<h2>{L_SELECT_DESTINATION_FORUM}</h2>
-			<p>{L_UNGLOBALISE_EXPLAIN}</p>
-			<dl>
-				<dt><label for="to_forum_id">{L_MOVE}{L_COLON}</label></dt>
-				<dd><select id="to_forum_id" name="to_forum_id">{S_FORUM_SELECT}</select></dd>
-			</dl>
-
-			<dl>
-				<dt>&nbsp;</dt>
-				<dd><input class="button1" type="submit" name="post" value="{L_CONFIRM}" /> <input class="button2" type="submit" name="cancel_unglobalise" value="{L_CANCEL}" /></dd>
-			</dl>
-		</fieldset>
-
-		</div>
-	</div>
-<!-- ENDIF -->
-
 <!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
 
 <div class="panel" id="postingbox">

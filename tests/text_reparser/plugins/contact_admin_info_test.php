@@ -39,7 +39,7 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 		return $rows;
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config;
 		if (!isset($config))

@@ -17,7 +17,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 	protected $user;
 	protected $request;
 
-	protected function setup()
+	protected function setup(): void
 	{
 		parent::setUp();
 
@@ -27,7 +27,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array());
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(

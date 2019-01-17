@@ -23,11 +23,11 @@ $level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
 error_reporting($level);
 
 /**
-* Minimum Requirement: PHP 5.4.0
+* Minimum Requirement: PHP 7.1.0
 */
-if (version_compare(PHP_VERSION, '5.4') < 0)
+if (version_compare(PHP_VERSION, '7.1') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 7.1.0 or higher before trying to install or update to phpBB 3.3');
 }
 // Register globals and magic quotes have been dropped in PHP 5.4 so no need for extra checks
 

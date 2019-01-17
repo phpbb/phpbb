@@ -164,13 +164,13 @@ acp_group_options_before
 ===
 * Location: adm/style/acp_groups.html
 * Since: 3.1.0-b4
-* Purpose: Add addtional options to group settings (before GROUP_FOUNDER_MANAGE)
+* Purpose: Add additional options to group settings (before GROUP_FOUNDER_MANAGE)
 
 acp_group_options_after
 ===
 * Location: adm/style/acp_groups.html
 * Since: 3.1.0-b4
-* Purpose: Add addtional options to group settings (after GROUP_RECEIVE_PM)
+* Purpose: Add additional options to group settings (after GROUP_RECEIVE_PM)
 
 acp_groups_find_username_append
 ===

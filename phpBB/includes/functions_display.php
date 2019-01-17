@@ -783,25 +783,25 @@ function generate_forum_nav(&$forum_data_ary)
 			}
 
 			$navlinks_parents[] = array(
-				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
-				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
-				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
-				'FORUM_NAME'	=> $parent_name,
-				'FORUM_ID'		=> $parent_forum_id,
-				'MICRODATA'		=> $microdata_attr . '="' . $parent_forum_id . '"',
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id),
+				'S_IS_CAT'			=> ($parent_type == FORUM_CAT) ? true : false,
+				'S_IS_LINK'			=> ($parent_type == FORUM_LINK) ? true : false,
+				'S_IS_POST'			=> ($parent_type == FORUM_POST) ? true : false,
+				'BREADCRUMB_NAME'	=> $parent_name,
+				'FORUM_ID'			=> $parent_forum_id,
+				'MICRODATA'			=> $microdata_attr . '="' . $parent_forum_id . '"',
+				'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id),
 			);
 		}
 	}
 
 	$navlinks = array(
-		'S_IS_CAT'		=> ($forum_data_ary['forum_type'] == FORUM_CAT) ? true : false,
-		'S_IS_LINK'		=> ($forum_data_ary['forum_type'] == FORUM_LINK) ? true : false,
-		'S_IS_POST'		=> ($forum_data_ary['forum_type'] == FORUM_POST) ? true : false,
-		'FORUM_NAME'	=> $forum_data_ary['forum_name'],
-		'FORUM_ID'		=> $forum_data_ary['forum_id'],
-		'MICRODATA'		=> $microdata_attr . '="' . $forum_data_ary['forum_id'] . '"',
-		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data_ary['forum_id']),
+		'S_IS_CAT'			=> ($forum_data_ary['forum_type'] == FORUM_CAT) ? true : false,
+		'S_IS_LINK'			=> ($forum_data_ary['forum_type'] == FORUM_LINK) ? true : false,
+		'S_IS_POST'			=> ($forum_data_ary['forum_type'] == FORUM_POST) ? true : false,
+		'BREADCRUMB_NAME'	=> $forum_data_ary['forum_name'],
+		'FORUM_ID'			=> $forum_data_ary['forum_id'],
+		'MICRODATA'			=> $microdata_attr . '="' . $forum_data_ary['forum_id'] . '"',
+		'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data_ary['forum_id']),
 	);
 
 	$forum_template_data = array(
@@ -1146,18 +1146,6 @@ function display_custom_bbcodes()
 	* @since 3.1.0-a1
 	*/
 	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
-}
-
-/**
-* Display reasons
-*
-* @deprecated 3.2.0-dev
-*/
-function display_reasons($reason_id = 0)
-{
-	global $phpbb_container;
-
-	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**

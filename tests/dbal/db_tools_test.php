@@ -25,7 +25,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -77,7 +77,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->table_exists = true;
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		if ($this->table_exists)
 		{
@@ -346,10 +346,10 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_perform_schema_changes_drop_tables()
 	{
-		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
-			'sql_table_exists',
-			'sql_table_drop',
-		), array(&$this->db));
+		$db_tools = $this->getMockBuilder('\phpbb\db\tools\tools')
+			->setMethods(array('sql_table_exists', 'sql_table_drop'))
+			->setConstructorArgs(array(&$this->db))
+			->getMock();
 
 		// pretend all tables exist
 		$db_tools->expects($this->any())->method('sql_table_exists')
@@ -372,10 +372,10 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_perform_schema_changes_drop_columns()
 	{
-		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
-			'sql_column_exists',
-			'sql_column_remove',
-		), array(&$this->db));
+		$db_tools = $this->getMockBuilder('\phpbb\db\tools\tools')
+			->setMethods(array('sql_column_exists', 'sql_column_remove'))
+			->setConstructorArgs(array(&$this->db))
+			->getMock();
 
 		// pretend all columns exist
 		$db_tools->expects($this->any())->method('sql_column_exists')

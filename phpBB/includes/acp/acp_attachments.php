@@ -147,7 +147,6 @@ class acp_attachments
 
 						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'wpath',	'type' => 'text:25:100', 'explain' => true),
 						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
 						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
@@ -221,9 +220,6 @@ class acp_attachments
 				if ($submit)
 				{
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_ATTACH');
-
-					// Check Settings
-					$this->test_upload($error, $this->new_config['upload_path'], false);
 
 					if (!count($error))
 					{
@@ -557,11 +553,6 @@ class acp_attachments
 							'allow_in_pm'	=> ($allow_in_pm) ? 1 : 0,
 						);
 
-						if ($action == 'add')
-						{
-							$group_ary['download_mode'] = INLINE_LINK;
-						}
-
 						$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
 						$sql .= $db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
 						$sql .= ($action == 'edit') ? " WHERE group_id = $group_id" : '';
@@ -606,7 +597,6 @@ class acp_attachments
 				$cat_lang = array(
 					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-					ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
 				);
 
 				$group_id = $request->variable('g', 0);
@@ -1385,7 +1375,6 @@ class acp_attachments
 		$types = array(
 			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
 		);
 
 		if ($group_id)

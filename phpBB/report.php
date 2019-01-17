@@ -35,7 +35,7 @@ $controller_helper = $phpbb_container->get('controller.helper');
 $response = new RedirectResponse(
 	$controller_helper->route($redirect_route_name, array(
 		'id'	=> ($pm_id === 0) ? $post_id : $pm_id,
-	)),
+	), false),
 	301
 );
 $response->send();

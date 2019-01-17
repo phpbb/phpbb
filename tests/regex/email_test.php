@@ -15,7 +15,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 {
 	protected $regex;
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->regex = '#^' . get_preg_expression('email') . '$#i';
 	}
@@ -36,7 +36,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 			//array('"John Doe"@example.com'),
 			//array('Alice@[192.168.2.1]'),		// IPv4
 			//array('Bob@[2001:0db8:85a3:08d3:1319:8a2e:0370:7344]'), // IPv6
-			
+
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
 			array('l3tt3rsAndNumb3rs@domain.com'),
 			array('has-dash@domain.com'),
@@ -80,7 +80,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 			array('abc,def@example.com'),		// invalid character ,
 			array('abc<def@example.com'),		// invalid character <
 			array('abc>def@example.com'),		// invalid character >
-			
+
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
 			array('missingDomain@.com'),
 			array('@missingLocal.org'),

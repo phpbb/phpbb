@@ -274,7 +274,7 @@ class oauth extends \phpbb\auth\provider\base
 			$storage->set_user_id($row['user_id']);
 
 			/**
-			* Event is triggered after user is successfuly logged in via OAuth.
+			* Event is triggered after user is successfully logged in via OAuth.
 			*
 			* @event core.auth_oauth_login_after
 			* @var    array    row    User row
@@ -392,7 +392,7 @@ class oauth extends \phpbb\auth\provider\base
 			if ($credentials['key'] && $credentials['secret'])
 			{
 				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
+				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $actual_name;
 				$login_data['BLOCK_VARS'][$service_name] = array(
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
 					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],

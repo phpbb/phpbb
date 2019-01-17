@@ -52,18 +52,6 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 }
 
 /**
-* Casts a variable to the given type.
-*
-* @deprecated
-*/
-function set_var(&$result, $var, $type, $multibyte = false)
-{
-	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new \phpbb\request\type_cast_helper();
-	$type_cast_helper->set_var($result, $var, $type, $multibyte);
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @param int $num_chars Length of random string, defaults to 8.
@@ -3281,6 +3269,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
+	global $phpbb_container;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
@@ -3301,7 +3290,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG')) ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -3359,7 +3348,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || defined('DEBUG') || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || $phpbb_container->getParameter('debug.show_errors') || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 
@@ -3543,15 +3532,7 @@ function phpbb_filter_root_path($errfile)
 
 	if (empty($root_path))
 	{
-		if ($phpbb_filesystem)
-		{
-			$root_path = $phpbb_filesystem->realpath(dirname(__FILE__) . '/../');
-		}
-		else
-		{
-			$filesystem = new \phpbb\filesystem\filesystem();
-			$root_path = $filesystem->realpath(dirname(__FILE__) . '/../');
-		}
+		$root_path = \phpbb\filesystem\helper::realpath(dirname(__FILE__) . '/../');
 	}
 
 	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);
@@ -4247,7 +4228,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 	else
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login');
+		$redirect = $request->variable('redirect', rawurlencode($user->page['page']));
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -4388,6 +4370,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4421,6 +4406,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
+		'PHPBB_VERSION'		=> PHPBB_VERSION,
+		'PHPBB_MAJOR'		=> $phpbb_major,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
@@ -4497,11 +4484,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
-		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
@@ -4515,11 +4500,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
-		'T_AVATAR'				=> $config['avatar_path'],
 		'T_AVATAR_GALLERY'		=> $config['avatar_gallery_path'],
 		'T_ICONS'				=> $config['icons_path'],
 		'T_RANKS'				=> $config['ranks_path'],
-		'T_UPLOAD'				=> $config['upload_path'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
@@ -4576,7 +4559,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
-	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG'))
+	global $phpbb_container;
+
+	if ($phpbb_container->getParameter('debug.sql_explain') && $request->variable('explain', false) && $auth->acl_get('a_'))
 	{
 		$db->sql_report('display');
 	}
@@ -4594,19 +4579,22 @@ function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $re
 */
 function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 {
+	global $phpbb_container;
+
 	$debug_info = array();
 
 	// Output page creation time
-	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+	if ($phpbb_container->getParameter('debug.load_time'))
 	{
 		if (isset($GLOBALS['starttime']))
 		{
 			$totaltime = microtime(true) - $GLOBALS['starttime'];
 			$debug_info[] = sprintf('<span title="SQL time: %.3fs / PHP time: %.3fs">Time: %.3fs</span>', $db->get_sql_time(), ($totaltime - $db->get_sql_time()), $totaltime);
 		}
+	}
 
-		$debug_info[] = sprintf('<span title="Cached: %d">Queries: %d</span>', $db->sql_num_queries(true), $db->sql_num_queries());
-
+	if ($phpbb_container->getParameter('debug.memory'))
+	{
 		$memory_usage = memory_get_peak_usage();
 		if ($memory_usage)
 		{
@@ -4614,16 +4602,18 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 
 			$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
 		}
-	}
 
-	if (defined('DEBUG'))
-	{
 		$debug_info[] = 'GZIP: ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off');
 
 		if ($user->load)
 		{
 			$debug_info[] = 'Load: ' . $user->load;
 		}
+	}
+
+	if ($phpbb_container->getParameter('debug.sql_explain'))
+	{
+		$debug_info[] = sprintf('<span title="Cached: %d">Queries: %d</span>', $db->sql_num_queries(true), $db->sql_num_queries());
 
 		if ($auth->acl_get('a_'))
 		{

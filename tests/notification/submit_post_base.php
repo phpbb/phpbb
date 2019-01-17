@@ -47,7 +47,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_' . $this->item_type . '.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -58,7 +58,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$db = $this->db;
 
 		// Auth
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'),
@@ -91,8 +91,11 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Language
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
+		// Storage
+		$storage = $this->createMock('\phpbb\storage\storage');
+
 		// User
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			$lang,
 			'\phpbb\datetime'
 		));
@@ -105,8 +108,8 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		);
 
 		// Request
-		$type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
-		$request = $this->getMock('\phpbb\request\request');
+		$type_cast_helper = $this->createMock('\phpbb\request\type_cast_helper_interface');
+		$request = $this->createMock('\phpbb\request\request');
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
@@ -125,6 +128,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
+		$phpbb_container->set('storage.attachment', $storage);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');

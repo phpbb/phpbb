@@ -154,7 +154,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 		);
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 

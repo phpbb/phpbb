@@ -61,7 +61,10 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 				$output->writeln(print_r($response, true));
 				return $response;
 			};
-			$helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', array('ask'));
+			$helper = $this->getMockBuilder('\Symfony\Component\Console\Helper\QuestionHelper')
+				->setMethods(['ask'])
+				->disableOriginalConstructor()
+				->getMock();
 			$helper->expects($this->any())
 				->method('ask')
 				->will($this->returnCallback($ask));

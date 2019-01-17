@@ -151,12 +151,11 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 		{
 			global $cache;
 
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG'))
+			if ($this->debug_sql_explain)
 			{
 				$this->sql_report('start', $query);
 			}
-			else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+			else if ($this->debug_load_time)
 			{
 				$this->curtime = microtime(true);
 			}
@@ -172,11 +171,11 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 					$this->sql_error($query);
 				}
 
-				if (defined('DEBUG'))
+				if ($this->debug_sql_explain)
 				{
 					$this->sql_report('stop', $query);
 				}
-				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+				else if ($this->debug_load_time)
 				{
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
@@ -196,7 +195,7 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
-			else if (defined('DEBUG'))
+			else if ($this->debug_sql_explain)
 			{
 				$this->sql_report('fromcache', $query);
 			}

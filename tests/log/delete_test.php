@@ -20,7 +20,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_log.xml');
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher, $auth;
 
@@ -30,7 +30,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = 1;
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$this->log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
