@@ -596,18 +596,22 @@ if (isset($post_data['post_text']))
 
 // Set some default variables
 $uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
+$attachment_poster_id = '';
 
 /**
 * This event allows you to modify the default variables for post_data, and unset them in post_data if needed
 *
 * @event core.posting_modify_default_variables
-* @var	array	post_data	Array with post data
-* @var	array	uninit		Array with default vars to put into post_data, if they aren't there
+* @var	array	post_data				Array with post data
+* @var	array	uninit					Array with default vars to put into post_data, if they aren't there
+* @var	string	attachment_poster_id	An empty string, can be set to an int user_id (or false to disable) to check against the submitted attachment data
 * @since 3.2.5-RC1
+* @changed 3.2.6-RC1 Added attachment_poster_id
 */
 $vars = array(
 	'post_data',
 	'uninit',
+	'attachment_poster_id',
 );
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_default_variables', compact($vars)));
 
@@ -620,9 +624,10 @@ foreach ($uninit as $var_name => $default_value)
 }
 unset($uninit);
 
+($attachment_poster_id !== '') ?: $attachment_poster_id = $post_data['poster_id'];
 // Always check if the submitted attachment data is valid and belongs to the user.
 // Further down (especially in submit_post()) we do not check this again.
-$message_parser->get_submitted_attachment_data($post_data['poster_id']);
+$message_parser->get_submitted_attachment_data($attachment_poster_id);
 
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
