@@ -200,7 +200,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$topic_condition = '';
 	}
 
-	if (count($ids) === 1)
+	if (count($ids) == 1)
 	{
 		$sql = 'SELECT p.post_id as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
