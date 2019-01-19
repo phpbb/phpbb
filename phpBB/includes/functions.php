@@ -1728,7 +1728,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $user, $phpbb_path_helper, $phpbb_dispatcher;
+	global $user, $phpbb_path_helper, $phpbb_dispatcher, $config;
 
 	if (!$user->is_setup())
 	{
@@ -1746,12 +1746,20 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Malformed url
 		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
-	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
+	else if (!$disable_cd_check && !empty($config['cookie_domain']) && !empty($url_parts['host']))
 	{
-		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
-		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
+		if (strpos($config['cookie_domain'], '.') === 0 && substr($url_parts['host'], -strlen($config['cookie_domain'])) !== $config['cookie_domain'] && substr($config['cookie_domain'], 1) !== $url_parts['host'])
 		{
+			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);				
+		}
+	else if (strpos($config['cookie_domain'], '.') !== 0 && substr($url_parts['host'], -strlen($config['cookie_domain'])-1) !== '.' . $config['cookie_domain'] && $url_parts['host'] !== $config['cookie_domain'])
+	{
 			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
+		}
+		else
+		{
+			//Passes cookie check
+			$disable_cd_check = true;	
 		}
 	}
 	else if ($url[0] == '/')
