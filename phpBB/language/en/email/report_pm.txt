@@ -1,4 +1,4 @@
-Subject: Private Message report - "{TOPIC_TITLE}"
+Subject: Private Message report - "{SUBJECT}"
 
 Hello {USERNAME},
 

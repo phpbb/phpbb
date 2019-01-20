@@ -142,13 +142,16 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->user_loader->get_user($this->get_data('reporter_id'));
+		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
 		return array(
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
 			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_REPORT'	=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
+			/** @deprecated	3.2.6-RC1	(to be removed in 4.0.0) use {SUBJECT} instead in report_pm.txt */
+			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+
+			'U_VIEW_REPORT'	=> generate_board_url() . "/mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
 		);
 	}
 
@@ -236,8 +239,10 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function users_to_query()
 	{
-		return array($this->get_data('reporter_id'));
-	}
+		return array(
+			$this->get_data('from_user_id'),
+			$this->get_data('reporter_id'),
+		);	}
 
 	/**
 	* {@inheritdoc}
