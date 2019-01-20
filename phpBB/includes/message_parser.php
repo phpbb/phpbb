@@ -1587,6 +1587,16 @@ class parse_message extends bbcode_firstpass
 						'poster_id'			=> $user->data['user_id'],
 					);
 
+					/**
+					* Modify attachment sql array on submit
+					*
+					* @event core.modify_attachment_sql_ary_on_submit
+					* @var	array	sql_ary		Array containing SQL data
+					* @since 3.2.6-RC1
+					*/
+					$vars = array('sql_ary');
+					extract($phpbb_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_submit', compact($vars)));
+
 					$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 					$new_entry = array(
@@ -1721,6 +1731,16 @@ class parse_message extends bbcode_firstpass
 							'in_message'		=> ($is_message) ? 1 : 0,
 							'poster_id'			=> $user->data['user_id'],
 						);
+
+						/**
+						* Modify attachment sql array on upload
+						*
+						* @event core.modify_attachment_sql_ary_on_upload
+						* @var	array	sql_ary		Array containing SQL data
+						* @since 3.2.6-RC1
+						*/
+						$vars = array('sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_upload', compact($vars)));
 
 						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
