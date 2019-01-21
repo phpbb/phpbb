@@ -2420,6 +2420,13 @@ ucp_profile_register_details_after
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after confirm password field.
 
+ucp_profile_signature_posting_editor_options_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_signature.html
+* Since: 3.2.6-RC1
+* Purpose: Add options signature posting editor - before first option.
+
 ucp_register_buttons_before
 ===
 * Locations:
