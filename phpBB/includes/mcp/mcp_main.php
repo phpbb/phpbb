@@ -414,6 +414,23 @@ function change_topic_type($action, $topic_ids)
 
 	if (confirm_box(true))
 	{
+		/**
+		 * Perform additional actions before changing topic(s) type
+		 *
+		 * @event core.mcp_change_topic_type_before
+		 * @var	int		new_topic_type		The candidated topic type.
+		 * @var	int		forum_id			The forum ID for the topic ID(s).
+		 * @var	array	topic_ids			Array containing the topic ID(s) that will be changed
+		 * @since 3.2.6-RC1
+		 */
+		$vars = array(
+			'new_topic_type',
+			'forum_id',
+			'topic_ids',
+		);
+
+		extract($phpbb_dispatcher->trigger_event('core.mcp_change_topic_type_before', compact($vars)));
+
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
 			SET topic_type = $new_topic_type
 			WHERE " . $db->sql_in_set('topic_id', $topic_ids);
@@ -447,6 +464,22 @@ function change_topic_type($action, $topic_ids)
 				));
 			}
 		}
+
+		/**
+		 * Perform additional actions after changing topic types
+		 *
+		 * @event core.mcp_change_topic_type_after
+		 * @var	int		new_topic_type		The newly changed topic type.
+		 * @var	int		forum_id			The forum ID where the newly changed topic type belongs to.
+		 * @var	array	topic_ids			Array containing the topic IDs that have been changed
+		 * @since 3.2.6-RC1
+		 */
+		$vars = array(
+			'new_topic_type',
+			'forum_id',
+			'topic_ids',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_change_topic_type_after', compact($vars)));
 
 		meta_refresh(2, $redirect);
 		$message = $user->lang[$success_msg];
