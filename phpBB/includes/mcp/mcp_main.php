@@ -428,7 +428,6 @@ function change_topic_type($action, $topic_ids)
 			'forum_id',
 			'topic_ids',
 		);
-
 		extract($phpbb_dispatcher->trigger_event('core.mcp_change_topic_type_before', compact($vars)));
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
