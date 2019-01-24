@@ -116,14 +116,34 @@ if (!$auth->acl_getf_global('m_'))
 	);
 
 	$allow_user = false;
+	$topic_info = phpbb_get_topic_data(array($topic_id));
 	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
 	{
-		$topic_info = phpbb_get_topic_data(array($topic_id));
 		if ($topic_info[$topic_id]['topic_poster'] == $user->data['user_id'])
 		{
 			$allow_user = true;
 		}
 	}
+
+	/**
+	* Allow modification of the permissions to access the mcp file
+	*
+	* @event core.mcp_modify_permissions
+	* @var	array		user_quickmod_actions			Array holding the quickmod actions and their respectiev permissions
+	* @var	array		topic_info						An array of the current topic's data
+	* @var	bool		allow_user						Boolean holding if the user can access the mcp
+	* @var	int			forum_id						The current forum ID
+	* @var	int			topic_id						The current topic ID
+	* @since 3.2.6-RC1
+	*/
+	$vars = array(
+		'user_quickmod_actions',
+		'topic_info',
+		'allow_user',
+		'forum_id',
+		'topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_modify_permissions', compact($vars)));
 
 	if (!$allow_user)
 	{
