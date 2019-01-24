@@ -1024,6 +1024,28 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 			$s_hidden_fields['delete_permanent'] = '1';
 		}
 
+		/**
+		* This event allows you to modify the hidden form fields when deleting topics
+		*
+		* @event core.mcp_delete_topic_modify_hidden_fields
+		* @var	string	l_confirm				The mode we are deleting in (DELETE_TOPIC(S), DELETE_TOPIC(S)_PERMANENTLY)
+		* @var	array	s_hidden_fields			The array holding the hidden form fields
+		* @var	array	topic_ids				The array of topic IDs to be deleted
+		* @var	int		forum_id				The current forum ID
+		* @var	bool	only_softdeleted		If the topic_ids are all soft deleted, this is true
+		* @var	bool	only_shadow				If the topic_ids are all shadow topics, this is true
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'l_confirm',
+			's_hidden_fields',
+			'topic_ids',
+			'forum_id',
+			'only_softdeleted',
+			'only_shadow',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_delete_topic_modify_hidden_fields', compact($vars)));
+
 		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
