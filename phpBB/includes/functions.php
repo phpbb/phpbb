@@ -1746,7 +1746,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Malformed url
 		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
-	else if (!$disable_cd_check && !empty($config['cookie_domain']) && !empty($url_parts['host']))
+	else if (!$disable_cd_check && !empty($config['cookie_domain']) && !empty($url_parts['host']) && !empty($url_parts['scheme']))
 	{
 		if (strpos($config['cookie_domain'], '.') === 0 && substr($url_parts['host'], -strlen($config['cookie_domain'])) !== $config['cookie_domain'] && substr($config['cookie_domain'], 1) !== $url_parts['host'])
 		{
@@ -1758,8 +1758,14 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		}
 		else
 		{
-			//Passes cookie check
 			$disable_cd_check = true;	
+		}
+	}
+	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
+		{
+			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 		}
 	}
 	else if ($url[0] == '/')
