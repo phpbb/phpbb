@@ -33,9 +33,20 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Needed for handle_message_list_actions()
 	global $refresh, $submit, $preview;
 
-	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+	if (!function_exists('generate_smilies'))
+	{
+		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+	}
+
+	if (!function_exists('display_custom_bbcodes'))
+	{
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	}
+
+	if (!class_exists('parse_message'))
+	{
+		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+	}
 
 	if (!$action)
 	{

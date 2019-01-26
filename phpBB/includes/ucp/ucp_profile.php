@@ -469,8 +469,15 @@ class ucp_profile
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
 
-				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('generate_smilies'))
+				{
+					include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				}
+
+				if (!function_exists('display_custom_bbcodes'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				$preview	= $request->is_set_post('preview');
 

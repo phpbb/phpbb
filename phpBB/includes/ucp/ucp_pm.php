@@ -82,7 +82,10 @@ class ucp_pm
 			$mode = 'view';
 		}
 
-		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		if (!function_exists('get_folder'))
+		{
+			include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		}
 
 		switch ($mode)
 		{
@@ -104,7 +107,10 @@ class ucp_pm
 					break;
 				}
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+				if (!function_exists('compose_pm'))
+				{
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+				}
 				compose_pm($id, $mode, $action, $user_folders);
 
 				$tpl_file = 'posting_body';
@@ -114,7 +120,10 @@ class ucp_pm
 				set_user_message_limit();
 				get_folder($user->data['user_id']);
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
+				if (!function_exists('message_options'))
+				{
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
+				}
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
 				$tpl_file = 'ucp_pm_options';
@@ -125,8 +134,10 @@ class ucp_pm
 				get_folder($user->data['user_id']);
 				$this->p_name = 'pm';
 
-				// Call another module... please do not try this at home... Hoochie Coochie Man
-				include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
+				if (!class_exists('ucp_main'))
+				{
+					include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
+				}
 
 				$module = new ucp_main($this);
 				$module->u_action = $this->u_action;
@@ -375,7 +386,10 @@ class ucp_pm
 
 				if ($action == 'view_folder')
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+					if (!function_exists('view_folder'))
+					{
+						include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+					}
 					view_folder($id, $mode, $folder_id, $folder);
 
 					$tpl_file = 'ucp_pm_viewfolder';
@@ -393,7 +407,10 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
+					if (!function_exists('view_message'))
+					{
+						include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
+					}
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
 					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
