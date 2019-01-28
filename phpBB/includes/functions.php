@@ -1750,7 +1750,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		if (strpos($config['cookie_domain'], '.') === 0 && substr($url_parts['host'], -strlen($config['cookie_domain'])) !== $config['cookie_domain'] && substr($config['cookie_domain'], 1) !== $url_parts['host'])
 		{
-			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);				
+			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 		}
 	else if (strpos($config['cookie_domain'], '.') !== 0 && substr($url_parts['host'], -strlen($config['cookie_domain'])-1) !== '.' . $config['cookie_domain'] && $url_parts['host'] !== $config['cookie_domain'])
 	{
@@ -1758,7 +1758,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		}
 		else
 		{
-			$disable_cd_check = true;	
+			$disable_cd_check = true;
 		}
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
