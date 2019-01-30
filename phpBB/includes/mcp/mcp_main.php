@@ -176,7 +176,7 @@ class mcp_main
 			case 'front':
 				if (!function_exists('mcp_front_view'))
 				{
-					mcp_front_view($id, $mode, $action);
+					include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
 				}
 
 				$user->add_lang('acp/common');
