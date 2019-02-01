@@ -3042,6 +3042,8 @@ function tidy_database()
 	}
 	$db->sql_freeresult($result);
 
+	$db->sql_transaction('begin');
+
 	// Delete those rows from the acl tables not having listed the forums above
 	$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
 		WHERE ' . $db->sql_in_set('forum_id', $forum_ids, true);
@@ -3050,6 +3052,8 @@ function tidy_database()
 	$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
 		WHERE ' . $db->sql_in_set('forum_id', $forum_ids, true);
 	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
 
 	$config->set('database_last_gc', time(), false);
 }
