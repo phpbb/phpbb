@@ -38,7 +38,7 @@ class phpbb_network_checkdnsrr_test extends phpbb_test_case
 			array('does-not-exist.phpbb.com', 'AAAA', false),
 
 			// Existing CNAME record
-			array('news.cnet.com', 'CNAME', true),
+			array('www.github.com', 'CNAME', true),
 
 			// Non-existing CNAME record
 			array('does-not-exist.phpbb.com', 'CNAME', false),
