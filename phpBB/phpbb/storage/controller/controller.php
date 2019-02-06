@@ -44,7 +44,7 @@ class controller
 	 * Constructor
 	 *
 	 * @param service				$cache
-	 * @param driver_interfacd		$db
+	 * @param driver_interface		$db
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 */
@@ -127,7 +127,7 @@ class controller
 		{
 			try
 			{
-				$content_type = $file_info->mimetype;
+				$content_type = $file_info->get('mimetype');
 			}
 			catch (\phpbb\storage\exception\exception $e)
 			{
@@ -141,7 +141,7 @@ class controller
 		{
 			try
 			{
-				$this->response->headers->set('Content-Length', $file_info->size);
+				$this->response->headers->set('Content-Length', $file_info->get('size'));
 			}
 			catch (\phpbb\storage\exception\exception $e)
 			{
@@ -174,8 +174,6 @@ class controller
 
 	/**
 	* Garbage Collection
-	*
-	* @param bool $exit		Whether to die or not
 	*/
 	protected function file_gc()
 	{

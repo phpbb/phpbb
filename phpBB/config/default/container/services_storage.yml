@@ -102,6 +102,7 @@ services:
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@language'
             - '@request'
             - '@storage.attachment'
             - '@symfony_request'

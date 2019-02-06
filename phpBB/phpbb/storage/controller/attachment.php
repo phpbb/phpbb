@@ -18,8 +18,9 @@ use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\content_visibility;
 use phpbb\db\driver\driver_interface;
-use phpbb\event\dispatcher;
+use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
+use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\storage\storage;
 use phpbb\user;
@@ -41,8 +42,11 @@ class attachment extends controller
 	/** @var content_visibility */
 	protected $content_visibility;
 
-	/** @var dispatcher */
+	/** @var dispatcher_interface */
 	protected $dispatcher;
+
+	/** @var \phpbb\language\language */
+	protected $language;
 
 	/** @var request */
 	protected $request;
@@ -59,12 +63,13 @@ class attachment extends controller
 	 * @param content_visibility	$content_visibility
 	 * @param driver_interface		$db
 	 * @param dispatcher_interface	$dispatcher
+	 * @param language				$language
 	 * @param request				$request
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 * @param user					$user
 	 */
-	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher $dispatcher, request $request, storage $storage, symfony_request $symfony_request, user $user)
+	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
 		parent::__construct($cache, $db, $storage, $symfony_request);
 
@@ -72,6 +77,7 @@ class attachment extends controller
 		$this->config = $config;
 		$this->content_visibility = $content_visibility;
 		$this->dispatcher = $dispatcher;
+		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
 	}
@@ -84,7 +90,7 @@ class attachment extends controller
 		$attach_id = (int) $id;
 		$thumbnail = $this->request->variable('t', false);
 
-		$this->user->add_lang('viewtopic');
+		$this->language->add_lang('viewtopic');
 
 		if (!$this->config['allow_attachments'] && !$this->config['allow_pm_attach'])
 		{
@@ -96,7 +102,9 @@ class attachment extends controller
 			throw new http_exception(404, 'NO_ATTACHMENT_SELECTED');
 		}
 
-		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
+		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id,
+				is_orphan, physical_filename, real_filename, extension, mimetype,
+				filesize, filetime
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE attach_id = $attach_id";
 		$result = $this->db->sql_query($sql);
@@ -114,7 +122,8 @@ class attachment extends controller
 
 		$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 
-		if (!$attachment['in_message'] && !$this->config['allow_attachments'] || $attachment['in_message'] && !$this->config['allow_pm_attach'])
+		if (!$attachment['in_message'] && !$this->config['allow_attachments'] ||
+			$attachment['in_message'] && !$this->config['allow_pm_attach'])
 		{
 			throw new http_exception(404, 'ATTACHMENT_FUNCTIONALITY_DISABLED');
 		}
@@ -124,7 +133,8 @@ class attachment extends controller
 			// We allow admins having attachment permissions to see orphan attachments...
 			$own_attachment = ($this->auth->acl_get('a_attach') || $attachment['poster_id'] == $this->user->data['user_id']) ? true : false;
 
-			if (!$own_attachment || ($attachment['in_message'] && !$this->auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$this->auth->acl_get('u_download')))
+			if (!$own_attachment || ($attachment['in_message'] && !$this->auth->acl_get('u_pm_download')) ||
+				(!$attachment['in_message'] && !$this->auth->acl_get('u_download')))
 			{
 				throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 			}

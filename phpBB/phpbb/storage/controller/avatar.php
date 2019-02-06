@@ -52,7 +52,7 @@ class avatar extends controller
 	 */
 	public function handle($file)
 	{
-		$file = $this->decode_avatar_filename($file);
+		$file = $this->decode_filename($file);
 
 		return parent::handle($file);
 	}
@@ -75,7 +75,7 @@ class avatar extends controller
 	 *
 	 * @return string Filename in filesystem
 	 */
-	protected function decode_avatar_filename($file)
+	protected function decode_filename($file)
 	{
 		$avatar_group = false;
 
