@@ -20,6 +20,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class generate extends \phpbb\console\command\command
 {
 	/**
+	* @var \phpbb\config\config
+	*/
+	protected $config;
+
+	/**
 	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
@@ -45,14 +50,16 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
+	* @param \config\config $config The config
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\cache\service $cache The cache service
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -126,8 +133,8 @@ class generate extends \phpbb\console\command\command
 		{
 			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE)
 			{
-				$source = $this->phpbb_root_path . 'files/' . $row['physical_filename'];
-				$destination = $this->phpbb_root_path . 'files/thumb_' . $row['physical_filename'];
+				$source = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $row['physical_filename'];
+				$destination = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
 
 				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{

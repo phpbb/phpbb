@@ -19,6 +19,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class delete extends \phpbb\console\command\command
 {
 	/**
+	* @var \phpbb\config\config
+	*/
+	protected $config;
+
+	/**
 	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
@@ -32,12 +37,14 @@ class delete extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
+	* @param \config\config $config The config
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param string $phpbb_root_path Root path
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
 	{
+		$this->config = $config;
 		$this->db = $db;
 		$this->phpbb_root_path = $phpbb_root_path;
 
@@ -101,7 +108,7 @@ class delete extends \phpbb\console\command\command
 		$return = 0;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$thumbnail_path = $this->phpbb_root_path . 'files/thumb_' . $row['physical_filename'];
+			$thumbnail_path = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
 
 			if (@unlink($thumbnail_path))
 			{
