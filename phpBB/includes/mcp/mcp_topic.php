@@ -93,7 +93,11 @@ function mcp_topic_view($id, $mode, $action)
 	// Restore or pprove posts?
 	if (($action == 'restore' || $action == 'approve') && $auth->acl_get('m_approve', $topic_info['forum_id']))
 	{
-		include($phpbb_root_path . 'includes/mcp/mcp_queue.' . $phpEx);
+		if (!class_exists('mcp_queue'))
+		{
+			include($phpbb_root_path . 'includes/mcp/mcp_queue.' . $phpEx);
+		}
+
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 

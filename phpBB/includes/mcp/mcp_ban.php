@@ -34,7 +34,10 @@ class mcp_ban
 		}
 
 		// Include the admin banning interface...
-		include($phpbb_root_path . 'includes/acp/acp_ban.' . $phpEx);
+		if (!class_exists('acp_ban'))
+		{
+			include($phpbb_root_path . 'includes/acp/acp_ban.' . $phpEx);
+		}
 
 		$bansubmit		= $request->is_set_post('bansubmit');
 		$unbansubmit	= $request->is_set_post('unbansubmit');
