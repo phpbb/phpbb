@@ -9,12 +9,12 @@
 		ban_give_reason[-1] = '';
 
 	<!-- BEGIN bans -->
-		ban_length['{bans.BAN_ID}'] = '{bans.A_LENGTH}';
+		ban_length['{bans.BAN_ID}'] = '{{ bans.A_LENGTH }}';
 		<!-- IF bans.A_REASON -->
-			ban_reason['{bans.BAN_ID}'] = '{{ bans.A_REASON | e('js') }}';
+			ban_reason['{bans.BAN_ID}'] = '{{ bans.REASON | e('js') }}';
 		<!-- ENDIF -->
 		<!-- IF bans.A_GIVE_REASON -->
-			ban_give_reason['{bans.BAN_ID}'] = '{{ bans.A_GIVE_REASON | e('js') }}';
+			ban_give_reason['{bans.BAN_ID}'] = '{{ bans.GIVE_REASON | e('js') }}';
 		<!-- ENDIF -->
 	<!-- END bans -->
 
