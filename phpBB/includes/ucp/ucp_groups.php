@@ -399,7 +399,10 @@ class ucp_groups
 				$action		= (isset($_POST['addusers'])) ? 'addusers' : $request->variable('action', '');
 				$group_id	= $request->variable('g', 0);
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('phpbb_get_user_rank'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				add_form_key('ucp_groups');
 

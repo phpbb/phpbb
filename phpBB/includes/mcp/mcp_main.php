@@ -174,7 +174,10 @@ class mcp_main
 		switch ($mode)
 		{
 			case 'front':
-				include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
+				if (!function_exists('mcp_front_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
+				}
 
 				$user->add_lang('acp/common');
 
@@ -185,7 +188,10 @@ class mcp_main
 			break;
 
 			case 'forum_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+				if (!function_exists('mcp_forum_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+				}
 
 				$user->add_lang('viewforum');
 
@@ -208,7 +214,10 @@ class mcp_main
 			break;
 
 			case 'topic_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_topic.' . $phpEx);
+				if (!function_exists('mcp_topic_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_topic.' . $phpEx);
+				}
 
 				mcp_topic_view($id, $mode, $action);
 
@@ -217,7 +226,10 @@ class mcp_main
 			break;
 
 			case 'post_details':
-				include($phpbb_root_path . 'includes/mcp/mcp_post.' . $phpEx);
+				if (!function_exists('mcp_post_details'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_post.' . $phpEx);
+				}
 
 				mcp_post_details($id, $mode, $action);
 
