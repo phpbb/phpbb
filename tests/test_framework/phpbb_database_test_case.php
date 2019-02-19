@@ -33,10 +33,10 @@ abstract class phpbb_database_test_case extends TestCase
 	{
 		parent::__construct($name, $data, $dataName);
 		$this->backupStaticAttributesBlacklist += array(
-			'PHP_CodeCoverage' => array('instance'),
-			'PHP_CodeCoverage_Filter' => array('instance'),
-			'PHP_CodeCoverage_Util' => array('ignoredLines', 'templateMethods'),
-			'PHP_Timer' => array('startTimes',),
+			'SebastianBergmann\CodeCoverage\CodeCoverage' => array('instance'),
+			'SebastianBergmann\CodeCoverage\Filter' => array('instance'),
+			'SebastianBergmann\CodeCoverage\Util' => array('ignoredLines', 'templateMethods'),
+			'SebastianBergmann\Timer\Timer' => array('startTimes',),
 			'PHP_Token_Stream' => array('customTokens'),
 			'PHP_Token_Stream_CachingFactory' => array('cache'),
 
