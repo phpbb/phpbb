@@ -952,6 +952,27 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		return;
 	}
+
+	/**
+	 * This event is used for performing actions directly after forums,
+	 * topics or posts have been marked as read.
+	 *
+	 * @event core.markread_after
+	 * @var	string		mode				Variable containing marking mode value
+	 * @var	mixed		forum_id			Variable containing forum id, or false
+	 * @var	mixed		topic_id			Variable containing topic id, or false
+	 * @var	int			post_time			Variable containing post time
+	 * @var	int			user_id				Variable containing the user id
+	 * @since 3.2.6-RC1
+	 */
+	$vars = array(
+		'mode',
+		'forum_id',
+		'topic_id',
+		'post_time',
+		'user_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.markread_after', compact($vars)));
 }
 
 /**
