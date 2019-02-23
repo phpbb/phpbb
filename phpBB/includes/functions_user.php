@@ -684,7 +684,8 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		PRIVMSGS_RULES_TABLE,
 		$phpbb_container->getParameter('tables.auth_provider_oauth_token_storage'),
 		$phpbb_container->getParameter('tables.auth_provider_oauth_states'),
-		$phpbb_container->getParameter('tables.auth_provider_oauth_account_assoc')
+		$phpbb_container->getParameter('tables.auth_provider_oauth_account_assoc'),
+		$phpbb_container->getParameter('tables.user_notifications')
 	];
 
 	// Ignore errors on deleting from non-existent tables, e.g. when migrating
