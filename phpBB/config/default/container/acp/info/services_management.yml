@@ -1,0 +1,16 @@
+services:
+# Main category
+    phpbb.acp.info.management:
+        class: phpbb\acp\info\management
+        parent: cp.info.base
+        shared: false
+        tags: { name: phpbb.acp }
+
+# Subcategories
+
+# Items
+    phpbb.acp.info.index:
+        class: phpbb\acp\info\management\index
+        parent: phpbb.acp.info.management
+        shared: false
+        tags: { name: phpbb.acp }

@@ -8,7 +8,7 @@
 <title>{PAGE_TITLE}</title>
 
 <link href="{T_FONT_AWESOME_LINK}" rel="stylesheet">
-<link href="style/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
+<link href="{T_TEMPLATE_PATH}/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -109,9 +109,11 @@ function popup(url, width, height, name)
 	<div id="page-body">
 		<div id="tabs">
 			<ul>
-			<!-- BEGIN t_block1 -->
-				<li class="tab<!-- IF t_block1.S_SELECTED --> activetab<!-- ENDIF -->"><a href="{t_block1.U_TITLE}">{t_block1.L_TITLE}</a></li>
-			<!-- END t_block1 -->
+				{% for category in acp_menu %}
+					<li class="tab{{ category.S_SELECTED ? ' activetab' : '' }}">
+						<a href="{{ category.U_VIEW }}">{{ category.TITLE }}</a>
+					</li>
+				{% endfor %}
 			</ul>
 		</div>
 
@@ -119,31 +121,33 @@ function popup(url, width, height, name)
 				<div id="content">
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-						<!-- DEFINE $LI_USED = 0 -->
-						<!-- BEGIN l_block1 -->
-							<!-- IF l_block1.S_SELECTED -->
 
-						<!-- BEGIN l_block2 -->
-							<!-- IF .l_block1.l_block2.l_block3 -->
-							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
-							<div class="menu-block">
-								<a class="header" href="javascript:void(0);">{l_block1.l_block2.L_TITLE}</a>
-								<ul>
-							<!-- DEFINE $LI_USED = 1 -->
-							<!-- ENDIF -->
-
-							<!-- BEGIN l_block3 -->
-								<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
-								<!-- DEFINE $LI_USED = 1 -->
-							<!-- END l_block3 -->
-						<!-- END l_block2 -->
-
-							<!-- ENDIF -->
-						<!-- END l_block1 -->
-						<!-- IF $LI_USED -->
-								</ul>
-							</div>
-						<!-- ENDIF -->
+						{% for item in acp_menu_items %}
+							{% if item.CHILDREN %}
+								<div class="menu-block{{ item.S_SELECTED ? ' active' : '' }}">
+									<a class="header" href="javascript:void(0);">{{ item.TITLE }}</a>
+									<ul>
+										{% for child in item.CHILDREN %}
+											<li{% if child.S_SELECTED %} id="activemenu"{% endif %}>
+												<a href="{{ child.U_VIEW }}">
+													<span>{{ child.TITLE }}</span>
+												</a>
+											</li>
+										{% endfor %}
+									</ul>
+								</div>
+							{% else %}
+								<div class="menu-block no-header{{ item.S_SELECTED ? ' active' : '' }}">
+									<ul>
+										<li{% if item.S_SELECTED %} id="activemenu"{% endif %}>
+											<a href="{{ item.U_VIEW }}">
+												<span>{{ item.TITLE }}</span>
+											</a>
+										</li>
+									</ul>
+								</div>
+							{% endif %}
+						{% endfor %}
 					</div>
 
 					<div id="main">

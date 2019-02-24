@@ -1,0 +1,111 @@
+services:
+# Main category
+    phpbb.acp.info.settings:
+        class: phpbb\acp\info\settings
+        parent: cp.info.base
+        shared: false
+        tags: { name: phpbb.acp }
+
+# Subcategories
+    phpbb.acp.info.settings.client:
+        class: phpbb\acp\info\settings\client
+        parent: phpbb.acp.info.settings
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.general:
+        class: phpbb\acp\info\settings\general
+        parent: phpbb.acp.info.settings
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.server.cat:
+        class: phpbb\acp\info\settings\server_cat
+        parent: phpbb.acp.info.settings
+        shared: false
+        tags: { name: phpbb.acp }
+
+# Items
+    phpbb.acp.info.settings.auth:
+        class: phpbb\acp\info\settings\auth
+        parent: phpbb.acp.info.settings.server.cat
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.avatar:
+        class: phpbb\acp\info\settings\avatar
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.board:
+        class: phpbb\acp\info\settings\board
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.cookie:
+        class: phpbb\acp\info\settings\cookie
+        parent: phpbb.acp.info.settings.server.cat
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.email:
+        class: phpbb\acp\info\settings\email
+        parent: phpbb.acp.info.settings.client
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.features:
+        class: phpbb\acp\info\settings\features
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.feed:
+        class: phpbb\acp\info\settings\feed
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.load:
+        class: phpbb\acp\info\settings\load
+        parent: phpbb.acp.info.settings.server.cat
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.pm:
+        class: phpbb\acp\info\settings\pm
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.post:
+        class: phpbb\acp\info\settings\post
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.registration:
+        class: phpbb\acp\info\settings\registration
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.security:
+        class: phpbb\acp\info\settings\security
+        parent: phpbb.acp.info.settings.server.cat
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.server:
+        class: phpbb\acp\info\settings\server
+        parent: phpbb.acp.info.settings.server.cat
+        shared: false
+        tags: { name: phpbb.acp }
+
+    phpbb.acp.info.settings.signature:
+        class: phpbb\acp\info\settings\signature
+        parent: phpbb.acp.info.settings.general
+        shared: false
+        tags: { name: phpbb.acp }

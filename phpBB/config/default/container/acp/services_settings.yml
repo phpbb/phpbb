@@ -1,0 +1,17 @@
+services:
+    phpbb.acp.settings:
+        class: phpbb\acp\controller\settings
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@service_container'
+            - '@cp.manager'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.helper'
+            - '@language'
+            - '@log'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'

@@ -1,0 +1,32 @@
+services:
+    cp.manager:
+        class: phpbb\cp\manager
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@dispatcher'
+            - '@ext.manager'
+            - '@language'
+            - '@cp.panel.admin'
+            - '@template'
+            - '@user'
+
+    cp.panel.admin:
+        class: phpbb\cp\panel\admin
+        arguments:
+            - '@acp.collection'
+            - '@auth'
+            - '@language'
+            - '@path_helper'
+            - '@template'
+            - '@user'
+
+    cp.info.base:
+        class: phpbb\cp\info\base
+        abstract: true
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@request'

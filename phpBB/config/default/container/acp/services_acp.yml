@@ -1,0 +1,33 @@
+imports:
+    - { resource: info/services_management.yml }
+    - { resource: info/services_settings.yml }
+
+services:
+    acp.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: phpbb.acp }
+
+    acp.functions:
+        class: phpbb\acp\functions\acp
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@service_container'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    acp.helper:
+        class: phpbb\acp\controller\helper
+        parent: controller.helper
+        calls:
+            - [set_acp_functions, ['@acp.functions']]
+            - [set_language, ['@language']]

@@ -1,0 +1,56 @@
+
+phpbb_acp_settings_auth:
+    path: /settings/auth
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'auth' }
+
+phpbb_acp_settings_avatar:
+    path: /settings/avatar
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'avatar' }
+
+phpbb_acp_settings_board:
+    path: /settings/board
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'settings' }
+
+phpbb_acp_settings_cookie:
+    path: /settings/cookie
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'cookie' }
+
+phpbb_acp_settings_email:
+    path: /settings/email
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'email' }
+
+phpbb_acp_settings_features:
+    path: /settings/features
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'features' }
+
+phpbb_acp_settings_feed:
+    path: /settings/feed
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'feed' }
+
+phpbb_acp_settings_load:
+    path: /settings/load
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'load' }
+
+phpbb_acp_settings_pm:
+    path: /settings/pm
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'message' }
+
+phpbb_acp_settings_post:
+    path: /settings/post
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'post' }
+
+phpbb_acp_settings_registration:
+    path: /settings/registration
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'registration' }
+
+phpbb_acp_settings_security:
+    path: /settings/security
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'security' }
+
+phpbb_acp_settings_server:
+    path: /settings/server
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'server' }
+
+phpbb_acp_settings_signature:
+    path: /settings/signature
+    defaults: { _controller: phpbb.acp.settings:handle, mode: 'signature' }

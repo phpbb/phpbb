@@ -1,0 +1,3 @@
+phpbb_acp_index:
+    path: /index
+    defaults: { _controller: phpbb.acp.index:handle }

@@ -1,0 +1,19 @@
+services:
+    phpbb.acp.index:
+        class: phpbb\acp\controller\index
+        arguments:
+            - '@auth'
+            - '@cache.driver'
+            - '@config'
+            - '@service_container'
+            - '@cp.manager'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@filesystem'
+            - '@acp.helper'
+            - '@language'
+            - '@log'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'

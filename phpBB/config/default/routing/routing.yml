@@ -8,6 +8,14 @@
 # instantiate the 'foo_service' service and call the 'method' method.
 #
 
+phpbb_acp_default:
+    path: /admin
+    defaults: { _controller: phpbb.acp.index:handle }
+
+phpbb_acp_routing:
+    resource: acp/*
+    prefix: /admin
+
 phpbb_cron_routing:
     resource: cron.yml
     prefix: /cron
