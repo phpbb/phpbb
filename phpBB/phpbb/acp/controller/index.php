@@ -35,7 +35,7 @@ class index
 	protected $container;
 
 	/** @var cp_manager */
-	protected $cp_helper;
+	protected $cp_manager;
 
 	/** @var db */
 	protected $db;
@@ -154,7 +154,7 @@ class index
 				'S_RESTORE_PERMISSIONS'		=> true,
 				'U_RESTORE_PERMISSIONS'		=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm'),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN'), $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
 			));
 
 			return $this->helper->render('acp_main', $this->lang->lang('ACP_MAIN'));
@@ -538,7 +538,7 @@ class index
 		{
 			$this->template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($this->lang->lang('PHP_VERSION_OLD'), PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> $this->lang->lang('PHP_VERSION_OLD', PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 

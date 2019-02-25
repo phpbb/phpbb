@@ -2,7 +2,7 @@
 
 namespace phpbb\acp\info\settings;
 
-class general extends \phpbb\acp\info\settings
+class general extends settings
 {
 	public function get_title()
 	{

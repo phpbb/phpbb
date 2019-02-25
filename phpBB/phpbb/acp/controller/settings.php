@@ -777,15 +777,15 @@ class settings
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_' . strtoupper($mode));
 
 			$message = $this->lang->lang('CONFIG_UPDATED');
-			$message_code = E_USER_NOTICE;
 			if (!$this->config['email_enable'] && in_array($mode, array('email', 'registration')) &&
 				in_array($this->config['require_activation'], array(USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN)))
 			{
 				$message .= '<br /><br />' . $this->lang->lang('ACC_ACTIVATION_WARNING');
-				$message_code = E_USER_WARNING;
+
+				// @todo a "warning" class?
 			}
 
-			return $this->helper->message_back($this->helper->get_current_url(), $message, [], 'INFORMATION', $message_code);
+			return $this->helper->message_back($this->helper->get_current_url(), $message);
 		}
 
 		$this->template->assign_vars(array(

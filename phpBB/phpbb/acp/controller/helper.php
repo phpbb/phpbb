@@ -64,9 +64,9 @@ class helper extends \phpbb\controller\helper
 	{
 		$this->acp_functions->adm_page_header($page_title);
 
-		$this->template->set_filenames(array(
+		$this->template->set_filenames([
 			'body'	=> $template_file,
-		));
+		]);
 
 		$this->acp_functions->adm_page_footer();
 
@@ -77,10 +77,10 @@ class helper extends \phpbb\controller\helper
 	{
 		$s_errors = (bool) count($errors);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_ERROR'		=> $s_errors,
 			'ERROR_MESSAGE'	=> $s_errors ? implode('<br>', $errors) : '',
-		));
+		]);
 	}
 
 	/**
@@ -94,10 +94,10 @@ class helper extends \phpbb\controller\helper
 	 * @param int		$code			The HTTP status code (e.g. 404, 500, 503, etc.)
 	 * @return Response|JsonResponse	A Response instance
 	 */
-	public function message($message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
+	public function message($message, array $parameters = [], $title = 'INFORMATION', $code = 200)
 	{
 		array_unshift($parameters, $message);
-		$message_text = call_user_func_array(array($this->lang, 'lang'), $parameters);
+		$message_text = call_user_func_array([$this->lang, 'lang'], $parameters);
 		$message_title = $this->lang->lang($title);
 
 		return $this->display_message($message_title, $message_text, $code);
@@ -113,10 +113,10 @@ class helper extends \phpbb\controller\helper
 	 * @param int		$code			The HTTP status code (e.g. 404, 500, 503, etc.)
 	 * @return Response|JsonResponse	A Response instance
 	 */
-	public function message_back($link, $message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
+	public function message_back($link, $message, array $parameters = [], $title = 'INFORMATION', $code = 200)
 	{
 		array_unshift($parameters, $message);
-		$message_text = call_user_func_array(array($this->lang, 'lang'), $parameters);
+		$message_text = call_user_func_array([$this->lang, 'lang'], $parameters);
 		$message_text .= $this->acp_functions->adm_back_link($link);
 		$message_title = $this->lang->lang($title);
 
@@ -134,30 +134,28 @@ class helper extends \phpbb\controller\helper
 	 */
 	protected function display_message($title, $message, $code)
 	{
-		$code = in_array($code, [E_USER_NOTICE, E_USER_WARNING]) ? 200 : $code;
-
 		if ($this->request->is_ajax())
 		{
 			global $refresh_data;
 
 			return new JsonResponse(
-				array(
+				[
 					'MESSAGE_TITLE'		=> $title,
 					'MESSAGE_TEXT'		=> $message,
 					'S_USER_WARNING'	=> false,
 					'S_USER_NOTICE'		=> false,
 					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
-				),
+				],
 				$code
 			);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'MESSAGE_TITLE'	=> $title,
 			'MESSAGE_TEXT'	=> $message,
 
 			'S_USER_NOTICE'	=> $code === 200,
-		));
+		]);
 
 		return $this->render('message_body.html', $title, $code);
 	}

@@ -2,7 +2,7 @@
 
 namespace phpbb\acp\info\settings;
 
-class server_cat extends \phpbb\acp\info\settings
+class server_cat extends settings
 {
 	public function get_title()
 	{

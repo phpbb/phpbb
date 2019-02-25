@@ -1,6 +1,6 @@
 <?php
 
-namespace phpbb\acp\info;
+namespace phpbb\acp\info\settings;
 
 class settings extends \phpbb\cp\info\base
 {

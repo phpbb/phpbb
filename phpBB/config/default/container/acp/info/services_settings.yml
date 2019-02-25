@@ -1,7 +1,7 @@
 services:
 # Main category
     phpbb.acp.info.settings:
-        class: phpbb\acp\info\settings
+        class: phpbb\acp\info\settings\settings
         parent: cp.info.base
         shared: false
         tags: { name: phpbb.acp }

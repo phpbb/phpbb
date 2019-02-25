@@ -1,7 +1,7 @@
 services:
 # Main category
     phpbb.acp.info.management:
-        class: phpbb\acp\info\management
+        class: phpbb\acp\info\management\management
         parent: cp.info.base
         shared: false
         tags: { name: phpbb.acp }

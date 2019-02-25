@@ -1,6 +1,6 @@
 <?php
 
-namespace phpbb\acp\info;
+namespace phpbb\acp\info\management;
 
 class management extends \phpbb\cp\info\base
 {

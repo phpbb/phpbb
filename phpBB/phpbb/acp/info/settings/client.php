@@ -2,7 +2,7 @@
 
 namespace phpbb\acp\info\settings;
 
-class client extends \phpbb\acp\info\settings
+class client extends settings
 {
 	public function get_title()
 	{
