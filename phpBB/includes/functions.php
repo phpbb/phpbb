@@ -680,8 +680,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 		}
-
-		return;
 	}
 	else if ($mode == 'topics')
 	{
@@ -808,8 +806,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			unset($tracking);
 		}
-
-		return;
 	}
 	else if ($mode == 'topic')
 	{
@@ -923,8 +919,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 		}
-
-		return;
 	}
 	else if ($mode == 'post')
 	{
@@ -949,8 +943,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			$db->sql_return_on_error(false);
 		}
-
-		return;
 	}
 
 	/**
