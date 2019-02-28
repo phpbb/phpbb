@@ -1,11 +1,19 @@
 {
 	"plugins": [
+		"stylelint-scss",
 		"stylelint-order"
 	],
 	"ignoreFiles": [
-		"./phpBB/styles/prosilver/theme/normalize.css",
+		"./src/scss/generic/_normalize.scss",
+		"./src/scss/settings/*.scss"
 	],
 	"rules": {
+		"scss/at-extend-no-missing-placeholder": true,
+		"scss/at-else-empty-line-before": "never",
+		"scss/at-if-closing-brace-newline-after": "always-last-in-chain",
+		"scss/dollar-variable-colon-space-before": "never",
+		"scss/selector-no-redundant-nesting-selector": true,
+
 		"at-rule-name-case": "lower",
 		"at-rule-name-newline-after": "always-multi-line",
 		"at-rule-name-space-after": "always-single-line",
@@ -62,7 +70,7 @@
 		"declaration-empty-line-before": "never",
 
 		"declaration-property-unit-blacklist": {
-			"line-height": ["rem", "em", "%"]
+			"line-height": ["rem", "px", "em", "%"]
 		},
 		"declaration-property-unit-whitelist": {
 			"height": ["px", "%", "vh"],
@@ -130,7 +138,7 @@
 		"property-case": "lower",
 		"property-no-unknown": true,
 
-		"rule-empty-line-before": ["always-multi-line", {
+		"rule-empty-line-before": ["always", {
 			"ignore": ["after-comment"],
 			"except": ["first-nested"]
 		}],
@@ -171,7 +179,7 @@
 		"shorthand-property-no-redundant-values": true,
 
 		"string-no-newline": true,
-		"string-quotes": "double",
+		"string-quotes": "single",
 
 		"unit-case": "lower",
 		"unit-no-unknown": true,
@@ -180,21 +188,27 @@
 		"value-list-comma-newline-before": "never-multi-line",
 		"value-list-comma-space-after": "always-single-line",
 		"value-list-comma-space-before": "never",
-		"order/declaration-block-order": [
+		"order/order": [
 			"custom-properties",
 			"dollar-variables",
 			{
 				"type": "at-rule",
-				"name": "include"
+				"name": "include",
+				"parameter": "type"
 			},
 			"declarations",
 			"rules",
 			{
 				"type": "at-rule",
+				"name": "include",
+				"parameter": "fluid"
+			},
+			{
+				"type": "at-rule",
 				"name": "media"
 			}
 		],
-		"order/declaration-block-properties-specified-order": [
+		"order/properties-order": [
 			[
 				"font",
 				"font-family",
@@ -385,7 +399,7 @@
 				"animation-direction",
 				"pointer-events"
 			],
-			{ unspecified: "bottomAlphabetical" }
+			{ "unspecified": "bottomAlphabetical" }
 		]
 	}
 }
