@@ -130,7 +130,7 @@
 		"property-case": "lower",
 		"property-no-unknown": true,
 
-		"rule-empty-line-before": ["always", {
+		"rule-empty-line-before": ["always-multi-line", {
 			"ignore": ["after-comment"],
 			"except": ["first-nested"]
 		}],
@@ -171,7 +171,7 @@
 		"shorthand-property-no-redundant-values": true,
 
 		"string-no-newline": true,
-		"string-quotes": "single",
+		"string-quotes": "double",
 
 		"unit-case": "lower",
 		"unit-no-unknown": true,
