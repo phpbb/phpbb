@@ -1,19 +1,11 @@
 {
 	"plugins": [
-		"stylelint-scss",
 		"stylelint-order"
 	],
 	"ignoreFiles": [
-		"./src/scss/generic/_normalize.scss",
-		"./src/scss/settings/*.scss"
+		"./phpBB/styles/prosilver/theme/normalize.css"
 	],
 	"rules": {
-		"scss/at-extend-no-missing-placeholder": true,
-		"scss/at-else-empty-line-before": "never",
-		"scss/at-if-closing-brace-newline-after": "always-last-in-chain",
-		"scss/dollar-variable-colon-space-before": "never",
-		"scss/selector-no-redundant-nesting-selector": true,
-
 		"at-rule-name-case": "lower",
 		"at-rule-name-newline-after": "always-multi-line",
 		"at-rule-name-space-after": "always-single-line",
@@ -70,7 +62,7 @@
 		"declaration-empty-line-before": "never",
 
 		"declaration-property-unit-blacklist": {
-			"line-height": ["rem", "px", "em", "%"]
+			"line-height": ["rem", "em", "%"]
 		},
 		"declaration-property-unit-whitelist": {
 			"height": ["px", "%", "vh"],
