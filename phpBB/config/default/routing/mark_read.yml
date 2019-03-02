@@ -1,8 +1,17 @@
 phpbb_mark_forum_read:
-    path:       /{forum_id}/{time}/{token}
+    path:       /forums/{forum_id}/{time}/{token}
     methods:    [GET]
     defaults:
         _controller: read_tracking.controller:mark_forum_read
+    requirements:
+        forum_id:   '\d+'
+        time:       '\d+'
+
+phpbb_mark_topics_read:
+    path:       /topics/{forum_id}/{time}/{token}
+    methods:    [GET]
+    defaults:
+        _controller: read_tracking.controller:mark_topics_read
     requirements:
         forum_id:   '\d+'
         time:       '\d+'

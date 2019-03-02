@@ -61,6 +61,8 @@ class visibility_helper
 	 *
 	 * @param array $forum_data	Forum data array.
 	 * @param array $parameters	Additional parameter array.
+	 *
+	 * @return array The forum data with authorization information added.
 	 */
 	public function check(array $forum_data, array $parameters)
 	{
@@ -88,6 +90,11 @@ class visibility_helper
 				throw new forum_password_needed_exception();
 			}
 		}
+
+		$forum_data['user_can_post'] = $this->auth->acl_get('f_post', $forum_id);
+		$forum_data['user_can_search'] = $this->auth->acl_get('u_search') && $this->auth->acl_get('f_search', $forum_id);
+
+		return $forum_data;
 	}
 
 	/**
@@ -103,8 +110,8 @@ class visibility_helper
 		$sql = 'SELECT forum_id
 		FROM ' . $this->forum_access_table . '
 		WHERE forum_id = ' . (int) $forum_data['forum_id'] . '
-			AND user_id = ' . (int) $this->user->data['user_id'] . '
-			AND session_id = \'' . $this->db->sql_escape($this->user->session_id) . "'";
+			AND user_id = ' . (int) $this->user->data['user_id'] . "
+			AND session_id = '" . $this->db->sql_escape($this->user->session_id) . "'";
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

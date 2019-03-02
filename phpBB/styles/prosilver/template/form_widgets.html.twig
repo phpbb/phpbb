@@ -1,0 +1,7 @@
+{% block select_form_widget %}{% spaceless %}
+	<select name="{{ select.name }}" id="{{ select.name }}">
+		{% for option in select.options %}
+		<option value="{{ option.option }}"{% if option.selected %} selected="selected"{% endif %}>{{ lang(option.text) }}</option>
+		{% endfor %}
+	</select>
+{% endspaceless %}{% endblock %}

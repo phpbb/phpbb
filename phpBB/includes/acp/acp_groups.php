@@ -318,11 +318,6 @@ class acp_groups
 			case 'edit':
 			case 'add':
 
-				if (!function_exists('display_forums'))
-				{
-					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-				}
-
 				if ($action == 'edit' && !$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);

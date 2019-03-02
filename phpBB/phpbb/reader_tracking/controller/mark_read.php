@@ -121,11 +121,49 @@ class mark_read
 				'RETURN_FORUM',
 				['<a href="' . $viewforum_route . '">', '</a>'],
 				$viewforum_route,
+				'phpbb_mark_forum_read',
 				$forum_id
 			);
 		}
 
 		return $this->create_failure_message($viewforum_route);
+	}
+
+	/**
+	 * Marks topics in a specific forum read.
+	 *
+	 * @param int		$forum_id	The forum ID.
+	 * @param int		$time		Timestamp before which we want to mark posts read.
+	 * @param string	$token		Link security token.
+	 *
+	 * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
+	 */
+	public function mark_topics_read($forum_id, $time, $token)
+	{
+		$forum_id = (int) $forum_id;
+		$redirect_url = $this->controller_helper->route(
+			'phpbb_view_forum',
+			[
+				'forum_id' => $forum_id,
+				'parameters' => ''
+			]
+		);
+
+		if (check_link_hash($token, 'global'))
+		{
+			markread('topics', [$forum_id], false, $time);
+
+			return $this->create_success_message(
+				'TOPICS_MARKED',
+				'RETURN_FORUM',
+				['<a href="' . $redirect_url . '">', '</a>'],
+				$redirect_url,
+				'phpbb_mark_topics_read',
+				$forum_id
+			);
+		}
+
+		return $this->create_failure_message($redirect_url);
 	}
 
 	/**
@@ -135,11 +173,12 @@ class mark_read
 	 * @param string	$msg		The message
 	 * @param array		$msg_params	Params of the message.
 	 * @param string	$url		Return url.
+	 * @param string	$mark_route	Name of the route.
 	 * @param int		$forum_id	Forum ID.
 	 *
 	 * @return JsonResponse|\Symfony\Component\HttpFoundation\Response The response object.
 	 */
-	protected function create_success_message($title, $msg, $msg_params, $url, $forum_id)
+	protected function create_success_message($title, $msg, $msg_params, $url, $mark_route, $forum_id)
 	{
 		if ($this->request->is_ajax())
 		{
@@ -147,7 +186,7 @@ class mark_read
 			if ($this->user->data['is_registered'] || $this->config['load_anon_lastread'])
 			{
 				$mark_link = $this->controller_helper->route(
-					'phpbb_mark_forum_read',
+					$mark_route,
 					[
 						'forum_id'	=> $forum_id,
 						'time'		=> time(),
@@ -161,7 +200,7 @@ class mark_read
 				'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
 				'U_MARK_FORUMS'		=> $mark_link,
 				'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
-				'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED')
+				'MESSAGE_TEXT'		=> $this->language->lang($title)
 			];
 
 			return new JsonResponse($data);

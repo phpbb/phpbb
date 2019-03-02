@@ -1,3 +1,4 @@
+{% use "form_widgets.html.twig" %}
 <div class="dropdown-container dropdown-container-left dropdown-button-control sort-tools">
 	<span title="{L_SORT_OPTIONS}" class="button button-secondary dropdown-trigger dropdown-select">
 		<i class="icon fa-sort-amount-asc fa-fw" aria-hidden="true"></i>
@@ -13,10 +14,10 @@
 				<hr class="dashed" />
 				<input type="submit" class="button1 button button-form-bold" name="sort" value="{L_SORT}" />
 			<!-- ELSE -->
-				<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
+				<label>{L_DISPLAY}{L_COLON} {% if S_SELECT_SORT_DAYS is iterable %}{% with { select: S_SELECT_SORT_DAYS } only %}{{ block('select_form_widget') }}{% endwith %}{% else %}{S_SELECT_SORT_DAYS}{% endif %}</label>
 				<!-- IF S_SELECT_SORT_KEY -->
-				<label>{L_SORT_BY}{L_COLON} {S_SELECT_SORT_KEY}</label>
-				<label>{L_SORT_DIRECTION}{L_COLON} {S_SELECT_SORT_DIR}</label>
+				<label>{L_SORT_BY}{L_COLON} {% if S_SELECT_SORT_KEY is iterable %}{% with { select: S_SELECT_SORT_KEY } only %}{{ block('select_form_widget') }}{% endwith %}{% else %}{S_SELECT_SORT_KEY}{% endif %}</label>
+				<label>{L_SORT_DIRECTION}{L_COLON} {% if S_SELECT_SORT_DIR is iterable %}{% with { select: S_SELECT_SORT_DIR } only %}{{ block('select_form_widget') }}{% endwith %}{% else %}{S_SELECT_SORT_DIR}{% endif %}</label>
 				<!-- ENDIF -->
 				<hr class="dashed" />
 				<input type="submit" class="button1 button button-form-bold" name="sort" value="{L_GO}" />

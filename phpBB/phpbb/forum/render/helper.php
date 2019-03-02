@@ -33,6 +33,9 @@ class helper
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
 
+	/** @var \phpbb\reader_tracking\reader_tracker */
+	protected $read_tracker;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -45,6 +48,7 @@ class helper
 		\phpbb\event\dispatcher_interface $dispatcher,
 		\phpbb\language\language $language,
 		\phpbb\path_helper $path_helper,
+		\phpbb\reader_tracking\reader_tracker $read_tracker,
 		\phpbb\template\template $template,
 		\phpbb\user $user)
 	{
@@ -53,6 +57,7 @@ class helper
 		$this->dispatcher = $dispatcher;
 		$this->language = $language;
 		$this->path_helper = $path_helper;
+		$this->read_tracker = $read_tracker;
 		$this->template = $template;
 		$this->user = $user;
 	}
@@ -76,14 +81,64 @@ class helper
 		]);
 	}
 
+	public function render_forum_data(array $forum_data, array $active_forum_ary)
+	{
+		$forum_id = (int) $forum_data['forum_id'];
+
+		$s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS));
+
+		$viewforum_route = ''; // append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . (($start == 0) ? '' : "&amp;start=$start")),
+		$mark_read_route = ''; // ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics&amp;mark_time=" . time()) : '',
+
+		$s_limit_days = $s_sort_dir = $s_sort_key = '<input type="checkbox">';
+
+		$this->template->assign_vars([
+			'MODERATORS'	=> [], //$forum_data['moderators'],
+
+			'L_NO_TOPICS'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $this->language->lang('POST_FORUM_LOCKED') : $this->language->lang('NO_TOPICS'),
+
+			'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($forum_data['user_can_post'] || $this->user->data['user_id'] == ANONYMOUS)),
+
+			'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST),
+			'S_USER_CAN_POST'		=> $forum_data['user_can_post'],
+			'S_DISPLAY_ACTIVE'		=> $s_display_active,
+
+			// @todo: move this.
+			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+			'S_SELECT_SORT_KEY'		=> $s_sort_key,
+			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+
+			'S_TOPIC_ICONS'			=> ($s_display_active && count($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
+			/*'U_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
+			'U_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['link_toggle'],
+			'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
+			'S_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['title_toggle'],
+			'S_WATCHING_FORUM'		=> $s_watching_forum['is_watching'],*/
+			'S_FORUM_ACTION'		=> $viewforum_route,
+
+			'S_DISPLAY_SEARCHBOX'			=> ($forum_data['user_can_search'] && $this->config['load_search']),
+			/*'S_SEARCHBOX_ACTION'			=> append_sid("{$phpbb_root_path}search.$phpEx"),
+			'S_SEARCH_LOCAL_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),*/
+
+			'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED),
+			'S_VIEWFORUM'			=> true,
+
+			//'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $this->user->session_id) : '',
+			//'U_POST_NEW_TOPIC'	=> ($forum_data['user_can_post'] || $this->user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
+			//'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start == 0) ? '' : "&amp;start=$start")),
+			//'U_CANONICAL'		=> generate_board_url() . '/' . append_sid("viewforum.$phpEx", "f=$forum_id" . (($start) ? "&amp;start=$start" : ''), true, ''),
+			'U_MARK_TOPICS'		=> $mark_read_route,
+		]);
+	}
+
 	/**
-	 * Renders the forum list.
+	 * Render forum list.
 	 *
-	 * @param array $forum_data				Forum metadata.
-	 * @param array $forum_rows				Forum rows to render.
-	 * @param array $subforums				Subforum array.
-	 * @param array $valid_categories		Non-empty category array.
-	 * @param array $forum_tracking_info	Reading time information.
+	 * @param array $forum_data				Data of the root forum.
+	 * @param array $forum_rows				Array of immediate children of the root forum.
+	 * @param array $subforums				Array of subforums of immediate children forums.
+	 * @param array $valid_categories		Boolean array of valid categories.
+	 * @param array $forum_tracking_info	Read tracking information.
 	 * @param array $forum_moderators		Array of forum moderators.
 	 */
 	public function render_subforums(
@@ -92,7 +147,7 @@ class helper
 		array $subforums,
 		array $valid_categories,
 		array $forum_tracking_info,
-		array $forum_moderators = [])
+		array $forum_moderators)
 	{
 		$asset_root_path = $phpbb_root_path = $this->path_helper->get_web_root_path();
 		$phpEx = $this->path_helper->get_php_ext();
@@ -118,6 +173,11 @@ class helper
 		];
 		extract($this->dispatcher->trigger_event('core.display_forums_before', compact($vars)));
 		$forum_data = $root_data;
+
+		if (empty($forum_rows))
+		{
+			$this->template->assign_var('S_HAS_SUBFORUM', false);
+		}
 
 		// Used to tell whatever we have to create a dummy category or not.
 		$last_catless = true;
@@ -329,7 +389,8 @@ class helper
 
 			$u_viewforum = (!empty($u_viewforum)) ? $u_viewforum : $this->controller_helper->route('phpbb_view_forum', $route_param_ary);
 
-			$l_moderator = $moderators_list = '';
+			$l_moderator = '';
+			$moderators_list = [];
 			if (!empty($forum_moderators) && !empty($forum_moderators[$forum_id]))
 			{
 				$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $this->language->lang('MODERATOR') : $this->language->lang('MODERATORS');

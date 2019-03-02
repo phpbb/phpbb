@@ -335,12 +335,6 @@ class mcp_warn
 		$parse_flags = OPTION_FLAG_SMILIES | ($user_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
 		$message = generate_text_for_display($user_row['post_text'], $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], $parse_flags, true);
 
-		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('phpbb_get_user_rank'))
-		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-		}
-
 		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
 		$avatar_img = phpbb_get_user_avatar($user_row);
 
@@ -485,11 +479,6 @@ class mcp_warn
 			}
 		}
 
-		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('phpbb_get_user_rank'))
-		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-		}
 		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
 		$avatar_img = phpbb_get_user_avatar($user_row);
 

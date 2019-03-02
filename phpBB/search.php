@@ -663,10 +663,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 	}
-	else
-	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	}
 
 	$user->add_lang('viewtopic');
 

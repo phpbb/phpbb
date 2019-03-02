@@ -2028,11 +2028,6 @@ class acp_users
 
 			case 'sig':
 
-				if (!function_exists('display_custom_bbcodes'))
-				{
-					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-				}
-
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? $this->optionget($user_row, 'sig_bbcode') : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? $this->optionget($user_row, 'sig_smilies') : false;
 				$enable_urls	= ($config['allow_sig_links']) ? $this->optionget($user_row, 'sig_links') : false;

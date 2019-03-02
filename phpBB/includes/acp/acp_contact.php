@@ -39,10 +39,6 @@ class acp_contact
 		add_form_key($form_name);
 		$error = '';
 
-		if (!function_exists('display_custom_bbcodes'))
-		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-		}
 		if (!class_exists('parse_message'))
 		{
 			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);

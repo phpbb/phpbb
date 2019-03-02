@@ -1,0 +1,9 @@
+services:
+# ----- Topic related services -----
+    topic.retriever:
+        class: phpbb\topic\topic_retriever
+        arguments:
+            - '@content.visibility'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '%tables.topics%'

@@ -3,17 +3,30 @@ services:
     forum.view_controller:
         class: phpbb\forum\controller\viewforum
         arguments:
+            - '@auth'
             - '@config'
+            - '@content.visibility'
             - '@controller.helper'
             - '@dispatcher'
+            - '@forum.data_transformer'
             - '@forum.retriever'
             - '@language'
+            - '@pagination'
             - '@forum.render_helper'
             - '@request'
+            - '@template'
             - '@user'
             - '@forum.visibility_helper'
 
 # ----- Forum related services -----
+    forum.data_transformer:
+        class: phpbb\forum\data_transformer
+        arguments:
+            - '@auth'
+            - '@dispatcher'
+            - '@read_tracking.tracker'
+            - '@user'
+
     forum.retriever:
         class: phpbb\forum\forum_retriever
         arguments:
@@ -21,7 +34,6 @@ services:
             - '@config'
             - '@dbal.conn.driver'
             - '@dispatcher'
-            - '@read_tracking.tracker'
             - '@user'
             - '%tables.forums%'
             - '%tables.forums_access%'
@@ -36,6 +48,7 @@ services:
             - '@dispatcher'
             - '@language'
             - '@path_helper'
+            - '@read_tracking.tracker'
             - '@template'
             - '@user'
 

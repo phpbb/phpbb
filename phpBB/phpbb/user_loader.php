@@ -217,11 +217,6 @@ class user_loader
 			return '';
 		}
 
-		if (!function_exists('phpbb_get_user_rank'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
 		$rank = array(
 			'rank_title',
 			'rank_img',

@@ -34,7 +34,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	global $refresh, $submit, $preview;
 
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 	if (!$action)

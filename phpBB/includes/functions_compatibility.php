@@ -160,10 +160,6 @@ function update_foes($group_id = false, $user_id = false)
 function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
 	global $phpbb_root_path, $phpEx;
-	if (!function_exists('phpbb_get_user_rank'))
-	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	}
 
 	$rank_data = phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts);
 	$rank_title = $rank_data['title'];
@@ -741,15 +737,20 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	/** @var \phpbb\forum\render\helper $phpbb_forum_renderer */
 	$phpbb_forum_renderer = $phpbb_container->get('forum.render_helper');
 
+	/** @var \phpbb\forum\data_transformer $phpbb_forum_data_transformer */
+	$phpbb_forum_data_transformer = $phpbb_container->get('forum.data_transformer');
+
 	$rows = $phpbb_forum_retriever->get_subforums($root_data);
 	$rows = $phpbb_forum_visibility->filter_subforums($rows);
 
-	list($forum_rows, $subforums, $valid_categories, $forum_ids_moderator, $forum_tracking_info) = $phpbb_forum_retriever->get_subforum_hierarchy(
+	list($forum_rows, $subforums, $valid_categories, $forum_tracking_info) = $phpbb_forum_data_transformer->get_subforum_hierarchy(
 		$root_data,
 		$rows
 	);
 
-	$active_forum_ary = $phpbb_forum_retriever->get_active_topic_array($root_data, $rows);
+	$forum_ids_moderator = $phpbb_forum_data_transformer->get_non_category_ids($forum_rows);
+
+	$active_forum_ary = $phpbb_forum_data_transformer->get_active_topic_array($root_data, $rows);
 
 	// Grab moderators ... if necessary
 	if ($display_moderators)
@@ -757,11 +758,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if ($return_moderators)
 		{
 			$forum_ids_moderator[] = $root_data['forum_id'];
-		}
-
-		if (!function_exists('get_moderators'))
-		{
-			include ($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
 		get_moderators($forum_moderators, $forum_ids_moderator);

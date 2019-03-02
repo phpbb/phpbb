@@ -470,7 +470,6 @@ class ucp_profile
 				}
 
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$preview	= $request->is_set_post('preview');
 

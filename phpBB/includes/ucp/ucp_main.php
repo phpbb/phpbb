@@ -215,10 +215,6 @@ class ucp_main
 
 				if ($config['load_user_activity'])
 				{
-					if (!function_exists('display_user_activity'))
-					{
-						include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-					}
 					display_user_activity($user->data);
 				}
 
@@ -244,8 +240,6 @@ class ucp_main
 			break;
 
 			case 'subscribed':
-
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$user->add_lang('viewforum');
 
@@ -480,8 +474,6 @@ class ucp_main
 					);
 					break;
 				}
-
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$user->add_lang('viewforum');
 
