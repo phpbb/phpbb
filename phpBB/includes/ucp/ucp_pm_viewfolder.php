@@ -39,7 +39,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		// Grab icons
 		$icons = $cache->obtain_icons();
 
-		$color_rows = array('marked', 'replied');
+		$color_rows = array('message_reported', 'marked', 'replied');
 
 		$_module = new p_master();
 		$_module->list_modules('ucp');
