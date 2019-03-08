@@ -1,0 +1,8 @@
+{% spaceless %}
+<img
+	class="icon png-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
+	src="{{ SOURCE }}"
+	alt="{{ lang(TITLE) }}"
+	{{ ATTRIBUTES }}
+/>
+{% endspaceless %}

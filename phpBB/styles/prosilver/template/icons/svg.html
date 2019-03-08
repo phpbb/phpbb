@@ -1,0 +1,21 @@
+{% spaceless %}
+	{% set TITLE_ID = TITLE ? TITLE|lower|replace({' ': '-'}) ~ '-' ~ random() %}
+<svg
+	class="icon svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
+	viewBox="0 0 24 24"
+	{% if TITLE %}
+		{% if S_HIDDEN %}aria-hidden="true"{% endif %}
+		aria-labelledby="{{ TITLE_ID }}"
+	{% endif %}
+	role="img"
+	{{ ATTRIBUTES }}
+>
+	{% if TITLE %}
+	<title id="{{ TITLE_ID }}">
+		{{ lang(TITLE) }}
+	</title>
+	{% endif %}
+
+	{{ SOURCE }}
+</svg>
+{% endspaceless %}
