@@ -73,6 +73,7 @@ class helper
 
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
 
+		/** @html Group name strings for usage in the template */
 		$this->name_strings = array(
 			'base_url'				=> "{$path_helper->get_phpbb_root_path()}memberlist.{$path_helper->get_php_ext()}?mode=group&amp;g={GROUP_ID}",
 			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
