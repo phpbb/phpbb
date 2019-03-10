@@ -2,10 +2,9 @@
 	$Colours
 /* -------------------------------------------------------------- *
 
-/* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
 
-/*	colours and backgrounds for common.css */
+/* colours and backgrounds for common.css */
 html,
 body {
 	background-color: #f5f5f5;
@@ -35,7 +34,7 @@ hr {
 	border-top-color: #dedede;
 }
 
-/*	colours and backgrounds for links.css */
+/* colours and backgrounds for links.css */
 a {
 	color: #0f4d8a;
 }
@@ -129,6 +128,8 @@ th a:hover {
 .bg1 {
 	background-color: #edf4f7;
 }
+
+/* stylelint-disable selector-no-qualifying-type */
 
 table.zebra-list tr:nth-child(odd) td,
 ul.zebra-list li:nth-child(odd) {
@@ -1051,7 +1052,6 @@ input.disabled {
 
 /* stylelint-enable at-rule-no-vendor-prefix */
 
-
 @keyframes colors {
 	0% {
 		stroke: #4285f4;
@@ -1151,3 +1151,5 @@ input.disabled {
 	background-color: #d41142;
 	color: #ffffff;
 }
+
+/* stylelint-enable selector-no-qualifying-type */

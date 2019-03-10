@@ -2,6 +2,8 @@
 	$Links
 /* -------------------------------------------------------------- */
 
+/* stylelint-disable selector-no-qualifying-type */
+
 /* Links adjustment to correctly display an order of rtl/ltr mixed content */
 a {
 	text-decoration: none;
@@ -32,8 +34,6 @@ th a {
 th a:hover {
 	text-decoration: underline;
 }
-
-/* stylelint-disable selector-no-qualifying-type */
 
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
@@ -205,3 +205,5 @@ a.feed-icon-forum {
 a.anchor {
 	display: block;
 }
+
+/* stylelint-enable selector-no-qualifying-type */

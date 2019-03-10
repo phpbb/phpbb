@@ -912,13 +912,10 @@ table.fixed-width-table {
 	border-radius: 3px;
 }
 
-/* Factor out this ID */
-/* stylelint-disable selector-no-id */
 .memberlist tr.inactive,
 .team tr.inactive {
 	font-style: italic;
 }
-/* stylelint-enable selector-no-id */
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
