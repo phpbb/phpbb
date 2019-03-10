@@ -73,7 +73,7 @@ class helper
 
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
 
-		/** @html Group name strings for usage in the template */
+		/** @html Group name spans and links for usage in the template */
 		$this->name_strings = array(
 			'base_url'				=> "{$path_helper->get_phpbb_root_path()}memberlist.{$path_helper->get_php_ext()}?mode=group&amp;g={GROUP_ID}",
 			'tpl_noprofile'			=> '<span class="username">{GROUP_NAME}</span>',
@@ -95,6 +95,8 @@ class helper
 
 	/**
 	 * Get group name details for placing into templates.
+	 *
+	 * @html Group name spans and links
 	 *
 	 * @param string	$mode				profile (for getting an url to the profile),
 	 *                                        group_name (for obtaining the group name),
@@ -212,6 +214,8 @@ class helper
 	/**
 	 * Get group rank title and image
 	 *
+	 * @html Group rank image element
+	 *
 	 * @param array		$group_data		the current stored group data
 	 *
 	 * @return array					An associative array containing the rank title (title),
@@ -249,6 +253,7 @@ class helper
 
 				$group_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $this->path_helper->update_web_root_path($this->phpbb_root_path . $this->config['ranks_path'] . '/' . $rank['rank_image']) : '';
 
+				/** @html Group rank image element for usage in the template */
 				$group_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $group_rank_data['img_src'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
 			}
 		}
