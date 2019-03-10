@@ -1,7 +1,8 @@
 {% spaceless %}
 	{% set TITLE_ID = TITLE ? TITLE|lower|replace({' ': '-'}) ~ '-' ~ random() %}
 <svg
-	class="icon svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
+	class="o-icon svg svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
+	xmlns="http://www.w3.org/2000/svg"
 	viewBox="0 0 24 24"
 	{% if TITLE %}
 		{% if S_HIDDEN %}aria-hidden="true"{% endif %}

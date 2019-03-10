@@ -1,6 +1,6 @@
 {% spaceless %}
 <i
-	class="icon fa-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
+	class="o-icon font fa-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}"
 	{% if S_HIDDEN %}
 		{% if TITLE %}title="{{ lang(TITLE) }}"{% endif %}
 		aria-hidden="true"
