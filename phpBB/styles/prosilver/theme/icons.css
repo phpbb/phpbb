@@ -20,10 +20,10 @@ blockquote cite:before,
 	font-variant: normal;
 	line-height: 1;
 	display: inline-block;
-	/* stylelint-disable order/declaration-block-properties-specified-order */
+	/* stylelint-disable order/properties-order */
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
-	/* stylelint-enable order/declaration-block-properties-specified-order */
+	/* stylelint-enable order/properties-order */
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 

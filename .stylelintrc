@@ -3,7 +3,7 @@
 		"stylelint-order"
 	],
 	"ignoreFiles": [
-		"./phpBB/styles/prosilver/theme/normalize.css",
+		"./phpBB/styles/prosilver/theme/normalize.css"
 	],
 	"rules": {
 		"at-rule-name-case": "lower",
@@ -180,21 +180,27 @@
 		"value-list-comma-newline-before": "never-multi-line",
 		"value-list-comma-space-after": "always-single-line",
 		"value-list-comma-space-before": "never",
-		"order/declaration-block-order": [
+		"order/order": [
 			"custom-properties",
 			"dollar-variables",
 			{
 				"type": "at-rule",
-				"name": "include"
+				"name": "include",
+				"parameter": "type"
 			},
 			"declarations",
 			"rules",
 			{
 				"type": "at-rule",
+				"name": "include",
+				"parameter": "fluid"
+			},
+			{
+				"type": "at-rule",
 				"name": "media"
 			}
 		],
-		"order/declaration-block-properties-specified-order": [
+		"order/properties-order": [
 			[
 				"font",
 				"font-family",
@@ -385,7 +391,7 @@
 				"animation-direction",
 				"pointer-events"
 			],
-			{ unspecified: "bottomAlphabetical" }
+			{ "unspecified": "bottomAlphabetical" }
 		]
 	}
 }
