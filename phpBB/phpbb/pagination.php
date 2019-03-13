@@ -46,7 +46,7 @@ class pagination
 	/**
 	* Generate a pagination link based on the url and the page information
 	*
-	* @param string $base_url is url prepended to all links generated within the function
+	* @param string|array $base_url is url prepended to all links generated within the function
 	*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 	*							for the page. Also be sure to specify the pagination path information into the start_name argument
 	* @param string $on_page is the page for which we want to generate the link
@@ -69,7 +69,7 @@ class pagination
 		* set $generate_page_link_override to the new URL value
 		*
 		* @event core.pagination_generate_page_link
-		* @var string base_url is url prepended to all links generated within the function
+		* @var string|array base_url is url prepended to all links generated within the function
 		*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 		*							for the page. Also be sure to specify the pagination path information into the start_name argument
 		* @var string on_page is the page for which we want to generate the link
@@ -120,7 +120,7 @@ class pagination
 	* Generate template rendered pagination
 	* Allows full control of rendering of pagination with the template
 	*
-	* @param string $base_url is url prepended to all links generated within the function
+	* @param string|array $base_url is url prepended to all links generated within the function
 	*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 	*							for the page. Also be sure to specify the pagination path information into the start_name argument
 	* @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
@@ -132,7 +132,7 @@ class pagination
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
 	* @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
 	* @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
-	* @return null
+	* @return void
 	*/
 	public function generate_template_pagination($base_url, $block_var_name, $start_name, $num_items, $per_page, $start = 1, $reverse_count = false, $ignore_on_page = false)
 	{
