@@ -54,7 +54,7 @@ class jumpbox extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('jumpbox', [$this, 'jumpbox'], array('needs_environment' => true)),
+			new \Twig_SimpleFunction('JumpBox', [$this, 'jumpbox'], array('needs_environment' => true)),
 		);
 	}
 
