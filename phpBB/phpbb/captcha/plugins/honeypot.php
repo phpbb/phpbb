@@ -16,14 +16,14 @@ namespace phpbb\captcha\plugins;
 class honeypot
 {
 	/**
-	 * CSS classes to hide honeypot question.
-	 * Classes are used in rotation.
+	 * CSS styles to hide honeypot question.
+	 * Styles are used in rotation.
 	 */
-	const CLASSES = [
-		'additional-question',
-		'more-questions',
-		'personal-data',
-		'know-better',
+	const STYLES = [
+		'display: none;',
+		'position: absolute; top: -9999px; left: -9999px;',
+		'position: absolute; clip: rect(1px, 1px, 1px, 1px);',
+		'overflow: hidden; width: 0; height: 0; margin: 0; padding: 0;'
 	];
 
 	/**
@@ -220,7 +220,7 @@ class honeypot
 			'HONEYPOT_LABEL'	=> $this->honeypot_bank[$this->code],
 			'HONEYPOT_NAME'		=> $this->code,
 			'S_TYPE'			=> $this->type,
-			'HONEYPOT_CLASS'	=> self::CLASSES[array_rand(self::CLASSES)],
+			'HONEYPOT_STYLE'	=> self::STYLES[array_rand(self::STYLES)],
 		]);
 
 		return 'captcha_honeypot.html';
