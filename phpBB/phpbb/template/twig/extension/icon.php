@@ -48,7 +48,7 @@ class icon extends \Twig_Extension
 	public function getFunctions()
 	{
 		return [
-			new \Twig_SimpleFunction('icon', [$this, 'icon'], ['needs_environment' => true]),
+			new \Twig_SimpleFunction('Icon', [$this, 'icon'], ['needs_environment' => true]),
 		];
 	}
 
