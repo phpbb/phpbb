@@ -270,7 +270,7 @@ ul.linklist > li {
 	list-style-type: none;
 }
 
-ul.linklist > li.rightside,
+ul.linklist > .rightside,
 p.rightside,
 a.rightside {
 	text-align: right;
@@ -339,11 +339,11 @@ ul.linklist.bulletin > li:before {
 }
 
 ul.linklist.bulletin > li:first-child:before,
-ul.linklist.bulletin > li.rightside:last-child:before {
+ul.linklist.bulletin > .rightside:last-child:before {
 	content: none;
 }
 
-ul.linklist.bulletin > li.no-bulletin:before {
+ul.linklist.bulletin > .no-bulletin:before {
 	content: none;
 }
 

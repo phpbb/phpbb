@@ -61,7 +61,7 @@
 	margin-left: 7px;
 }
 
-.rtl ul.linklist > li.rightside,
+.rtl ul.linklist > .rightside,
 .rtl p.rightside,
 .rtl a.rightside {
 	text-align: left;

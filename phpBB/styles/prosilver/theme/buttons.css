@@ -194,7 +194,7 @@ button::-moz-focus-inner {
 
 
 /* stylelint-disable selector-no-qualifying-type */
-ul.linklist.bulletin > li.small-icon:before {
+ul.linklist.bulletin > .small-icon:before {
 	display: none;
 }
 /* stylelint-enable selector-no-qualifying-type */
