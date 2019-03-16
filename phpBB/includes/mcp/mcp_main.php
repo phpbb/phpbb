@@ -426,6 +426,8 @@ function change_topic_type($action, $topic_ids)
 
 	if (confirm_box(true))
 	{
+		$db->sql_transaction('begin');
+
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
 			SET topic_type = $new_topic_type
 			WHERE " . $db->sql_in_set('topic_id', $topic_ids);
@@ -437,12 +439,9 @@ function change_topic_type($action, $topic_ids)
 			$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 				WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
 			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_type = $new_topic_type
-					WHERE " . $db->sql_in_set('topic_id', $topic_ids);
-			$db->sql_query($sql);
 		}
+
+		$db->sql_transaction('commit');
 
 		$success_msg = (count($topic_ids) == 1) ? 'TOPIC_TYPE_CHANGED' : 'TOPICS_TYPE_CHANGED';
 
