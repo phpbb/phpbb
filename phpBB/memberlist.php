@@ -1369,11 +1369,6 @@ switch ($mode)
 		}
 		$sort_params[] = "mode=$mode";
 
-		$pagination_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
-		$sort_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $sort_params));
-
-		unset($search_params, $sort_params);
-
 		$u_first_char_params = implode('&amp;', $u_first_char_params);
 		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
 
@@ -1385,15 +1380,46 @@ switch ($mode)
 		}
 		$first_characters['other'] = $user->lang['OTHER'];
 
+		$first_char_block_vars = [];
+
 		foreach ($first_characters as $char => $desc)
 		{
-			$template->assign_block_vars('first_char', array(
+			$first_char_block_vars[] = [
 				'DESC'			=> $desc,
 				'VALUE'			=> $char,
 				'S_SELECTED'	=> ($first_char == $char) ? true : false,
 				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
-			));
+			];
 		}
+
+		/**
+		 * Modify memberlist sort and pagination parameters
+		 *
+		 * @event core.memberlist_modify_sort_pagination_params
+		 * @var array	sort_params				Array with URL parameters for sorting
+		 * @var array	params					Array with URL parameters for pagination
+		 * @var array	first_characters		Array that maps each letter in a-z, 'other' and the empty string to their display representation
+		 * @var string	u_first_char_params		Concatenated URL parameters for first character search links
+		 * @var array	first_char_block_vars	Template block variables for each first character
+		 * @var int		total_users				Total number of users found in this search
+		 * @since 3.2.6-RC1
+		 */
+		$vars = [
+			'sort_params',
+			'params',
+			'first_characters',
+			'u_first_char_params',
+			'first_char_block_vars',
+			'total_users',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sort_pagination_params', compact($vars)));
+
+		$template->assign_block_vars_array('first_char', $first_char_block_vars);
+
+		$pagination_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
+		$sort_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $sort_params));
+
+		unset($search_params, $sort_params);
 
 		// Some search user specific data
 		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
