@@ -79,9 +79,9 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 		$cookie_secure		= $this->io_handler->get_input('cookie_secure', $cookie_secure);
 		$server_protocol	= $this->io_handler->get_input('server_protocol', $server_protocol);
 		$force_server_vars	= $this->io_handler->get_input('force_server_vars', 0);
-		$server_name		= $this->io_handler->get_input('server_name', $server_name);
+		$server_name		= $this->io_handler->get_input('server_name', $server_name, true);
 		$server_port		= $this->io_handler->get_input('server_port', $server_port);
-		$script_path		= $this->io_handler->get_input('script_path', $script_path);
+		$script_path		= $this->io_handler->get_input('script_path', $script_path, true);
 
 		// Clean up script path
 		if ($script_path !== '/')

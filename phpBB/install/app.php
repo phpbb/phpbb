@@ -20,9 +20,9 @@ define('PHPBB_ENVIRONMENT', 'production');
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.4') < 0)
+if (version_compare(PHP_VERSION, '5.4.7', '<') || version_compare(PHP_VERSION, '7.3-dev', '>='))
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
+	die('You are running an unsupported PHP version. Please upgrade to PHP equal to or greater than 5.4.7 but less than 7.3-dev in order to install or update to phpBB 3.2');
 }
 
 $startup_new_path = $phpbb_root_path . 'install/update/update/new/install/startup.' . $phpEx;

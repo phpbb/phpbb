@@ -202,11 +202,13 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	if (count($ids) == 1)
 	{
-		$sql = 'SELECT MAX(p.post_id) as last_post_id
+		$sql = 'SELECT p.post_id as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_visibility = " . ITEM_APPROVED;
+				AND p.post_visibility = " . ITEM_APPROVED . "
+			ORDER BY p.post_id DESC";
+		$result = $db->sql_query_limit($sql, 1);
 	}
 	else
 	{
@@ -216,8 +218,8 @@ function update_post_information($type, $ids, $return_update_sql = false)
 				$topic_condition
 				AND p.post_visibility = " . ITEM_APPROVED . "
 			GROUP BY p.{$type}_id";
+		$result = $db->sql_query($sql);
 	}
-	$result = $db->sql_query($sql);
 
 	$last_post_ids = array();
 	while ($row = $db->sql_fetchrow($result))

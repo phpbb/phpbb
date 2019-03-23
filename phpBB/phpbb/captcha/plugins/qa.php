@@ -107,8 +107,7 @@ class qa
 
 			$sql = 'SELECT q.question_id, q.lang_iso
 				FROM ' . $this->table_captcha_questions . ' q, ' . $this->table_captcha_answers . ' a
-				WHERE q.question_id = a.question_id
-				GROUP BY lang_iso';
+				WHERE q.question_id = a.question_id';
 			$result = $db->sql_query($sql, 7200);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -638,7 +637,7 @@ class qa
 	/**
 	*  API function - The ACP backend, this marks the end of the easy methods
 	*/
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $config, $request, $phpbb_log, $template, $user;
 
@@ -776,7 +775,7 @@ class qa
 	/**
 	*  This handles the list overview
 	*/
-	function acp_question_list(&$module)
+	function acp_question_list($module)
 	{
 		global $db, $template;
 

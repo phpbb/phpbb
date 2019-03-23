@@ -28,9 +28,9 @@ class mcp_main
 	var $p_master;
 	var $u_action;
 
-	function __construct(&$p_master)
+	function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	function main($id, $mode)
@@ -174,7 +174,10 @@ class mcp_main
 		switch ($mode)
 		{
 			case 'front':
-				include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
+				if (!function_exists('mcp_front_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
+				}
 
 				$user->add_lang('acp/common');
 
@@ -185,7 +188,10 @@ class mcp_main
 			break;
 
 			case 'forum_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+				if (!function_exists('mcp_forum_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+				}
 
 				$user->add_lang('viewforum');
 
@@ -208,7 +214,10 @@ class mcp_main
 			break;
 
 			case 'topic_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_topic.' . $phpEx);
+				if (!function_exists('mcp_topic_view'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_topic.' . $phpEx);
+				}
 
 				mcp_topic_view($id, $mode, $action);
 
@@ -217,7 +226,10 @@ class mcp_main
 			break;
 
 			case 'post_details':
-				include($phpbb_root_path . 'includes/mcp/mcp_post.' . $phpEx);
+				if (!function_exists('mcp_post_details'))
+				{
+					include($phpbb_root_path . 'includes/mcp/mcp_post.' . $phpEx);
+				}
 
 				mcp_post_details($id, $mode, $action);
 
@@ -414,6 +426,7 @@ function change_topic_type($action, $topic_ids)
 
 	if (confirm_box(true))
 	{
+
 		/**
 		 * Perform additional actions before changing topic(s) type
 		 *
@@ -430,6 +443,8 @@ function change_topic_type($action, $topic_ids)
 		);
 		extract($phpbb_dispatcher->trigger_event('core.mcp_change_topic_type_before', compact($vars)));
 
+		$db->sql_transaction('begin');
+
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
 			SET topic_type = $new_topic_type
 			WHERE " . $db->sql_in_set('topic_id', $topic_ids);
@@ -441,12 +456,9 @@ function change_topic_type($action, $topic_ids)
 			$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 				WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
 			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_type = $new_topic_type
-					WHERE " . $db->sql_in_set('topic_id', $topic_ids);
-			$db->sql_query($sql);
 		}
+
+		$db->sql_transaction('commit');
 
 		$success_msg = (count($topic_ids) == 1) ? 'TOPIC_TYPE_CHANGED' : 'TOPICS_TYPE_CHANGED';
 

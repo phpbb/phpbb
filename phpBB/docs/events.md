@@ -1009,6 +1009,20 @@ mcp_post_report_buttons_top_before
 * Since: 3.2.4-RC1
 * Purpose: Add content before report buttons
 
+mcp_post_text_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+* Since: 3.2.6-RC1
+* Purpose: Add content after the post text
+
+mcp_post_text_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+* Since: 3.2.6-RC1
+* Purpose: Add content before the post text
+
 mcp_topic_options_after
 ===
 * Locations:
@@ -1114,6 +1128,83 @@ mcp_warn_user_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
 
+memberlist_body_group_desc_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the group description and type in the group profile page.
+
+memberlist_body_group_name_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the group name in the group profile page.
+
+memberlist_body_group_name_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data before the group name in the group profile page.
+
+memberlist_body_group_rank_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the group rank in the group profile page.
+
+memberlist_body_group_rank_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data before the group rank in the group profile page.
+
+memberlist_body_leaders_set_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the last row in the memberlist mode leaders.
+
+memberlist_body_memberlist_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the last row in the memberlist.
+
+memberlist_body_memberrow_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the last memberrow in the memberlist.
+
+memberlist_body_page_footer_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data before the page footer.
+
+memberlist_body_page_header_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the page header.
+
+memberlist_body_page_title_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data before the page title.
+
 memberlist_body_rank_append
 ===
 * Locations:
@@ -1129,6 +1220,13 @@ memberlist_body_rank_prepend
 * Since: 3.1.6-RC1
 * Purpose: Add information before rank in memberlist. Works in
 all display modes (leader, group and normal memberlist).
+
+memberlist_body_show_group_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add data after the last row in the memberlist mode group.
 
 memberlist_body_username_append
 ===

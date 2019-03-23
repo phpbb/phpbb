@@ -46,6 +46,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array(
 			'img_min_thumb_filesize' => 2,
 			'img_max_thumb_width' => 2,
+			'upload_path' => 'files',
 		));
 
 		$this->db = $this->db = $this->new_dbal();
@@ -63,8 +64,8 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		)));
 
 		$this->application = new Application();
-		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
-		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
+		$this->application->add(new generate($config, $this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new delete($config, $this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();

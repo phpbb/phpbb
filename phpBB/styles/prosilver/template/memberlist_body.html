@@ -12,19 +12,28 @@
 
 <!-- ENDIF -->
 
+{% EVENT memberlist_body_page_header_after %}
+
 	<!-- IF S_SHOW_GROUP -->
+		{% EVENT memberlist_body_group_name_before %}
 		<h2 class="group-title"<!-- IF GROUP_COLOR --> style="color:#{GROUP_COLOR};"<!-- ENDIF -->>{GROUP_NAME}</h2>
+		{% EVENT memberlist_body_group_name_after %}
 		<!-- IF U_MANAGE -->
 			<p class="right responsive-center manage rightside"><a href="{U_MANAGE}">{L_MANAGE_GROUP}</a></p>
 		<!-- ENDIF -->
 		<p>{GROUP_DESC} {GROUP_TYPE}</p>
 
+		{% EVENT memberlist_body_group_desc_after %}
+
 		<p>
 			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
+			{% EVENT memberlist_body_group_rank_before %}
 			<!-- IF RANK_IMG -->{RANK_IMG}<!-- ENDIF -->
 			<!-- IF GROUP_RANK -->{GROUP_RANK}<!-- ENDIF -->
+			{% EVENT memberlist_body_group_rank_after %}
 		</p>
 	<!-- ELSE -->
+		{% EVENT memberlist_body_page_title_before %}
 		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 
 		<div class="action-bar bar-top">
@@ -60,6 +69,7 @@
 			<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
 			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+			{% EVENT memberlist_body_memberlist_after %}
 		</tr>
 		</thead>
 		<tbody>
@@ -91,12 +101,14 @@
 			<th class="info">{% for field in custom_fields %}{% if not loop.first %}{L_COMMA_SEPARATOR} {% endif %}{{ field.PROFILE_FIELD_NAME }}{% endfor %}</th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
 			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+			{% EVENT memberlist_body_leaders_set_after %}
 	<!-- ELSEIF S_SHOW_GROUP -->
 		<th class="name">{L_GROUP_MEMBERS}</th>
 		<th class="posts">{L_POSTS}</th>
 		<th class="info"><!-- BEGIN custom_fields --><!-- IF not custom_fields.S_FIRST_ROW -->{L_COMMA_SEPARATOR} <!-- ENDIF -->{custom_fields.PROFILE_FIELD_NAME}<!-- END custom_fields --></th>
 		<th class="joined">{L_JOINED}</th>
 		<!-- IF U_SORT_ACTIVE --><th class="active">{L_LAST_ACTIVE}</th><!-- ENDIF -->
+		{% EVENT memberlist_body_show_group_after %}
 	<!-- ENDIF -->
 	</tr>
 	</thead>
@@ -111,6 +123,7 @@
 		<td class="info"><!-- BEGIN custom_fields --><div>{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td>
 		<td>{memberrow.JOINED}</td>
 		<!-- IF S_VIEWONLINE --><td>{memberrow.LAST_ACTIVE}&nbsp;</td><!-- ENDIF -->
+		{% EVENT memberlist_body_memberrow_after %}
 	</tr>
 		<!-- BEGINELSE -->
 	<tr class="bg1">
@@ -155,6 +168,8 @@
 		<!-- ENDIF -->
 	</div>
 </div>
+
+{% EVENT memberlist_body_page_footer_before %}
 
 <!-- IF S_IN_SEARCH_POPUP -->
 	<!-- INCLUDE simple_footer.html -->

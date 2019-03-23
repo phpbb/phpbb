@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c843abc1344cd9df37f63c08a125cad0",
+    "content-hash": "6daa2f5f7a161377dee1835bd4d5b463",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -661,16 +661,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.13.1",
+            "version": "1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "804ed8fdfa9fd0c8d99f5a33000d4f7e5ed90c6f"
+                "reference": "640b65b0d4c1de93bc98000c003998c08b2e7256"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/804ed8fdfa9fd0c8d99f5a33000d4f7e5ed90c6f",
-                "reference": "804ed8fdfa9fd0c8d99f5a33000d4f7e5ed90c6f",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/640b65b0d4c1de93bc98000c003998c08b2e7256",
+                "reference": "640b65b0d4c1de93bc98000c003998c08b2e7256",
                 "shasum": ""
             },
             "require": {
@@ -681,8 +681,8 @@
             },
             "require-dev": {
                 "matthiasmullie/minify": "*",
-                "php": ">=5.4.7",
-                "s9e/regexp-builder": ">=1.3.0"
+                "php-coveralls/php-coveralls": "*",
+                "s9e/regexp-builder": "1.*"
             },
             "suggest": {
                 "ext-curl": "Improves the performance of the MediaEmbed plugin and some JavaScript minifiers",
@@ -722,7 +722,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2017-12-10T00:55:53+00:00"
+            "time": "2018-12-23T20:27:39+00:00"
         },
         {
             "name": "symfony/config",
@@ -2478,6 +2478,7 @@
                 "testing",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2015-03-29T14:23:04+00:00"
         },
         {
@@ -2891,9 +2892,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",

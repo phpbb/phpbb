@@ -12,7 +12,7 @@ set -e
 set -x
 
 # MariaDB Series
-VERSION='5.5'
+VERSION='10.0'
 
 # Operating system codename, e.g. "precise"
 OS_CODENAME=$(lsb_release --codename --short)

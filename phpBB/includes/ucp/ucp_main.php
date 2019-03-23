@@ -28,9 +28,9 @@ class ucp_main
 	var $p_master;
 	var $u_action;
 
-	function __construct(&$p_master)
+	function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	function main($id, $mode)
@@ -245,7 +245,10 @@ class ucp_main
 
 			case 'subscribed':
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('topic_status'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				$user->add_lang('viewforum');
 
@@ -481,7 +484,10 @@ class ucp_main
 					break;
 				}
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('topic_status'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				$user->add_lang('viewforum');
 
