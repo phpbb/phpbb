@@ -221,24 +221,33 @@ class oauth extends \phpbb\auth\provider\base
 				'provider'	=> $service_name_original,
 				'oauth_provider_id'	=> $unique_id
 			);
+
 			$sql = 'SELECT user_id FROM ' . $this->auth_provider_oauth_token_account_assoc . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $data);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
+			$redirect_data = array(
+				'auth_provider'				=> 'oauth',
+				'login_link_oauth_service'	=> $service_name_original,
+			);
+
 			/**
 			* Event is triggered before check if provider is already associated with an account
 			*
 			* @event core.oauth_login_after_check_if_provider_id_has_match
-			* @var	array									row		User row
-			* @var	array									data	Provider data
-			* @var	\OAuth\Common\Service\ServiceInterface	service	OAuth service
+			* @var	array									row				User row
+			* @var	array									data			Provider data
+			* @var	array									redirect_data	Data to be appended to the redirect url
+			* @var	\OAuth\Common\Service\ServiceInterface	service			OAuth service
 			* @since 3.2.3-RC1
+			* @changed 3.2.6-RC1 Added redirect_data
 			*/
 			$vars = array(
 				'row',
 				'data',
+				'redirect_data',
 				'service',
 			);
 			extract($this->dispatcher->trigger_event('core.oauth_login_after_check_if_provider_id_has_match', compact($vars)));
@@ -250,10 +259,7 @@ class oauth extends \phpbb\auth\provider\base
 					'status'		=> LOGIN_SUCCESS_LINK_PROFILE,
 					'error_msg'		=> 'LOGIN_OAUTH_ACCOUNT_NOT_LINKED',
 					'user_row'		=> array(),
-					'redirect_data'	=> array(
-						'auth_provider'				=> 'oauth',
-						'login_link_oauth_service'	=> $service_name_original,
-					),
+					'redirect_data'	=> $redirect_data,
 				);
 			}
 
