@@ -1504,7 +1504,7 @@ switch ($mode)
 			 * Modify user data SQL before member row is created
 			 *
 			 * @event core.memberlist_modify_memberrow_sql
-			 * @var string	mode				group
+			 * @var string	mode				Memberlist mode
 			 * @var string	sql_select			Additional select statement
 			 * @var string	sql_from			Additional from statement
 			 * @var array	sql_array			Array containing the main query
