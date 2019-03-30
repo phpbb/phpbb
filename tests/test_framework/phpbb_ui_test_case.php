@@ -80,7 +80,12 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		try {
 			$capabilities = DesiredCapabilities::firefox();
-			self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
+			self::$webDriver = RemoteWebDriver::create(
+				self::$host . ':' . self::$port,
+				$capabilities,
+				60 * 1000, // 60 seconds connection timeout
+				60 * 1000 // 60 seconds request timeout
+			);
 		} catch (WebDriverCurlException $e) {
 			self::markTestSkipped('PhantomJS webserver is not running.');
 		}
