@@ -773,42 +773,58 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
-		$template->assign_vars(array(
-			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
+		// Define the main array of vars to assign to memberlist_view.html
+		$template_ary = array(
+			'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
-			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
-			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
+			'POSTS_DAY'					=> $user->lang('POST_DAY', $posts_per_day),
+			'POSTS_PCT'					=> $user->lang('POST_PCT', $percentage),
 
-			'SIGNATURE'		=> $member['user_sig'],
-			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
+			'SIGNATURE'					=> $member['user_sig'],
+			'POSTS_IN_QUEUE'			=> $member['posts_in_queue'],
 
-			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
-			'L_SEND_EMAIL_USER'	=> $user->lang('SEND_EMAIL_USER', $member['username']),
-			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
-			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
+			'PM_IMG'					=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'L_SEND_EMAIL_USER'			=> $user->lang('SEND_EMAIL_USER', $member['username']),
+			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
+			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
+			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
-			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
-			'S_GROUP_OPTIONS'	=> $group_options,
-			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
+			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
+			'S_GROUP_OPTIONS'			=> $group_options,
+			'S_CUSTOM_FIELDS'			=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+			'U_USER_ADMIN'				=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
-			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
-			'U_EDIT_SELF'			=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_profile&amp;mode=profile_info') : '',
+			'U_SWITCH_PERMISSIONS'		=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
+			'U_EDIT_SELF'				=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_profile&amp;mode=profile_info') : '',
 
-			'S_USER_NOTES'		=> ($user_notes_enabled) ? true : false,
-			'S_WARN_USER'		=> ($warn_user_enabled) ? true : false,
-			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'		=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_ADD_FOE'			=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_REMOVE_FRIEND'	=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
-			'U_REMOVE_FOE'		=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
+			'S_USER_NOTES'				=> ($user_notes_enabled) ? true : false,
+			'S_WARN_USER'				=> ($warn_user_enabled) ? true : false,
+			'S_ZEBRA'					=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
+			'U_ADD_FRIEND'				=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
+			'U_ADD_FOE'					=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
+			'U_REMOVE_FRIEND'			=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+			'U_REMOVE_FOE'				=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
 
-			'U_CANONICAL'	=> generate_board_url() . '/' . append_sid("memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id, true, ''),
-		));
+			'U_CANONICAL'				=> generate_board_url() . '/' . append_sid("memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id, true, ''),
+		);
+
+		/**
+		* Modify user's template vars before we display the profile
+		*
+		* @event core.memberlist_modify_view_profile_template_vars
+		* @var	array	template_ary	Array with user's template vars
+		* @since 3.2.6-RC1
+		*/
+		$vars = array(
+			'template_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_view_profile_template_vars', compact($vars)));
+
+		// Assign vars to memberlist_view.html
+		$template->assign_vars($template_ary);
 
 		if (!empty($profile_fields['row']))
 		{
