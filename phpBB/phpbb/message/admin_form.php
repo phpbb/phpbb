@@ -99,6 +99,7 @@ class admin_form extends form
 		$subject = $this->subject;
 		$body = $this->body;
 		$errors = $this->errors;
+
 		/**
 		* You can use this event to modify subject and/or body and add new errors.
 		*
