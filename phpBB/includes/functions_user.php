@@ -1690,6 +1690,7 @@ function phpbb_validate_timezone($timezone)
 /**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
+* Also checks if it includes the 4-bytes Unicode characters (emojis), which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
 *
 * @param string $username The username to check
