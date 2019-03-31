@@ -1760,6 +1760,13 @@ function validate_username($username, $allowed_username = false)
 		return 'USERNAME_TAKEN';
 	}
 
+	// Check for out-of-bounds characters that are currently
+	// not supported by utf8_bin in MySQL
+	if (preg_match('/[\x{10000}-\x{10FFFF}]/u', $username))
+	{
+		return 'INVALID_EMOJIS_USERNAME';
+	}
+
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
 		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
