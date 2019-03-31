@@ -1610,19 +1610,58 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql = "SELECT u.*
-						$sql_select
-					FROM " . USERS_TABLE . " u
-						$sql_from
-					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-						$sql_where_data";
+				$sql_from_ary = explode(',', $sql_from);
+				$extra_tables = [];
+				foreach ($sql_from_ary as $entry)
+				{
+					$table_data = explode(' ', trim($entry));
+
+					if (empty($table_data[0]) || empty($table_data[1]))
+					{
+						continue;
+					}
+
+					$extra_tables[$table_data[0]] = $table_data[1];
+				}
+
+				$sql_array = array(
+					'SELECT'	=> 'u.*' . $sql_select,
+					'FROM'		=> array_merge([USERS_TABLE => 'u'], $extra_tables),
+					'WHERE'		=> $db->sql_in_set('u.user_id', $user_list) . $sql_where_data . '',
+				);
 			}
 			else
 			{
-				$sql = 'SELECT *
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $user_list);
+				$sql_array = array(
+					'SELECT'	=> 'u.*',
+					'FROM'		=> array(
+						USERS_TABLE		=> 'u'
+					),
+					'WHERE'		=> $db->sql_in_set('u.user_id', $user_list),
+				);
 			}
+
+			/**
+			 * Modify user data SQL before member row is created
+			 *
+			 * @event core.memberlist_modify_memberrow_sql
+			 * @var string	mode				Memberlist mode
+			 * @var string	sql_select			Additional select statement
+			 * @var string	sql_from			Additional from statement
+			 * @var array	sql_array			Array containing the main query
+			 * @var array	user_list			Array containing list of users
+			 * @since 3.2.6-RC1
+			 */
+			$vars = array(
+				'mode',
+				'sql_select',
+				'sql_from',
+				'sql_array',
+				'user_list',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_memberrow_sql', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 
 			$id_cache = array();
@@ -1633,9 +1672,10 @@ switch ($mode)
 
 				$id_cache[$row['user_id']] = $row;
 			}
+
 			$db->sql_freeresult($result);
 
-			// Load custom profile fields
+			// Load custom profile fields if required
 			if ($config['load_cpf_memberlist'])
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
