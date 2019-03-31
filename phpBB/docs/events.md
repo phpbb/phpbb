@@ -1700,13 +1700,6 @@ posting_attach_body_attach_row_after
 * Since: 3.2.6-RC1
 * Purpose: Add content after attachment row in the file list
 
-posting_attach_body_attach_row_before
-===
-* Locations:
-    + styles/prosilver/template/posting_attach_body.html
-* Since: 3.2.6-RC1
-* Purpose: Add content before attachment row in the file list
-
 posting_attach_body_attach_row_append
 ===
 * Locations:
@@ -1714,12 +1707,12 @@ posting_attach_body_attach_row_append
 * Since: 3.2.6-RC1
 * Purpose: Add content appending the attachment row in the file list
 
-posting_attach_body_attach_row_prepend
+posting_attach_body_attach_row_before
 ===
 * Locations:
     + styles/prosilver/template/posting_attach_body.html
 * Since: 3.2.6-RC1
-* Purpose: Add content prepending attachment row in the file list
+* Purpose: Add content before attachment row in the file list
 
 posting_attach_body_attach_row_controls_append
 ===
@@ -1734,6 +1727,13 @@ posting_attach_body_attach_row_controls_prepend
     + styles/prosilver/template/posting_attach_body.html
 * Since: 3.2.2-RC1
 * Purpose: Add content before attachment control elements 
+
+posting_attach_body_attach_row_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.6-RC1
+* Purpose: Add content prepending attachment row in the file list
 
 posting_attach_body_file_list_after
 ===
