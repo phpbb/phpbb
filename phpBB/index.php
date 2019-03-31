@@ -55,6 +55,17 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 
 			$notification->mark_read();
 
+			/**
+			* You can use this event to perform additional tasks or redirect user elsewhere.
+			*
+			* @event core.index_mark_notification_after
+			* @var	int										mark_notification	Notification ID
+			* @var	\phpbb\notification\type\type_interface	notification		Notification instance
+			* @since 3.2.6-RC1
+			*/
+			$vars = array('mark_notification', 'notification');
+			extract($phpbb_dispatcher->trigger_event('core.index_mark_notification_after', compact($vars)));
+
 			if ($request->is_ajax())
 			{
 				$json_response = new \phpbb\json_response();
