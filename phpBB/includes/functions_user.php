@@ -1709,6 +1709,14 @@ function validate_username($username, $allowed_username = false)
 		return false;
 	}
 
+	// The very first check is for
+	// out-of-bounds characters that are currently
+	// not supported by utf8_bin in MySQL
+	if (preg_match('/[\x{10000}-\x{10FFFF}]/u', $username))
+	{
+		return 'INVALID_EMOJIS_USERNAME';
+	}
+
 	// ... fast checks first.
 	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false || empty($clean_username))
 	{
@@ -1758,13 +1766,6 @@ function validate_username($username, $allowed_username = false)
 	if ($row)
 	{
 		return 'USERNAME_TAKEN';
-	}
-
-	// Check for out-of-bounds characters that are currently
-	// not supported by utf8_bin in MySQL
-	if (preg_match('/[\x{10000}-\x{10FFFF}]/u', $username))
-	{
-		return 'INVALID_EMOJIS_USERNAME';
 	}
 
 	$sql = 'SELECT group_name
