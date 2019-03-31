@@ -1687,17 +1687,20 @@ function phpbb_validate_timezone($timezone)
 	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
 }
 
-/**
-* Check to see if the username has been taken, or if it is disallowed.
-* Also checks if it includes the " character, which we don't allow in usernames.
-* Also checks if it includes the 4-bytes Unicode characters (emojis), which we don't allow in usernames.
-* Used for registering, changing names, and posting anonymously with a username
-*
-* @param string $username The username to check
-* @param string $allowed_username An allowed username, default being $user->data['username']
-*
-* @return	mixed	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
-*/
+/***
+ * Validate Username
+ *
+ * Check to see if the username has been taken, or if it is disallowed.
+ * Also checks if it includes the " character or the 4-bytes Unicode ones
+ * (aka emojis) which we don't allow in usernames.
+ * Used for registering, changing names, and posting anonymously with a username
+ *
+ * @param string	$username				The username to check
+ * @param string	$allowed_username		An allowed username, default being $user->data['username']
+ *
+ * @return mixed							Either false if validation succeeded or a string which will be
+ *											used as the error message (with the variable name appended)
+ */
 function validate_username($username, $allowed_username = false)
 {
 	global $config, $db, $user, $cache;
@@ -1715,7 +1718,7 @@ function validate_username($username, $allowed_username = false)
 	// not supported by utf8_bin in MySQL
 	if (preg_match('/[\x{10000}-\x{10FFFF}]/u', $username))
 	{
-		return 'INVALID_EMOJIS_USERNAME';
+		return 'INVALID_EMOJIS';
 	}
 
 	// ... fast checks first.
