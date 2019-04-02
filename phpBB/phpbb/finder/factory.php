@@ -27,7 +27,7 @@ class factory
 	* Creates a new finder instance with its dependencies
 	*
 	* @param \phpbb\cache\service		$cache A cache instance or null
-	* @param bool $not_use_cache		Use cache or not
+	* @param bool $use_cache		Use cache or not
 	* @param string $phpbb_root_path	Path to the phpbb root directory
 	* @param string $php_ext			php file extension
 	*/

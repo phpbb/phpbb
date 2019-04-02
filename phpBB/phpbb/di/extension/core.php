@@ -117,6 +117,7 @@ class core extends Extension
 		foreach ($config['session'] as $name => $value)
 		{
 			$container->setParameter('session.' . $name, $value);
+		}
 
 		// Set the finder options
 		foreach ($config['finder'] as $name => $value)
