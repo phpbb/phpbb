@@ -191,7 +191,7 @@ class oauth extends \phpbb\auth\provider\base
 			return $provider->login($username, $password);
 		}
 
-		// Requst the name of the OAuth service
+		// Request the name of the OAuth service
 		$service_name_original = $this->request->variable('oauth_service', '', false);
 		$service_name = 'auth.provider.oauth.service.' . strtolower($service_name_original);
 		if ($service_name_original === '' || !array_key_exists($service_name, $this->service_providers))
@@ -270,11 +270,36 @@ class oauth extends \phpbb\auth\provider\base
 				throw new \Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY');
 			}
 
+			/**
+			 * Check if the user is banned.
+			 * The fourth parameter, return, has to be true,
+			 * otherwise the OAuth login is still called and
+			 * an uncaught exception is thrown as there is no
+			 * token stored in the database.
+			 */
+			$ban = $this->user->check_ban($row['user_id'], $row['user_ip'], $row['user_email'], true);
+			if ($ban !== false)
+			{
+				$till_date = !empty($ban['ban_end']) ? $this->user->format_date($ban['ban_end']) : '';
+				$message = !empty($ban['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+
+				$contact_link = phpbb_get_board_contact_link($this->config, $this->phpbb_root_path, $this->php_ext);
+				$message = $this->user->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
+				$message .= !empty($ban['ban_give_reason']) ? '<br /><br />' . $this->user->lang('BOARD_BAN_REASON', $ban['ban_give_reason']) : '';
+				$message .= !empty($ban['ban_triggered_by']) ? '<br /><br /><em>' . $this->user->lang('BAN_TRIGGERED_BY_' . strtoupper($ban['ban_triggered_by'])) . '</em>' : '';
+
+				return array(
+					'status'	=> LOGIN_BREAK,
+					'error_msg'	=> $message,
+					'user_row'	=> $row,
+				);
+			}
+
 			// Update token storage to store the user_id
 			$storage->set_user_id($row['user_id']);
 
 			/**
-			* Event is triggered after user is successfuly logged in via OAuth.
+			* Event is triggered after user is successfully logged in via OAuth.
 			*
 			* @event core.auth_oauth_login_after
 			* @var    array    row    User row
@@ -707,7 +732,7 @@ class oauth extends \phpbb\auth\provider\base
 				AND user_id = " . (int) $user_id;
 		$this->db->sql_query($sql);
 
-		// Clear all tokens belonging to the user on this servce
+		// Clear all tokens belonging to the user on this service
 		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
 		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
 		$storage->clearToken($service_name);
