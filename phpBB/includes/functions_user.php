@@ -1932,7 +1932,7 @@ function validate_user_email($email, $allowed_email = false)
 
 	if (($ban = $user->check_ban(false, false, $email, true)) !== false)
 	{
-		return !empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : 'EMAIL_BANNED';
+		return ($ban === true) ? 'EMAIL_BANNED' : (!empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : $ban);
 	}
 
 	if (!$config['allow_emailreuse'])

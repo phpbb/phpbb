@@ -278,7 +278,7 @@ class oauth extends \phpbb\auth\provider\base
 			 * token stored in the database.
 			 */
 			$ban = $this->user->check_ban($row['user_id'], $row['user_ip'], $row['user_email'], true);
-			if ($ban !== false)
+			if (!empty($ban))
 			{
 				$till_date = !empty($ban['ban_end']) ? $this->user->format_date($ban['ban_end']) : '';
 				$message = !empty($ban['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';

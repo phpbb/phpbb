@@ -1234,8 +1234,6 @@ class session
 		$vars = array('return', 'banned', 'ban_row', 'ban_triggered_by');
 		extract($phpbb_dispatcher->trigger_event('core.session_set_custom_ban', compact($vars)));
 
-		$ban_row['ban_triggered_by'] = $ban_triggered_by;
-
 		if ($banned && !$return)
 		{
 			global $phpbb_root_path, $phpEx;
@@ -1299,6 +1297,11 @@ class session
 			$this->session_kill(false);
 
 			trigger_error($message);
+		}
+
+		if (!empty($ban_row))
+		{
+			$ban_row['ban_triggered_by'] = $ban_triggered_by;
 		}
 
 		return ($banned && $ban_row) ? $ban_row : $banned;
