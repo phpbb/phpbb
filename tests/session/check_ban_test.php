@@ -72,7 +72,8 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 	{
 		try
 		{
-			$is_banned = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
+			$ban = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
+			$is_banned = !empty($ban);
 		}
 		catch (PHPUnit_Framework_Error_Notice $e)
 		{
