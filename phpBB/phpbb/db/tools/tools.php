@@ -1418,7 +1418,7 @@ class tools implements tools_interface
 	 */
 	function sql_table_truncate($table_name)
 	{
-		$statements = array();
+		$statements = [];
 
 		if (!$this->sql_table_exists($table_name))
 		{
