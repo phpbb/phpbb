@@ -1434,10 +1434,6 @@ class tools implements tools_interface
 
 			default:
 				$statements[] = 'TRUNCATE TABLE ' . $table_name;
-
-				// // reset the auto-inc counter
-				// $statements[] = 'DELETE FROM  sqlite_sequence WHERE name = ' . $table_name;
-			break;
 		}
 
 		return $this->_sql_run_sql($statements);
