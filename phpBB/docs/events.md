@@ -32,13 +32,13 @@ acp_email_find_username_append
 ===
 * Location: adm/style/acp_email.html
 * Since: 3.1.7-RC1
-* Purpose: Add content at the end of the fimd username link
+* Purpose: Add content at the end of the find username link
 
 acp_email_find_username_prepend
 ===
 * Location: adm/style/acp_email.html
 * Since: 3.1.7-RC1
-* Purpose: Add content at the start of the fimd username link
+* Purpose: Add content at the start of the find username link
 
 acp_email_group_options_append
 ===
@@ -164,13 +164,13 @@ acp_group_options_after
 ===
 * Location: adm/style/acp_groups.html
 * Since: 3.1.0-b4
-* Purpose: Add addtional options to group settings (after GROUP_RECEIVE_PM)
+* Purpose: Add additional options to group settings (after GROUP_RECEIVE_PM)
 
 acp_group_options_before
 ===
 * Location: adm/style/acp_groups.html
 * Since: 3.1.0-b4
-* Purpose: Add addtional options to group settings (before GROUP_FOUNDER_MANAGE)
+* Purpose: Add additional options to group settings (before GROUP_FOUNDER_MANAGE)
 
 acp_groups_find_username_append
 ===
@@ -297,13 +297,13 @@ acp_permission_forum_copy_src_forum_append
 ===
 * Location: adm/style/permission_forum_copy.html
 * Since: 3.1.7-RC1
-* Purpose: Add content after the sourse forum select form
+* Purpose: Add content after the source forum select form
 
 acp_permission_forum_copy_src_forum_prepend
 ===
 * Location: adm/style/permission_forum_copy.html
 * Since: 3.1.7-RC1
-* Purpose: Add content before the sourse forum select form
+* Purpose: Add content before the source forum select form
 
 acp_permissions_add_group_options_append
 ===
