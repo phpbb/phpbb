@@ -22,6 +22,9 @@ class admin_form extends form
 	/** @var \phpbb\config\db_text */
 	protected $config_text;
 
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $dispatcher;
+
 	/** @var string */
 	protected $subject;
 	/** @var string */
@@ -37,13 +40,15 @@ class admin_form extends form
 	* @param \phpbb\config\db_text $config_text
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\user $user
+	* @param \phpbb\event\dispatcher_interface $dispatcher
 	* @param string $phpbb_root_path
 	* @param string $phpEx
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $dispatcher, $phpbb_root_path, $phpEx)
 	{
 		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx);
 		$this->config_text = $config_text;
+		$this->dispatcher = $dispatcher;
 	}
 
 	/**
@@ -90,6 +95,29 @@ class admin_form extends form
 		{
 			$this->errors[] = $this->user->lang['EMPTY_MESSAGE_EMAIL'];
 		}
+
+		$subject = $this->subject;
+		$body = $this->body;
+		$errors = $this->errors;
+
+		/**
+		* You can use this event to modify subject and/or body and add new errors.
+		*
+		* @event core.message_admin_form_submit_before
+		* @var	string	subject	Message subject
+		* @var	string	body	Message body
+		* @var	array	errors	Form errors
+		* @since 3.2.6-RC1
+		*/
+		$vars = [
+			'subject',
+			'body',
+			'errors',
+		];
+		extract($this->dispatcher->trigger_event('core.message_admin_form_submit_before', compact($vars)));
+		$this->subject = $subject;
+		$this->body = $body;
+		$this->errors = $errors;
 
 		if ($this->user->data['is_registered'])
 		{

@@ -35,6 +35,7 @@ services:
             - '@config_text'
             - '@dbal.conn'
             - '@user'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
 
