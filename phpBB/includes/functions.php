@@ -680,8 +680,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 		}
-
-		return;
 	}
 	else if ($mode == 'topics')
 	{
@@ -808,8 +806,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			unset($tracking);
 		}
-
-		return;
 	}
 	else if ($mode == 'topic')
 	{
@@ -923,8 +919,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
 			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 		}
-
-		return;
 	}
 	else if ($mode == 'post')
 	{
@@ -949,9 +943,28 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			$db->sql_return_on_error(false);
 		}
-
-		return;
 	}
+
+	/**
+	 * This event is used for performing actions directly after forums,
+	 * topics or posts have been marked as read.
+	 *
+	 * @event core.markread_after
+	 * @var	string		mode				Variable containing marking mode value
+	 * @var	mixed		forum_id			Variable containing forum id, or false
+	 * @var	mixed		topic_id			Variable containing topic id, or false
+	 * @var	int			post_time			Variable containing post time
+	 * @var	int			user_id				Variable containing the user id
+	 * @since 3.2.6-RC1
+	 */
+	$vars = array(
+		'mode',
+		'forum_id',
+		'topic_id',
+		'post_time',
+		'user_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.markread_after', compact($vars)));
 }
 
 /**
