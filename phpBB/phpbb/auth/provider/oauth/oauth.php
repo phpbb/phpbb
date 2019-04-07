@@ -674,6 +674,7 @@ class oauth extends \phpbb\auth\provider\base
 						'oauth_service' => $actual_name,
 					),
 
+					'SERVICE_ID'	=> $actual_name,
 					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
 					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
 				);
