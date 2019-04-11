@@ -285,13 +285,13 @@ acp_permission_forum_copy_dest_forum_append
 ===
 * Location: adm/style/permission_forum_copy.html
 * Since: 3.1.7-RC1
-* Purpose: Add content after the destiny forum select form
+* Purpose: Add content after the destination forum select form
 
 acp_permission_forum_copy_dest_forum_prepend
 ===
 * Location: adm/style/permission_forum_copy.html
 * Since: 3.1.7-RC1
-* Purpose: Add content before the destiny forum select form
+* Purpose: Add content before the destination forum select form
 
 acp_permission_forum_copy_src_forum_append
 ===
