@@ -724,6 +724,13 @@ class acp_extensions
 		}
 	}
 
+	/**
+	* Checks whether the extension can be enabled. Triggers error if not.
+	* Error message can be set by the extension.
+	*
+	* @param bool|array $enableable True if extension is enableable, array of reasons
+	*								if not, false for generic reason.
+	*/
 	protected function check_is_enableable($enableable)
 	{
 		if ($enableable !== true)
