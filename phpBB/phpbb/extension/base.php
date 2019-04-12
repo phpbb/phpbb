@@ -38,6 +38,9 @@ class base implements \phpbb\extension\extension_interface
 	/** @var string[] */
 	private $migrations = false;
 
+	/** @var string[] */
+	private $activation_errors;
+
 	/**
 	* Constructor
 	*
@@ -55,6 +58,8 @@ class base implements \phpbb\extension\extension_interface
 
 		$this->extension_name = $extension_name;
 		$this->extension_path = $extension_path;
+
+		$this->activation_errors = array();
 	}
 
 	/**
@@ -62,7 +67,15 @@ class base implements \phpbb\extension\extension_interface
 	*/
 	public function is_enableable()
 	{
-		return true;
+		return 0 === \count($this->activation_errors);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_activation_errors()
+	{
+		return $this->activation_errors;
 	}
 
 	/**

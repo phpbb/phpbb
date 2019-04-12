@@ -168,10 +168,7 @@ class acp_extensions
 				}
 
 				$extension = $this->ext_manager->get_extension($ext_name);
-				if (!$extension->is_enableable())
-				{
-					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				$this->extension_is_enableable($extension);
 
 				if ($this->ext_manager->is_enabled($ext_name))
 				{
@@ -199,10 +196,7 @@ class acp_extensions
 				}
 
 				$extension = $this->ext_manager->get_extension($ext_name);
-				if (!$extension->is_enableable())
-				{
-					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				$this->extension_is_enableable($extension);
 
 				try
 				{
@@ -656,6 +650,23 @@ class acp_extensions
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
 				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $author['role'] : '',
 			));
+		}
+	}
+
+	/**
+	 * Trigger an error message if the extension is not enableable.
+	 *
+	 * @param phpbb\extension\extension_interface $extension
+	 */
+	protected function extension_is_enableable($extension)
+	{
+		if(!$extension->is_enableable()) {
+			$error_message_list = $extension->get_activation_errors();
+
+			\array_unshift($error_message_list, $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE'));
+
+			$error_message = \implode('<br />', $error_message_list);
+			trigger_error($error_message . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 }

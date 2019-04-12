@@ -69,7 +69,12 @@ class enable extends command
 		}
 		else
 		{
-			$io->error($this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name));
+			$error_message_list = $extension->get_activation_errors();
+
+			\array_unshift($error_message_list, $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE'));
+
+			$error_message = \implode('<br />', $error_message_list);
+			$io->error($error_message, $name);
 			return 1;
 		}
 	}

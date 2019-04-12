@@ -27,6 +27,13 @@ interface extension_interface
 	public function is_enableable();
 
 	/**
+	 * Returns the errors generated when trying to enable the extension.
+	 *
+	 * @return string[]
+	 */
+	public function get_activation_errors();
+
+	/**
 	* enable_step is executed on enabling an extension until it returns false.
 	*
 	* Calls to this function can be made in subsequent requests, when the
