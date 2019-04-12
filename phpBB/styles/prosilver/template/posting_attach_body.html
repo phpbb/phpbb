@@ -21,6 +21,7 @@
 		<input type="button" class="button2" value="{L_PLUPLOAD_ADD_FILES}" id="add_files" />
 	</div>
 
+	{% EVENT posting_attach_body_file_list_before %}
 	<div class="panel<!-- IF not .attach_row --> hidden<!-- ENDIF --> file-list-container" id="file-list-container">
 		<div class="inner">
 			<table class="table1 zebra-list fixed-width-table">
@@ -55,16 +56,18 @@
 								<span class="file-status"></span>
 							</td>
 					</tr>
+					{% EVENT posting_attach_body_attach_row_before %}
 					<!-- BEGIN attach_row -->
+						{% EVENT posting_attach_body_attach_row_prepend %}
 						<tr class="attach-row" data-attach-id="{attach_row.ATTACH_ID}">
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></span>
-								<!-- EVENT posting_attach_body_attach_row_controls_prepend -->
+								{% EVENT posting_attach_body_attach_row_controls_prepend %}
 								<span class="attach-controls">
 									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" class="button2 file-inline-bbcode" />&nbsp; <!-- ENDIF -->
 									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2 file-delete" />
 								</span>
-								<!-- EVENT posting_attach_body_attach_row_controls_append -->
+								{% EVENT posting_attach_body_attach_row_controls_append %}
 								<span class="clear"></span>
 							</td>
 							<td class="attach-comment">
@@ -78,10 +81,13 @@
 								<span class="file-status file-uploaded"></span>
 							</td>
 						</tr>
+						{% EVENT posting_attach_body_attach_row_append %}
 					<!-- END attach_row -->
+					{% EVENT posting_attach_body_attach_row_after %}
 				</tbody>
 			</table>
 		</div>
 	</div>
+	{% EVENT posting_attach_body_file_list_after %}
 	</div>
 </div>
