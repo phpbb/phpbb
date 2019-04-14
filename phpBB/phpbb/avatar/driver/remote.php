@@ -84,6 +84,24 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
+		/**
+		 * Event to make custom validation of avatar upload
+		 *
+		 * @event core.ucp_profile_avatar_upload_validation
+		 * @var	string	$url	Image url
+		 * @var	string	$width	Image width
+		 * @var	string	$height	Image height
+		 * @var	array	$error	Error message array
+		 * @since 3.2.6-RC1
+		 */
+		$vars = array('url', 'width', 'height', 'error');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_upload_validation', compact($vars)));
+
+		if (!empty($error))
+		{
+			return false;
+		}
+
 		// Check if this url looks alright
 		// Do not allow specifying the port (see RFC 3986) or IP addresses
 		if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.('. implode('|', $this->allowed_extensions) . ')$#i', $url) ||
