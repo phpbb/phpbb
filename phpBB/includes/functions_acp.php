@@ -419,7 +419,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user, $phpbb_dispatcher, $phpbb_filesystem;
+	global $phpbb_root_path, $user, $phpbb_dispatcher, $phpbb_filesystem, $language;
 
 	$type	= 0;
 	$min	= 1;
@@ -442,6 +442,16 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 		// Validate a bit. ;) (0 = type, 1 = min, 2= max)
 		switch ($validator[$type])
 		{
+			case 'url':
+				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
+
+				if (!empty($cfg_array[$config_name]) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $cfg_array[$config_name]))
+				{
+					$error[] = $language->lang('URL_INVALID', $language->lang($config_definition['lang']));
+				}
+
+			// no break here
+
 			case 'string':
 				$length = utf8_strlen($cfg_array[$config_name]);
 
