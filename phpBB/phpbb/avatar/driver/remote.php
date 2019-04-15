@@ -90,10 +90,10 @@ class remote extends \phpbb\avatar\driver\driver
 		 * Event to make custom validation of avatar upload
 		 *
 		 * @event core.ucp_profile_avatar_upload_validation
-		 * @var	string	$url	Image url
-		 * @var	string	$width	Image width
-		 * @var	string	$height	Image height
-		 * @var	array	$error	Error message array
+		 * @var	string	url		Image url
+		 * @var	string	width	Image width
+		 * @var	string	height	Image height
+		 * @var	array	error	Error message array
 		 * @since 3.2.6-RC1
 		 */
 		$vars = array('url', 'width', 'height', 'error');
