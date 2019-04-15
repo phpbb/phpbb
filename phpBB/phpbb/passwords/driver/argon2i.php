@@ -13,10 +13,8 @@
 
 namespace phpbb\passwords\driver;
 
-class argon2i extends base
+class argon2i extends base_native
 {
-	const PREFIX = '$argon2i$';
-
 	/** @var int Maximum memory (in bytes) that may be used to compute the Argon2 hash */
 	protected $memory_cost;
 
@@ -48,15 +46,13 @@ class argon2i extends base
 	/**
 	* {@inheritdoc}
 	*/
-	public function check($password, $hash, $user_row = [])
+	public function get_algo_name()
 	{
-		return password_verify($password, $hash);
+		return 'PASSWORD_ARGON2I';
 	}
 
 	/**
-	* Return the options set for this driver instance
-	*
-	* @return array
+	* {@inheritdoc}
 	*/
 	public function get_options()
 	{
@@ -72,30 +68,6 @@ class argon2i extends base
 	*/
 	public function get_prefix()
 	{
-		return self::PREFIX;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function hash($password)
-	{
-		return password_hash($password, PASSWORD_ARGON2I, $this->get_options());
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function is_supported()
-	{
-		return defined('PASSWORD_ARGON2I') && function_exists('password_hash') && function_exists('password_needs_rehash') && function_exists('password_verify');
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function needs_rehash($hash)
-	{
-		return password_needs_rehash($hash, PASSWORD_ARGON2I, $this->get_options());
+		return '$argon2i$';
 	}
 }
