@@ -49,6 +49,8 @@ class remote extends \phpbb\avatar\driver\driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
+		global $phpbb_dispatcher;
+
 		$url = $request->variable('avatar_remote_url', '');
 		$width = $request->variable('avatar_remote_width', 0);
 		$height = $request->variable('avatar_remote_height', 0);
