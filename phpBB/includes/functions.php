@@ -2134,6 +2134,8 @@ function check_form_key($form_name, $timespan = false)
 *		message text is _CONFIRM appended to title.
 *		If title cannot be found in user->lang a default one is displayed
 *		If title_CONFIRM cannot be found in user->lang the text given is used.
+*       If title is an array, the first array value is used as explained per above,
+*       all other array values are send as parameters to the language function.
 * @param string $hidden Hidden variables
 * @param string $html_body Template used for confirm box
 * @param string $u_action Custom form action
