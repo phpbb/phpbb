@@ -2143,25 +2143,29 @@ function check_form_key($form_name, $timespan = false)
 /**
 * Build Confirm box
 * @param boolean $check True for checking if confirmed (without any additional parameters) and false for displaying the confirm box
-* @param string $title Title/Message used for confirm box.
+* @param string|array $title Title/Message used for confirm box.
 *		message text is _CONFIRM appended to title.
 *		If title cannot be found in user->lang a default one is displayed
 *		If title_CONFIRM cannot be found in user->lang the text given is used.
+*       If title is an array, the first array value is used as explained per above,
+*       all other array values are sent as parameters to the language function.
 * @param string $hidden Hidden variables
 * @param string $html_body Template used for confirm box
 * @param string $u_action Custom form action
+*
+* @return bool True if confirmation was successful, false if not
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
-	global $config, $phpbb_path_helper;
+	global $config, $language, $phpbb_path_helper;
 
 	if (isset($_POST['cancel']))
 	{
 		return false;
 	}
 
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
+	$confirm = ($language->lang('YES') === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -2195,13 +2199,27 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
 
-	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	// generate language strings
+	if (is_array($title))
 	{
-		adm_page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		$key = array_shift($title);
+		$count = array_shift($title);
+		$confirm_title =  $language->is_set($key) ? $language->lang($key, $count, $title) : $language->lang('CONFIRM');
+		$confirm_text = $language->is_set($key . '_CONFIRM') ? $language->lang($key . '_CONFIRM', $count, $title) : $key;
 	}
 	else
 	{
-		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		$confirm_title = $language->is_set($title) ? $language->lang($title) : $language->lang('CONFIRM');
+		$confirm_text = $language->is_set($title . '_CONFIRM') ? $language->lang($title . '_CONFIRM') : $title;
+	}
+
+	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	{
+		adm_page_header($confirm_title);
+	}
+	else
+	{
+		page_header($confirm_title);
 	}
 
 	$template->set_filenames(array(
@@ -2221,10 +2239,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang($title, 1),
-		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+		'MESSAGE_TITLE'		=> $confirm_title,
+		'MESSAGE_TEXT'		=> $confirm_text,
 
-		'YES_VALUE'			=> $user->lang['YES'],
+		'YES_VALUE'			=> $language->lang('YES'),
 		'S_CONFIRM_ACTION'	=> $u_action,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields,
 		'S_AJAX_REQUEST'	=> $request->is_ajax(),
@@ -2240,10 +2258,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$json_response = new \phpbb\json_response;
 		$json_response->send(array(
 			'MESSAGE_BODY'		=> $template->assign_display('body'),
-			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
-			'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+			'MESSAGE_TITLE'		=> $confirm_title,
+			'MESSAGE_TEXT'		=> $confirm_text,
 
-			'YES_VALUE'			=> $user->lang['YES'],
+			'YES_VALUE'			=> $language->lang('YES'),
 			'S_CONFIRM_ACTION'	=> str_replace('&amp;', '&', $u_action), //inefficient, rewrite whole function
 			'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields
 		));
@@ -2257,6 +2275,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	{
 		page_footer();
 	}
+
+	exit; // unreachable, page_footer() above will call exit()
 }
 
 /**
