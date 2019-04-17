@@ -1299,7 +1299,12 @@ class session
 			trigger_error($message);
 		}
 
-		return ($banned && $ban_row['ban_give_reason']) ? $ban_row['ban_give_reason'] : $banned;
+		if (!empty($ban_row))
+		{
+			$ban_row['ban_triggered_by'] = $ban_triggered_by;
+		}
+
+		return ($banned && $ban_row) ? $ban_row : $banned;
 	}
 
 	/**
