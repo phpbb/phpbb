@@ -122,6 +122,7 @@ class acp_board
 				$avatar_vars = array();
 				foreach ($avatar_drivers as $current_driver)
 				{
+					/** @var \phpbb\avatar\driver\driver_interface $driver */
 					$driver = $phpbb_avatar_manager->get_driver($current_driver, false);
 
 					/*
@@ -730,7 +731,7 @@ class acp_board
 			$template->assign_block_vars('options', array(
 				'KEY'			=> $config_key,
 				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
-				'S_EXPLAIN'		=> $vars['explain'],
+				'S_EXPLAIN'		=> $vars['explain'] && !empty($l_explain),
 				'TITLE_EXPLAIN'	=> $l_explain,
 				'CONTENT'		=> $content,
 				)
