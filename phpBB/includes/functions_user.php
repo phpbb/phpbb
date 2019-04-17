@@ -1942,9 +1942,9 @@ function validate_user_email($email, $allowed_email = false)
 		return $validate_email;
 	}
 
-	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)
+	if (($ban = $user->check_ban(false, false, $email, true)) !== false)
 	{
-		return ($ban_reason === true) ? 'EMAIL_BANNED' : $ban_reason;
+		return ($ban === true) ? 'EMAIL_BANNED' : (!empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : $ban);
 	}
 
 	if (!$config['allow_emailreuse'])
