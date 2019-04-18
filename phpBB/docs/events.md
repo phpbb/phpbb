@@ -1740,14 +1740,14 @@ posting_attach_body_file_list_after
 * Locations:
     + styles/prosilver/template/posting_attach_body.html
 * Since: 3.2.6-RC1
-* Purpose: Add content after attachments list 
+* Purpose: Add content after attachments list
 
 posting_attach_body_file_list_before
 ===
 * Locations:
     + styles/prosilver/template/posting_attach_body.html
 * Since: 3.2.6-RC1
-* Purpose: Add content before attachments list 
+* Purpose: Add content before attachments list
 
 posting_editor_add_panel_tab
 ===
@@ -2102,14 +2102,14 @@ search_results_header_before
 search_results_last_post_author_username_append
 ===
 * Locations:
-    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/search_results.html (2)
 * Since: 3.2.4-RC1
 * Purpose: Append information to last post author username of member
 
 search_results_last_post_author_username_prepend
 ===
 * Locations:
-    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/search_results.html (2)
 * Since: 3.2.4-RC1
 * Purpose: Prepend information to last post author username of member
 
@@ -2612,14 +2612,14 @@ ucp_register_profile_fields_before
 viewforum_body_last_post_author_username_append
 ===
 * Locations:
-    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/viewforum_body.html (2)
 * Since: 3.2.4-RC1
 * Purpose: Append information to last post author username of member
 
 viewforum_body_last_post_author_username_prepend
 ===
 * Locations:
-    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/viewforum_body.html (2)
 * Since: 3.2.4-RC1
 * Purpose: Prepend information to last post author username of member
 
