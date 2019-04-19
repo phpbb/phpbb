@@ -394,7 +394,7 @@ class md_exporter
 					throw new \LogicException("Invalid event instances for file '{$file}' found for event '{$this->current_event}'", 1);
 				}
 
-				list($file, ) = explode(" ", $file);
+				list($file) = explode(" ", $file);
 
 				if (!file_exists($this->path . $file) || substr($file, -5) !== '.html')
 				{
