@@ -1910,12 +1910,40 @@ posting_preview_poll_after
 * Since: 3.1.7-RC1
 * Purpose: Add content after the poll preview block
 
+posting_review_row_post_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/posting_review.html
+* Since: 3.2.6
+* Purpose: Append information to post author username of member
+
+posting_review_row_post_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_review.html
+* Since: 3.2.6
+* Purpose: Prepend information to post author username of member
+
 posting_topic_review_row_content_after
 ===
 * Locations:
     + styles/prosilver/template/posting_topic_review.html
 * Since: 3.2.4-RC1
 * Purpose: Add content after the message content in topic review
+
+posting_topic_review_row_post_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/posting_topic_review.html
+* Since: 3.2.6
+* Purpose: Append information to post author username of member
+
+posting_topic_review_row_post_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_topic_review.html
+* Since: 3.2.6
+* Purpose: Prepend information to post author username of member
 
 posting_topic_review_row_post_details_after
 ===
@@ -2363,6 +2391,20 @@ ucp_pm_history_review_before
     + styles/prosilver/template/ucp_pm_history.html
 * Since: 3.1.6-RC1
 * Purpose: Add content before the private messages history review.
+
+ucp_pm_history_row_message_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+* Since: 3.2.6
+* Purpose: Append information to message author username of member
+
+ucp_pm_history_row_message_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+* Since: 3.2.6
+* Purpose: Prepend information to message author username of member
 
 ucp_pm_viewmessage_avatar_after
 ===

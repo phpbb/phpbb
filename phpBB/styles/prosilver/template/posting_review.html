@@ -22,7 +22,7 @@
 					<i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{post_review_row.MINI_POST}</span>
 				</a>
 			<!-- ENDIF -->
-			{L_POST_BY_AUTHOR}<strong>  {post_review_row.POST_AUTHOR_FULL}</strong> &raquo; {post_review_row.POST_DATE}
+			{L_POST_BY_AUTHOR} <!-- EVENT posting_review_row_post_author_username_prepend --><strong>{post_review_row.POST_AUTHOR_FULL}</strong><!-- EVENT posting_review_row_post_author_username_append --> &raquo; {post_review_row.POST_DATE}
 		</p>
 		<div class="content">{post_review_row.MESSAGE}</div>
 
