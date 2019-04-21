@@ -330,6 +330,8 @@ class config
 
 		fwrite($fp, $file_content);
 		fclose($fp);
+		// Enforce 0600 permission for install config
+		$this->filesystem->chmod([$this->install_config_file], 0600);
 	}
 
 	/**
