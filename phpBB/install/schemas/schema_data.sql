@@ -269,9 +269,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_auth_method', 'PLAIN');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password', '', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('smtp_password', '', 1);
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_port', '25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username', '', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('smtp_username', '', 1);
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_memberships', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
