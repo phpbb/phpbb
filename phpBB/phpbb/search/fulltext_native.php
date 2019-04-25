@@ -310,6 +310,15 @@ class fulltext_native extends \phpbb\search\base
 		$replace = '$1';
 		$keywords = preg_replace($match, $replace, $keywords);
 
+		// Only allow one wildcard in the search query to limit the database load
+		$match = '#\*#';
+		$replace = '$1';
+		$count_wildcards = substr_count($keywords, '*');
+
+		// Reverse the string to remove all wildcards except the first one
+		$keywords = strrev(preg_replace($match, $replace, strrev($keywords), $count_wildcards - 1));
+		unset($count_wildcards);
+
 		// set the search_query which is shown to the user
 		$this->search_query = $keywords;
 
