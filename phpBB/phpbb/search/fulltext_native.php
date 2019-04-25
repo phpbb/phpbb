@@ -306,7 +306,7 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		// Remove non trailing wildcards from each word to prevent a full table scan (it's now using the database index)
-		$match = '#\*(?!$)\b#';
+		$match = '#\*(?!$|\s)#';
 		$replace = '$1';
 		$keywords = preg_replace($match, $replace, $keywords);
 
