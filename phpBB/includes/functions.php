@@ -2268,6 +2268,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 	$err = '';
+	$form_name = 'login';
 
 	// Make sure user->setup() has been called
 	if (!$user->is_setup())
@@ -2343,8 +2344,19 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
-		// If authentication is successful we redirect user to previous page
-		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+		// Check form key
+		if ($password && !check_form_key($form_name))
+		{
+			$result = array(
+				'status' => false,
+				'error_msg' => 'FORM_INVALID',
+			);
+		}
+		else
+		{
+			// If authentication is successful we redirect user to previous page
+			$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+		}
 
 		// If admin authentication and login, we will log if it was a success or not...
 		// We also break the operation on the first non-success login - it could be argued that the user already knows
@@ -2494,6 +2506,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
 		));
 	}
+
+	// Add form token for login box
+	add_form_key($form_name, '_LOGIN');
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
