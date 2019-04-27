@@ -190,7 +190,7 @@ class fulltext_native extends \phpbb\search\base
 	*/
 	public function split_keywords($keywords, $terms)
 	{
-		$tokens = '+-|()*';
+		$tokens = '+-|()* ';
 
 		$keywords = trim($this->cleanup($keywords, $tokens));
 
@@ -224,12 +224,10 @@ class fulltext_native extends \phpbb\search\base
 						$keywords[$i] = '|';
 					break;
 					case '*':
-						if ($i === 0 || ($keywords[$i - 1] !== '*' && strcspn($keywords[$i - 1], $tokens) === 0))
+						// $i can never be 0 here since $open_bracket is initialised to false
+						if (strpos($tokens, $keywords[$i - 1]) !== false && ($i + 1 === $n || strpos($tokens, $keywords[$i + 1]) !== false))
 						{
-							if ($i === $n - 1 || ($keywords[$i + 1] !== '*' && strcspn($keywords[$i + 1], $tokens) === 0))
-							{
-								$keywords = substr($keywords, 0, $i) . substr($keywords, $i + 1);
-							}
+							$keywords[$i] = '|';
 						}
 					break;
 				}
@@ -264,7 +262,7 @@ class fulltext_native extends \phpbb\search\base
 			}
 		}
 
-		if ($open_bracket)
+		if ($open_bracket !== false)
 		{
 			$keywords .= ')';
 		}
@@ -306,6 +304,20 @@ class fulltext_native extends \phpbb\search\base
 				$keywords = '(' . implode('|', $words[1]) . ')';
 			}
 		}
+
+		// Remove non trailing wildcards from each word to prevent a full table scan (it's now using the database index)
+		$match = '#\*(?!$|\s)#';
+		$replace = '$1';
+		$keywords = preg_replace($match, $replace, $keywords);
+
+		// Only allow one wildcard in the search query to limit the database load
+		$match = '#\*#';
+		$replace = '$1';
+		$count_wildcards = substr_count($keywords, '*');
+
+		// Reverse the string to remove all wildcards except the first one
+		$keywords = strrev(preg_replace($match, $replace, strrev($keywords), $count_wildcards - 1));
+		unset($count_wildcards);
 
 		// set the search_query which is shown to the user
 		$this->search_query = $keywords;
@@ -409,8 +421,16 @@ class fulltext_native extends \phpbb\search\base
 				{
 					if (strpos($word_part, '*') !== false)
 					{
-						$id_words[] = '\'' . $this->db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
-						$non_common_words[] = $word_part;
+						$len = utf8_strlen(str_replace('*', '', $word_part));
+						if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
+						{
+							$id_words[] = '\'' . $this->db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+							$non_common_words[] = $word_part;
+						}
+						else
+						{
+							$this->common_words[] = $word_part;
+						}
 					}
 					else if (isset($words[$word_part]))
 					{
