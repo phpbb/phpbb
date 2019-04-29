@@ -397,6 +397,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $phpbb_container;
 		$phpbb_container->reset();
 
+		// Purge cache to remove cached files
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
+
+		$cache = new \phpbb\cache\driver\file;
+		$cache->purge();
+
 		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
 
 		foreach (array_keys($GLOBALS) as $key)
