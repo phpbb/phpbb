@@ -2664,6 +2664,9 @@ function login_forum_box($forum_data)
 
 	page_header($user->lang['LOGIN']);
 
+	// Add form token for login box
+	add_form_key('login', '_LOGIN');
+
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
