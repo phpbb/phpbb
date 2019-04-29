@@ -19,10 +19,11 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $user;
+		global $language, $user;
 
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
+		$language = $user->lang;
 	}
 
 	/**
@@ -44,6 +45,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 					'test_int_32'			=> array('lang' => 'TEST_INT',			'validate' => 'int:32'),
 					'test_int_32_64'		=> array('lang' => 'TEST_INT',			'validate' => 'int:32:64'),
 					'test_lang'				=> array('lang' => 'TEST_LANG',			'validate' => 'lang'),
+					'test_url'				=> array('lang' => 'TEST_URL',			'validate' => 'url'),
 					/*
 					'test_sp'				=> array('lang' => 'TEST_SP',			'validate' => 'script_path'),
 					'test_rpath'			=> array('lang' => 'TEST_RPATH',		'validate' => 'rpath'),
@@ -64,6 +66,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 					'test_int_32'		=> 32,
 					'test_int_32_64'	=> 48,
 					'test_lang'			=> 'en',
+					'test_url'			=> 'http://foobar.com',
 				),
 			),
 		);
@@ -147,6 +150,11 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 				array('test_lang'		=> array('lang' => 'TEST_LANG',			'validate' => 'lang')),
 				array('test_lang'		=> 'this_is_no_language'),
 				array('WRONG_DATA_LANG'),
+			),
+			array(
+				array('test_url'		=> array('lang' => 'TEST_URL',			'validate' => 'url')),
+				array('test_url'		=> 'javascript://foobar.com'),
+				array('URL_INVALID TEST_URL'),
 			),
 		);
 	}

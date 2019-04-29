@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v326rc1">Changes since 3.2.6-RC1</a></li>
 		<li><a href="#v325">Changes since 3.2.5</a></li>
 		<li><a href="#v325rc1">Changes since 3.2.5-RC1</a></li>
 		<li><a href="#v324">Changes since 3.2.4</a></li>
@@ -136,6 +137,23 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v326rc1"></a><h3>Changes since 3.2.6-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16027">PHPBB3-16027</a>] - Appveyor builds fail on PHP 7.0</li>
+			</ul>
+			<h4>Security Issue</h4>
+			<ul>
+				<li>[SECURITY-231] - Remote avatar functionality allows checking for files and ports on local network</li>
+				<li>[SECURITY-235] - Fulltext native search can be used to cause long execution times</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[SECURITY-228] - Require form token in login_box</li>
+				<li>[SECURITY-233] - SMTP auth data shouldn't be cached</li>
+				<li>[SECURITY-234] - Main website URL in Admin Control Panel should not support JS URLs</li>
+			</ul>
+
 			<a name="v325"></a><h3>Changes since 3.2.5</h3>
 			<h4>Bug</h4>
 			<ul>
