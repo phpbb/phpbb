@@ -138,9 +138,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$row_indicator = '';
 				foreach ($color_rows as $var)
 				{
-					if (($var != 'friend' && $var != 'foe' && $row['pm_' . $var])
+					if (($var !== 'friend' && $var !== 'foe' && $row[($var === 'message_reported') ? $var : "pm_{$var}"])
 						||
-						(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
+						(($var === 'friend' || $var === 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
 					{
 						$row_indicator = $var;
 						break;
