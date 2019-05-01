@@ -378,7 +378,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $user, $db, $request, $phpbb_log;
+	global $user, $db, $request, $phpbb_log, $phpbb_dispatcher;
 
 	switch ($action)
 	{
