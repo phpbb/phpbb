@@ -4439,15 +4439,16 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
 	/**
 	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
 	 * @deprecated 3.2.7 (To be removed: 3.3.0-a1)
 	 */
 	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
-	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
 	if (!empty($form_token_login))
 	{
 		$s_login_redirect .= $form_token_login;
+		// Remove S_FORM_TOKEN_LOGIN as it's already appended to S_LOGIN_REDIRECT
 		$template->assign_var('S_FORM_TOKEN_LOGIN', '');
 	}
 
