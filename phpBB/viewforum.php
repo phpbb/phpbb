@@ -198,6 +198,9 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 // We also make this circumstance available to the template in case we want to display a notice. ;)
 if (!$auth->acl_gets('f_read', 'f_list_topics', $forum_id))
 {
+	// Add form token for login box
+	add_form_key('login', '_LOGIN');
+
 	$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
 	));
