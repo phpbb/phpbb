@@ -3395,7 +3395,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || $phpbb_container->getParameter('debug.show_errors') || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors')) || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 
