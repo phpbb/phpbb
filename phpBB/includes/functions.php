@@ -4439,6 +4439,19 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
+	/**
+	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
+	 * @deprecated 3.2.7 (To be removed: 3.3.0-a1)
+	 */
+	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
+	if (!empty($form_token_login))
+	{
+		$s_login_redirect .= $form_token_login;
+		// Remove S_FORM_TOKEN_LOGIN as it's already appended to S_LOGIN_REDIRECT
+		$template->assign_var('S_FORM_TOKEN_LOGIN', '');
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4528,7 +4541,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_TOPIC_ID'			=> $topic_id,
 
 		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
-		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url()))),
+		'S_LOGIN_REDIRECT'		=> $s_login_redirect,
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
 		'S_ENABLE_FEEDS_OVERALL'	=> ($config['feed_overall']) ? true : false,
