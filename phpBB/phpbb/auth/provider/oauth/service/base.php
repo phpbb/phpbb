@@ -44,16 +44,16 @@ abstract class base implements service_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider)
+	public function get_external_service_provider()
 	{
-		$this->service_provider = $service_provider;
+		return $this->service_provider;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_external_service_provider()
+	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider)
 	{
-		return $this->service_provider;
+		$this->service_provider = $service_provider;
 	}
 }
