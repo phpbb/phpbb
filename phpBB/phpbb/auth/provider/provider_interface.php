@@ -74,7 +74,7 @@ interface provider_interface
 	 *
 	 * @param \phpbb\config\config	$new_config	Contains the new configuration values
 	 * 											that have been set in acp_board.
-	 * @return array|null		Returns null if not implemented or an array with
+	 * @return array|null		Returns null if not implemented or an array withe
 	 *							the template file name and an array of the vars
 	 *							that the template needs that must conform to the
 	 *							following example:
