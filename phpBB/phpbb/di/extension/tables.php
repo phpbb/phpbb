@@ -32,7 +32,9 @@ class tables extends Extension
 	public function load(array $configs, ContainerBuilder $container)
 	{
 		if (!$container->hasParameter('tables'))
+		{
 			return;
+		}
 
 		$tables = $container->getParameter('tables');
 
