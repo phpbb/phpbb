@@ -1,9 +1,9 @@
 services:
-# ----- Auth management -----
+    # ----- Auth management -----
     auth:
         class: phpbb\auth\auth
 
-# ----- Auth providers -----
+    # ----- Auth providers -----
     auth.provider_collection:
         class: phpbb\auth\provider_collection
         arguments:
@@ -52,24 +52,25 @@ services:
     auth.provider.oauth:
         class: phpbb\auth\provider\oauth\oauth
         arguments:
-            - '@dbal.conn'
             - '@config'
+            - '@service_container'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@language'
             - '@passwords.manager'
             - '@request'
+            - '@auth.provider.oauth.service_collection'
             - '@user'
             - '%tables.auth_provider_oauth_token_storage%'
             - '%tables.auth_provider_oauth_states%'
             - '%tables.auth_provider_oauth_account_assoc%'
-            - '@auth.provider.oauth.service_collection'
             - '%tables.users%'
-            - '@service_container'
-            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
             - { name: auth.provider }
 
-# ----- OAuth services providers -----
+    # ----- OAuth services providers -----
     auth.provider.oauth.service_collection:
         class: phpbb\di\service_collection
         arguments:
