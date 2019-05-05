@@ -72,16 +72,16 @@ interface service_interface
 	public function get_external_service_class();
 
 	/**
-	 * Sets the external library service provider
-	 *
-	 * @param \OAuth\Common\Service\ServiceInterface	$service_provider
-	 */
-	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider);
-
-	/**
 	 * Returns the external library service provider once it has been set
 	 *
 	 * @param \OAuth\Common\Service\ServiceInterface|null
 	 */
 	public function get_external_service_provider();
+
+	/**
+	 * Sets the external library service provider
+	 *
+	 * @param \OAuth\Common\Service\ServiceInterface	$service_provider
+	 */
+	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider);
 }
