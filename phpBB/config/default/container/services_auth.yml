@@ -1,9 +1,9 @@
 services:
-    # ----- Auth management -----
+# ----- Auth management -----
     auth:
         class: phpbb\auth\auth
 
-    # ----- Auth providers -----
+# ----- Auth providers -----
     auth.provider_collection:
         class: phpbb\auth\provider_collection
         arguments:
@@ -70,7 +70,7 @@ services:
         tags:
             - { name: auth.provider }
 
-    # ----- OAuth services providers -----
+# ----- OAuth services providers -----
     auth.provider.oauth.service_collection:
         class: phpbb\di\service_collection
         arguments:
