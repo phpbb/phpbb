@@ -242,7 +242,7 @@ class oauth extends \phpbb\auth\provider\base
 			 * @var	array				redirect_data	Data to be appended to the redirect url
 			 * @var ServiceInterface	service			OAuth service
 			 * @since 3.2.3-RC1
-			 * @changed 3.2.6-RC1 Added redirect_data
+			 * @changed 3.2.6-RC1						Added redirect_data
 			 */
 			$vars = [
 				'row',
@@ -282,7 +282,7 @@ class oauth extends \phpbb\auth\provider\base
 
 			/**
 			 * Check if the user is banned.
-			 * The fourth parameter, return, has to be true, otherwise the OAuth login is still called and
+			 * The fourth parameter (return) has to be true, otherwise the OAuth login is still called and
 			 * an uncaught exception is thrown as there is no token stored in the database.
 			 */
 			$ban = $this->user->check_ban($row['user_id'], $row['user_ip'], $row['user_email'], true);
@@ -303,31 +303,6 @@ class oauth extends \phpbb\auth\provider\base
 					'error_msg'	=> $message,
 					'user_row'	=> $row,
 				];
-			}
-
-			/**
-			 * Check if the user is banned.
-			 * The fourth parameter, return, has to be true,
-			 * otherwise the OAuth login is still called and
-			 * an uncaught exception is thrown as there is no
-			 * token stored in the database.
-			 */
-			$ban = $this->user->check_ban($row['user_id'], $row['user_ip'], $row['user_email'], true);
-			if (!empty($ban))
-			{
-				$till_date = !empty($ban['ban_end']) ? $this->user->format_date($ban['ban_end']) : '';
-				$message = !empty($ban['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-
-				$contact_link = phpbb_get_board_contact_link($this->config, $this->phpbb_root_path, $this->php_ext);
-				$message = $this->user->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
-				$message .= !empty($ban['ban_give_reason']) ? '<br /><br />' . $this->user->lang('BOARD_BAN_REASON', $ban['ban_give_reason']) : '';
-				$message .= !empty($ban['ban_triggered_by']) ? '<br /><br /><em>' . $this->user->lang('BAN_TRIGGERED_BY_' . strtoupper($ban['ban_triggered_by'])) . '</em>' : '';
-
-				return array(
-					'status'	=> LOGIN_BREAK,
-					'error_msg'	=> $message,
-					'user_row'	=> $row,
-				);
 			}
 
 			// Update token storage to store the user_id
