@@ -16,7 +16,7 @@ namespace phpbb\auth\provider;
 /**
 * Base authentication provider class that all other providers should implement
 */
-abstract class base implements \phpbb\auth\provider\provider_interface
+abstract class base implements provider_interface
 {
 	/**
 	* {@inheritdoc}

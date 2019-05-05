@@ -1,74 +1,66 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\auth\provider\oauth\service;
 
 /**
-* Google OAuth service
-*/
+ * Google OAuth service
+ */
 class google extends base
 {
-	/**
-	* phpBB config
-	*
-	* @var \phpbb\config\config
-	*/
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/**
-	* phpBB request
-	*
-	* @var \phpbb\request\request_interface
-	*/
+	/** @var \phpbb\request\request_interface */
 	protected $request;
 
 	/**
-	* Constructor
-	*
-	* @param	\phpbb\config\config				$config
-	* @param	\phpbb\request\request_interface 	$request
-	*/
+	 * Constructor.
+	 *
+	 * @param \phpbb\config\config				$config		Config object
+	 * @param \phpbb\request\request_interface	$request	Request object
+	 */
 	public function __construct(\phpbb\config\config $config, \phpbb\request\request_interface $request)
 	{
-		$this->config = $config;
-		$this->request = $request;
+		$this->config	= $config;
+		$this->request	= $request;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function get_auth_scope()
 	{
-		return array(
+		return [
 			'userinfo_email',
 			'userinfo_profile',
-		);
+		];
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function get_service_credentials()
 	{
-		return array(
+		return [
 			'key'		=> $this->config['auth_oauth_google_key'],
 			'secret'	=> $this->config['auth_oauth_google_secret'],
-		);
+		];
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function perform_auth_login()
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
@@ -76,19 +68,33 @@ class google extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
-		// This was a callback request, get the token
-		$this->service_provider->requestAccessToken($this->request->variable('code', ''));
+		try
+		{
+			// This was a callback request, get the token
+			$this->service_provider->requestAccessToken($this->request->variable('code', ''));
+		}
+		catch (\OAuth\Common\Http\Exception\TokenResponseException $e)
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
 
-		// Send a request with it
-		$result = json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
+		try
+		{
+			// Send a request with it
+			$result = (array) json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
+		}
+		catch (\OAuth\Common\Exception\Exception $e)
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
 
 		// Return the unique identifier
 		return $result['id'];
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function perform_token_auth()
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
@@ -96,8 +102,15 @@ class google extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
-		// Send a request with it
-		$result = json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
+		try
+		{
+			// Send a request with it
+			$result = (array) json_decode($this->service_provider->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
+		}
+		catch (\OAuth\Common\Exception\Exception $e)
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
 
 		// Return the unique identifier
 		return $result['id'];
