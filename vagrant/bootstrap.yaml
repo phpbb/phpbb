@@ -18,13 +18,10 @@ folders:
 sites:
     - map: phpbb.app
       to: "/home/vagrant/phpbb/phpBB"
+      php: "7.2"
 
 databases:
     - phpbb
-
-variables:
-    - key: APP_ENV
-      value: local
 
 # blackfire:
 #     - id: foo
