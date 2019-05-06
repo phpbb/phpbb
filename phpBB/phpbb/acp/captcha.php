@@ -36,6 +36,11 @@ class captcha
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @todo */
+	public $page_title;
+	public $tpl_name;
+	public $u_action;
+
 	/**
 	 * Constructor.
 	 *
@@ -65,10 +70,6 @@ class captcha
 		$this->template	= $template;
 		$this->user		= $user;
 	}
-
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
 
 	function main($id, $mode)
 	{
