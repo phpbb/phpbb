@@ -330,7 +330,8 @@ class bbcodes
 
 						$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
-						$this->db->sql_query('INSERT INTO ' . $this->bbcode_table . $this->db->sql_build_array('INSERT', $sql_ary));
+						$sql = 'INSERT INTO ' . $this->bbcode_table . ' ' .  $this->db->sql_build_array('INSERT', $sql_ary);
+						$this->db->sql_query($sql);
 						$this->cache->destroy('sql', $this->bbcode_table);
 						$this->container->get('text_formatter.cache')->invalidate();
 
