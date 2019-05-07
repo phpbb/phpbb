@@ -18,17 +18,36 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
  */
-class acp_icons
+class icons
 {
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
+
+	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var ContainerInterface */
 	protected $container;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\language\language */
 	protected $lang;
+
+	/** @var \phpbb\pagination */
 	protected $pagination;
+
+	/** @var \phpbb\request\request */
 	protected $request;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var string phpBB root path */
 	protected $root_path;
+
+	/** @var array phpBB tables */
 	protected $tables;
 
 	/** @todo */
@@ -36,6 +55,20 @@ class acp_icons
 	public $tpl_name;
 	public $u_action;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
+	 * @param \phpbb\config\config					$config			Config object
+	 * @param ContainerInterface					$container		Service container object
+	 * @param \phpbb\db\driver\driver_interface		$db				Database object
+	 * @param \phpbb\language\language				$lang			Language object
+	 * @param \phpbb\pagination						$pagination		Pagination object
+	 * @param \phpbb\request\request				$request		Request object
+	 * @param \phpbb\template\template				$template		Template object
+	 * @param string								$root_path		phpBB root path
+	 * @param array									$tables			phpBB tables
+	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
@@ -133,7 +166,7 @@ class acp_icons
 						continue;
 					}
 
-					// adjust the width and height to be lower than 128px while perserving the aspect ratio (for icons)
+					// adjust the width and height to be lower than 128px while preserving the aspect ratio (for icons)
 					if ($mode === 'icons')
 					{
 						if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
@@ -202,7 +235,7 @@ class acp_icons
 					}
 					$this->db->sql_freeresult($result);
 
-					if (count($smilies))
+					if (!empty($smilies))
 					{
 						foreach ($smilies as $row)
 						{
@@ -337,7 +370,7 @@ class acp_icons
 				}
 
 				// Ok, another row for adding an addition code for a pre-existing image...
-				if ($action === 'add' && $mode === 'smilies' && count($smilies))
+				if ($action === 'add' && $mode === 'smilies' && !empty($smilies))
 				{
 					$this->template->assign_vars([
 						'S_ADD_CODE'		=> true,
@@ -371,18 +404,18 @@ class acp_icons
 				}
 
 				// Get items to create/modify
-				$images = (isset($_POST['image'])) ? array_keys($this->request->variable('image', ['' => 0])) : [];
+				$images = $this->request->is_set_post('image') ? array_keys($this->request->variable('image', ['' => 0])) : [];
 
 				// Now really get the items
-				$image_id		= (isset($_POST['id'])) ? $this->request->variable('id', ['' => 0]) : [];
-				$image_order	= (isset($_POST['order'])) ? $this->request->variable('order', ['' => 0]) : [];
-				$image_width	= (isset($_POST['width'])) ? $this->request->variable('width', ['' => 0]) : [];
-				$image_height	= (isset($_POST['height'])) ? $this->request->variable('height', ['' => 0]) : [];
-				$image_add		= (isset($_POST['add_img'])) ? $this->request->variable('add_img', ['' => 0]) : [];
+				$image_id		= $this->request->is_set_post('id') ? $this->request->variable('id', ['' => 0]) : [];
+				$image_order	= $this->request->is_set_post('order') ? $this->request->variable('order', ['' => 0]) : [];
+				$image_width	= $this->request->is_set_post('width') ? $this->request->variable('width', ['' => 0]) : [];
+				$image_height	= $this->request->is_set_post('height') ? $this->request->variable('height', ['' => 0]) : [];
+				$image_add		= $this->request->is_set_post('add_image') ? $this->request->variable('add_img', ['' => 0]) : [];
 				$image_emotion	= $this->request->variable('emotion', ['' => ''], true);
 				$image_code		= $this->request->variable('code', ['' => ''], true);
-				$image_alt		= ($this->request->is_set_post('alt')) ? $this->request->variable('alt', ['' => ''], true) : [];
-				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? $this->request->variable('display_on_posting', ['' => 0]) : [];
+				$image_alt		= $this->request->is_set_post('alt') ? $this->request->variable('alt', ['' => ''], true) : [];
+				$image_display_on_posting = $this->request->is_set_post('display_on_posting') ? $this->request->variable('display_on_posting', ['' => 0]) : [];
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
 				if ($this->request->variable('add_additional_code', false, false, \phpbb\request\request_interface::POST))
