@@ -1914,14 +1914,14 @@ posting_review_row_post_author_username_append
 ===
 * Locations:
     + styles/prosilver/template/posting_review.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Append information to post author username of member
 
 posting_review_row_post_author_username_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_review.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Prepend information to post author username of member
 
 posting_topic_review_row_content_after
@@ -1935,14 +1935,14 @@ posting_topic_review_row_post_author_username_append
 ===
 * Locations:
     + styles/prosilver/template/posting_topic_review.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Append information to post author username of member
 
 posting_topic_review_row_post_author_username_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_topic_review.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Prepend information to post author username of member
 
 posting_topic_review_row_post_details_after
@@ -2396,14 +2396,14 @@ ucp_pm_history_row_message_author_username_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_history.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Append information to message author username of member
 
 ucp_pm_history_row_message_author_username_prepend
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_history.html
-* Since: 3.2.6
+* Since: 3.2.8-RC1
 * Purpose: Prepend information to message author username of member
 
 ucp_pm_viewmessage_avatar_after
