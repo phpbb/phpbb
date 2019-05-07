@@ -989,7 +989,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	* @var	bool	show_quote_button	Flag indicating if the quote button should be displayed
 	* @var	array	post_list			Array with the post IDs
 	* @var	array	sql_ary				Array with the SQL query
-	* @since 3.2.6
+	* @since 3.2.8-RC1
 	*/
 	$vars = array(
 		'topic_id',
