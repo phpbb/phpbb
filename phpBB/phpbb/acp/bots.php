@@ -454,7 +454,7 @@ class bots
 	 * @param string|false	$old_name
 	 * @return bool
 	 */
-	function validate_bot_name($new_name, $old_name = false)
+	protected function validate_bot_name($new_name, $old_name = false)
 	{
 		if ($old_name && utf8_clean_string($new_name) === $old_name)
 		{

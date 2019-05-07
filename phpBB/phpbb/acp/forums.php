@@ -1024,7 +1024,7 @@ class forums
 	 * @param int		$forum_id		The forum identifier
 	 * @return array					The forum data
 	 */
-	function get_forum_info($forum_id)
+	protected function get_forum_info($forum_id)
 	{
 		$sql = 'SELECT *
 			FROM ' . $this->tables['forums'] . "
@@ -1048,7 +1048,7 @@ class forums
 	 * @param array		$forum_data_ary		The forum data
 	 * @return array						Array possibly filled with errors
 	 */
-	function update_forum_data(&$forum_data_ary)
+	protected function update_forum_data(&$forum_data_ary)
 	{
 		$errors = [];
 
@@ -1479,7 +1479,7 @@ class forums
 	 * @param int		$to_id			The "to" forum identifier
 	 * @return array					An array possibly filled with errors
 	 */
-	function move_forum($from_id, $to_id)
+	protected function move_forum($from_id, $to_id)
 	{
 		$errors = [];
 
@@ -1601,7 +1601,7 @@ class forums
 	 * @param bool		$sync			Whether or not the forums should be resynchronised
 	 * @return array					An array possibly filled with errors
 	 */
-	function move_forum_content($from_id, $to_id, $sync = true)
+	protected function move_forum_content($from_id, $to_id, $sync = true)
 	{
 		$errors = [];
 
@@ -1676,7 +1676,7 @@ class forums
 	 * @param int		$subforums_to_id	The "to" forum identifier for the subforums action
 	 * @return array						Array possibly filled with errors
 	 */
-	function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
+	protected function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
 	{
 		$errors = [];
 
@@ -1923,7 +1923,7 @@ class forums
 	 * @param int		$forum_id		The forum identifier
 	 * @return array
 	 */
-	function delete_forum_content($forum_id)
+	protected function delete_forum_content($forum_id)
 	{
 		// @todo Why is this even included? Otherwise wrap it in a if (!function_exists())
 		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
@@ -2157,7 +2157,7 @@ class forums
 	 * @param int		$steps			The step amount
 	 * @return string					The targeted forum name
 	 */
-	function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
+	protected function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
 	{
 		$target = [];
 
@@ -2240,7 +2240,7 @@ class forums
 	 * @param int		$total
 	 * @return void
 	 */
-	function display_progress_bar($start, $total)
+	protected function display_progress_bar($start, $total)
 	{
 		adm_page_header($this->lang->lang('SYNC_IN_PROGRESS'));
 
