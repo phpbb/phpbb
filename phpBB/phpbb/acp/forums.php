@@ -310,13 +310,7 @@ class forums
 							phpbb_cache_moderators($this->db, $this->cache, $this->auth);
 							$copied_permissions = true;
 						}
-						/* Commented out because of questionable UI workflow - re-visit for 3.0.7
-												else if (!$this->parent_id && $action != 'edit' && $this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))
-												{
-													$this->copy_permission_page($forum_data);
-													return;
-												}
-						*/
+
 						$this->auth->acl_clear_prefetch();
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
@@ -333,7 +327,6 @@ class forums
 
 						trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
-
 				break;
 			}
 		}
@@ -2262,30 +2255,4 @@ class forums
 
 		adm_page_footer();
 	}
-
-	/**
-	 * Display copy permission page.
-	 * Not used at the moment - we will have a look at it for 3.0.7
-	 *
-	 * @param array		$forum_data		The forum data
-	 * @return void
-	 */
-	function copy_permission_page($forum_data)
-	{
-		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
-		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
-
-		$l_acl = $this->lang->lang('COPY_TO_ACL', '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url) . '">', '</a>');
-
-		$this->tpl_name = 'acp_forums_copy_perm';
-
-		$this->template->assign_vars([
-			'U_ACL'				=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url),
-			'L_ACL_LINK'		=> $l_acl,
-			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
-			'S_COPY_ACTION'		=> $action,
-			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], $forum_data['forum_id'], false, false, false),
-		]);
-	}
-
 }
