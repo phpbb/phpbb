@@ -15,27 +15,65 @@ namespace phpbb\acp;
 
 class language
 {
+	/** @var \phpbb\config\config */
 	protected $config;
-	protected $db;
-	protected $dispatcher;
-	protected $lang;
-	protected $lang_helper;
-	protected $log;
-	protected $request;
-	protected $template;
-	protected $user;
-	protected $root_path;
-	protected $php_ext;
-	protected $tables;
 
-	protected $dir;
-	protected $file;
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\language\language */
+	protected $lang;
+
+	/** @var \phpbb\language\language_file_helper */
+	protected $lang_helper;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/** @todo */
 	public $page_title;
 	public $tpl_name;
 	public $u_action;
+	protected $dir;
+	protected $file;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\config\config					$config			Config object
+	 * @param \phpbb\db\driver\driver_interface		$db				Database object
+	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\language\language				$lang			Language object
+	 * @param \phpbb\language\language_file_helper	$lang_helper	Language helper object
+	 * @param \phpbb\log\log						$log			Log object
+	 * @param \phpbb\request\request				$request		Request object
+	 * @param \phpbb\template\template				$template		Template object
+	 * @param \phpbb\user							$user			User object
+	 * @param string								$root_path		phpBB root path
+	 * @param string								$php_ext		php File extension
+	 * @param array									$tables			phpBB tables
+	 */
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
