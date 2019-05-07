@@ -2118,7 +2118,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		* @event core.message_history_modify_template_vars
 		* @var array	template_vars		Array containing the query
 		* @var array	row					Array containing the action user row
-		* @since 3.2.6
+		* @since 3.2.8-RC1
 		*/
 		$vars = array(
 			'template_vars',
