@@ -179,8 +179,7 @@ class permission_roles
 					{
 						$this->remove_role($role_id, $permission_type);
 
-						$role_name = $this->lang->is_set($role_row['role_name']) ? $this->lang->lang($role_row['role_name']) : $role_row['role_name'];
-						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, [$role_name]);
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, [$this->lang->lang($role_row['role_name'])]);
 
 						trigger_error($this->lang->lang('ROLE_DELETED') . adm_back_link($this->u_action));
 					}
@@ -193,7 +192,6 @@ class permission_roles
 							'role_id'	=> $role_id,
 						]));
 					}
-
 				break;
 
 				/** @noinspection PhpMissingBreakStatementInspection */
@@ -281,11 +279,9 @@ class permission_roles
 					// Now add the auth settings
 					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
-					$role_name = $this->lang->is_set($role_name) ? $this->lang->lang($role_name) : $role_name;
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, [$role_name]);
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, [$this->lang->lang($role_name)]);
 
 					trigger_error($this->lang->lang('ROLE_' . strtoupper($action) . '_SUCCESS') . adm_back_link($this->u_action));
-
 				break;
 			}
 		}
@@ -407,11 +403,9 @@ class permission_roles
 
 					if (!empty($hold_ary))
 					{
-						$role_name = $this->lang->is_set($role_row['role_name']) ? $this->lang->lang($role_row['role_name']) : $role_row['role_name'];
-
 						$this->template->assign_vars([
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> $this->lang->lang('ROLE_ASSIGNED_TO', $role_name),
+							'L_ROLE_ASSIGNED_TO'	=> $this->lang->lang('ROLE_ASSIGNED_TO', $this->lang->lang($role_row['role_name'])),
 						]);
 
 						$this->auth_admin->display_role_mask($hold_ary);
@@ -423,7 +417,6 @@ class permission_roles
 
 			case 'move_up':
 			case 'move_down':
-
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_permission_roles'))
 				{
 					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
@@ -446,7 +439,7 @@ class permission_roles
 				$sql = 'UPDATE ' . $this->tables['acl_roles'] . '
 					SET role_order = ' . $order_total . " - role_order
 					WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'
-						AND role_order IN ($order, " . ($action === 'move_up' ? $order - 1 : $order + 1) . ')';
+						AND " . $this->db->sql_in_set('role_order', [$order, ($action === 'move_up' ? $order - 1 : $order + 1)]);
 				$this->db->sql_query($sql);
 
 				if ($this->request->is_ajax())
@@ -456,7 +449,6 @@ class permission_roles
 						'success'	=> (bool) $this->db->sql_affectedrows(),
 					]);
 				}
-
 			break;
 		}
 
@@ -495,10 +487,8 @@ class permission_roles
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$role_name = $this->lang->is_set($row['role_name']) ? $this->lang->lang($row['role_name']) : $row['role_name'];
-
 			$this->template->assign_block_vars('roles', [
-				'ROLE_NAME'				=> $role_name,
+				'ROLE_NAME'				=> $this->lang->lang($row['role_name']),
 				'ROLE_DESCRIPTION'		=> $this->lang->is_set($row['role_description']) ? $this->lang->lang($row['role_description']) : nl2br($row['role_description']),
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
@@ -508,11 +498,11 @@ class permission_roles
 				'U_DISPLAY_ITEMS'	=> $row['role_id'] == $display_item ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to',
 			]);
 
-			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $role_name . '</option>';
+			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $this->lang->lang($row['role_name']) . '</option>';
 
 			if ($display_item == $row['role_id'])
 			{
-				$this->template->assign_var('L_ROLE_ASSIGNED_TO', $this->lang->lang('ROLE_ASSIGNED_TO', $role_name));
+				$this->template->assign_var('L_ROLE_ASSIGNED_TO', $this->lang->lang('ROLE_ASSIGNED_TO', $this->lang->lang($row['role_name'])));
 			}
 		}
 		$this->db->sql_freeresult($result);
