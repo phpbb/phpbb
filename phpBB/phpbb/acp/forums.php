@@ -976,24 +976,24 @@ class forums
 				$url = $this->u_action . "&amp;parent_id=$this->parent_id&amp;f={$row['forum_id']}";
 
 				$this->template->assign_block_vars('forums', [
-						'FOLDER_IMAGE'		=> $folder_image,
-						'FORUM_IMAGE'		=> ($row['forum_image']) ? '<img src="' . $this->root_path . $row['forum_image'] . '" alt="" />' : '',
-						'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $this->root_path . $row['forum_image'] : '',
-						'FORUM_NAME'		=> $row['forum_name'],
-						'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-						'FORUM_TOPICS'		=> $row['forum_topics_approved'],
-						'FORUM_POSTS'		=> $row['forum_posts_approved'],
+					'FOLDER_IMAGE'		=> $folder_image,
+					'FORUM_IMAGE'		=> ($row['forum_image']) ? '<img src="' . $this->root_path . $row['forum_image'] . '" alt="" />' : '',
+					'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $this->root_path . $row['forum_image'] : '',
+					'FORUM_NAME'		=> $row['forum_name'],
+					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
+					'FORUM_TOPICS'		=> $row['forum_topics_approved'],
+					'FORUM_POSTS'		=> $row['forum_posts_approved'],
 
-						'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
-						'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
+					'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
+					'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
 
-						'U_FORUM'			=> $this->u_action . '&amp;parent_id=' . $row['forum_id'],
-						'U_MOVE_UP'			=> $url . '&amp;action=move_up',
-						'U_MOVE_DOWN'		=> $url . '&amp;action=move_down',
-						'U_EDIT'			=> $url . '&amp;action=edit',
-						'U_DELETE'			=> $url . '&amp;action=delete',
-						'U_SYNC'			=> $url . '&amp;action=sync']
-				);
+					'U_FORUM'			=> $this->u_action . '&amp;parent_id=' . $row['forum_id'],
+					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
+					'U_MOVE_DOWN'		=> $url . '&amp;action=move_down',
+					'U_EDIT'			=> $url . '&amp;action=edit',
+					'U_DELETE'			=> $url . '&amp;action=delete',
+					'U_SYNC'			=> $url . '&amp;action=sync',
+				]);
 			}
 		}
 		else if ($this->parent_id)
