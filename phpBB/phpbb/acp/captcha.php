@@ -229,7 +229,7 @@ class captcha
 	 * @param string	$selected	The selected captcha service name
 	 * @return void
 	 */
-	function deliver_demo($selected)
+	protected function deliver_demo($selected)
 	{
 		$captcha = $this->factory->get_instance($selected);
 		$captcha->init(CONFIRM_REG);

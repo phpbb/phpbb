@@ -123,12 +123,12 @@ class jabber
 		$jab_verify_peer_name	= $this->request->variable('jab_verify_peer_name',	(bool) $this->config['jab_verify_peer_name']);
 		$jab_allow_self_signed	= $this->request->variable('jab_allow_self_signed',	(bool) $this->config['jab_allow_self_signed']);
 
-		$form_name = 'acp_jabber';
-		add_form_key($form_name);
+		$form_key = 'acp_jabber';
+		add_form_key($form_key);
 
 		if ($submit)
 		{
-			if (!check_form_key($form_name))
+			if (!check_form_key($form_key))
 			{
 				trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 			}
