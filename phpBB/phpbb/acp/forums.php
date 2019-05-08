@@ -1048,7 +1048,7 @@ class forums
 	 * @param array		$forum_data_ary		The forum data
 	 * @return array						Array possibly filled with errors
 	 */
-	protected function update_forum_data(&$forum_data_ary)
+	protected function update_forum_data(array &$forum_data_ary)
 	{
 		$errors = [];
 
@@ -2157,7 +2157,7 @@ class forums
 	 * @param int		$steps			The step amount
 	 * @return string					The targeted forum name
 	 */
-	protected function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
+	protected function move_forum_by(array $forum_row, $action = 'move_up', $steps = 1)
 	{
 		$target = [];
 

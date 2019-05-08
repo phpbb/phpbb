@@ -525,7 +525,7 @@ class permission_roles
 	 * @param array		$auth_options
 	 * @return void
 	 */
-	protected function display_auth_options($auth_options)
+	protected function display_auth_options(array $auth_options)
 	{
 		$content_array = $categories = [];
 		$key_sort_array = [0];

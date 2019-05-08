@@ -638,7 +638,7 @@ class permissions
 	 * @param array		$forum_list		The forums
 	 * @return string					The <select> options
 	 */
-	function build_subforum_options($forum_list)
+	function build_subforum_options(array $forum_list)
 	{
 		$s_options = '';
 
@@ -686,7 +686,7 @@ class permissions
 	 * @param string	$permission_scope	The permission scope (local|global)
 	 * @return string						The <option> list
 	 */
-	function build_permission_dropdown($options, $default_option, $permission_scope)
+	function build_permission_dropdown(array $options, $default_option, $permission_scope)
 	{
 		$s_dropdown_options = '';
 
@@ -712,7 +712,7 @@ class permissions
 	 * @param array		$ids		The mode's identifiers
 	 * @return void
 	 */
-	function check_existence($mode, &$ids)
+	function check_existence($mode, array &$ids)
 	{
 		if (!empty($ids))
 		{
@@ -747,7 +747,7 @@ class permissions
 	 * @param array			$group_ids			The group identifiers
 	 * @return void
 	 */
-	function set_permissions($mode, $permission_type, &$user_ids, &$group_ids)
+	function set_permissions($mode, $permission_type, array &$user_ids, array &$group_ids)
 	{
 		$psubmit = $this->request->variable('psubmit', [0 => [0 => 0]]);
 
@@ -839,7 +839,7 @@ class permissions
 	 * @param array			$group_ids			The group identifiers
 	 * @return void
 	 */
-	function set_all_permissions($mode, $permission_type, &$user_ids, &$group_ids)
+	function set_all_permissions($mode, $permission_type, array &$user_ids, array &$group_ids)
 	{
 		// User or group to be set?
 		$ug_type = !empty($user_ids) ? 'user' : 'group';
@@ -918,7 +918,7 @@ class permissions
 	 * @param array		$auth_settings	The auth settings
 	 * @return bool						false if they differ, true if they are equal
 	 */
-	function check_assigned_role($role_id, &$auth_settings)
+	function check_assigned_role($role_id, array &$auth_settings)
 	{
 		$test_auth_settings = [];
 
@@ -960,7 +960,7 @@ class permissions
 	 * @param array			$forum_ids			The forum identifiers
 	 * @return void
 	 */
-	function remove_permissions($mode, $permission_type, &$user_ids, &$group_ids, &$forum_ids)
+	function remove_permissions($mode, $permission_type, array &$user_ids, array &$group_ids, array &$forum_ids)
 	{
 		// User or group to be set?
 		$ug_type = !empty($user_ids) ? 'user' : 'group';
@@ -1333,7 +1333,7 @@ class permissions
 	 * @param string	$permission_type	The permission type (a_|m_|u_|f_)
 	 * @return array						The assigned users / groups identifiers and <select> options
 	 */
-	function retrieve_defined_user_groups($permission_scope, $forum_ids, $permission_type)
+	function retrieve_defined_user_groups($permission_scope, array $forum_ids, $permission_type)
 	{
 		$sql_forum_id = ($permission_scope === 'global') ? 'AND a.forum_id = 0' : (!empty($forum_id) ? 'AND ' . $this->db->sql_in_set('a.forum_id', $forum_ids) : 'AND a.forum_id <> 0');
 
