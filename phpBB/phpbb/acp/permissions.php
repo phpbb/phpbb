@@ -1417,7 +1417,7 @@ class permissions
 			'group_ids'			=> $defined_group_ids,
 			'group_ids_options'	=> $s_defined_group_options,
 			'user_ids'			=> $defined_user_ids,
-			'user_ids_options'	=> $s_defined_user_options
+			'user_ids_options'	=> $s_defined_user_options,
 		];
 	}
 

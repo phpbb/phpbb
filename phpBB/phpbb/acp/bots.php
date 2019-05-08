@@ -292,7 +292,7 @@ class bots
 								'bot_name'		=> (string) $bot_row['bot_name'],
 								'bot_active'	=> (int) $bot_row['bot_active'],
 								'bot_agent'		=> (string) $bot_row['bot_agent'],
-								'bot_ip'		=> (string) $bot_row['bot_ip']
+								'bot_ip'		=> (string) $bot_row['bot_ip'],
 							]);
 							$this->db->sql_query($sql);
 						}

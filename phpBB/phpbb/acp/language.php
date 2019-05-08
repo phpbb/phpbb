@@ -341,7 +341,7 @@ class language
 					'iso'		=> $lang_iso,
 					'name'		=> trim(htmlspecialchars($file[0])),
 					'local_name'=> trim(htmlspecialchars($file[1], ENT_COMPAT, 'UTF-8')),
-					'author'	=> trim(htmlspecialchars($file[2], ENT_COMPAT, 'UTF-8'))
+					'author'	=> trim(htmlspecialchars($file[2], ENT_COMPAT, 'UTF-8')),
 				];
 				unset($file);
 
@@ -368,7 +368,7 @@ class language
 					'lang_dir'			=> $lang_pack['iso'],
 					'lang_english_name'	=> $lang_pack['name'],
 					'lang_local_name'	=> $lang_pack['local_name'],
-					'lang_author'		=> $lang_pack['author']
+					'lang_author'		=> $lang_pack['author'],
 				];
 
 				$this->db->sql_query('INSERT INTO ' . $this->tables['lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));

@@ -709,7 +709,7 @@ class groups
 											'forum_id'			=> (int) $row['forum_id'],
 											'auth_option_id'	=> (int) $row['auth_option_id'],
 											'auth_role_id'		=> (int) $row['auth_role_id'],
-											'auth_setting'		=> (int) $row['auth_setting']
+											'auth_setting'		=> (int) $row['auth_setting'],
 										];
 									}
 									$this->db->sql_freeresult($result);
@@ -740,7 +740,7 @@ class groups
 							'text'			=> $group_desc,
 							'allow_bbcode'	=> $allow_desc_bbcode,
 							'allow_smilies'	=> $allow_desc_smilies,
-							'allow_urls'	=> $allow_desc_urls
+							'allow_urls'	=> $allow_desc_urls,
 						];
 					}
 				}
@@ -751,7 +751,7 @@ class groups
 						'text'			=> '',
 						'allow_bbcode'	=> true,
 						'allow_smilies'	=> true,
-						'allow_urls'	=> true
+						'allow_urls'	=> true,
 					];
 					$group_rank = 0;
 					$group_type = GROUP_OPEN;

@@ -170,7 +170,7 @@ class board
 						'warnings_expire_days'	=> ['lang' => 'WARNINGS_EXPIRE', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $this->lang->lang('DAYS')],
 
 						'legend4'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -197,7 +197,7 @@ class board
 						'allow_quick_reply'				=> ['lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'quick_reply'], 'explain' => true],
 
 						'legend2'							=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -231,7 +231,7 @@ class board
 						'allow_avatar'			=> ['lang' => 'ALLOW_AVATARS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'avatar_min'			=> ['lang' => 'MIN_AVATAR_SIZE', 'validate' => 'int:0', 'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
 						'avatar_max'			=> ['lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
-					]
+					],
 				];
 
 				if (!empty($avatar_vars))
@@ -266,7 +266,7 @@ class board
 						'enable_pm_icons'		=> ['lang' => 'ENABLE_PM_ICONS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -309,7 +309,7 @@ class board
 						'max_post_img_height'	=> ['lang' => 'MAX_POST_IMG_HEIGHT', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -334,7 +334,7 @@ class board
 						'max_sig_img_height'	=> ['lang' => 'MAX_SIG_IMG_HEIGHT', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -368,7 +368,7 @@ class board
 						'coppa_fax'			=> ['lang' => 'COPPA_FAX', 'validate' => 'string', 'type' => 'text:25:100', 'explain' => false],
 
 						'legend4'			=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -396,7 +396,7 @@ class board
 						'legend4'					=> 'ACP_FEED_SETTINGS_OTHER',
 						'feed_overall_forums'		=> ['lang' => 'ACP_FEED_OVERALL_FORUMS', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
 						'feed_exclude_id'			=> ['lang' => 'ACP_FEED_EXCLUDE_ID', 'validate' => 'string', 'type' => 'custom', 'function' => [$this, 'select_exclude_forums'], 'explain' => true],
-					]
+					],
 				];
 			break;
 
@@ -410,7 +410,7 @@ class board
 						'cookie_path'	=> ['lang' => 'COOKIE_PATH', 'validate' => 'string', 'type' => 'text::255', 'explain' => true],
 						'cookie_secure'	=> ['lang' => 'COOKIE_SECURE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
 						'cookie_notice'	=> ['lang' => 'COOKIE_NOTICE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
-					]
+					],
 				];
 			break;
 
@@ -451,7 +451,7 @@ class board
 						'load_cpf_viewtopic'	=> ['lang' => 'LOAD_CPF_VIEWTOPIC', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
 
 						'legend4'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -461,7 +461,7 @@ class board
 					'vars'	=> [
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
 						'auth_method'	=> ['lang' => 'AUTH_METHOD', 'validate' => 'string', 'type' => 'select:1:togglable', 'function' => [$this, 'select_auth_method'], 'explain' => false],
-					]
+					],
 				];
 			break;
 
@@ -488,7 +488,7 @@ class board
 						'script_path'			=> ['lang' => 'SCRIPT_PATH', 'validate' => 'script_path', 'type' => 'text::255', 'explain' => true],
 
 						'legend4'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
@@ -518,8 +518,7 @@ class board
 						'tpl_allow_php'			=> ['lang' => 'TPL_ALLOW_PHP', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'form_token_lifetime'	=> ['lang' => 'FORM_TIME_MAX', 'validate' => 'int:-1:99999', 'type' => 'number:-1:99999', 'explain' => true, 'append' => ' ' . $this->lang->lang('SECONDS')],
 						'form_token_sid_guests'	=> ['lang' => 'FORM_SID_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-
-					]
+					],
 				];
 			break;
 
@@ -551,7 +550,7 @@ class board
 						'smtp_allow_self_signed'=> ['lang' => 'SMTP_ALLOW_SELF_SIGNED', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
-					]
+					],
 				];
 			break;
 
