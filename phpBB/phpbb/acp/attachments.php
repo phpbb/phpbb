@@ -1287,7 +1287,7 @@ class attachments
 	 * @param array		$stats	Array of config key => value pairs to set.
 	 * @return void
 	 */
-	public function set_attachment_stats($stats)
+	public function set_attachment_stats(array $stats)
 	{
 		foreach ($stats as $key => $value)
 		{
@@ -1457,7 +1457,7 @@ class attachments
 	 * @param bool		$create_directory	Whether or not a directory should be created
 	 * @return void
 	 */
-	protected function test_upload(&$error, $upload_dir, $create_directory = false)
+	protected function test_upload(array &$error, $upload_dir, $create_directory = false)
 	{
 		// Does the target directory exist, is it a directory and writable.
 		if ($create_directory)

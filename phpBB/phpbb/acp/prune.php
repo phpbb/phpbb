@@ -489,7 +489,7 @@ class prune
 	 * @param array		$usernames	The usernames
 	 * @return void
 	 */
-	function get_prune_users(&$user_ids, &$usernames)
+	function get_prune_users(array &$user_ids, array &$usernames)
 	{
 		$group_id		= $this->request->variable('group_id', 0);
 		$users_by_id	= $this->request->variable('user_ids', [0]);

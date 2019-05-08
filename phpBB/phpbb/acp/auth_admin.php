@@ -355,7 +355,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool		$local
 	 * @param bool		$group_display
 	 */
-	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
+	function display_mask($mode, $permission_type, array &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
 		// Define names for template loops, might be able to be set
 		$tpl_mask = 'mask';
@@ -711,7 +711,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$hold_ary
 	 * @return void
 	 */
-	function display_role_mask(&$hold_ary)
+	function display_role_mask(array &$hold_ary)
 	{
 		if (empty($hold_ary))
 		{
@@ -792,7 +792,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$options
 	 * @return bool
 	 */
-	function acl_add_option($options)
+	function acl_add_option(array $options)
 	{
 		if (!is_array($options))
 		{
@@ -909,7 +909,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool			$clear_prefetch
 	 * @return void
 	 */
-	function acl_set($ug_type, $forum_id, $ug_id, $auth, $role_id = 0, $clear_prefetch = true)
+	function acl_set($ug_type, $forum_id, $ug_id, array $auth, $role_id = 0, $clear_prefetch = true)
 	{
 		$forum_id = !is_array($forum_id) ? [$forum_id] : $forum_id;
 		$ug_id = !is_array($ug_id) ? [$ug_id] : $ug_id;
@@ -1035,7 +1035,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$auth			The auth data
 	 * @return void
 	 */
-	function acl_set_role($role_id, $auth)
+	function acl_set_role($role_id, array $auth)
 	{
 		// Get any-flag as required
 		reset($auth);
@@ -1218,7 +1218,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool		$show_trace
 	 * @return void
 	 */
-	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
+	function assign_cat_array(array &$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
 		reset($category_array);
 		foreach ($category_array as $cat => $cat_array)
@@ -1312,7 +1312,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$key_sort_array
 	 * @return void
 	 */
-	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
+	function build_permission_array(array &$permission_row, array &$content_array, array &$categories, array $key_sort_array)
 	{
 		foreach ($key_sort_array as $forum_id)
 		{

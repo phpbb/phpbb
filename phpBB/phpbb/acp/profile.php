@@ -1319,7 +1319,7 @@ class profile
 	 * @param array		$where_fields
 	 * @return void
 	 */
-	function update_insert($table, $sql_ary, $where_fields)
+	function update_insert($table, array $sql_ary, array $where_fields)
 	{
 		$check_key = '';
 		$where_sql = [];
