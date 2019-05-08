@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * @todo add cron intervals to server settings? (database_gc, queue_interval, session_gc, search_gc, cache_gc, warnings_gc)
  */
-class acp_board
+class board
 {
 	/* @var \phpbb\auth\provider_collection */
 	protected $auth_providers;
