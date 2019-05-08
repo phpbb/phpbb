@@ -15,7 +15,7 @@ namespace phpbb\acp;
 
 class permission_roles
 {
-	/** @var \auth_admin */
+	/** @var auth_admin */
 	protected $auth_admin;
 
 	/** @var \phpbb\db\driver\driver_interface */
@@ -56,6 +56,7 @@ class permission_roles
 	/**
 	 * Constructor.
 	 *
+	 * @param auth_admin						$auth_admin		Auth admin object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\language\language			$lang			Language objet
 	 * @param \phpbb\log\log					$log			Log object
@@ -68,6 +69,7 @@ class permission_roles
 	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
+		auth_admin $auth_admin,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
@@ -80,6 +82,7 @@ class permission_roles
 		$tables
 	)
 	{
+		$this->auth_admin	= $auth_admin;
 		$this->db			= $db;
 		$this->lang			= $lang;
 		$this->log			= $log;
@@ -107,8 +110,6 @@ class permission_roles
 		{
 			include($this->root_path . 'includes/acp/auth.' . $this->php_ext);
 		}
-
-		$this->auth_admin = new \auth_admin();
 
 		$this->tpl_name = 'acp_permission_roles';
 
