@@ -13,15 +13,10 @@
 
 namespace phpbb\acp;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 class bbcodes
 {
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
-
-	/** @var ContainerInterface */
-	protected $container;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -41,6 +36,9 @@ class bbcodes
 	/** @var \phpbb\template\template */
 	protected $template;
 
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $tf_cache;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -56,37 +54,37 @@ class bbcodes
 	 * Constructor.
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
-	 * @param ContainerInterface					$container		Service container object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\request\request				$request		Request object
 	 * @param \phpbb\template\template				$template		Template object
+	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
 	 * @param \phpbb\user							$user			User object
 	 * @param string								$bbcode_table	BBCode table
 	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
-		ContainerInterface $container,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
+		\phpbb\textformatter\cache_interface $tf_cache,
 		\phpbb\user $user,
 		$bbcode_table
 	)
 	{
 		$this->cache		= $cache;
-		$this->container	= $container;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
 		$this->template		= $template;
+		$this->tf_cache		= $tf_cache;
 		$this->user			= $user;
 
 		$this->bbcode_table	= $bbcode_table;
@@ -333,7 +331,7 @@ class bbcodes
 						$sql = 'INSERT INTO ' . $this->bbcode_table . ' ' .  $this->db->sql_build_array('INSERT', $sql_ary);
 						$this->db->sql_query($sql);
 						$this->cache->destroy('sql', $this->bbcode_table);
-						$this->container->get('text_formatter.cache')->invalidate();
+						$this->tf_cache->invalidate();
 
 						$lang = 'BBCODE_ADDED';
 						$log_action = 'LOG_BBCODE_ADD';
@@ -345,7 +343,7 @@ class bbcodes
 							WHERE bbcode_id = ' . $bbcode_id;
 						$this->db->sql_query($sql);
 						$this->cache->destroy('sql', $this->bbcode_table);
-						$this->container->get('text_formatter.cache')->invalidate();
+						$this->tf_cache->invalidate();
 
 						$lang = 'BBCODE_EDITED';
 						$log_action = 'LOG_BBCODE_EDIT';
@@ -403,7 +401,7 @@ class bbcodes
 
 						$this->cache->destroy('sql', $this->bbcode_table);
 
-						$this->container->get('text_formatter.cache')->invalidate();
+						$this->tf_cache->invalidate();
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_BBCODE_DELETE', false, [$bbcode_tag]);
 

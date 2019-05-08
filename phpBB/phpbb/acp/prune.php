@@ -494,7 +494,7 @@ class prune
 		$group_id		= $this->request->variable('group_id', 0);
 		$users_by_id	= $this->request->variable('user_ids', [0]);
 		$users_by_name	= $this->request->variable('users', '', true);
-		$posts_on_queue	= (trim($this->request->variable('posts_on_queue', '')) === '') ? false : $this->request->variable('posts_on_queue', 0);
+		$posts_on_queue	= $this->request->variable('posts_on_queue', '') === '' ? false : $this->request->variable('posts_on_queue', 0);
 
 		$key_match		= [];
 		$queue_select	= '';
