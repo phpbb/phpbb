@@ -628,7 +628,7 @@ class board
 				}
 				$this->config->set($config_name, $config_value);
 
-				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
+				if ($config_name == 'allow_quick_reply' && $this->request->is_set_post('allow_quick_reply_enable'))
 				{
 					enable_bitfield_column_flag($this->tables['forums'], 'forum_flags', round(log(FORUM_FLAG_QUICK_REPLY, 2)));
 				}
