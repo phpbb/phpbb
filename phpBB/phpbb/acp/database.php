@@ -291,16 +291,12 @@ class database
 						{
 							if (strlen($this->table_prefix) === 0 || stripos($table_name, $this->table_prefix) === 0)
 							{
-								$this->template->assign_block_vars('tables', [
-									'TABLE'	=> $table_name
-								]);
+								$this->template->assign_block_vars('tables', ['TABLE' => $table_name]);
 							}
 						}
 						unset($tables);
 
-						$this->template->assign_vars([
-							'U_ACTION'	=> $this->u_action . '&amp;action=download'
-						]);
+						$this->template->assign_var('U_ACTION', $this->u_action . '&amp;action=download');
 
 						$available_methods = ['gzip' => 'zlib', 'bzip2' => 'bz2'];
 
@@ -311,14 +307,10 @@ class database
 								continue;
 							}
 
-							$this->template->assign_block_vars('methods', [
-								'TYPE'	=> $type
-							]);
+							$this->template->assign_block_vars('methods', ['TYPE' => $type]);
 						}
 
-						$this->template->assign_block_vars('methods', [
-							'TYPE'	=> 'text'
-						]);
+						$this->template->assign_block_vars('methods', ['TYPE' => 'text']);
 					break;
 				}
 			break;
@@ -598,9 +590,7 @@ class database
 							}
 						}
 
-						$this->template->assign_vars([
-							'U_ACTION'	=> $this->u_action . '&amp;action=submit'
-						]);
+						$this->template->assign_var('U_ACTION', $this->u_action . '&amp;action=submit');
 					break;
 				}
 			break;

@@ -664,7 +664,7 @@ class extensions
 					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
 						$s_hidden_fields = build_hidden_fields([
-							'enable_packagist'	=> $enable_packagist
+							'enable_packagist'	=> $enable_packagist,
 						]);
 
 						confirm_box(false, $this->lang->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields);
@@ -758,7 +758,7 @@ class extensions
 		$types	= [
 			'enabled'	=> [
 				'block'		=> 'enabled',
-				'actions'	=> ['disable']
+				'actions'	=> ['disable'],
 			],
 			'disabled'	=> [
 				'block'		=> 'disabled',

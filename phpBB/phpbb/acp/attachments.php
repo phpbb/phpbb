@@ -241,7 +241,7 @@ class attachments
 						'img_min_thumb_filesize'	=> ['lang' => 'MIN_THUMB_FILESIZE', 'validate' => 'int:0:999999999999999', 'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $this->lang->lang('BYTES')],
 						'img_max'					=> ['lang' => 'MAX_IMAGE_SIZE', 'validate' => 'int:0:9999', 'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
 						'img_link'					=> ['lang' => 'IMAGE_LINK_SIZE', 'validate' => 'int:0:9999', 'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $this->lang->lang('PIXEL')],
-					]
+					],
 				];
 
 				/**
@@ -473,7 +473,7 @@ class attachments
 							{
 								$sql_ary = [
 									'group_id'	=>	$add_extension_group,
-									'extension'	=>	$add_extension
+									'extension'	=>	$add_extension,
 								];
 
 								$this->db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));

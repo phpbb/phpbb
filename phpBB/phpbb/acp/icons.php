@@ -884,7 +884,7 @@ class icons
 							'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $notice,
 							'REFRESH_DATA'	=> [
-								'time'	=> 3
+								'time'	=> 3,
 							],
 						]);
 					}

@@ -204,7 +204,7 @@ class forums
 				/** @noinspection PhpMissingBreakStatementInspection */
 				case 'edit':
 					$forum_data = [
-						'forum_id'		=>	$forum_id
+						'forum_id'		=>	$forum_id,
 					];
 				// No break here
 
@@ -581,14 +581,14 @@ class forums
 					'text'			=> $forum_data['forum_rules'],
 					'allow_bbcode'	=> true,
 					'allow_smilies'	=> true,
-					'allow_urls'	=> true
+					'allow_urls'	=> true,
 				];
 
 				$forum_desc_data = [
 					'text'			=> $forum_data['forum_desc'],
 					'allow_bbcode'	=> true,
 					'allow_smilies'	=> true,
-					'allow_urls'	=> true
+					'allow_urls'	=> true,
 				];
 
 				$forum_rules_preview = '';
@@ -2010,7 +2010,7 @@ class forums
 						$this->tables['topics_posted'],
 						$this->tables['poll_options'],
 						$this->tables['poll_votes'],
-					]
+					],
 				];
 
 				// Amount of rows we select and delete in one iteration.
@@ -2054,7 +2054,7 @@ class forums
 		$table_ary = [
 			$this->tables['forums_access'], $this->tables['forums_track'], $this->tables['forums_watch'],
 			$this->tables['moderator_cache'], $this->tables['posts'], $this->tables['log'],
-			$this->tables['topics'], $this->tables['topics_track']
+			$this->tables['topics'], $this->tables['topics_track'],
 		];
 
 		/**
@@ -2245,7 +2245,7 @@ class forums
 		adm_page_header($this->lang->lang('SYNC_IN_PROGRESS'));
 
 		$this->template->set_filenames([
-			'body'	=> 'progress_bar.html'
+			'body'	=> 'progress_bar.html',
 		]);
 
 		$this->template->assign_vars([
