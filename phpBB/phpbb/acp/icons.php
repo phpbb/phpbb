@@ -13,8 +13,6 @@
 
 namespace phpbb\acp;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
  */
@@ -25,9 +23,6 @@ class icons
 
 	/** @var \phpbb\config\config */
 	protected $config;
-
-	/** @var ContainerInterface */
-	protected $container;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -43,6 +38,9 @@ class icons
 
 	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $tf_cache;
 
 	/** @var string phpBB root path */
 	protected $root_path;
@@ -60,36 +58,36 @@ class icons
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\config\config					$config			Config object
-	 * @param ContainerInterface					$container		Service container object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\pagination						$pagination		Pagination object
 	 * @param \phpbb\request\request				$request		Request object
 	 * @param \phpbb\template\template				$template		Template object
+	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
 	 * @param string								$root_path		phpBB root path
 	 * @param array									$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
-		ContainerInterface $container,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\language\language $lang,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
+		\phpbb\textformatter\cache_interface $tf_cache,
 		$root_path,
 		$tables
 	)
 	{
 		$this->cache		= $cache;
 		$this->config		= $config;
-		$this->container	= $container;
 		$this->db			= $db;
 		$this->lang			= $lang;
 		$this->pagination	= $pagination;
 		$this->request		= $request;
 		$this->template		= $template;
+		$this->tf_cache		= $tf_cache;
 
 		$this->root_path	= $root_path;
 		$this->tables		= $tables;
@@ -572,7 +570,7 @@ class icons
 
 				$this->cache->destroy('_icons');
 				$this->cache->destroy('sql', $table);
-				$this->container->get('text_formatter.cache')->invalidate();
+				$this->tf_cache->invalidate();
 
 				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$errormsgs = '';
@@ -753,7 +751,7 @@ class icons
 
 					$this->cache->destroy('_icons');
 					$this->cache->destroy('sql', $table);
-					$this->container->get('text_formatter.cache')->invalidate();
+					$this->tf_cache->invalidate();
 
 					trigger_error($this->lang->lang($lang . '_IMPORT_SUCCESS') . adm_back_link($this->u_action));
 				}
@@ -875,7 +873,7 @@ class icons
 
 					$this->cache->destroy('_icons');
 					$this->cache->destroy('sql', $table);
-					$this->container->get('text_formatter.cache')->invalidate();
+					$this->tf_cache->invalidate();
 
 					if ($this->request->is_ajax())
 					{
@@ -945,7 +943,7 @@ class icons
 
 				$this->cache->destroy('_icons');
 				$this->cache->destroy('sql', $table);
-				$this->container->get('text_formatter.cache')->invalidate();
+				$this->tf_cache->invalidate();
 
 				if ($this->request->is_ajax())
 				{
