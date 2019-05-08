@@ -13,7 +13,7 @@
 
 namespace phpbb\acp;
 
-class acp_permissions
+class permissions
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
