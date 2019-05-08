@@ -297,7 +297,7 @@ class bbcodes
 						'first_pass_match'			=> $data['first_pass_match'],
 						'first_pass_replace'		=> $data['first_pass_replace'],
 						'second_pass_match'			=> $data['second_pass_match'],
-						'second_pass_replace'		=> $data['second_pass_replace']
+						'second_pass_replace'		=> $data['second_pass_replace'],
 					]);
 
 					if ($action === 'create')
@@ -430,8 +430,8 @@ class bbcodes
 								'MESSAGE_TITLE'	=> $this->lang->lang('INFORMATION'),
 								'MESSAGE_TEXT'	=> $this->lang->lang('BBCODE_DELETED'),
 								'REFRESH_DATA'	=> [
-									'time'	=> 3
-								]
+									'time'	=> 3,
+								],
 							]);
 						}
 					}
@@ -531,7 +531,7 @@ class bbcodes
 
 			// Use a non-matching, valid regexp to effectively disable this BBCode
 			'second_pass_match'			=> '/(?!)/',
-			'second_pass_replace'		=> ''
+			'second_pass_replace'		=> '',
 		];
 	}
 }

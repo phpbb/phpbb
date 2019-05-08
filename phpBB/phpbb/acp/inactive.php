@@ -217,7 +217,7 @@ class inactive
 							{
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE', false, [$row['username']]);
 								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE_USER', false, [
-									'reportee_id' => $row['user_id']
+									'reportee_id' => $row['user_id'],
 								]);
 							}
 
