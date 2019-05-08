@@ -13,8 +13,6 @@
 
 namespace phpbb\acp;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * @todo add cron intervals to server settings? (database_gc, queue_interval, session_gc, search_gc, cache_gc, warnings_gc)
  */
@@ -31,9 +29,6 @@ class board
 
 	/** @var \phpbb\config\config */
 	protected $config;
-
-	/** @var ContainerInterface */
-	protected $container;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -52,6 +47,9 @@ class board
 
 	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $tf_cache;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -80,13 +78,13 @@ class board
 	 * @param \phpbb\avatar\manager					$avatar_manager		Avatar manager object
 	 * @param \phpbb\cache\driver\driver_interface	$cache				Cache object
 	 * @param \phpbb\config\config					$config				Config object
-	 * @param ContainerInterface					$container			Service container object
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\template\template				$template			Template object
+	 * @param \phpbb\textformatter\cache_interface	$tf_cache			Textformatter cache object
 	 * @param \phpbb\user							$user				User object
 	 * @param string								$root_path			phpBB root path
 	 * @param string								$php_ext			php File extension
@@ -97,13 +95,13 @@ class board
 		\phpbb\avatar\manager $avatar_manager,
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
-		ContainerInterface $container,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
+		\phpbb\textformatter\cache_interface $tf_cache,
 		\phpbb\user $user,
 		$root_path,
 		$php_ext,
@@ -114,13 +112,13 @@ class board
 		$this->avatar_manager	= $avatar_manager;
 		$this->cache			= $cache;
 		$this->config			= $config;
-		$this->container		= $container;
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
 		$this->lang				= $lang;
 		$this->log				= $log;
 		$this->request			= $request;
 		$this->template			= $template;
+		$this->tf_cache			= $tf_cache;
 		$this->user				= $user;
 
 		$this->root_path		= $root_path;
@@ -638,7 +636,7 @@ class board
 		// Invalidate the text_formatter cache when posting options are changed
 		if ($mode === 'post' && $submit)
 		{
-			$this->container->get('text_formatter.cache')->invalidate();
+			$this->tf_cache->invalidate();
 		}
 
 		// Store news and exclude ids
