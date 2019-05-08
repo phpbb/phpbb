@@ -548,7 +548,7 @@ class main
 		}
 
 		// Version check
-		$this->user->add_lang('install');
+		$this->lang->add_lang('install');
 
 		if ($this->auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
@@ -711,7 +711,7 @@ class main
 
 		if ($this->auth->acl_get('a_user'))
 		{
-			$this->user->add_lang('memberlist');
+			$this->lang->add_lang('memberlist');
 
 			$inactive = [];
 			$inactive_count = 0;
