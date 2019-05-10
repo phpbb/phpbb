@@ -564,7 +564,6 @@ class icons
 							$this->db->sql_query($sql);
 							$icons_updated++;
 						}
-
 					}
 				}
 
@@ -573,18 +572,18 @@ class icons
 				$this->tf_cache->invalidate();
 
 				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
-				$errormsgs = '';
+				$error_msgs = '';
 				foreach ($errors as $img => $error)
 				{
-					$errormsgs .= '<br />' . $this->lang->lang($error, $img);
+					$error_msgs .= '<br />' . $this->lang->lang($error, $img);
 				}
 				if ($action === 'modify')
 				{
-					trigger_error($this->lang->lang($lang . '_EDITED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($this->lang->lang($lang . '_EDITED', $icons_updated) . $error_msgs . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($this->lang->lang($lang . '_ADDED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($this->lang->lang($lang . '_ADDED', $icons_updated) . $error_msgs . adm_back_link($this->u_action), $level);
 				}
 
 			break;
