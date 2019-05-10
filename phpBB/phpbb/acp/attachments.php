@@ -201,7 +201,7 @@ class attachments
 				$s_assigned_groups = [];
 
 				$sql = 'SELECT group_name, cat_id
-					FROM ' . $this->tables['extension_groups']  . '
+					FROM ' . $this->tables['extension_groups'] . '
 					WHERE cat_id > 0
 					ORDER BY cat_id';
 				$result = $this->db->sql_query($sql);

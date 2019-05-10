@@ -332,12 +332,12 @@ class users
 				 * Run code at beginning of ACP users overview
 				 *
 				 * @event core.acp_users_overview_before
-				 * @var	array   user_row    Current user data
-				 * @var	string  mode        Active module
-				 * @var	string  action      Module that should be run
-				 * @var	bool    submit      Do we display the form only
-				 *                          or did the user press submit
-				 * @var	array   error       Array holding error messages
+				 * @var	array	user_row	Current user data
+				 * @var	string	mode		Active module
+				 * @var	string	action		Module that should be run
+				 * @var	bool	submit		Do we display the form only
+				 * 							or did the user press submit
+				 * @var	array	error		Array holding error messages
 				 * @since 3.1.3-RC1
 				 */
 				$vars = ['user_row', 'mode', 'action', 'submit', 'error'];

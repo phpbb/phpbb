@@ -244,7 +244,7 @@ class inactive
 
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, [implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)]);
 
-							trigger_error($this->lang->lang('LOG_INACTIVE_DELETE', implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected))  . adm_back_link($this->u_action));
+							trigger_error($this->lang->lang('LOG_INACTIVE_DELETE', implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)) . adm_back_link($this->u_action));
 						}
 						else
 						{

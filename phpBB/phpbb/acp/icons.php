@@ -357,12 +357,12 @@ class icons
 						'CODE'		=> ($mode === 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',
 						'EMOTION'	=> ($mode === 'smilies' && isset($img_row['emotion'])) ? $img_row['emotion'] : '',
 
-						'S_ID'				=> (isset($img_row[$fields . '_id'])) ? true : false,
-						'ID'				=> (isset($img_row[$fields . '_id'])) ? $img_row[$fields . '_id'] : 0,
-						'WIDTH'				=> (!empty($img_row[$fields .'_width'])) ? $img_row[$fields .'_width'] : $img_row['width'],
-						'HEIGHT'			=> (!empty($img_row[$fields .'_height'])) ? $img_row[$fields .'_height'] : $img_row['height'],
-						'TEXT_ALT'		    => ($mode === 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : $img,
-						'ALT'			    => ($mode === 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : '',
+						'S_ID'				=> isset($img_row[$fields . '_id']),
+						'ID'				=> isset($img_row[$fields . '_id']) ? $img_row[$fields . '_id'] : 0,
+						'WIDTH'				=> !empty($img_row[$fields .'_width']) ? $img_row[$fields .'_width'] : $img_row['width'],
+						'HEIGHT'			=> !empty($img_row[$fields .'_height']) ? $img_row[$fields .'_height'] : $img_row['height'],
+						'TEXT_ALT'			=> ($mode === 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : $img,
+						'ALT'				=> ($mode === 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : '',
 						'POSTING_CHECKED'	=> (!empty($img_row['display_on_posting']) || $action === 'add') ? ' checked="checked"' : '',
 					]);
 				}
@@ -550,7 +550,7 @@ class icons
 							}
 						}
 
-						if ($action === 'modify'  && !empty($image_id[$image]))
+						if ($action === 'modify' && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
 								SET " . $this->db->sql_build_array('UPDATE', $img_sql) . "

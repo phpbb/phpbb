@@ -1262,9 +1262,9 @@ class board
 		//
 		// To be clear on the value of $mod_rewrite:
 		// null = Cannot determine whether or not the server has mod_rewrite
-		//        enabled
+		// 			enabled
 		// false = Can determine that the server does NOT have mod_rewrite
-		//         enabled
+		// 			enabled
 		// true = Can determine that the server DOES have mod_rewrite_enabled
 		$mod_rewrite = null;
 		if (function_exists('apache_get_modules'))
