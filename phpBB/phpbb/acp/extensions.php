@@ -250,9 +250,9 @@ class extensions
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'MANAGED_EXTENSIONS'	=> $managed_packages,
 
-					'U_ACTION' 				=> $this->u_action,
-					'U_CATALOG_ACTION' 		=> $this->u_catalog_action,
-					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
+					'U_ACTION'				=> $this->u_action,
+					'U_CATALOG_ACTION'		=> $this->u_catalog_action,
+					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 				]);
 
 				$this->request->disable_super_globals();
@@ -326,8 +326,8 @@ class extensions
 
 					// Update custom style for admin area
 					$this->template->set_custom_style([[
-						'name' 		=> 'adm',
-						'ext_path' 	=> 'adm/style/',
+						'name'		=> 'adm',
+						'ext_path'	=> 'adm/style/',
 					]], [$this->root_path . 'adm/style']);
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), [$ext_name]);
@@ -877,7 +877,7 @@ class extensions
 	 *
 	 * @param string	$block		The template block name
 	 * @param array		$actions	The extension action
-	 * @return array 				List of actions to be performed on the extension
+	 * @return array				List of actions to be performed on the extension
 	 */
 	protected function output_actions($block, array $actions)
 	{

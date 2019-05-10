@@ -149,11 +149,11 @@ class auth_admin extends \phpbb\auth\auth
 	 * Either user_id(s) or group_id(s) has to be supplied.
 	 *
 	 * @param string			$mode			Defines the permissions we get (set|view)
-	 *                          		          'view' gets effective permissions (both user AND group permissions),
-	 *                                  		  'set' only gets the user or group permission set alone
+	 *                         			          'view' gets effective permissions (both user AND group permissions),
+	 *                                			  'set' only gets the user or group permission set alone
 	 * @param int|array|false	$user_id		The user identifiers to search for
 	 * @param int|array|false	$group_id			The group identifiers to search for,
-	 *                                          	return group related settings
+	 *                                         		return group related settings
 	 * @param int|array|false	$forum_id		The forum identifiers to search for,
 	 * 												defining a forum id also means getting local settings
 	 * @param string|false		$auth_option	The auth_option defines the permission setting to look for (eg: a_)
@@ -904,7 +904,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param string		$ug_type			The type (user|group)
 	 * @param array|int		$forum_id			The forum identifiers
 	 * @param array|int		$ug_id				The type's identifiers
-	 * @param array			$auth 				The auth data
+	 * @param array			$auth				The auth data
 	 * @param int			$role_id			The role identifier
 	 * @param bool			$clear_prefetch
 	 * @return void
