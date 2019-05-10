@@ -58,7 +58,7 @@ class permission_roles
 	 *
 	 * @param auth_admin						$auth_admin		Auth admin object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
-	 * @param \phpbb\language\language			$lang			Language objet
+	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\permissions				$permissions	Permissions object
 	 * @param \phpbb\request\request			$request		Request object
@@ -424,8 +424,8 @@ class permission_roles
 				}
 
 				$sql = 'SELECT role_order
-					FROM ' . $this->tables['acl_roles'] . "
-					WHERE role_id = $role_id";
+					FROM ' . $this->tables['acl_roles'] . '
+					WHERE role_id = '. (int) $role_id;
 				$result = $this->db->sql_query($sql);
 				$order = (int) $this->db->sql_fetchfield('role_order');
 				$this->db->sql_freeresult($result);

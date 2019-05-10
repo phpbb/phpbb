@@ -149,8 +149,8 @@ class language
 				}
 
 				$sql = 'SELECT *
-					FROM ' . $this->tables['lang'] . "
-					WHERE lang_id = $lang_id";
+					FROM ' . $this->tables['lang'] . '
+					WHERE lang_id = ' . (int) $lang_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);

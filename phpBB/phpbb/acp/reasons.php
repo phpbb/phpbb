@@ -280,8 +280,8 @@ class reasons
 						case 'mysql':
 							// Change the reports using this reason to 'other'
 							$sql = 'UPDATE ' . $this->tables['reports'] . '
-								SET reason_id = ' . $other_reason_id . ", report_text = CONCAT('" . $this->db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)
-								WHERE reason_id = $reason_id";
+								SET reason_id = ' . (int) $other_reason_id . ", report_text = CONCAT('" . $this->db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)
+								WHERE reason_id = " . (int) $reason_id;
 						break;
 
 						// Standard? What's that?
@@ -292,13 +292,13 @@ class reasons
 
 									SELECT @ptrval = TEXTPTR(report_text)
 										FROM " . $this->tables['reports'] . "
-									WHERE reason_id = " . $reason_id . "
+									WHERE reason_id = " . (int) $reason_id . "
 
 									UPDATETEXT " . $this->tables['reports'] . ".report_text @ptrval 0 0 '" . $this->db->sql_escape($reason_row['reason_description']) . "\n\n'
 
 									UPDATE " . $this->tables['reports'] . '
-										SET reason_id = ' . $other_reason_id . "
-									WHERE reason_id = $reason_id";
+										SET reason_id = ' . (int) $other_reason_id . '
+									WHERE reason_id = ' . (int) $reason_id;
 						break;
 
 						// Teh standard
@@ -307,8 +307,8 @@ class reasons
 						case 'sqlite3':
 							// Change the reports using this reason to 'other'
 							$sql = 'UPDATE ' . $this->tables['reports'] . '
-								SET reason_id = ' . $other_reason_id . ", report_text = '" . $this->db->sql_escape($reason_row['reason_description']) . "\n\n' || report_text
-								WHERE reason_id = $reason_id";
+								SET reason_id = ' . (int) $other_reason_id . ", report_text = '" . $this->db->sql_escape($reason_row['reason_description']) . "\n\n' || report_text
+								WHERE reason_id = " . (int) $reason_id;
 						break;
 					}
 					$this->db->sql_query($sql);
@@ -339,8 +339,8 @@ class reasons
 				}
 
 				$sql = 'SELECT reason_order
-					FROM ' . $this->tables['reports_reasons'] . "
-					WHERE reason_id = $reason_id";
+					FROM ' . $this->tables['reports_reasons'] . '
+					WHERE reason_id = '. (int) $reason_id;
 				$result = $this->db->sql_query($sql);
 				$order = $this->db->sql_fetchfield('reason_order');
 				$this->db->sql_freeresult($result);

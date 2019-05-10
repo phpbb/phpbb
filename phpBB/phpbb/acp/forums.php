@@ -341,8 +341,8 @@ class forums
 				}
 
 				$sql = 'SELECT *
-					FROM ' . $this->tables['forums'] . "
-					WHERE forum_id = $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -376,8 +376,8 @@ class forums
 				@set_time_limit(0);
 
 				$sql = 'SELECT forum_name, (forum_topics_approved + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
-					FROM ' . $this->tables['forums'] . "
-					WHERE forum_id = $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -452,8 +452,8 @@ class forums
 			case 'sync_forum':
 
 				$sql = 'SELECT forum_name, forum_type
-					FROM ' . $this->tables['forums'] . "
-					WHERE forum_id = $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -646,8 +646,8 @@ class forums
 
 				$sql = 'SELECT forum_id
 					FROM ' . $this->tables['forums'] . '
-					WHERE forum_type = ' . FORUM_POST . "
-						AND forum_id <> $forum_id";
+					WHERE forum_type = ' . FORUM_POST . '
+						AND forum_id <> ' . (int) $forum_id;
 				$result = $this->db->sql_query_limit($sql, 1);
 				if ($this->db->sql_fetchrow($result))
 				{
@@ -830,8 +830,8 @@ class forums
 
 				$sql = 'SELECT forum_id
 					FROM ' . $this->tables['forums'] . '
-					WHERE forum_type = ' . FORUM_POST . "
-						AND forum_id <> $forum_id";
+					WHERE forum_type = ' . FORUM_POST . '
+						AND forum_id <> ' . (int) $forum_id;
 				$result = $this->db->sql_query_limit($sql, 1);
 				if ($this->db->sql_fetchrow($result))
 				{
@@ -1027,8 +1027,8 @@ class forums
 	protected function get_forum_info($forum_id)
 	{
 		$sql = 'SELECT *
-			FROM ' . $this->tables['forums'] . "
-			WHERE forum_id = $forum_id";
+			FROM ' . $this->tables['forums'] . '
+			WHERE forum_id = ' . (int) $forum_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -1136,8 +1136,8 @@ class forums
 		unset($forum_data_sql['enable_quick_reply']);
 		unset($forum_data_sql['forum_password_confirm']);
 
-		// What are we going to do tonight Brain? The same thing we do everynight,
-		// try to take over the world ... or decide whether to continue update
+		// What are we going to do tonight Brain? The same thing we do every night,
+		// try to take over the world ... or decide whether to continue updating
 		// and if so, whether it's a new forum/cat/link or an existing one
 		if (!empty($errors))
 		{
@@ -1534,7 +1534,7 @@ class forums
 				AND right_id > " . $from_data['right_id'];
 		$this->db->sql_query($sql);
 
-		// Resync righthand side of tree
+		// Resync right-hand side of tree
 		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id > " . $from_data['right_id'];
@@ -1552,7 +1552,7 @@ class forums
 					AND ' . $this->db->sql_in_set('forum_id', $moved_ids, true);
 			$this->db->sql_query($sql);
 
-			// Resync the righthand side of the tree
+			// Resync the right-hand side of the tree
 			$sql = 'UPDATE ' . $this->tables['forums'] . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
@@ -1641,8 +1641,8 @@ class forums
 		foreach ($table_ary as $table)
 		{
 			$sql = "UPDATE $table
-				SET forum_id = $to_id
-				WHERE forum_id = $from_id";
+				SET forum_id = " . (int) $to_id . '
+					WHERE forum_id = ' . (int) $from_id;
 			$this->db->sql_query($sql);
 		}
 		unset($table_ary);
@@ -1652,7 +1652,7 @@ class forums
 		foreach ($table_ary as $table)
 		{
 			$sql = "DELETE FROM $table
-				WHERE forum_id = $from_id";
+					WHERE forum_id = " . (int) $from_id;
 			$this->db->sql_query($sql);
 		}
 
@@ -1783,8 +1783,8 @@ class forums
 					$subforums_to_name = $row['forum_name'];
 
 					$sql = 'SELECT forum_id
-						FROM ' . $this->tables['forums'] . "
-						WHERE parent_id = $forum_id";
+						FROM ' . $this->tables['forums'] . '
+						WHERE parent_id = ' . (int) $forum_id;
 					$result = $this->db->sql_query($sql);
 
 					while ($row = $this->db->sql_fetchrow($result))
@@ -1796,22 +1796,22 @@ class forums
 					// Grab new forum data for correct tree updating later
 					$forum_data = $this->get_forum_info($forum_id);
 
-					$sql = 'UPDATE ' . $this->tables['forums'] . "
-						SET parent_id = $subforums_to_id
-						WHERE parent_id = $forum_id";
+					$sql = 'UPDATE ' . $this->tables['forums'] . '
+						SET parent_id = ' . (int) $subforums_to_id . '
+						WHERE parent_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
 					$diff = 2;
-					$sql = 'DELETE FROM ' . $this->tables['forums'] . "
-						WHERE forum_id = $forum_id";
+					$sql = 'DELETE FROM ' . $this->tables['forums'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . "
-						WHERE forum_id = $forum_id";
+					$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . $this->tables['acl_users'] . "
-						WHERE forum_id = $forum_id";
+					$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 				}
 			}
@@ -1825,16 +1825,16 @@ class forums
 		{
 			$diff = 2;
 
-			$sql = 'DELETE FROM ' . $this->tables['forums'] . "
-				WHERE forum_id = $forum_id";
+			$sql = 'DELETE FROM ' . $this->tables['forums'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . "
-				WHERE forum_id = $forum_id";
+			$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . $this->tables['acl_users'] . "
-				WHERE forum_id = $forum_id";
+			$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 		}
 
@@ -1934,10 +1934,10 @@ class forums
 
 		// Select then delete all attachments
 		$sql = 'SELECT a.topic_id
-			FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['attachments'] . " a
-			WHERE p.forum_id = $forum_id
-				AND a.in_message = 0
-				AND a.topic_id = p.topic_id";
+			FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['attachments'] . ' a
+			WHERE a.in_message = 0
+				AND a.topic_id = p.topic_id
+				AND p.forum_id = ' . (int) $forum_id;
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -1955,7 +1955,7 @@ class forums
 		// Before we remove anything we make sure we are able to adjust the post counts later. ;)
 		$sql = 'SELECT poster_id
 			FROM ' . $this->tables['posts'] . '
-			WHERE forum_id = ' . $forum_id . '
+			WHERE forum_id = ' . (int) $forum_id . '
 				AND post_postcount = 1
 				AND post_visibility = ' . ITEM_APPROVED;
 		$result = $this->db->sql_query($sql);
@@ -2077,7 +2077,7 @@ class forums
 
 		foreach ($table_ary as $table)
 		{
-			$this->db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
+			$this->db->sql_query("DELETE FROM $table WHERE forum_id = " . (int) $forum_id);
 		}
 
 		// Set forum ids to 0
@@ -2085,7 +2085,7 @@ class forums
 
 		foreach ($table_ary as $table)
 		{
-			$this->db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
+			$this->db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = " . (int) $forum_id);
 		}
 
 		// Adjust users post counts
@@ -2095,14 +2095,14 @@ class forums
 			{
 				$sql = 'UPDATE ' . $this->tables['users'] . '
 					SET user_posts = 0
-					WHERE user_id = ' . $poster_id . '
-					AND user_posts < ' . $subtract;
+					WHERE user_id = ' . (int) $poster_id . '
+					AND user_posts < ' . (int) $subtract;
 				$this->db->sql_query($sql);
 
 				$sql = 'UPDATE ' . $this->tables['users'] . '
-					SET user_posts = user_posts - ' . $subtract . '
-					WHERE user_id = ' . $poster_id . '
-					AND user_posts >= ' . $subtract;
+					SET user_posts = user_posts - ' . (int) $subtract . '
+					WHERE user_id = ' . (int) $poster_id . '
+					AND user_posts >= ' . (int) $subtract;
 				$this->db->sql_query($sql);
 			}
 		}
@@ -2170,7 +2170,7 @@ class forums
 		$sql = 'SELECT forum_id, forum_name, left_id, right_id
 			FROM ' . $this->tables['forums'] . "
 			WHERE parent_id = {$forum_row['parent_id']}
-				AND " . (($action == 'move_up') ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
+				AND " . ($action === 'move_up' ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
 		$result = $this->db->sql_query_limit($sql, $steps);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -2186,7 +2186,7 @@ class forums
 
 		/**
 		 * $left_id and $right_id define the scope of the nodes that are affected by the move.
-		 * $diff_up and $diff_down are the values to substract or add to each node's left_id
+		 * $diff_up and $diff_down are the values to subtract or add to each node's left_id
 		 * and right_id in order to move them up or down.
 		 * $move_up_left and $move_up_right define the scope of the nodes that are moving
 		 * up. Other nodes in the scope of ($left_id, $right_id) are considered to move down.
