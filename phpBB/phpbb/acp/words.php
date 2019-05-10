@@ -159,7 +159,7 @@ class words
 
 				$sql_ary = [
 					'word'			=> $word,
-					'replacement'	=> $replacement
+					'replacement'	=> $replacement,
 				];
 
 				if ($word_id)
