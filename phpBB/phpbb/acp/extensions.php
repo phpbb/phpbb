@@ -734,8 +734,8 @@ class extensions
 		}
 		else
 		{
-			$message_title = $this->lang->lang('INFORMATION');
-			$message_text  = $this->lang->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
+			$message_title	= $this->lang->lang('INFORMATION');
+			$message_text	= $this->lang->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
 		}
 
 		$this->template->assign_vars([

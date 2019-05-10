@@ -128,7 +128,7 @@ class search
 				continue;
 			}
 
-			/** @var \phpbb\search\fulltext_mysql $search  @todo Search interface? */
+			/** @var \phpbb\search\fulltext_mysql $search	@todo Search interface? */
 			$name = $search->get_name();
 
 			$selected = $this->config['search_type'] === $type ? '" selected="selected' : '';
@@ -516,7 +516,7 @@ class search
 				continue;
 			}
 
-			/** @var \phpbb\search\fulltext_mysql $search  @todo Search interface? */
+			/** @var \phpbb\search\fulltext_mysql $search	@todo Search interface? */
 			$name = $search->get_name();
 
 			$data = [];
