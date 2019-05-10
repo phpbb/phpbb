@@ -237,7 +237,7 @@ class bots
 						$sql = 'SELECT u.username_clean
 							FROM ' . $this->tables['bots'] . ' b, ' . $this->tables['users'] . ' u
 							WHERE u.user_id = b.user_id
-							 	AND b.bot_id = ' . (int) $bot_id;
+								AND b.bot_id = ' . (int) $bot_id;
 						$result = $this->db->sql_query($sql);
 						$row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);

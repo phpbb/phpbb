@@ -847,10 +847,10 @@ class users
 									$sql = 'INSERT INTO ' . $this->tables['topics'] . ' ' . $this->db->sql_build_array('INSERT', [
 										'topic_poster'				=> $user_id,
 										'topic_time'				=> time(),
-										'forum_id' 					=> $new_forum_id,
+										'forum_id'					=> $new_forum_id,
 										'icon_id'					=> 0,
 										'topic_visibility'			=> ITEM_APPROVED,
-										'topic_title' 				=> $post_ary['title'],
+										'topic_title'				=> $post_ary['title'],
 										'topic_first_poster_name'	=> $user_row['username'],
 										'topic_type'				=> POST_NORMAL,
 										'topic_time_limit'			=> 0,
@@ -2757,10 +2757,10 @@ class users
 	 *
 	 * Optionget replacement for this module based on $this->user->optionget.
 	 *
-	 * @param array			$user_row 	Row from the users table.
+	 * @param array			$user_row	Row from the users table.
 	 * @param int			$key		option key, as defined in $this->user->keyoptions property.
 	 * @param int|false		$data		bit field value to use, or false to use $user_row['user_options']
-	 * @return bool 					true if the option is set in the bit field, false otherwise
+	 * @return bool						true if the option is set in the bit field, false otherwise
 	 */
 	function optionget(array &$user_row, $key, $data = false)
 	{

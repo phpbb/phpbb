@@ -741,7 +741,7 @@ class permissions
 	/**
 	 * Apply permissions.
 	 *
-	 * @param string 		$mode				The module mode
+	 * @param string		$mode				The module mode
 	 * @param string		$permission_type	The permission type (a_|m_|u_|f_)
 	 * @param array			$user_ids			The user identifiers
 	 * @param array			$group_ids			The group identifiers
@@ -833,7 +833,7 @@ class permissions
 	/**
 	 * Apply all permissions.
 	 *
-	 * @param string 		$mode				The module mode
+	 * @param string		$mode				The module mode
 	 * @param string		$permission_type	The permission type (a_|m_|u_|f_)
 	 * @param array			$user_ids			The user identifiers
 	 * @param array			$group_ids			The group identifiers
@@ -942,7 +942,7 @@ class permissions
 			}
 		}
 
-		if (count(array_diff_assoc($auth_settings, $test_auth_settings)))
+		if (!empty(array_diff_assoc($auth_settings, $test_auth_settings)))
 		{
 			return false;
 		}
@@ -953,7 +953,7 @@ class permissions
 	/**
 	 * Remove permissions
 	 *
-	 * @param string 		$mode				The module mode
+	 * @param string		$mode				The module mode
 	 * @param string		$permission_type	The permission type (a_|m_|u_|f_)
 	 * @param array			$user_ids			The user identifiers
 	 * @param array			$group_ids			The group identifiers
@@ -997,7 +997,7 @@ class permissions
 	/**
 	 * Log permission changes
 	 *
-	 * @param string 		$mode				The module mode
+	 * @param string		$mode				The module mode
 	 * @param string		$action				The action
 	 * @param string		$permission_type	The permission type (a_|m_|u_|f_)
 	 * @param int			$ug_type			The type (user|group)

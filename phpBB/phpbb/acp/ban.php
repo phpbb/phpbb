@@ -86,12 +86,12 @@ class ban
 
 	function main($id, $mode)
 	{
+		$this->lang->add_lang(['acp/ban', 'acp/users']);
+
 		if (!function_exists('user_ban'))
 		{
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
-
-		$this->lang->add_lang(['acp/ban', 'acp/users']);
 
 		$submit_ban		= $this->request->is_set_post('bansubmit');
 		$submit_unban	= $this->request->is_set_post('unbansubmit');
@@ -226,7 +226,8 @@ class ban
 	/**
 	 * Display ban options.
 	 *
-	 * @todo move into separate file, also used by mcp_ban
+	 * @todo move into separate file, also used by see mcp_ban
+	 * @see \phpbb\mcp\ban
 	 *
 	 * @html
 	 *

@@ -613,8 +613,8 @@ class icons
 					{
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
-							if ((count($data[1]) != 4 && $mode === 'icons') ||
-								((count($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode === 'smilies' ))
+							if ((count($data[1]) !== 4 && $mode === 'icons') ||
+								((count($data[1]) !== 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode === 'smilies' ))
 							{
 								trigger_error($this->lang->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
