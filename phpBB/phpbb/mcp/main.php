@@ -15,22 +15,55 @@ namespace phpbb\mcp;
 
 class main
 {
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var \phpbb\content_visibility */
 	protected $content_visibility;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\language\language */
 	protected $lang;
+
+	/** @var \phpbb\log\log */
 	protected $log;
+
+	/** @var forum */
 	protected $mcp_forum;
+
+	/** @var front */
 	protected $mcp_front;
+
+	/** @var post */
 	protected $mcp_post;
+
+	/** @var topic */
 	protected $mcp_topic;
+
+	/** @var \phpbb\request\request */
 	protected $request;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var string phpBB root path */
 	protected $root_path;
+
+	/** @var string php File extension */
 	protected $php_ext;
+
+	/** @var array phpBB tables */
 	protected $tables;
 
 	/** @todo */
@@ -38,7 +71,28 @@ class main
 	public $tpl_name;
 	public $u_action;
 
-	function __construct(
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth				Auth object
+	 * @param \phpbb\config\config				$config				Config object
+	 * @param \phpbb\content_visibility			$content_visibility	Content visibility object
+	 * @param \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
+	 * @param \phpbb\language\language			$lang				Language object
+	 * @param \phpbb\log\log					$log				Log object
+	 * @param \phpbb\mcp\forum					$mcp_forum			MCP Forum controller object
+	 * @param \phpbb\mcp\front					$mcp_front			MCP Front controller object
+	 * @param \phpbb\mcp\post					$mcp_post			MCP Post controller	object
+	 * @param \phpbb\mcp\topic					$mcp_topic			MCP Topic controller object
+	 * @param \phpbb\request\request			$request			Request object
+	 * @param \phpbb\template\template			$template			Template object
+	 * @param \phpbb\user						$user				User object
+	 * @param string							$root_path			phpBB root path
+	 * @param string							$php_ext			php File extension
+	 * @param array								$tables				phpBB tables
+	 */
+	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\content_visibility $content_visibility,
@@ -219,7 +273,7 @@ class main
 			case 'front':
 				$this->lang->add_lang('acp/common');
 
-				$this->mcp_front->mcp_front_view($id, $mode, $action);
+				$this->mcp_front->view($id);
 
 				$this->tpl_name = 'mcp_front';
 				$this->page_title = 'MCP_MAIN';
@@ -240,21 +294,21 @@ class main
 
 				$forum_info = $forum_info[$forum_id];
 
-				$this->mcp_forum->mcp_forum_view($id, $mode, $action, $forum_info);
+				$this->mcp_forum->view($id, $mode, $action, $forum_info);
 
 				$this->tpl_name = 'mcp_forum';
 				$this->page_title = 'MCP_MAIN_FORUM_VIEW';
 			break;
 
 			case 'topic_view':
-				$this->mcp_topic->mcp_topic_view($id, $mode, $action);
+				$this->mcp_topic->view($id, $mode, $action);
 
 				$this->tpl_name = 'mcp_topic';
 				$this->page_title = 'MCP_MAIN_TOPIC_VIEW';
 			break;
 
 			case 'post_details':
-				$this->mcp_post->mcp_post_details($id, $mode, $action);
+				$this->mcp_post->post_details($id, $mode, $action);
 
 				$this->tpl_name = $action === 'whois' ? 'mcp_whois' : 'mcp_post';
 				$this->page_title = 'MCP_MAIN_POST_DETAILS';
@@ -293,9 +347,13 @@ class main
 }
 
 /**
-* Lock/Unlock Topic/Post
-*/
-function lock_unlock($action, $ids)
+ * (Un)lock posts or topics.
+ *
+ * @param string	$action		The action (lock|unlock|post_lock|post_unlock)
+ * @param array		$ids		The post|topic identifiers
+ * @return void
+ */
+function lock_unlock($action, array $ids)
 {
 	if ($action === 'lock' || $action === 'unlock')
 	{
@@ -395,9 +453,13 @@ function lock_unlock($action, $ids)
 }
 
 /**
-* Change Topic Type
-*/
-function change_topic_type($action, $topic_ids)
+ * Change topic type.
+ *
+ * @param string	$action			The action (make_announce|make_global|make_sticky|make_normal)
+ * @param array		$topic_ids		The topic identifiers
+ * @return void
+ */
+function change_topic_type($action, array $topic_ids)
 {
 	switch ($action)
 	{
@@ -497,12 +559,16 @@ function change_topic_type($action, $topic_ids)
 }
 
 /**
-* Move Topic
-*/
-function mcp_move_topic($topic_ids)
+ * Move topic
+ *
+ * @param array		$topic_ids		The topic identifiers
+ * @return void
+ */
+function mcp_move_topic(array $topic_ids)
 {
 	// Here we limit the operation to one forum only
 	$forum_id = phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', ['m_move'], true);
+	$forum_data = [];
 
 	if ($forum_id === false)
 	{
@@ -766,9 +832,12 @@ function mcp_move_topic($topic_ids)
 }
 
 /**
-* Restore Topics
-*/
-function mcp_restore_topic($topic_ids)
+ * Restore topics.
+ *
+ * @param array		$topic_ids		The topic identifiers
+ * @return void
+ */
+function mcp_restore_topic(array $topic_ids)
 {
 	if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', ['m_approve']))
 	{
@@ -841,9 +910,15 @@ function mcp_restore_topic($topic_ids)
 }
 
 /**
-* Delete Topics
-*/
-function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
+ * Delete topics.
+ *
+ * @param array		$topic_ids				The topic identifiers
+ * @param bool		$is_soft				Whether or not we're soft deleting
+ * @param string	$soft_delete_reason		The soft delete reason
+ * @param string	$action					The action
+ * @return void
+ */
+function mcp_delete_topic(array $topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 {
 	if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', [$is_soft ? 'm_softdelete' : 'm_delete']))
 	{
@@ -991,9 +1066,15 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 }
 
 /**
-* Delete Posts
-*/
-function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
+ * Delete posts.
+ *
+ * @param array		$post_ids				The post identifiers
+ * @param bool		$is_soft				Whether or not we're soft deleting
+ * @param string	$soft_delete_reason		The soft delete reason
+ * @param string	$action					The action
+ * @return void
+ */
+function mcp_delete_post(array $post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 {
 	if (!phpbb_check_ids($post_ids, $this->tables['posts'], 'post_id', [$is_soft ? 'm_softdelete' : 'm_delete']))
 	{
@@ -1002,6 +1083,9 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 
 	$redirect = $this->request->variable('redirect', build_url(['action', 'quickmod']));
 	$forum_id = $this->request->variable('f', 0);
+
+	$return_link = [];
+	$topic_id = $affected_topics = $deleted_topics = 0;
 
 	$s_hidden_fields = [
 		'post_id_list'	=> $post_ids,
@@ -1055,7 +1139,9 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		{
 			$this->content_visibility->set_post_visibility(ITEM_DELETED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $this->user->data['user_id'], time(), $soft_delete_reason, isset($topic_data['first_post']), isset($topic_data['last_post']));
 		}
+
 		$affected_topics = count($topic_info);
+
 		// None of the topics is really deleted, so a redirect won't hurt much.
 		$deleted_topics = 0;
 
@@ -1232,9 +1318,12 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 }
 
 /**
-* Fork Topic
-*/
-function mcp_fork_topic($topic_ids)
+ * Fork topic.
+ *
+ * @param array		$topic_ids		The topic identifiers
+ * @return void
+ */
+function mcp_fork_topic(array $topic_ids)
 {
 	if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', ['m_']))
 	{
@@ -1245,7 +1334,9 @@ function mcp_fork_topic($topic_ids)
 	$forum_id = $this->request->variable('f', 0);
 	$redirect = $this->request->variable('redirect', build_url(['action', 'quickmod']));
 	$additional_msg = $success_msg = '';
-	$counter = [];
+	$counter = $topic_row = [];
+	$search = null;
+	$search_mode = '';
 
 	$s_hidden_fields = build_hidden_fields([
 		'topic_id_list'	=> $topic_ids,
@@ -1312,6 +1403,8 @@ function mcp_fork_topic($topic_ids)
 				}
 
 				$error = false;
+
+				/** @var \phpbb\search\fulltext_mysql $search		@todo Search interface?? */
 				$search = new $search_type($error, $this->root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user, $this->dispatcher);
 				$search_mode = 'post';
 

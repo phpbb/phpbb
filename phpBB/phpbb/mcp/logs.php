@@ -64,7 +64,7 @@ class logs
 	 * @param \phpbb\user						$user			User object
 	 * @param string							$topics_table	phpBB topics table
 	 */
-	function __construct(
+	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
