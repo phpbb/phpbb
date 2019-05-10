@@ -674,7 +674,7 @@ function sanitize_data_mssql($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (count($matches[0]))
+		if (!empty($matches[0]))
 		{
 			$val[] = 'char(' . ord(array_shift($matches[0])) . ')';
 		}
@@ -706,7 +706,7 @@ function sanitize_data_oracle($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (count($matches[0]))
+		if (!empty($matches[0]))
 		{
 			$val[] = 'chr(' . ord(array_shift($matches[0])) . ')';
 		}
@@ -736,7 +736,7 @@ function sanitize_data_generic($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (count($matches[0]))
+		if (!empty($matches[0]))
 		{
 			$val[] = "'" . array_shift($matches[0]) . "'";
 		}
@@ -778,7 +778,7 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 	static $array = [];
 	static $record = '';
 
-	if (!count($array))
+	if (empty($array))
 	{
 		while (!$eof($fp))
 		{
@@ -800,7 +800,7 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 		}
 	}
 
-	if (count($array))
+	if (!empty($array))
 	{
 		return array_shift($array);
 	}

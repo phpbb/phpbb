@@ -668,7 +668,7 @@ class search
 	 * @param string		$type		The search time
 	 * @param mixed			$search		NULL when coming, afterwards \phpbb\search\fulltext_mysql @todo Search interface?
 	 * @param string|false	$error		Error message
-	 * @return string|false 		false if no error occurred else an error message
+	 * @return string|false				false if no error occurred else an error message
 	 */
 	function init_search($type, &$search, &$error)
 	{

@@ -190,7 +190,7 @@ class forums
 
 					$errors = $this->delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
-					if (count($errors))
+					if (!empty($errors))
 					{
 						break;
 					}
@@ -1334,7 +1334,7 @@ class forums
 								$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
 								$sql = 'UPDATE ' . $this->tables['extension_groups'] . "
-									SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
+									SET allowed_forums = '" . (!empty($allowed_forums) ? serialize($allowed_forums) : '') . "'
 									WHERE group_id = {$_row['group_id']}";
 								$this->db->sql_query($sql);
 							}
@@ -1403,7 +1403,7 @@ class forums
 				$forum_data_sql['forum_last_poster_colour'] = '';
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1420,7 +1420,7 @@ class forums
 				}
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1738,7 +1738,7 @@ class forums
 				$errors = array_merge($errors, $this->delete_forum_content($row['forum_id']));
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1816,7 +1816,7 @@ class forums
 				}
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1865,8 +1865,8 @@ class forums
 			$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
 			$sql = 'UPDATE ' . $this->tables['extension_groups'] . "
-				SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
-				WHERE group_id = {$row['group_id']}";
+				SET allowed_forums = '" . (!empty($allowed_forums) ? serialize($allowed_forums) : '') . "'
+				WHERE group_id = " . (int) $row['group_id'];
 			$this->db->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
