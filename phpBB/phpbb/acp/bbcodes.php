@@ -384,8 +384,8 @@ class bbcodes
 
 			case 'delete':
 				$sql = 'SELECT bbcode_tag
-					FROM ' . $this->bbcode_table . "
-					WHERE bbcode_id = $bbcode_id";
+					FROM ' . $this->bbcode_table . '
+					WHERE bbcode_id = ' . (int) $bbcode_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -396,7 +396,7 @@ class bbcodes
 					{
 						$bbcode_tag = $row['bbcode_tag'];
 
-						$sql = 'DELETE FROM ' . $this->bbcode_table . " WHERE bbcode_id = $bbcode_id";
+						$sql = 'DELETE FROM ' . $this->bbcode_table . ' WHERE bbcode_id = ' . (int) $bbcode_id;
 						$this->db->sql_query($sql);
 
 						$this->cache->destroy('sql', $this->bbcode_table);

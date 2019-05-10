@@ -358,7 +358,7 @@ class styles
 		// Confirm box
 		confirm_box(false, $this->lang->lang('CONFIRM_UNINSTALL_STYLES'), build_hidden_fields([
 			'action'	=> 'uninstall',
-			'ids'		=> $ids
+			'ids'		=> $ids,
 		]), 'acp_styles.html');
 
 		// Canceled - show styles list
@@ -698,7 +698,7 @@ class styles
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
-			'S_STYLE_DEFAULT'	=> ($style['style_id'] == $this->default_style)
+			'S_STYLE_DEFAULT'	=> $style['style_id'] == $this->default_style,
 		]);
 	}
 
@@ -1027,12 +1027,12 @@ class styles
 			if ($style['style_id'] != $id && $style['style_parent_id'] == $parent)
 			{
 				$results[] = [
-					'style_id'		=> $style['style_id'],
-					'style_name'	=> $style['style_name'],
-					'style_path'	=> $style['style_path'],
+					'style_id'			=> $style['style_id'],
+					'style_name'		=> $style['style_name'],
+					'style_path'		=> $style['style_path'],
 					'style_parent_id'	=> $style['style_parent_id'],
 					'style_parent_tree'	=> $style['style_parent_tree'],
-					'level'			=> $level
+					'level'				=> $level,
 				];
 
 				$results = array_merge($results, $this->find_possible_parents($styles, $id, $style['style_id'], $level + 1));
@@ -1129,14 +1129,14 @@ class styles
 			if (empty($style['_available']))
 			{
 				$actions[] = [
-					'HTML'		=> $this->lang->lang('CANNOT_BE_INSTALLED')
+					'HTML'		=> $this->lang->lang('CANNOT_BE_INSTALLED'),
 				];
 			}
 			else
 			{
 				$actions[] = [
 					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
-					'L_ACTION'	=> $this->lang->lang('INSTALL_STYLE')
+					'L_ACTION'	=> $this->lang->lang('INSTALL_STYLE'),
 				];
 			}
 		}

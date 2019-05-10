@@ -97,7 +97,7 @@ class main
 	 * @param \phpbb\template\template				$template			Template object
 	 * @param \phpbb\user							$user				User object
 	 * @param \phpbb\version_helper					$version_helper		Version helper object
-	 * @param bool									$allow_install_dir	Allow install diretory
+	 * @param bool									$allow_install_dir	Allow install directory
 	 * @param string								$admin_path			phpBB admin path
 	 * @param string								$root_path			phpBB root path
 	 * @param string								$php_ext			php File extension

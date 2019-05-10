@@ -849,7 +849,7 @@ class icons
 				if (confirm_box(true))
 				{
 					$sql = "DELETE FROM $table
-						WHERE {$fields}_id = $icon_id";
+						WHERE {$fields}_id = " . (int) $icon_id;
 					$this->db->sql_query($sql);
 
 					switch ($mode)
@@ -859,13 +859,13 @@ class icons
 
 						case 'icons':
 							// Reset appropriate icon_ids
-							$this->db->sql_query('UPDATE ' . $this->tables['topics'] . "
+							$this->db->sql_query('UPDATE ' . $this->tables['topics'] . '
 								SET icon_id = 0
-								WHERE icon_id = $icon_id");
+								WHERE icon_id = ' . (int) $icon_id);
 
-							$this->db->sql_query('UPDATE ' . $this->tables['posts'] . "
+							$this->db->sql_query('UPDATE ' . $this->tables['posts'] . '
 								SET icon_id = 0
-								WHERE icon_id = $icon_id");
+								WHERE icon_id = ' . (int) $icon_id);
 						break;
 					}
 
@@ -909,7 +909,7 @@ class icons
 				// Get current order id...
 				$sql = "SELECT {$fields}_order as current_order
 					FROM $table
-					WHERE {$fields}_id = $icon_id";
+					WHERE {$fields}_id = " . (int) $icon_id;
 				$result = $this->db->sql_query($sql);
 				$current_order = (int) $this->db->sql_fetchfield('current_order');
 				$this->db->sql_freeresult($result);
@@ -925,9 +925,9 @@ class icons
 
 				//
 				$sql = "UPDATE $table
-					SET {$fields}_order = $current_order
-					WHERE {$fields}_order = $switch_order_id
-						AND {$fields}_id <> $icon_id";
+					SET {$fields}_order = " . (int) $current_order . "
+					WHERE {$fields}_order = " . (int) $switch_order_id . "
+						AND {$fields}_id <> " . (int) $icon_id;
 				$this->db->sql_query($sql);
 				$move_executed = (bool) $this->db->sql_affectedrows();
 
@@ -935,9 +935,9 @@ class icons
 				if ($move_executed)
 				{
 					$sql = "UPDATE $table
-						SET {$fields}_order = $switch_order_id
-						WHERE {$fields}_order = $current_order
-							AND {$fields}_id = $icon_id";
+						SET {$fields}_order = " . (int) $switch_order_id . "
+						WHERE {$fields}_order = " . (int) $current_order . "
+							AND {$fields}_id = " . (int) $icon_id;
 					$this->db->sql_query($sql);
 				}
 

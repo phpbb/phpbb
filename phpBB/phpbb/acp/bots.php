@@ -299,8 +299,8 @@ class bots
 						else if ($bot_id)
 						{
 							$sql = 'SELECT user_id, bot_name
-								FROM ' . $this->tables['bots'] . "
-								WHERE bot_id = $bot_id";
+								FROM ' . $this->tables['bots'] . '
+								WHERE bot_id = ' . (int) $bot_id;
 							$result = $this->db->sql_query($sql);
 							$row = $this->db->sql_fetchrow($result);
 							$this->db->sql_freeresult($result);
@@ -329,7 +329,7 @@ class bots
 										'bot_active'	=> (int) $bot_row['bot_active'],
 										'bot_agent'		=> (string) $bot_row['bot_agent'],
 										'bot_ip'		=> (string) $bot_row['bot_ip']]
-								) . " WHERE bot_id = $bot_id";
+								) . ' WHERE bot_id = ' . (int) $bot_id;
 							$this->db->sql_query($sql);
 
 							// Updated username?
