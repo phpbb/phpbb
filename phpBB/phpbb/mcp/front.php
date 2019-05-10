@@ -85,7 +85,7 @@ class front
 		$this->tables		= $tables;
 	}
 
-	function mcp_front_view($id, $mode, $action)
+	public function view($id)
 	{
 		/** @todo */
 		global $module;

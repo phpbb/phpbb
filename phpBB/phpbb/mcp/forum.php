@@ -115,7 +115,7 @@ class forum
 		$this->tables				= $tables;
 	}
 
-	function mcp_forum_view($id, $mode, $action, $forum_info)
+	public function view($id, $mode, $action, $forum_info)
 	{
 		$this->lang->add_lang(['viewtopic', 'viewforum']);
 
