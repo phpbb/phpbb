@@ -475,11 +475,11 @@ class groups
 					else
 					{
 						confirm_box(false, $this->lang->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
-							'i'                 => $id,
-							'mode'              => $mode,
-							'action'            => $action,
-							'g'			        => $group_id,
-							'avatar_delete'     => true,
+							'i'				=> $id,
+							'mode'			=> $mode,
+							'action'		=> $action,
+							'g'				=> $group_id,
+							'avatar_delete'	=> true,
 						]));
 					}
 				}

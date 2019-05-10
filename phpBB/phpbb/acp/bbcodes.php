@@ -328,7 +328,7 @@ class bbcodes
 
 						$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
-						$sql = 'INSERT INTO ' . $this->bbcode_table . ' ' .  $this->db->sql_build_array('INSERT', $sql_ary);
+						$sql = 'INSERT INTO ' . $this->bbcode_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 						$this->db->sql_query($sql);
 						$this->cache->destroy('sql', $this->bbcode_table);
 						$this->tf_cache->invalidate();
@@ -459,7 +459,7 @@ class bbcodes
 		];
 
 		/**
-		 *  Modify custom bbcode template data before we display the form
+		 * Modify custom bbcode template data before we display the form
 		 *
 		 * @event core.acp_bbcodes_display_form
 		 * @var	string	action			Type of the action: modify|create
@@ -484,7 +484,7 @@ class bbcodes
 			];
 
 			/**
-			 *  Modify display of custom bbcodes in the form
+			 * Modify display of custom bbcodes in the form
 			 *
 			 * @event core.acp_bbcodes_display_bbcodes
 			 * @var	array	row				Array with current bbcode data

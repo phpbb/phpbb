@@ -202,9 +202,9 @@ class profile
 
 					$this->db->sql_transaction('begin');
 
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields'] . ' WHERE field_id = ' .  (int) $field_id);
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE field_id = ' .  (int) $field_id);
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE field_id = ' .  (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields'] . ' WHERE field_id = ' . (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE field_id = ' . (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE field_id = ' . (int) $field_id);
 
 					$this->db_tools->sql_column_remove($this->tables['profile_fields_data'], 'pf_' . $field_ident);
 
@@ -217,6 +217,7 @@ class profile
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$order++;
+
 						if ($row['field_order'] != $order)
 						{
 							$sql = 'UPDATE ' . $this->tables['profile_fields'] . "
@@ -263,12 +264,12 @@ class profile
 
 				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
 					SET field_active = 1
-					WHERE field_id = ' .  (int) $field_id;
+					WHERE field_id = ' . (int) $field_id;
 				$this->db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
 					FROM ' . $this->tables['profile_fields'] . '
-					WHERE field_id = ' .  (int) $field_id;
+					WHERE field_id = ' . (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_ident = (string) $this->db->sql_fetchfield('field_ident');
 				$this->db->sql_freeresult($result);
@@ -294,12 +295,12 @@ class profile
 
 				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
 					SET field_active = 0
-					WHERE field_id = ' .  (int) $field_id;
+					WHERE field_id = ' . (int) $field_id;
 				$this->db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
 					FROM ' . $this->tables['profile_fields'] . '
-					WHERE field_id = ' .  (int) $field_id;
+					WHERE field_id = ' . (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_ident = (string) $this->db->sql_fetchfield('field_ident');
 				$this->db->sql_freeresult($result);
@@ -326,7 +327,7 @@ class profile
 
 				$sql = 'SELECT field_order
 					FROM ' . $this->tables['profile_fields'] . '
-					WHERE field_id = ' .  (int) $field_id;
+					WHERE field_id = ' . (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_order = $this->db->sql_fetchfield('field_order');
 				$this->db->sql_freeresult($result);
@@ -593,7 +594,7 @@ class profile
 				}
 
 				// Check for general issues in every step
-				if ($submit) //  && $step == 1
+				if ($submit) // && $step == 1
 				{
 					// Check values for step 1
 					if ($this->pf_manager->vars['field_ident'] == '')
@@ -970,7 +971,7 @@ class profile
 						break;
 
 						case 'optionfield':
-							$value = isset($value[$lang_id]) ? (is_array($value[$lang_id]) ?  implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var);
+							$value = isset($value[$lang_id]) ? (is_array($value[$lang_id]) ? implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var);
 							$lang_options[$lang_id]['fields'][$field] = [
 								'TITLE'		=> $this->lang->lang('CP_' . strtoupper($field)),
 								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . $value . '</textarea></dd>',

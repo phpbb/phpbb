@@ -658,7 +658,7 @@ function get_usable_memory()
  *
  * @see \phpbb\db\extractor\mssql_extractor
  *
- * @param  string	$text
+ * @param string	$text
  * @return string
  */
 function sanitize_data_mssql($text)

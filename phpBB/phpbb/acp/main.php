@@ -86,7 +86,7 @@ class main
 	 * @param \phpbb\auth\auth						$auth				Auth object
 	 * @param \phpbb\cache\driver\driver_interface	$cache				Cache object
 	 * @param \phpbb\config\config					$config				Config object
-	 * @param  ContainerInterface					$container			Service container object
+	 * @param ContainerInterface					$container			Service container object
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\filesystem\filesystem			$filesystem			Filesystem object
