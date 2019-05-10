@@ -73,6 +73,8 @@ class attachments
 	protected $new_config;
 
 	/** @todo */
+	public $page_title;
+	public $tpl_name;
 	public $u_action;
 
 	/**
@@ -549,8 +551,8 @@ class attachments
 					if ($group_id)
 					{
 						$sql = 'SELECT *
-							FROM ' . $this->tables['extension_groups'] . "
-							WHERE group_id = $group_id";
+							FROM ' . $this->tables['extension_groups'] . '
+							WHERE group_id = ' . (int) $group_id;
 						$result = $this->db->sql_query($sql);
 						$ext_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
@@ -626,7 +628,7 @@ class attachments
 
 						$sql = $action === 'add' ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
 						$sql .= $this->db->sql_build_array(($action === 'add' ? 'INSERT' : 'UPDATE'), $group_ary);
-						$sql .= $action === 'edit' ? " WHERE group_id = $group_id" : '';
+						$sql .= $action === 'edit' ? ' WHERE group_id = ' . (int) $group_id : '';
 
 						$this->db->sql_query($sql);
 
@@ -643,17 +645,17 @@ class attachments
 
 					if ($action === 'edit' && !empty($extension_list))
 					{
-						$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
+						$sql = 'UPDATE ' . EXTENSIONS_TABLE . '
 							SET group_id = 0
-							WHERE group_id = $group_id";
+							WHERE group_id = ' . (int) $group_id;
 						$this->db->sql_query($sql);
 					}
 
 					if (!empty($extension_list))
 					{
-						$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
-							SET group_id = $group_id
-							WHERE " . $this->db->sql_in_set('extension_id', $extension_list);
+						$sql = 'UPDATE ' . EXTENSIONS_TABLE . '
+							SET group_id = ' . (int) $group_id . '
+							WHERE ' . $this->db->sql_in_set('extension_id', $extension_list);
 						$this->db->sql_query($sql);
 					}
 
@@ -679,21 +681,21 @@ class attachments
 						if (confirm_box(true))
 						{
 							$sql = 'SELECT group_name
-								FROM ' . $this->tables['extension_groups'] . "
-								WHERE group_id = $group_id";
+								FROM ' . $this->tables['extension_groups'] . '
+								WHERE group_id = ' . (int) $group_id;
 							$result = $this->db->sql_query($sql);
 							$group_name = (string) $this->db->sql_fetchfield('group_name');
 							$this->db->sql_freeresult($result);
 
 							$sql = 'DELETE
-								FROM ' . $this->tables['extension_groups'] . "
-								WHERE group_id = $group_id";
+								FROM ' . $this->tables['extension_groups'] . '
+								WHERE group_id = ' . (int) $group_id;
 							$this->db->sql_query($sql);
 
 							// Set corresponding Extensions to a pending Group
-							$sql = 'UPDATE ' . $this->tables['extensions'] . "
+							$sql = 'UPDATE ' . $this->tables['extensions'] . '
 								SET group_id = 0
-								WHERE group_id = $group_id";
+								WHERE group_id = ' . (int) $group_id;
 							$this->db->sql_query($sql);
 
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ATTACH_EXTGROUP_DEL', false, [$group_name]);
@@ -721,8 +723,8 @@ class attachments
 						}
 
 						$sql = 'SELECT *
-							FROM ' . $this->tables['extension_groups'] . "
-							WHERE group_id = $group_id";
+							FROM ' . $this->tables['extension_groups'] . '
+							WHERE group_id = ' . (int) $group_id;
 						$result = $this->db->sql_query($sql);
 						$ext_group_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
@@ -768,14 +770,14 @@ class attachments
 						$filename_list = '';
 						$no_image_select = false;
 
-						$imglist = filelist($this->root_path . $img_path);
+						$img_list = filelist($this->root_path . $img_path);
 
-						if (!empty($imglist['']))
+						if (!empty($img_list['']))
 						{
-							$imglist = array_values($imglist);
-							$imglist = $imglist[0];
+							$img_list = array_values($img_list);
+							$img_list = $img_list[0];
 
-							foreach ($imglist as $key => $img)
+							foreach ($img_list as $key => $img)
 							{
 								if (!$ext_group_row['upload_icon'])
 								{

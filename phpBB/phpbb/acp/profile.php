@@ -194,17 +194,17 @@ class profile
 				if (confirm_box(true))
 				{
 					$sql = 'SELECT field_ident
-						FROM ' . $this->tables['profile_fields'] . "
-						WHERE field_id = $field_id";
+						FROM ' . $this->tables['profile_fields'] . '
+						WHERE field_id = ' . (int) $field_id;
 					$result = $this->db->sql_query($sql);
 					$field_ident = (string) $this->db->sql_fetchfield('field_ident');
 					$this->db->sql_freeresult($result);
 
 					$this->db->sql_transaction('begin');
 
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields'] . " WHERE field_id = $field_id");
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_lang'] . " WHERE field_id = $field_id");
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_lang'] . " WHERE field_id = $field_id");
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields'] . ' WHERE field_id = ' .  (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE field_id = ' .  (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE field_id = ' .  (int) $field_id);
 
 					$this->db_tools->sql_column_remove($this->tables['profile_fields_data'], 'pf_' . $field_ident);
 
@@ -261,14 +261,14 @@ class profile
 					trigger_error($this->lang->lang('DEFAULT_LANGUAGE_NOT_FILLED') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'UPDATE ' . $this->tables['profile_fields'] . "
+				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
 					SET field_active = 1
-					WHERE field_id = $field_id";
+					WHERE field_id = ' .  (int) $field_id;
 				$this->db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
-					FROM ' . $this->tables['profile_fields'] . "
-					WHERE field_id = $field_id";
+					FROM ' . $this->tables['profile_fields'] . '
+					WHERE field_id = ' .  (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_ident = (string) $this->db->sql_fetchfield('field_ident');
 				$this->db->sql_freeresult($result);
@@ -292,14 +292,14 @@ class profile
 					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'UPDATE ' . $this->tables['profile_fields'] . "
+				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
 					SET field_active = 0
-					WHERE field_id = $field_id";
+					WHERE field_id = ' .  (int) $field_id;
 				$this->db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
-					FROM ' . $this->tables['profile_fields'] . "
-					WHERE field_id = $field_id";
+					FROM ' . $this->tables['profile_fields'] . '
+					WHERE field_id = ' .  (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_ident = (string) $this->db->sql_fetchfield('field_ident');
 				$this->db->sql_freeresult($result);
@@ -325,8 +325,8 @@ class profile
 				}
 
 				$sql = 'SELECT field_order
-					FROM ' . $this->tables['profile_fields'] . "
-					WHERE field_id = $field_id";
+					FROM ' . $this->tables['profile_fields'] . '
+					WHERE field_id = ' .  (int) $field_id;
 				$result = $this->db->sql_query($sql);
 				$field_order = $this->db->sql_fetchfield('field_order');
 				$this->db->sql_freeresult($result);
@@ -366,9 +366,9 @@ class profile
 				{
 					$sql = 'SELECT l.*, f.*
 						FROM ' . $this->tables['profile_lang'] . ' l, ' . $this->tables['profile_fields'] . ' f
-						WHERE l.lang_id = ' . $this->edit_lang_id . "
-							AND f.field_id = $field_id
-							AND l.field_id = f.field_id";
+						WHERE l.lang_id = ' . $this->edit_lang_id . '
+							AND l.field_id = f.field_id
+							AND f.field_id = ' . (int) $field_id;
 					$result = $this->db->sql_query($sql);
 					$field_row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
@@ -378,9 +378,9 @@ class profile
 						// Some admin changed the default language?
 						$sql = 'SELECT l.*, f.*
 							FROM ' . $this->tables['profile_lang'] . ' l, ' . $this->tables['profile_fields'] . ' f
-							WHERE l.lang_id <> ' . $this->edit_lang_id . "
-							AND f.field_id = $field_id
-							AND l.field_id = f.field_id";
+							WHERE l.lang_id <> ' . $this->edit_lang_id . '
+							AND l.field_id = f.field_id
+							AND f.field_id = ' . (int) $field_id;
 						$result = $this->db->sql_query($sql);
 						$field_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
@@ -1092,8 +1092,8 @@ class profile
 		else
 		{
 			$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
-				SET ' . $this->db->sql_build_array('UPDATE', $profile_fields) . "
-				WHERE field_id = $field_id";
+				SET ' . $this->db->sql_build_array('UPDATE', $profile_fields) . '
+				WHERE field_id = '. (int) $field_id;
 			$this->db->sql_query($sql);
 		}
 
