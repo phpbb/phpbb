@@ -104,7 +104,7 @@ class main
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
-		\phpbb\mcp\functions\delete $mcp_delete,
+		functions\delete $mcp_delete,
 		forum $mcp_forum,
 		front $mcp_front,
 		post $mcp_post,
