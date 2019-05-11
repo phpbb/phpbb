@@ -81,7 +81,7 @@ class auth_link
 		$s_hidden_fields = [];
 		add_form_key('ucp_auth_link');
 
-		$submit	= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$submit	= $this->request->is_set_post('submit');
 
 		// This path is only for primary actions
 		if (empty($errors) && $submit)
@@ -102,7 +102,7 @@ class auth_link
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
-				if ($this->request->variable('link', 0, false, \phpbb\request\request_interface::POST))
+				if ($this->request->is_set_post('link'))
 				{
 					$error = $auth_provider->link_account($link_data);
 
