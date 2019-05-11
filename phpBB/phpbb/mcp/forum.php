@@ -282,10 +282,10 @@ class forum
 		 * @event core.mcp_view_forum_modify_sql
 		 * @var	string	sql					SQL query for forum view topic list
 		 * @var	int		forum_id			ID of the forum
-		 * @var	string  limit_time_sql		SQL query part for limit time
-		 * @var	string  sort_order_sql		SQL query part for sort order
-		 * @var	int 	topics_per_page		Number of topics per page
-		 * @var	int 	start				Start value
+		 * @var	string	limit_time_sql		SQL query part for limit time
+		 * @var	string	sort_order_sql		SQL query part for sort order
+		 * @var	int		topics_per_page		Number of topics per page
+		 * @var	int		start				Start value
 		 * @since 3.1.2-RC1
 		 */
 		$vars = ['sql', 'forum_id', 'limit_time_sql', 'sort_order_sql', 'topics_per_page', 'start'];
@@ -474,9 +474,9 @@ class forum
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'LOG_TOPIC_RESYNC', false, [
-				'forum_id' => $row['forum_id'],
-				'topic_id' => $row['topic_id'],
-				$row['topic_title']
+				'forum_id' => (int) $row['forum_id'],
+				'topic_id' => (int) $row['topic_id'],
+				$row['topic_title'],
 			]);
 		}
 		$this->db->sql_freeresult($result);
@@ -585,9 +585,9 @@ class forum
 			move_posts($post_id_list, $to_topic_id, false);
 
 			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'LOG_MERGE', false, [
-				'forum_id' => $to_forum_id,
-				'topic_id' => $to_topic_id,
-				$to_topic_data['topic_title']
+				'forum_id' => (int) $to_forum_id,
+				'topic_id' => (int) $to_topic_id,
+				$to_topic_data['topic_title'],
 			]);
 
 			// Update topic views count
@@ -610,7 +610,7 @@ class forum
 			// Update the bookmarks table.
 			phpbb_update_rows_avoiding_duplicates($this->db, $this->tables['bookmarks'], 'topic_id', $topic_ids, $to_topic_id);
 
-			// Re-sync the topics and forums because the auto-sync was deactivated in the call of  move_posts()
+			// Re-sync the topics and forums because the auto-sync was deactivated in the call of move_posts()
 			sync('topic_reported', 'topic_id', $sync_topics);
 			sync('topic_attachment', 'topic_id', $sync_topics);
 			sync('topic', 'topic_id', $sync_topics, true);

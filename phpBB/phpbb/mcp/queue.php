@@ -340,7 +340,7 @@ class queue
 					{
 						$sql = 'SELECT u.user_id, u.username, u.user_colour
 							FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['users'] . ' u
-							WHERE p.post_id =  ' . (int) $post_info['post_id'] . '
+							WHERE p.post_id = ' . (int) $post_info['post_id'] . '
 								AND p.post_delete_user = u.user_id';
 						$result = $this->db->sql_query($sql);
 						$post_delete_userinfo = $this->db->sql_fetchrow($result);
@@ -629,7 +629,7 @@ class queue
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . $this->tables['topics'] . ' t
 						WHERE ' . $this->db->sql_in_set('forum_id', $forum_list) . '
-							AND  ' . $this->db->sql_in_set('topic_visibility', $visibility_const) . "
+							AND ' . $this->db->sql_in_set('topic_visibility', $visibility_const) . "
 							AND topic_delete_user <> 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
@@ -836,10 +836,10 @@ class queue
 			foreach ($approve_log as $log_data)
 			{
 				$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'LOG_POST_' . strtoupper($action) . 'D', false, [
-					'forum_id' => $log_data['forum_id'],
-					'topic_id' => $log_data['topic_id'],
-					'post_id'  => $log_data['post_id'],
-					$log_data['post_subject']
+					'forum_id'	=> (int) $log_data['forum_id'],
+					'topic_id'	=> (int) $log_data['topic_id'],
+					'post_id'	=> (int) $log_data['post_id'],
+					$log_data['post_subject'],
 				]);
 			}
 
@@ -1063,9 +1063,9 @@ class queue
 			foreach ($approve_log as $log_data)
 			{
 				$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'LOG_TOPIC_' . strtoupper($action) . 'D', false, [
-					'forum_id' => $log_data['forum_id'],
-					'topic_id' => $log_data['topic_id'],
-					$log_data['topic_title']
+					'forum_id' => (int) $log_data['forum_id'],
+					'topic_id' => (int) $log_data['topic_id'],
+					$log_data['topic_title'],
 				]);
 			}
 
@@ -1367,21 +1367,21 @@ class queue
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
 						$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $l_log_message, false, [
-							'forum_id' => $log_data['forum_id'],
-							'topic_id' => $log_data['topic_id'],
+							'forum_id' => (int) $log_data['forum_id'],
+							'topic_id' => (int) $log_data['topic_id'],
 							$log_data['post_subject'],
 							$disapprove_reason,
-							$log_data['post_username']
+							$log_data['post_username'],
 						]);
 					}
 					else
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_DELETE_TOPIC' : 'LOG_DELETE_POST';
 						$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $l_log_message, false, [
-							'forum_id' => $log_data['forum_id'],
-							'topic_id' => $log_data['topic_id'],
+							'forum_id' => (int) $log_data['forum_id'],
+							'topic_id' => (int) $log_data['topic_id'],
 							$log_data['post_subject'],
-							$log_data['post_username']
+							$log_data['post_username'],
 						]);
 					}
 				}
