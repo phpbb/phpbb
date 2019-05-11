@@ -39,7 +39,7 @@ class database
 	/** @var \phpbb\request\request */
 	protected $request;
 
-	/** @var \phpbb\storage\storage backup */
+	/** @var \phpbb\storage\storage */
 	protected $storage;
 
 	/** @var \phpbb\template\template */
