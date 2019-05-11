@@ -14,7 +14,6 @@
 namespace phpbb\acp\controller;
 
 use phpbb\exception\runtime_exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class main
 {
@@ -26,9 +25,6 @@ class main
 
 	/** @var \phpbb\config\config */
 	protected $config;
-
-	/** @var ContainerInterface */
-	protected $container;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -53,6 +49,9 @@ class main
 
 	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $tf_cache;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -86,7 +85,6 @@ class main
 	 * @param \phpbb\auth\auth						$auth				Auth object
 	 * @param \phpbb\cache\driver\driver_interface	$cache				Cache object
 	 * @param \phpbb\config\config					$config				Config object
-	 * @param ContainerInterface					$container			Service container object
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\filesystem\filesystem			$filesystem			Filesystem object
@@ -95,6 +93,7 @@ class main
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\storage\storage				$storage_avatar		Avatar storage object
 	 * @param \phpbb\template\template				$template			Template object
+	 * @param \phpbb\textformatter\cache_interface	$tf_cache			Textformatter cache object
 	 * @param \phpbb\user							$user				User object
 	 * @param \phpbb\version_helper					$version_helper		Version helper object
 	 * @param bool									$allow_install_dir	Allow install directory
@@ -107,7 +106,6 @@ class main
 		\phpbb\auth\auth $auth,
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
-		ContainerInterface $container,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\filesystem\filesystem $filesystem,
@@ -116,6 +114,7 @@ class main
 		\phpbb\request\request $request,
 		\phpbb\storage\storage $storage_avatar,
 		\phpbb\template\template $template,
+		\phpbb\textformatter\cache_interface $tf_cache,
 		\phpbb\user $user,
 		\phpbb\version_helper $version_helper,
 		$allow_install_dir,
@@ -128,7 +127,6 @@ class main
 		$this->auth				= $auth;
 		$this->cache			= $cache;
 		$this->config			= $config;
-		$this->container		= $container;
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
 		$this->filesystem		= $filesystem;
@@ -137,6 +135,7 @@ class main
 		$this->request			= $request;
 		$this->storage_avatar	= $storage_avatar;
 		$this->template			= $template;
+		$this->tf_cache			= $tf_cache;
 		$this->user				= $user;
 		$this->version_helper	= $version_helper;
 
@@ -479,7 +478,7 @@ class main
 						// Remove old renderers from the text_formatter service. Since this
 						// operation is performed after the cache is purged, there is not "current"
 						// renderer and in effect all renderers will be purged
-						$this->container->get('text_formatter.cache')->tidy();
+						$this->tf_cache->tidy();
 
 						// Clear permissions
 						$this->auth->acl_clear_prefetch();
