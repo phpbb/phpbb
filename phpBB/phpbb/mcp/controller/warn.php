@@ -468,10 +468,10 @@ class warn
 				* @since 3.1.0-b4
 				*/
 				$vars = [
-						'user_row',
-						'warning',
-						'notify',
-						's_mcp_warn_user',
+					'user_row',
+					'warning',
+					'notify',
+					's_mcp_warn_user',
 				];
 				extract($this->dispatcher->trigger_event('core.mcp_warn_user_before', compact($vars)));
 
@@ -491,10 +491,10 @@ class warn
 					* @since 3.1.0-b4
 					*/
 					$vars = [
-							'user_row',
-							'warning',
-							'notify',
-							'message',
+						'user_row',
+						'warning',
+						'notify',
+						'message',
 					];
 					extract($this->dispatcher->trigger_event('core.mcp_warn_user_after', compact($vars)));
 				}

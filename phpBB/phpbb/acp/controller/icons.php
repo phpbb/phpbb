@@ -510,24 +510,24 @@ class icons
 						if ($mode === 'smilies')
 						{
 							$img_sql = array_merge($img_sql, [
-									'emotion'	=> $image_emotion[$image],
-									'code'		=> $image_code[$image]]
-							);
+								'emotion'	=> $image_emotion[$image],
+								'code'		=> $image_code[$image],
+							]);
 						}
 
 						if ($mode === 'icons')
 						{
 							$img_sql = array_merge($img_sql, [
-									'icons_alt'	=> $image_alt[$image]]
-							);
+								'icons_alt'	=> $image_alt[$image],
+							]);
 						}
 
 						// Image_order holds the 'new' order value
 						if (!empty($image_order[$image]))
 						{
 							$img_sql = array_merge($img_sql, [
-									$fields . '_order'	=>	$image_order[$image]]
-							);
+								$fields . '_order'	=>	$image_order[$image],
+							]);
 
 							// Since we always add 'after' an item, we just need to increase all following + the current by one
 							$sql = "UPDATE $table

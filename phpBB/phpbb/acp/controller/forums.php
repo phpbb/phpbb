@@ -1652,7 +1652,7 @@ class forums
 		foreach ($table_ary as $table)
 		{
 			$sql = "DELETE FROM $table
-					WHERE forum_id = " . (int) $from_id;
+				WHERE forum_id = " . (int) $from_id;
 			$this->db->sql_query($sql);
 		}
 

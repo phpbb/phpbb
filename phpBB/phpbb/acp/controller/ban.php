@@ -252,8 +252,7 @@ class ban
 
 				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . $this->tables['banlist'] . ' b, ' . $this->tables['users'] . ' u
-					WHERE (b.ban_end >= ' . time() . '
-							OR b.ban_end = 0)
+					WHERE (b.ban_end >= ' . time() . ' OR b.ban_end = 0)
 						AND u.user_id = b.ban_userid
 					ORDER BY u.username_clean ASC';
 			break;
@@ -263,8 +262,7 @@ class ban
 
 				$sql = 'SELECT *
 					FROM ' . $this->tables['banlist'] . '
-					WHERE (ban_end >= ' . time() . "
-							OR ban_end = 0)
+					WHERE (ban_end >= ' . time() . " OR ban_end = 0)
 						AND ban_ip <> ''
 					ORDER BY ban_ip";
 			break;
@@ -274,8 +272,7 @@ class ban
 
 				$sql = 'SELECT *
 					FROM ' . $this->tables['banlist'] . '
-					WHERE (ban_end >= ' . time() . "
-							OR ban_end = 0)
+					WHERE (ban_end >= ' . time() . " OR ban_end = 0)
 						AND ban_email <> ''
 					ORDER BY ban_email";
 			break;
