@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\mcp;
+namespace phpbb\mcp\controller;
 
 class forum
 {
