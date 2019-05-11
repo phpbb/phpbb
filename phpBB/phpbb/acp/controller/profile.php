@@ -427,23 +427,23 @@ class profile
 
 					$profile_field = $this->pf_collection[$field_type];
 					$field_row = array_merge($profile_field->get_default_option_values(), [
-							'field_ident'		=> str_replace(' ', '_', utf8_clean_string($this->request->variable('field_ident', '', true))),
-							'field_required'	=> 0,
-							'field_show_novalue'=> 0,
-							'field_hide'		=> 0,
-							'field_show_profile'=> 0,
-							'field_no_view'		=> 0,
-							'field_show_on_reg'	=> 0,
-							'field_show_on_pm'	=> 0,
-							'field_show_on_vt'	=> 0,
-							'field_show_on_ml'	=> 0,
-							'field_is_contact'	=> 0,
-							'field_contact_desc'=> '',
-							'field_contact_url'	=> '',
-							'lang_name'			=> $this->request->variable('field_ident', '', true),
-							'lang_explain'		=> '',
-							'lang_default_value'=> '']
-					);
+						'field_ident'		=> str_replace(' ', '_', utf8_clean_string($this->request->variable('field_ident', '', true))),
+						'field_required'	=> 0,
+						'field_show_novalue'=> 0,
+						'field_hide'		=> 0,
+						'field_show_profile'=> 0,
+						'field_no_view'		=> 0,
+						'field_show_on_reg'	=> 0,
+						'field_show_on_pm'	=> 0,
+						'field_show_on_vt'	=> 0,
+						'field_show_on_ml'	=> 0,
+						'field_is_contact'	=> 0,
+						'field_contact_desc'=> '',
+						'field_contact_url'	=> '',
+						'lang_name'			=> $this->request->variable('field_ident', '', true),
+						'lang_explain'		=> '',
+						'lang_default_value'=> '',
+					]);
 
 					$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
 				}
@@ -1192,10 +1192,10 @@ class profile
 				else
 				{
 					$this->update_insert($this->tables['profile_fields_lang'], $sql_ary, [
-							'field_id'	=> $field_id,
-							'lang_id'	=> (int) $default_lang_id,
-							'option_id'	=> (int) $option_id]
-					);
+						'field_id'	=> (int) $field_id,
+						'lang_id'	=> (int) $default_lang_id,
+						'option_id'	=> (int) $option_id,
+					]);
 				}
 			}
 		}
