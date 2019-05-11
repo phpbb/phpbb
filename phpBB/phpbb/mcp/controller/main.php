@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\mcp;
+namespace phpbb\mcp\controller;
 
 class main
 {
@@ -85,10 +85,10 @@ class main
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\log\log					$log				Log object
 	 * @param \phpbb\mcp\functions\delete		$mcp_delete			MCP Delete functions object
-	 * @param \phpbb\mcp\forum					$mcp_forum			MCP Forum controller object
-	 * @param \phpbb\mcp\front					$mcp_front			MCP Front controller object
-	 * @param \phpbb\mcp\post					$mcp_post			MCP Post controller	object
-	 * @param \phpbb\mcp\topic					$mcp_topic			MCP Topic controller object
+	 * @param \phpbb\mcp\controller\forum		$mcp_forum			MCP Forum controller object
+	 * @param \phpbb\mcp\controller\front		$mcp_front			MCP Front controller object
+	 * @param \phpbb\mcp\controller\post		$mcp_post			MCP Post controller	object
+	 * @param \phpbb\mcp\controller\topic		$mcp_topic			MCP Topic controller object
 	 * @param \phpbb\request\request			$request			Request object
 	 * @param \phpbb\template\template			$template			Template object
 	 * @param \phpbb\user						$user				User object
@@ -104,7 +104,7 @@ class main
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
-		functions\delete $mcp_delete,
+		\phpbb\mcp\functions\delete $mcp_delete,
 		forum $mcp_forum,
 		front $mcp_front,
 		post $mcp_post,
