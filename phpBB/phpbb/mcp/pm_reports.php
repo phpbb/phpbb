@@ -27,7 +27,7 @@ class pm_reports
 	/** @var \phpbb\language\language */
 	protected $lang;
 
-	/** @var \phpbb\mcp\reports  */
+	/** @var \phpbb\mcp\reports */
 	protected $mcp_reports;
 
 	/** @var \phpbb\notification\manager */

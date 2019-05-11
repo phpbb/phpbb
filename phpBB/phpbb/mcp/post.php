@@ -58,7 +58,7 @@ class post
 	 * Constructor.
 	 *
 	 * @param \phpbb\auth\auth					$auth			Auth object
-	 * @param \phpbb\config\config 				$config			Config object
+	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\language\language			$lang			Language object

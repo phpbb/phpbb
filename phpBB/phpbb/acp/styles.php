@@ -837,7 +837,7 @@ class styles
 	 * Find styles available for installation.
 	 *
 	 * @param bool		$all		if true, function will return all installable styles
-	 * 				 				if false, function will return only styles that can be installed
+	 * 								if false, function will return only styles that can be installed
 	 * @return array				The styles list
 	 */
 	protected function find_available($all)
