@@ -15,20 +15,62 @@ namespace phpbb\mcp;
 
 class post
 {
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\language\language */
 	protected $lang;
+
+	/** @var \phpbb\log\log */
 	protected $log;
+
+	/** @var \phpbb\pagination */
 	protected $pagination;
+
+	/** @var \phpbb\request\request */
 	protected $request;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var string phpBB root path */
 	protected $root_path;
+
+	/** @var string php File extension */
 	protected $php_ext;
+
+	/** @var array phpBB tables */
 	protected $tables;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\config\config 				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\pagination					$pagination		Pagination object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
 	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
@@ -630,18 +672,18 @@ class post
 		if ($this->config['load_db_track'] && $post_info['user_id'] != ANONYMOUS)
 		{
 			$sql = 'SELECT topic_id
-			FROM ' . $this->tables['posts'] . '
-			WHERE topic_id = ' . (int) $post_info['topic_id'] . '
-				AND poster_id = ' . (int) $post_info['user_id'];
+				FROM ' . $this->tables['posts'] . '
+				WHERE topic_id = ' . (int) $post_info['topic_id'] . '
+					AND poster_id = ' . (int) $post_info['user_id'];
 			$result = $this->db->sql_query_limit($sql, 1);
 			$topic_id = (int) $this->db->sql_fetchfield('topic_id');
 			$this->db->sql_freeresult($result);
 
-			if (!$topic_id)
+			if ($topic_id === 0)
 			{
 				$sql = 'DELETE FROM ' . $this->tables['topics_posted'] . '
-				WHERE user_id = ' . (int) $post_info['user_id'] . '
-					AND topic_id = ' . (int) $post_info['topic_id'];
+					WHERE user_id = ' . (int) $post_info['user_id'] . '
+						AND topic_id = ' . (int) $post_info['topic_id'];
 				$this->db->sql_query($sql);
 			}
 		}
@@ -650,10 +692,10 @@ class post
 		if ($post_info['post_attachment'])
 		{
 			$sql = 'UPDATE ' . $this->tables['attachments'] . '
-			SET poster_id = ' . (int) $user_data['user_id'] . '
-			WHERE poster_id = ' . (int) $post_info['user_id'] . '
-				AND post_msg_id = ' . (int) $post_info['post_id'] . '
-				AND topic_id = ' . (int) $post_info['topic_id'];
+				SET poster_id = ' . (int) $user_data['user_id'] . '
+				WHERE poster_id = ' . (int) $post_info['user_id'] . '
+					AND post_msg_id = ' . (int) $post_info['post_id'] . '
+					AND topic_id = ' . (int) $post_info['topic_id'];
 			$this->db->sql_query($sql);
 		}
 
