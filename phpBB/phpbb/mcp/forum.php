@@ -144,7 +144,7 @@ class forum
 		{
 			case 'resync':
 				$topic_ids = $this->request->variable('topic_id_list', [0]);
-				mcp_resync_topics($topic_ids);
+				$this->resync_topics($topic_ids);
 			break;
 
 			/** @noinspection PhpMissingBreakStatementInspection */
@@ -155,7 +155,7 @@ class forum
 			case 'merge_topic':
 				if ($to_topic_id)
 				{
-					merge_topics($forum_id, $source_topic_ids, $to_topic_id);
+					$this->merge_topics($forum_id, $source_topic_ids, $to_topic_id);
 				}
 			break;
 		}
@@ -448,7 +448,7 @@ class forum
 	 * @param array		$topic_ids		The topic identifiers
 	 * @return void
 	 */
-	function mcp_resync_topics(array $topic_ids)
+	public function resync_topics(array $topic_ids)
 	{
 		if (empty($topic_ids))
 		{
@@ -499,7 +499,7 @@ class forum
 	 * @param int		$to_topic_id	The "to" topic identifier
 	 * @return void
 	 */
-	function merge_topics($forum_id, array $topic_ids, $to_topic_id)
+	public function merge_topics($forum_id, array $topic_ids, $to_topic_id)
 	{
 		if (empty($topic_ids))
 		{
