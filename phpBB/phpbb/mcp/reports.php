@@ -116,6 +116,7 @@ class reports
 
 	public function main($id, $mode)
 	{
+		/** @todo */
 		global $action;
 
 		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);

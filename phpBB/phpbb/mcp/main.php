@@ -140,6 +140,7 @@ class main
 
 	function main($id, $mode)
 	{
+		/** @todo */
 		global $action;
 
 		$quickmod = $mode === 'quickmod';
@@ -599,7 +600,8 @@ class main
 				];
 				extract($this->dispatcher->trigger_event('core.mcp_main_modify_fork_sql', compact($vars)));
 
-				$this->db->sql_query('INSERT INTO ' . $this->tables['topics'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
+				$sql = 'INSERT INTO ' . $this->tables['topics'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+				$this->db->sql_query($sql);
 				$new_topic_id = $this->db->sql_nextid();
 				$new_topic_id_list[$topic_id] = $new_topic_id;
 
@@ -632,7 +634,8 @@ class main
 							'poll_option_total'	=> 0,
 						];
 
-						$this->db->sql_query('INSERT INTO ' . $this->tables['poll_options'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
+						$sql = 'INSERT INTO ' . $this->tables['poll_options'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+						$this->db->sql_query($sql);
 					}
 					$this->db->sql_freeresult($result);
 				}
@@ -684,6 +687,7 @@ class main
 						'post_edit_locked'	=> (int) $row['post_edit_locked'],
 						'post_postcount'	=> $row['post_postcount'],
 					];
+
 					// Adjust post count only if the post can be incremented to the user counter
 					if ($row['post_postcount'])
 					{
@@ -696,7 +700,9 @@ class main
 							$counter[$row['poster_id']] = 1;
 						}
 					}
-					$this->db->sql_query('INSERT INTO ' . $this->tables['posts'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
+
+					$sql = 'INSERT INTO ' . $this->tables['posts'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$this->db->sql_query($sql);
 					$new_post_id = $this->db->sql_nextid();
 
 					/**
@@ -1078,7 +1084,8 @@ class main
 					];
 					extract($this->dispatcher->trigger_event('core.mcp_main_modify_shadow_sql', compact($vars)));
 
-					$this->db->sql_query('INSERT INTO ' . $this->tables['topics'] . $this->db->sql_build_array('INSERT', $shadow));
+					$sql = 'INSERT INTO ' . $this->tables['topics'] . $this->db->sql_build_array('INSERT', $shadow);
+					$this->db->sql_query($sql);
 
 					// Shadow topics only count on new "topics" and not posts... a shadow topic alone has 0 posts
 					$shadow_topics++;
@@ -1089,37 +1096,38 @@ class main
 			$sync_sql = [];
 			if ($posts_moved)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_posts_approved = forum_posts_approved + ' . (int) $posts_moved;
-				$sync_sql[$forum_id][] = 'forum_posts_approved = forum_posts_approved - ' . (int) $posts_moved;
+				$sync_sql[$to_forum_id][]	= 'forum_posts_approved = forum_posts_approved + ' . (int) $posts_moved;
+				$sync_sql[$forum_id][]		= 'forum_posts_approved = forum_posts_approved - ' . (int) $posts_moved;
 			}
 			if ($posts_moved_unapproved)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved + ' . (int) $posts_moved_unapproved;
-				$sync_sql[$forum_id][] = 'forum_posts_unapproved = forum_posts_unapproved - ' . (int) $posts_moved_unapproved;
+				$sync_sql[$to_forum_id][]	= 'forum_posts_unapproved = forum_posts_unapproved + ' . (int) $posts_moved_unapproved;
+				$sync_sql[$forum_id][]		= 'forum_posts_unapproved = forum_posts_unapproved - ' . (int) $posts_moved_unapproved;
 			}
 			if ($posts_moved_softdeleted)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted + ' . (int) $posts_moved_softdeleted;
-				$sync_sql[$forum_id][] = 'forum_posts_softdeleted = forum_posts_softdeleted - ' . (int) $posts_moved_softdeleted;
+				$sync_sql[$to_forum_id][]	= 'forum_posts_softdeleted = forum_posts_softdeleted + ' . (int) $posts_moved_softdeleted;
+				$sync_sql[$forum_id][]		= 'forum_posts_softdeleted = forum_posts_softdeleted - ' . (int) $posts_moved_softdeleted;
 			}
 
 			if ($topics_moved)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_topics_approved = forum_topics_approved + ' . (int) $topics_moved;
+				$sync_sql[$to_forum_id][]	= 'forum_topics_approved = forum_topics_approved + ' . (int) $topics_moved;
+
 				if ($topics_moved - $shadow_topics > 0)
 				{
-					$sync_sql[$forum_id][] = 'forum_topics_approved = forum_topics_approved - ' . (int) ($topics_moved - $shadow_topics);
+					$sync_sql[$forum_id][]	= 'forum_topics_approved = forum_topics_approved - ' . (int) ($topics_moved - $shadow_topics);
 				}
 			}
 			if ($topics_moved_unapproved)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved + ' . (int) $topics_moved_unapproved;
-				$sync_sql[$forum_id][] = 'forum_topics_unapproved = forum_topics_unapproved - ' . (int) $topics_moved_unapproved;
+				$sync_sql[$to_forum_id][]	= 'forum_topics_unapproved = forum_topics_unapproved + ' . (int) $topics_moved_unapproved;
+				$sync_sql[$forum_id][]		= 'forum_topics_unapproved = forum_topics_unapproved - ' . (int) $topics_moved_unapproved;
 			}
 			if ($topics_moved_softdeleted)
 			{
-				$sync_sql[$to_forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted + ' . (int) $topics_moved_softdeleted;
-				$sync_sql[$forum_id][] = 'forum_topics_softdeleted = forum_topics_softdeleted - ' . (int) $topics_moved_softdeleted;
+				$sync_sql[$to_forum_id][]	= 'forum_topics_softdeleted = forum_topics_softdeleted + ' . (int) $topics_moved_softdeleted;
+				$sync_sql[$forum_id][]		= 'forum_topics_softdeleted = forum_topics_softdeleted - ' . (int) $topics_moved_softdeleted;
 			}
 
 			$success_msg = count($topic_ids) === 1 ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
