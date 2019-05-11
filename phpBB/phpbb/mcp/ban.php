@@ -326,9 +326,9 @@ class ban
 		}
 		else if ($post_id)
 		{
-			$post_info = phpbb_get_post_data($post_id, 'm_ban');
+			$post_info = phpbb_get_post_data([$post_id], 'm_ban');
 
-			if (!empty($post_info) && !empty($post_info[$post_id]))
+			if (!empty($post_info[$post_id]))
 			{
 				switch ($mode)
 				{
