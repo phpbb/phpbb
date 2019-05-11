@@ -15,18 +15,43 @@ namespace phpbb\mcp\controller;
 
 class warn
 {
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\language\language */
 	protected $lang;
+
+	/** @var \phpbb\log\log */
 	protected $log;
+
+	/** @var \phpbb\pagination */
 	protected $pagination;
+
+	/** @var \phpbb\request\request */
 	protected $request;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var string phpBB root path */
 	protected $root_path;
+
+	/** @var string php File extension */
 	protected $php_ext;
+
+	/** @var array phpBB tables */
 	protected $tables;
 
 	/** @todo */
@@ -34,6 +59,23 @@ class warn
 	public $tpl_name;
 	public $u_action;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\config\config				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\pagination					$pagination		Pagination object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
 	function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
