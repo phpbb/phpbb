@@ -269,7 +269,7 @@ class mcp_ban
 		}
 		else if ($post_id)
 		{
-			$post_info = phpbb_get_post_data($post_id, 'm_ban');
+			$post_info = phpbb_get_post_data(array($post_id), 'm_ban');
 
 			if (count($post_info) && !empty($post_info[$post_id]))
 			{
