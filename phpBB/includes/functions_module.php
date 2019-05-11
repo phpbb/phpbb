@@ -123,7 +123,7 @@ class p_master
 
 		// We "could" build a true tree with this function - maybe mod authors want to use this...
 		// Functions for traversing and manipulating the tree are not available though
-		// We might re-structure the module system to use true trees in 3.2.x...
+		// We might re-structure the module system to use true trees in 4.0
 		// $tree = $this->build_tree($this->module_cache['modules'], $this->module_cache['parents']);
 
 		// Clean up module cache array to only let survive modules the user can access
