@@ -38,7 +38,7 @@ class acp_extensions
 	private $phpbb_container;
 	private $php_ini;
 
-	function main()
+	function main($id, $mode)
 	{
 		// Start the page
 		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher, $phpbb_container;

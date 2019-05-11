@@ -172,7 +172,6 @@ acp_group_options_before
 * Since: 3.1.0-b4
 * Purpose: Add additional options to group settings (before GROUP_FOUNDER_MANAGE)
 
-
 acp_groups_find_username_append
 ===
 * Location: adm/style/acp_groups.html
