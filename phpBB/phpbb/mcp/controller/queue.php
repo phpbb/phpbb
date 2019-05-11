@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\mcp;
+namespace phpbb\mcp\controller;
 
 class queue
 {
@@ -100,7 +100,7 @@ class queue
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
-		functions\delete $mcp_delete,
+		\phpbb\mcp\functions\delete $mcp_delete,
 		\phpbb\notification\manager $notification_manager,
 		\phpbb\pagination $pagination,
 		\phpbb\report\report_reason_list_provider $reason_provider,
@@ -1096,7 +1096,7 @@ class queue
 
 					$this->notification_manager->delete_notifications('notification.type.topic_in_queue', $topic_id);
 
-					// Only add notifications, if we are not reapproving post
+					// Only add notifications, if we are not re-approving post
 					// When the topic was already approved, but was edited and
 					// now needs re-approval, we don't want to notify the users
 					// again.

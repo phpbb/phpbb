@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\mcp;
+namespace phpbb\mcp\controller;
 
 class topic
 {
@@ -36,10 +36,10 @@ class topic
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\mcp\forum */
+	/** @var \phpbb\mcp\controller\forum */
 	protected $mcp_forum;
 
-	/** @var \phpbb\mcp\queue */
+	/** @var \phpbb\mcp\controller\queue */
 	protected $mcp_queue;
 
 	/** @var \phpbb\pagination */
@@ -73,8 +73,8 @@ class topic
 	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\log\log					$log				Log object
-	 * @param \phpbb\mcp\forum					$mcp_forum			MCP Forum controller object
-	 * @param \phpbb\mcp\queue					$mcp_queue			MCP Queue controller object
+	 * @param \phpbb\mcp\controller\forum		$mcp_forum			MCP Forum controller object
+	 * @param \phpbb\mcp\controller\queue		$mcp_queue			MCP Queue controller object
 	 * @param \phpbb\pagination					$pagination			Pagination object
 	 * @param \phpbb\request\request			$request			Request object
 	 * @param \phpbb\template\template			$template			Template object

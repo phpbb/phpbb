@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\mcp;
+namespace phpbb\mcp\controller;
 
 class pm_reports
 {
@@ -27,7 +27,7 @@ class pm_reports
 	/** @var \phpbb\language\language */
 	protected $lang;
 
-	/** @var \phpbb\mcp\reports */
+	/** @var \phpbb\mcp\controller\reports */
 	protected $mcp_reports;
 
 	/** @var \phpbb\notification\manager */
