@@ -313,7 +313,7 @@ class warn
 		// Check if can send a notification
 		if ($this->config['allow_privmsg'])
 		{
-			$auth2 = $this->auth;
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 
 			$s_can_notify = (bool) $auth2->acl_get('u_readpm');

@@ -286,13 +286,13 @@ class topic
 		 * Event to modify the post data for the MCP topic review before assigning the posts
 		 *
 		 * @event core.mcp_topic_modify_post_data
-		 * @var	int		id				ID of the tab we are displaying
-		 * @var	string	mode			Mode of the MCP page we are displaying
-		 * @var	int		forum_id		The forum ID we are currently in
-		 * @var	int		topic_id		The topic ID we are currently reviewing
-		 * @var	array	post_id_list	Array with post ids we are going to display
-		 * @var	array	rowset			Array with the posts data
-		 * @var	array	attachments		List of attachments post_id => array of attachments
+		 * @var int		id				ID of the tab we are displaying
+		 * @var string	mode			Mode of the MCP page we are displaying
+		 * @var int		forum_id		The forum ID we are currently in
+		 * @var int		topic_id		The topic ID we are currently reviewing
+		 * @var array	post_id_list	Array with post ids we are going to display
+		 * @var array	rowset			Array with the posts data
+		 * @var array	attachments		List of attachments post_id => array of attachments
 		 * @since 3.1.7-RC1
 		 */
 		$vars = [
@@ -361,16 +361,16 @@ class topic
 			 * Event to modify the template data block for topic reviews in the MCP
 			 *
 			 * @event core.mcp_topic_review_modify_row
-			 * @var	int		id					ID of the tab we are displaying
-			 * @var	string	mode				Mode of the MCP page we are displaying
-			 * @var	int		start				Start item of this page
-			 * @var	int		total				Total posts count
-			 * @var	int		forum_id			The forum ID we are currently in
-			 * @var	int		topic_id			The topic ID we are currently reviewing
-			 * @var	array	topic_info			Array with topic data
-			 * @var	array	row					Array with original post and user data
-			 * @var	array	post_row			Template block array of the current post
-			 * @var	int		current_row_number	Number of the post on this page
+			 * @var int		id					ID of the tab we are displaying
+			 * @var string	mode				Mode of the MCP page we are displaying
+			 * @var int		start				Start item of this page
+			 * @var int		total				Total posts count
+			 * @var int		forum_id			The forum ID we are currently in
+			 * @var int		topic_id			The topic ID we are currently reviewing
+			 * @var array	topic_info			Array with topic data
+			 * @var array	row					Array with original post and user data
+			 * @var array	post_row			Template block array of the current post
+			 * @var int		current_row_number	Number of the post on this page
 			 * @since 3.1.4-RC1
 			 */
 			$vars = [
@@ -886,8 +886,8 @@ class topic
 			 * Perform additional actions after merging posts.
 			 *
 			 * @event core.mcp_topics_merge_posts_after
-			 * @var	int		topic_id		The topic ID from which posts are being moved
-			 * @var	int		to_topic_id		The topic ID to which posts are being moved
+			 * @var int		topic_id		The topic ID from which posts are being moved
+			 * @var int		to_topic_id		The topic ID to which posts are being moved
 			 * @since 3.1.11-RC1
 			 */
 			$vars = [

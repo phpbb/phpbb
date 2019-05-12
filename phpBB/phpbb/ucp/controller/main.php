@@ -366,7 +366,7 @@ class main
 								$l_unwatch .= '_TOPICS';
 							}
 
-							$msg = $this->lang->lang['UNWATCHED' . $l_unwatch];
+							$msg = $this->lang->lang('UNWATCHED' . $l_unwatch);
 						}
 						else
 						{
@@ -815,7 +815,7 @@ class main
 		}
 
 		$this->template->assign_vars([
-			'L_TITLE'			=> $this->lang->lang['UCP_MAIN_' . strtoupper($mode)],
+			'L_TITLE'			=> $this->lang->lang('UCP_MAIN_' . strtoupper($mode)),
 
 			'S_DISPLAY_MARK_ALL'	=> ($mode === 'watched' || ($mode === 'drafts' && !$this->request->is_set('edit', \phpbb\request\request_interface::GET))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> isset($s_hidden_fields) ? $s_hidden_fields : '',

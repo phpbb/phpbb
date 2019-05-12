@@ -178,10 +178,10 @@ class reports
 				* Allow changing the query to obtain the user-submitted report.
 				*
 				* @event core.mcp_reports_report_details_query_before
-				* @var	array	sql_ary			The array in the format of the query builder with the query
-				* @var	int		forum_id		The forum_id, the number in the f GET parameter
-				* @var	int		post_id			The post_id of the report being viewed (if 0, it is meaningless)
-				* @var	int		report_id		The report_id of the report being viewed
+				* @var array	sql_ary			The array in the format of the query builder with the query
+				* @var int		forum_id		The forum_id, the number in the f GET parameter
+				* @var int		post_id			The post_id of the report being viewed (if 0, it is meaningless)
+				* @var int		report_id		The report_id of the report being viewed
 				* @since 3.1.5-RC1
 				*/
 				$vars = [
@@ -201,11 +201,11 @@ class reports
 				* Allow changing the data obtained from the user-submitted report.
 				*
 				* @event core.mcp_reports_report_details_query_after
-				* @var	array	sql_ary		The array in the format of the query builder with the query that had been executed
-				* @var	int		forum_id	The forum_id, the number in the f GET parameter
-				* @var	int		post_id		The post_id of the report being viewed (if 0, it is meaningless)
-				* @var	int		report_id	The report_id of the report being viewed
-				* @var	array	report		The query's resulting row.
+				* @var array	sql_ary		The array in the format of the query builder with the query that had been executed
+				* @var int		forum_id	The forum_id, the number in the f GET parameter
+				* @var int		post_id		The post_id of the report being viewed (if 0, it is meaningless)
+				* @var int		report_id	The report_id of the report being viewed
+				* @var array	report		The query's resulting row.
 				* @since 3.1.5-RC1
 				*/
 				$vars = [
@@ -389,7 +389,7 @@ class reports
 				 * @var int		post_id						The post_id of the report being viewed (if 0, it is meaningless)
 				 * @var int		report_id					The report_id of the report being viewed
 				 * @var array	report						Array with the report data
-				 * @var	array	report_template				Array with the report template data
+				 * @var array	report_template				Array with the report template data
 				 * @var array	post_info					Array with the reported post data
 				 * @since 3.2.5-RC1
 				 */
@@ -529,11 +529,11 @@ class reports
 				* Alter sql query to get report id of all reports for requested forum and topic or just forum
 				*
 				* @event core.mcp_reports_get_reports_query_before
-				* @var	string	sql						String with the query to be executed
-				* @var	array	forum_list				List of forums that contain the posts
-				* @var	int		topic_id				topic_id in the page request
-				* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-				* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+				* @var string	sql						String with the query to be executed
+				* @var array	forum_list				List of forums that contain the posts
+				* @var int		topic_id				topic_id in the page request
+				* @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+				* @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
 				* @since 3.1.0-RC4
 				*/
 				$vars = [

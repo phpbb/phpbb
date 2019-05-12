@@ -409,14 +409,14 @@ class queue
 				* Alter post awaiting approval template before it is rendered
 				*
 				* @event core.mcp_queue_approve_details_template
-				* @var	int		post_id		Post ID
-				* @var	int		topic_id	Topic ID
-				* @var	array	topic_info	Topic data
-				* @var	array	post_info	Post data
+				* @var int		post_id		Post ID
+				* @var int		topic_id	Topic ID
+				* @var array	topic_info	Topic data
+				* @var array	post_info	Post data
 				* @var array	post_data	Post template data
-				* @var	string	message		Post message
-				* @var	string	post_url	Post URL
-				* @var	string	topic_url	Topic URL
+				* @var string	message		Post message
+				* @var string	post_url	Post URL
+				* @var string	topic_url	Topic URL
 				* @since 3.2.2-RC1
 				*/
 				$vars = [
@@ -541,12 +541,12 @@ class queue
 					* Alter sql query to get posts in queue to be accepted
 					*
 					* @event core.mcp_queue_get_posts_query_before
-					* @var	string	sql						Associative array with the query to be executed
-					* @var	array	forum_list				List of forums that contain the posts
-					* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
-					* @var	int		topic_id				If topic_id not equal to 0, the topic id to filter the posts to display
-					* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-					* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+					* @var string	sql						Associative array with the query to be executed
+					* @var array	forum_list				List of forums that contain the posts
+					* @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+					* @var int		topic_id				If topic_id not equal to 0, the topic id to filter the posts to display
+					* @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+					* @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
 					* @since 3.1.0-RC3
 					*/
 					$vars = [
@@ -585,12 +585,12 @@ class queue
 						* Alter sql query to get information on all posts in queue
 						*
 						* @event core.mcp_queue_get_posts_for_posts_query_before
-						* @var	string	sql						String with the query to be executed
-						* @var	array	forum_list				List of forums that contain the posts
-						* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
-						* @var	int		topic_id				topic_id in the page request
-						* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-						* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+						* @var string	sql						String with the query to be executed
+						* @var array	forum_list				List of forums that contain the posts
+						* @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+						* @var int		topic_id				topic_id in the page request
+						* @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+						* @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
 						* @since 3.2.3-RC2
 						*/
 						$vars = [
@@ -635,17 +635,17 @@ class queue
 						ORDER BY $sort_order_sql";
 
 					/**
-					* Alter sql query to get information on all topics in the list of forums provided.
-					*
-					* @event core.mcp_queue_get_posts_for_topics_query_before
-					* @var	string	sql						String with the query to be executed
-					* @var	array	forum_list				List of forums that contain the posts
-					* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
-					* @var	int		topic_id				topic_id in the page request
-					* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-					* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
-					* @since 3.1.0-RC3
-					*/
+					 * Alter sql query to get information on all topics in the list of forums provided.
+					 *
+					 * @event core.mcp_queue_get_posts_for_topics_query_before
+					 * @var string	sql						String with the query to be executed
+					 * @var array	forum_list				List of forums that contain the posts
+					 * @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+					 * @var int		topic_id				topic_id in the page request
+					 * @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+					 * @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
+					 * @since 3.1.0-RC3
+					 */
 					$vars = [
 						'sql',
 						'forum_list',
@@ -711,14 +711,14 @@ class queue
 					];
 
 					/**
-					* Alter sql query to get information on all topics in the list of forums provided.
-					*
-					* @event core.mcp_queue_get_posts_modify_post_row
-					* @var	array	post_row	Template variables for current post
-					* @var	array	row			Post data
-					* @var	array	forum_names	Forum names
-					* @since 3.2.3-RC2
-					*/
+					 * Alter sql query to get information on all topics in the list of forums provided.
+					 *
+					 * @event core.mcp_queue_get_posts_modify_post_row
+					 * @var array	post_row	Template variables for current post
+					 * @var array	row			Post data
+					 * @var array	forum_names	Forum names
+					 * @since 3.2.3-RC2
+					 */
 					$vars = [
 						'post_row',
 						'row',
@@ -919,12 +919,12 @@ class queue
 			 * Perform additional actions during post(s) approval
 			 *
 			 * @event core.approve_posts_after
-			 * @var	string	action				Variable containing the action we perform on the posts ('approve' or 'restore')
-			 * @var	array	post_info			Array containing info for all posts being approved
-			 * @var	array	topic_info			Array containing info for all parent topics of the posts
-			 * @var	int		num_topics			Variable containing number of topics
+			 * @var string	action				Variable containing the action we perform on the posts ('approve' or 'restore')
+			 * @var array	post_info			Array containing info for all posts being approved
+			 * @var array	topic_info			Array containing info for all parent topics of the posts
+			 * @var int		num_topics			Variable containing number of topics
 			 * @var bool	notify_poster		Variable telling if the post should be notified or not
-			 * @var	string	success_msg			Variable containing the language key for the success message
+			 * @var string	success_msg			Variable containing the language key for the success message
 			 * @var string	redirect			Variable containing the redirect url
 			 * @since 3.1.4-RC1
 			 */
@@ -1122,11 +1122,11 @@ class queue
 			 * Perform additional actions during topics(s) approval
 			 *
 			 * @event core.approve_topics_after
-			 * @var	string	action				Variable containing the action we perform on the posts ('approve' or 'restore')
-			 * @var	mixed	topic_info			Array containing info for all topics being approved
-			 * @var	array	first_post_ids		Array containing ids of all first posts
+			 * @var string	action				Variable containing the action we perform on the posts ('approve' or 'restore')
+			 * @var mixed	topic_info			Array containing info for all topics being approved
+			 * @var array	first_post_ids		Array containing ids of all first posts
 			 * @var bool	notify_poster		Variable telling if the poster should be notified or not
-			 * @var	string	success_msg			Variable containing the language key for the success message
+			 * @var string	success_msg			Variable containing the language key for the success message
 			 * @var string	redirect			Variable containing the redirect url
 			 * @since 3.1.4-RC1
 			 */
@@ -1334,7 +1334,6 @@ class queue
 						'topic_id'		=> (int) $post_info[$post_id]['topic_id'],
 						'post_username'	=> ($post_info[$post_id]['poster_id'] == ANONYMOUS && !empty($post_info[$post_id]['post_username'])) ? $post_info[$post_id]['post_username'] : $post_info[$post_id]['username'],
 					];
-
 				}
 			}
 
@@ -1494,18 +1493,18 @@ class queue
 			 * Perform additional actions during post(s) disapproval
 			 *
 			 * @event core.disapprove_posts_after
-			 * @var	array	post_info					Array containing info for all posts being disapproved
-			 * @var	array	topic_information			Array containing information for the topics
-			 * @var	array	topic_posts_unapproved		Array containing list of topic ids and the count of disapproved posts in them
-			 * @var	array	post_disapprove_list		Array containing list of posts and their topic id
-			 * @var	int		num_disapproved_topics		Variable containing the number of disapproved topics
-			 * @var	int		num_disapproved_posts		Variable containing the number of disapproved posts
+			 * @var array	post_info					Array containing info for all posts being disapproved
+			 * @var array	topic_information			Array containing information for the topics
+			 * @var array	topic_posts_unapproved		Array containing list of topic ids and the count of disapproved posts in them
+			 * @var array	post_disapprove_list		Array containing list of posts and their topic id
+			 * @var int		num_disapproved_topics		Variable containing the number of disapproved topics
+			 * @var int		num_disapproved_posts		Variable containing the number of disapproved posts
 			 * @var array	lang_reasons				Array containing the language keys for reasons
-			 * @var	string	disapprove_reason			Variable containing the language key for the success message
-			 * @var	string	disapprove_reason_lang		Variable containing the language key for the success message
+			 * @var string	disapprove_reason			Variable containing the language key for the success message
+			 * @var string	disapprove_reason_lang		Variable containing the language key for the success message
 			 * @var bool	is_disapproving				Variable telling if anything is going to be disapproved
 			 * @var bool	notify_poster				Variable telling if the post should be notified or not
-			 * @var	string	success_msg					Variable containing the language key for the success message
+			 * @var string	success_msg					Variable containing the language key for the success message
 			 * @var string	redirect					Variable containing the redirect url
 			 * @since 3.1.4-RC1
 			 */

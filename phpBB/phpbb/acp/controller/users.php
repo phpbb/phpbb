@@ -332,12 +332,11 @@ class users
 				 * Run code at beginning of ACP users overview
 				 *
 				 * @event core.acp_users_overview_before
-				 * @var	array	user_row	Current user data
-				 * @var	string	mode		Active module
-				 * @var	string	action		Module that should be run
-				 * @var	bool	submit		Do we display the form only
-				 * 							or did the user press submit
-				 * @var	array	error		Array holding error messages
+				 * @var array	user_row	Current user data
+				 * @var string	mode		Active module
+				 * @var string	action		Module that should be run
+				 * @var bool	submit		Do we display the form only or did the user press submit
+				 * @var array	error		Array holding error messages
 				 * @since 3.1.3-RC1
 				 */
 				$vars = ['user_row', 'mode', 'action', 'submit', 'error'];
@@ -930,9 +929,9 @@ class users
 							 * Run custom quick tool code
 							 *
 							 * @event core.acp_users_overview_run_quicktool
-							 * @var	string	action		Quick tool that should be run
-							 * @var	array	user_row	Current user data
-							 * @var	string	u_action	The u_action link
+							 * @var string	action		Quick tool that should be run
+							 * @var array	user_row	Current user data
+							 * @var string	u_action	The u_action link
 							 * @since 3.1.0-a1
 							 * @changed 3.2.2-RC1 Added u_action
 							 */
@@ -1053,9 +1052,9 @@ class users
 						 * Modify user data before we update it
 						 *
 						 * @event core.acp_users_overview_modify_data
-						 * @var	array	user_row	Current user data
-						 * @var	array	data		Submitted user data
-						 * @var	array	sql_ary		User data we update
+						 * @var array	user_row	Current user data
+						 * @var array	data		Submitted user data
+						 * @var array	sql_ary		User data we update
 						 * @since 3.1.0-a1
 						 */
 						$vars = ['user_row', 'data', 'sql_ary'];
@@ -1181,8 +1180,8 @@ class users
 				 * Add additional quick tool options and overwrite user data
 				 *
 				 * @event core.acp_users_display_overview
-				 * @var	array	user_row			Array with user data
-				 * @var	array	quick_tool_ary		Quick tool options
+				 * @var array	user_row			Array with user data
+				 * @var array	quick_tool_ary		Quick tool options
 				 * @since 3.1.0-a1
 				 */
 				$vars = ['user_row', 'quick_tool_ary'];
@@ -1563,10 +1562,10 @@ class users
 				 * Modify user data on editing profile in ACP
 				 *
 				 * @event core.acp_users_modify_profile
-				 * @var	array	data		Array with user profile data
-				 * @var	bool	submit		Flag indicating if submit button has been pressed
-				 * @var	int		user_id		The user id
-				 * @var	array	user_row	Array with the full user data
+				 * @var array	data		Array with user profile data
+				 * @var bool	submit		Flag indicating if submit button has been pressed
+				 * @var int		user_id		The user id
+				 * @var array	user_row	Array with the full user data
 				 * @since 3.1.4-RC1
 				 */
 				$vars = ['data', 'submit', 'user_id', 'user_row'];
@@ -1600,10 +1599,10 @@ class users
 					 * Validate profile data in ACP before submitting to the database
 					 *
 					 * @event core.acp_users_profile_validate
-					 * @var	array	data		Array with user profile data
-					 * @var	int		user_id		The user id
-					 * @var	array	user_row	Array with the full user data
-					 * @var	array	error		Array with the form errors
+					 * @var array	data		Array with user profile data
+					 * @var int		user_id		The user id
+					 * @var array	user_row	Array with the full user data
+					 * @var array	error		Array with the form errors
 					 * @since 3.1.4-RC1
 					 * @changed 3.1.12-RC1		Removed submit, added user_id, user_row
 					 */
@@ -1621,11 +1620,11 @@ class users
 						 * Modify profile data in ACP before submitting to the database
 						 *
 						 * @event core.acp_users_profile_modify_sql_ary
-						 * @var	array	cp_data		Array with the user custom profile fields data
-						 * @var	array	data		Array with user profile data
-						 * @var	int		user_id		The user id
-						 * @var	array	user_row	Array with the full user data
-						 * @var	array	sql_ary		Array with sql data
+						 * @var array	cp_data		Array with the user custom profile fields data
+						 * @var array	data		Array with user profile data
+						 * @var int		user_id		The user id
+						 * @var array	user_row	Array with the full user data
+						 * @var array	sql_ary		Array with sql data
 						 * @since 3.1.4-RC1
 						 */
 						$vars = ['cp_data', 'data', 'user_id', 'user_row', 'sql_ary'];
@@ -1727,8 +1726,8 @@ class users
 				 * Modify users preferences data
 				 *
 				 * @event core.acp_users_prefs_modify_data
-				 * @var	array	data			Array with users preferences data
-				 * @var	array	user_row		Array with user data
+				 * @var array	data			Array with users preferences data
+				 * @var array	user_row		Array with user data
 				 * @since 3.1.0-b3
 				 */
 				$vars = ['data', 'user_row'];
@@ -1794,10 +1793,10 @@ class users
 						 * Modify SQL query before users preferences are updated
 						 *
 						 * @event core.acp_users_prefs_modify_sql
-						 * @var	array	data			Array with users preferences data
-						 * @var	array	user_row		Array with user data
-						 * @var	array	sql_ary			SQL array with users preferences data to update
-						 * @var	array	error			Array with errors data
+						 * @var array	data			Array with users preferences data
+						 * @var array	user_row		Array with user data
+						 * @var array	sql_ary			SQL array with users preferences data to update
+						 * @var array	error			Array with errors data
 						 * @since 3.1.0-b3
 						 */
 						$vars = ['data', 'user_row', 'sql_ary', 'error'];
@@ -1947,9 +1946,9 @@ class users
 				 * Modify users preferences data before assigning it to the template
 				 *
 				 * @event core.acp_users_prefs_modify_template_data
-				 * @var	array	data				Array with users preferences data
-				 * @var	array	user_row			Array with user data
-				 * @var	array	user_prefs_data		Array with users preferences data to be assigned to the template
+				 * @var array	data				Array with users preferences data
+				 * @var array	user_row			Array with user data
+				 * @var array	user_prefs_data		Array with users preferences data to be assigned to the template
 				 * @since 3.1.0-b3
 				 */
 				$vars = ['data', 'user_row', 'user_prefs_data'];
@@ -1993,8 +1992,8 @@ class users
 									 * Modify users preferences data before assigning it to the template
 									 *
 									 * @event core.acp_users_avatar_sql
-									 * @var	array	user_row	Array with user data
-									 * @var	array	result		Array with user avatar data to be updated in the DB
+									 * @var array	user_row	Array with user data
+									 * @var array	result		Array with user avatar data to be updated in the DB
 									 * @since 3.2.4-RC1
 									 */
 									$vars = ['user_row', 'result'];
@@ -2201,8 +2200,8 @@ class users
 						 * Modify user signature before it is stored in the DB
 						 *
 						 * @event core.acp_users_modify_signature_sql_ary
-						 * @var	array	user_row	Array with user data
-						 * @var	array	sql_ary		Array with user signature data to be updated in the DB
+						 * @var array	user_row	Array with user data
+						 * @var array	sql_ary		Array with user signature data to be updated in the DB
 						 * @since 3.2.4-RC1
 						 */
 						$vars = ['user_row', 'sql_ary'];
@@ -2689,10 +2688,10 @@ class users
 				 * Additional modes provided by extensions
 				 *
 				 * @event core.acp_users_mode_add
-				 * @var	string	mode			New mode
-				 * @var	int		user_id			User id of the user to manage
-				 * @var	array	user_row		Array with user data
-				 * @var	array	error			Array with errors data
+				 * @var string	mode			New mode
+				 * @var int		user_id			User id of the user to manage
+				 * @var array	user_row		Array with user data
+				 * @var array	error			Array with errors data
 				 * @since 3.2.2-RC1
 				 */
 				$vars = ['mode', 'user_id', 'user_row', 'error'];

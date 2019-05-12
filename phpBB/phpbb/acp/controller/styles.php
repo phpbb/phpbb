@@ -195,9 +195,9 @@ class styles
 		 * Run code before ACP styles action execution
 		 *
 		 * @event core.acp_styles_action_before
-		 * @var	int		id			Module ID
-		 * @var	string	mode		Active module
-		 * @var	string	action		Module that should be run
+		 * @var int		id			Module ID
+		 * @var string	mode		Active module
+		 * @var string	action		Module that should be run
 		 * @since 3.1.7-RC1
 		 */
 		$vars = ['id', 'mode', 'action'];

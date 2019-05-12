@@ -1212,7 +1212,7 @@ class permissions
 		{
 			if ($user_id != $this->user->data['user_id'])
 			{
-				$auth2 = $this->auth;
+				$auth2 = new \phpbb\auth\auth();
 				$auth2->acl($userdata);
 
 				$auth_setting = $auth2->acl_get($permission);

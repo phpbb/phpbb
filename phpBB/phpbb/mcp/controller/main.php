@@ -263,8 +263,8 @@ class main
 				* This event allows you to handle custom quickmod options
 				*
 				* @event core.modify_quickmod_actions
-				* @var	string	action		Topic quick moderation action name
-				* @var	bool	quickmod	Flag indicating whether MCP is in quick moderation mode
+				* @var string	action		Topic quick moderation action name
+				* @var bool		quickmod	Flag indicating whether MCP is in quick moderation mode
 				* @since 3.1.0-a4
 				* @changed 3.1.0-RC4 Added variables: action, quickmod
 				*/
@@ -425,9 +425,9 @@ class main
 			 * Perform additional actions after locking/unlocking posts/topics
 			 *
 			 * @event core.mcp_lock_unlock_after
-			 * @var	string	action				Variable containing the action we perform on the posts/topics ('lock', 'unlock', 'lock_post' or 'unlock_post')
-			 * @var	array	ids					Array containing the post/topic IDs that have been locked/unlocked
-			 * @var	array	data				Array containing posts/topics data
+			 * @var string	action				Variable containing the action we perform on the posts/topics ('lock', 'unlock', 'lock_post' or 'unlock_post')
+			 * @var array	ids					Array containing the post/topic IDs that have been locked/unlocked
+			 * @var array	data				Array containing posts/topics data
 			 * @since 3.1.7-RC1
 			 */
 			$vars = [
@@ -589,8 +589,8 @@ class main
 				 * Perform actions before forked topic is created.
 				 *
 				 * @event core.mcp_main_modify_fork_sql
-				 * @var	array	sql_ary		SQL array to be used by $this->db->sql_build_array
-				 * @var	array	topic_row	Topic data
+				 * @var array	sql_ary		SQL array to be used by $this->db->sql_build_array
+				 * @var array	topic_row	Topic data
 				 * @since 3.1.11-RC1
 				 * @changed 3.1.11-RC1 Added variable: topic_row
 				 */
@@ -709,10 +709,10 @@ class main
 					 * Perform actions after forked topic is created.
 					 *
 					 * @event core.mcp_main_fork_sql_after
-					 * @var	int		new_topic_id	The newly created topic ID
-					 * @var	int		to_forum_id		The forum ID where the forked topic has been moved to
-					 * @var	int		new_post_id		The newly created post ID
-					 * @var	array	row				Post data
+					 * @var int		new_topic_id	The newly created topic ID
+					 * @var int		to_forum_id		The forum ID where the forked topic has been moved to
+					 * @var int		new_post_id		The newly created post ID
+					 * @var array	row				Post data
 					 * @since 3.2.4-RC1
 					 */
 					$vars = [
@@ -1073,8 +1073,8 @@ class main
 					 * Perform actions before shadow topic is created.
 					 *
 					 * @event core.mcp_main_modify_shadow_sql
-					 * @var	array	shadow	SQL array to be used by $this->db->sql_build_array
-					 * @var	array	row		Topic data
+					 * @var array	shadow	SQL array to be used by $this->db->sql_build_array
+					 * @var array	row		Topic data
 					 * @since 3.1.11-RC1
 					 * @changed 3.1.11-RC1 Added variable: row
 					 */

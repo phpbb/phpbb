@@ -184,12 +184,12 @@ class login_link
 		 * Event to perform additional actions before ucp_login_link is displayed
 		 *
 		 * @event core.ucp_login_link_template_after
-		 * @var	array									data				Login link data
-		 * @var	\phpbb\auth\provider\provider_interface	auth_provider		Auth provider
-		 * @var	string									login_link_error	Login link error
-		 * @var	string									login_error			Login error
-		 * @var	string									login_username		Login username
-		 * @var	array									tpl_ary				Template variables
+		 * @var array									data				Login link data
+		 * @var \phpbb\auth\provider\provider_interface	auth_provider		Auth provider
+		 * @var string									login_link_error	Login link error
+		 * @var string									login_error			Login error
+		 * @var string									login_username		Login username
+		 * @var array									tpl_ary				Template variables
 		 * @since 3.2.4-RC1
 		 */
 		$vars = ['data', 'auth_provider', 'login_link_error', 'login_error', 'login_username', 'tpl_ary'];
@@ -254,7 +254,7 @@ class login_link
 	 * @return string|null				string when there was an error in the process,
 	 *									null when the login was successful.
 	 */
-	protected function process_login_result($result)
+	protected function process_login_result(array $result)
 	{
 		$login_error = null;
 
@@ -274,30 +274,30 @@ class login_link
 					$captcha->init(CONFIRM_LOGIN);
 
 					$this->template->assign_vars([
-						'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
+						'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
 					]);
 
-					$login_error = $this->lang->lang[$result['error_msg']];
+					$login_error = $this->lang->lang([$result['error_msg']]);
 				break;
 
 				case LOGIN_ERROR_PASSWORD_CONVERT:
-					$login_error = sprintf(
-						$this->lang->lang[$result['error_msg']],
-						($this->config['email_enable']) ? '<a href="' . append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=sendpassword') . '">' : '',
-						($this->config['email_enable']) ? '</a>' : '',
-						($this->config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
-						($this->config['board_contact']) ? '</a>' : ''
+					$login_error = $this->lang->lang(
+						[$result['error_msg']],
+						$this->config['email_enable'] ? '<a href="' . append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=sendpassword') . '">' : '',
+						$this->config['email_enable'] ? '</a>' : '',
+						$this->config['board_contact'] ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
+						$this->config['board_contact'] ? '</a>' : ''
 					);
 				break;
 
 				// Username, password, etc...
 				default:
-					$login_error = $this->lang->lang[$result['error_msg']];
+					$login_error = $this->lang->lang([$result['error_msg']]);
 
 					// Assign admin contact to some error messages
-					if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
+					if ($result['error_msg'] === 'LOGIN_ERROR_USERNAME' || $result['error_msg'] === 'LOGIN_ERROR_PASSWORD')
 					{
-						$login_error = (!$this->config['board_contact']) ? sprintf($this->lang->lang[$result['error_msg']], '', '') : sprintf($this->lang->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>');
+						$login_error = !$this->config['board_contact'] ? $this->lang->lang([$result['error_msg']], '', '') : $this->lang->lang([$result['error_msg']], '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>');
 					}
 				break;
 			}

@@ -562,20 +562,20 @@ class groups
 					 * Request group data and operate on it
 					 *
 					 * @event core.acp_manage_group_request_data
-					 * @var	string	action				Type of the action: add|edit
-					 * @var	int		group_id			The group id
-					 * @var	array	group_row			Array with new group data
-					 * @var	array	error				Array of errors, if you add errors
-					 *							ensure to update the template variables
-					 *							S_ERROR and ERROR_MSG to display it
-					 * @var	string	group_name			The group name
-					 * @var	string	group_desc			The group description
-					 * @var	int		group_type			The group type
-					 * @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
-					 * @var	bool	allow_desc_urls		Allow urls in group description: true|false
-					 * @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
-					 * @var	array	submit_ary			Array with new group data
-					 * @var	array	validation_checks	Array with validation data
+					 * @var string	action				Type of the action: add|edit
+					 * @var int		group_id			The group id
+					 * @var array	group_row			Array with new group data
+					 * @var array	error				Array of errors, if you add errors
+					 *									ensure to update the template variables
+					 *									S_ERROR and ERROR_MSG to display it
+					 * @var string	group_name			The group name
+					 * @var string	group_desc			The group description
+					 * @var int		group_type			The group type
+					 * @var bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+					 * @var bool	allow_desc_urls		Allow urls in group description: true|false
+					 * @var bool	allow_desc_smilies	Allow smiles in group description: true|false
+					 * @var array	submit_ary			Array with new group data
+					 * @var array	validation_checks	Array with validation data
 					 * @since 3.1.0-b5
 					 */
 					$vars = [
@@ -630,20 +630,20 @@ class groups
 						 * Initialise data before we display the add/edit form
 						 *
 						 * @event core.acp_manage_group_initialise_data
-						 * @var	string	action				Type of the action: add|edit
-						 * @var	int		group_id			The group id
-						 * @var	array	group_row			Array with new group data
-						 * @var	array	error				Array of errors, if you add errors
-						 *							ensure to update the template variables
-						 *							S_ERROR and ERROR_MSG to display it
-						 * @var	string	group_name			The group name
-						 * @var	string	group_desc			The group description
-						 * @var	int		group_type			The group type
-						 * @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
-						 * @var	bool	allow_desc_urls		Allow urls in group description: true|false
-						 * @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
-						 * @var	array	submit_ary			Array with new group data
-						 * @var	array	test_variables		Array with variables for test
+						 * @var string	action				Type of the action: add|edit
+						 * @var int		group_id			The group id
+						 * @var array	group_row			Array with new group data
+						 * @var array	error				Array of errors, if you add errors
+						 *									ensure to update the template variables
+						 *									S_ERROR and ERROR_MSG to display it
+						 * @var string	group_name			The group name
+						 * @var string	group_desc			The group description
+						 * @var int		group_type			The group type
+						 * @var bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+						 * @var bool	allow_desc_urls		Allow urls in group description: true|false
+						 * @var bool	allow_desc_smilies	Allow smiles in group description: true|false
+						 * @var array	submit_ary			Array with new group data
+						 * @var array	test_variables		Array with variables for test
 						 * @since 3.1.0-b5
 						 */
 						$vars = [
@@ -900,19 +900,18 @@ class groups
 				 * Modify group template data before we display the form
 				 *
 				 * @event core.acp_manage_group_display_form
-				 * @var	string	action				Type of the action: add|edit
-				 * @var	bool	update				Do we display the form only
-				 *							or did the user press submit
-				 * @var	int		group_id			The group id
-				 * @var	array	group_row			Array with new group data
-				 * @var	string	group_name			The group name
-				 * @var	int		group_type			The group type
-				 * @var	array	group_desc_data		The group description data
-				 * @var	string	group_rank			The group rank
-				 * @var	string	rank_options		The rank options
-				 * @var	array	error				Array of errors, if you add errors
-				 *							ensure to update the template variables
-				 *							S_ERROR and ERROR_MSG to display it
+				 * @var string	action				Type of the action: add|edit
+				 * @var bool	update				Do we display the form only or did the user press submit
+				 * @var int		group_id			The group id
+				 * @var array	group_row			Array with new group data
+				 * @var string	group_name			The group name
+				 * @var int		group_type			The group type
+				 * @var array	group_desc_data		The group description data
+				 * @var string	group_rank			The group rank
+				 * @var string	rank_options		The rank options
+				 * @var array	error				Array of errors, if you add errors
+				 *									ensure to update the template variables
+				 *									S_ERROR and ERROR_MSG to display it
 				 * @since 3.1.0-b5
 				 */
 				$vars = [
