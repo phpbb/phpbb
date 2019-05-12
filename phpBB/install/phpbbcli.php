@@ -23,7 +23,7 @@ if (php_sapi_name() !== 'cli')
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 define('PHPBB_ENVIRONMENT', 'production');
-define('PHPBB_VERSION', '3.3.0-a1-dev');
+define('PHPBB_VERSION', '4.0.0-a1-dev');
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 

@@ -32,8 +32,8 @@ Read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use V
 We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](https://bamboo.phpbb.com) or check our travis builds below:
 
 * [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=master)](http://travis-ci.org/phpbb/phpbb)[![Build status](https://ci.appveyor.com/api/projects/status/8g98ybngd2f3axy1/branch/master?svg=true)](https://ci.appveyor.com/project/phpBB/phpbb/branch/master) **master** - Latest development version
+* [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=3.3.x)](http://travis-ci.org/phpbb/phpbb)[![Build status](https://ci.appveyor.com/api/projects/status/8g98ybngd2f3axy1/branch/3.3.x?svg=true)](https://ci.appveyor.com/project/phpBB/phpbb/branch/3.3.x) **3.3.x** - Development of version 3.3.x
 * [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=3.2.x)](http://travis-ci.org/phpbb/phpbb)[![Build status](https://ci.appveyor.com/api/projects/status/8g98ybngd2f3axy1/branch/3.2.x?svg=true)](https://ci.appveyor.com/project/phpBB/phpbb/branch/3.2.x) **3.2.x** - Development of version 3.2.x
-* [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=3.1.x)](http://travis-ci.org/phpbb/phpbb) **3.1.x** - Development of version 3.1.x
 
 ## LICENSE
 

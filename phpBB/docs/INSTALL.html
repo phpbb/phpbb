@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="keywords" content="" />
-<meta name="description" content="phpBB 3.2.x Installation, updating and conversion informations" />
+<meta name="description" content="phpBB 3.3.x Installation, updating and conversion informations" />
 <title>phpBB &bull; Install</title>
 
 <link href="assets/css/stylesheet.css" rel="stylesheet" type="text/css" media="screen" />
@@ -21,8 +21,8 @@
 
 			<div id="doc-description">
 				<a href="../index.php" id="logo"><img src="assets/images/site_logo.gif" alt="" /></a>
-				<h1>phpBB 3.2.x Install</h1>
-				<p>phpBB 3.2.x Installation, updating and conversion informations</p>
+				<h1>phpBB 3.3.x Install</h1>
+				<p>phpBB 3.3.x Installation, updating and conversion informations</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
@@ -44,7 +44,7 @@
 	<p>
 		A basic overview of running phpBB can be found in the accompanying <a href="README.html">README</a> file.
 		Please ensure you read that document in addition to this! For more detailed information on using, installing,
-		updating and converting phpBB you should read <a href="https://www.phpbb.com/support/docs/en/3.2/ug/">the documentation</a>
+		updating and converting phpBB you should read <a href="https://www.phpbb.com/support/docs/en/3.3/ug/">the documentation</a>
 		available online.
 	</p>
 </div>
@@ -59,7 +59,7 @@
 	<li><a href="#quickinstall">Quick install</a></li>
 	<li><a href="#require">Requirements</a></li>
 	<li><a href="#install">New installation</a></li>
-	<li><a href="#update">Updating from stable releases of phpBB 3.2.x</a>
+	<li><a href="#update">Updating from stable releases of phpBB 3.3.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#update_full">Full package</a></li>
 		<li><a href="#update_files">Changed files</a></li>
@@ -68,8 +68,8 @@
 		<li><a href="#update_all">All package types</a></li>
 	</ol>
 	</li>
-	<li><a href="#update30_31">Updating from phpBB 3.0.x/3.1.x to phpBB 3.2.x</a></li>
-	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.2.x</a>
+	<li><a href="#update30_31">Updating from phpBB 3.0.x/3.1.x to phpBB 3.2.x or phpBB 3.3.x</a></li>
+	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.3.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#prereq">Requirements before converting</a></li>
 		<li><a href="#conversion">Converting</a></li>
@@ -139,7 +139,7 @@
 		<li>A webserver or web hosting account running on any major Operating System with support for PHP</li>
 		<li>A SQL database system, <strong>one of</strong>:
 		<ul>
-			<li>MySQL 3.23 or above (MySQLi supported)</li>
+			<li>MySQL 4.1.3 or above (MySQLi required)</li>
 			<li>MariaDB 5.1 or above</li>
 			<li>PostgreSQL 8.3+</li>
 			<li>SQLite 3.6.15+</li>
@@ -147,10 +147,11 @@
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP 7.1.0+</strong> but less than <strong>PHP 7.3</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 7.1.0+</strong> but less than <strong>PHP 7.4</strong> with support for the database you intend to use.</li>
 		<li>The following PHP modules are required:
 		<ul>
 			<li>json</li>
+			<li>XML support</li>
 		</ul>
 		</li>
 		<li>getimagesize() function must be enabled.</li>
@@ -158,13 +159,12 @@
 		<ul>
 			<li>zlib Compression support</li>
 			<li>Remote FTP support</li>
-			<li>XML support</li>
 			<li>GD Support</li>
 		</ul>
 		</li>
 	</ul>
 
-	<p>If your server or hosting account does not meet the requirements above then you will be unable to install phpBB 3.2.x.</p>
+	<p>If your server or hosting account does not meet the requirements above then you will be unable to install phpBB 3.3.x.</p>
 
 		</div>
 
@@ -255,7 +255,7 @@
 
 	<hr />
 
-	<a name="update"></a><h2>4. Updating from stable releases of phpBB 3.2.x</h2>
+	<a name="update"></a><h2>4. Updating from stable releases of phpBB 3.3.x</h2>
 
 	<div class="paragraph">
 		<div class="inner">
@@ -280,7 +280,7 @@
 
 	<p>This package is meant for those wanting to only replace the files that were changed between a previous version and the latest version.</p>
 
-	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <strong>3.2.0</strong> you should select the appropriate <code>phpBB-3.2.1-files.zip/tar.bz2</code> file.</p>
+	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <strong>3.3.0</strong> you should select the appropriate <code>phpBB-3.3.1-files.zip/tar.bz2</code> file.</p>
 
 	<p>The directory structure has been preserved, enabling you (if you wish) to simply upload the uncompressed contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any modifications (MODs) these files will overwrite the originals, possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
@@ -292,7 +292,7 @@
 
 	<p>The patch file is one solution for those with changes in to the phpBB core files and do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application, but still want to use this update approach, we strongly recommend the <a href="#update_auto">Automatic update package</a> explained below. It is also the recommended update method.</p>
 
-	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <strong>3.2.0</strong>, you need the <code>phpBB-3.2.1-patch.zip/tar.bz2</code> file. Place the correct patch in the parent directory containing the phpBB core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <code>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</code> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <strong>3.3.0</strong>, you need the <code>phpBB-3.3.1-patch.zip/tar.bz2</code> file. Place the correct patch in the parent directory containing the phpBB core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <code>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</code> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 	<p>If you do get failures, you should look at using the <a href="#update_files">Changed Files</a> package to replace the files which failed to patch. Please note that you will need to manually re-add any MODs to these particular files. Alternatively, if you know how, you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
@@ -302,7 +302,7 @@
 
 	<p>This update method is only recommended for installations with modifications to core phpBB files. This package detects changed files automatically and merges in changes if needed.</p>
 
-	<p>The automatic update package will update the board from a given version to the latest version. A number of automatic update files are available, and you should choose the one that corresponds to the version of the board that you are currently running. For example, if your current version is <strong>3.2.0</strong>, you need the <code>phpBB-3.2.0_to_3.2.1.zip/tar.bz2</code> file.</p>
+	<p>The automatic update package will update the board from a given version to the latest version. A number of automatic update files are available, and you should choose the one that corresponds to the version of the board that you are currently running. For example, if your current version is <strong>3.3.0</strong>, you need the <code>phpBB-3.3.0_to_3.3.1.zip/tar.bz2</code> file.</p>
 
 	<p>To perform the update, either follow the instructions from the <strong>Administration Control Panel-&gt;System</strong> Tab - this should point out that you are running an outdated version and will guide you through the update - or follow the instructions listed below.</p>
 
@@ -331,16 +331,16 @@
 
 	<hr />
 
-	<a name="update30_31"></a><h2>5. Updating from phpBB 3.0.x/3.1x to phpBB 3.2.x</h2>
+	<a name="update30_31"></a><h2>5. Updating from phpBB 3.0.x/3.1x to phpBB 3.2.x or phpBB 3.3.x</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
 
-			<p>Updating from phpBB 3.0.x or 3.1.x to 3.2.x is just the same as <a href="#update">updating from stable releases of phpBB 3.2.x</a></p>
+			<p>Updating from phpBB 3.0.x or 3.1.x to 3.2.x or 3.3.x is just the same as <a href="#update">updating from stable releases of phpBB 3.3.x</a></p>
 
-			<p>However you can also start with a new set of phpBB 3.2.x files.</p>
+			<p>However you can also start with a new set of phpBB 3.3.x files.</p>
 
 			<ol>
 				<li>Delete all files <strong>EXCEPT</strong> for the following:
@@ -353,7 +353,7 @@
 					<li>(The <code>ext/</code> directory</li>
 				</ul></li>
 
-				<li>Upload the contents of the 3.2.x Full Package into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
+				<li>Upload the contents of the 3.3.x Full Package into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
 				<li>Browse to <code>/install/app.php/update</code></li>
 				<li>Read the notice <em>Update database only</em> and press <strong>Submit</strong></li>
 				<li>Delete the <code>install/</code> directory</li>
@@ -367,7 +367,7 @@
 
 	<hr />
 
-	<a name="convert"></a><h2>6. Conversion from phpBB 2.0.x to phpBB 3.2.x</h2>
+	<a name="convert"></a><h2>6. Conversion from phpBB 2.0.x to phpBB 3.3.x</h2>
 
 	<div class="paragraph">
 		<div class="inner">

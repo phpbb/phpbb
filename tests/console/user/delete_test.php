@@ -45,7 +45,7 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 
 		$this->assertEquals(3, $this->get_user_id('Test'));
 
-		$this->question->setInputStream($this->getInputStream("yes\n"));
+		$command_tester->setInputs(['yes', '']);
 
 		$command_tester->execute(array(
 			'command'			=> $this->command_name,
@@ -63,7 +63,7 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 
 		$this->assertNull($this->get_user_id('Foo'));
 
-		$this->question->setInputStream($this->getInputStream("yes\n"));
+		$command_tester->setInputs(['yes', '']);
 
 		$command_tester->execute(array(
 			'command'			=> $this->command_name,
@@ -80,7 +80,7 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 
 		$this->assertEquals(3, $this->get_user_id('Test'));
 
-		$this->question->setInputStream($this->getInputStream("no\n"));
+		$command_tester->setInputs(['no', '']);
 
 		$command_tester->execute(array(
 			'command'			=> $this->command_name,
