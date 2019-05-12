@@ -126,7 +126,7 @@ class help_phpbb
 		 * Event to modify ACP help phpBB page and/or listen to submit
 		 *
 		 * @event core.acp_help_phpbb_submit_before
-		 * @var	boolean	submit			Do we display the form or process the submission
+		 * @var bool		submit		Do we display the form or process the submission
 		 * @since 3.2.0-RC2
 		 */
 		$vars = ['submit'];

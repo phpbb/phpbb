@@ -189,8 +189,8 @@ class post
 				 * This event allows you to handle custom post moderation options
 				 *
 				 * @event core.mcp_post_additional_options
-				 * @var	string	action		Post moderation action name
-				 * @var	array	post_info	Information on the affected post
+				 * @va string	action		Post moderation action name
+				 * @var array	post_info	Information on the affected post
 				 * @since 3.1.5-RC1
 				 */
 				$vars = ['action', 'post_info'];
@@ -349,10 +349,10 @@ class post
 		 * Event to add/modify MCP post template data
 		 *
 		 * @event core.mcp_post_template_data
-		 * @var	array	post_info					Array with the post information
-		 * @var	array	mcp_post_template_data		Array with the MCP post template data
-		 * @var	array	attachments					Array with the post attachments, if any
-		 * @var	bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
+		 * @var array	post_info					Array with the post information
+		 * @var array	mcp_post_template_data		Array with the MCP post template data
+		 * @var array	attachments					Array with the post attachments, if any
+		 * @var bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
 		 * @since 3.1.5-RC1
 		 */
 		$vars = [
@@ -723,8 +723,8 @@ class post
 		 * This event allows you to perform additional tasks after changing a post's poster
 		 *
 		 * @event core.mcp_change_poster_after
-		 * @var	array	userdata	Information on a post's new poster
-		 * @var	array	post_info	Information on the affected post
+		 * @var array	userdata	Information on a post's new poster
+		 * @var array	post_info	Information on the affected post
 		 * @since 3.1.6-RC1
 		 * @changed 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
 		 */

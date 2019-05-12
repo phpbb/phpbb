@@ -472,14 +472,14 @@ class profile
 				 * Event to add initialization for new profile field table fields
 				 *
 				 * @event core.acp_profile_create_edit_init
-				 * @var	string	action			create|edit
-				 * @var	int		step			Configuration step (1|2|3)
-				 * @var	bool	submit			Form has been submitted
-				 * @var	bool	save			Configuration should be saved
-				 * @var	string	field_type		Type of the field we are dealing with
-				 * @var	array	field_row		Array of data about the field
-				 * @var	array	exclude			Array of excluded fields by step
-				 * @var	array	visibility_ary	Array of fields that are visibility related
+				 * @var string	action			create|edit
+				 * @var int		step			Configuration step (1|2|3)
+				 * @var bool	submit			Form has been submitted
+				 * @var bool	save			Configuration should be saved
+				 * @var string	field_type		Type of the field we are dealing with
+				 * @var array	field_row		Array of data about the field
+				 * @var array	exclude			Array of excluded fields by step
+				 * @var array	visibility_ary	Array of fields that are visibility related
 				 * @since 3.1.6-RC1
 				 */
 				$vars = [
@@ -774,14 +774,14 @@ class profile
 				 * Event to add template variables for new profile field table fields
 				 *
 				 * @event core.acp_profile_create_edit_after
-				 * @var	string	action			create|edit
-				 * @var	int		step			Configuration step (1|2|3)
-				 * @var	bool	submit			Form has been submitted
-				 * @var	bool	save			Configuration should be saved
-				 * @var	string	field_type		Type of the field we are dealing with
-				 * @var	array	field_data		Array of data about the field
-				 * @var	array	s_hidden_fields	Array of hidden fields in case this needs modification		@todo This is a string?
-				 * @var	array	options			Array of options specific to this step
+				 * @var string	action			create|edit
+				 * @var int		step			Configuration step (1|2|3)
+				 * @var bool	submit			Form has been submitted
+				 * @var bool	save			Configuration should be saved
+				 * @var string	field_type		Type of the field we are dealing with
+				 * @var array	field_data		Array of data about the field
+				 * @var array	s_hidden_fields	Array of hidden fields in case this needs modification		@todo This is a string?
+				 * @var array	options			Array of options specific to this step
 				 * @since 3.1.6-RC1
 				 */
 				$vars = [
@@ -810,10 +810,10 @@ class profile
 		 * Event to handle actions on the ACP profile fields page
 		 *
 		 * @event core.acp_profile_action
-		 * @var	string	action		Action that is being performed
-		 * @var	string	tpl_name	Template file to load
-		 * @var	string	page_title	Page title
-		 * @var	string	u_action	The URL we are at, read only
+		 * @var string	action		Action that is being performed
+		 * @var string	tpl_name	Template file to load
+		 * @var string	page_title	Page title
+		 * @var string	u_action	The URL we are at, read only
 		 * @since 3.2.2-RC1
 		 */
 		$vars = [
@@ -872,9 +872,9 @@ class profile
 			 * Event to modify profile field data before it is assigned to the template
 			 *
 			 * @event core.acp_profile_modify_profile_row
-			 * @var	array	row				Array with data for the current profile field
-			 * @var	array	field_block		Template data that is being assigned to the 'fields' block
-			 * @var	object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
+			 * @var array	row				Array with data for the current profile field
+			 * @var array	field_block		Template data that is being assigned to the 'fields' block
+			 * @var object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
 			 * @since 3.2.2-RC1
 			 */
 			$vars = [
@@ -1061,10 +1061,10 @@ class profile
 		 * Event to modify profile field configuration data before saving to database
 		 *
 		 * @event core.acp_profile_create_edit_save_before
-		 * @var	string	action			create|edit
-		 * @var	string	field_type		Type of the field we are dealing with
-		 * @var	array	field_data		Array of data about the field
-		 * @var	array	profile_fields	Array of fields to be sent to the database
+		 * @var string	action			create|edit
+		 * @var string	field_type		Type of the field we are dealing with
+		 * @var array	field_data		Array of data about the field
+		 * @var array	profile_fields	Array of fields to be sent to the database
 		 * @since 3.1.6-RC1
 		 */
 		$vars = [
@@ -1280,8 +1280,8 @@ class profile
 					$this->update_insert($this->tables['profile_fields_lang'], $sql, [
 						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
-						'option_id'	=> $option_id]
-					);
+						'option_id'	=> $option_id,
+					]);
 				}
 			}
 		}

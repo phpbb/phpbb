@@ -561,9 +561,9 @@ class board
 		 * Event to add and/or modify acp_board configurations
 		 *
 		 * @event core.acp_board_config_edit_add
-		 * @var	array	display_vars	Array of config values to display and process
-		 * @var	string	mode			Mode of the config page we are displaying
-		 * @var	boolean	submit			Do we display the form or process the submission
+		 * @var array	display_vars	Array of config values to display and process
+		 * @var string	mode			Mode of the config page we are displaying
+		 * @var bool	submit			Do we display the form or process the submission
 		 * @since 3.1.0-a4
 		 */
 		$vars = ['display_vars', 'mode', 'submit'];

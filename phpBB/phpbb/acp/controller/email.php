@@ -200,7 +200,7 @@ class email
 				 * Modify sql query to change the list of users the email is sent to
 				 *
 				 * @event core.acp_email_modify_sql
-				 * @var	array	sql_ary		Array which is used to build the sql query
+				 * @var array	sql_ary		Array which is used to build the sql query
 				 * @since 3.1.2-RC1
 				 */
 				$vars = ['sql_ary'];
@@ -283,14 +283,14 @@ class email
 				 * Modify email template data before the emails are sent
 				 *
 				 * @event core.acp_email_send_before
-				 * @var	string	email_template		The template to be used for sending the email
-				 * @var	string	subject				The subject of the email
-				 * @var	array	template_data		Array with template data assigned to email template
-				 * @var	bool	generate_log_entry	If false, no log entry will be created
-				 * @var	array	usernames			Usernames which will be displayed in log entry, if it will be created
-				 * @var	int		group_id			The group this email will be sent to
-				 * @var	bool	use_queue			If true, email queue will be used for sending
-				 * @var	int		priority			Priority of sent emails
+				 * @var string	email_template		The template to be used for sending the email
+				 * @var string	subject				The subject of the email
+				 * @var array	template_data		Array with template data assigned to email template
+				 * @var bool	generate_log_entry	If false, no log entry will be created
+				 * @var array	usernames			Usernames which will be displayed in log entry, if it will be created
+				 * @var int		group_id			The group this email will be sent to
+				 * @var bool	use_queue			If true, email queue will be used for sending
+				 * @var int		priority			Priority of sent emails
 				 * @since 3.1.3-RC1
 				 */
 				$vars = [
@@ -400,10 +400,9 @@ class email
 		 * Modify custom email template data before we display the form
 		 *
 		 * @event core.acp_email_display
-		 * @var	array	template_data		Array with template data assigned to email template
-		 * @var	array	exclude				Array with groups which are excluded from group selection
-		 * @var	array	usernames			Usernames which will be displayed in form
-		 *
+		 * @var array	template_data		Array with template data assigned to email template
+		 * @var array	exclude				Array with groups which are excluded from group selection
+		 * @var array	usernames			Usernames which will be displayed in form
 		 * @since 3.1.4-RC1
 		 */
 		$vars = ['template_data', 'exclude', 'usernames'];

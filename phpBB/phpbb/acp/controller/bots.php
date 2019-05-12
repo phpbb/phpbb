@@ -325,11 +325,11 @@ class bots
 							$this->db->sql_query($sql);
 
 							$sql = 'UPDATE ' . $this->tables['bots'] . ' SET ' . $this->db->sql_build_array('UPDATE', [
-									'bot_name'		=> (string) $bot_row['bot_name'],
-									'bot_active'	=> (int) $bot_row['bot_active'],
-									'bot_agent'		=> (string) $bot_row['bot_agent'],
-									'bot_ip'		=> (string) $bot_row['bot_ip']]
-								) . ' WHERE bot_id = ' . (int) $bot_id;
+								'bot_name'		=> (string) $bot_row['bot_name'],
+								'bot_active'	=> (int) $bot_row['bot_active'],
+								'bot_agent'		=> (string) $bot_row['bot_agent'],
+								'bot_ip'		=> (string) $bot_row['bot_ip'],
+							]) . ' WHERE bot_id = ' . (int) $bot_id;
 							$this->db->sql_query($sql);
 
 							// Updated username?
