@@ -219,7 +219,7 @@ class auth_admin extends \phpbb\auth\auth
 			{
 				if ($this->user->data['user_id'] != $userdata['user_id'])
 				{
-					$auth2 = $this->auth;
+					$auth2 = new \phpbb\auth\auth();
 					$auth2->acl($userdata);
 				}
 				else

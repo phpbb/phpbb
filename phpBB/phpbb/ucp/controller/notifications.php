@@ -221,7 +221,7 @@ class notifications
 	 * @param string	$block
 	 * @return void
 	 */
-	public function output_notification_types($subscriptions, $block = 'notification_types')
+	public function output_notification_types(array $subscriptions, $block = 'notification_types')
 	{
 		$notification_methods = $this->notification_manager->get_subscription_methods();
 

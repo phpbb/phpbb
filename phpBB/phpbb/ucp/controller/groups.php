@@ -248,7 +248,7 @@ class groups
 								]);
 
 								meta_refresh(3, $this->u_action);
-								trigger_error($this->lang->lang[($row['user_pending']) ? 'GROUP_RESIGNED_PENDING' : 'GROUP_RESIGNED_MEMBERSHIP'] . $return_page);
+								trigger_error($this->lang->lang($row['user_pending'] ? 'GROUP_RESIGNED_PENDING' : 'GROUP_RESIGNED_MEMBERSHIP') . $return_page);
 							}
 							else
 							{
@@ -306,7 +306,7 @@ class groups
 								]);
 
 								meta_refresh(3, $this->u_action);
-								trigger_error($this->lang->lang[($group_row[$group_id]['group_type'] == GROUP_FREE) ? 'GROUP_JOINED' : 'GROUP_JOINED_PENDING'] . $return_page);
+								trigger_error($this->lang->lang($group_row[$group_id]['group_type'] == GROUP_FREE ? 'GROUP_JOINED' : 'GROUP_JOINED_PENDING') . $return_page);
 							}
 							else
 							{
@@ -401,7 +401,7 @@ class groups
 						'GROUP_NAME'		=> $this->group_helper->get_name($row['group_name']),
 						'GROUP_DESC'		=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $this->lang->lang('GROUP_IS_SPECIAL'),
 						'GROUP_SPECIAL'		=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
-						'GROUP_STATUS'		=> $this->lang->lang['GROUP_IS_' . $group_status],
+						'GROUP_STATUS'		=> $this->lang->lang('GROUP_IS_' . $group_status),
 						'GROUP_COLOUR'		=> $row['group_colour'],
 
 						'S_GROUP_DEFAULT'	=> (bool) $row['group_id'] == $this->user->data['group_id'],
@@ -456,10 +456,9 @@ class groups
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $this->lang->lang('GROUP_IS_SPECIAL'),
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
 						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || $this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
-						'GROUP_STATUS'	=> $this->lang->lang['GROUP_IS_' . $group_status],
+						'GROUP_STATUS'	=> $this->lang->lang('GROUP_IS_' . $group_status),
 						'S_CAN_JOIN'	=> (bool) ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE),
 						'GROUP_COLOUR'	=> $row['group_colour'],
-
 
 						'S_ROW_COUNT'	=> $nonmember_count++,
 
@@ -926,7 +925,7 @@ class groups
 
 						foreach ($options as $option => $lang)
 						{
-							$s_action_options .= '<option value="' . $option . '">' . $this->lang->lang['GROUP_' . $lang] . '</option>';
+							$s_action_options .= '<option value="' . $option . '">' . $this->lang->lang('GROUP_' . $lang) . '</option>';
 						}
 
 						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
@@ -1177,8 +1176,8 @@ class groups
 								'GROUP_COLOUR'	=> $value['group_colour'],
 
 								'U_LIST'		=> $this->u_action . "&amp;action=list&amp;g={$value['group_id']}",
-								'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}"]
-							);
+								'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}",
+							]);
 						}
 						$this->db->sql_freeresult($result);
 					break;

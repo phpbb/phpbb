@@ -231,8 +231,8 @@ class activate
 		* This event can be used to modify data after user account's activation
 		*
 		* @event core.ucp_activate_after
-		* @var	array	user_row	Array with some user data
-		* @var	string	message		Language string of the message that will be displayed to the user
+		* @var array	user_row	Array with some user data
+		* @var string	message		Language string of the message that will be displayed to the user
 		* @since 3.1.6-RC1
 		*/
 		$vars = ['user_row', 'message'];

@@ -172,12 +172,12 @@ class extensions
 		 * Event to run a specific action on extension
 		 *
 		 * @event core.acp_extensions_run_action_before
-		 * @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
-		 * @var	string	u_action		Url we are at
-		 * @var	string	ext_name		Extension name from request
-		 * @var	int		safe_time_limit	Safe limit of execution time
-		 * @var	int		start_time		Start time
-		 * @var	string	tpl_name		Template file to load
+		 * @var string	action			Action to run; if the event completes execution of the action, should be set to 'none'
+		 * @var string	u_action		Url we are at
+		 * @var string	ext_name		Extension name from request
+		 * @var int		safe_time_limit	Safe limit of execution time
+		 * @var int		start_time		Start time
+		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 * @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
 		 */
@@ -526,12 +526,12 @@ class extensions
 		 * Event to run after a specific action on extension has completed
 		 *
 		 * @event core.acp_extensions_run_action_after
-		 * @var	string	action			Action that has run
-		 * @var	string	u_action		Url we are at
-		 * @var	string	ext_name		Extension name from request
-		 * @var	int		safe_time_limit	Safe limit of execution time
-		 * @var	int		start_time		Start time
-		 * @var	string	tpl_name		Template file to load
+		 * @var string	action			Action that has run
+		 * @var string	u_action		Url we are at
+		 * @var string	ext_name		Extension name from request
+		 * @var int		safe_time_limit	Safe limit of execution time
+		 * @var int		start_time		Start time
+		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 */
 		$vars = ['action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name'];
