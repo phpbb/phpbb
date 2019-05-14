@@ -1,0 +1,6 @@
+services:
+    cp.manager:
+        class: \phpbb\cp\manager
+        arguments:
+            - '@acp_collection'
+            - '@acp.constructor'

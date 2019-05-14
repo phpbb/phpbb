@@ -26,3 +26,7 @@ phpbb_help_routing:
 
 phpbb_report_routing:
     resource: report.yml
+
+phpbb_cp_routing:
+    resource: .
+    type: phpbb_cp_route

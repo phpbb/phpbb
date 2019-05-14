@@ -45,6 +45,13 @@ services:
         tags:
             - { name: service_collection, tag: routing.loader }
 
+    routing.loader.cp:
+        class: \phpbb\routing\loader\cp
+        arguments:
+            - '@cp.manager'
+        tags:
+            - { name: routing.loader }
+
     routing.loader.yaml:
         class: Symfony\Component\Routing\Loader\YamlFileLoader
         arguments:
