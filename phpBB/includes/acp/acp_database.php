@@ -314,7 +314,7 @@ class acp_database
 								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
 							}
 
-							switch ($backup_info['extensions'])
+							switch ($backup_info['extension'])
 							{
 								case 'sql':
 									$fp = fopen($temp_file_name, 'rb');
