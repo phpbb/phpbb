@@ -150,7 +150,7 @@ class main
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		// Show restore permissions notice
 		if ($this->user->data['user_perm_from'] && $this->auth->acl_get('a_switchperm'))
@@ -225,8 +225,6 @@ class main
 				if ($confirm)
 				{
 					confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> $action,
 					]));
 				}
