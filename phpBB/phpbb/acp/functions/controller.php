@@ -39,6 +39,9 @@ class controller
 	/** @var string phpBB root path */
 	protected $root_path;
 
+	/** @var string phpBB web root path */
+	protected $web_path;
+
 	/** @var string php File extension */
 	protected $php_ext;
 
@@ -51,6 +54,7 @@ class controller
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\path_helper				$path_helper	Path helper object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
 	 * @param \phpbb\user						$user			User object
@@ -65,6 +69,7 @@ class controller
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\language\language $lang,
+		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
@@ -85,6 +90,7 @@ class controller
 
 		$this->admin_path	= $admin_path;
 		$this->root_path	= $root_path;
+		$this->web_path		= $path_helper->update_web_root_path($root_path);
 		$this->php_ext		= $php_ext;
 	}
 
@@ -141,7 +147,7 @@ class controller
 			'USERNAME'					=> $this->user->data['username'],
 
 			'ADMIN_ROOT_PATH'			=> $this->admin_path,
-			'ROOT_PATH'					=> $this->root_path,
+			'ROOT_PATH'					=> $this->web_path,
 			'SESSION_ID'				=> $this->user->session_id,
 			'PHPBB_MAJOR'				=> $phpbb_major,
 			'PHPBB_VERSION'				=> PHPBB_VERSION,
@@ -164,17 +170,18 @@ class controller
 			'S_CONTENT_FLOW_END'		=> $this->lang->lang('DIRECTION') === 'ltr' ? 'right' : 'left',
 
 			'T_ASSETS_VERSION'			=> $this->config['assets_version'],
-			'T_IMAGES_PATH'				=> "{$this->root_path}images/",
-			'T_AVATAR_GALLERY_PATH'		=> "{$this->root_path}{$this->config['avatar_gallery_path']}/",
-			'T_ICONS_PATH'				=> "{$this->root_path}{$this->config['icons_path']}/",
-			'T_RANKS_PATH'				=> "{$this->root_path}{$this->config['ranks_path']}/",
-			'T_SMILIES_PATH'			=> "{$this->root_path}{$this->config['smilies_path']}/",
-			'T_FONT_AWESOME_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->root_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
 
-			'U_LOGOUT'					=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=logout'),
+			'T_IMAGES_PATH'				=> "{$this->web_path}images/",
+			'T_AVATAR_GALLERY_PATH'		=> "{$this->web_path}{$this->config['avatar_gallery_path']}/",
+			'T_ICONS_PATH'				=> "{$this->web_path}{$this->config['icons_path']}/",
+			'T_RANKS_PATH'				=> "{$this->web_path}{$this->config['ranks_path']}/",
+			'T_SMILIES_PATH'			=> "{$this->web_path}{$this->config['smilies_path']}/",
+			'T_FONT_AWESOME_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->web_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
+
+			'U_LOGOUT'					=> append_sid("{$this->web_path}ucp.$this->php_ext", 'mode=logout'),
 			'U_ADM_LOGOUT'				=> append_sid("{$this->admin_path}index.$this->php_ext", 'action=admlogout'),
 			'U_ADM_INDEX'				=> append_sid("{$this->admin_path}index.$this->php_ext"),
-			'U_INDEX'					=> append_sid("{$this->root_path}index.$this->php_ext"),
+			'U_INDEX'					=> append_sid("{$this->web_path}index.$this->php_ext"),
 
 			'CONTAINER_EXCEPTION'		=> $this->container->hasParameter('container_exception') ? $this->container->getParameter('container_exception') : false,
 		]);
@@ -241,7 +248,7 @@ class controller
 			'TRANSLATION_INFO'	=> $this->lang->lang('TRANSLATION_INFO'),
 			'VERSION'			=> $this->config['version'],
 
-			'T_JQUERY_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_jquery_url']) ? $this->config['load_jquery_url'] : "{$this->root_path}assets/javascript/jquery.min.js",
+			'T_JQUERY_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_jquery_url']) ? $this->config['load_jquery_url'] : "{$this->web_path}assets/javascript/jquery.min.js",
 
 			'S_ALLOW_CDN'		=> !empty($this->config['allow_cdn']),
 			'S_COPYRIGHT_HTML'	=> $copyright_html,
@@ -264,4 +271,3 @@ class controller
 		return '<br /><br /><a href="' . $link . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>';
 	}
 }
-
