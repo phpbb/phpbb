@@ -16,6 +16,29 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
+    acp.controller.helper:
+        class: \phpbb\acp\helper\controller
+        parent: controller.helper
+        calls:
+            - ['set_functions', ['@acp.functions.controller']]
+
+# --- Functions --- #
+    acp.functions.controller:
+        class: \phpbb\acp\functions\controller
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@service_container'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
 # --- Controllers --- #
     acp.attachments:
         class: \phpbb\acp\controller\attachment
@@ -321,6 +344,7 @@ services:
             - '@dbal.conn'
             - '@dispatcher'
             - '@filesystem'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
