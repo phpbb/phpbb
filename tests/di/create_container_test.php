@@ -77,6 +77,18 @@ namespace
 			$this->assertTrue($container->isFrozen());
 		}
 
+		public function test_tables_mapping()
+		{
+			$this->builder->without_cache();
+			$container = $this->builder->get_container();
+			$this->assertTrue($container->hasParameter('tables'));
+			$tables = $container->getParameter('tables');
+			$this->assertGreaterThan(0, count($tables));
+			$this->assertTrue($container->hasParameter('tables.foo_bar'));
+			$this->assertTrue(isset($tables['foo_bar']));
+			$this->assertEquals($tables['acl_groups'], 'phpbb_some_other');
+		}
+
 		public function test_without_cache()
 		{
 			$this->builder->without_cache();

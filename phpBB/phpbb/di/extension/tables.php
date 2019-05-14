@@ -22,26 +22,27 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class tables extends Extension
 {
 	/**
-	 * Loads a specific configuration.
-	 *
-	 * @param array            $configs   An array of configuration values
-	 * @param ContainerBuilder $container A ContainerBuilder instance
-	 *
-	 * @throws \InvalidArgumentException When provided tag is not defined in this extension
+	 * {@inheritDoc}
 	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
-		if (!$container->hasParameter('tables'))
+		// Tables is a reserved parameter and will be overwritten at all times
+		$tables = [];
+
+		// Add access via 'tables' parameter to acquire array with all tables
+		$parameterBag = $container->getParameterBag();
+		$parameters = $parameterBag->all();
+		foreach ($parameters as $parameter_name => $parameter_value)
 		{
-			return;
+			if (!preg_match('/tables\.(.+)/', $parameter_name, $matches))
+			{
+				continue;
+			}
+
+			$tables[$matches[1]] = $parameter_value;
 		}
 
-		$tables = $container->getParameter('tables');
-
-		foreach ($tables as $table_name => $table_value)
-		{
-			$container->setParameter('tables.' . $table_name, $table_value);
-		}
+		$container->setParameter('tables', $tables);
 	}
 
 	/**
