@@ -1,0 +1,53 @@
+<?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\event;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+class kernel_request_subscriber implements EventSubscriberInterface
+{
+	protected $cp_manager;
+
+	public function __construct(\phpbb\cp\manager $cp_manager)
+	{
+		$this->cp_manager	= $cp_manager;
+	}
+
+	public function on_kernel_request(GetResponseEvent $event)
+	{
+		$route = $event->getRequest()->attributes->get('_route');
+
+		$route = str_replace($this->cp_manager->get_route_pagination(), '', $route);
+
+		/** @var \phpbb\di\service_collection $services */
+		foreach ($this->cp_manager->get_collections() as $cp => $services)
+		{
+			if ($services->offsetExists($route))
+			{
+				$this->cp_manager->setup_cp($cp, $route);
+
+				continue;
+			}
+		}
+	}
+
+	static public function getSubscribedEvents()
+	{
+		return [
+			KernelEvents::REQUEST	=> 'on_kernel_request',
+		];
+	}
+}

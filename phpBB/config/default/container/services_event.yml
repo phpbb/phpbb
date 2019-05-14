@@ -13,6 +13,13 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    kernel_request_subscriber:
+        class: phpbb\event\kernel_request_subscriber
+        arguments:
+            - '@cp.manager'
+        tags:
+            - { name: kernel.event_subscriber }
+
     kernel_terminate_subscriber:
         class: phpbb\event\kernel_terminate_subscriber
         tags:

@@ -22,6 +22,18 @@ services:
         calls:
             - ['set_functions', ['@acp.functions.controller']]
 
+    acp.constructor:
+        class: \phpbb\acp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@language'
+            - '@path_helper'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
 # --- Functions --- #
     acp.functions.controller:
         class: \phpbb\acp\functions\controller
