@@ -216,7 +216,7 @@ class acp_database
 						}
 						else if (confirm_box(true))
 						{
-							switch ($backup_info['extensions'])
+							switch ($backup_info['extension'])
 							{
 								case 'sql':
 									$fp = fopen($backup_info['file_name'], 'rb');
