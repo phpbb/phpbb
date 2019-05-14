@@ -35,6 +35,9 @@ class main
 	/** @var \phpbb\filesystem\filesystem */
 	protected $filesystem;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -75,8 +78,6 @@ class main
 	protected $tables;
 
 	/** @todo */
-	public $page_title;
-	public $tpl_name;
 	public $u_action;
 
 	/**
@@ -88,6 +89,7 @@ class main
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\filesystem\filesystem			$filesystem			Filesystem object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\request\request				$request			Request object
@@ -109,6 +111,7 @@ class main
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\filesystem\filesystem $filesystem,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -124,20 +127,21 @@ class main
 		$tables
 	)
 	{
-		$this->auth				= $auth;
-		$this->cache			= $cache;
-		$this->config			= $config;
-		$this->db				= $db;
-		$this->dispatcher		= $dispatcher;
-		$this->filesystem		= $filesystem;
-		$this->lang				= $lang;
-		$this->log				= $log;
-		$this->request			= $request;
-		$this->storage_avatar	= $storage_avatar;
-		$this->template			= $template;
-		$this->tf_cache			= $tf_cache;
-		$this->user				= $user;
-		$this->version_helper	= $version_helper;
+		$this->auth					= $auth;
+		$this->cache				= $cache;
+		$this->config				= $config;
+		$this->db					= $db;
+		$this->dispatcher			= $dispatcher;
+		$this->filesystem			= $filesystem;
+		$this->helper				= $helper;
+		$this->lang					= $lang;
+		$this->log					= $log;
+		$this->request				= $request;
+		$this->storage_avatar		= $storage_avatar;
+		$this->template				= $template;
+		$this->tf_cache				= $tf_cache;
+		$this->user					= $user;
+		$this->version_helper		= $version_helper;
 
 		$this->allow_install_dir	= $allow_install_dir;
 		$this->admin_path			= $admin_path;
@@ -151,9 +155,6 @@ class main
 		// Show restore permissions notice
 		if ($this->user->data['user_perm_from'] && $this->auth->acl_get('a_switchperm'))
 		{
-			$this->tpl_name = 'acp_main';
-			$this->page_title = 'ACP_MAIN';
-
 			$sql = 'SELECT user_id, username, user_colour
 				FROM ' . $this->tables['users'] . '
 				WHERE user_id = ' . $this->user->data['user_perm_from'];
@@ -170,7 +171,7 @@ class main
 				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
 			]);
 
-			return;
+			return $this->helper->render('acp_main.html', $this->lang->lang('ACP_MAIN'));
 		}
 
 		$action = $this->request->variable('action', '');
@@ -800,7 +801,6 @@ class main
 			$this->config->set('dbms_version', $this->db->sql_server_info(true));
 		}
 
-		$this->tpl_name = 'acp_main';
-		$this->page_title = 'ACP_MAIN';
+		return $this->helper->render('acp_main.html', $this->lang->lang('ACP_MAIN'));
 	}
 }
