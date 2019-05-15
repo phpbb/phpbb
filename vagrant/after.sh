@@ -18,6 +18,9 @@ fi
 # Install phpBB
 php ${PHPBB_PATH}/phpBB/install/phpbbcli.php install ${PHPBB_INSTALL}
 
+# Enable mod rewrite
+php ${PHPBB_PATH}/phpBB/bin/phpbbcli.php  config:set enable_mod_rewrite 1
+
 # Add DEBUG mode to phpBB to remove annoying installer warnings
 echo "@define('DEBUG', true);" >> ${PHPBB_CONFIG}
 
