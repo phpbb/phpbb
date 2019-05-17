@@ -18,9 +18,6 @@ fi
 # Install phpBB
 php ${PHPBB_PATH}/phpBB/install/phpbbcli.php install ${PHPBB_INSTALL}
 
-# Enable mod rewrite
-php ${PHPBB_PATH}/phpBB/bin/phpbbcli.php  config:set enable_mod_rewrite 1
-
 # Add DEBUG mode to phpBB to remove annoying installer warnings
 echo "@define('DEBUG', true);" >> ${PHPBB_CONFIG}
 
@@ -29,5 +26,11 @@ sed -i '/^.*PHPBB_ENVIRONMENT.*$/s/production/development/' ${PHPBB_CONFIG}
 
 # Update the PHP memory limits (enough to allow phpunit tests to run)
 sed -i "s/memory_limit = .*/memory_limit = 1024M/" /etc/php/7.2/fpm/php.ini
+
+# Fix for urls with app.php
+sed -i "s/cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/" /etc/php/7.2/fpm/php.ini
+
+# Restart php-fpm to apply php.ini changes
+systemctl restart php7.2-fpm.service
 
 echo "Your board is ready at http://192.168.10.10/"
