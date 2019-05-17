@@ -342,7 +342,7 @@
                 "oauth",
                 "security"
             ],
-            "time": "2016-07-12T22:15:00+00:00"
+            "time": "2018-02-14T22:37:14+00:00"
         },
         {
             "name": "marc1706/fast-image-size",
@@ -505,7 +505,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2017-03-13T16:22:52+00:00"
+            "time": "2018-04-04T21:48:54+00:00"
         },
         {
             "name": "patchwork/utf8",
@@ -661,16 +661,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "1.4.2",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "dc7efff70b67b9cee00881ad3bef0a1da076b31e"
+                "reference": "504d538593350150e50c9de0a48418bb0a48e540"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/dc7efff70b67b9cee00881ad3bef0a1da076b31e",
-                "reference": "dc7efff70b67b9cee00881ad3bef0a1da076b31e",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/504d538593350150e50c9de0a48418bb0a48e540",
+                "reference": "504d538593350150e50c9de0a48418bb0a48e540",
                 "shasum": ""
             },
             "require": {
@@ -682,6 +682,7 @@
             "require-dev": {
                 "matthiasmullie/minify": "*",
                 "php-coveralls/php-coveralls": "*",
+                "phpunit/phpunit": "<6",
                 "s9e/regexp-builder": "1.*"
             },
             "suggest": {
@@ -722,7 +723,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2019-03-27T14:19:41+00:00"
+            "time": "2019-05-15T00:08:12+00:00"
         },
         {
             "name": "symfony/config",
@@ -2293,7 +2294,8 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net"
+                    "email": "mrook@php.net",
+                    "role": "Lead"
                 },
                 {
                     "name": "Phing Community",
