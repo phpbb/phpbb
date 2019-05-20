@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
+
 class storage
 {
 	/** @var \phpbb\config\config $config */
@@ -20,6 +22,9 @@ class storage
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language $lang */
 	protected $lang;
@@ -39,16 +44,12 @@ class storage
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config			$config					Config object
 	 * @param \phpbb\event\dispatcher		$dispatcher				Event dispatcher object
+	 * @param \phpbb\acp\helper\controller	$helper					ACP Controller helper object
 	 * @param \phpbb\language\language		$lang					Language object
 	 * @param \phpbb\di\service_collection	$provider_collection	Provider collection object
 	 * @param \phpbb\request\request		$request				Request object
@@ -59,6 +60,7 @@ class storage
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\di\service_collection $provider_collection,
 		\phpbb\request\request $request,
@@ -69,6 +71,7 @@ class storage
 	{
 		$this->config				= $config;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->provider_collection	= $provider_collection;
 		$this->request				= $request;
@@ -77,7 +80,7 @@ class storage
 		$this->user					= $user;
 	}
 
-	public function main($id, $mode)
+	public function main()
 	{
 		// Add necessary language files
 		$this->lang->add_lang(['acp/storage']);
@@ -90,19 +93,8 @@ class storage
 		 */
 		$this->dispatcher->dispatch('core.acp_storage_load');
 
-		$this->overview($id, $mode);
-	}
-
-	public function overview($id, $mode)
-	{
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
-
-		// Template from adm/style
-		$this->tpl_name = 'acp_storage';
-
-		// Set page title
-		$this->page_title = 'STORAGE_TITLE';
 
 		if ($this->request->is_set_post('submit'))
 		{
@@ -158,16 +150,16 @@ class storage
 						$this->update_storage_config($storage_name);
 					}
 
-					trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action), E_USER_NOTICE);
+					return $this->helper->message($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . $this->helper->adm_back_link('acp_settings_storage'));
 				}
 				else
 				{
-					trigger_error(implode('<br />', $errors) . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new http_exception(400, implode('<br />', $errors));
 				}
 			}
 
 			// If there is no changes
-			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new http_exception(400, $this->lang->lang('STORAGE_NO_CHANGES'));
 		}
 
 		$storage_stats = [];
@@ -183,18 +175,20 @@ class storage
 			}
 
 			$storage_stats[] = [
-				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
-				'files' => $storage->get_num_files(),
-				'size' => get_formatted_filesize($storage->get_size()),
-				'free_space' => $free_space,
+				'files'			=> $storage->get_num_files(),
+				'free_space'	=> $free_space,
+				'name'			=> $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
+				'size'			=> get_formatted_filesize($storage->get_size()),
 			];
 		}
 
 		$this->template->assign_vars([
-			'STORAGES' => $this->storage_collection,
-			'STORAGE_STATS' => $storage_stats,
-			'PROVIDERS' => $this->provider_collection,
+			'PROVIDERS'		=> $this->provider_collection,
+			'STORAGES'		=> $this->storage_collection,
+			'STORAGE_STATS'	=> $storage_stats,
 		]);
+
+		return $this->helper->render('acp_storage.html', $this->lang->lang('ACP_SETTINGS_STORAGE'));
 	}
 
 	/**

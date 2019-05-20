@@ -32,6 +32,7 @@ services:
             - '@cp.menu'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@path_helper'
             - '@request'
@@ -43,22 +44,24 @@ services:
 
 # --- Controllers --- #
     acp.attachments:
-        class: \phpbb\acp\controller\attachment
+        class: \phpbb\acp\controller\attachments
         arguments:
             - '@attachment.manager'
             - '@auth'
-            - '@cache'
             - '@cache.driver'
+            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
             - '@filesystem'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
             - '@request'
             - '@template'
             - '@user'
+            - '%core.adm_relative_path%'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables%'
@@ -99,6 +102,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -129,6 +133,7 @@ services:
         arguments:
             - '@config'
             - '@captcha.factory'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -140,7 +145,7 @@ services:
         arguments:
             - '@config'
             - '@config_text'
-            - '@controller.helper'
+            - '@acp.controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -301,6 +306,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -474,6 +480,7 @@ services:
             - '@dbal.conn'
             - '@dispatcher'
             - '@ext.manager'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -489,6 +496,7 @@ services:
         arguments:
             - '@config'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@storage.provider_collection'
             - '@request'

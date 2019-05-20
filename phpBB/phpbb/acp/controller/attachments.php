@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+
+use phpbb\exception\http_exception;
+
 class attachments
 {
 	/** @var \phpbb\attachment\manager */
@@ -38,6 +41,9 @@ class attachments
 
 	/** @var \phpbb\filesystem\filesystem */
 	protected $filesystem;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -72,11 +78,6 @@ class attachments
 	/** @var array */
 	protected $new_config;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -88,6 +89,7 @@ class attachments
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\filesystem\filesystem			$filesystem			Filesystem object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\pagination						$pagination			Pagination object
@@ -108,6 +110,7 @@ class attachments
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\filesystem\filesystem $filesystem,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -128,6 +131,7 @@ class attachments
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
 		$this->filesystem			= $filesystem;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->pagination			= $pagination;
@@ -141,7 +145,7 @@ class attachments
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode, $page = 1)
 	{
 		$this->lang->add_lang(['posting', 'viewtopic', 'acp/attachments']);
 
@@ -154,13 +158,13 @@ class attachments
 
 		if ($submit && !check_form_key($form_key))
 		{
-			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
 		}
 
 		switch ($mode)
 		{
 			case 'attach':
-				$l_title = 'ACP_ATTACHMENT_SETTINGS';
+				$l_title = 'ACP_SETTINGS_ATTACHMENT';
 			break;
 
 			case 'extensions':
@@ -180,14 +184,15 @@ class attachments
 			break;
 
 			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
+				throw new http_exception(400, $this->lang->lang('NO_MODE'));
 			break;
 		}
 
 		$this->template->assign_vars([
 			'L_TITLE'			=> $this->lang->lang($l_title),
 			'L_TITLE_EXPLAIN'	=> $this->lang->lang($l_title . '_EXPLAIN'),
-			'U_ACTION'			=> $this->u_action,
+
+			'U_ACTION'			=> $this->helper->get_current_url(),
 		]);
 
 		switch ($mode)
@@ -293,7 +298,10 @@ class attachments
 					}
 				}
 
-				$this->perform_site_list();
+				if ($this->request->is_set_post('securesubmit') || $this->request->is_set_post('unsecuresubmit'))
+				{
+					return $this->perform_site_list();
+				}
 
 				if ($submit)
 				{
@@ -301,7 +309,7 @@ class attachments
 
 					if (empty($error))
 					{
-						trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+						return $this->helper->message($this->lang->lang('CONFIG_UPDATED') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
 					}
 				}
 
@@ -538,14 +546,14 @@ class attachments
 					$action = $this->request->variable('action', '');
 					$group_id = $this->request->variable('g', 0);
 
-					if ($action != 'add' && $action != 'edit')
+					if ($action !== 'add' && $action !== 'edit')
 					{
-						trigger_error('NO_MODE', E_USER_ERROR);
+						throw new http_exception(400, $this->lang->lang('NO_MODE'));
 					}
 
 					if (!$group_id && $action === 'edit')
 					{
-						trigger_error($this->lang->lang('NO_EXT_GROUP_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new http_exception(400, $this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
 					}
 
 					if ($group_id)
@@ -557,9 +565,9 @@ class attachments
 						$ext_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
 
-						if (!$ext_row)
+						if ($ext_row === false)
 						{
-							trigger_error($this->lang->lang('NO_EXT_GROUP_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception($this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
 						}
 					}
 					else
@@ -702,12 +710,11 @@ class attachments
 
 							$this->cache_driver->destroy('_extensions');
 
-							trigger_error($this->lang->lang('EXTENSION_GROUP_DELETED') . adm_back_link($this->u_action));
+							return $this->helper->message($this->lang->lang('EXTENSION_GROUP_DELETED') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
 						}
 						else
 						{
 							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-								'i'			=> $id,
 								'mode'		=> $mode,
 								'group_id'	=> $group_id,
 								'action'	=> 'delete',
@@ -719,7 +726,7 @@ class attachments
 					case 'edit':
 						if (!$group_id)
 						{
-							trigger_error($this->lang->lang('NO_EXT_GROUP_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(400, $this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
 						}
 
 						$sql = 'SELECT *
@@ -835,8 +842,8 @@ class attachments
 							'S_NO_IMAGE'				=> $no_image_select,
 							'S_FORUM_IDS'				=> !empty($forum_ids),
 
-							'U_EXTENSIONS'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;mode=extensions"),
-							'U_BACK'			=> $this->u_action,
+							'U_EXTENSIONS'		=> $this->helper->route('acp_attachments_extensions'),
+							'U_BACK'			=> $this->helper->route('acp_attachments_ext_groups'),
 
 							'L_LEGEND'			=> $this->lang->lang(strtoupper($action) . '_EXTENSION_GROUP'),
 						]);
@@ -855,11 +862,11 @@ class attachments
 
 					$this->template->assign_block_vars('groups', [
 						'S_ADD_SPACER'		=> $s_add_spacer,
-						'S_ALLOWED_IN_PM'	=> ($row['allow_in_pm']) ? true : false,
-						'S_GROUP_ALLOWED'	=> ($row['allow_group']) ? true : false,
+						'S_ALLOWED_IN_PM'	=> (bool) $row['allow_in_pm'],
+						'S_GROUP_ALLOWED'	=> (bool) $row['allow_group'],
 
-						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
-						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",
+						'U_EDIT'		=> $this->helper->route('acp_attachments_ext_groups', ['action' => 'edit', 'g' => $row['group_id']]),
+						'U_DELETE'		=> $this->helper->route('acp_attachments_ext_groups', ['action' => 'delete', 'g' => $row['group_id']]),
 
 						'GROUP_NAME'	=> $this->get_extension_group_name($row['group_name']),
 						'CATEGORY'		=> $cat_lang[$row['cat_id']],
@@ -1020,14 +1027,15 @@ class attachments
 				$sql = 'SELECT COUNT(attach_id) as num_files, SUM(filesize) as total_size
 					FROM ' . $this->tables['attachments'] . '
 					WHERE is_orphan = 1
-						AND filetime < ' . (time() - 3*60*60);
+						AND filetime < ' . (time() - (3 * 60 * 60));
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
-				$num_files = (int) $row['num_files'];
-				$total_size = (int) $row['total_size'];
 				$this->db->sql_freeresult($result);
 
-				$start = $this->request->variable('start', 0);
+				$num_files = (int) $row['num_files'];
+				$total_size = (int) $row['total_size'];
+
+				$start = ($page - 1) * $attachments_per_page;
 				$start = $this->pagination->validate_start($start, $attachments_per_page, $num_files);
 
 				// Just get the files with is_orphan set and older than 3 hours
@@ -1052,14 +1060,9 @@ class attachments
 				}
 				$this->db->sql_freeresult($result);
 
-				$this->pagination->generate_template_pagination(
-					$this->u_action,
-					'pagination',
-					'start',
-					$num_files,
-					$attachments_per_page,
-					$start
-				);
+				$this->pagination->generate_template_pagination([
+					'routes' => ['acp_attachments_orphaned', 'acp_attachments_orphaned_pagination'],
+				], 'pagination', 'page', $num_files, $attachments_per_page, $start);
 
 				$this->template->assign_vars([
 					'TOTAL_FILES'		=> $num_files,
@@ -1105,7 +1108,7 @@ class attachments
 
 				if ($action === 'stats')
 				{
-					$this->handle_stats_resync($id);
+					$this->handle_stats_resync();
 				}
 
 				$stats_error = $this->check_stats_accuracy();
@@ -1116,8 +1119,6 @@ class attachments
 				}
 
 				$this->template->assign_var('S_MANAGE', true);
-
-				$start		= $this->request->variable('start', 0);
 
 				// Sort keys
 				$sort_days	= $this->request->variable('st', 0);
@@ -1134,9 +1135,11 @@ class attachments
 
 				$min_filetime = ($sort_days) ? (time() - ($sort_days * 86400)) : '';
 				$limit_filetime = ($min_filetime) ? " AND a.filetime >= $min_filetime " : '';
-				$start = ($sort_days && $this->request->is_set_post('sort')) ? 0 : $start;
 
 				$attachments_per_page = (int) $this->config['topics_per_page'];
+
+				$start = ($page - 1) * $attachments_per_page;
+				$start = ($sort_days && $this->request->is_set_post('sort')) ? 0 : $start;
 
 				$stats = $this->get_attachment_stats($limit_filetime);
 				$num_files = $stats['num_files'];
@@ -1190,8 +1193,11 @@ class attachments
 				}
 				$this->db->sql_freeresult($result);
 
-				$base_url = $this->u_action . "&amp;$u_sort_param";
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
+				parse_str($u_sort_param, $pagination_sort_params);
+				$this->pagination->generate_template_pagination([
+					'routes' => ['acp_attachments_manage', 'acp_attachments_manage_pagination'],
+					'params' => $pagination_sort_params,
+				], 'pagination', 'page', $num_files, $attachments_per_page, $start);
 
 				$this->template->assign_vars([
 					'TOTAL_FILES'		=> $num_files,
@@ -1255,10 +1261,7 @@ class attachments
 			]);
 		}
 
-		$this->tpl_name = 'acp_attachments';
-		$this->page_title = $l_title;
-
-		// @todo return $this->helper->render('acp_attachments.html', $l_title);
+		return $this->helper->render('acp_attachments.html', $this->lang->lang($l_title));
 	}
 
 	/**
@@ -1314,7 +1317,7 @@ class attachments
 
 		if (($num_files != $stats['num_files']) || ($total_size != $stats['upload_dir_size']))
 		{
-			$u_resync = $this->u_action . '&amp;action=stats';
+			$u_resync = $this->helper->route('acp_attachments_manage', ['action' => 'stats']);
 
 			return $this->lang->lang(
 				'FILES_STATS_WRONG',
@@ -1331,10 +1334,9 @@ class attachments
 	/**
 	 * Handle stats resync.
 	 *
-	 * @param string	$id		The module identifier
 	 * @return void
 	 */
-	public function handle_stats_resync($id)
+	public function handle_stats_resync()
 	{
 		if (confirm_box(true))
 		{
@@ -1345,7 +1347,6 @@ class attachments
 		else
 		{
 			confirm_box(false, $this->lang->lang('RESYNC_FILES_STATS_CONFIRM'), build_hidden_fields([
-				'i'			=> $id,
 				'mode'		=> 'manage',
 				'action'	=> 'stats',
 			]));
@@ -1500,8 +1501,6 @@ class attachments
 
 	/**
 	 * Perform operations on sites for external linking.
-	 *
-	 * @return void
 	 */
 	protected function perform_site_list()
 	{
@@ -1660,9 +1659,9 @@ class attachments
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_entry, false, [$ip_list_log]);
 			}
 
-			trigger_error($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . adm_back_link($this->u_action));
+			return $this->helper->message($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
 		}
-		else if ($this->request->is_set_post('unsecuresubmit'))
+		else // if ($this->request->is_set_post('unsecuresubmit'))
 		{
 			$unip_sql = $this->request->variable('unip', [0]);
 
@@ -1688,7 +1687,7 @@ class attachments
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DOWNLOAD_REMOVE_IP', false, [$l_unip_list]);
 			}
 
-			trigger_error($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . adm_back_link($this->u_action));
+			return $this->helper->message($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
 		}
 	}
 
@@ -1701,7 +1700,7 @@ class attachments
 	 * @param string	$key		The config name (used as the element's identifier)
 	 * @return string				The <label> and <input> elements
 	 */
-	protected function display_order($value, $key = '')
+	public function display_order($value, $key = '')
 	{
 		return h_radio('config[display_order]', [0 => 'DESCENDING', 1 => 'ASCENDING'], $value, $key);
 	}
@@ -1715,7 +1714,7 @@ class attachments
 	 * @param string	$key		The config name (used as the element's identifier)
 	 * @return string				The <input> and <select> elements
 	 */
-	protected function max_filesize($value, $key = '')
+	public function max_filesize($value, $key = '')
 	{
 		// Determine size var and adjust the value accordingly
 		$filesize = get_formatted_filesize($value, false, ['mb', 'kb', 'b']);
@@ -1735,7 +1734,7 @@ class attachments
 	 * @param string	$key		The config name (used as the element's identifier)
 	 * @return string				The <label> and <input> elements
 	 */
-	protected function select_allow_deny($value, $key = '')
+	public function select_allow_deny($value, $key = '')
 	{
 		$radio_ary = [1 => 'ORDER_ALLOW_DENY', 0 => 'ORDER_DENY_ALLOW'];
 
@@ -1748,7 +1747,7 @@ class attachments
 	 * @param string	$group_name	The extension group name
 	 * @return string				The possibly localised extension group name
 	 */
-	protected function get_extension_group_name($group_name)
+	public function get_extension_group_name($group_name)
 	{
 		$extension_group_name = 'EXT_GROUP_' . $group_name;
 

@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
+
 class captcha
 {
 	/** @var \phpbb\config\config */
@@ -20,6 +22,9 @@ class captcha
 
 	/** @var \phpbb\captcha\factory */
 	protected $factory;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -36,25 +41,22 @@ class captcha
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config		Config object
-	 * @param \phpbb\captcha\factory	$factory	Captcha factory object
-	 * @param \phpbb\language\language	$lang		Language object
-	 * @param \phpbb\log\log			$log		Log object
-	 * @param \phpbb\request\request	$request	Request object
-	 * @param \phpbb\template\template	$template	Template object
-	 * @param \phpbb\user				$user		User object
+	 * @param \phpbb\config\config			$config		Config object
+	 * @param \phpbb\captcha\factory		$factory	Captcha factory object
+	 * @param \phpbb\acp\helper\controller	$helper		ACP Controller helper object
+	 * @param \phpbb\language\language		$lang		Language object
+	 * @param \phpbb\log\log				$log		Log object
+	 * @param \phpbb\request\request		$request	Request object
+	 * @param \phpbb\template\template		$template	Template object
+	 * @param \phpbb\user					$user		User object
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\captcha\factory $factory,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -64,6 +66,7 @@ class captcha
 	{
 		$this->config	= $config;
 		$this->factory	= $factory;
+		$this->helper	= $helper;
 		$this->lang		= $lang;
 		$this->log		= $log;
 		$this->request	= $request;
@@ -71,7 +74,7 @@ class captcha
 		$this->user		= $user;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/board');
 
@@ -91,7 +94,8 @@ class captcha
 		if ($configure)
 		{
 			$config_captcha = $this->factory->get_instance($selected);
-			$config_captcha->acp_page($id, $this);
+
+			return $config_captcha->acp_page();
 		}
 		else
 		{
@@ -177,11 +181,12 @@ class captcha
 					}
 					else
 					{
-						trigger_error($this->lang->lang('CAPTCHA_UNAVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
+
+						throw new http_exception(400, $this->lang->lang('CAPTCHA_UNAVAILABLE') . $this->helper->adm_back_link('acp_settings_captcha'));
 					}
 				}
 
-				trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+				return $this->helper->message($this->lang->lang('CONFIG_UPDATED') . $this->helper->adm_back_link('acp_settings_captcha'));
 			}
 			else
 			{
@@ -210,16 +215,14 @@ class captcha
 					'ERROR_MSG'				=> implode('<br />', $errors),
 
 					'CAPTCHA_SELECT'		=> $captcha_select,
-					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
+					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template(),
 					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
 
-					'U_ACTION'				=> $this->u_action,
+					'U_ACTION'				=> $this->helper->route('acp_settings_captcha'),
 				]);
 			}
 
-			$this->tpl_name = 'acp_captcha';
-			$this->page_title = 'ACP_VC_SETTINGS';
-			// @todo $this->helper->render('acp_captcha.html', $this->lang->lang('ACP_VC_SETTINGS'));
+			return $this->helper->render('acp_captcha.html', $this->lang->lang('ACP_VC_SETTINGS'));
 		}
 	}
 
