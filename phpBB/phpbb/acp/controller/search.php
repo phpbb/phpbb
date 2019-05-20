@@ -310,7 +310,7 @@ class search
 				throw new http_exception(400, $error);
 			}
 
-			return $this->helper->message($this->lang->lang('CONFIG_UPDATED') . $extra_message . $this->helper->adm_back_link('acp_settings_search'));
+			return $this->helper->message_back($this->lang->lang('CONFIG_UPDATED') . $extra_message,'acp_settings_search');
 		}
 		unset($cfg_array);
 
@@ -456,7 +456,7 @@ class search
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, [$name]);
 
-					return $this->helper->message($this->lang->lang('SEARCH_INDEX_REMOVED') . $this->helper->adm_back_link('acp_search_index') . $this->close_popup_js());
+					return $this->helper->message_back($this->lang->lang('SEARCH_INDEX_REMOVED') . $this->close_popup_js(), 'acp_search_index');
 				break;
 
 				case 'create':
@@ -549,7 +549,7 @@ class search
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_CREATED', false, [$name]);
 
-					return $this->helper->message($this->lang->lang('SEARCH_INDEX_CREATED') . $this->helper->adm_back_link('acp_search_index') . $this->close_popup_js());
+					return $this->helper->message_back($this->lang->lang('SEARCH_INDEX_CREATED') . $this->close_popup_js(), 'acp_search_index');
 				break;
 			}
 		}

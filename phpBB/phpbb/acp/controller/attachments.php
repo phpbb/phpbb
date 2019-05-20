@@ -165,26 +165,12 @@ class attachments
 		{
 			case 'attach':
 				$l_title = 'ACP_SETTINGS_ATTACHMENT';
-			break;
-
-			case 'extensions':
-				$l_title = 'ACP_MANAGE_EXTENSIONS';
-			break;
-
-			case 'ext_groups':
-				$l_title = 'ACP_EXTENSION_GROUPS';
-			break;
-
-			case 'orphan':
-				$l_title = 'ACP_ORPHAN_ATTACHMENTS';
-			break;
-
-			case 'manage':
-				$l_title = 'ACP_MANAGE_ATTACHMENTS';
+				$u_mode = 'acp_settings_attachment';
 			break;
 
 			default:
-				throw new http_exception(400, $this->lang->lang('NO_MODE'));
+				$l_title = 'ACP_ATTACHMENTS_' . utf8_strtoupper($mode);
+				$u_mode = 'acp_settings_' . $mode;
 			break;
 		}
 
@@ -309,7 +295,7 @@ class attachments
 
 					if (empty($error))
 					{
-						return $this->helper->message($this->lang->lang('CONFIG_UPDATED') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+						return $this->helper->message_back('CONFIG_UPDATED', $u_mode);
 					}
 				}
 
@@ -710,7 +696,7 @@ class attachments
 
 							$this->cache_driver->destroy('_extensions');
 
-							return $this->helper->message($this->lang->lang('EXTENSION_GROUP_DELETED') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+							return $this->helper->message_back('EXTENSION_GROUP_DELETED', $u_mode);
 						}
 						else
 						{
@@ -1659,7 +1645,7 @@ class attachments
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_entry, false, [$ip_list_log]);
 			}
 
-			return $this->helper->message($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+			return $this->helper->message_back('SECURE_DOWNLOAD_UPDATE_SUCCESS', 'acp_settings_attachment');
 		}
 		else // if ($this->request->is_set_post('unsecuresubmit'))
 		{
@@ -1687,7 +1673,7 @@ class attachments
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DOWNLOAD_REMOVE_IP', false, [$l_unip_list]);
 			}
 
-			return $this->helper->message($this->lang->lang('SECURE_DOWNLOAD_UPDATE_SUCCESS') . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+			return $this->helper->message_back('SECURE_DOWNLOAD_UPDATE_SUCCESS', 'acp_settings_attachment');
 		}
 	}
 

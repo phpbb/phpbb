@@ -349,7 +349,7 @@ class users
 
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DELETED', false, [$user_row['username']]);
 
-								return $this->helper->message($this->lang->lang('USER_DELETED') . $this->helper->adm_back_link('acp_users_manage'));
+								return $this->helper->message_back('USER_DELETED','acp_users_manage');
 							}
 							else
 							{
@@ -438,7 +438,7 @@ class users
 								throw new http_exception(400, $this->lang->lang('BAN_ALREADY_ENTERED'));
 							}
 
-							return $this->helper->message($this->lang->lang('BAN_SUCCESSFUL') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('BAN_SUCCESSFUL', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						break;
 
 						case 'reactivate':
@@ -518,7 +518,7 @@ class users
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_REACTIVATE', false, [$user_row['username']]);
 								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_REACTIVATE_USER', false, ['reportee_id' => $user_id]);
 
-								return $this->helper->message($this->lang->lang('FORCE_REACTIVATION_SUCCESS') . $this->helper->adm_back_link($u_user_action, false));
+								return $this->helper->message_back('FORCE_REACTIVATION_SUCCESS', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 							}
 						break;
 
@@ -579,7 +579,7 @@ class users
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log, false, [$user_row['username']]);
 							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $log . '_USER', false, ['reportee_id' => $user_id]);
 
-							return $this->helper->message($this->lang->lang($message) . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back($message, 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						break;
 
 						case 'delsig':
@@ -602,7 +602,7 @@ class users
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_SIG', false, [$user_row['username']]);
 							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_SIG_USER', false, ['reportee_id' => $user_id]);
 
-							return $this->helper->message($this->lang->lang('USER_ADMIN_SIG_REMOVED') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('USER_ADMIN_SIG_REMOVED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						break;
 
 						case 'delavatar':
@@ -617,7 +617,7 @@ class users
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_AVATAR', false, [$user_row['username']]);
 							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_AVATAR_USER', false, ['reportee_id' => $user_id]);
 
-							return $this->helper->message($this->lang->lang('USER_ADMIN_AVATAR_REMOVED') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('USER_ADMIN_AVATAR_REMOVED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						break;
 
 						case 'delposts':
@@ -628,7 +628,7 @@ class users
 
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_POSTS', false, [$user_row['username']]);
 
-								return $this->helper->message($this->lang->lang('USER_POSTS_DELETED') . $this->helper->adm_back_link($u_user_action, false));
+								return $this->helper->message_back('USER_POSTS_DELETED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 							}
 							else
 							{
@@ -647,7 +647,7 @@ class users
 
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DEL_ATTACH', false, [$user_row['username']]);
 
-								return $this->helper->message($this->lang->lang('USER_ATTACHMENTS_REMOVED') . $this->helper->adm_back_link($u_user_action, false));
+								return $this->helper->message_back('USER_ATTACHMENTS_REMOVED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 							}
 							else
 							{
@@ -693,7 +693,7 @@ class users
 								}
 								$this->db->sql_freeresult($result);
 
-								return $this->helper->message($this->lang->lang('USER_OUTBOX_' . $lang) . $this->helper->adm_back_link($u_user_action, false));
+								return $this->helper->message_back('USER_OUTBOX_' . $lang, 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 							}
 							else
 							{
@@ -858,7 +858,7 @@ class users
 								$forum_info['forum_name'],
 							]);
 
-							return $this->helper->message($this->lang->lang('USER_POSTS_MOVED') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('USER_POSTS_MOVED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						break;
 
 						case 'leave_nr':
@@ -868,7 +868,7 @@ class users
 
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_REMOVED_NR', false, [$user_row['username']]);
 
-								return $this->helper->message($this->lang->lang('USER_LIFTED_NR') . $this->helper->adm_back_link($u_user_action, false));
+								return $this->helper->message_back('USER_LIFTED_NR', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 							}
 							else
 							{
@@ -1072,7 +1072,7 @@ class users
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_USER_UPDATE', false, [$data['username']]);
 
-						return $this->helper->message($this->lang->lang('USER_OVERVIEW_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+						return $this->helper->message_back('USER_OVERVIEW_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1290,7 +1290,7 @@ class users
 						$message,
 					]);
 
-					return $this->helper->message($this->lang->lang('USER_FEEDBACK_ADDED') . $this->helper->adm_back_link($u_user_action, false));
+					return $this->helper->message_back('USER_FEEDBACK_ADDED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 				}
 
 				// Sorting
@@ -1597,7 +1597,7 @@ class users
 						// Update Custom Fields
 						$this->pf_manager->update_profile_field_data($user_id, $cp_data);
 
-						return $this->helper->message($this->lang->lang('USER_PROFILE_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+						return $this->helper->message_back('USER_PROFILE_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1793,7 +1793,7 @@ class users
 								}
 							}
 
-							return $this->helper->message($this->lang->lang('USER_PREFS_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('USER_PREFS_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						}
 					}
 
@@ -1964,7 +1964,7 @@ class users
 
 									$this->db->sql_query($sql);
 
-									return $this->helper->message($this->lang->lang('USER_AVATAR_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+									return $this->helper->message_back('USER_AVATAR_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 								}
 							}
 						}
@@ -1981,7 +1981,7 @@ class users
 						{
 							$this->avatar_manager->handle_avatar_delete($this->db, $this->user, $avatar_data, $this->tables['users'], 'user_');
 
-							return $this->helper->message($this->lang->lang('USER_AVATAR_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+							return $this->helper->message_back('USER_AVATAR_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 						}
 						else
 						{
@@ -2064,7 +2064,7 @@ class users
 						WHERE user_id = ' . (int) $user_id;
 					$this->db->sql_query($sql);
 
-					return $this->helper->message($this->lang->lang('USER_RANK_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+					return $this->helper->message_back('USER_RANK_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 				}
 
 				$s_rank_options = '<option value="0"' . (!$user_row['user_rank'] ? ' selected="selected"' : '') . '>' . $this->lang->lang('NO_SPECIAL_RANK') . '</option>';
@@ -2172,7 +2172,7 @@ class users
 							WHERE user_id = ' . (int) $user_id;
 						$this->db->sql_query($sql);
 
-						return $this->helper->message($this->lang->lang('USER_SIG_UPDATED') . $this->helper->adm_back_link($u_user_action, false));
+						return $this->helper->message_back('USER_SIG_UPDATED', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 					}
 				}
 
@@ -2264,7 +2264,7 @@ class users
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ATTACHMENTS_DELETED', false, [implode($this->lang->lang('COMMA_SEPARATOR'), $log_attachments)]);
 
-						return $this->helper->message($message . $this->helper->adm_back_link($u_user_action, false));
+						return $this->helper->message_back($message, 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 					}
 					else
 					{

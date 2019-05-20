@@ -186,7 +186,7 @@ class captcha
 					}
 				}
 
-				return $this->helper->message($this->lang->lang('CONFIG_UPDATED') . $this->helper->adm_back_link('acp_settings_captcha'));
+				return $this->helper->message_back('CONFIG_UPDATED','acp_settings_captcha');
 			}
 			else
 			{

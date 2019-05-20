@@ -762,7 +762,7 @@ class board
 				$message .= '<br /><br />' . $this->lang->lang('ACC_ACTIVATION_WARNING');
 			}
 
-			return $this->helper->message($message . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+			return $this->helper->message($message . $this->helper->adm_back_link($this->helper->get_current_url()));
 		}
 
 		$s_errors = !empty($errors);
@@ -832,6 +832,7 @@ class board
 			foreach ($this->auth_providers as $provider)
 			{
 				$auth_tpl = $provider->get_acp_template($this->new_config);
+
 				if ($auth_tpl)
 				{
 					if (array_key_exists('BLOCK_VAR_NAME', $auth_tpl))
@@ -841,6 +842,7 @@ class board
 							$this->template->assign_block_vars($auth_tpl['BLOCK_VAR_NAME'], $block_vars);
 						}
 					}
+
 					$this->template->assign_vars($auth_tpl['TEMPLATE_VARS']);
 					$this->template->assign_block_vars('auth_tpl', ['TEMPLATE_FILE' => $auth_tpl['TEMPLATE_FILE']]);
 				}

@@ -174,7 +174,7 @@ class jabber
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_JAB_SETTINGS_CHANGED');
 
-			return $this->helper->message($this->lang->lang('JAB_SETTINGS_CHANGED') . $this->helper->adm_back_link('acp_settings_jabber'));
+			return $this->helper->message_back('JAB_SETTINGS_CHANGED', 'acp_settings_jabber');
 		}
 
 		$this->template->assign_vars([
