@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
 /**
  *
  * This file is part of the phpBB Forum Software package.
@@ -12,7 +10,6 @@
  * the docs/CREDITS.txt file.
  *
  */
->>>>>>> 22f43cf1178cec861d048a1edd5ae65de1d8dbfa
 
 namespace phpbb\acp\helper;
 
