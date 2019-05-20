@@ -6,46 +6,46 @@ services:
         tags:
             - { name: service_collection, tag: acp }
 
-# --- ACP > General --- #
-    acp_general:
+# --- ACP > Configuration --- #
+    acp_cat_configuration:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
+            $auth: ''
             $icon: cogs
-            $auth: acl_a
             $route: acp_index
 
     acp_index:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: home
-            $parent: acp_general
+            $parent: acp_cat_configuration
             $route:
                 path: /index
                 defaults:
                     _controller: acp.main:main
 
-# --- ACP > General > Board configuration --- #
+# --- ACP > Configuration > Board configuration --- #
     acp_configuration_board:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
-            $parent: acp_general
+            $parent: acp_cat_configuration
             $route: acp_settings_board
 
     acp_settings_board:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -56,10 +56,10 @@ services:
 
     acp_settings_features:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -68,12 +68,12 @@ services:
                     _controller: acp.board:main
                     mode: 'features'
 
-    acp_settings_attachments:
+    acp_settings_attachment:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_attach
+            $auth: 'acl_a_attach'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -82,12 +82,12 @@ services:
                     _controller: acp.attachments:main
                     mode: 'attach'
 
-    acp_settings_avatars:
+    acp_settings_avatar:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -98,10 +98,10 @@ services:
 
     acp_settings_signature:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -112,10 +112,10 @@ services:
 
     acp_settings_post:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -126,10 +126,10 @@ services:
 
     acp_settings_pm:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -140,10 +140,10 @@ services:
 
     acp_settings_registration:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -154,10 +154,10 @@ services:
 
     acp_settings_captcha:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -167,10 +167,10 @@ services:
 
     acp_settings_contact:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -180,10 +180,10 @@ services:
 
     acp_settings_feed:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_board
+            $auth: 'acl_a_board'
             $icon: ''
             $parent: acp_configuration_board
             $route:
@@ -191,23 +191,23 @@ services:
                 defaults:
                     _controller: acp.board:main
 
-# --- ACP > General > Server configuration --- #
+# --- ACP > Configuration > Server configuration --- #
     acp_configuration_server:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
-            $parent: acp_general
+            $parent: acp_cat_configuration
             $route: acp_settings_server
 
     acp_settings_server:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -218,10 +218,10 @@ services:
 
     acp_settings_cookie:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -232,10 +232,10 @@ services:
 
     acp_settings_load:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -246,10 +246,10 @@ services:
 
     acp_settings_security:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -260,10 +260,10 @@ services:
 
     acp_settings_search:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_search
+            $auth: 'acl_a_search'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -273,10 +273,10 @@ services:
 
     acp_settings_storage:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_storage
+            $auth: 'acl_a_storage'
             $icon: ''
             $parent: acp_configuration_server
             $route:
@@ -284,25 +284,25 @@ services:
                 defaults:
                     _controller: acp.storage:main
 
-# --- ACP > General > Client communication --- #
-    acp_communication_client:
+# --- ACP > Configuration > Client communication --- #
+    acp_client_communication:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
-            $parent: acp_general
-            $route: acp_settings_authentication
+            $parent: acp_cat_configuration
+            $route: acp_settings_auth
 
-    acp_settings_authentication:
+    acp_settings_auth:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
-            $parent: acp_communication_client
+            $parent: acp_client_communication
             $route:
                 path: /settings/authentication
                 defaults:
@@ -311,12 +311,12 @@ services:
 
     acp_settings_email:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_server
+            $auth: 'acl_a_server'
             $icon: ''
-            $parent: acp_communication_client
+            $parent: acp_client_communication
             $route:
                 path: /settings/email
                 defaults:
@@ -325,13 +325,1068 @@ services:
 
     acp_settings_jabber:
         tags: { name: acp }
-        class: \phpbb\cp\item
+        class: \phpbb\cp\menu\item
         shared: false
         arguments:
-            $auth: acl_a_jabber
+            $auth: 'acl_a_jabber'
             $icon: ''
-            $parent: acp_communication_client
+            $parent: acp_client_communication
             $route:
                 path: /settings/jabber
                 defaults:
                     _controller: acp.jabber:main
+
+# --- ACP > Management --- #
+    acp_cat_management:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: acp_users_manage
+
+# --- ACP > Management > User management --- #
+    acp_management_users:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_management
+            $route: acp_users_manage
+
+    acp_users_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_user'
+            $icon: ''
+            $parent: acp_management_users
+            $route:
+                path: /users/manage/{mode}/{username}
+                defaults:
+                    _controller: acp.users:main
+                    mode: 'overview'
+                    username: ''
+
+    acp_users_inactive:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_user'
+            $icon: ''
+            $parent: acp_management_users
+            $route:
+                path: /users/inactive
+                defaults:
+                    _controller: acp.inactive:main
+
+    acp_users_prune:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_userdel'
+            $icon: ''
+            $parent: acp_management_users
+            $route:
+                path: /users/prune
+                defaults:
+                    _controller: acp.prune:main
+                    mode: 'users'
+
+# --- ACP > Management > Groups management
+    acp_management_groups:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_management
+            $route: acp_groups_manage
+
+    acp_groups_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_group'
+            $icon: ''
+            $parent: acp_management_groups
+            $route:
+                path: /groups/manage
+                defaults:
+                    _controller: acp.groups:main
+                    mode: 'manage'
+
+    acp_groups_positions:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_group'
+            $icon: ''
+            $parent: acp_management_groups
+            $route:
+                path: /groups/position
+                defaults:
+                    _controller: acp.groups:main
+                    mode: 'position'
+
+# --- ACP > Management > Forum management --- #
+    acp_management_forums:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_management
+            $route: acp_forums_manage
+
+    acp_forums_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_forum'
+            $icon: ''
+            $parent: acp_management_forums
+            $route:
+                path: /forums/manage
+                defaults:
+                    _controller: acp.forums:main
+
+    acp_forums_prune:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_prune'
+            $icon: ''
+            $parent: acp_management_forums
+            $route:
+                path: /forums/prune
+                defaults:
+                    _controller: acp.prune:main
+                    mode: 'forums'
+
+# --- ACP > Management > Ban management --- #
+    acp_management_ban:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_management
+            $route: acp_ban_emails
+
+    acp_ban_emails:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_ban'
+            $icon: ''
+            $parent: acp_management_ban
+            $route:
+                path: /ban/emails
+                defaults:
+                    _controller: acp.ban:main
+                    mode: 'email'
+
+    acp_ban_users:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_ban'
+            $icon: ''
+            $parent: acp_management_ban
+            $route:
+                path: /ban/users
+                defaults:
+                    _controller: acp.ban:main
+                    mode: 'user'
+
+    acp_ban_ips:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_ban'
+            $icon: ''
+            $parent: acp_management_ban
+            $route:
+                path: /ban/ips
+                defaults:
+                    _controller: acp.ban:main
+                    mode: 'ip'
+
+# --- ACP > Management > Attachment management --- #
+    acp_management_attachments:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_attach'
+            $icon: ''
+            $parent: acp_cat_management
+            $route: acp_attachments_manage
+
+    acp_attachments_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_attach'
+            $icon: ''
+            $parent: acp_management_attachments
+            $route:
+                path: /attachments/manage
+                defaults:
+                    _controller: acp.attachments:main
+                    mode: 'manage'
+
+    acp_attachments_extensions:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_attach'
+            $icon: ''
+            $parent: acp_management_attachments
+            $route:
+                path: /attachments/extensions
+                defaults:
+                    _controller: acp.attachments:main
+                    mode: 'extensions'
+
+    acp_attachments_ext_groups:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_attach'
+            $icon: ''
+            $parent: acp_management_attachments
+            $route:
+                path: /attachments/extension_groups
+                defaults:
+                    _controller: acp.attachments:main
+                    mode: 'ext_groups'
+
+    acp_attachments_orphaned:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_attach'
+            $icon: ''
+            $parent: acp_management_attachments
+            $route:
+                path: /attachments/orphaned
+                defaults:
+                    _controller: acp.attachments:main
+                    mode: 'orphan'
+
+# --- ACP > Permissions --- #
+    acp_cat_permissions:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: acp_permissions_intro
+
+    acp_permissions_intro:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth'
+            $icon: ''
+            $parent: acp_cat_permissions
+            $route:
+                path: /permissions/intro
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'intro'
+
+# --- ACP > Permissions > Global permissions --- #
+    acp_permissions_global:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_permissions
+            $route: acp_permissions_global_user
+
+    acp_permissions_global_user:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_authusers && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'
+            $icon: ''
+            $parent: acp_permissions_global
+            $route:
+                path: /permissions/global/user
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_user_global'
+
+    acp_permissions_global_group:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_authgroups && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'
+            $icon: ''
+            $parent: acp_permissions_global
+            $route:
+                path: /permissions/global/group
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_group_global'
+
+    acp_permissions_global_mods:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_mauth && (acl_a_authusers || acl_a_authgroups)'
+            $icon: ''
+            $parent: acp_permissions_global
+            $route:
+                path: /permissions/global/mod
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_mod_global'
+
+    acp_permissions_global_admins:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_aauth && (acl_a_authusers || acl_a_authgroups)'
+            $icon: ''
+            $parent: acp_permissions_global
+            $route:
+                path: /permissions/global/admins
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_admin_global'
+
+# --- ACP > Permissions > Forum permissions --- #
+    acp_permissions_forums:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_permissions
+            $route: acp_permissions_forum
+
+    acp_permissions_forum:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_fauth && (acl_a_authusers || acl_a_authgroups)'
+            $icon: ''
+            $parent: acp_permissions_forums
+            $route:
+                path: /permissions/forum
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_forum_local'
+
+
+    acp_permissions_forum_copy:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth'
+            $icon: ''
+            $parent: acp_permissions_forums
+            $route:
+                path: /permissions/forum/copy
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_forum_copy'
+
+    acp_permissions_forum_user:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_authusers && (acl_a_mauth || acl_a_fauth)'
+            $icon: ''
+            $parent: acp_permissions_forums
+            $route:
+                path: /permissions/forum/user
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_user_local'
+
+    acp_permissions_forum_group:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_authgroups && (acl_a_mauth || acl_a_fauth)'
+            $icon: ''
+            $parent: acp_permissions_forums
+            $route:
+                path: /permissions/forum/group
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_group_local'
+
+    acp_permissions_forum_mods:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_mauth && (acl_a_authusers || acl_a_authgroups)'
+            $icon: ''
+            $parent: acp_permissions_forums
+            $route:
+                path: /permissions/forum/mod
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'setting_mod_local'
+
+# --- ACP > Permissions > Permission roles --- #
+    acp_permissions_roles:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_permissions
+            $route: acp_permissions_roles_user
+
+    acp_permissions_roles_user:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_roles && acl_a_uauth'
+            $icon: ''
+            $parent: acp_permissions_roles
+            $route:
+                path: /permissions/roles/user
+                defaults:
+                    _controller: acp.permission_roles:main
+                    mode: 'user_roles'
+
+    acp_permissions_roles_mod:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_roles && acl_a_mauth'
+            $icon: ''
+            $parent: acp_permissions_roles
+            $route:
+                path: /permissions/roles/mod
+                defaults:
+                    _controller: acp.permission_roles:main
+                    mode: 'mod_roles'
+
+    acp_permissions_roles_admin:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_roles && acl_a_aauth'
+            $icon: ''
+            $parent: acp_permissions_roles
+            $route:
+                path: /permissions/roles/admin
+                defaults:
+                    _controller: acp.permission_roles:main
+                    mode: 'admin_roles'
+
+    acp_permissions_roles_forum:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_roles && acl_a_fauth'
+            $icon: ''
+            $parent: acp_permissions_roles
+            $route:
+                path: /permissions/roles/forum
+                defaults:
+                    _controller: acp.permission_roles:main
+                    mode: 'forum_roles'
+
+# --- ACP > Permissions > Permission masks --- #
+    acp_permissions_masks:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_permissions
+            $route: acp_permissions_masks_user
+
+    acp_permissions_masks_user:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewauth'
+            $icon: ''
+            $parent: acp_permissions_masks
+            $route:
+                path: /permissions/masks/user
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'user'
+
+    acp_permissions_masks_mod_global:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewauth'
+            $icon: ''
+            $parent: acp_permissions_masks
+            $route:
+                path: /permissions/masks/mod/global
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'view_mod_global'
+
+    acp_permissions_masks_mod_forum:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewauth'
+            $icon: ''
+            $parent: acp_permissions_masks
+            $route:
+                path: /permissions/masks/mod/local
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'view_mod_local'
+
+    acp_permissions_masks_admin:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewauth'
+            $icon: ''
+            $parent: acp_permissions_masks
+            $route:
+                path: /permissions/masks/admin
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'view_admin_local'
+
+    acp_permissions_masks_forum:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewauth'
+            $icon: ''
+            $parent: acp_permissions_masks
+            $route:
+                path: /permissions/masks/forum
+                defaults:
+                    _controller: acp.permissions:main
+                    mode: 'view_forum_local'
+
+# --- ACP > Posting --- #
+    acp_cat_posting:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: acp_ranks
+
+# --- ACP > Posting > Content --- #
+    acp_content:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_posting
+            $route: acp_ranks
+
+    acp_ranks:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_ranks'
+            $icon: ''
+            $parent: acp_content
+            $route:
+                path: /ranks
+                defaults:
+                    _controller: acp.ranks:main
+
+    acp_bbcodes:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_bbcode'
+            $icon: ''
+            $parent: acp_content
+            $route:
+                path: /bbcodes
+                defaults:
+                    _controller: acp.bbcodes:main
+
+    acp_smilies:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_icons'
+            $icon: ''
+            $parent: acp_content
+            $route:
+                path: /smilies
+                defaults:
+                    _controller: acp.icons:main
+                    mode: 'smilies'
+
+    acp_topic_icons:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_icons'
+            $icon: ''
+            $parent: acp_content
+            $route:
+                path: /topic_icons
+                defaults:
+                    _controller: acp.icons:main
+                    mode: 'icons'
+
+    acp_cpf:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_profile'
+            $icon: ''
+            $parent: acp_content
+            $route:
+                path: /cpf
+                defaults:
+                    _controller: acp.profile:main
+
+# --- ACP > Posting > General tasks
+    acp_general_tasks:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_posting
+            $route: acp_mass_email
+
+    acp_mass_email:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_email && cfg_email_enable'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /mass_email
+                defaults:
+                    _controller: acp.email:main
+
+    acp_word_censoring:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_words'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /disallow/words
+                defaults:
+                    _controller: acp.words:main
+
+    acp_disallow_usernames:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_names'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /disallow/usernames
+                defaults:
+                    _controller: acp.disallow:main
+
+    acp_robots:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_bots'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /robots
+                defaults:
+                    _controller: acp.bots:main
+
+    acp_reasons:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_reasons'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /reasons
+                defaults:
+                    _controller: acp.reasons:main
+
+# --- ACP > Customise --- #
+    acp_cat_customise:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: acp_extensions_manage
+
+# --- ACP > Customise > Extensions management --- #
+    acp_extensions_management:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_customise
+            $route: acp_extensions_manage
+
+
+    acp_extensions_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_extensions'
+            $icon: ''
+            $parent: acp_extensions_management
+            $route:
+                path: /extensions/manage
+                defaults:
+                    _controller: acp.extensions:main
+                    mode: 'main'
+
+    acp_extensions_catalog:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_extensions'
+            $icon: ''
+            $parent: acp_extensions_management
+            $route:
+                path: /extensions/catalog
+                defaults:
+                    _controller: acp.extensions:main
+                    mode: 'catalog'
+
+# --- ACP > Customise > Style management
+    acp_styles_management:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_customise
+            $route: acp_styles_manage
+
+    acp_styles_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_styles'
+            $icon: ''
+            $parent: acp_styles_management
+            $route:
+                path: /styles/manage
+                defaults:
+                    _controller: acp.styles:main
+                    mode: 'style'
+
+    acp_styles_install:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_styles'
+            $icon: ''
+            $parent: acp_styles_management
+            $route:
+                path: /styles/install
+                defaults:
+                    _controller: acp.styles:main
+                    mode: 'install'
+
+# --- ACP > Customise > Language management
+    acp_language_management:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_customise
+            $route: acp_language_manage
+
+    acp_language_manage:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_language'
+            $icon: ''
+            $parent: acp_cat_customise
+            $route:
+                path: /language
+                defaults:
+                    _controller: acp.language:main
+
+# -- ACP > Maintenance --- #
+    acp_cat_maintenance:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: acp_logs_admin
+
+# --- ACP > Maintenance > Logs --- #
+    acp_logs:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_maintenance
+            $route: acp_logs_admin
+
+    acp_logs_admin:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewlogs'
+            $icon: ''
+            $parent: acp_logs
+            $route:
+                path: /logs/admin
+                defaults:
+                    _controller: acp.logs:main
+                    mode: 'admin'
+
+    acp_logs_mod:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewlogs'
+            $icon: ''
+            $parent: acp_logs
+            $route:
+                path: /logs/mod
+                defaults:
+                    _controller: acp.logs:main
+                    mode: 'mod'
+
+    acp_logs_user:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewlogs'
+            $icon: ''
+            $parent: acp_logs
+            $route:
+                path: /logs/user
+                defaults:
+                    _controller: acp.logs:main
+                    mode: 'user'
+
+    acp_logs_error:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_viewlogs'
+            $icon: ''
+            $parent: acp_logs
+            $route:
+                path: /logs/error
+                defaults:
+                    _controller: acp.logs:main
+                    mode: 'critical'
+
+
+    # --- ACP > Maintenance > Database --- #
+    acp_database:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_maintenance
+            $route: acp_backup
+
+    acp_backup:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_backup'
+            $icon: ''
+            $parent: acp_database
+            $route:
+                path: /database/backup
+                defaults:
+                    _controller: acp.database:main
+                    mode: 'backup'
+
+    acp_restore:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_backup'
+            $icon: ''
+            $parent: acp_database
+            $route:
+                path: /database/restore
+                defaults:
+                    _controller: acp.database:main
+                    mode: 'restore'
+
+    acp_search_index:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_search'
+            $icon: ''
+            $parent: acp_database
+            $route:
+                path: /database/search
+                defaults:
+                    _controller: acp.search:main
+                    mode: 'index'
+
+# --- ACP > Maintenance > phpBB --- #
+    acp_phpbb:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_maintenance
+            $route: acp_update
+
+    acp_update:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_board'
+            $icon: ''
+            $parent: acp_phpbb
+            $route:
+                path: /phpbb/update
+                defaults:
+                    _controller: acp.update:main
+
+    acp_php_info:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_phpinfo'
+            $icon: ''
+            $parent: acp_phpbb
+            $route:
+                path: /php
+                defaults:
+                    _controller: acp.php_info:main
+
+    acp_help_phpbb:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_phpbb
+            $route:
+                path: /phpbb/help
+                defaults:
+                    _controller:
+
+# --- ACP > Extensions --- #
+    acp_cat_extensions:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: ''

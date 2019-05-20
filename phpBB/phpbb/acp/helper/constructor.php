@@ -13,7 +13,7 @@
 
 namespace phpbb\acp\helper;
 
-class constructor
+class constructor implements \phpbb\cp\constructor_interface
 {
 	protected $auth;
 	protected $lang;
@@ -49,6 +49,8 @@ class constructor
 
 	public function setup()
 	{
+		define('ADMIN_START', true);
+
 		require($this->root_path . 'includes/functions_acp.' . $this->php_ext);
 		require($this->root_path . 'includes/functions_admin.' . $this->php_ext);
 

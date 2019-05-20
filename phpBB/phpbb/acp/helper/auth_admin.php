@@ -22,7 +22,7 @@ class auth_admin extends \phpbb\auth\auth
 	protected $auth;
 
 	/** @var \phpbb\cache\driver\driver_interface */
-	protected $cache;
+	public $cache;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;

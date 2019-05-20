@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\cp;
+namespace phpbb\cp\menu;
 
 class item
 {

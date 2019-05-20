@@ -4,3 +4,32 @@ services:
         arguments:
             - '@acp_collection'
             - '@acp.constructor'
+            - '@cp.auth'
+            - '@cp.lang'
+
+    cp.menu:
+        class: \phpbb\cp\menu\menu
+        arguments:
+            - '@cp.auth'
+            - '@cp.manager'
+            - '@controller.helper'
+            - '@language'
+            - '@symfony_request'
+            - '@template'
+
+    cp.auth:
+        class: \phpbb\cp\helper\auth
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dispatcher'
+            - '@ext.manager'
+            - '@request'
+
+    cp.lang:
+        class: \phpbb\cp\helper\language
+        arguments:
+            - '@config'
+            - '@ext.manager'
+            - '@language'
+            - '%core.php_ext%'
