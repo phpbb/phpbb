@@ -21,7 +21,7 @@ class contact
 	/** @var \phpbb\config\db_text */
 	protected $config_text;
 
-	/** @var \phpbb\controller\helper */
+	/** @var \phpbb\acp\helper\controller */
 	protected $helper;
 
 	/** @var \phpbb\language\language */
@@ -39,27 +39,22 @@ class contact
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config			Config object
-	 * @param \phpbb\config\db_text		$config_text	Config text object
-	 * @param \phpbb\controller\helper	$helper			Controller helper object
-	 * @param \phpbb\language\language	$lang			Language object
-	 * @param \phpbb\request\request	$request		Request object
-	 * @param \phpbb\template\template	$template		Template object
-	 * @param string					$root_path		phpBB root path
-	 * @param string					$php_ext		php File extension
+	 * @param \phpbb\config\config			$config			Config object
+	 * @param \phpbb\config\db_text			$config_text	Config text object
+	 * @param \phpbb\acp\helper\controller	$helper			ACP Controller helper object
+	 * @param \phpbb\language\language		$lang			Language object
+	 * @param \phpbb\request\request		$request		Request object
+	 * @param \phpbb\template\template		$template		Template object
+	 * @param string						$root_path		phpBB root path
+	 * @param string						$php_ext		php File extension
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\config\db_text $config_text,
-		\phpbb\controller\helper $helper,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -78,7 +73,7 @@ class contact
 		$this->php_ext		= $php_ext;
 	}
 
-	public function main($id, $mode)
+	public function main()
 	{
 		$this->lang->add_lang(['acp/board', 'posting']);
 
@@ -141,11 +136,12 @@ class contact
 					'contact_admin_info_flags'		=> $contact_admin_info_flags,
 				]);
 
-				trigger_error($this->lang->lang('CONTACT_US_INFO_UPDATED') . adm_back_link($this->u_action));
+				return $this->helper->message($this->lang->lang('CONTACT_US_INFO_UPDATED') . $this->helper->adm_back_link('acp_settings_contact'));
 			}
 		}
 
 		$contact_admin_info_preview = '';
+
 		if ($this->request->is_set_post('preview'))
 		{
 			$contact_admin_info_preview = generate_text_for_display($contact_admin_info, $contact_admin_info_uid, $contact_admin_info_bitfield, $contact_admin_info_flags);
@@ -180,8 +176,6 @@ class contact
 		// Assigning custom bbcodes
 		display_custom_bbcodes();
 
-		$this->tpl_name = 'acp_contact';
-		$this->page_title = 'ACP_CONTACT_SETTINGS';
-		// @todo $this->helper->render('acp_contact.html', $this->lang->lang('ACP_CONTACT_SETTINGS'));
+		return $this->helper->render('acp_contact.html', $this->lang->lang('ACP_CONTACT_SETTINGS'));
 	}
 }

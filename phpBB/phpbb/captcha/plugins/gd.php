@@ -51,15 +51,19 @@ class gd extends captcha_abstract
 		return 'CAPTCHA_GD';
 	}
 
-	function acp_page($id, &$module)
+	function acp_page()
 	{
 		global $user, $template, $phpbb_log, $request;
-		global $config;
+		global $config, $phpbb_container;
 
-		$user->add_lang('acp/board');
+		/** @var \phpbb\language\language $lang */
+		$lang = $phpbb_container->get('language');
 
-		$module->tpl_name = 'captcha_gd_acp';
-		$module->page_title = 'ACP_VC_SETTINGS';
+		/** @var \phpbb\acp\helper\controller $helper */
+		$helper = $phpbb_container->get('acp.controller.helper');
+
+		$lang->add_lang('acp/board');
+
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
@@ -78,25 +82,28 @@ class gd extends captcha_abstract
 			}
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
+
+			return $helper->message($lang->lang('CONFIG_UPDATED') . $helper->adm_back_link('acp_settings_captcha'));
 		}
 		else if ($submit)
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			throw new \phpbb\exception\http_exception(400, $lang->lang('FORM_INVALID'));
 		}
 		else
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, 0) : $config[$captcha_var];
+				$var = $request->is_set($captcha_var) ? $request->variable($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
 			}
 
 			$template->assign_vars(array(
-				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
+				'CAPTCHA_PREVIEW'	=> $this->get_demo_template(),
 				'CAPTCHA_NAME'		=> $this->get_service_name(),
-				'U_ACTION'			=> $module->u_action,
+				'U_ACTION'			=> $helper->route('acp_settings_captcha'),
 			));
+
+			return $helper->render('captcha_gd_acp.html', $lang->lang('ACP_VC_SETTINGS'));
 		}
 	}
 
