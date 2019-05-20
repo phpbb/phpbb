@@ -190,6 +190,7 @@ services:
                 path: /settings/feed
                 defaults:
                     _controller: acp.board:main
+                    mode: 'feed'
 
 # --- ACP > Configuration > Server configuration --- #
     acp_configuration_server:
@@ -242,7 +243,7 @@ services:
                 path: /settings/load
                 defaults:
                     _controller: acp.board:main
-                    mode: 'cookie'
+                    mode: 'load'
 
     acp_settings_security:
         tags: { name: acp }
@@ -270,6 +271,7 @@ services:
                 path: /settings/search
                 defaults:
                     _controller: acp.search:main
+                    mode: 'settings'
 
     acp_settings_storage:
         tags: { name: acp }
@@ -366,12 +368,14 @@ services:
             $auth: 'acl_a_user'
             $icon: ''
             $parent: acp_management_users
+            $before: ''
+            $page: 'page'
             $route:
-                path: /users/manage/{mode}/{username}
+                path: /users/manage/{mode}/{u}
                 defaults:
                     _controller: acp.users:main
                     mode: 'overview'
-                    username: ''
+                    u: 0
 
     acp_users_inactive:
         tags: { name: acp }
@@ -549,11 +553,14 @@ services:
             $auth: 'acl_a_attach'
             $icon: ''
             $parent: acp_management_attachments
+            $before: ''
+            $page: 'page'
             $route:
                 path: /attachments/manage
                 defaults:
                     _controller: acp.attachments:main
                     mode: 'manage'
+                    page: 1
 
     acp_attachments_extensions:
         tags: { name: acp }
@@ -591,11 +598,14 @@ services:
             $auth: 'acl_a_attach'
             $icon: ''
             $parent: acp_management_attachments
+            $before: ''
+            $page: 'page'
             $route:
                 path: /attachments/orphaned
                 defaults:
                     _controller: acp.attachments:main
                     mode: 'orphan'
+                    page: 1
 
 # --- ACP > Permissions --- #
     acp_cat_permissions:

@@ -24,6 +24,9 @@ class controller
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -57,6 +60,7 @@ class controller
 	 * @param \phpbb\cp\menu\menu				$cp_menu		CP Menu object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\path_helper				$path_helper	Path helper object
 	 * @param \phpbb\request\request			$request		Request object
@@ -73,6 +77,7 @@ class controller
 		\phpbb\cp\menu\menu $cp_menu,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
@@ -89,6 +94,7 @@ class controller
 		$this->cp_menu		= $cp_menu;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -186,8 +192,8 @@ class controller
 			'T_FONT_AWESOME_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->web_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
 
 			'U_LOGOUT'					=> append_sid("{$this->web_path}ucp.$this->php_ext", 'mode=logout'),
-			'U_ADM_LOGOUT'				=> append_sid("{$this->admin_path}index.$this->php_ext", 'action=admlogout'),
-			'U_ADM_INDEX'				=> append_sid("{$this->admin_path}index.$this->php_ext"),
+			'U_ADM_LOGOUT'				=> $this->helper->route('acp_index', ['action' => 'admlogout']),
+			'U_ADM_INDEX'				=> $this->helper->route('acp_index'),
 			'U_INDEX'					=> append_sid("{$this->web_path}index.$this->php_ext"),
 
 			'CONTAINER_EXCEPTION'		=> $this->container->hasParameter('container_exception') ? $this->container->getParameter('container_exception') : false,
