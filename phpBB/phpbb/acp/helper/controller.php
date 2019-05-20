@@ -14,6 +14,7 @@
 namespace phpbb\acp\helper;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class controller extends \phpbb\controller\helper
 {
@@ -53,16 +54,57 @@ class controller extends \phpbb\controller\helper
 	}
 
 	/**
+	 * Output a message
+	 *
+	 * In case of an error, please throw an exception instead
+	 *
+	 * @param string	$message		The message to display (must be a language variable)
+	 * @param string	$route			The message back route (return to previous page)
+	 * @param array		$params			The parameters to use with the route
+	 * @param array		$parameters		The parameters to use with the language var
+	 * @param string	$title			Title for the message (must be a language variable)
+	 * @param int		$code			The HTTP status code (e.g. 404, 500, 503, etc.)
+	 * @return Response|JsonResponse	A Response instance
+	 */
+	public function message_back($message, $route, array $params = [], array $parameters = [], $title = 'INFORMATION', $code = 200)
+	{
+		array_unshift($parameters, $message);
+		$message_text = call_user_func_array([$this->user, 'lang'], $parameters);
+		$message_title = $this->user->lang($title);
+		$message_back = $this->user->lang('RETURN_PAGE', '<a href="' . $this->route($route, $params) . '">', '</a>');
+
+		if ($this->request->is_ajax())
+		{
+			global $refresh_data;
+
+			return new JsonResponse([
+					'MESSAGE_TITLE'		=> $message_title,
+					'MESSAGE_TEXT'		=> $message_text,
+					'MESSAGE_BACK'		=> $message_back,
+					'S_USER_WARNING'	=> false,
+					'S_USER_NOTICE'		=> false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+			], $code);
+		}
+
+		$this->template->assign_vars([
+			'MESSAGE_TEXT'		=> $message_text,
+			'MESSAGE_TITLE'		=> $message_title,
+			'MESSAGE_BACK'		=> $message_back,
+		]);
+
+		return $this->render('message_body.html', $message_title, $code);
+	}
+
+	/**
 	 * Generate a back link to be appended to a message.
 	 *
-	 * @param string	$link		The link back to the previous page
-	 * @param bool		$route		Whether or not it is a route name
+	 * @param string	$route		The route name for the link back to the previous page
+	 * @param array		$params		The route parameters
 	 * @return string
 	 */
-	public function adm_back_link($link, $route = true)
+	public function adm_back_link($route, array $params = [])
 	{
-		$link = $route ? $this->route($link) : $link;
-
-		return $this->functions->adm_back_link($link);
+		return $this->functions->adm_back_link($this->route($route, $params));
 	}
 }

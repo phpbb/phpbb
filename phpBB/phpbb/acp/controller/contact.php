@@ -136,7 +136,7 @@ class contact
 					'contact_admin_info_flags'		=> $contact_admin_info_flags,
 				]);
 
-				return $this->helper->message($this->lang->lang('CONTACT_US_INFO_UPDATED') . $this->helper->adm_back_link('acp_settings_contact'));
+				return $this->helper->message_back('CONTACT_US_INFO_UPDATED','acp_settings_contact');
 			}
 		}
 
