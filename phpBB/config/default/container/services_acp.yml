@@ -29,6 +29,7 @@ services:
             - '@auth'
             - '@config'
             - '@service_container'
+            - '@cp.menu'
             - '@dbal.conn'
             - '@dispatcher'
             - '@language'
@@ -197,6 +198,7 @@ services:
             - '@ext.composer.manager'
             - '@dispatcher'
             - '@ext.manager'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -329,6 +331,7 @@ services:
         arguments:
             - '@auth'
             - '@config'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -384,6 +387,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@group_helper'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@acl.permissions'
@@ -437,10 +441,11 @@ services:
     acp.ranks:
         class: \phpbb\acp\controller\ranks
         arguments:
-            - 'cache.driver'
+            - '@cache.driver'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -532,7 +537,7 @@ services:
             - '@dbal.conn'
             - '@dispatcher'
             - '@group_helper'
-            - '@controller.helper'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@notification_manager'

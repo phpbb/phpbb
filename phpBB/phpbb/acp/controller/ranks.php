@@ -27,6 +27,9 @@ class ranks
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -52,8 +55,6 @@ class ranks
 	protected $tables;
 
 	/** @todo */
-	public $page_title;
-	public $tpl_name;
 	public $u_action;
 
 	/**
@@ -63,6 +64,7 @@ class ranks
 	 * @param \phpbb\config\config					$config			Config object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\request\request				$request		Request object
@@ -77,6 +79,7 @@ class ranks
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -91,6 +94,7 @@ class ranks
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -102,7 +106,7 @@ class ranks
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -111,9 +115,6 @@ class ranks
 		$action = $this->request->is_set_post('add') ? 'add' : $action;
 		$action = $this->request->is_set_post('save') ? 'save' : $action;
 		$rank_id = $this->request->variable('id', 0);
-
-		$this->tpl_name = 'acp_ranks';
-		$this->page_title = 'ACP_MANAGE_RANKS';
 
 		$form_key = 'acp_ranks';
 		add_form_key($form_key);
@@ -226,10 +227,8 @@ class ranks
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'rank_id'	=> $rank_id,
-						'action'	=> 'delete',
+						'rank_id'	=> (int) $rank_id,
+						'action'	=> $action,
 					]));
 				}
 			break;
@@ -350,5 +349,7 @@ class ranks
 			$this->template->assign_block_vars('ranks', $rank_row);
 		}
 		$this->db->sql_freeresult($result);
+
+		$this->helper->render('acp_ranks.html', $this->lang->lang('ACP_MANAGE_RANKS'));
 	}
 }
