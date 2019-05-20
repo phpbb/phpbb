@@ -40,4 +40,18 @@ class controller extends \phpbb\controller\helper
 
 		return new Response($this->template->assign_display('body'), $status_code);
 	}
+
+	/**
+	 * Generate a back link to be appended to a message.
+	 *
+	 * @param string	$link		The link back to the previous page
+	 * @param bool		$route		Whether or not it is a route name
+	 * @return string
+	 */
+	public function adm_back_link($link, $route = true)
+	{
+		$link = $route ? $this->route($link) : $link;
+
+		return $this->functions->adm_back_link($link);
+	}
 }

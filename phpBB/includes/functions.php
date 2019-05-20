@@ -2146,12 +2146,14 @@ function check_form_key($form_name, $timespan = false)
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
-	global $config, $language, $phpbb_path_helper;
+	global $config, $language, $phpbb_path_helper, $phpbb_container;
 
 	if (isset($_POST['cancel']))
 	{
 		return false;
 	}
+
+	$acp_functions = $phpbb_container->get('acp.functions.controller');
 
 	$confirm = ($language->lang('YES') === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
 
@@ -2203,7 +2205,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
-		adm_page_header($confirm_title);
+		$acp_functions->adm_page_header($confirm_title);
 	}
 	else
 	{
@@ -2257,7 +2259,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
-		adm_page_footer();
+		$acp_functions->adm_page_footer();
 	}
 	else
 	{
@@ -3501,11 +3503,14 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 
+			global $phpbb_container;
+			$acp_functions = $phpbb_container->get('acp.functions.controller');
+
 			if (!defined('HEADER_INC'))
 			{
 				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 				{
-					adm_page_header($msg_title);
+					$acp_functions->adm_page_header($msg_title);
 				}
 				else
 				{
@@ -3543,7 +3548,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 			{
-				adm_page_footer();
+				$acp_functions->adm_page_footer();
 			}
 			else
 			{
