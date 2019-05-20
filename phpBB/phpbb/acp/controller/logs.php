@@ -21,6 +21,9 @@ class logs
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -40,26 +43,26 @@ class logs
 	protected $user;
 
 	/** @todo */
-	public $page_title;
-	public $tpl_name;
 	public $u_action;
 	public $log_type;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\auth\auth			$auth			Auth object
-	 * @param \phpbb\config\config		$config			Config object
-	 * @param \phpbb\language\language	$lang			Language object
-	 * @param \phpbb\log\log			$log			Log object
-	 * @param \phpbb\pagination			$pagination		Pagination object
-	 * @param \phpbb\request\request	$request		Request object
-	 * @param \phpbb\template\template	$template		Template object
-	 * @param \phpbb\user				$user			User object
+	 * @param \phpbb\auth\auth				$auth			Auth object
+	 * @param \phpbb\config\config			$config			Config object
+	 * @param \phpbb\acp\helper\controller	$helper			ACP Controller helper object
+	 * @param \phpbb\language\language		$lang			Language object
+	 * @param \phpbb\log\log				$log			Log object
+	 * @param \phpbb\pagination				$pagination		Pagination object
+	 * @param \phpbb\request\request		$request		Request object
+	 * @param \phpbb\template\template		$template		Template object
+	 * @param \phpbb\user					$user			User object
 	 */
 	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -70,6 +73,7 @@ class logs
 	{
 		$this->auth			= $auth;
 		$this->config		= $config;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -78,7 +82,7 @@ class logs
 		$this->user			= $user;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('mcp');
 
@@ -126,7 +130,6 @@ class logs
 			else
 			{
 				confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-					'i'			=> $id,
 					'mode'		=> $mode,
 					'delmarked'	=> $delete_mark,
 					'delall'	=> $delete_all,
@@ -215,7 +218,6 @@ class logs
 			]);
 		}
 
-		$this->page_title = $l_title;
-		$this->tpl_name = 'acp_logs';
+		return $this->helper->render('acp_logs.html', $l_title);
 	}
 }

@@ -33,6 +33,9 @@ class permissions
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -77,6 +80,7 @@ class permissions
 	 * @param \phpbb\config\config					$config			Config object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\group\helper					$group_helper	Group helper object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\permissions					$permissions	Permissions object
@@ -94,6 +98,7 @@ class permissions
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\group\helper $group_helper,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\permissions $permissions,
@@ -111,6 +116,7 @@ class permissions
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->permissions	= $permissions;
@@ -123,7 +129,7 @@ class permissions
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('acp/permissions');
 		add_permission_language();
@@ -258,7 +264,7 @@ class permissions
 
 			$this->template->assign_var('S_INTRO', true);
 
-			return;
+			return $this->helper->render('acp_permissions.html', $this->lang->lang('ACP_PERMISSIONS_INTRO'));
 		}
 
 		switch ($mode)
@@ -372,7 +378,6 @@ class permissions
 						}
 
 						$s_hidden_fields = [
-							'i'				=> $id,
 							'mode'			=> $mode,
 							'action'		=> [$action => 1],
 							'user_id'		=> $user_ids,

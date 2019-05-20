@@ -32,6 +32,9 @@ class extensions
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -78,6 +81,7 @@ class extensions
 	 * @param \phpbb\composer\extension_manager		$composer_manager	Composer manager object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
 	 * @param \phpbb\extension\manager				$extension_manager	Extension manager object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\pagination						$pagination			Pagination object
@@ -95,6 +99,7 @@ class extensions
 		\phpbb\composer\extension_manager $composer_manager,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\extension\manager $extension_manager,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -112,6 +117,7 @@ class extensions
 		$this->composer_manager		= $composer_manager;
 		$this->dispatcher			= $dispatcher;
 		$this->extension_manager	= $extension_manager;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->pagination			= $pagination;
@@ -126,23 +132,23 @@ class extensions
 		$this->php_ext				= $php_ext;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang(['install', 'acp/extensions', 'migrator']);
 
 		switch ($mode)
 		{
 			case 'catalog':
-				$this->catalog_mode($id, $mode);
+				return $this->catalog_mode();
 			break;
 
 			default:
-				$this->main_mode($id, $mode);
+				return $this->main_mode();
 			break;
 		}
 	}
 
-	public function main_mode($id, $mode)
+	public function main_mode()
 	{
 		$this->page_title = 'ACP_EXTENSIONS';
 
@@ -205,7 +211,7 @@ class extensions
 			}
 		}
 
-		$this->u_catalog_action = append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;mode=catalog");
+		$this->u_catalog_action = append_sid("{$this->admin_path}index.$this->php_ext", "mode=catalog");
 
 		// What are we doing?
 		switch ($action)
@@ -257,7 +263,7 @@ class extensions
 
 				$this->request->disable_super_globals();
 
-				$this->tpl_name = 'acp_ext_list';
+				return $this->helper->render('acp_ext_list.html', $this->lang->lang('ACP_EXTENSIONS'));
 			break;
 
 			case 'enable_pre':
@@ -288,8 +294,6 @@ class extensions
 				else
 				{
 					confirm_box(false, $this->lang->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> 'enable_pre',
 						'ext_name'	=> $ext_name,
 					]));
@@ -366,8 +370,6 @@ class extensions
 				else
 				{
 					confirm_box(false, $this->lang->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> 'disable_pre',
 						'ext_name'	=> $ext_name,
 					]));
@@ -425,8 +427,6 @@ class extensions
 				else
 				{
 					confirm_box(false, $this->lang->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> 'delete_data_pre',
 						'ext_name'	=> $ext_name,
 					]));
@@ -544,11 +544,8 @@ class extensions
 
 	/**
 	 * Handles the catalog mode of the extensions list
-	 *
-	 * @param string $id
-	 * @param string $mode
 	 */
-	public function catalog_mode($id, $mode)
+	public function catalog_mode()
 	{
 		if (!$this->composer_manager->check_requirements())
 		{

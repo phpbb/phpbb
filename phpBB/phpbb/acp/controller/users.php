@@ -40,7 +40,7 @@ class users
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
 
-	/** @var \phpbb\controller\helper */
+	/** @var \phpbb\acp\helper\controller */
 	protected $helper;
 
 	/** @var \phpbb\language\language */
@@ -51,9 +51,6 @@ class users
 
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
-
-	/** @var \p_master */
-	protected $p_master;
 
 	/** @var \phpbb\pagination */
 	protected $pagination;
@@ -101,7 +98,7 @@ class users
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
 	 * @param \phpbb\group\helper				$group_helper			Group helper object
-	 * @param \phpbb\controller\helper			$helper					Controller helper object
+	 * @param \phpbb\acp\helper\controller		$helper					ACP Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\log\log					$log					Log object
 	 * @param \phpbb\notification\manager		$notification_manager	Notification manager object
@@ -125,7 +122,7 @@ class users
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\group\helper $group_helper,
-		\phpbb\controller\helper $helper,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\notification\manager $notification_manager,
@@ -164,12 +161,9 @@ class users
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;
 		$this->tables				= $tables;
-
-		// @todo
-		$this->p_master = new \p_master;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang(['posting', 'ucp', 'acp/users']);
 
@@ -184,13 +178,13 @@ class users
 		// Get referer to redirect user to the appropriate page after delete action
 		$redirect		= $this->request->variable('redirect', '');
 		$redirect_tag	= "redirect=$redirect";
-		$redirect_url	= append_sid("{$this->root_path}index.$this->php_ext", "i=$redirect");
+		$redirect_url	= append_sid("{$this->admin_path}index.$this->php_ext", "i=$redirect");
 
 		$form_key = 'acp_users';
 		add_form_key($form_key);
 
 		// Whois (special case)
-		if ($action == 'whois')
+		if ($action === 'whois')
 		{
 			if (!function_exists('user_get_id_name'))
 			{
@@ -225,7 +219,7 @@ class users
 				'U_ACTION'			=> $this->u_action,
 			]);
 
-			return;
+			return $this->helper->render('acp_users.html', $this->lang->lang('SELECT_USER'));
 		}
 
 		if (!$user_id)
@@ -281,7 +275,7 @@ class users
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!$this->p_master->module_auth_self($row['module_auth']))
+			if (false)#!$this->p_master->module_auth_self($row['module_auth']))
 			{
 				continue;
 			}
@@ -302,7 +296,7 @@ class users
 			'S_FORM_OPTIONS'	=> $s_form_options,
 
 			'U_BACK'			=> empty($redirect) ? $this->u_action : $redirect_url,
-			'U_MODE_SELECT'		=> append_sid("{$this->root_path}index.$this->php_ext", "i=$id&amp;u=$user_id"),
+	# @todo		'U_MODE_SELECT'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . (empty($redirect) ? '' : '&amp;' . $redirect_tag),
 		]);
 
@@ -383,7 +377,6 @@ class users
 							{
 								$delete_confirm_hidden_fields = [
 									'u'				=> $user_id,
-									'i'				=> $id,
 									'mode'			=> $mode,
 									'action'		=> $action,
 									'update'		=> true,
@@ -664,7 +657,7 @@ class users
 							else
 							{
 								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-									'i'			=> $id,
+
 									'mode'		=> $mode,
 									'update'	=> true,
 									'action'	=> $action,
@@ -685,7 +678,6 @@ class users
 							else
 							{
 								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-									'i'			=> $id,
 									'mode'		=> $mode,
 									'update'	=> true,
 									'action'	=> $action,
@@ -734,7 +726,6 @@ class users
 							else
 							{
 								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-									'i'			=> $id,
 									'mode'		=> $mode,
 									'update'	=> true,
 									'action'	=> $action,
@@ -913,7 +904,6 @@ class users
 							else
 							{
 								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-									'i'			=> $id,
 									'mode'		=> $mode,
 									'update'	=> true,
 									'action'	=> $action,
@@ -1438,7 +1428,6 @@ class users
 					else
 					{
 						$s_hidden_fields = [
-							'i'			=> $id,
 							'mode'		=> $mode,
 							'u'			=> $user_id,
 							'mark'		=> $marked,
@@ -2079,7 +2068,7 @@ class users
 
 				$this->template->assign_vars([
 					'ERROR'		=> !empty($error) ? implode('<br />', $error) : '',
-					'AVATAR'	=> empty($avatar) ? '<img src="' . $this->root_path . 'images/no_avatar.gif" alt="" />' : $avatar,
+					'AVATAR'	=> empty($avatar) ? '<img src="' . $this->admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 
 					'L_AVATAR_EXPLAIN'	=> $this->lang->lang($this->config['avatar_filesize'] == 0 ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN', $this->config['avatar_max_width'], $this->config['avatar_max_height'], $this->config['avatar_filesize'] / 1024),
 
@@ -2306,7 +2295,6 @@ class users
 					else
 					{
 						confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-							'i'				=> $id,
 							'mode'			=> $mode,
 							'delmarked'		=> true,
 							'action'		=> $action,
@@ -2453,7 +2441,7 @@ class users
 
 						group_user_attributes($action, $group_id, $user_id);
 
-						if ($action == 'default')
+						if ($action === 'default')
 						{
 							$user_row['group_id'] = $group_id;
 						}
@@ -2488,7 +2476,6 @@ class users
 						else
 						{
 							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action,
 								'u'			=> $user_id,
@@ -2509,7 +2496,6 @@ class users
 						else
 						{
 							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-								'i'				=> $id,
 								'mode'			=> $mode,
 								'action'		=> $action,
 								'u'				=> $user_id,
@@ -2610,7 +2596,7 @@ class users
 							'S_NO_DEFAULT'		=> $user_row['group_id'] != $data['group_id'],
 							'S_SPECIAL_GROUP'	=> $group_type === 'special',
 
-							'U_EDIT_GROUP'		=> append_sid("{$this->root_path}index.$this->php_ext", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
+							'U_EDIT_GROUP'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;hash=' . generate_link_hash('acp_users'),
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . ($data['group_leader'] ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;hash=' . generate_link_hash('acp_users'),
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
@@ -2678,8 +2664,8 @@ class users
 					'S_FORUM_OPTIONS'			=> $s_forum_options,
 
 					'U_ACTION'					=> $this->u_action . '&amp;u=' . $user_id,
-					'U_USER_PERMISSIONS'		=> append_sid("{$this->root_path}index.$this->php_ext" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
-					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$this->root_path}index.$this->php_ext", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id),
+					'U_USER_PERMISSIONS'		=> append_sid("{$this->admin_path}index.$this->php_ext" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
+					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id),
 				]);
 			break;
 
@@ -2706,6 +2692,8 @@ class users
 			'S_ERROR'	=> $s_error,
 			'ERROR_MSG'	=> $s_error ? implode('<br />', $error) : '',
 		]);
+
+		return $this->helper->render('acp_users.html', $this->page_title);
 	}
 
 	/**
