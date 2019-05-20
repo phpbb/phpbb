@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
+
 /**
  * @todo Check/enter/update transport info
  */
@@ -23,6 +25,9 @@ class jabber
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -48,16 +53,12 @@ class jabber
 	/** @var string phpBB users table */
 	protected $users_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\request\request			$request		Request object
@@ -70,6 +71,7 @@ class jabber
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -82,6 +84,7 @@ class jabber
 	{
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -93,7 +96,7 @@ class jabber
 		$this->users_table	= $users_table;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/board');
 
@@ -101,14 +104,6 @@ class jabber
 		{
 			include($this->root_path . 'includes/functions_jabber.' . $this->php_ext);
 		}
-
-		if ($mode !== 'settings')
-		{
-			return;
-		}
-
-		$this->tpl_name = 'acp_jabber';
-		$this->page_title = 'ACP_JABBER_SETTINGS';
 
 		$submit = $this->request->is_set_post('submit');
 
@@ -130,7 +125,7 @@ class jabber
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+				throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
 			}
 
 			// Is this feature enabled? Then try to establish a connection
@@ -140,13 +135,13 @@ class jabber
 
 				if (!$jabber->connect())
 				{
-					trigger_error($this->lang->lang('ERR_JAB_CONNECT') . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new http_exception(400, $this->lang->lang('ERR_JAB_CONNECT') . '<br /><br />' . $jabber->get_log() . $this->helper->adm_back_link('acp_settings_jabber'));
 				}
 
 				// We'll try to authorise using this account
 				if (!$jabber->login())
 				{
-					trigger_error($this->lang->lang('ERR_JAB_AUTH') . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new http_exception(400, $this->lang->lang('ERR_JAB_AUTH') . '<br /><br />' . $jabber->get_log() . $this->helper->adm_back_link('acp_settings_jabber'));
 				}
 
 				$jabber->disconnect();
@@ -155,7 +150,8 @@ class jabber
 			{
 				// This feature is disabled.
 				// We update the user table to be sure all users that have IM as notify type are set to both as notify type
-				// We set this to both because users still have their jabber address entered and may want to receive jabber notifications again once it is re-enabled.
+				// We set this to both because users still have their jabber address entered
+				// and may want to receive jabber notifications again once it is re-enabled.
 				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_notify_type = ' . NOTIFY_BOTH . '
 					WHERE user_notify_type = ' . NOTIFY_IM;
@@ -178,11 +174,11 @@ class jabber
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_JAB_SETTINGS_CHANGED');
 
-			trigger_error($this->lang->lang('JAB_SETTINGS_CHANGED') . adm_back_link($this->u_action));
+			return $this->helper->message($this->lang->lang('JAB_SETTINGS_CHANGED') . $this->helper->adm_back_link('acp_settings_jabber'));
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->helper->route('acp_settings_jabber'),
 			'JAB_ENABLE'			=> $jab_enable,
 			'L_JAB_SERVER_EXPLAIN'	=> $this->lang->lang('JAB_SERVER_EXPLAIN', '<a href="http://www.jabber.org/">', '</a>'),
 			'JAB_HOST'				=> $jab_host,
@@ -197,5 +193,7 @@ class jabber
 			'S_CAN_USE_SSL'			=> \jabber::can_use_ssl(),
 			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		]);
+
+		return $this->helper->render('acp_jabber.html', $this->lang->lang('ACP_SETTINGS_JABBER'));
 	}
 }

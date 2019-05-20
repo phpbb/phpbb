@@ -113,23 +113,28 @@ abstract class captcha_abstract
 		}
 	}
 
-	function get_demo_template($id)
+	function get_demo_template()
 	{
-		global $config, $template, $request, $phpbb_admin_path, $phpEx;
+		global $config, $template, $request, $phpbb_container;
 
-		$variables = '';
+		/** @var \phpbb\acp\helper\controller $helper */
+		$helper = $phpbb_container->get('acp.controller.helper');
+
+		$variables = [];
 
 		if (is_array($this->captcha_vars))
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . $request->variable($captcha_var, (int) $config[$captcha_var]);
+				$variables[rawurlencode($captcha_var)] = $request->variable($captcha_var, (int) $config[$captcha_var]);
 			}
 		}
 
+		$params = array_merge(['captcha_demo' => true, 'select_captcha' => $this->get_service_name()], $variables);
+
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
+			'CONFIRM_IMAGE'		=> $helper->route('acp_settings_captcha', $params),
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 

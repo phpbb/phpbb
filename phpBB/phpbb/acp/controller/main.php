@@ -13,6 +13,7 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
 use phpbb\exception\runtime_exception;
 
 class main
@@ -76,9 +77,6 @@ class main
 
 	/** @var array phpBB tables */
 	protected $tables;
-
-	/** @todo */
-	public $u_action;
 
 	/**
 	 * Constructor.
@@ -189,73 +187,60 @@ class main
 				switch ($action)
 				{
 					case 'online':
-						$confirm = true;
 						$confirm_lang = 'RESET_ONLINE_CONFIRM';
 					break;
 					case 'stats':
-						$confirm = true;
 						$confirm_lang = 'RESYNC_STATS_CONFIRM';
 					break;
 					case 'user':
-						$confirm = true;
 						$confirm_lang = 'RESYNC_POSTCOUNTS_CONFIRM';
 					break;
 					case 'date':
-						$confirm = true;
 						$confirm_lang = 'RESET_DATE_CONFIRM';
 					break;
 					case 'db_track':
-						$confirm = true;
 						$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
 					break;
 					case 'purge_cache':
-						$confirm = true;
 						$confirm_lang = 'PURGE_CACHE_CONFIRM';
 					break;
 					case 'purge_sessions':
-						$confirm = true;
 						$confirm_lang = 'PURGE_SESSIONS_CONFIRM';
 					break;
-
 					default:
-						$confirm = true;
 						$confirm_lang = 'CONFIRM_OPERATION';
+					break;
 				}
 
-				if ($confirm)
-				{
-					confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
-						'action'	=> $action,
-					]));
-				}
+				return confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
+					'action'	=> $action,
+				]));
 			}
 			else
 			{
 				switch ($action)
 				{
-
 					case 'online':
 						if (!$this->auth->acl_get('a_board'))
 						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_link('acp_index'));
 						}
 
 						$this->config->set('record_online_users', 1, false);
 						$this->config->set('record_online_date', time(), false);
+
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_RESET_ONLINE');
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('RESET_ONLINE_SUCCESS');
+							return $this->helper->message('RESET_ONLINE_SUCCESS');
 						}
 					break;
 
 					case 'stats':
 						if (!$this->auth->acl_get('a_board'))
 						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_link('acp_index'));
 						}
 
 						$sql = 'SELECT COUNT(post_id) AS stat
@@ -295,23 +280,23 @@ class main
 
 						if (!function_exists('update_last_username'))
 						{
-							include($this->root_path . "includes/functions_user.$this->php_ext");
+							include("{$this->root_path}includes/functions_user.$this->php_ext");
 						}
+
 						update_last_username();
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_RESYNC_STATS');
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('RESYNC_STATS_SUCCESS');
+							return $this->helper->message('RESYNC_STATS_SUCCESS');
 						}
 					break;
 
 					case 'user':
 						if (!$this->auth->acl_get('a_board'))
 						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_link('acp_index'));
 						}
 
 						// Resync post counts
@@ -371,15 +356,14 @@ class main
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
+							return $this->helper->message('RESYNC_POSTCOUNTS_SUCCESS');
 						}
 					break;
 
 					case 'date':
 						if (!$this->auth->acl_get('a_board'))
 						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_link('acp_index'));
 						}
 
 						$this->config->set('board_startdate', time() - 1);
@@ -387,7 +371,7 @@ class main
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('RESET_DATE_SUCCESS');
+							return $this->helper->message('RESET_DATE_SUCCESS');
 						}
 					break;
 
@@ -466,7 +450,7 @@ class main
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('RESYNC_POST_MARKING_SUCCESS');
+							return $this->helper->message('RESYNC_POST_MARKING_SUCCESS');
 						}
 					break;
 
@@ -487,15 +471,14 @@ class main
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('PURGE_CACHE_SUCCESS');
+							return $this->helper->message('PURGE_CACHE_SUCCESS');
 						}
 					break;
 
 					case 'purge_sessions':
 						if ((int) $this->user->data['user_type'] !== USER_FOUNDER)
 						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_link('acp_index'));
 						}
 
 						$tables = [$this->tables['confirm'], $this->tables['sessions']];
@@ -538,7 +521,7 @@ class main
 
 						if ($this->request->is_ajax())
 						{
-							trigger_error('PURGE_SESSIONS_SUCCESS');
+							return $this->helper->message('PURGE_SESSIONS_SUCCESS');
 						}
 					break;
 				}
@@ -677,12 +660,12 @@ class main
 			'PHP_VERSION_INFO'	=> PHP_VERSION,
 			'BOARD_VERSION'		=> $this->config['version'],
 
-			'U_ACTION'			=> $this->u_action,
-			'U_ADMIN_LOG'		=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=logs&amp;mode=admin'),
-			'U_INACTIVE_USERS'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=inactive&amp;mode=list'),
-			'U_VERSIONCHECK'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=update&amp;mode=version_check'),
-			'U_VERSIONCHECK_FORCE'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'versioncheck_force=1'),
-			'U_ATTACH_ORPHAN'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=acp_attachments&mode=orphan'),
+			'U_ACTION'				=> $this->helper->route('acp_index'),
+			'U_ADMIN_LOG'			=> $this->helper->route('acp_logs_admin'),
+			'U_INACTIVE_USERS'		=> $this->helper->route('acp_users_inactive'),
+			'U_VERSIONCHECK'		=> $this->helper->route('acp_update'),
+			'U_VERSIONCHECK_FORCE'	=> $this->helper->route('acp_index', ['versioncheck_force' => true]),
+			'U_ATTACH_ORPHAN'		=> $this->helper->route('acp_attachments_orphaned'),
 
 			'S_VERSIONCHECK'	=> $this->auth->acl_get('a_board'),
 			'S_ACTION_OPTIONS'	=> $this->auth->acl_get('a_board'),
@@ -719,24 +702,24 @@ class main
 			foreach ($inactive as $row)
 			{
 				$this->template->assign_block_vars('inactive', [
-					'INACTIVE_DATE'	=> $this->user->format_date($row['user_inactive_time']),
-					'REMINDED_DATE'	=> $this->user->format_date($row['user_reminded_time']),
-					'JOINED'		=> $this->user->format_date($row['user_regdate']),
-					'LAST_VISIT'	=> $row['user_lastvisit'] ? $this->user->format_date($row['user_lastvisit']) : ' - ',
+					'INACTIVE_DATE'		=> $this->user->format_date($row['user_inactive_time']),
+					'REMINDED_DATE'		=> $this->user->format_date($row['user_reminded_time']),
+					'JOINED'			=> $this->user->format_date($row['user_regdate']),
+					'LAST_VISIT'		=> $row['user_lastvisit'] ? $this->user->format_date($row['user_lastvisit']) : ' - ',
 
-					'REASON'		=> $row['inactive_reason'],
-					'USER_ID'		=> $row['user_id'],
-					'POSTS'			=> $row['user_posts'] ? $row['user_posts'] : 0,
-					'REMINDED'		=> $row['user_reminded'],
+					'REASON'			=> $row['inactive_reason'],
+					'USER_ID'			=> $row['user_id'],
+					'POSTS'				=> $row['user_posts'] ? $row['user_posts'] : 0,
+					'REMINDED'			=> $row['user_reminded'],
 
 					'REMINDED_EXPLAIN'	=> $this->lang->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $this->user->format_date($row['user_reminded_time'])),
 
-					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview')),
+					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $this->helper->route('acp_users_manage', ['mode' => 'overview'])),
 					'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 					'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 
-					'U_USER_ADMIN'	=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
-					'U_SEARCH_USER'	=> $this->auth->acl_get('u_search') ? append_sid("{$this->root_path}search.$this->php_ext", "author_id={$row['user_id']}&amp;sr=posts") : '',
+					'U_USER_ADMIN'		=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
+					'U_SEARCH_USER'		=> $this->auth->acl_get('u_search') ? append_sid("{$this->root_path}search.$this->php_ext", "author_id={$row['user_id']}&amp;sr=posts") : '',
 				]);
 			}
 
@@ -771,7 +754,7 @@ class main
 			{
 				$this->template->assign_vars([
 					'S_SEARCH_INDEX_MISSING'	=> true,
-					'L_NO_SEARCH_INDEX'			=> $this->lang->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=acp_search&amp;mode=index') . '">', '</a>'),
+					'L_NO_SEARCH_INDEX'			=> $this->lang->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . $this->helper->route('acp_search_index') . '">', '</a>'),
 				]);
 			}
 		}

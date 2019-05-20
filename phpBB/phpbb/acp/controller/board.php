@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
+
 /**
  * @todo add cron intervals to server settings? (database_gc, queue_interval, session_gc, search_gc, cache_gc, warnings_gc)
  */
@@ -35,6 +37,10 @@ class board
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -66,11 +72,6 @@ class board
 	/** @var \phpbb\config\config */
 	protected $new_config;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -80,6 +81,7 @@ class board
 	 * @param \phpbb\config\config					$config				Config object
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\request\request				$request			Request object
@@ -97,6 +99,7 @@ class board
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -114,6 +117,7 @@ class board
 		$this->config			= $config;
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->log				= $log;
 		$this->request			= $request;
@@ -126,7 +130,7 @@ class board
 		$this->tables			= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('acp/board');
 
@@ -553,7 +557,7 @@ class board
 			break;
 
 			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
+				throw new http_exception(400, $this->lang->lang('NO_MODE'));
 			break;
 		}
 
@@ -700,19 +704,22 @@ class board
 				if (array_key_exists('auth.provider.' . $method, $this->auth_providers))
 				{
 					$provider = $this->auth_providers['auth.provider.' . $method];
+
 					if ($errors = $provider->init())
 					{
 						foreach ($old_auth_config as $config_name => $config_value)
 						{
 							$this->config->set($config_name, $config_value);
 						}
-						trigger_error($errors . adm_back_link($this->u_action), E_USER_WARNING);
+
+						throw new http_exception(400, $errors);
 					}
+
 					$this->config->set('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
-					trigger_error('NO_AUTH_PLUGIN', E_USER_ERROR);
+					throw new http_exception(404, $this->lang->lang('NO_AUTH_PLUGIN'));
 				}
 			}
 		}
@@ -732,12 +739,14 @@ class board
 				]);
 				$messenger->send(NOTIFY_EMAIL);
 
-				trigger_error($this->lang->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
+
+				return $this->helper->message($this->lang->lang('TEST_EMAIL_SEND', $this->helper->adm_back_link('acp_settings_email')));
 			}
 			else
 			{
 				$this->lang->add_lang('memberlist');
-				trigger_error($this->lang->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
+
+				throw new http_exception(400, $this->lang->lang('EMAIL_DISABLED'));
 			}
 		}
 
@@ -746,18 +755,15 @@ class board
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_' . strtoupper($mode));
 
 			$message = $this->lang->lang('CONFIG_UPDATED');
-			$message_type = E_USER_NOTICE;
+
 			if (!$this->config['email_enable'] && in_array($mode, ['email', 'registration']) &&
 				in_array($this->config['require_activation'], [USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN]))
 			{
 				$message .= '<br /><br />' . $this->lang->lang('ACC_ACTIVATION_WARNING');
-				$message_type = E_USER_WARNING;
 			}
-			trigger_error($message . adm_back_link($this->u_action), $message_type);
-		}
 
-		$this->tpl_name = 'acp_board';
-		$this->page_title = $display_vars['title'];
+			return $this->helper->message($message . $this->helper->adm_back_link($this->helper->get_current_url(), false));
+		}
 
 		$s_errors = !empty($errors);
 
@@ -768,7 +774,7 @@ class board
 			'S_ERROR'			=> $s_errors,
 			'ERROR_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
 
-			'U_ACTION'			=> $this->u_action,
+			'U_ACTION'			=> $this->helper->get_current_url(),
 		]);
 
 		// Output relevant page
@@ -840,6 +846,9 @@ class board
 				}
 			}
 		}
+
+
+		return $this->helper->render('acp_board.html', $this->lang->lang($display_vars['title']));
 	}
 
 	/**
