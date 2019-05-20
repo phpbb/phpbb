@@ -184,7 +184,6 @@ class controller
 			'S_CONTENT_FLOW_END'		=> $this->lang->lang('DIRECTION') === 'ltr' ? 'right' : 'left',
 
 			'T_ASSETS_VERSION'			=> $this->config['assets_version'],
-
 			'T_IMAGES_PATH'				=> "{$this->web_path}images/",
 			'T_AVATAR_GALLERY_PATH'		=> "{$this->web_path}{$this->config['avatar_gallery_path']}/",
 			'T_ICONS_PATH'				=> "{$this->web_path}{$this->config['icons_path']}/",
