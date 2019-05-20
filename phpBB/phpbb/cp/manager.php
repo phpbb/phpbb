@@ -15,37 +15,74 @@ namespace phpbb\cp;
 
 class manager
 {
+	/** @var \phpbb\di\service_collection */
 	protected $acp_collection;
+
+	/** @var \phpbb\di\service_collection */
 	protected $mcp_collection;
+
+	/** @var \phpbb\di\service_collection */
 	protected $ucp_collection;
 
+	/** @var \phpbb\acp\helper\constructor */
 	protected $acp_constructor;
 
-	protected $prefixes = [
+	/** @var \phpbb\cp\helper\auth */
+	protected $cp_auth;
+
+	/** @var \phpbb\cp\helper\language */
+	protected $cp_lang;
+
+	/** @var array Control panel route prefixes */
+	protected $route_prefixes = [
 		'acp'	=> '/admin',
 		'mcp'	=> '/mod',
 		'ucp'	=> '/user',
 	];
 
+	/** @var string Control panel pagination route suffix */
+	protected $route_pagination = '_pagination';
+
 	public function __construct(
 		\phpbb\di\service_collection $acp_collection,
-		\phpbb\acp\helper\constructor $acp_constructor
+		\phpbb\acp\helper\constructor $acp_constructor,
+		helper\auth $cp_auth,
+		helper\language $cp_lang
 	)
 	{
 		$this->acp_collection	= $acp_collection;
 		$this->acp_constructor	= $acp_constructor;
+
+		$this->cp_auth			= $cp_auth;
+		$this->cp_lang			= $cp_lang;
 	}
 
+	/**
+	 * Get the control panel routes' pagination suffix.
+	 *
+	 * @return string				The pagination route suffix
+	 */
 	public function get_route_pagination()
 	{
-		return '_pagination';
+		return $this->route_pagination;
 	}
 
+	/**
+	 * Get the control panel's route prefix.
+	 *
+	 * @param string	$cp			The control panel's route prefix
+	 * @return string
+	 */
 	public function get_route_prefix($cp)
 	{
-		return isset($this->prefixes[$cp]) ? (string) $this->prefixes[$cp] : '';
+		return isset($this->route_prefixes[$cp]) ? (string) $this->route_prefixes[$cp] : '';
 	}
 
+	/**
+	 * Get the control panels' menu items collections.
+	 *
+	 * @return array				The control panels item collections.
+	 */
 	public function get_collections()
 	{
 		return [
@@ -56,6 +93,8 @@ class manager
 	}
 
 	/**
+	 * Get a control panel's menu items collection.
+	 *
 	 * @return \phpbb\di\service_collection
 	 */
 	public function get_collection($cp)
@@ -63,31 +102,40 @@ class manager
 		return $this->{$cp . '_collection'};
 	}
 
+	/**
+	 * Get a control panel's constructor.
+	 *
+	 * @return constructor_interface
+	 */
 	public function get_constructor($cp)
 	{
 		return $this->{$cp . '_constructor'};
 	}
 
+	/**
+	 * Set up a control panel.
+	 *
+	 * Check authentication for accessed item and its parents.
+	 *
+	 * @param string	$cp			The control panel (acp|mcp|ucp)
+	 * @param string	$route		The accessed control panel route
+	 * @return void
+	 */
 	public function setup_cp($cp, $route)
 	{
 		$collection = $this->get_collection($cp);
 
 		$item = $collection->offsetGet($route);
 
-		$s_auth = true;
-		$active = [$route];
-
 		do
 		{
-			$auth = $item->get_auth();
-
-			// Preserve "false"
-			$s_auth = !$s_auth ? $s_auth : $auth;
+			if ($this->cp_auth->check_auth($item->get_auth()) === false)
+			{
+				throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
+			}
 
 			if ($item->get_parent() && $collection->offsetExists($item->get_parent()))
 			{
-				$active[] = $item->get_parent();
-
 				$item = $collection->offsetGet($item->get_parent());
 			}
 			else
@@ -97,14 +145,8 @@ class manager
 		}
 		while ($item !== null);
 
-		if ($s_auth)
-		{
-			# @todo language from extensions
-			$this->get_constructor($cp)->setup();
-		}
-		else
-		{
-			throw new \phpbb\exception\http_exception(403, 'NOT_AUTHORISED');
-		}
+		$this->cp_lang->load_cp_language_files($cp);
+
+		$this->get_constructor($cp)->setup();
 	}
 }
