@@ -855,7 +855,7 @@ class acp_users
 						$check_ary += array(
 							'username'			=> array(
 								array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-								array('username', $user_row['username'])
+								array('username', $user_row['username'], true)
 							),
 						);
 					}
