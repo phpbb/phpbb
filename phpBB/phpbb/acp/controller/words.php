@@ -91,7 +91,7 @@ class words
 		$this->words_table	= $words_table;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/posting');
 

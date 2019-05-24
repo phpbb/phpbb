@@ -125,7 +125,7 @@ class search
 		$this->tables		= $tables;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/search');
 
@@ -134,7 +134,6 @@ class search
 
 		switch ($mode)
 		{
-
 			case 'index':
 				 return $this->index();
 			break;
@@ -146,7 +145,7 @@ class search
 		}
 	}
 
-	function settings()
+	protected function settings()
 	{
 		$submit = $this->request->is_set_post('submit');
 
@@ -333,7 +332,7 @@ class search
 		return $this->helper->render('acp_search.html', 'ACP_SETTINGS_SEARCH');
 	}
 
-	function index()
+	protected function index()
 	{
 		$action = $this->request->variable('action', '');
 
@@ -642,7 +641,7 @@ class search
 	/**
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function display_progress_bar()
+	protected function display_progress_bar()
 	{
 		$type = $this->request->variable('type', '');
 
@@ -660,7 +659,7 @@ class search
 	/**
 	 * @return string
 	 */
-	function close_popup_js()
+	protected function close_popup_js()
 	{
 		return "<script type=\"text/javascript\">\n" .
 			"// <![CDATA[\n" .
@@ -672,7 +671,7 @@ class search
 	/**
 	 * @return array
 	 */
-	function get_search_types()
+	protected function get_search_types()
 	{
 		$finder = $this->ext_manager->get_finder();
 
@@ -686,7 +685,7 @@ class search
 	/**
 	 * @return int
 	 */
-	function get_max_post_id()
+	protected function get_max_post_id()
 	{
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. $this->tables['posts'];
@@ -701,7 +700,7 @@ class search
 	 * @param array|false	$state
 	 * @return void
 	 */
-	function save_state($state = false)
+	protected function save_state($state = false)
 	{
 		if ($state)
 		{
@@ -721,7 +720,7 @@ class search
 	 * @param string|false	$error		Error message
 	 * @return string|false				false if no error occurred else an error message
 	 */
-	function init_search($type, &$search, &$error)
+	protected function init_search($type, &$search, &$error)
 	{
 		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{

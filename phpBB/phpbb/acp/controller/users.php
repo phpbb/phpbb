@@ -111,7 +111,7 @@ class users
 	 * @param string							$php_ext				php File extension
 	 * @param array								$tables					phpBB tables
 	 */
-	function __construct(
+	public function __construct(
 		\phpbb\attachment\manager $attachment_manager,
 		\phpbb\auth\auth $auth,
 		\phpbb\acp\helper\auth_admin $auth_admin,
@@ -161,7 +161,7 @@ class users
 		$this->tables				= $tables;
 	}
 
-	function main($mode, $u = 0, $page = 1)
+	public function main($mode, $u = 0, $page = 1)
 	{
 		$this->lang->add_lang(['posting', 'ucp', 'acp/users']);
 
@@ -2703,7 +2703,7 @@ class users
 	 * 											and return value is true if the bit field changed and false otherwise.
 	 * 										If $data is not false, the new bitfield value is returned.
 	 */
-	function optionset(array &$user_row, $key, $value, $data = false)
+	protected function optionset(array &$user_row, $key, $value, $data = false)
 	{
 		$var = $data !== false ? $data : $user_row['user_options'];
 
@@ -2737,7 +2737,7 @@ class users
 	 * @param int|false		$data		bit field value to use, or false to use $user_row['user_options']
 	 * @return bool						true if the option is set in the bit field, false otherwise
 	 */
-	function optionget(array &$user_row, $key, $data = false)
+	protected function optionget(array &$user_row, $key, $data = false)
 	{
 		$var = $data !== false ? $data : $user_row['user_options'];
 		return phpbb_optionget($this->user->keyoptions[$key], $var);

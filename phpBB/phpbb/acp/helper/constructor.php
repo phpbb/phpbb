@@ -109,8 +109,8 @@ class constructor implements \phpbb\cp\constructor_interface
 		// Set custom style for admin area
 		$this->template->set_custom_style([
 			[
-				'name' 		=> 'adm',
-				'ext_path' 	=> 'adm/style/',
+				'name'		=> 'adm',
+				'ext_path'	=> 'adm/style/',
 			],
 		], $this->admin_path . 'style');
 

@@ -111,7 +111,7 @@ class prune
 		$this->tables		= $tables;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/prune');
 
@@ -128,7 +128,7 @@ class prune
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_forums()
+	protected function prune_forums()
 	{
 		$all_forums	= $this->request->variable('all_forums', 0);
 		$forum_ids	= $this->request->variable('f', [0]);
@@ -331,7 +331,7 @@ class prune
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_users()
+	protected function prune_users()
 	{
 		$this->lang->add_lang('memberlist');
 
@@ -476,7 +476,7 @@ class prune
 	 * @param array		$usernames	The usernames
 	 * @return void
 	 */
-	function get_prune_users(array &$user_ids, array &$usernames)
+	protected function get_prune_users(array &$user_ids, array &$usernames)
 	{
 		$group_id		= $this->request->variable('group_id', 0);
 		$users_by_id	= $this->request->variable('user_ids', [0]);

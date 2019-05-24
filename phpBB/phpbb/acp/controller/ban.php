@@ -88,7 +88,7 @@ class ban
 		$this->tables		= $tables;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang(['acp/ban', 'acp/users']);
 

@@ -106,7 +106,7 @@ class database
 		$this->table_prefix		= $table_prefix;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/database');
 

@@ -147,7 +147,7 @@ class groups
 		$this->is_founder		= (int) $user->data['user_type'] === USER_FOUNDER;
 	}
 
-	function main($mode, $action = '', $g = 0, $page = 1)
+	public function main($mode, $action = '', $g = 0, $page = 1)
 	{
 		$this->lang->add_lang('acp/groups');
 

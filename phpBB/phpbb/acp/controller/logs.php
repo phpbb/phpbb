@@ -81,7 +81,7 @@ class logs
 		$this->user			= $user;
 	}
 
-	function main($mode, $page = 1)
+	public function main($mode, $page = 1)
 	{
 		$this->lang->add_lang('mcp');
 

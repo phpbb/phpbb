@@ -97,7 +97,7 @@ class jabber
 		$this->users_table	= $users_table;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/board');
 

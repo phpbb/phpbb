@@ -124,7 +124,7 @@ class profile
 		$this->tables			= $tables;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang(['ucp', 'acp/profile']);
 
@@ -898,7 +898,7 @@ class profile
 	 * @param string	$action
 	 * @return array
 	 */
-	function build_language_options($field_type, $action = 'create')
+	protected function build_language_options($field_type, $action = 'create')
 	{
 		$default_lang_id = !empty($this->edit_lang_id) ? $this->edit_lang_id : $this->lang_defs['iso'][$this->config['default_lang']];
 
@@ -996,7 +996,7 @@ class profile
 	 * @param string	$action
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function save_profile_field($field_type, $action = 'create')
+	protected function save_profile_field($field_type, $action = 'create')
 	{
 		$field_id = $this->request->variable('field_id', 0);
 
@@ -1305,7 +1305,7 @@ class profile
 	 * @param array		$where_fields
 	 * @return void
 	 */
-	function update_insert($table, array $sql_ary, array $where_fields)
+	protected function update_insert($table, array $sql_ary, array $where_fields)
 	{
 		$check_key = '';
 		$where_sql = [];

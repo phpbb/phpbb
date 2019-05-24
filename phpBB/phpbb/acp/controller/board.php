@@ -131,7 +131,7 @@ class board
 		$this->tables			= $tables;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/board');
 

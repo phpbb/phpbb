@@ -94,7 +94,7 @@ class bbcodes
 		$this->bbcode_table	= $bbcode_table;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -519,7 +519,7 @@ class bbcodes
 	 * @param string	$bbcode_tpl
 	 * @return array
 	 */
-	function build_regexp(&$bbcode_match, &$bbcode_tpl)
+	public function build_regexp(&$bbcode_match, &$bbcode_tpl)
 	{
 		$bbcode_match = trim($bbcode_match);
 		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+).*/i', '$1', $bbcode_match);

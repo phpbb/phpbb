@@ -124,7 +124,7 @@ class permissions
 		$this->tables		= $tables;
 	}
 
-	function main($mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/permissions');
 		add_permission_language();
@@ -627,7 +627,7 @@ class permissions
 	 * @param array		$forum_list		The forums
 	 * @return string					The <select> options
 	 */
-	function build_subforum_options(array $forum_list)
+	protected function build_subforum_options(array $forum_list)
 	{
 		$s_options = '';
 
@@ -675,7 +675,7 @@ class permissions
 	 * @param string	$permission_scope	The permission scope (local|global)
 	 * @return string						The <option> list
 	 */
-	function build_permission_dropdown(array $options, $default_option, $permission_scope)
+	protected function build_permission_dropdown(array $options, $default_option, $permission_scope)
 	{
 		$s_dropdown_options = '';
 
@@ -703,7 +703,7 @@ class permissions
 	 * @param array		$ids		The mode's identifiers
 	 * @return void
 	 */
-	function check_existence($mode, $u_mode, array &$ids)
+	protected function check_existence($mode, $u_mode, array &$ids)
 	{
 		if (!empty($ids))
 		{
@@ -740,7 +740,7 @@ class permissions
 	 * @param array			$group_ids			The group identifiers
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function set_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids)
+	protected function set_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids)
 	{
 		$psubmit = $this->request->variable('psubmit', [0 => [0 => 0]]);
 
@@ -833,7 +833,7 @@ class permissions
 	 * @param array			$group_ids			The group identifiers
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function set_all_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids)
+	protected function set_all_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids)
 	{
 		// User or group to be set?
 		$ug_type = !empty($user_ids) ? 'user' : 'group';
@@ -913,7 +913,7 @@ class permissions
 	 * @param array		$auth_settings	The auth settings
 	 * @return bool						false if they differ, true if they are equal
 	 */
-	function check_assigned_role($role_id, array &$auth_settings)
+	protected function check_assigned_role($role_id, array &$auth_settings)
 	{
 		$test_auth_settings = [];
 
@@ -958,7 +958,7 @@ class permissions
 	 * @param array			$forum_ids			The forum identifiers
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function remove_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids, array &$forum_ids)
+	protected function remove_permissions($mode, $u_mode, $permission_type, array &$user_ids, array &$group_ids, array &$forum_ids)
 	{
 		// User or group to be set?
 		$ug_type = !empty($user_ids) ? 'user' : 'group';
@@ -1004,7 +1004,7 @@ class permissions
 	 * @param int|array		$forum_ids			The forum identifiers
 	 * @return void
 	 */
-	function log_action($mode, $action, $permission_type, $ug_type, $ug_id, $forum_ids)
+	protected function log_action($mode, $action, $permission_type, $ug_type, $ug_id, $forum_ids)
 	{
 		if (!is_array($ug_id))
 		{
@@ -1062,7 +1062,7 @@ class permissions
 	 * @param string	$permission		The permission name
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function permission_trace($user_id, $forum_id, $permission)
+	protected function permission_trace($user_id, $forum_id, $permission)
 	{
 		if ($user_id != $this->user->data['user_id'])
 		{
@@ -1293,7 +1293,7 @@ class permissions
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function copy_forum_permissions()
+	protected function copy_forum_permissions()
 	{
 		$this->lang->add_lang('acp/forums');
 
@@ -1349,7 +1349,7 @@ class permissions
 	 * @param string	$permission_type	The permission type (a_|m_|u_|f_)
 	 * @return array						The assigned users / groups identifiers and <select> options
 	 */
-	function retrieve_defined_user_groups($permission_scope, array $forum_ids, $permission_type)
+	protected function retrieve_defined_user_groups($permission_scope, array $forum_ids, $permission_type)
 	{
 		$sql_forum_id = ($permission_scope === 'global') ? 'AND a.forum_id = 0' : (!empty($forum_id) ? 'AND ' . $this->db->sql_in_set('a.forum_id', $forum_ids) : 'AND a.forum_id <> 0');
 

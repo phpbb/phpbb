@@ -123,7 +123,7 @@ class controller
 	 * @param string	$page_title		The page title
 	 * @return void
 	 */
-	function adm_page_header($page_title)
+	public function adm_page_header($page_title)
 	{
 		if (defined('HEADER_INC'))
 		{
@@ -243,7 +243,7 @@ class controller
 	 * @param bool		$copyright_html		Whether or not the copyright should be included
 	 * @return void
 	 */
-	function adm_page_footer($copyright_html = true)
+	public function adm_page_footer($copyright_html = true)
 	{
 		// A listener can set this variable to `true` when it overrides this function
 		$adm_page_footer_override = false;
@@ -290,7 +290,7 @@ class controller
 	 * @param string	$link		The link back to the previous page
 	 * @return string
 	 */
-	function adm_back_link($link)
+	public function adm_back_link($link)
 	{
 		return '<br /><br /><a href="' . $link . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>';
 	}

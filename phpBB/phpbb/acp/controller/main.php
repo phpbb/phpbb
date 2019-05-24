@@ -149,7 +149,7 @@ class main
 		$this->tables				= $tables;
 	}
 
-	function main()
+	public function main()
 	{
 		// Show restore permissions notice
 		if ($this->user->data['user_perm_from'] && $this->auth->acl_get('a_switchperm'))

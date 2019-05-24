@@ -112,7 +112,7 @@ class inactive
 		$this->users_table	= $users_table;
 	}
 
-	function main($page = 1)
+	public function main($page = 1)
 	{
 		$this->lang->add_lang('memberlist');
 

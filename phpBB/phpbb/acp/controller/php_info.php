@@ -35,7 +35,7 @@ class php_info
 		$this->template	= $template;
 	}
 
-	function main()
+	public function main()
 	{
 		ob_start();
 		phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
@@ -86,7 +86,7 @@ class php_info
 		return $this->helper->render('acp_php_info.html', 'ACP_PHP_INFO');
 	}
 
-	function remove_spaces($matches)
+	protected function remove_spaces($matches)
 	{
 		return '<a name="' . str_replace(' ', '_', $matches[1]) . '">';
 	}

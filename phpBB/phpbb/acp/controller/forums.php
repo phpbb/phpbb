@@ -136,7 +136,7 @@ class forums
 		$this->tables				= $tables;
 	}
 
-	function main($p = 0, $action = '', $f = 0)
+	public function main($p = 0, $action = '', $f = 0)
 	{
 		$this->lang->add_lang('acp/forums');
 

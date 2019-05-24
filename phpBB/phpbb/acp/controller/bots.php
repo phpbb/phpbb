@@ -99,7 +99,7 @@ class bots
 		$this->tables		= $tables;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/bots');
 

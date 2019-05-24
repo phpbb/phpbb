@@ -84,7 +84,7 @@ class help_phpbb
 		$this->php_ext		= $php_ext;
 	}
 
-	function main()
+	public function main()
 	{
 		if (!class_exists('phpbb_questionnaire_data_collector'))
 		{

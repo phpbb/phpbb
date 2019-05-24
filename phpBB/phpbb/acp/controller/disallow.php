@@ -82,7 +82,7 @@ class disallow
 		$this->disallow_table	= $disallow_table;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/posting');
 

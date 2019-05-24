@@ -77,7 +77,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param string								$php_ext		php File extension
 	 * @param array									$tables			phpBB tables
 	 */
-	function __construct(
+	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
@@ -169,7 +169,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * 												are getting filled with (ACL_NEVER|ACL_NO|ACL_YES)
 	 * @return array
 	 */
-	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
+	public function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
 	{
 		$hold_ary = [];
 		$view_user_mask = ($mode === 'view' && $group_id === false) ? true : false;
@@ -320,7 +320,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param int		$role_id	The role identifier
 	 * @return array
 	 */
-	function get_role_mask($role_id)
+	public function get_role_mask($role_id)
 	{
 		$hold_ary = [];
 
@@ -361,7 +361,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool		$local
 	 * @param bool		$group_display
 	 */
-	function display_mask($mode, $permission_type, array &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
+	public function display_mask($mode, $permission_type, array &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
 		// Define names for template loops, might be able to be set
 		$tpl_mask = 'mask';
@@ -717,7 +717,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$hold_ary
 	 * @return void
 	 */
-	function display_role_mask(array &$hold_ary)
+	public function display_role_mask(array &$hold_ary)
 	{
 		if (empty($hold_ary))
 		{
@@ -797,7 +797,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool			$clear_prefetch
 	 * @return void
 	 */
-	function acl_set($ug_type, $forum_id, $ug_id, array $auth, $role_id = 0, $clear_prefetch = true)
+	public function acl_set($ug_type, $forum_id, $ug_id, array $auth, $role_id = 0, $clear_prefetch = true)
 	{
 		$forum_id = !is_array($forum_id) ? [$forum_id] : $forum_id;
 		$ug_id = !is_array($ug_id) ? [$ug_id] : $ug_id;
@@ -923,7 +923,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$auth			The auth data
 	 * @return void
 	 */
-	function acl_set_role($role_id, array $auth)
+	public function acl_set_role($role_id, array $auth)
 	{
 		// Get any-flag as required
 		reset($auth);
@@ -990,7 +990,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param string|false		$permission_type	The permission type
 	 * @return void
 	 */
-	function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
+	public function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
 	{
 		if ($ug_id === false && $forum_id === false)
 		{
@@ -1106,7 +1106,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param bool		$show_trace
 	 * @return void
 	 */
-	function assign_cat_array(array &$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
+	public function assign_cat_array(array &$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
 		reset($category_array);
 		foreach ($category_array as $cat => $cat_array)
@@ -1200,7 +1200,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param array		$key_sort_array
 	 * @return void
 	 */
-	function build_permission_array(array &$permission_row, array &$content_array, array &$categories, array $key_sort_array)
+	public function build_permission_array(array &$permission_row, array &$content_array, array &$categories, array $key_sort_array)
 	{
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1260,7 +1260,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param int	$to_user_id
 	 * @return bool
 	 */
-	function ghost_permissions($from_user_id, $to_user_id)
+	public function ghost_permissions($from_user_id, $to_user_id)
 	{
 		if ($to_user_id == ANONYMOUS)
 		{

@@ -74,7 +74,7 @@ class captcha
 		$this->user		= $user;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('acp/board');
 
@@ -181,7 +181,6 @@ class captcha
 					}
 					else
 					{
-
 						throw new back_exception(400, 'CAPTCHA_UNAVAILABLE', 'acp_settings_captcha');
 					}
 				}

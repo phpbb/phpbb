@@ -73,7 +73,7 @@ class update
 		$this->php_ext			= $php_ext;
 	}
 
-	function main()
+	public function main()
 	{
 		$this->lang->add_lang('install');
 
