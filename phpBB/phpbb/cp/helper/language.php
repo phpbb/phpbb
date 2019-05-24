@@ -27,6 +27,14 @@ class language
 	/** @var string php File extension */
 	protected $php_ext;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\config\config		$config			Config object
+	 * @param \phpbb\extension\manager	$ext_manager	Extension manager object
+	 * @param \phpbb\language\language	$lang			Language object
+	 * @param string					$php_ext		php File extension
+	 */
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\extension\manager $ext_manager,
@@ -41,11 +49,21 @@ class language
 		$this->php_ext		= $php_ext;
 	}
 
+	/**
+	 * Load all extensions' language files related to the specified control panel.
+	 *
+	 * This will include all the language files starting with "info_*cp_".
+	 *
+	 * @param string	$cp		The control panel type (acp|mcp|ucp)
+	 * @return void
+	 */
 	public function load_cp_language_files($cp)
 	{
 		$files = [];
 		$finder = $this->ext_manager->get_finder();
 
+		// Order is important, as we are merging later on.
+		// Meaning the last found strings, override previous ones.
 		$languages = array_unique([
 			\phpbb\language\language::FALLBACK_LANGUAGE,
 			$this->config['default_lang'],

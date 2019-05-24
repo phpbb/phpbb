@@ -260,6 +260,7 @@ $lang = array_merge($lang, array(
 	'FORUM_LINK'			=> 'Forum link',
 	'FORUM_LOCATION'		=> 'Forum location',
 	'FORUM_LOCKED'			=> 'Forum locked',
+	'FORUM_NOT_EXIST'		=> 'The forum you selected does not exist.',
 	'FORUM_RULES'			=> 'Forum rules',
 	'FORUM_RULES_LINK'		=> 'Please click here to view the forum rules',
 	'FROM'					=> 'from',

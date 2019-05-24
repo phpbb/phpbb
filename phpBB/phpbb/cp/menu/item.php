@@ -13,15 +13,36 @@
 
 namespace phpbb\cp\menu;
 
-class item
+class item implements item_interface
 {
+	/** @var string Item's auth */
 	protected $auth;
+
+	/** @var string Item's icon */
 	protected $icon;
+
+	/** @var string|array Item's route */
 	protected $route;
+
+	/** @var string Item's parent */
 	protected $parent;
+
+	/** @var string Item's "before" sibling */
 	protected $before;
+
+	/** @var string Item's pagination "page" variable */
 	protected $page;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param string		$auth		Item's auth
+	 * @param string		$icon		Item's icon
+	 * @param string|array	$route		Item's route
+	 * @param string		$parent		Item's parent
+	 * @param string		$before		Item's before sibling
+	 * @param string		$page		Item's pagination variable
+	 */
 	public function __construct($auth = '', $icon = '', $route = '', $parent = '', $before = '', $page = '')
 	{
 		$this->auth 	= $auth;
@@ -32,31 +53,49 @@ class item
 		$this->page		= $page;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_auth()
 	{
 		return $this->auth;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_icon()
 	{
 		return $this->icon;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_parent()
 	{
 		return $this->parent;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_before()
 	{
 		return $this->before;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_route()
 	{
 		return $this->route;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_page()
 	{
 		return $this->page;

@@ -2039,12 +2039,7 @@ class users
 							]);
 						}
 					}
-				}
 
-				// Avatar manager is not initialized if avatars are disabled
-				/** @todo is this still true?? */
-				if (isset($this->avatar_manager))
-				{
 					// Replace "error" strings with their real, localised form
 					$error = $this->avatar_manager->localize_errors($this->user, $error);
 				}

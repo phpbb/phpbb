@@ -81,7 +81,7 @@ class local extends \phpbb\avatar\driver\driver
 				}
 
 				$template->assign_block_vars('avatar_local_row.avatar_local_col', array(
-					'AVATAR_IMAGE'  => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $img['file'],
+					'AVATAR_IMAGE'  => $this->path_helper->update_web_root_path($this->phpbb_root_path) . $this->config['avatar_gallery_path'] . '/' . $img['file'],
 					'AVATAR_NAME' 	=> $img['name'],
 					'AVATAR_FILE' 	=> $img['filename'],
 					'CHECKED'			=> $img['file'] === $row['avatar'],

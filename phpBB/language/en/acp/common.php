@@ -150,7 +150,6 @@ $lang = array_merge($lang, array(
 	'ACP_USERS_PRUNE'				=> 'Prune users',
 	'ACP_WORDS'						=> 'Word censoring',
 
-
 	'ACP_ADMINISTRATORS'		=> 'Administrators',
 	'ACP_ADMIN_LOGS'			=> 'Admin log',
 	'ACP_ADMIN_ROLES'			=> 'Admin roles',
@@ -210,7 +209,6 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_PERMISSIONS'		=> 'Group permissions',
 	'ACP_GROUPS_POSITION'			=> 'Manage group positions',
 
-
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
@@ -222,52 +220,30 @@ $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
 	'ACP_LOGGING'				=> 'Logging',
 
-	'ACP_MAIN'					=> 'ACP index',
+	'ACP_ATTACHMENTS_MANAGE_EXPLAIN'	=> 'Here you can list and delete files attached to posts and private messages.',
 
-	'ACP_MANAGE_ATTACHMENTS'			=> 'Manage attachments',
-	'ACP_MANAGE_ATTACHMENTS_EXPLAIN'	=> 'Here you can list and delete files attached to posts and private messages.',
-
-	'ACP_MANAGE_EXTENSIONS'		=> 'Manage attachment extensions',
-	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
-	'ACP_MANAGE_REASONS'		=> 'Manage report/denial reasons',
-	'ACP_MANAGE_USERS'			=> 'Manage users',
 	'ACP_MESSAGES'				=> 'Messages',
-	'ACP_MESSAGE_SETTINGS'		=> 'Private message settings',
-	'ACP_MODULE_MANAGEMENT'		=> 'Module management',
 	'ACP_MOD_LOGS'				=> 'Moderator log',
 	'ACP_MOD_ROLES'				=> 'Moderator roles',
 
 	'ACP_NO_ITEMS'				=> 'There are no items yet.',
 
-	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphaned attachments',
-
 	'ACP_PERMISSIONS'			=> 'Permissions',
 	'ACP_PERMISSION_MASKS'		=> 'Permission masks',
 	'ACP_PERMISSION_ROLES'		=> 'Permission roles',
 	'ACP_PERMISSION_TRACE'		=> 'Permission trace',
-	'ACP_POST_SETTINGS'			=> 'Post settings',
-	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
-	'ACP_PRUNE_USERS'			=> 'Prune users',
 	'ACP_PRUNING'				=> 'Pruning',
 
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
 
 	'ACP_RANKS'					=> 'Ranks',
-	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
 	'ACP_FEED'					=> 'Feed management',
-	'ACP_FEED_SETTINGS'			=> 'Feed settings',
 
 	'ACP_SEARCH'				=> 'Search configuration',
-	'ACP_SEARCH_SETTINGS'		=> 'Search settings',
 
-	'ACP_SECURITY_SETTINGS'		=> 'Security settings',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server configuration',
-	'ACP_SERVER_SETTINGS'		=> 'Server settings',
-	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
-
-	'ACP_STORAGE_SETTINGS'		=> 'Storage settings',
 
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
@@ -279,8 +255,8 @@ $lang = array_merge($lang, array(
 	'ACP_THEMES'				=> 'Themes',
 
 	'ACP_USERS_FORUM_PERMISSIONS'	=> 'User forum permissions',
-	'ACP_USERS_LOGS'				=> 'User logs',
 	'ACP_USERS_PERMISSIONS'			=> 'User permissions',
+	'ACP_USER_LOGS'					=> 'User logs',
 	'ACP_USER_ATTACH'				=> 'Attachments',
 	'ACP_USER_AVATAR'				=> 'Avatar',
 	'ACP_USER_FEEDBACK'				=> 'Feedback',
@@ -441,7 +417,7 @@ $lang = array_merge($lang, array(
 	'ACP_ADMIN_LOGS_EXPLAIN'	=> 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. This log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_MOD_LOGS_EXPLAIN'		=> 'This lists all actions done on forums, topics and posts as well as actions carried out on users by moderators, including banning. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'ACP_USERS_LOGS_EXPLAIN'	=> 'This lists all actions carried out by users or on users (reports, warnings and user notes).',
+	'ACP_USER_LOGS_EXPLAIN'	=> 'This lists all actions carried out by users or on users (reports, warnings and user notes).',
 	'ALL_ENTRIES'				=> 'All entries',
 
 	'DISPLAY_LOG'	=> 'Display entries from previous',
@@ -841,30 +817,6 @@ $lang = array_merge($lang, array(
 	'LOG_STYLE_DELETE'			=> '<strong>Deleted style</strong><br />» %s',
 	'LOG_STYLE_EDIT_DETAILS'	=> '<strong>Edited style</strong><br />» %s',
 	'LOG_STYLE_EXPORT'			=> '<strong>Exported style</strong><br />» %s',
-
-	// @deprecated 3.1
-	'LOG_TEMPLATE_ADD_DB'			=> '<strong>Added new template set to database</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_TEMPLATE_ADD_FS'			=> '<strong>Add new template set on filesystem</strong><br />» %s',
-	'LOG_TEMPLATE_CACHE_CLEARED'	=> '<strong>Deleted cached versions of template files in template set <em>%1$s</em></strong><br />» %2$s',
-	'LOG_TEMPLATE_DELETE'			=> '<strong>Deleted template set</strong><br />» %s',
-	'LOG_TEMPLATE_EDIT'				=> '<strong>Edited template set <em>%1$s</em></strong><br />» %2$s',
-	'LOG_TEMPLATE_EDIT_DETAILS'		=> '<strong>Edited template details</strong><br />» %s',
-	'LOG_TEMPLATE_EXPORT'			=> '<strong>Exported template set</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_TEMPLATE_REFRESHED'		=> '<strong>Refreshed template set</strong><br />» %s',
-
-	// @deprecated 3.1
-	'LOG_THEME_ADD_DB'			=> '<strong>Added new theme to database</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_THEME_ADD_FS'			=> '<strong>Add new theme on filesystem</strong><br />» %s',
-	'LOG_THEME_DELETE'			=> '<strong>Theme deleted</strong><br />» %s',
-	'LOG_THEME_EDIT_DETAILS'	=> '<strong>Edited theme details</strong><br />» %s',
-	'LOG_THEME_EDIT'			=> '<strong>Edited theme <em>%1$s</em></strong>',
-	'LOG_THEME_EDIT_FILE'		=> '<strong>Edited theme <em>%1$s</em></strong><br />» Modified file <em>%2$s</em>',
-	'LOG_THEME_EXPORT'			=> '<strong>Exported theme</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_THEME_REFRESHED'		=> '<strong>Refreshed theme</strong><br />» %s',
 
 	'LOG_UPDATE_DATABASE'	=> '<strong>Updated Database from version %1$s to version %2$s</strong>',
 	'LOG_UPDATE_PHPBB'		=> '<strong>Updated phpBB from version %1$s to version %2$s</strong>',

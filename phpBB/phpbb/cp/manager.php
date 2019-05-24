@@ -43,6 +43,14 @@ class manager
 	/** @var string Control panel pagination route suffix */
 	protected $route_pagination = '_pagination';
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\di\service_collection		$acp_collection		ACP Menu item collection
+	 * @param \phpbb\acp\helper\constructor		$acp_constructor	ACP Construct object
+	 * @param \phpbb\cp\helper\auth				$cp_auth			Control panel auth object
+	 * @param \phpbb\cp\helper\language			$cp_lang			Control panel language object
+	 */
 	public function __construct(
 		\phpbb\di\service_collection $acp_collection,
 		\phpbb\acp\helper\constructor $acp_constructor,

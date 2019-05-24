@@ -42,9 +42,6 @@ class logs
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @todo */
-	public $log_type;
-
 	/**
 	 * Constructor.
 	 *
@@ -85,7 +82,7 @@ class logs
 	{
 		$this->lang->add_lang('mcp');
 
-		$u_mode = "acp_logs_{$mode}";
+		$u_mode = 'acp_logs_' . ($mode === 'critical' ? 'error' : $mode);
 
 		// Set up general vars
 		$action		= $this->request->variable('action', '');
@@ -101,9 +98,6 @@ class logs
 
 		$limit		= (int) $this->config['topics_per_page'];
 		$start		= ($page - 1) * $limit;
-
-		/** @todo is this even used? */
-		$this->log_type = constant('LOG_' . strtoupper($mode));
 
 		// Delete entries if requested and able
 		if (($delete_mark || $delete_all) && $this->auth->acl_get('a_clearlogs'))

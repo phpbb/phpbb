@@ -1155,7 +1155,6 @@ class groups
 					break;
 				}
 			}
-			// @todo is thrown, but @throws tag is missing in respective DocBlocks
 			catch (\phpbb\groupposition\exception $exception)
 			{
 				throw new back_exception(400, $exception->getMessage(), 'acp_groups_positions');
@@ -1168,8 +1167,10 @@ class groups
 				switch ($action)
 				{
 					case 'add':
+						$group_position->add_group($group_id);
+					break;
 					case 'delete':
-						$group_position->{$action . '_group'}($group_id);
+						$group_position->delete_group($group_id);
 					break;
 
 					case 'move_up':
@@ -1178,7 +1179,6 @@ class groups
 					break;
 				}
 			}
-			// @todo is thrown, but @throws tag is missing in respective DocBlocks
 			catch (\phpbb\groupposition\exception $exception)
 			{
 				throw new back_exception(400, $exception->getMessage(), 'acp_groups_positions');

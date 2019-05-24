@@ -14,7 +14,6 @@
 namespace phpbb\acp\controller;
 
 use phpbb\exception\back_exception;
-use phpbb\exception\http_exception;
 
 class forums
 {
@@ -905,9 +904,6 @@ class forums
 					$this->auth->acl_clear_prefetch();
 					$this->cache->destroy('sql', $this->tables['forums']);
 
-					// @todo permissions route
-					$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_id;
-
 					$message = $this->lang->lang('FORUM_UPDATED');
 
 					// Redirect to permissions
@@ -1072,8 +1068,7 @@ class forums
 
 		if ($row === false)
 		{
-			// @todo Hard-coded language
-			throw new http_exception(400, "Forum #$forum_id does not exist");
+			throw new back_exception(400, 'FORUM_NOT_EXIST', 'acp_forums_manage');
 		}
 
 		return $row;
@@ -1961,9 +1956,6 @@ class forums
 	 */
 	protected function delete_forum_content($forum_id)
 	{
-		// @todo Why is this even included? Otherwise wrap it in a if (!function_exists())
-		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
-
 		$this->db->sql_transaction('begin');
 
 		$topic_ids = [];

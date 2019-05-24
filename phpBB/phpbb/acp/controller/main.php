@@ -170,7 +170,7 @@ class main
 				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
 			]);
 
-			return $this->helper->render('acp_main.html', 'ACP_MAIN');
+			return $this->helper->render('acp_main.html', 'ACP_INDEX');
 		}
 
 		$action = $this->request->variable('action', '');
@@ -799,6 +799,6 @@ class main
 			$this->config->set('dbms_version', $this->db->sql_server_info(true));
 		}
 
-		return $this->helper->render('acp_main.html', 'ACP_MAIN');
+		return $this->helper->render('acp_main.html', 'ACP_INDEX');
 	}
 }

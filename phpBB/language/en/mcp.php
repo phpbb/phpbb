@@ -104,7 +104,6 @@ $lang = array_merge($lang, array(
 	'FORK_TOPICS_CONFIRM'	=> 'Are you sure you want to copy the selected topics?',
 	'FORUM_DESC'			=> 'Description',
 	'FORUM_NAME'			=> 'Forum name',
-	'FORUM_NOT_EXIST'		=> 'The forum you selected does not exist.',
 	'FORUM_NOT_POSTABLE'	=> 'The forum you selected cannot be posted to.',
 	'FORUM_STATUS'			=> 'Forum status',
 	'FORUM_STYLE'			=> 'Forum style',

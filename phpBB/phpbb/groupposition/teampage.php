@@ -198,6 +198,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* @param	int		$group_id	group_id of the group to be added
 	* @param	int		$parent_id	Teampage ID of the parent item
 	* @return	bool		True if the group was added successfully
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function add_group_teampage($group_id, $parent_id)
 	{

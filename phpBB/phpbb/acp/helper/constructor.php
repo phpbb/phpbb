@@ -81,6 +81,9 @@ class constructor implements \phpbb\cp\constructor_interface
 		$this->php_ext		= $php_ext;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setup()
 	{
 		define('ADMIN_START', true);

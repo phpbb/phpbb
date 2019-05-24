@@ -15,5 +15,16 @@ namespace phpbb\cp;
 
 interface constructor_interface
 {
+	/**
+	 * Set up everything needed for a control panel.
+	 * This checks authentication and handles all other miscellaneous things.
+	 *
+	 * @see \phpbb\acp\helper\constructor::setup()
+	 * @see \phpbb\mcp\helper\constructor::setup() @todo
+	 * @see \phpbb\ucp\helper\constructor::setup() @todo
+	 *
+	 * @throws \phpbb\exception\exception_interface
+	 * @return void
+	 */
 	public function setup();
 }

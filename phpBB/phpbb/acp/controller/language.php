@@ -58,10 +58,6 @@ class language
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	protected $dir;
-	protected $file;
-
 	/**
 	 * Constructor.
 	 *
@@ -131,13 +127,6 @@ class language
 		add_form_key($form_key);
 
 		$lang_id = $this->request->variable('id', 0);
-
-		/** @todo is this even used? */
-		$selected_lang_file = $this->request->variable('language_file', '|common.' . $this->php_ext);
-		$selected_lang_file = explode('|', $selected_lang_file);
-
-		$this->dir	= basename($selected_lang_file[0]);
-		$this->file	= basename($selected_lang_file[1]);
 
 		switch ($action)
 		{
@@ -310,6 +299,8 @@ class language
 					 */
 					$vars = ['lang_iso', 'delete_message'];
 					extract($this->dispatcher->trigger_event('core.acp_language_after_delete', compact($vars)));
+
+					unset($lang_iso);
 
 					return $this->helper->message_back($delete_message, 'acp_language_manage');
 				}

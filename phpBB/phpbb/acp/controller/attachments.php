@@ -70,6 +70,9 @@ class attachments
 	/** @var string phpBB root path */
 	protected $root_path;
 
+	/** @var string phpBB web path */
+	protected $web_path;
+
 	/** @var string php File extension */
 	protected $php_ext;
 
@@ -94,6 +97,7 @@ class attachments
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\pagination						$pagination			Pagination object
+	 * @param \phpbb\path_helper					$path_helper		Path helper object
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\template\template				$template			Template object
 	 * @param \phpbb\user							$user				User object
@@ -115,6 +119,7 @@ class attachments
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
+		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
@@ -142,6 +147,7 @@ class attachments
 
 		$this->admin_path			= $admin_path;
 		$this->root_path			= $root_path;
+		$this->web_path				= $path_helper->update_web_root_path($root_path);
 		$this->php_ext				= $php_ext;
 		$this->tables				= $tables;
 	}
@@ -816,7 +822,7 @@ class attachments
 							'GROUP_NAME'			=> $ext_group_row['group_name'],
 							'ALLOW_GROUP'			=> $ext_group_row['allow_group'],
 							'ALLOW_IN_PM'			=> $ext_group_row['allow_in_pm'],
-							'UPLOAD_ICON_SRC'		=> $this->root_path . $img_path . '/' . $ext_group_row['upload_icon'],
+							'UPLOAD_ICON_SRC'		=> $this->web_path . $img_path . '/' . $ext_group_row['upload_icon'],
 							'EXTGROUP_FILESIZE'		=> $ext_group_row['max_filesize'],
 							'ASSIGNED_EXTENSIONS'	=> $assigned_extensions,
 
