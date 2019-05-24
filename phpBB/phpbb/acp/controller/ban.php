@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class ban
 {
 	/** @var \phpbb\db\driver\driver_interface */
@@ -20,6 +23,9 @@ class ban
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -42,27 +48,24 @@ class ban
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\db\driver\driver_interface	$db			Database object
-	 * @param \phpbb\event\dispatcher			$dispatcher	Event dispatcher object
-	 * @param \phpbb\language\language			$lang		Language object
-	 * @param \phpbb\request\request			$request	Request object
-	 * @param \phpbb\template\template			$template	Template object
-	 * @param \phpbb\user						$user		User object
-	 * @param string							$root_path	phpBB root path
-	 * @param string							$php_ext	php File extension
-	 * @param array								$tables		phpBB tables
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
+	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -74,6 +77,7 @@ class ban
 	{
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -84,7 +88,7 @@ class ban
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang(['acp/ban', 'acp/users']);
 
@@ -96,12 +100,14 @@ class ban
 		$submit_ban		= $this->request->is_set_post('bansubmit');
 		$submit_unban	= $this->request->is_set_post('unbansubmit');
 
+		$u_mode = "acp_ban_{$mode}s";
+
 		$form_key = 'acp_ban';
 		add_form_key($form_key);
 
 		if (($submit_ban || $submit_unban) && !check_form_key($form_key))
 		{
-			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new form_invalid_exception($u_mode);
 		}
 
 		// Ban submitted?
@@ -148,7 +154,7 @@ class ban
 
 				if ($abort_ban)
 				{
-					trigger_error($abort_ban . adm_back_link($this->u_action));
+					throw new back_exception(400, $abort_ban, $u_mode);
 				}
 
 				user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
@@ -177,7 +183,7 @@ class ban
 				];
 				extract($this->dispatcher->trigger_event('core.acp_ban_after', compact($vars)));
 
-				trigger_error($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
+				return $this->helper->message_back('BAN_UPDATE_SUCCESSFUL', $u_mode);
 			}
 		}
 		else if ($submit_unban)
@@ -188,7 +194,7 @@ class ban
 			{
 				user_unban($mode, $ban);
 
-				trigger_error($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
+				return $this->helper->message_back('BAN_UPDATE_SUCCESSFUL', $u_mode);
 			}
 		}
 
@@ -214,13 +220,11 @@ class ban
 
 			'S_USERNAME_BAN'		=> $mode === 'user',
 
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->helper->route($u_mode),
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),
 		]);
 
-		$this->page_title = $l_title;
-		$this->tpl_name = 'acp_ban';
-		// @todo return $this->helper->render('acp_ban.html', $l_title);
+		return $this->helper->render('acp_ban.html', $l_title);
 	}
 
 	/**

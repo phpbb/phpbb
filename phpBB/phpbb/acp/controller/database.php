@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class database
 {
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -29,6 +32,9 @@ class database
 
 	/** @var \phpbb\filesystem\temp */
 	protected $filesystem_temp;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -51,11 +57,6 @@ class database
 	/** @var string Table prefix */
 	protected $table_prefix;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -64,6 +65,7 @@ class database
 	 * @param \phpbb\db\tools\tools_interface			$db_tools			Database tools object
 	 * @param \phpbb\db\extractor\extractor_interface	$extractor			Database extractor object
 	 * @param \phpbb\filesystem\temp					$filesystem_temp	Temporary filesystem object
+	 * @param \phpbb\acp\helper\controller				$helper				ACP Controller helper object
 	 * @param \phpbb\language\language					$lang				Language object
 	 * @param \phpbb\log\log							$log				Log object
 	 * @param \phpbb\request\request					$request			Request object
@@ -78,6 +80,7 @@ class database
 		\phpbb\db\tools\tools_interface $db_tools,
 		\phpbb\db\extractor\extractor_interface $extractor,
 		\phpbb\filesystem\temp $filesystem_temp,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -92,6 +95,7 @@ class database
 		$this->db_tools			= $db_tools;
 		$this->extractor		= $extractor;
 		$this->filesystem_temp	= $filesystem_temp;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->log				= $log;
 		$this->request			= $request;
@@ -102,12 +106,9 @@ class database
 		$this->table_prefix		= $table_prefix;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('acp/database');
-
-		$this->tpl_name = 'acp_database';
-		$this->page_title = 'ACP_DATABASE';
 
 		$action	= $this->request->variable('action', '');
 
@@ -119,8 +120,6 @@ class database
 		switch ($mode)
 		{
 			case 'backup':
-				$this->page_title = 'ACP_BACKUP';
-
 				switch ($action)
 				{
 					case 'download':
@@ -131,12 +130,12 @@ class database
 
 						if (empty($table))
 						{
-							trigger_error($this->lang->lang('TABLE_SELECT_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'TABLE_SELECT_ERROR', 'acp_backup');
 						}
 
 						if (!check_form_key($form_key))
 						{
-							trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new form_invalid_exception('acp_backup');
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -218,7 +217,7 @@ class database
 						}
 						catch (\phpbb\exception\runtime_exception $e)
 						{
-							trigger_error($e->getMessage(), E_USER_ERROR);
+							throw new back_exception(503, $e->getMessage(), 'acp_backup');
 						}
 
 						try
@@ -271,7 +270,7 @@ class database
 						}
 						catch (\phpbb\exception\runtime_exception $e)
 						{
-							trigger_error($e->getMessage(), E_USER_ERROR);
+							throw new back_exception(503, $e->getMessage(), 'acp_backup');
 						}
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_BACKUP');
@@ -281,7 +280,7 @@ class database
 							exit;
 						}
 
-						trigger_error($this->lang->lang('BACKUP_SUCCESS') . adm_back_link($this->u_action));
+						return $this->helper->message_back('BACKUP_SUCCESS', 'acp_backup');
 					break;
 
 					default:
@@ -296,7 +295,7 @@ class database
 						}
 						unset($tables);
 
-						$this->template->assign_var('U_ACTION', $this->u_action . '&amp;action=download');
+						$this->template->assign_var('U_ACTION', $this->helper->route('acp_backup', ['action' => 'download']));
 
 						$available_methods = ['gzip' => 'zlib', 'bzip2' => 'bz2'];
 
@@ -316,25 +315,23 @@ class database
 			break;
 
 			case 'restore':
-				$this->page_title = 'ACP_RESTORE';
-
 				switch ($action)
 				{
 					case 'submit':
-						$delete = $this->request->variable('delete', '');
 						$file = $this->request->variable('file', '');
+						$delete = $this->request->variable('delete', '');
 						$download = $this->request->variable('download', '');
 
 						if (!preg_match('#^backup_\d{10,}_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
 						{
-							trigger_error($this->lang->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'BACKUP_INVALID', 'acp_restore');
 						}
 
 						$file_name = $matches[0];
 
 						if (!$this->storage->exists($file_name))
 						{
-							trigger_error($this->lang->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'BACKUP_INVALID', 'acp_restore');
 						}
 
 						if ($delete)
@@ -356,14 +353,16 @@ class database
 								}
 								catch (\Exception $e)
 								{
-									trigger_error($this->lang->lang('BACKUP_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
+									throw new back_exception(503, 'BACKUP_ERROR', 'acp_restore');
 								}
 
-								trigger_error($this->lang->lang('BACKUP_DELETE') . adm_back_link($this->u_action));
+								return $this->helper->message_back('BACKUP_DELETE', 'acp_restore');
 							}
 							else
 							{
 								confirm_box(false, $this->lang->lang('DELETE_SELECTED_BACKUP'), build_hidden_fields(['delete' => $delete, 'file' => $file]));
+
+								return redirect($this->helper->route('acp_restore'));
 							}
 						}
 						else if ($download || confirm_box(true))
@@ -426,7 +425,7 @@ class database
 							}
 							catch (\phpbb\storage\exception\exception $e)
 							{
-								trigger_error($this->lang->lang('RESTORE_DOWNLOAD_FAIL') . adm_back_link($this->u_action));
+								throw new back_exception(503, 'RESTORE_DOWNLOAD_FAIL', 'acp_restore');
 							}
 
 							switch ($matches[1])
@@ -501,10 +500,12 @@ class database
 											{
 												if ($sub === false)
 												{
-													trigger_error($this->lang->lang('RESTORE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
+													throw new back_exception(503, 'RESTORE_FAILURE', 'acp_restore');
 												}
+
 												pg_put_line($this->db->get_db_connect_id(), $sub . "\n");
 											}
+
 											pg_put_line($this->db->get_db_connect_id(), "\\.\n");
 											pg_end_copy($this->db->get_db_connect_id());
 										}
@@ -536,11 +537,13 @@ class database
 
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_RESTORE');
 
-							trigger_error($this->lang->lang('RESTORE_SUCCESS') . adm_back_link($this->u_action));
+							return $this->helper->message_back('RESTORE_SUCCESS', 'acp_restore');
 						}
 						else if (!$download)
 						{
 							confirm_box(false, $this->lang->lang('RESTORE_SELECTED_BACKUP'), build_hidden_fields(['file' => $file]));
+
+							return redirect($this->helper->route('acp_restore'));
 						}
 					break;
 
@@ -590,13 +593,13 @@ class database
 							}
 						}
 
-						$this->template->assign_var('U_ACTION', $this->u_action . '&amp;action=submit');
+						$this->template->assign_var('U_ACTION', $this->helper->route('acp_restore', ['action' => 'submit']));
 					break;
 				}
 			break;
 		}
 
-		// @todo return $this->helper->render('acp_database.html', $this->lang->lang('ACP_' . strtoupper($mode));
+		return $this->helper->render('acp_database.html', 'ACP_' . utf8_strtoupper($mode));
 	}
 }
 

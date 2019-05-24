@@ -30,6 +30,9 @@ class auth_admin extends \phpbb\auth\auth
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
 
+	/** @var controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -64,6 +67,7 @@ class auth_admin extends \phpbb\auth\auth
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\group\helper					$group_helper	Group helper object
+	 * @param controller							$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\permissions					$permissions	Permissions object
 	 * @param \phpbb\template\template				$template		Template object
@@ -78,6 +82,7 @@ class auth_admin extends \phpbb\auth\auth
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\group\helper $group_helper,
+		controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\permissions $permissions,
 		\phpbb\template\template $template,
@@ -92,6 +97,7 @@ class auth_admin extends \phpbb\auth\auth
 		$this->cache		= $cache;
 		$this->db			= $db;
 		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->permissions	= $permissions;
 		$this->template		= $template;
@@ -781,124 +787,6 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	 * @todo
-	 * NOTE: this function is not in use atm
-	 * Add a new option to the list ... $options is a hash of form ->
-	 * $options = array(
-	 *	'local'		=> array('option1', 'option2', ...),
-	 *	'global'	=> array('optionA', 'optionB', ...)
-	 * );
-	 *
-	 * @param array		$options
-	 * @return bool
-	 */
-	function acl_add_option(array $options)
-	{
-		if (!is_array($options))
-		{
-			return false;
-		}
-
-		$cur_options = [];
-
-		// Determine current options
-		$sql = 'SELECT auth_option, is_global, is_local
-			FROM ' . $this->tables['acl_options'] . '
-			ORDER BY auth_option_id';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$cur_options[$row['auth_option']] = ($row['is_global'] && $row['is_local']) ? 'both' : (($row['is_global']) ? 'global' : 'local');
-		}
-		$this->db->sql_freeresult($result);
-
-		// Here we need to insert new options ... this requires discovering whether
-		// an options is global, local or both and whether we need to add an permission
-		// set flag (x_)
-		$new_options = ['local' => [], 'global' => []];
-
-		foreach ($options as $type => $option_ary)
-		{
-			$option_ary = array_unique($option_ary);
-
-			foreach ($option_ary as $option_value)
-			{
-				$new_options[$type][] = $option_value;
-
-				$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
-
-				if (!in_array($flag, $new_options[$type]))
-				{
-					$new_options[$type][] = $flag;
-				}
-			}
-		}
-		unset($options);
-
-		$options = [
-			'global'	=> array_diff($new_options['global'], $new_options['local']),
-			'local'		=> array_diff($new_options['local'], $new_options['global']),
-			'both'		=> array_intersect($new_options['local'], $new_options['global']),
-		];
-
-		// Now check which options to add/update
-		$add_options = $update_options = [];
-
-		// First local ones...
-		foreach ($options as $type => $option_ary)
-		{
-			foreach ($option_ary as $option)
-			{
-				if (!isset($cur_options[$option]))
-				{
-					$add_options[] = [
-						'auth_option'	=> (string) $option,
-						'is_global'		=> ($type == 'global' || $type == 'both') ? 1 : 0,
-						'is_local'		=> ($type == 'local' || $type == 'both') ? 1 : 0,
-					];
-
-					continue;
-				}
-
-				// Else, update existing entry if it is changed...
-				if ($type === $cur_options[$option])
-				{
-					continue;
-				}
-
-				// New type is always both:
-				// If is now both, we set both.
-				// If it was global the new one is local and we need to set it to both
-				// If it was local the new one is global and we need to set it to both
-				$update_options[] = $option;
-			}
-		}
-
-		if (!empty($add_options))
-		{
-			$this->db->sql_multi_insert($this->tables['acl_options'], $add_options);
-		}
-
-		if (!empty($update_options))
-		{
-			$sql = 'UPDATE ' . $this->tables['acl_options'] . '
-				SET is_global = 1, is_local = 1
-				WHERE ' . $this->db->sql_in_set('auth_option', $update_options);
-			$this->db->sql_query($sql);
-		}
-
-		$this->cache->destroy('_acl_options');
-		$this->acl_clear_prefetch();
-
-		// Because we just changed the options and also purged the options cache,
-		// we instantly update/regenerate it for later calls to succeed.
-		$this->acl_options = [];
-		$this->init();
-
-		return true;
-	}
-
-	/**
 	 * Set a user or group ACL record
 	 *
 	 * @param string		$ug_type			The type (user|group)
@@ -1272,8 +1160,8 @@ class auth_admin extends \phpbb\auth\auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> $show_trace ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> $show_trace ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> $show_trace ? $this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission]) : '',
+						'UA_TRACE'		=> $show_trace ? addslashes($this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission])) : '',
 
 						'PERMISSION'	=> $this->permissions->get_permission_lang($permission),
 					]);
@@ -1290,8 +1178,8 @@ class auth_admin extends \phpbb\auth\auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> $show_trace ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> $show_trace ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> $show_trace ? $this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission]) : '',
+						'UA_TRACE'		=> $show_trace ? addslashes($this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission])) : '',
 
 						'PERMISSION'	=> $this->permissions->get_permission_lang($permission),
 					]);

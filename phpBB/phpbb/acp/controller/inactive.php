@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class inactive
 {
 	/** @var \phpbb\auth\auth */
@@ -23,6 +26,9 @@ class inactive
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,17 +60,13 @@ class inactive
 	/** @var string phpBB users table */
 	protected $users_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\pagination					$pagination		Pagination object
@@ -80,6 +82,7 @@ class inactive
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -95,6 +98,7 @@ class inactive
 		$this->auth			= $auth;
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -108,7 +112,7 @@ class inactive
 		$this->users_table	= $users_table;
 	}
 
-	function main($id, $mode)
+	function main($page = 1)
 	{
 		$this->lang->add_lang('memberlist');
 
@@ -122,7 +126,6 @@ class inactive
 
 		$action = $this->request->variable('action', '');
 		$submit = $this->request->is_set_post('submit');
-		$start	= $this->request->variable('start', 0);
 		$mark	= $this->request->is_set_post('mark') ? $this->request->variable('mark', [0]) : [];
 
 		// Sort keys
@@ -133,7 +136,8 @@ class inactive
 		// We build the sort key and per page settings here, because they may be needed later
 
 		// Number of entries to display
-		$per_page = $this->request->variable('users_per_page', (int) $this->config['topics_per_page']);
+		$per_page = (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $per_page;
 
 		// Sorting
 		$limit_days = [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
@@ -147,7 +151,7 @@ class inactive
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
 			{
-				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new form_invalid_exception('acp_users_inactive');
 			}
 
 			switch ($action)
@@ -221,14 +225,13 @@ class inactive
 								]);
 							}
 
-							trigger_error($this->lang->lang('LOG_INACTIVE_ACTIVATE', implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)) . adm_back_link($this->u_action));
+							return $this->helper->message_back('LOG_INACTIVE_ACTIVATE', 'acp_users_inactive', [], [implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)]);
 						}
 
-						// For activate we really need to redirect, else a refresh can result in users being deactivated again
-						$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
-						$u_action .= ($per_page != $this->config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+						$route = $page === 1 ? 'acp_users_inactive' : 'acp_users_inactive_pagination';
+						parse_str($u_sort_param, $params);
 
-						redirect($u_action);
+						redirect($this->helper->route($route, $params + ['page' => $page]));
 					}
 					else if ($action === 'delete')
 					{
@@ -236,34 +239,33 @@ class inactive
 						{
 							if (!$this->auth->acl_get('a_userdel'))
 							{
-								send_status_line(403, 'Forbidden');
-								trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+								throw new back_exception(403, 'NO_AUTH_OPERATION', 'acp_users_inactive');
 							}
 
 							user_delete('retain', $mark, true);
 
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, [implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)]);
 
-							trigger_error($this->lang->lang('LOG_INACTIVE_DELETE', implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)) . adm_back_link($this->u_action));
+							return $this->helper->message_back('LOG_INACTIVE_DELETE', 'acp_users_inactive', [], [implode($this->lang->lang('COMMA_SEPARATOR'), $user_affected)]);
 						}
 						else
 						{
 							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-								'mode'			=> $mode,
 								'action'		=> $action,
 								'start'			=> $start,
 								'mark'			=> $mark,
 								'submit'		=> true,
 							]));
+
+							return redirect($this->helper->route('acp_users_inactive'));
 						}
 					}
-
 				break;
 
 				case 'remind':
 					if (empty($this->config['email_enable']))
 					{
-						trigger_error($this->lang->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'EMAIL_DISABLED', 'acp_users_inactive');
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
@@ -318,16 +320,14 @@ class inactive
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INACTIVE_REMIND', false, [implode(', ', $usernames)]);
 
-						trigger_error($this->lang->lang('LOG_INACTIVE_REMIND', implode($this->lang->lang('COMMA_SEPARATOR'), $usernames)) . adm_back_link($this->u_action));
+						return $this->helper->message_back('LOG_INACTIVE_REMIND', 'acp_users_inactive', [], [implode($this->lang->lang('COMMA_SEPARATOR'), $usernames)]);
 					}
 					$this->db->sql_freeresult($result);
 
-					// For remind we really need to redirect, else a refresh can result in more than one reminder
-					$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
-					$u_action .= ($per_page !== (int) $this->config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+					$route = $page === 1 ? 'acp_users_inactive' : 'acp_users_inactive_pagination';
+					parse_str($u_sort_param, $params);
 
-					redirect($u_action);
-
+					redirect($this->helper->route($route, $params + ['page' => $page]));
 				break;
 			}
 		}
@@ -356,12 +356,12 @@ class inactive
 
 				'REMINDED_EXPLAIN'	=> $this->lang->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $this->user->format_date($row['user_reminded_time'])),
 
-				'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview&amp;redirect=acp_inactive')),
+				'USERNAME_FULL'	=> str_replace(['&u=', '&amp;u='], '?u=', get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $this->helper->route('acp_users_manage', ['mode' => 'overview']))),
 				'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_COLOR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_EMAIL'	=> $row['user_email'],
 
-				'U_USER_ADMIN'	=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+				'U_USER_ADMIN'	=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
 				'U_SEARCH_USER'	=> $this->auth->acl_get('u_search') ? append_sid("{$this->root_path}search.$this->php_ext", "author_id={$row['user_id']}&amp;sr=posts") : '',
 			]);
 		}
@@ -372,8 +372,13 @@ class inactive
 			$option_ary += ['remind' => 'REMIND'];
 		}
 
-		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $inactive_count, $per_page, $start);
+		$route = $page === 1 ? 'acp_users_inactive' : 'acp_users_inactive_pagination';
+		parse_str($u_sort_param, $params);
+
+		$this->pagination->generate_template_pagination([
+			'routes'	=> ['acp_users_inactive', 'acp_users_inactive_pagination'],
+			'params'	=> $params,
+		], 'pagination', 'page', $inactive_count, $per_page, $start);
 
 		$this->template->assign_vars([
 			'S_INACTIVE_USERS'		=> true,
@@ -384,10 +389,9 @@ class inactive
 			'S_SORT_DIR'		=> $s_sort_dir,
 			'USERS_PER_PAGE'	=> $per_page,
 
-			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",
+			'U_ACTION'			=> $this->helper->route($route, $params + ['page' => $page]),
 		]);
 
-		$this->tpl_name = 'acp_inactive';
-		$this->page_title = 'ACP_INACTIVE_USERS';
+		return $this->helper->render('acp_inactive.html', 'ACP_INACTIVE_USERS');
 	}
 }

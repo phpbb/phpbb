@@ -52,7 +52,7 @@ services:
                 path: /settings/board
                 defaults:
                     _controller: acp.board:main
-                    mode: 'settings'
+                    mode: 'board'
 
     acp_settings_features:
         tags: { name: acp }
@@ -136,7 +136,7 @@ services:
                 path: /settings/pm
                 defaults:
                     _controller: acp.board:main
-                    mode: 'message'
+                    mode: 'pm'
 
     acp_settings_registration:
         tags: { name: acp }
@@ -323,7 +323,7 @@ services:
                 path: /settings/email
                 defaults:
                     _controller: acp.board:main
-                    mode: 'auth'
+                    mode: 'email'
 
     acp_settings_jabber:
         tags: { name: acp }
@@ -385,10 +385,13 @@ services:
             $auth: 'acl_a_user'
             $icon: ''
             $parent: acp_management_users
+            $before: ''
+            $page: 'page'
             $route:
                 path: /users/inactive
                 defaults:
                     _controller: acp.inactive:main
+                    page: 1
 
     acp_users_prune:
         tags: { name: acp }
@@ -423,11 +426,16 @@ services:
             $auth: 'acl_a_group'
             $icon: ''
             $parent: acp_management_groups
+            $before: ''
+            $page: 'page'
             $route:
-                path: /groups/manage
+                path: /groups/manage/{action}/{g}
                 defaults:
                     _controller: acp.groups:main
                     mode: 'manage'
+                    action: ''
+                    g: 0
+                    page: 1
 
     acp_groups_positions:
         tags: { name: acp }
@@ -463,9 +471,12 @@ services:
             $icon: ''
             $parent: acp_management_forums
             $route:
-                path: /forums/manage
+                path: /forums/manage/{p}/{action}/{f}
                 defaults:
                     _controller: acp.forums:main
+                    action: ''
+                    p: 0
+                    f: 0
 
     acp_forums_prune:
         tags: { name: acp }
@@ -616,9 +627,9 @@ services:
             $auth: ''
             $icon: ''
             $parent: ''
-            $route: acp_permissions_intro
+            $route: acp_permissions
 
-    acp_permissions_intro:
+    acp_permissions:
         tags: { name: acp }
         class: \phpbb\cp\menu\item
         shared: false
@@ -627,10 +638,12 @@ services:
             $icon: ''
             $parent: acp_cat_permissions
             $route:
-                path: /permissions/intro
+                path: /permissions/{mode}
                 defaults:
                     _controller: acp.permissions:main
                     mode: 'intro'
+                requirements:
+                    mode: "intro|trace"
 
 # --- ACP > Permissions > Global permissions --- #
     acp_permissions_global:
@@ -723,7 +736,6 @@ services:
                 defaults:
                     _controller: acp.permissions:main
                     mode: 'setting_forum_local'
-
 
     acp_permissions_forum_copy:
         tags: { name: acp }
@@ -871,7 +883,7 @@ services:
                 path: /permissions/masks/user
                 defaults:
                     _controller: acp.permissions:main
-                    mode: 'user'
+                    mode: 'view_user_global'
 
     acp_permissions_masks_mod_global:
         tags: { name: acp }
@@ -896,7 +908,7 @@ services:
             $icon: ''
             $parent: acp_permissions_masks
             $route:
-                path: /permissions/masks/mod/local
+                path: /permissions/masks/mod/forum
                 defaults:
                     _controller: acp.permissions:main
                     mode: 'view_mod_local'
@@ -913,7 +925,7 @@ services:
                 path: /permissions/masks/admin
                 defaults:
                     _controller: acp.permissions:main
-                    mode: 'view_admin_local'
+                    mode: 'view_admin_global'
 
     acp_permissions_masks_forum:
         tags: { name: acp }
@@ -929,8 +941,8 @@ services:
                     _controller: acp.permissions:main
                     mode: 'view_forum_local'
 
-# --- ACP > Posting --- #
-    acp_cat_posting:
+# --- ACP > Content --- #
+    acp_cat_content:
         tags: { name: acp }
         class: \phpbb\cp\menu\item
         shared: false
@@ -938,31 +950,18 @@ services:
             $auth: ''
             $icon: ''
             $parent: ''
-            $route: acp_ranks
+            $route: acp_bbcodes
 
-# --- ACP > Posting > Content --- #
-    acp_content:
+# --- ACP > Content > Posting --- #
+    acp_posting:
         tags: { name: acp }
         class: \phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
             $icon: ''
-            $parent: acp_cat_posting
-            $route: acp_ranks
-
-    acp_ranks:
-        tags: { name: acp }
-        class: \phpbb\cp\menu\item
-        shared: false
-        arguments:
-            $auth: 'acl_a_ranks'
-            $icon: ''
-            $parent: acp_content
-            $route:
-                path: /ranks
-                defaults:
-                    _controller: acp.ranks:main
+            $parent: acp_cat_content
+            $route: acp_bbcodes
 
     acp_bbcodes:
         tags: { name: acp }
@@ -971,11 +970,14 @@ services:
         arguments:
             $auth: 'acl_a_bbcode'
             $icon: ''
-            $parent: acp_content
+            $parent: acp_posting
+            $before: ''
+            $page: 'page'
             $route:
                 path: /bbcodes
                 defaults:
                     _controller: acp.bbcodes:main
+                    page: 1
 
     acp_smilies:
         tags: { name: acp }
@@ -984,12 +986,15 @@ services:
         arguments:
             $auth: 'acl_a_icons'
             $icon: ''
-            $parent: acp_content
+            $parent: acp_posting
+            $before: ''
+            $page: 'page'
             $route:
                 path: /smilies
                 defaults:
                     _controller: acp.icons:main
                     mode: 'smilies'
+                    page: 1
 
     acp_topic_icons:
         tags: { name: acp }
@@ -998,12 +1003,36 @@ services:
         arguments:
             $auth: 'acl_a_icons'
             $icon: ''
-            $parent: acp_content
+            $parent: acp_posting
             $route:
                 path: /topic_icons
                 defaults:
                     _controller: acp.icons:main
                     mode: 'icons'
+
+    acp_words:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_words'
+            $icon: ''
+            $parent: acp_posting
+            $route:
+                path: /disallow/words
+                defaults:
+                    _controller: acp.words:main
+
+# --- ACP > Content > Users
+    acp_profiles:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: acp_cat_content
+            $route: acp_cpf
 
     acp_cpf:
         tags: { name: acp }
@@ -1012,13 +1041,39 @@ services:
         arguments:
             $auth: 'acl_a_profile'
             $icon: ''
-            $parent: acp_content
+            $parent: acp_profiles
             $route:
                 path: /cpf
                 defaults:
                     _controller: acp.profile:main
 
-# --- ACP > Posting > General tasks
+    acp_disallow_usernames:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_names'
+            $icon: ''
+            $parent: acp_profiles
+            $route:
+                path: /disallow/usernames
+                defaults:
+                    _controller: acp.disallow:main
+
+    acp_ranks:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_ranks'
+            $icon: ''
+            $parent: acp_profiles
+            $route:
+                path: /ranks
+                defaults:
+                    _controller: acp.ranks:main
+
+# --- ACP > Content > General tasks
     acp_general_tasks:
         tags: { name: acp }
         class: \phpbb\cp\menu\item
@@ -1026,7 +1081,7 @@ services:
         arguments:
             $auth: ''
             $icon: ''
-            $parent: acp_cat_posting
+            $parent: acp_cat_content
             $route: acp_mass_email
 
     acp_mass_email:
@@ -1042,45 +1097,6 @@ services:
                 defaults:
                     _controller: acp.email:main
 
-    acp_word_censoring:
-        tags: { name: acp }
-        class: \phpbb\cp\menu\item
-        shared: false
-        arguments:
-            $auth: 'acl_a_words'
-            $icon: ''
-            $parent: acp_general_tasks
-            $route:
-                path: /disallow/words
-                defaults:
-                    _controller: acp.words:main
-
-    acp_disallow_usernames:
-        tags: { name: acp }
-        class: \phpbb\cp\menu\item
-        shared: false
-        arguments:
-            $auth: 'acl_a_names'
-            $icon: ''
-            $parent: acp_general_tasks
-            $route:
-                path: /disallow/usernames
-                defaults:
-                    _controller: acp.disallow:main
-
-    acp_robots:
-        tags: { name: acp }
-        class: \phpbb\cp\menu\item
-        shared: false
-        arguments:
-            $auth: 'acl_a_bots'
-            $icon: ''
-            $parent: acp_general_tasks
-            $route:
-                path: /robots
-                defaults:
-                    _controller: acp.bots:main
-
     acp_reasons:
         tags: { name: acp }
         class: \phpbb\cp\menu\item
@@ -1093,6 +1109,19 @@ services:
                 path: /reasons
                 defaults:
                     _controller: acp.reasons:main
+
+    acp_bots:
+        tags: { name: acp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_a_bots'
+            $icon: ''
+            $parent: acp_general_tasks
+            $route:
+                path: /robots
+                defaults:
+                    _controller: acp.bots:main
 
 # --- ACP > Customise --- #
     acp_cat_customise:
@@ -1126,10 +1155,11 @@ services:
             $icon: ''
             $parent: acp_extensions_management
             $route:
-                path: /extensions/manage
+                path: /extensions/manage/{action}/{ext}
                 defaults:
-                    _controller: acp.extensions:main
-                    mode: 'main'
+                    _controller: acp.extensions:manage
+                    action: 'list'
+                    ext: ''
 
     acp_extensions_catalog:
         tags: { name: acp }
@@ -1139,11 +1169,14 @@ services:
             $auth: 'acl_a_extensions'
             $icon: ''
             $parent: acp_extensions_management
+            $before: ''
+            $page: 'page'
             $route:
-                path: /extensions/catalog
+                path: /extensions/catalog/{action}
                 defaults:
-                    _controller: acp.extensions:main
-                    mode: 'catalog'
+                    _controller: acp.extensions:catalog
+                    action: 'list'
+                    page: 1
 
 # --- ACP > Customise > Style management
     acp_styles_management:
@@ -1168,7 +1201,7 @@ services:
                 path: /styles/manage
                 defaults:
                     _controller: acp.styles:main
-                    mode: 'style'
+                    mode: 'manage'
 
     acp_styles_install:
         tags: { name: acp }
@@ -1238,11 +1271,14 @@ services:
             $auth: 'acl_a_viewlogs'
             $icon: ''
             $parent: acp_logs
+            $before: ''
+            $page: 'page'
             $route:
                 path: /logs/admin
                 defaults:
                     _controller: acp.logs:main
                     mode: 'admin'
+                    page: 1
 
     acp_logs_mod:
         tags: { name: acp }
@@ -1252,11 +1288,14 @@ services:
             $auth: 'acl_a_viewlogs'
             $icon: ''
             $parent: acp_logs
+            $before: ''
+            $page: 'page'
             $route:
                 path: /logs/mod
                 defaults:
                     _controller: acp.logs:main
                     mode: 'mod'
+                    page: 1
 
     acp_logs_user:
         tags: { name: acp }
@@ -1266,11 +1305,14 @@ services:
             $auth: 'acl_a_viewlogs'
             $icon: ''
             $parent: acp_logs
+            $before: ''
+            $page: 'page'
             $route:
                 path: /logs/user
                 defaults:
                     _controller: acp.logs:main
                     mode: 'user'
+                    page: 1
 
     acp_logs_error:
         tags: { name: acp }
@@ -1280,12 +1322,14 @@ services:
             $auth: 'acl_a_viewlogs'
             $icon: ''
             $parent: acp_logs
+            $before: ''
+            $page: 'page'
             $route:
                 path: /logs/error
                 defaults:
                     _controller: acp.logs:main
                     mode: 'critical'
-
+                    page: 1
 
     # --- ACP > Maintenance > Database --- #
     acp_database:
@@ -1388,7 +1432,7 @@ services:
             $route:
                 path: /phpbb/help
                 defaults:
-                    _controller:
+                    _controller: acp.help_phpbb:main
 
 # --- ACP > Extensions --- #
     acp_cat_extensions:

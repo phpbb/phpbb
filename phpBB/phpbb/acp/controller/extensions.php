@@ -15,6 +15,9 @@ namespace phpbb\acp\controller;
 
 use phpbb\composer\io\html_output_formatter;
 use phpbb\composer\io\web_io;
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+use phpbb\exception\http_exception;
 use phpbb\exception\runtime_exception;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
@@ -67,12 +70,6 @@ class extensions
 
 	/** @var string php File extension */
 	protected $php_ext;
-
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-	protected $u_catalog_action;
 
 	/**
 	 * Constructor.
@@ -132,28 +129,18 @@ class extensions
 		$this->php_ext				= $php_ext;
 	}
 
-	function main($mode)
+	/**
+	 * Manage extensions.
+	 *
+	 * @param string	$action		The action
+	 * @param string	$ext		The extension name
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function manage($action = 'list', $ext = '')
 	{
 		$this->lang->add_lang(['install', 'acp/extensions', 'migrator']);
 
-		switch ($mode)
-		{
-			case 'catalog':
-				return $this->catalog_mode();
-			break;
-
-			default:
-				return $this->main_mode();
-			break;
-		}
-	}
-
-	public function main_mode()
-	{
-		$this->page_title = 'ACP_EXTENSIONS';
-
-		$action = $this->request->variable('action', 'list');
-		$ext_name = $this->request->variable('ext_name', '');
+		$ext_name = $ext;
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = ($this->php_ini->getNumeric('max_execution_time') / 2);
@@ -162,37 +149,30 @@ class extensions
 		// Cancel action
 		if ($this->request->is_set_post('cancel'))
 		{
-			$action = 'list';
-			$ext_name = '';
+			$action		= 'list';
+			$ext_name	= '';
 		}
 
-		if (in_array($action, ['enable', 'disable', 'delete_data']) && !check_link_hash($this->request->variable('hash', ''), $action . '.' . $ext_name))
+		if (in_array($action, ['enable', 'disable', 'delete_data']) &&
+			!check_link_hash($this->request->variable('hash', ''), $action . '.' . $ext_name)
+		)
 		{
-			trigger_error($this->lang->lang('FORM_INVALID'), E_USER_WARNING);
+			throw new form_invalid_exception('acp_extensions_manage');
 		}
-
-		$u_action = $this->u_action;
-		$tpl_name = '';
 
 		/**
 		 * Event to run a specific action on extension
 		 *
 		 * @event core.acp_extensions_run_action_before
 		 * @var string	action			Action to run; if the event completes execution of the action, should be set to 'none'
-		 * @var string	u_action		Url we are at
 		 * @var string	ext_name		Extension name from request
 		 * @var int		safe_time_limit	Safe limit of execution time
 		 * @var int		start_time		Start time
-		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 * @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
 		 */
-		$vars = ['action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name'];
+		$vars = ['action', 'ext_name', 'safe_time_limit', 'start_time'];
 		extract($this->dispatcher->trigger_event('core.acp_extensions_run_action_before', compact($vars)));
-
-		// In case they have been updated by the event
-		$this->u_action = $u_action;
-		$this->tpl_name = $tpl_name;
 
 		$md_manager = null;
 
@@ -207,11 +187,9 @@ class extensions
 			}
 			catch (runtime_exception $e)
 			{
-				trigger_error($this->get_exception_message($e) . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(503, $e->getMessage(), 'acp_extensions_manage', $e->get_parameters());
 			}
 		}
-
-		$this->u_catalog_action = append_sid("{$this->admin_path}index.$this->php_ext", "mode=catalog");
 
 		// What are we doing?
 		switch ($action)
@@ -230,40 +208,15 @@ class extensions
 					]);
 
 					confirm_box(false, $this->lang->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 				else
 				{
 					$this->config->set('extension_force_unstable', false);
 
-					trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_extensions_manage');
 				}
-			break;
-
-			case 'list':
-			default:
-				if (confirm_box(true))
-				{
-					$this->config->set('extension_force_unstable', true);
-
-					trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
-				}
-
-				$managed_packages = $this->composer_manager->check_requirements() ? $this->composer_manager->get_managed_packages() : [];
-
-				$this->list_extensions($managed_packages);
-
-				$this->template->assign_vars([
-					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
-					'MANAGED_EXTENSIONS'	=> $managed_packages,
-
-					'U_ACTION'				=> $this->u_action,
-					'U_CATALOG_ACTION'		=> $this->u_catalog_action,
-					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
-				]);
-
-				$this->request->disable_super_globals();
-
-				return $this->helper->render('acp_ext_list.html', $this->lang->lang('ACP_EXTENSIONS'));
 			break;
 
 			case 'enable_pre':
@@ -273,23 +226,24 @@ class extensions
 				}
 				catch (runtime_exception $e)
 				{
-					trigger_error($this->get_exception_message($e) . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new http_exception(503, $e->getMessage(), 'acp_extensions_manage', $e->get_parameters());
 				}
 
 				$extension = $this->extension_manager->get_extension($ext_name);
+
 				if (!$extension->is_enableable())
 				{
-					trigger_error($this->lang->lang('EXTENSION_NOT_ENABLEABLE') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'EXTENSION_NOT_ENABLEABLE', 'acp_extensions_manage');
 				}
 
 				if ($this->extension_manager->is_enabled($ext_name))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 
 				if (confirm_box(true))
 				{
-					redirect($this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
+					return redirect($this->hash_route('enable', $ext_name));
 				}
 				else
 				{
@@ -297,6 +251,8 @@ class extensions
 						'action'	=> 'enable_pre',
 						'ext_name'	=> $ext_name,
 					]));
+
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 			break;
 
@@ -307,14 +263,14 @@ class extensions
 				}
 				catch (runtime_exception $e)
 				{
-					trigger_error($this->get_exception_message($e) . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new http_exception(400, $e->getMessage(), 'acp_extensions_manage', $e->get_parameters());
 				}
 
 				$extension = $this->extension_manager->get_extension($ext_name);
+
 				if (!$extension->is_enableable())
 				{
-					trigger_error($this->lang->lang('EXTENSION_NOT_ENABLEABLE') . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+					throw new back_exception(400, 'EXTENSION_NOT_ENABLEABLE', 'acp_extensions_manage');				}
 
 				try
 				{
@@ -323,8 +279,9 @@ class extensions
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
-							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
-							trigger_error($this->lang->lang('EXTENSION_ENABLE_IN_PROGRESS'), E_USER_NOTICE);
+							meta_refresh(0, $this->hash_route('enable', $ext_name));
+
+							return $this->helper->message('EXTENSION_ENABLE_IN_PROGRESS');
 						}
 					}
 
@@ -338,13 +295,13 @@ class extensions
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->lang->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					throw new back_exception(503, $this->lang->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), 'acp_extensions_manage');
 				}
 
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('enabled', [
-						'DISABLE'	=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($ext_name),
+						'DISABLE'	=> $this->helper->route('acp_extensions_manage', ['action' => 'disable_pre', 'ext' => urlencode($ext_name)]),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -354,18 +311,18 @@ class extensions
 					]);
 				}
 
-				trigger_error($this->lang->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				return $this->helper->message_back('EXTENSION_ENABLE_SUCCESS', 'acp_extensions_manage');
 			break;
 
 			case 'disable_pre':
 				if (!$this->extension_manager->is_enabled($ext_name))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 
 				if (confirm_box(true))
 				{
-					redirect($this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
+					return redirect($this->hash_route('disable', $ext_name));
 				}
 				else
 				{
@@ -373,13 +330,15 @@ class extensions
 						'action'	=> 'disable_pre',
 						'ext_name'	=> $ext_name,
 					]));
+
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 			break;
 
 			case 'disable':
 				if (!$this->extension_manager->is_enabled($ext_name))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 
 				while ($this->extension_manager->disable_step($ext_name))
@@ -389,9 +348,9 @@ class extensions
 					{
 						$this->template->assign_var('S_NEXT_STEP', true);
 
-						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
+						meta_refresh(0, $this->hash_route('disable', $ext_name));
 
-						trigger_error($this->lang->lang('EXTENSION_DISABLE_IN_PROGRESS'), E_USER_NOTICE);
+						return $this->helper->message('EXTENSION_DISABLE_IN_PROGRESS');
 					}
 				}
 
@@ -400,8 +359,8 @@ class extensions
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
-						'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($ext_name),
+						'ENABLE'		=> $this->helper->route('acp_extensions_manage', ['action' => 'enable_pre', 'ext' => urlencode($ext_name)]),
+						'DELETE_DATA'	=> $this->helper->route('acp_extensions_manage', ['action' => 'delete_data_pre', 'ext' => urlencode($ext_name)]),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -411,18 +370,18 @@ class extensions
 					]);
 				}
 
-				trigger_error($this->lang->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				return $this->helper->message_back('EXTENSION_DIABLE_SUCCESS', 'acp_extensions_manage');
 			break;
 
 			case 'delete_data_pre':
 				if ($this->extension_manager->is_enabled($ext_name))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 
 				if (confirm_box(true))
 				{
-					redirect($this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
+					return redirect($this->hash_route('delete_data', $ext_name));
 				}
 				else
 				{
@@ -430,13 +389,15 @@ class extensions
 						'action'	=> 'delete_data_pre',
 						'ext_name'	=> $ext_name,
 					]));
+
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 			break;
 
 			case 'delete_data':
 				if ($this->extension_manager->is_enabled($ext_name))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_manage'));
 				}
 
 				try
@@ -448,22 +409,22 @@ class extensions
 						{
 							$this->template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
+							meta_refresh(0, $this->hash_route('delete_data', $ext_name));
 
-							trigger_error($this->lang->lang('EXTENSION_DELETE_DATA_IN_PROGRESS'), E_USER_NOTICE);
+							return $this->helper->message('EXTENSION_DELETE_DATA_IN_PROGRESS');
 						}
 					}
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), [$ext_name]);
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->lang->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					throw new back_exception(400, 'MIGRATION_EXCEPTION_ERROR', 'acp_extensions_manage', $e->getLocalisedMessage($this->user));
 				}
 
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
+						'ENABLE'		=> $this->helper->route('acp_extensions_manage', ['action' => 'enable_pre', 'ext' => urlencode($ext_name)]),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -473,7 +434,7 @@ class extensions
 					]);
 				}
 
-				trigger_error($this->lang->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				return $this->helper->message_back('EXTENSION_DELETE_DATA_SUCCESS', 'acp_extensions_manage');
 			break;
 
 			case 'details':
@@ -511,56 +472,70 @@ class extensions
 				}
 
 				$this->template->assign_vars([
-					'U_BACK'				=> $this->u_action . '&amp;action=list',
-					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode((string) $md_manager->get_metadata('name')),
+					'U_BACK'				=> $this->helper->route('acp_extensions_manage', ['action' => 'list']),
+					'U_VERSIONCHECK_FORCE'	=> $this->helper->route('acp_extensions_manage', ['action' => 'details', 'ext' => urlencode((string) $md_manager->get_metadata('name')), 'versioncheck_force' => true]),
+				]);
+			break;
+
+			case 'list':
+			default:
+				if (confirm_box(true))
+				{
+					$this->config->set('extension_force_unstable', true);
+
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_extensions_manage');
+				}
+
+				$managed_packages = $this->composer_manager->check_requirements() ? $this->composer_manager->get_managed_packages() : [];
+
+				$this->list_extensions($managed_packages);
+
+				$this->template->assign_vars([
+					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
+					'MANAGED_EXTENSIONS'	=> $managed_packages,
+
+					'U_ACTION'				=> $this->helper->route('acp_extensions_manage'),
+					'U_CATALOG_ACTION'		=> $this->helper->route('acp_extensions_catalog'),
+					'U_VERSIONCHECK_FORCE'	=> $this->helper->route('acp_extensions_manage', ['action' => 'list', 'versioncheck_force' => true]),
 				]);
 
-				$this->tpl_name = 'acp_ext_details';
+				$this->request->disable_super_globals();
 			break;
 		}
-
-		$u_action = $this->u_action;
-		$tpl_name = $this->tpl_name;
 
 		/**
 		 * Event to run after a specific action on extension has completed
 		 *
 		 * @event core.acp_extensions_run_action_after
 		 * @var string	action			Action that has run
-		 * @var string	u_action		Url we are at
 		 * @var string	ext_name		Extension name from request
 		 * @var int		safe_time_limit	Safe limit of execution time
 		 * @var int		start_time		Start time
-		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 */
-		$vars = ['action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name'];
+		$vars = ['action', 'ext_name', 'safe_time_limit', 'start_time'];
 		extract($this->dispatcher->trigger_event('core.acp_extensions_run_action_after', compact($vars)));
 
-		// In case they have been updated by the event
-		$this->u_action = $u_action;
-		$this->tpl_name = $tpl_name;
+		$tpl_name = $action === 'details' ? 'acp_ext_details.html' : 'acp_ext_list.html';
+
+		return $this->helper->render($tpl_name, 'ACP_EXTENSIONS');
 	}
 
 	/**
-	 * Handles the catalog mode of the extensions list
+	 * Handles the catalog mode of the extensions list.
+	 *
+	 * @param string	$action
+	 * @param int		$page
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function catalog_mode()
+	public function catalog($action = 'list', $page = 1)
 	{
+		$this->lang->add_lang(['install', 'acp/extensions', 'migrator']);
+
 		if (!$this->composer_manager->check_requirements())
 		{
-			$this->page_title = 'ACP_EXTENSIONS_CATALOG';
-			$this->tpl_name = 'message_body';
-
-			$this->template->assign_vars([
-				'MESSAGE_TITLE'	=> $this->lang->lang('EXTENSIONS_CATALOG_NOT_AVAILABLE'),
-				'MESSAGE_TEXT'	=> $this->lang->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'),
-			]);
-
-			return;
+			return $this->helper->message('EXTENSIONS_COMPOSER_NOT_WRITABLE', [], 'EXTENSION_CATALOG_NOT_AVAILABLE');
 		}
-
-		$action = $this->request->variable('action', 'list');
 
 		switch ($action)
 		{
@@ -572,7 +547,7 @@ class extensions
 
 				if (empty($extension))
 				{
-					redirect($this->u_action);
+					return redirect($this->helper->route('acp_extensions_catalog'));
 				}
 
 				$action_upper = strtoupper($action);
@@ -580,9 +555,6 @@ class extensions
 				$action_text = 'EXTENSIONS_' . $action_upper . ($action === 'install' ? 'ED' : 'D');
 				$action_text = $action === 'manage' ? $this->lang->lang('EXTENSION_MANAGED_SUCCESS', $extension) : $this->lang->lang($action_text);
 				$action_func = $action === 'manage' ? 'start_managing' : $action;
-
-				$this->page_title = $action_title;
-				$this->tpl_name = 'detailed_message_body';
 
 				$formatter = new html_output_formatter(['warning' => new OutputFormatterStyle('black', 'yellow')]);
 				$composer_io = new web_io($this->lang, '', $this->composer_output, $formatter);
@@ -594,16 +566,19 @@ class extensions
 				catch (runtime_exception $e)
 				{
 					$this->display_composer_exception($e, $composer_io);
-					return;
+
+					return $this->helper->render('detailed_message_body.html', 'INFORMATION');
 				}
 
 				$this->template->assign_vars([
 					'MESSAGE_TITLE'			=> $this->lang->lang($action_title),
-					'MESSAGE_TEXT'			=> $action_text . adm_back_link($this->u_action),
+					'MESSAGE_TEXT'			=> $action_text . $this->helper->adm_back_route('acp_extensions_catalog'),
 					'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
 					'MESSAGE_DETAIL_LEGEND'	=> $this->lang->lang('COMPOSER_OUTPUT'),
 					'S_USER_NOTICE'			=> true,
 				]);
+
+				return $this->helper->render('detailed_message_body.html', $action_title);
 			break;
 
 			case 'list':
@@ -613,7 +588,7 @@ class extensions
 					$this->config->set('exts_composer_packagist', true);
 					$this->composer_manager->reset_cache();
 
-					trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_extensions_catalog');
 				}
 
 				$submit = $this->request->is_set('update');
@@ -625,7 +600,7 @@ class extensions
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new form_invalid_exception('acp_extensions_catalog');
 					}
 
 					$enable_packagist	= $this->request->variable('enable_packagist', false);
@@ -669,22 +644,22 @@ class extensions
 					else
 					{
 						$this->config->set('exts_composer_packagist', $enable_packagist);
-						trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+
+						return $this->helper->message_back('CONFIG_UPDATED', 'acp_extensions_catalog');
 					}
 				}
 
-				$start = $this->request->variable('start', 0);
-				$base_url = $this->u_action;
+				$limit = 20;
+				$start = ($page - 1) * $limit;
 
 				$available_extensions = $this->composer_manager->get_available_packages();
 				$managed_packages = $this->composer_manager->get_managed_packages();
 
-				$extensions = array_slice($available_extensions, $start, 20);
+				$extensions = array_slice($available_extensions, $start, $limit);
 
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
-
-				$this->page_title = 'ACP_EXTENSIONS_CATALOG';
-				$this->tpl_name = 'acp_ext_catalog';
+				$this->pagination->generate_template_pagination([
+					'routes' => ['acp_extensions_catalog', 'acp_extensions_catalog_pagination'],
+				], 'pagination', 'page', count($available_extensions), $limit, $start);
 
 				$this->template->assign_vars([
 					'extensions'			=> $extensions,
@@ -699,8 +674,10 @@ class extensions
 						'repositories'		=> json_decode($this->config['exts_composer_repositories'], true),
 					],
 
-					'U_ACTION'				=> $this->u_action,
+					'U_ACTION'				=> $this->helper->route('acp_extensions_catalog'),
 				]);
+
+				return $this->helper->render('acp_ext_catalog.html', 'ACP_EXTENSIONS_CATALOG');
 			break;
 		}
 	}
@@ -710,11 +687,10 @@ class extensions
 	 *
 	 * @param runtime_exception $e
 	 * @param web_io			$composer_io
+	 * @return void
 	 */
 	protected function display_composer_exception(runtime_exception $e, web_io $composer_io)
 	{
-		$this->tpl_name = 'detailed_message_body';
-
 		/** @var runtime_exception $previous */
 		if ($previous = $e->getPrevious())
 		{
@@ -722,22 +698,22 @@ class extensions
 
 			if ($previous instanceof runtime_exception)
 			{
-				$message_text = $this->lang->lang_array($previous->getMessage(), $previous->get_parameters()) . adm_back_link($this->u_action);
+				$message_text = $this->lang->lang_array($previous->getMessage(), $previous->get_parameters());
 			}
 			else
 			{
-				$message_text = $previous->getMessage() . adm_back_link($this->u_action);
+				$message_text = $previous->getMessage();
 			}
 		}
 		else
 		{
 			$message_title	= $this->lang->lang('INFORMATION');
-			$message_text	= $this->lang->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
+			$message_text	= $this->lang->lang_array($e->getMessage(), $e->get_parameters());
 		}
 
 		$this->template->assign_vars([
 			'MESSAGE_TITLE'			=> $message_title,
-			'MESSAGE_TEXT'			=> $message_text,
+			'MESSAGE_TEXT'			=> $message_text . $this->helper->adm_back_route('acp_extensions_catalog'),
 			'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
 			'MESSAGE_DETAIL_LEGEND'	=> $this->lang->lang('COMPOSER_OUTPUT'),
 			'S_USER_ERROR'			=> true,
@@ -809,7 +785,7 @@ class extensions
 							$extensions_md[$ext_name] += [
 								'S_UP_TO_DATE'			=> empty($update_avail),
 								'S_VERSIONCHECK'		=> true,
-								'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode((string) $md_manager->get_metadata('name')),
+								'U_VERSIONCHECK_FORCE'	=> $this->helper->route('acp_extensions_manage', ['action' => 'details', 'ext' => urlencode((string) $md_manager->get_metadata('name')), 'versioncheck_force' => true]),
 							];
 						}
 						catch (runtime_exception $e)
@@ -841,7 +817,7 @@ class extensions
 			{
 				$block_vars += [
 					'NAME'		=> $ext_name,
-					'U_DETAILS'	=> $this->u_action . '&amp;action=details&amp;ext_name=' . $ext_name,
+					'U_DETAILS'	=> $this->helper->route('acp_extensions_manage', ['action' => 'details', 'ext' => $ext_name]),
 				];
 
 				$this->template->assign_block_vars($types[$type]['block'], $block_vars);
@@ -850,7 +826,7 @@ class extensions
 
 				foreach ($types[$type]['actions'] as $action)
 				{
-					$actions[strtoupper($action)] = $this->u_action . "&amp;action={$action}_pre&amp;ext_nam" . urlencode($ext_name);
+					$actions[strtoupper($action)] = $this->helper->route('acp_extensions_manage', ['action' => "{$action}_pre", 'ext' => urlencode($ext_name)]);
 				}
 
 				$this->output_actions($types[$type]['block'], $actions);
@@ -858,9 +834,9 @@ class extensions
 				if ($type !== 'available' && isset($managed_packages[$block_vars['META_NAME']]))
 				{
 					$this->output_actions($types[$type]['block'], [
-						'UPDATE'	=> $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
+						'UPDATE'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'update', 'extension' => urlencode($block_vars['META_NAME'])]),
 						'REMOVE'	=> [
-							'url'	=> $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
+							'url'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'remove', 'extension' => urlencode($block_vars['META_NAME'])]),
 							'color'	=> '#bc2a4d',
 						],
 					]);
@@ -939,6 +915,22 @@ class extensions
 				'AUTHOR_ROLE'		=> isset($author['role']) ? $author['role'] : '',
 			]);
 		}
+	}
+
+	/**
+	 * Helper function to generate a hash route for an extension action.
+	 *
+	 * @param string	$action			The action
+	 * @param string	$extension		The extension name
+	 * @return string
+	 */
+	protected function hash_route($action, $extension)
+	{
+		return $this->helper->route('acp_extensions_manage', [
+			'action'	=> $action,
+			'ext'		=> urlencode($extension),
+			'hash'		=> generate_link_hash("{$action}.{$extension}"),
+		]);
 	}
 
 	/**

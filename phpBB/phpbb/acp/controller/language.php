@@ -13,6 +13,10 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+use phpbb\exception\http_exception;
+
 class language
 {
 	/** @var \phpbb\config\config */
@@ -23,6 +27,9 @@ class language
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -52,9 +59,6 @@ class language
 	protected $tables;
 
 	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
 	protected $dir;
 	protected $file;
 
@@ -64,6 +68,7 @@ class language
 	 * @param \phpbb\config\config					$config			Config object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\language\language_file_helper	$lang_helper	Language helper object
 	 * @param \phpbb\log\log						$log			Log object
@@ -78,6 +83,7 @@ class language
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\language\language_file_helper $lang_helper,
 		\phpbb\log\log $log,
@@ -92,6 +98,7 @@ class language
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->lang_helper	= $lang_helper;
 		$this->log			= $log;
@@ -104,12 +111,9 @@ class language
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/language');
-
-		$this->tpl_name = 'acp_language';
-		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
 		if (!function_exists('validate_language_iso_name'))
 		{
@@ -140,12 +144,12 @@ class language
 			case 'update_details':
 				if (!$submit || !check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_language_manage');
 				}
 
 				if (!$lang_id)
 				{
-					trigger_error($this->lang->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_LANG_ID', 'acp_language_manage');
 				}
 
 				$sql = 'SELECT *
@@ -168,16 +172,14 @@ class language
 
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_LANGUAGE_PACK_UPDATED', false, [$sql_ary['lang_english_name']]);
 
-				trigger_error($this->lang->lang('LANGUAGE_DETAILS_UPDATED') . adm_back_link($this->u_action));
+				return $this->helper->message_back('LANGUAGE_DETAILS_UPDATED', 'acp_language_manage');
 			break;
 
 			case 'details':
 				if (!$lang_id)
 				{
-					trigger_error($this->lang->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_LANG_ID', 'acp_language_manage');
 				}
-
-				$this->page_title = 'LANGUAGE_PACK_DETAILS';
 
 				$sql = 'SELECT *
 					FROM ' . $this->tables['lang'] . '
@@ -186,17 +188,17 @@ class language
 				$lang_entries = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$lang_entries)
+				if ($lang_entries == false)
 				{
-					trigger_error($this->lang->lang('LANGUAGE_PACK_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'LANGUAGE_PACK_NOT_EXIST', 'acp_language_manage');
 				}
 
 				$lang_iso = $lang_entries['lang_iso'];
 
 				$this->template->assign_vars([
 					'S_DETAILS'			=> true,
-					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route('acp_language_manage', ['action' => 'details', 'id' => $lang_id]),
+					'U_BACK'			=> $this->helper->route('acp_language_manage'),
 
 					'LANG_LOCAL_NAME'	=> $lang_entries['lang_local_name'],
 					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
@@ -223,7 +225,7 @@ class language
 					}
 					catch (\Exception $e)
 					{
-						trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new http_exception(400, $e->getMessage(), 'acp_language_manage');
 					}
 
 					foreach ($iterator as $file_info)
@@ -255,12 +257,14 @@ class language
 						}
 					}
 				}
+
+				return $this->helper->render('acp_language.html', 'LANGUAGE_PACK_DETAILS');
 			break;
 
 			case 'delete':
 				if (!$lang_id)
 				{
-					trigger_error($this->lang->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_LANG_ID', 'acp_language_manage');
 				}
 
 				$sql = 'SELECT *
@@ -272,7 +276,7 @@ class language
 
 				if ($row['lang_iso'] == $this->config['default_lang'])
 				{
-					trigger_error($this->lang->lang('NO_REMOVE_DEFAULT_LANG') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_REMOVE_DEFAULT_LANG', 'acp_language_manage');
 				}
 
 				if (confirm_box(true))
@@ -307,16 +311,15 @@ class language
 					$vars = ['lang_iso', 'delete_message'];
 					extract($this->dispatcher->trigger_event('core.acp_language_after_delete', compact($vars)));
 
-					trigger_error($delete_message . adm_back_link($this->u_action));
+					return $this->helper->message_back($delete_message, 'acp_language_manage');
 				}
 				else
 				{
 					$s_hidden_fields = [
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> $action,
 						'id'		=> $lang_id,
 					];
+
 					confirm_box(false, $this->lang->lang('DELETE_LANGUAGE_CONFIRM', $row['lang_english_name']), build_hidden_fields($s_hidden_fields));
 				}
 			break;
@@ -324,7 +327,7 @@ class language
 			case 'install':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_language'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_language_manage');
 				}
 
 				$lang_iso = $this->request->variable('iso', '');
@@ -332,7 +335,7 @@ class language
 
 				if (!$lang_iso || !file_exists("{$this->root_path}language/$lang_iso/iso.txt"))
 				{
-					trigger_error($this->lang->lang('LANGUAGE_PACK_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'LANGUAGE_PACK_NOT_EXIST', 'acp_language_manage');
 				}
 
 				$file = file("{$this->root_path}language/$lang_iso/iso.txt");
@@ -354,12 +357,12 @@ class language
 
 				if ($row)
 				{
-					trigger_error($this->lang->lang('LANGUAGE_PACK_ALREADY_INSTALLED') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'LANGUAGE_PACK_ALREADY_INSTALLED', 'acp_language_manage');
 				}
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
-					trigger_error($this->lang->lang('INVALID_LANGUAGE_PACK') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'INVALID_LANGUAGE_PACK', 'acp_language_manage');
 				}
 
 				// Add language pack
@@ -417,7 +420,7 @@ class language
 				$message = $this->lang->lang('LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 				$message .= ($notify_cpf_update) ? '<br /><br />' . $this->lang->lang('LANGUAGE_PACK_CPF_UPDATE') : '';
 
-				trigger_error($message . adm_back_link($this->u_action));
+				return $this->helper->message_back($message, 'acp_language_manage');
 			break;
 		}
 
@@ -445,15 +448,15 @@ class language
 			$installed[] = $row['lang_iso'];
 
 			$this->template->assign_block_vars('lang', [
-				'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",
-				'U_DOWNLOAD'		=> $this->u_action . "&amp;action=download&amp;id={$row['lang_id']}",
-				'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
+				'U_DETAILS'			=> $this->helper->route('acp_language_manage', ['id' => $row['lang_id'], 'action' => 'details']),
+				'U_DOWNLOAD'		=> $this->helper->route('acp_language_manage', ['id' => $row['lang_id'], 'action' => 'download']),
+				'U_DELETE'			=> $this->helper->route('acp_language_manage', ['id' => $row['lang_id'], 'action' => 'delete']),
 
 				'ENGLISH_NAME'		=> $row['lang_english_name'],
 				'TAG'				=> $row['lang_iso'] == $this->config['default_lang'] ? '*' : '',
 				'LOCAL_NAME'		=> $row['lang_local_name'],
 				'ISO'				=> $row['lang_iso'],
-				'USED_BY'			=> (isset($lang_count[$row['lang_iso']])) ? $lang_count[$row['lang_iso']] : 0,
+				'USED_BY'			=> isset($lang_count[$row['lang_iso']]) ? $lang_count[$row['lang_iso']] : 0,
 			]);
 		}
 		$this->db->sql_freeresult($result);
@@ -480,12 +483,18 @@ class language
 					'ISO'			=> htmlspecialchars($lang_ary['iso']),
 					'LOCAL_NAME'	=> htmlspecialchars($lang_ary['local_name'], ENT_COMPAT, 'UTF-8'),
 					'NAME'			=> htmlspecialchars($lang_ary['name'], ENT_COMPAT, 'UTF-8'),
-					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']) . '&amp;hash=' . generate_link_hash('acp_language'),
+					'U_INSTALL'		=> $this->helper->route('acp_language_manage', [
+						'action'	=> 'install',
+						'iso'		=> urlencode($lang_ary['iso']),
+						'hash'		=> generate_link_hash('acp_language'),
+					]),
 				]);
 			}
 		}
 
 		unset($new_ary);
+
+		return $this->helper->render('acp_language.html', 'ACP_LANGUAGE_PACKS');
 	}
 
 	/**

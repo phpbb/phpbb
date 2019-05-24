@@ -13,36 +13,30 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\http_exception;
+
 class php_info
 {
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\template\template */
 	protected $template;
-
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\template\template	$template	Template object
+	 * @param \phpbb\acp\helper\controller	$helper		ACP Controller helper object
+	 * @param \phpbb\template\template		$template	Template object
 	 */
-	public function __construct(\phpbb\template\template $template)
+	public function __construct(\phpbb\acp\helper\controller $helper, \phpbb\template\template $template)
 	{
+		$this->helper	= $helper;
 		$this->template	= $template;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
-		if ($mode !== 'info')
-		{
-			trigger_error('NO_MODE', E_USER_ERROR);
-		}
-
-		$this->tpl_name = 'acp_php_info';
-		$this->page_title = 'ACP_PHP_INFO';
-
 		ob_start();
 		phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
 		$phpinfo = ob_get_clean();
@@ -56,7 +50,7 @@ class php_info
 
 		if (empty($phpinfo) || empty($output[1][0]))
 		{
-			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
+			throw new http_exception(400, 'NO_PHPINFO_AVAILABLE');
 		}
 
 		$output = $output[1][0];
@@ -79,7 +73,7 @@ class php_info
 
 		if (empty($output))
 		{
-			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
+			throw new http_exception(400, 'NO_PHPINFO_AVAILABLE');
 		}
 
 		$orig_output = $output;
@@ -88,6 +82,8 @@ class php_info
 		$output = !empty($output[1][0]) ? $output[1][0] : $orig_output;
 
 		$this->template->assign_var('PHPINFO', $output);
+
+		return $this->helper->render('acp_php_info.html', 'ACP_PHP_INFO');
 	}
 
 	function remove_spaces($matches)

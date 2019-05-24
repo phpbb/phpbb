@@ -13,6 +13,7 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
 use phpbb\exception\http_exception;
 use phpbb\exception\runtime_exception;
 
@@ -169,7 +170,7 @@ class main
 				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
 			]);
 
-			return $this->helper->render('acp_main.html', $this->lang->lang('ACP_MAIN'));
+			return $this->helper->render('acp_main.html', 'ACP_MAIN');
 		}
 
 		$action = $this->request->variable('action', '');
@@ -212,9 +213,11 @@ class main
 					break;
 				}
 
-				return confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
+				confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
 					'action'	=> $action,
 				]));
+
+				return redirect($this->helper->route('acp_index'));
 			}
 			else
 			{
@@ -235,6 +238,8 @@ class main
 						{
 							return $this->helper->message('RESET_ONLINE_SUCCESS');
 						}
+
+						return $this->helper->message_back('RESET_ONLINE_SUCCESS', 'acp_index');
 					break;
 
 					case 'stats':
@@ -291,6 +296,8 @@ class main
 						{
 							return $this->helper->message('RESYNC_STATS_SUCCESS');
 						}
+
+						return $this->helper->message_back('RESYNC_STATS_SUCCESS', 'acp_index');
 					break;
 
 					case 'user':
@@ -358,6 +365,8 @@ class main
 						{
 							return $this->helper->message('RESYNC_POSTCOUNTS_SUCCESS');
 						}
+
+						return $this->helper->message_back('RESYNC_POSTCOUNTS_SUCCESS', 'acp_index');
 					break;
 
 					case 'date':
@@ -373,6 +382,8 @@ class main
 						{
 							return $this->helper->message('RESET_DATE_SUCCESS');
 						}
+
+						return $this->helper->message_back('RESET_DATE_SUCCESS', 'acp_index');
 					break;
 
 					case 'db_track':
@@ -452,6 +463,8 @@ class main
 						{
 							return $this->helper->message('RESYNC_POST_MARKING_SUCCESS');
 						}
+
+						return $this->helper->message_back('RESYNC_POST_MARKING_SUCCESS', 'acp_index');
 					break;
 
 					case 'purge_cache':
@@ -473,6 +486,8 @@ class main
 						{
 							return $this->helper->message('PURGE_CACHE_SUCCESS');
 						}
+
+						return $this->helper->message_back('PURGE_CACHE_SUCCESS', 'acp_index');
 					break;
 
 					case 'purge_sessions':
@@ -523,6 +538,8 @@ class main
 						{
 							return $this->helper->message('PURGE_SESSIONS_SUCCESS');
 						}
+
+						return $this->helper->message_back('PURGE_SESSIONS_SUCCESS', 'acp_index');
 					break;
 				}
 			}
@@ -782,6 +799,6 @@ class main
 			$this->config->set('dbms_version', $this->db->sql_server_info(true));
 		}
 
-		return $this->helper->render('acp_main.html', $this->lang->lang('ACP_MAIN'));
+		return $this->helper->render('acp_main.html', 'ACP_MAIN');
 	}
 }

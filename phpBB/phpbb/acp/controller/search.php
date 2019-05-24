@@ -13,7 +13,8 @@
 
 namespace phpbb\acp\controller;
 
-use phpbb\exception\http_exception;
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
 
 class search
 {
@@ -151,7 +152,7 @@ class search
 
 		if ($submit && !check_link_hash($this->request->variable('hash', ''), 'acp_search'))
 		{
-			throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+			throw new form_invalid_exception('acp_settings_search');
 		}
 
 		$search_types = $this->get_search_types();
@@ -271,7 +272,7 @@ class search
 						}
 						else
 						{
-							throw new http_exception(400, $error);
+							throw new back_exception(400, $error, 'acp_settings_search');
 						}
 					}
 					else
@@ -285,7 +286,7 @@ class search
 				}
 				else
 				{
-					throw new http_exception(400, $error);
+					throw new back_exception(400, $error, 'acp_settings_search');
 				}
 			}
 
@@ -300,17 +301,17 @@ class search
 					{
 						if ($search->config_updated())
 						{
-							throw new http_exception(400, $error);
+							throw new back_exception(400, $error, 'acp_settings_search');
 						}
 					}
 				}
 			}
 			else
 			{
-				throw new http_exception(400, $error);
+				throw new back_exception(400, $error, 'acp_settings_search');
 			}
 
-			return $this->helper->message_back($this->lang->lang('CONFIG_UPDATED') . $extra_message,'acp_settings_search');
+			return $this->helper->message_back($this->lang->lang('CONFIG_UPDATED') . $extra_message, 'acp_settings_search');
 		}
 		unset($cfg_array);
 
@@ -329,7 +330,7 @@ class search
 			'U_ACTION'				=> $this->helper->route('acp_settings_search', ['hash' => generate_link_hash('acp_search')]),
 		]);
 
-		return $this->helper->render('acp_search.html', $this->lang->lang('ACP_SETTINGS_SEARCH'));
+		return $this->helper->render('acp_search.html', 'ACP_SETTINGS_SEARCH');
 	}
 
 	function index()
@@ -347,7 +348,7 @@ class search
 
 		if (!check_link_hash($this->request->variable('hash', ''), 'acp_search') && in_array($action, ['create', 'delete']))
 		{
-			throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+			throw new form_invalid_exception('acp_search_index');
 		}
 
 		if ($action)
@@ -367,7 +368,7 @@ class search
 				break;
 
 				default:
-					throw new http_exception(400, $this->lang->lang('NO_ACTION'));
+					throw new back_exception(400, 'NO_ACTION', 'acp_search_index');
 				break;
 			}
 
@@ -380,7 +381,7 @@ class search
 			$error = false;
 			if ($this->init_search($this->state[0], $this->search, $error))
 			{
-				throw new http_exception(400, $error);
+				throw new back_exception(400, $error, 'acp_search_index');
 			}
 			$name = $this->search->get_name();
 
@@ -403,7 +404,8 @@ class search
 							$this->state = [''];
 							$this->save_state();
 
-							throw new http_exception(400, $error . $this->close_popup_js());
+							// @todo Close popup ?
+							throw new back_exception(400, $error . $this->close_popup_js(), 'acp_search_index');
 						}
 					}
 					else
@@ -469,7 +471,8 @@ class search
 							$this->state = [''];
 							$this->save_state();
 
-							throw new http_exception(400, $error . $this->close_popup_js());
+						// @todo Close popup ?
+							throw new back_exception(400, $error . $this->close_popup_js(), 'acp_search_index');
 						}
 					}
 					else
@@ -486,6 +489,8 @@ class search
 
 						$start_time = microtime(true);
 						$row_count = 0;
+						$rows = [];
+
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
@@ -631,7 +636,7 @@ class search
 			]);
 		}
 
-		return $this->helper->render('acp_search.html', $this->lang->lang('ACP_SEARCH_INDEX'));
+		return $this->helper->render('acp_search.html', 'ACP_SEARCH_INDEX');
 	}
 
 	/**
@@ -649,7 +654,7 @@ class search
 		]);
 
 
-		return $this->helper->render('progress_bar.html', $this->lang->lang($l_type));
+		return $this->helper->render('progress_bar.html', $l_type);
 	}
 
 	/**

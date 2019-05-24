@@ -13,6 +13,7 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
 use phpbb\exception\http_exception;
 
 /**
@@ -135,6 +136,8 @@ class board
 		$this->lang->add_lang('acp/board');
 
 		$submit = $this->request->is_set_post('submit') || $this->request->is_set_post('allow_quick_reply_enable');
+		$u_mode = 'acp_settings_' . $mode;
+		$l_mode = utf8_strtoupper($u_mode);
 
 		$form_key = 'acp_board';
 		add_form_key($form_key);
@@ -147,9 +150,8 @@ class board
 		 */
 		switch ($mode)
 		{
-			case 'settings':
+			case 'board':
 				$display_vars = [
-					'title'	=> 'ACP_BOARD_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_BOARD_SETTINGS',
 						'sitename'				=> ['lang' => 'SITE_NAME', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => false],
@@ -178,7 +180,6 @@ class board
 
 			case 'features':
 				$display_vars = [
-					'title'	=> 'ACP_BOARD_FEATURES',
 					'vars'	=> [
 						'legend1'						=> 'ACP_BOARD_FEATURES',
 						'allow_privmsg'					=> ['lang' => 'BOARD_PM', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
@@ -221,7 +222,6 @@ class board
 				}
 
 				$display_vars = [
-					'title'	=> 'ACP_AVATAR_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_AVATAR_SETTINGS',
 
@@ -242,9 +242,8 @@ class board
 				}
 			break;
 
-			case 'message':
+			case 'pm':
 				$display_vars = [
-					'title'	=> 'ACP_MESSAGE_SETTINGS',
 					'lang'	=> 'ucp',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
@@ -274,7 +273,6 @@ class board
 
 			case 'post':
 				$display_vars = [
-					'title'	=> 'ACP_POST_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_OPTIONS',
 						'allow_topic_notify'	=> ['lang' => 'ALLOW_TOPIC_NOTIFY', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
@@ -317,7 +315,6 @@ class board
 
 			case 'signature':
 				$display_vars = [
-					'title'	=> 'ACP_SIGNATURE_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_OPTIONS',
 						'allow_sig'				=> ['lang' => 'ALLOW_SIG', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
@@ -342,7 +339,6 @@ class board
 
 			case 'registration':
 				$display_vars = [
-					'title'	=> 'ACP_REGISTER_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'max_name_chars'		=> ['lang' => 'USERNAME_LENGTH', 'validate' => 'int:8:180', 'type' => false, 'method' => false, 'explain' => false,],
@@ -376,7 +372,6 @@ class board
 
 			case 'feed':
 				$display_vars = [
-					'title'	=> 'ACP_FEED_MANAGEMENT',
 					'vars'	=> [
 						'legend1'					=> 'ACP_FEED_GENERAL',
 						'feed_enable'				=> ['lang' => 'ACP_FEED_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
@@ -404,7 +399,6 @@ class board
 
 			case 'cookie':
 				$display_vars = [
-					'title'	=> 'ACP_COOKIE_SETTINGS',
 					'vars'	=> [
 						'legend1'		=> 'ACP_COOKIE_SETTINGS',
 						'cookie_domain'	=> ['lang' => 'COOKIE_DOMAIN', 'validate' => 'string', 'type' => 'text::255', 'explain' => true],
@@ -418,7 +412,6 @@ class board
 
 			case 'load':
 				$display_vars = [
-					'title'	=> 'ACP_LOAD_SETTINGS',
 					'vars'	=> [
 						'legend1'			=> 'GENERAL_SETTINGS',
 						'limit_load'		=> ['lang' => 'LIMIT_LOAD', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true],
@@ -459,7 +452,6 @@ class board
 
 			case 'auth':
 				$display_vars = [
-					'title'	=> 'ACP_AUTH_SETTINGS',
 					'vars'	=> [
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
 						'auth_method'	=> ['lang' => 'AUTH_METHOD', 'validate' => 'string', 'type' => 'select:1:togglable', 'function' => [$this, 'select_auth_method'], 'explain' => false],
@@ -469,7 +461,6 @@ class board
 
 			case 'server':
 				$display_vars = [
-					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
 						'gzip_compress'			=> ['lang' => 'ENABLE_GZIP', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
@@ -496,7 +487,6 @@ class board
 
 			case 'security':
 				$display_vars = [
-					'title'	=> 'ACP_SECURITY_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
 						'allow_autologin'		=> ['lang' => 'ALLOW_AUTOLOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
@@ -526,7 +516,6 @@ class board
 
 			case 'email':
 				$display_vars = [
-					'title'	=> 'ACP_EMAIL_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'email_enable'			=> ['lang' => 'ENABLE_EMAIL', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
@@ -712,14 +701,14 @@ class board
 							$this->config->set($config_name, $config_value);
 						}
 
-						throw new http_exception(400, $errors);
+						throw new back_exception(400, $errors, 'acp_settings_auth');
 					}
 
 					$this->config->set('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
-					throw new http_exception(404, $this->lang->lang('NO_AUTH_PLUGIN'));
+					throw new back_exception(404, 'NO_AUTH_PLUGIN', 'acp_settings_auth');
 				}
 			}
 		}
@@ -740,13 +729,13 @@ class board
 				$messenger->send(NOTIFY_EMAIL);
 
 
-				return $this->helper->message($this->lang->lang('TEST_EMAIL_SEND', $this->helper->adm_back_link('acp_settings_email')));
+				return $this->helper->message_back('TEST_EMAIL_SEND', 'acp_settings_email');
 			}
 			else
 			{
 				$this->lang->add_lang('memberlist');
 
-				throw new http_exception(400, $this->lang->lang('EMAIL_DISABLED'));
+				throw new back_exception(400, 'EMAIL_DISABLED', 'acp_settings_email');
 			}
 		}
 
@@ -762,19 +751,19 @@ class board
 				$message .= '<br /><br />' . $this->lang->lang('ACC_ACTIVATION_WARNING');
 			}
 
-			return $this->helper->message($message . $this->helper->adm_back_link($this->helper->get_current_url()));
+			return $this->helper->message_back($message, $u_mode);
 		}
 
 		$s_errors = !empty($errors);
 
 		$this->template->assign_vars([
-			'L_TITLE'			=> $this->lang->lang($display_vars['title']),
-			'L_TITLE_EXPLAIN'	=> $this->lang->lang($display_vars['title'] . '_EXPLAIN'),
+			'L_TITLE'			=> $this->lang->lang($l_mode),
+			'L_TITLE_EXPLAIN'	=> $this->lang->lang($l_mode . '_EXPLAIN'),
 
 			'S_ERROR'			=> $s_errors,
 			'ERROR_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
 
-			'U_ACTION'			=> $this->helper->get_current_url(),
+			'U_ACTION'			=> $this->helper->route($u_mode),
 		]);
 
 		// Output relevant page
@@ -850,7 +839,7 @@ class board
 		}
 
 
-		return $this->helper->render('acp_board.html', $this->lang->lang($display_vars['title']));
+		return $this->helper->render('acp_board.html', $l_mode);
 	}
 
 	/**

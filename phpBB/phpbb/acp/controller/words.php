@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 /**
  * @todo [words] check regular expressions for special char replacements (stored specialchared in db)
  */
@@ -23,6 +26,9 @@ class words
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -45,16 +51,12 @@ class words
 	/** @var string phpBB words table */
 	protected $words_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\request\request				$request		Request object
@@ -66,6 +68,7 @@ class words
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -77,6 +80,7 @@ class words
 	{
 		$this->cache		= $cache;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -87,7 +91,7 @@ class words
 		$this->words_table	= $words_table;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -100,9 +104,6 @@ class words
 		$word_info = [];
 		$s_hidden_fields = '';
 
-		$this->tpl_name = 'acp_words';
-		$this->page_title = 'ACP_WORDS';
-
 		$form_key = 'acp_words';
 		add_form_key($form_key);
 
@@ -112,7 +113,7 @@ class words
 			case 'edit':
 				if (!$word_id)
 				{
-					trigger_error($this->lang->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_WORD', 'acp_words');
 				}
 
 				$sql = 'SELECT *
@@ -132,17 +133,17 @@ class words
 					'REPLACEMENT'		=> isset($word_info['replacement']) ? $word_info['replacement'] : '',
 
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-					'U_ACTION'			=> $this->u_action,
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route('acp_words'),
+					'U_BACK'			=> $this->helper->route('acp_words'),
 				]);
 
-				return;
+				return $this->helper->render('acp_words.html', 'ACP_WORDS');
 			break;
 
 			case 'save':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_words');
 				}
 
 				$word_id		= $this->request->variable('id', 0);
@@ -151,7 +152,7 @@ class words
 
 				if ($word === '' || $replacement === '')
 				{
-					trigger_error($this->lang->lang('ENTER_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'ENTOR_WORD', 'acp_words');
 				}
 
 				// Replace multiple consecutive asterisks with single one as those are not needed
@@ -178,13 +179,13 @@ class words
 
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, ($word_id ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD'), false, [$word]);
 
-				trigger_error($this->lang->lang($word_id ? 'WORD_UPDATED' : 'WORD_ADDED') . adm_back_link($this->u_action));
+				return $this->helper->message_back($word_id ? 'WORD_UPDATED' : 'WORD_ADDED', 'acp_words');
 			break;
 
 			case 'delete':
 				if (!$word_id)
 				{
-					trigger_error($this->lang->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_WORD', 'acp_words');
 				}
 
 				if (confirm_box(true))
@@ -205,23 +206,23 @@ class words
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_WORD_DELETE', false, [$deleted_word]);
 
-					trigger_error($this->lang->lang('WORD_REMOVED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('WORD_REMOVED', 'acp_words');
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> 'delete',
 						'id'		=> $word_id,
 					]));
+
+					return $this->helper->route('acp_words');
 				}
 			break;
 		}
 
 		$this->template->assign_vars([
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'U_ACTION'			=> $this->u_action,
+			'U_ACTION'			=> $this->helper->route('acp_words'),
 		]);
 
 		$sql = 'SELECT *
@@ -233,10 +234,12 @@ class words
 			$this->template->assign_block_vars('words', [
 				'WORD'			=> $row['word'],
 				'REPLACEMENT'	=> $row['replacement'],
-				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'],
-				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['word_id'],
+				'U_DELETE'		=> $this->helper->route('acp_words', ['action' => 'delete', 'id' => $row['word_id']]),
+				'U_EDIT'		=> $this->helper->route('acp_words', ['action' => 'edit', 'id' => $row['word_id']]),
 			]);
 		}
 		$this->db->sql_freeresult($result);
+
+		return $this->helper->render('acp_words.html', 'ACP_WORDS');
 	}
 }

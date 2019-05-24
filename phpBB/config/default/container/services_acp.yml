@@ -7,6 +7,7 @@ services:
             - '@cache.driver'
             - '@dbal.conn'
             - '@group_helper'
+            - '@acp.controller.helper'
             - '@language'
             - '@acl.permissions'
             - '@template'
@@ -26,6 +27,7 @@ services:
         class: \phpbb\acp\helper\constructor
         arguments:
             - '@auth'
+            - '@controller.helper'
             - '@language'
             - '@path_helper'
             - '@template'
@@ -83,6 +85,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -97,6 +100,7 @@ services:
             - '@cache.driver'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -131,6 +135,7 @@ services:
             - '@cache.driver'
             - '@config'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -172,11 +177,12 @@ services:
             - '@dbal.tools'
             - '@dbal.extractor'
             - '@filesystem.temp'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
-            - '@template'
             - '@storage.backup'
+            - '@template'
             - '@user'
             - '%core.table_prefix%'
 
@@ -185,6 +191,7 @@ services:
         arguments:
             - '@cache.driver'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -198,6 +205,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -237,9 +245,11 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@passwords.manager'
+            - '@path_helper'
             - '@request'
             - '@template'
             - '@user'
@@ -260,6 +270,7 @@ services:
             - '@group_helper'
             - '@groupposition.legend'
             - '@groupposition.teampage'
+            - '@acp.controller.helper'
             - '@language'
             - '@pagination'
             - '@request'
@@ -275,6 +286,7 @@ services:
         arguments:
             - '@config'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -288,8 +300,10 @@ services:
             - '@cache.driver'
             - '@config'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@pagination'
+            - '@path_helper'
             - '@request'
             - '@template'
             - '@text_formatter.cache'
@@ -302,6 +316,7 @@ services:
             - '@auth'
             - '@config'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -334,6 +349,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@language.helper.language_file'
             - '@log'
@@ -386,6 +402,7 @@ services:
         arguments:
             - '@acp.auth_admin'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@acl.permissions'
@@ -419,6 +436,7 @@ services:
     acp.php_info:
         class: \phpbb\acp\controller\php_info
         arguments:
+            - '@acp.controller.helper'
             - '@template'
 
     acp.profile:
@@ -428,10 +446,11 @@ services:
             - '@dbal.conn'
             - '@dbal.tools'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
-            - '@profilefields.manager'
             - '@profilefields.type_collection'
+            - '@profilefields.manager'
             - '@request'
             - '@template'
             - '@user'
@@ -446,6 +465,7 @@ services:
             - '@dbal.conn'
             - '@dispatcher'
             - '@group_helper'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -466,6 +486,7 @@ services:
             - '@acp.controller.helper'
             - '@language'
             - '@log'
+            - '@path_helper'
             - '@request'
             - '@template'
             - '@user'
@@ -477,6 +498,7 @@ services:
         class: \phpbb\acp\controller\reasons
         arguments:
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -524,6 +546,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'
@@ -539,6 +562,7 @@ services:
         class: \phpbb\acp\controller\update
         arguments:
             - '@config'
+            - '@acp.controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -577,6 +601,7 @@ services:
         arguments:
             - '@cache.driver'
             - '@dbal.conn'
+            - '@acp.controller.helper'
             - '@language'
             - '@log'
             - '@request'

@@ -136,7 +136,7 @@ class contact
 					'contact_admin_info_flags'		=> $contact_admin_info_flags,
 				]);
 
-				return $this->helper->message_back('CONTACT_US_INFO_UPDATED','acp_settings_contact');
+				return $this->helper->message_back('CONTACT_US_INFO_UPDATED', 'acp_settings_contact');
 			}
 		}
 
@@ -176,6 +176,6 @@ class contact
 		// Assigning custom bbcodes
 		display_custom_bbcodes();
 
-		return $this->helper->render('acp_contact.html', $this->lang->lang('ACP_CONTACT_SETTINGS'));
+		return $this->helper->render('acp_contact.html', 'ACP_CONTACT_SETTINGS');
 	}
 }

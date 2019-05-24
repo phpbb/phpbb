@@ -14,7 +14,8 @@
 namespace phpbb\acp\controller;
 
 
-use phpbb\exception\http_exception;
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
 
 class attachments
 {
@@ -153,14 +154,6 @@ class attachments
 		$submit = $this->request->is_set_post('submit');
 		$action = $this->request->variable('action', '');
 
-		$form_key = 'acp_attach';
-		add_form_key($form_key);
-
-		if ($submit && !check_form_key($form_key))
-		{
-			throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
-		}
-
 		switch ($mode)
 		{
 			case 'attach':
@@ -172,6 +165,14 @@ class attachments
 				$l_title = 'ACP_ATTACHMENTS_' . utf8_strtoupper($mode);
 				$u_mode = 'acp_settings_' . $mode;
 			break;
+		}
+
+		$form_key = 'acp_attach';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			throw new form_invalid_exception($u_mode);
 		}
 
 		$this->template->assign_vars([
@@ -534,12 +535,12 @@ class attachments
 
 					if ($action !== 'add' && $action !== 'edit')
 					{
-						throw new http_exception(400, $this->lang->lang('NO_MODE'));
+						throw new back_exception(400, 'NO_MODE', 'acp_attachments_ext_group');
 					}
 
 					if (!$group_id && $action === 'edit')
 					{
-						throw new http_exception(400, $this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
+						throw new back_exception(400, 'NO_EXT_GROUP_SPECIFIED', 'acp_attachments_ext_group');
 					}
 
 					if ($group_id)
@@ -553,7 +554,7 @@ class attachments
 
 						if ($ext_row === false)
 						{
-							throw new http_exception($this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
+							throw new back_exception(404, 'NO_EXT_GROUP_SPECIFIED', 'acp_attachments_ext_group');
 						}
 					}
 					else
@@ -712,7 +713,7 @@ class attachments
 					case 'edit':
 						if (!$group_id)
 						{
-							throw new http_exception(400, $this->lang->lang('NO_EXT_GROUP_SPECIFIED'));
+							throw new back_exception(400, 'NO_EXT_GROUP_SPECIFIED', 'acp_attachments_ext_group');
 						}
 
 						$sql = 'SELECT *
@@ -1247,7 +1248,7 @@ class attachments
 			]);
 		}
 
-		return $this->helper->render('acp_attachments.html', $this->lang->lang($l_title));
+		return $this->helper->render('acp_attachments.html', $l_title);
 	}
 
 	/**

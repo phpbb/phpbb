@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class disallow
 {
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -20,6 +23,9 @@ class disallow
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -39,16 +45,12 @@ class disallow
 	/** @var string Disallowed username table */
 	protected $disallow_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache				Cache object
 	 * @param \phpbb\db\driver\driver_interface		$db					Database object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\log\log						$log				Log object
 	 * @param \phpbb\request\request				$request			Request object
@@ -59,6 +61,7 @@ class disallow
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -69,6 +72,7 @@ class disallow
 	{
 		$this->cache			= $cache;
 		$this->db				= $db;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->log				= $log;
 		$this->request			= $request;
@@ -78,7 +82,7 @@ class disallow
 		$this->disallow_table	= $disallow_table;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -91,7 +95,7 @@ class disallow
 
 		if (($allow || $disallow) && !check_form_key($form_key))
 		{
-			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new form_invalid_exception('acp_disallow_usernames');
 		}
 
 		if ($disallow)
@@ -100,7 +104,7 @@ class disallow
 
 			if (!$disallowed_user)
 			{
-				trigger_error($this->lang->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'NO_USERNAME_SPECIFIED', 'acp_disallow_usernames');
 			}
 
 			$sql = 'SELECT disallow_id
@@ -112,7 +116,7 @@ class disallow
 
 			if ($row !== false)
 			{
-				trigger_error($this->lang->lang('DISALLOWED_ALREADY') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'DISALLOW_ALREADY', 'acp_disallow_usernames');
 			}
 
 			$sql = 'INSERT INTO ' . $this->disallow_table . ' ' . $this->db->sql_build_array('INSERT', ['disallow_username' => $disallowed_user]);
@@ -122,7 +126,7 @@ class disallow
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DISALLOW_ADD', false, [str_replace('%', '*', $disallowed_user)]);
 
-			trigger_error($this->lang->lang('DISALLOW_SUCCESSFUL') . adm_back_link($this->u_action));
+			return $this->helper->message_back('DISALLOW_SUCCESSFUL', 'acp_disallow_usernames');
 		}
 		else if ($allow)
 		{
@@ -130,7 +134,7 @@ class disallow
 
 			if (!$disallowed_id)
 			{
-				trigger_error($this->lang->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'NO_USERNAME_SPECIFIED', 'acp_disallow_usernames');
 			}
 
 			$sql = 'DELETE FROM ' . $this->disallow_table . '
@@ -141,7 +145,7 @@ class disallow
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DISALLOW_DELETE');
 
-			trigger_error($this->lang->lang('DISALLOWED_DELETED') . adm_back_link($this->u_action));
+			return $this->helper->message_back('DISALLOW_DELETED', 'acp_disallow_usernames');
 		}
 
 		$disallow_select = '';
@@ -158,11 +162,9 @@ class disallow
 
 		$this->template->assign_vars([
 			'S_DISALLOWED_NAMES'	=> $disallow_select,
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->helper->route('acp_disallow_usernames'),
 		]);
 
-		$this->tpl_name = 'acp_disallow';
-		$this->page_title = 'ACP_DISALLOW_USERNAMES';
-		// @todo return $this->helper->render('acp_disallow.html', $this->lang->lang('ACP_DISALLOW_USERNAMES'));
+		return $this->helper->render('acp_disallow.html', 'ACP_DISALLOW_USERNAMES');
 	}
 }

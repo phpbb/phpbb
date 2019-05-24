@@ -78,12 +78,12 @@ class controller extends \phpbb\controller\helper
 			global $refresh_data;
 
 			return new JsonResponse([
-					'MESSAGE_TITLE'		=> $message_title,
-					'MESSAGE_TEXT'		=> $message_text,
-					'MESSAGE_BACK'		=> $message_back,
-					'S_USER_WARNING'	=> false,
-					'S_USER_NOTICE'		=> false,
-					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				'MESSAGE_TITLE'		=> $message_title,
+				'MESSAGE_TEXT'		=> $message_text,
+				'MESSAGE_BACK'		=> $message_back,
+				'S_USER_WARNING'	=> false,
+				'S_USER_NOTICE'		=> false,
+				'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
 			], $code);
 		}
 
@@ -91,20 +91,32 @@ class controller extends \phpbb\controller\helper
 			'MESSAGE_TEXT'		=> $message_text,
 			'MESSAGE_TITLE'		=> $message_title,
 			'MESSAGE_BACK'		=> $message_back,
+			'S_USER_NOTICE'		=> $code === 200,
 		]);
 
 		return $this->render('message_body.html', $message_title, $code);
 	}
 
 	/**
-	 * Generate a back link to be appended to a message.
+	 * Generate a back link from a route to be appended to a message.
 	 *
 	 * @param string	$route		The route name for the link back to the previous page
 	 * @param array		$params		The route parameters
 	 * @return string
 	 */
-	public function adm_back_link($route, array $params = [])
+	public function adm_back_route($route, array $params = [])
 	{
 		return $this->functions->adm_back_link($this->route($route, $params));
+	}
+
+	/**
+	 * Generate a back link to be appended to a message.
+	 *
+	 * @param string	$link		The link back to the previous page
+	 * @return string
+	 */
+	public function adm_back_link($link)
+	{
+		return $this->functions->adm_back_link($link);
 	}
 }

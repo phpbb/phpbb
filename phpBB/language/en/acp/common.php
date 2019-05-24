@@ -40,17 +40,16 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	// Categories
 	'ACP_CAT_CONFIGURATION'			=> 'Configuration',
+	'ACP_CAT_CONTENT'				=> 'Content',
 	'ACP_CAT_CUSTOMISE'				=> 'Customise',
 	'ACP_CAT_EXTENSIONS'			=> 'Extensions',
 	'ACP_CAT_MAINTENANCE'			=> 'Maintenance',
 	'ACP_CAT_MANAGEMENT'			=> 'Management',
 	'ACP_CAT_PERMISSIONS'			=> 'Permissions',
-	'ACP_CAT_POSTING'				=> 'Posting',
 
 	// Subcategories
 	'ACP_CONFIGURATION_BOARD'		=> 'Board configuration',
 	'ACP_CONFIGURATION_SERVER'		=> 'Server configuration',
-	'ACP_CONTENT'					=> 'Content',
 	'ACP_CLIENT_COMMUNICATION'		=> 'Client communication',
 	'ACP_EXTENSIONS_MANAGEMENT'		=> 'Extensions management',
 	'ACP_GENERAL_TASKS'				=> 'General tasks',
@@ -66,7 +65,9 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSIONS_MASKS'			=> 'Permission masks',
 	'ACP_PERMISSIONS_ROLES'			=> 'Permission roles',
 	'ACP_PHPBB'						=> 'phpBB',
+	'ACP_POSTING'					=> 'Posting',
 	'ACP_STYLES_MANAGEMENT'			=> 'Styles management',
+	'ACP_PROFILES'					=> 'Profiles',
 
 	// Items
 	'ACP_ATTACHMENTS_EXTENSIONS'	=> 'Manage attachment extensions',
@@ -78,6 +79,7 @@ $lang = array_merge($lang, array(
 	'ACP_BAN_IPS'					=> 'Ban IPs',
 	'ACP_BAN_USERS'					=> 'Ban users',
 	'ACP_BBCODES'					=> 'BBCodes',
+	'ACP_BOTS'						=> 'Robots/spiders',
 	'ACP_CPF'						=> 'Custom profile fields',
 	'ACP_DATABASE'					=> 'Database management',
 	'ACP_DISALLOW_USERNAMES'		=> 'Disallow usernames',
@@ -117,7 +119,6 @@ $lang = array_merge($lang, array(
 	'ACP_PHP_INFO'					=> 'PHP information',
 	'ACP_REASONS'					=> 'Report/denial reasons',
 	'ACP_RESTORE'					=> 'Restore',
-	'ACP_ROBOTS'					=> 'Robots/spiders',
 	'ACP_SEARCH_INDEX'				=> 'Search index',
 	'ACP_SETTINGS_ATTACHMENT'		=> 'Attachment settings',
 	'ACP_SETTINGS_AUTH'				=> 'Authentication',
@@ -147,7 +148,7 @@ $lang = array_merge($lang, array(
 	'ACP_USERS_INACTIVE'			=> 'Inactive users',
 	'ACP_USERS_MANAGE'				=> 'Manage users',
 	'ACP_USERS_PRUNE'				=> 'Prune users',
-	'ACP_WORD_CENSORING'			=> 'Word censoring',
+	'ACP_WORDS'						=> 'Word censoring',
 
 
 	'ACP_ADMINISTRATORS'		=> 'Administrators',
@@ -165,7 +166,6 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_FEATURES'		=> 'Board features',
 	'ACP_BOARD_MANAGEMENT'		=> 'Board management',
 	'ACP_BOARD_SETTINGS'		=> 'Board settings',
-	'ACP_BOTS'					=> 'Spiders/Robots',
 
 	'ACP_CAPTCHA'				=> 'CAPTCHA',
 
@@ -304,8 +304,6 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View forum-based permissions',
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
-
-	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',
 	'ACTIONS'				=> 'Actions',

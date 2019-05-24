@@ -13,6 +13,7 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\form_invalid_exception;
 use phpbb\exception\http_exception;
 
 /**
@@ -125,7 +126,7 @@ class jabber
 		{
 			if (!check_form_key($form_key))
 			{
-				throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+				throw new form_invalid_exception('acp_settings_jabber');
 			}
 
 			// Is this feature enabled? Then try to establish a connection
@@ -135,12 +136,14 @@ class jabber
 
 				if (!$jabber->connect())
 				{
+					// @todo <br> tags in exceptions
 					throw new http_exception(400, $this->lang->lang('ERR_JAB_CONNECT') . '<br /><br />' . $jabber->get_log() . $this->helper->adm_back_link('acp_settings_jabber'));
 				}
 
 				// We'll try to authorise using this account
 				if (!$jabber->login())
 				{
+					// @todo <br> tags in exceptions
 					throw new http_exception(400, $this->lang->lang('ERR_JAB_AUTH') . '<br /><br />' . $jabber->get_log() . $this->helper->adm_back_link('acp_settings_jabber'));
 				}
 
@@ -194,6 +197,6 @@ class jabber
 			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		]);
 
-		return $this->helper->render('acp_jabber.html', $this->lang->lang('ACP_SETTINGS_JABBER'));
+		return $this->helper->render('acp_jabber.html', 'ACP_SETTINGS_JABBER');
 	}
 }

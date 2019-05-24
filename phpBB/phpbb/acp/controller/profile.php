@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class profile
 {
 	/** @var \phpbb\config\config */
@@ -26,6 +29,9 @@ class profile
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -63,11 +69,6 @@ class profile
 	/** @var array */
 	protected $lang_defs;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -75,6 +76,7 @@ class profile
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\db\tools\tools_interface	$db_tools		Database tools object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\di\service_collection		$pf_collection	Profile field service collection
@@ -91,6 +93,7 @@ class profile
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\db\tools\tools_interface $db_tools,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\di\service_collection $pf_collection,
@@ -107,6 +110,7 @@ class profile
 		$this->db				= $db;
 		$this->db_tools			= $db_tools;
 		$this->dispatcher		= $dispatcher;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->log				= $log;
 		$this->pf_collection	= $pf_collection;
@@ -120,7 +124,7 @@ class profile
 		$this->tables			= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang(['ucp', 'acp/profile']);
 
@@ -134,9 +138,6 @@ class profile
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		$this->tpl_name = 'acp_profile';
-		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
-
 		$field_id = $this->request->variable('field_id', 0);
 		$action = $this->request->is_set_post('create') ? 'create' : '';
 		$action = $action ? $action : $this->request->variable('action', '');
@@ -146,9 +147,9 @@ class profile
 		$form_key = 'acp_profile';
 		add_form_key($form_key);
 
-		if (!$field_id && in_array($action, ['delete','activate', 'deactivate', 'move_up', 'move_down', 'edit']))
+		if (!$field_id && in_array($action, ['delete', 'activate', 'deactivate', 'move_up', 'move_down', 'edit']))
 		{
-			trigger_error($this->lang->lang('NO_FIELD_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new form_invalid_exception('acp_cpf');
 		}
 
 		// Build Language array
@@ -168,7 +169,7 @@ class profile
 		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT field_id, lang_id
-			FROM ' . $this->tables['profile_lang'] . '
+			FROM ' . $this->tables['profile_fields_language'] . '
 			ORDER BY lang_id';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -203,8 +204,8 @@ class profile
 					$this->db->sql_transaction('begin');
 
 					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields'] . ' WHERE field_id = ' . (int) $field_id);
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE field_id = ' . (int) $field_id);
-					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE field_id = ' . (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_options_language'] . ' WHERE field_id = ' . (int) $field_id);
+					$this->db->sql_query('DELETE FROM ' . $this->tables['profile_fields_language'] . ' WHERE field_id = ' . (int) $field_id);
 
 					$this->db_tools->sql_column_remove($this->tables['profile_fields_data'], 'pf_' . $field_ident);
 
@@ -231,23 +232,24 @@ class profile
 					$this->db->sql_transaction('commit');
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_PROFILE_FIELD_REMOVED', false, [$field_ident]);
-					trigger_error($this->lang->lang('REMOVED_PROFILE_FIELD') . adm_back_link($this->u_action));
+
+					return $this->helper->message_back('REMOVED_PROFILE_FIELD', 'acp_cpf');
 				}
 				else
 				{
 					confirm_box(false, 'DELETE_PROFILE_FIELD', build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> $action,
 						'field_id'	=> $field_id,
 					]));
+
+					return redirect($this->helper->route('acp_cpf'));
 				}
 			break;
 
 			case 'activate':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_profile'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_cpf');
 				}
 
 				$sql = 'SELECT lang_id
@@ -259,7 +261,7 @@ class profile
 
 				if (!in_array($default_lang_id, $this->lang_defs['entry'][$field_id]))
 				{
-					trigger_error($this->lang->lang('DEFAULT_LANGUAGE_NOT_FILLED') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'DEFAULT_LANGUAGE_NOT_FILLED', 'acp_cpf');
 				}
 
 				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
@@ -284,13 +286,13 @@ class profile
 					]);
 				}
 
-				trigger_error($this->lang->lang('PROFILE_FIELD_ACTIVATED') . adm_back_link($this->u_action));
+				return $this->helper->message_back('PROFILE_FIELD_ACTIVATED', 'acp_cpf');
 			break;
 
 			case 'deactivate':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_profile'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_cpf');
 				}
 
 				$sql = 'UPDATE ' . $this->tables['profile_fields'] . '
@@ -315,14 +317,14 @@ class profile
 
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_PROFILE_FIELD_DEACTIVATE', false, [$field_ident]);
 
-				trigger_error($this->lang->lang('PROFILE_FIELD_DEACTIVATED') . adm_back_link($this->u_action));
+				return $this->helper->message_back('PROFILE_FIELD_DEACTIVATED', 'acp_cpf');
 			break;
 
 			case 'move_up':
 			case 'move_down':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_profile'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_cpf');
 				}
 
 				$sql = 'SELECT field_order
@@ -341,7 +343,7 @@ class profile
 
 				$sql = 'UPDATE ' . $this->tables['profile_fields'] . "
 					SET field_order = $order_total - field_order
-					WHERE field_order IN ($field_order, " . (($action === 'move_up') ? $field_order - 1 : $field_order + 1) . ')';
+					WHERE field_order IN ($field_order, " . ($action === 'move_up' ? $field_order - 1 : $field_order + 1) . ')';
 				$this->db->sql_query($sql);
 
 				if ($this->request->is_ajax())
@@ -366,7 +368,7 @@ class profile
 				if ($action === 'edit')
 				{
 					$sql = 'SELECT l.*, f.*
-						FROM ' . $this->tables['profile_lang'] . ' l, ' . $this->tables['profile_fields'] . ' f
+						FROM ' . $this->tables['profile_fields_language'] . ' l, ' . $this->tables['profile_fields'] . ' f
 						WHERE l.lang_id = ' . $this->edit_lang_id . '
 							AND l.field_id = f.field_id
 							AND f.field_id = ' . (int) $field_id;
@@ -378,7 +380,7 @@ class profile
 					{
 						// Some admin changed the default language?
 						$sql = 'SELECT l.*, f.*
-							FROM ' . $this->tables['profile_lang'] . ' l, ' . $this->tables['profile_fields'] . ' f
+							FROM ' . $this->tables['profile_fields_language'] . ' l, ' . $this->tables['profile_fields'] . ' f
 							WHERE l.lang_id <> ' . $this->edit_lang_id . '
 							AND l.field_id = f.field_id
 							AND f.field_id = ' . (int) $field_id;
@@ -386,9 +388,9 @@ class profile
 						$field_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
 
-						if (!$field_row)
+						if ($field_row === false)
 						{
-							trigger_error($this->lang->lang('FIELD_NOT_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(404, 'FIELD_NOT_FOUND', 'acp_cpf');
 						}
 
 						$this->edit_lang_id = $field_row['lang_id'];
@@ -400,7 +402,7 @@ class profile
 					$lang_options = [];
 
 					$sql = 'SELECT *
-						FROM ' . $this->tables['profile_fields_lang'] . '
+						FROM ' . $this->tables['profile_fields_options_language'] . '
 						WHERE lang_id = ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
@@ -422,7 +424,7 @@ class profile
 
 					if (!isset($this->pf_collection[$field_type]))
 					{
-						trigger_error($this->lang->lang('NO_FIELD_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'NO_FIELD_TYPE', 'acp_cpf');
 					}
 
 					$profile_field = $this->pf_collection[$field_type];
@@ -551,7 +553,7 @@ class profile
 					$l_lang_options = [];
 
 					$sql = 'SELECT *
-						FROM ' . $this->tables['profile_fields_lang'] . '
+						FROM ' . $this->tables['profile_fields_options_language'] . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
@@ -565,7 +567,7 @@ class profile
 					$l_lang_name = $l_lang_explain = $l_lang_default_value = [];
 
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
-						FROM ' . $this->tables['profile_lang'] . '
+						FROM ' . $this->tables['profile_fields_language'] . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY lang_id ASC";
@@ -636,11 +638,7 @@ class profile
 					}
 				}
 
-				if (!empty($errors))
-				{
-					$submit = false;
-				}
-				else
+				if (empty($errors))
 				{
 					$step = $this->request->is_set('next') ? $step + 1 : ($this->request->is_set('prev') ? $step - 1 : $step);
 				}
@@ -675,10 +673,10 @@ class profile
 					{
 						if (!check_form_key($form_key))
 						{
-							trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new form_invalid_exception('acp_cpf');
 						}
 
-						$this->save_profile_field($field_type, $action);
+						return $this->save_profile_field($field_type, $action);
 					}
 				}
 
@@ -690,8 +688,8 @@ class profile
 					'L_TITLE'			=> $this->lang->lang('STEP_' . $step . '_TITLE_' . strtoupper($action)),
 					'L_EXPLAIN'			=> $this->lang->lang('STEP_' . $step . '_EXPLAIN_' . strtoupper($action)),
 
-					'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;step=$step",
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route('acp_cpf', ['action' => $action, 'step' => $step]),
+					'U_BACK'			=> $this->helper->route('acp_cpf'),
 				]);
 
 				// Now go through the steps
@@ -770,6 +768,7 @@ class profile
 				}
 
 				$field_data = $this->pf_manager->vars;
+
 				/**
 				 * Event to add template variables for new profile field table fields
 				 *
@@ -780,7 +779,7 @@ class profile
 				 * @var bool	save			Configuration should be saved
 				 * @var string	field_type		Type of the field we are dealing with
 				 * @var array	field_data		Array of data about the field
-				 * @var array	s_hidden_fields	Array of hidden fields in case this needs modification		@todo This is a string?
+				 * @var string	s_hidden_fields	String of hidden fields
 				 * @var array	options			Array of options specific to this step
 				 * @since 3.1.6-RC1
 				 */
@@ -798,35 +797,19 @@ class profile
 
 				$this->template->assign_vars(['S_HIDDEN_FIELDS' => $s_hidden_fields]);
 
-				return;
+				return $this->helper->render('acp_profile.html', 'ACP_CUSTOM_PROFILE_FIELDS');
 			break;
 		}
-
-		$page_title	= $this->page_title;
-		$tpl_name	= $this->tpl_name;
-		$u_action	= $this->u_action;
 
 		/**
 		 * Event to handle actions on the ACP profile fields page
 		 *
 		 * @event core.acp_profile_action
 		 * @var string	action		Action that is being performed
-		 * @var string	tpl_name	Template file to load
-		 * @var string	page_title	Page title
-		 * @var string	u_action	The URL we are at, read only
 		 * @since 3.2.2-RC1
 		 */
-		$vars = [
-			'action',
-			'tpl_name',
-			'page_title',
-			'u_action',
-		];
+		$vars = ['action',];
 		extract($this->dispatcher->trigger_event('core.acp_profile_action', compact($vars)));
-
-		$this->tpl_name		= $tpl_name;
-		$this->page_title	= $page_title;
-		unset($u_action);
 
 		$s_one_need_edit = false;
 
@@ -858,12 +841,12 @@ class profile
 				'FIELD_TYPE'		=> $profile_field->get_name(),
 
 				'L_ACTIVATE_DEACTIVATE'		=> $this->lang->lang($active_lang),
-				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
-				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
-				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
-				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
-				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
-				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
+				'U_ACTIVATE_DEACTIVATE'		=> $this->helper->route('acp_cpf', ['action' => $active_value, 'field_id' => $id, 'hash' => generate_link_hash('acp_profile')]),
+				'U_EDIT'					=> $this->helper->route('acp_cpf', ['action' => 'edit', 'field_id' => $id]),
+				'U_TRANSLATE'				=> $this->helper->route('acp_cpf', ['action' => 'edit', 'field_id' => $id, 'step' => 3]),
+				'U_DELETE'					=> $this->helper->route('acp_cpf', ['action' => 'delete', 'field_id' => $id]),
+				'U_MOVE_UP'					=> $this->helper->route('acp_cpf', ['action' => 'move_up', 'field_id' => $id, 'hash' => generate_link_hash('acp_profile')]),
+				'U_MOVE_DOWN'				=> $this->helper->route('acp_cpf', ['action' => 'move_down', 'field_id' => $id, 'hash' => generate_link_hash('acp_profile')]),
 
 				'S_NEED_EDIT'				=> $s_need_edit,
 			];
@@ -901,9 +884,11 @@ class profile
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'			=> $this->u_action,
+			'U_ACTION'			=> $this->helper->route('acp_cpf'),
 			'S_TYPE_OPTIONS'	=> $s_select_type,
 		]);
+
+		return $this->helper->render('acp_profile.html', 'ACP_CUSTOM_PROFILE_FIELDS');
 	}
 
 	/**
@@ -1009,7 +994,7 @@ class profile
 	 *
 	 * @param string	$field_type
 	 * @param string	$action
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	function save_profile_field($field_type, $action = 'create')
 	{
@@ -1117,11 +1102,11 @@ class profile
 			$sql_ary['field_id'] = $field_id;
 			$sql_ary['lang_id'] = $default_lang_id;
 
-			$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+			$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		}
 		else
 		{
-			$this->update_insert($this->tables['profile_lang'], $sql_ary, ['field_id' => $field_id, 'lang_id' => $default_lang_id]);
+			$this->update_insert($this->tables['profile_fields_language'], $sql_ary, ['field_id' => $field_id, 'lang_id' => $default_lang_id]);
 		}
 
 		if (is_array($this->pf_manager->vars['l_lang_name']) && !empty($this->pf_manager->vars['l_lang_name']))
@@ -1150,7 +1135,7 @@ class profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_lang'] . "
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_language'] . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
 				$this->db->sql_query($sql);
@@ -1168,7 +1153,7 @@ class profile
 
 			if ($action !== 'create')
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . "
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . "
 					WHERE field_id = $field_id
 						AND lang_id = " . (int) $default_lang_id;
 				$this->db->sql_query($sql);
@@ -1187,11 +1172,11 @@ class profile
 					$sql_ary['lang_id'] = $default_lang_id;
 					$sql_ary['option_id'] = (int) $option_id;
 
-					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_options_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 				}
 				else
 				{
-					$this->update_insert($this->tables['profile_fields_lang'], $sql_ary, [
+					$this->update_insert($this->tables['profile_fields_options_language'], $sql_ary, [
 						'field_id'	=> (int) $field_id,
 						'lang_id'	=> (int) $default_lang_id,
 						'option_id'	=> (int) $option_id,
@@ -1220,7 +1205,7 @@ class profile
 				{
 					if ($action !== 'create')
 					{
-						$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . "
+						$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . "
 							WHERE field_id = $field_id
 							AND lang_id = " . (int) $lang_id;
 						$this->db->sql_query($sql);
@@ -1241,7 +1226,7 @@ class profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . "
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
 				$this->db->sql_query($sql);
@@ -1252,14 +1237,14 @@ class profile
 		{
 			if ($action === 'create')
 			{
-				$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
+				$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
 			}
 			else
 			{
 				$lang_id = $sql['lang_id'];
 				unset($sql['lang_id'], $sql['field_id']);
 
-				$this->update_insert($this->tables['profile_lang'], $sql, ['lang_id' => (int) $lang_id, 'field_id' => $field_id]);
+				$this->update_insert($this->tables['profile_fields_language'], $sql, ['lang_id' => (int) $lang_id, 'field_id' => $field_id]);
 			}
 		}
 
@@ -1269,7 +1254,7 @@ class profile
 			{
 				if ($action === 'create')
 				{
-					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
+					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_options_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
 				}
 				else
 				{
@@ -1277,7 +1262,7 @@ class profile
 					$option_id = $sql['option_id'];
 					unset($sql['lang_id'], $sql['field_id'], $sql['option_id']);
 
-					$this->update_insert($this->tables['profile_fields_lang'], $sql, [
+					$this->update_insert($this->tables['profile_fields_options_language'], $sql, [
 						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
 						'option_id'	=> $option_id,
@@ -1302,13 +1287,13 @@ class profile
 		{
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_PROFILE_FIELD_EDIT', false, [$this->pf_manager->vars['field_ident'] . ':' . $this->pf_manager->vars['lang_name']]);
 
-			trigger_error($this->lang->lang('CHANGED_PROFILE_FIELD') . adm_back_link($this->u_action));
+			return $this->helper->message_back('CHANGED_PROFILE_FIELD', 'acp_cpf');
 		}
 		else
 		{
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_PROFILE_FIELD_CREATE', false, [substr($field_ident, 3) . ':' . $this->pf_manager->vars['lang_name']]);
 
-			trigger_error($this->lang->lang('ADDED_PROFILE_FIELD') . adm_back_link($this->u_action));
+			return $this->helper->message_back('ADDED_PROFILE_FIELD', 'acp_cpf');
 		}
 	}
 

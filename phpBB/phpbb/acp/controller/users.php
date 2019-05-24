@@ -14,7 +14,8 @@
 
 namespace phpbb\acp\controller;
 
-use phpbb\exception\http_exception;
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
 
 class users
 {
@@ -164,10 +165,9 @@ class users
 	{
 		$this->lang->add_lang(['posting', 'ucp', 'acp/users']);
 
-		$this->tpl_name = 'acp_users';
-
-		$user_id		= $u;
+		$user_id		= $u ? $u : $this->request->variable('u', 0);
 		$mode			= $this->request->is_set_post('mode') ? $this->request->variable('mode', '', true) : $mode;
+		$u_mode			= ['acp_users_manage', 'mode' => $mode, 'u' => (int) $user_id];
 		$u_user_action	= $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 
 		$error		= [];
@@ -195,7 +195,7 @@ class users
 				'MESSAGE_TEXT'	=> nl2br($ip_whois),
 			]);
 
-			return $this->helper->render('simple_body.html', $this->lang->lang('WHOIS'));
+			return $this->helper->render('simple_body.html', 'WHOIS');
 		}
 
 		// Show user selection mask
@@ -209,7 +209,7 @@ class users
 				'U_ACTION'			=> $this->helper->route('acp_users_manage'),
 			]);
 
-			return $this->helper->render('acp_users.html', $this->lang->lang('SELECT_USER'));
+			return $this->helper->render('acp_users.html', 'SELECT_USER');
 		}
 
 		if (!$user_id)
@@ -223,7 +223,7 @@ class users
 
 			if ($user_id === 0)
 			{
-				throw new http_exception(404, $this->lang->lang('NO_USER'));
+				throw new back_exception(404, 'NO_USER', $u_mode);
 			}
 		}
 
@@ -247,7 +247,7 @@ class users
 
 		if ($user_row === false)
 		{
-			throw new http_exception(404, $this->lang->lang('NO_USER'));
+			throw new back_exception(404, 'NO_USER', 'acp_users_manage');
 		}
 
 		$modes = ['overview', 'feedback', 'warnings', 'profile', 'prefs', 'avatar', 'rank', 'sig', 'attach'];
@@ -284,7 +284,7 @@ class users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($this->user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			throw new http_exception(403, $this->lang->lang('NOT_MANAGE_FOUNDER'));
+			throw new back_exception(403, 'NOT_MANAGE_FOUNDER', 'acp_users_manage');
 		}
 
 		switch ($mode)
@@ -321,24 +321,24 @@ class users
 					{
 						if (!$this->auth->acl_get('a_userdel'))
 						{
-							throw new http_exception(403, $this->lang->lang('NO_AUTH_OPERATION'));
+							throw new back_exception(403, 'NO_AUTH_OPERATION', $u_mode);
 						}
 
 						// Check if the user wants to remove himself or the guest user account
 						if ($user_id == ANONYMOUS)
 						{
-							throw new http_exception(403, $this->lang->lang('CANNOT_REMOVE_ANONYMOUS'));
+							throw new back_exception(403, 'CANNOT_REMOVE_ANONYMOUS', $u_mode);
 						}
 
 						// Founders can not be deleted.
 						if ($user_row['user_type'] == USER_FOUNDER)
 						{
-							throw new http_exception(403, $this->lang->lang('CANNOT_REMOVE_FOUNDER'));
+							throw new back_exception(403, 'CANNOT_REMOVE_FOUNDER', $u_mode);
 						}
 
 						if ($user_id == $this->user->data['user_id'])
 						{
-							throw new http_exception(403, $this->lang->lang('CANNOT_REMOVE_YOURSELF'));
+							throw new back_exception(403, 'CANNOT_REMOVE_YOURSELF', $u_mode);
 						}
 
 						if ($delete_type)
@@ -349,7 +349,7 @@ class users
 
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DELETED', false, [$user_row['username']]);
 
-								return $this->helper->message_back('USER_DELETED','acp_users_manage');
+								return $this->helper->message_back('USER_DELETED', 'acp_users_manage');
 							}
 							else
 							{
@@ -360,12 +360,14 @@ class users
 									'delete_type'	=> $delete_type,
 								];
 
-								return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields($delete_confirm_hidden_fields));
+								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields($delete_confirm_hidden_fields));
+
+								return $this->helper->route($u_user_action);
 							}
 						}
 						else
 						{
-							throw new http_exception(400, $this->lang->lang('NO_MODE'));
+							throw new back_exception(403, 'NO_MODE', $u_mode);
 						}
 					}
 
@@ -377,22 +379,22 @@ class users
 						case 'banip':
 							if ($user_id == $this->user->data['user_id'])
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_BAN_YOURSELF'));
+								throw new back_exception(403, 'CANNOT_BAN_YOURSELF', $u_mode);
 							}
 
 							if ($user_id == ANONYMOUS)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_BAN_ANONYMOUS'));
+								throw new back_exception(403, 'CANNOT_BAN_ANONYMOUS', $u_mode);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_BAN_FOUNDER'));
+								throw new back_exception(403, 'CANNOT_BAN_FOUNDER', $u_mode);
 							}
 
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							$ban = [];
@@ -435,7 +437,7 @@ class users
 
 							if ($result === false)
 							{
-								throw new http_exception(400, $this->lang->lang('BAN_ALREADY_ENTERED'));
+								throw new back_exception(400, 'BAN_ALREADY_ENTERED', $u_mode);
 							}
 
 							return $this->helper->message_back('BAN_SUCCESSFUL', 'acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
@@ -444,22 +446,22 @@ class users
 						case 'reactivate':
 							if ($user_id == $this->user->data['user_id'])
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_FORCE_REACT_YOURSELF'));
+								throw new back_exception(403, 'CANNOT_FORCE_REACT_YOURSELF', $u_mode);
 							}
 
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_FORCE_REACT_FOUNDER'));
+								throw new back_exception(403, 'CANNOT_FORCE_REACT_FOUNDER', $u_mode);
 							}
 
 							if ($user_row['user_type'] == USER_IGNORE)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_FORCE_REACT_BOT'));
+								throw new back_exception(403, 'CANNOT_FORCE_REACT_BOT', $u_mode);
 							}
 
 							if ($this->config['email_enable'])
@@ -526,22 +528,22 @@ class users
 							if ($user_id == $this->user->data['user_id'])
 							{
 								// It is only deactivation since the user is already activated (else he would not have reached this page)
-								throw new http_exception(403, $this->lang->lang('CANNOT_DEACTIVATE_YOURSELF'));
+								throw new back_exception(403, 'CANNOT_DEACTIVATE_YOURSELF', $u_mode);
 							}
 
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_DEACTIVATE_FOUNDER'));
+								throw new back_exception(403, 'CANNOT_DEACTIVATE_FOUNDER', $u_mode);
 							}
 
 							if ($user_row['user_type'] == USER_IGNORE)
 							{
-								throw new http_exception(403, $this->lang->lang('CANNOT_DEACTIVATE_BOT'));
+								throw new back_exception(403, 'CANNOT_DEACTIVATE_BOT', $u_mode);
 							}
 
 							user_active_flip('flip', $user_id);
@@ -585,7 +587,7 @@ class users
 						case 'delsig':
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							$sql_ary = [
@@ -608,7 +610,7 @@ class users
 						case 'delavatar':
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							// Delete old avatar if present
@@ -632,10 +634,12 @@ class users
 							}
 							else
 							{
-								return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 									'update'	=> true,
 									'action'	=> $action,
 								]));
+
+								return $this->helper->route($u_user_action);
 							}
 						break;
 
@@ -651,10 +655,12 @@ class users
 							}
 							else
 							{
-								return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 									'update'	=> true,
 									'action'	=> $action,
 								]));
+
+								return $this->helper->route($u_user_action);
 							}
 						break;
 
@@ -697,17 +703,19 @@ class users
 							}
 							else
 							{
-								return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 									'update'	=> true,
 									'action'	=> $action,
 								]));
+
+								return $this->helper->route($u_user_action);
 							}
 						break;
 
 						case 'moveposts':
 							if (!check_form_key($form_key))
 							{
-								throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+								throw new form_invalid_exception($u_mode);
 							}
 
 							$this->lang->add_lang('acp/forums');
@@ -737,12 +745,12 @@ class users
 
 							if ($forum_info === false)
 							{
-								throw new http_exception(400, $this->lang->lang('NO_FORUM'));
+								throw new back_exception(400, 'NO_FORUM', $u_mode);
 							}
 
 							if ($forum_info['forum_type'] != FORUM_POST)
 							{
-								throw new http_exception(400, $this->lang->lang('MOVE_POSTS_NO_POSTABLE_FORUM'));
+								throw new back_exception(400, 'MOVE_POSTS_NO_POSTABLE_FORUM', $u_mode);
 							}
 
 							// Two stage?
@@ -872,10 +880,12 @@ class users
 							}
 							else
 							{
-								return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+								confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 									'update'	=> true,
 									'action'	=> $action,
 								]));
+
+								return $this->helper->route($u_user_action);
 							}
 						break;
 
@@ -967,12 +977,12 @@ class users
 									// Make sure the user is not setting an Inactive or ignored user to be a founder
 									if ($user_row['user_type'] == USER_IGNORE)
 									{
-										throw new http_exception(403, $this->lang->lang('CANNOT_SET_FOUNDER_IGNORED'));
+										throw new back_exception(403, 'CANNOT_SET_FOUNDER_IGNORED', $u_mode);
 									}
 
 									if ($user_row['user_type'] == USER_INACTIVE)
 									{
-										throw new http_exception(403, $this->lang->lang('CANNOT_SET_FOUNDER_INACTIVE'));
+										throw new back_exception(403, 'CANNOT_SET_FOUNDER_INACTIVE', $u_mode);
 									}
 
 									$sql_ary['user_type'] = USER_FOUNDER;
@@ -994,7 +1004,7 @@ class users
 									}
 									else
 									{
-										throw new http_exception(403, $this->lang->lang('AT_LEAST_ONE_FOUNDER'));
+										throw new back_exception(403, 'AT_LEAST_ONE_FOUNDER', $u_mode);
 									}
 								}
 							}
@@ -1244,7 +1254,7 @@ class users
 				{
 					if (!check_form_key($form_key))
 					{
-						throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+						throw new form_invalid_exception($u_mode);
 					}
 
 					$where_sql = '';
@@ -1275,7 +1285,7 @@ class users
 				{
 					if (!check_form_key($form_key))
 					{
-						throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+						throw new form_invalid_exception($u_mode);
 					}
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_FEEDBACK', false, [$user_row['username']]);
@@ -1412,7 +1422,9 @@ class users
 
 						if ($this->request->is_set_post('delall') || ($this->request->is_set_post('delmarked') && !empty($marked)))
 						{
-							return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
+							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
+
+							return $this->helper->route($u_user_action);
 						}
 					}
 				}
@@ -1970,7 +1982,7 @@ class users
 						}
 						else
 						{
-							throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+							throw new form_invalid_exception($u_mode);
 						}
 					}
 
@@ -1985,9 +1997,11 @@ class users
 						}
 						else
 						{
-							return confirm_box(false, $this->lang->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
+							confirm_box(false, $this->lang->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
 								'avatar_delete'	=> true,
 							]));
+
+							return $this->helper->route($u_user_action);
 						}
 					}
 
@@ -2054,7 +2068,7 @@ class users
 				{
 					if (!check_form_key($form_key))
 					{
-						throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+						throw new form_invalid_exception($u_mode);
 					}
 
 					$rank_id = $this->request->variable('user_rank', 0);
@@ -2268,11 +2282,13 @@ class users
 					}
 					else
 					{
-						return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+						confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 							'delmarked'		=> true,
 							'action'		=> $action,
 							'mark'			=> $marked,
 						]));
+
+						return $this->helper->route($u_user_action);
 					}
 				}
 
@@ -2394,7 +2410,7 @@ class users
 
 					if ($this->user->data['user_type'] != USER_FOUNDER && $founder_manage)
 					{
-						throw new http_exception(403, $this->lang->lang('NOT_ALLOWED_MANAGE_GROUP'));
+						throw new back_exception(403, 'NOT_ALLOWED_MANAGE_GROUP', $u_mode);
 					}
 				}
 
@@ -2405,12 +2421,12 @@ class users
 					case 'default':
 						if (!$group_id)
 						{
-							throw new http_exception(400, $this->lang->lang('NO_GROUP'));
+							throw new back_exception(400, 'NO_GROUP', $u_mode);
 						}
 
 						if (!check_link_hash($this->request->variable('hash', ''), 'acp_users'))
 						{
-							throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+							throw new form_invalid_exception($u_mode);
 						}
 
 						group_user_attributes($action, $group_id, $user_id);
@@ -2426,12 +2442,12 @@ class users
 						{
 							if (!$group_id)
 							{
-								throw new http_exception(400, $this->lang->lang('NO_GROUP'));
+								throw new back_exception(400, 'NO_GROUP', $u_mode);
 							}
 
 							if ($error = (string) group_user_del($group_id, $user_id))
 							{
-								throw new http_exception(400, $this->lang->lang($error));
+								throw new back_exception(400, $error, $u_mode);
 							}
 
 							$error = [];
@@ -2449,10 +2465,12 @@ class users
 						}
 						else
 						{
-							return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 								'action'	=> $action,
 								'g'			=> $group_id,
 							]));
+
+							return $this->helper->route($u_user_action);
 						}
 					break;
 
@@ -2461,19 +2479,21 @@ class users
 						{
 							if (!$group_id)
 							{
-								throw new http_exception(400, $this->lang->lang('NO_GROUP'));
+								throw new back_exception(400, 'NO_GROUP', $u_mode);
 							}
 
 							group_user_attributes($action, $group_id, $user_id);
 						}
 						else
 						{
-							return confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
+							confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
 								'mode'			=> $mode,
 								'action'		=> $action,
 								'u'				=> $user_id,
 								'g'				=> $group_id,
 							]));
+
+							return $this->helper->route($u_user_action);
 						}
 					break;
 				}
@@ -2483,18 +2503,18 @@ class users
 				{
 					if (!check_form_key($form_key))
 					{
-						throw new http_exception(400, $this->lang->lang('FORM_INVALID'));
+						throw new form_invalid_exception($u_mode);
 					}
 
 					if (!$group_id)
 					{
-						throw new http_exception(400, $this->lang->lang('NO_GROUP'));
+						throw new back_exception(400, 'NO_GROUP', $u_mode);
 					}
 
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
-						throw new http_exception(400, $this->lang->lang($error));
+						throw new back_exception(400, $error, $u_mode);
 					}
 
 					$error = [];
@@ -2569,8 +2589,7 @@ class users
 							'S_NO_DEFAULT'		=> $user_row['group_id'] != $data['group_id'],
 							'S_SPECIAL_GROUP'	=> $group_type === 'special',
 
-							// @todo
-							'U_EDIT_GROUP'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
+							'U_EDIT_GROUP'		=> $this->helper->route('acp_groups_manage', ['action' => 'edit', 'u' => $user_id, 'g' => $group_id, 'back_link' => 'acp_users_groups']),
 							'U_DEFAULT'			=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'action' => 'default', 'g' => $data['group_id'], 'hash' => generate_link_hash('acp_users')]),
 							'U_DEMOTE_PROMOTE'	=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'action' => ($data['group_leader'] ? 'demote' : 'promote'), 'hash' => generate_link_hash('acp_users')]),
 							'U_DELETE'			=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'action' => 'delete', 'g' => $data['group_id']]),
@@ -2638,9 +2657,8 @@ class users
 					'S_FORUM_OPTIONS'			=> $s_forum_options,
 
 					'U_ACTION'					=> $u_user_action,
-					// @todo
-					'U_USER_PERMISSIONS'		=> append_sid("{$this->admin_path}index.$this->php_ext" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
-					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id),
+					'U_USER_PERMISSIONS'		=> $this->helper->route('acp_permissions_global_user', ['user_id[]' => $user_id]),
+					'U_USER_FORUM_PERMISSIONS'	=> $this->helper->route('acp_permissions_forum_user', ['user_id[]' => $user_id]),
 				]);
 			break;
 

@@ -9,6 +9,7 @@ services:
         arguments:
             - '@template'
             - '@language'
+            - '@controller.helper'
             - '@acp.functions.controller'
             - '%debug.exceptions%'
         tags:

@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class ranks
 {
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -51,11 +54,11 @@ class ranks
 	/** @var string phpBB root path */
 	protected $root_path;
 
+	/** @var string phpBB web path */
+	protected $web_path;
+
 	/** @var array phpBB tables */
 	protected $tables;
-
-	/** @todo */
-	public $u_action;
 
 	/**
 	 * Constructor.
@@ -67,6 +70,7 @@ class ranks
 	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
+	 * @param \phpbb\path_helper					$path_helper	Path helper object
 	 * @param \phpbb\request\request				$request		Request object
 	 * @param \phpbb\template\template				$template		Template object
 	 * @param \phpbb\user							$user			User object
@@ -82,6 +86,7 @@ class ranks
 		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
+		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
@@ -103,6 +108,7 @@ class ranks
 
 		$this->admin_path	= $admin_path;
 		$this->root_path	= $root_path;
+		$this->web_path		= $path_helper->update_web_root_path($root_path);
 		$this->tables		= $tables;
 	}
 
@@ -124,7 +130,7 @@ class ranks
 			case 'save':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_ranks');
 				}
 
 				$rank_title		= $this->request->variable('title', '', true);
@@ -140,7 +146,7 @@ class ranks
 
 				if (!$rank_title)
 				{
-					trigger_error($this->lang->lang('NO_RANK_TITLE') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_RANK_TITLE', 'acp_ranks');
 				}
 
 				$sql_ary = [
@@ -181,13 +187,13 @@ class ranks
 
 				$this->cache->destroy('_ranks');
 
-				trigger_error($message . adm_back_link($this->u_action));
+				return $this->helper->message_back($message, 'acp_ranks');
 			break;
 
 			case 'delete':
 				if (!$rank_id)
 				{
-					trigger_error($this->lang->lang('MUST_SELECT_RANK') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'MUST_SELECT_RANK', 'acp_ranks');
 				}
 
 				if (confirm_box(true))
@@ -223,6 +229,8 @@ class ranks
 							],
 						]);
 					}
+
+					return $this->helper->message_back('RANK_REMOVED', 'acp_ranks');
 				}
 				else
 				{
@@ -230,6 +238,8 @@ class ranks
 						'rank_id'	=> (int) $rank_id,
 						'action'	=> $action,
 					]));
+
+					return redirect($this->helper->route('acp_ranks'));
 				}
 			break;
 
@@ -287,13 +297,13 @@ class ranks
 
 				$tpl_ary = [
 					'S_EDIT'			=> true,
-					'U_BACK'			=> $this->u_action,
-					'U_ACTION'			=> $this->u_action . '&amp;id=' . $rank_id,
-					'RANKS_PATH'		=> $this->root_path . $this->config['ranks_path'],
+					'U_BACK'			=> $this->helper->route('acp_ranks'),
+					'U_ACTION'			=> $this->helper->route('acp_ranks', ['id' => $rank_id]),
+					'RANKS_PATH'		=> $this->web_path . $this->config['ranks_path'],
 
 					'RANK_TITLE'		=> isset($ranks['rank_title']) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
-					'RANK_IMAGE'		=> $edit_img ? $this->root_path . $this->config['ranks_path'] . '/' . $edit_img : htmlspecialchars($this->admin_path) . 'images/spacer.gif',
+					'RANK_IMAGE'		=> $edit_img ? $this->web_path . $this->config['ranks_path'] . '/' . $edit_img : htmlspecialchars($this->web_path . $this->admin_path) . 'images/spacer.gif',
 					'S_SPECIAL_RANK'	=> (isset($ranks['rank_special']) && $ranks['rank_special']) ? true : false,
 					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0,
 				];
@@ -311,11 +321,11 @@ class ranks
 
 				$this->template->assign_vars($tpl_ary);
 
-				return;
+				$this->helper->render('acp_ranks.html', 'ACP_MANAGE_RANKS');
 			break;
 		}
 
-		$this->template->assign_var('U_ACTION', $this->u_action);
+		$this->template->assign_var('U_ACTION', $this->helper->route('acp_ranks'));
 
 		$sql = 'SELECT *
 			FROM ' . $this->tables['ranks'] . '
@@ -327,12 +337,12 @@ class ranks
 				'S_RANK_IMAGE'		=> !empty($row['rank_image']),
 				'S_SPECIAL_RANK'	=> !empty($row['rank_special']),
 
-				'RANK_IMAGE'		=> $this->root_path . $this->config['ranks_path'] . '/' . $row['rank_image'],
+				'RANK_IMAGE'		=> $this->web_path . $this->config['ranks_path'] . '/' . $row['rank_image'],
 				'RANK_TITLE'		=> $row['rank_title'],
 				'MIN_POSTS'			=> $row['rank_min'],
 
-				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'],
+				'U_EDIT'			=> $this->helper->route('acp_ranks', ['action' => 'edit', 'id' => $row['rank_id']]),
+				'U_DELETE'			=> $this->helper->route('acp_ranks', ['action' => 'delete', 'id' => $row['rank_id']]),
 			];
 
 			/**
@@ -350,6 +360,6 @@ class ranks
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->helper->render('acp_ranks.html', $this->lang->lang('ACP_MANAGE_RANKS'));
+		return $this->helper->render('acp_ranks.html', 'ACP_MANAGE_RANKS');
 	}
 }

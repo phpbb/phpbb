@@ -13,10 +13,16 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class reasons
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -36,15 +42,11 @@ class reasons
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\db\driver\driver_interface	$db			Database object
+	 * @param \phpbb\acp\helper\controller		$helper		ACP Controller helper object
 	 * @param \phpbb\language\language			$lang		Language object
 	 * @param \phpbb\log\log					$log		Log object
 	 * @param \phpbb\request\request			$request	Request object
@@ -54,6 +56,7 @@ class reasons
 	 */
 	public function __construct(
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -63,6 +66,7 @@ class reasons
 	)
 	{
 		$this->db		= $db;
+		$this->helper	= $helper;
 		$this->lang		= $lang;
 		$this->log		= $log;
 		$this->request	= $request;
@@ -72,7 +76,7 @@ class reasons
 		$this->tables	= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang(['mcp', 'acp/posting']);
 
@@ -82,9 +86,6 @@ class reasons
 		$reason_id = $this->request->variable('id', 0);
 
 		$reasons_lang = $this->lang->get_lang_array()['report_reasons'];
-
-		$this->tpl_name = 'acp_reasons';
-		$this->page_title = 'ACP_REASONS';
 
 		$form_key = 'acp_reason';
 		add_form_key($form_key);
@@ -193,7 +194,7 @@ class reasons
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_REASON_' . $log, false, [$reason_row['reason_title']]);
 
-						trigger_error($this->lang->lang('REASON_' . $log) . adm_back_link($this->u_action));
+						return $this->helper->message_back('REASON_' . $log, 'acp_reasons');
 					}
 				}
 				else if ($reason_id)
@@ -207,7 +208,7 @@ class reasons
 
 					if ($reason_row === false)
 					{
-						trigger_error($this->lang->lang('NO_REASON') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(404, 'NO_REASON', 'acp_reasons');
 					}
 				}
 
@@ -225,8 +226,8 @@ class reasons
 
 				$this->template->assign_vars([
 					'L_TITLE'		=> $this->lang->lang('REASON_' . $l_title),
-					'U_ACTION'		=> $this->u_action . "&amp;id=$reason_id&amp;action=$action",
-					'U_BACK'		=> $this->u_action,
+					'U_ACTION'		=> $this->helper->route('acp_reasons', ['action' => $action, 'id' => $reason_id]),
+					'U_BACK'		=> $this->helper->route('acp_reasons'),
 					'ERROR_MSG'		=> $s_errors ? implode('<br />', $errors) : '',
 
 					'REASON_TITLE'			=> $reason_row['reason_title'],
@@ -241,7 +242,7 @@ class reasons
 					'S_ERROR'				=> $s_errors,
 				]);
 
-				return;
+				return $this->helper->render('acp_reasons.html', 'ACP_REASONS');
 			break;
 
 			case 'delete':
@@ -254,12 +255,12 @@ class reasons
 
 				if ($reason_row === false)
 				{
-					trigger_error($this->lang->lang('NO_REASON') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'NO_REASON', 'acp_reasons');
 				}
 
 				if (strtolower($reason_row['reason_title']) == 'other')
 				{
-					trigger_error($this->lang->lang('NO_REMOVE_DEFAULT_REASON') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_REMOVE_DEFAULT_REASON', 'acp_reasons');
 				}
 
 				// Let the deletion be confirmed...
@@ -318,16 +319,16 @@ class reasons
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_REASON_REMOVED', false, [$reason_row['reason_title']]);
 
-					trigger_error($this->lang->lang('REASON_REMOVED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('REASON_REMOVED', 'acp_reasons');
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> $action,
 						'id'		=> (int) $reason_id,
 					]));
+
+					return redirect($this->helper->route('acp_reasons'));
 				}
 			break;
 
@@ -335,7 +336,7 @@ class reasons
 			case 'move_down':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_reasons'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_reasons');
 				}
 
 				$sql = 'SELECT reason_order
@@ -393,7 +394,7 @@ class reasons
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->template->assign_var('U_ACTION', $this->u_action);
+		$this->template->assign_var('U_ACTION', $this->helper->route('acp_reasons'));
 
 		// Reason count
 		$reason_count = [];
@@ -404,7 +405,7 @@ class reasons
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$reason_count[(int) $row['reason_id']] = $row['reason_count'];
+			$reason_count[(int) $row['reason_id']] = (int) $row['reason_count'];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -416,12 +417,13 @@ class reasons
 		{
 			$translated		= false;
 			$other_reason	= $row['reason_title'] === 'other';
+			$upper_reason	= utf8_strtoupper($row['reason_title']);
 
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			if (isset($reasons_lang['TITLE'][strtoupper($row['reason_title'])]) && isset($reasons_lang['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			if (isset($reasons_lang['TITLE'][$upper_reason]) && isset($reasons_lang['DESCRIPTION'][$upper_reason]))
 			{
-				$row['reason_title']		= $reasons_lang['TITLE'][strtoupper($row['reason_title'])];
-				$row['reason_description']	= $reasons_lang['DESCRIPTION'][strtoupper($row['reason_title'])];
+				$row['reason_title']		= $reasons_lang['TITLE'][$upper_reason];
+				$row['reason_description']	= $reasons_lang['DESCRIPTION'][$upper_reason];
 
 				$translated = true;
 			}
@@ -434,12 +436,14 @@ class reasons
 				'S_TRANSLATED'		=> $translated,
 				'S_OTHER_REASON'	=> $other_reason,
 
-				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['reason_id'],
-				'U_DELETE'		=> !$other_reason ? $this->u_action . '&amp;action=delete&amp;id=' . $row['reason_id'] : '',
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row['reason_id'] . '&amp;hash=' . generate_link_hash('acp_reasons'),
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row['reason_id'] . '&amp;hash=' . generate_link_hash('acp_reasons'),
+				'U_EDIT'		=> $this->helper->route('acp_reasons', ['action' => 'edit', 'id' => $row['reason_id']]),
+				'U_DELETE'		=> !$other_reason ? $this->helper->route('acp_reasons', ['action' => 'delete', 'id' => $row['reason_id']]) : '',
+				'U_MOVE_UP'		=> $this->helper->route('acp_reasons', ['action' => 'move_up', 'id' => $row['reason_id'], 'hash' => generate_link_hash('acp_reasons')]),
+				'U_MOVE_DOWN'	=> $this->helper->route('acp_reasons', ['action' => 'move_down', 'id' => $row['reason_id'], 'hash' => generate_link_hash('acp_reasons')]),
 			]);
 		}
 		$this->db->sql_freeresult($result);
+
+		return $this->helper->render('acp_reasons.html', 'ACP_REASONS');
 	}
 }

@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+
 class prune
 {
 	/** @var \phpbb\auth\auth */
@@ -26,6 +28,9 @@ class prune
 
 	/** @var \phpbb\group\helper */
 	protected $group_helper;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,11 +59,6 @@ class prune
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -66,6 +66,7 @@ class prune
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\group\helper				$group_helper	Group helper object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\request\request			$request		Request object
@@ -81,6 +82,7 @@ class prune
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\group\helper $group_helper,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -96,6 +98,7 @@ class prune
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
 		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -108,7 +111,7 @@ class prune
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('acp/prune');
 
@@ -117,32 +120,15 @@ class prune
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		switch ($mode)
-		{
-			case 'forums':
-				$this->tpl_name = 'acp_prune_forums';
-				$this->page_title = 'ACP_PRUNE_FORUMS';
-
-				$this->prune_forums($id, $mode);
-			break;
-
-			case 'users':
-				$this->tpl_name = 'acp_prune_users';
-				$this->page_title = 'ACP_PRUNE_USERS';
-
-				$this->prune_users($id, $mode);
-			break;
-		}
+		return $this->{'prune_' . $mode}();
 	}
 
 	/**
 	 * Prune forums
 	 *
-	 * @param string	$id		The module identifier
-	 * @param string	$mode	The module mode
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_forums($id, $mode)
+	function prune_forums()
 	{
 		$all_forums	= $this->request->variable('all_forums', 0);
 		$forum_ids	= $this->request->variable('f', [0]);
@@ -247,13 +233,11 @@ class prune
 				}
 				$this->db->sql_freeresult($result);
 
-				return;
+				return $this->helper->render('acp_prune_forums.html', 'ACP_PRUNE_FORUMS');
 			}
 			else
 			{
 				$hidden_fields = [
-					'i'				=> $id,
-					'mode'			=> $mode,
 					'submit'		=> 1,
 					'all_forums'	=> $all_forums,
 					'f'				=> $forum_ids,
@@ -276,6 +260,8 @@ class prune
 				extract($this->dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
 
 				confirm_box(false, $this->lang->lang('PRUNE_FORUM_CONFIRM'), build_hidden_fields($hidden_fields));
+
+				return redirect($this->helper->route('acp_forums_prune'));
 			}
 		}
 
@@ -284,9 +270,9 @@ class prune
 		if (empty($forum_ids))
 		{
 			$this->template->assign_vars([
-				'U_ACTION'			=> $this->u_action,
 				'S_SELECT_FORUM'	=> true,
 				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false),
+				'U_ACTION'			=> $this->helper->route('acp_forums_prune'),
 			]);
 		}
 		else
@@ -301,7 +287,7 @@ class prune
 			{
 				$this->db->sql_freeresult($result);
 
-				trigger_error($this->lang->lang('NO_FORUM') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(404, 'NO_FORUM', 'acp_forums_prune');
 			}
 
 			$forum_list = $s_hidden_fields = '';
@@ -318,8 +304,8 @@ class prune
 
 			$template_data = [
 				'L_SELECTED_FORUMS'		=> $this->lang->lang($l_selected_forums),
-				'U_ACTION'				=> $this->u_action,
-				'U_BACK'				=> $this->u_action,
+				'U_ACTION'				=> $this->helper->route('acp_forums_prune'),
+				'U_BACK'				=> $this->helper->route('acp_forums_prune'),
 				'FORUM_LIST'			=> $forum_list,
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 			];
@@ -336,16 +322,16 @@ class prune
 
 			$this->template->assign_vars($template_data);
 		}
+
+		return $this->helper->render('acp_prune_forums.html', 'ACP_PRUNE_FORUMS');
 	}
 
 	/**
 	 * Prune users
 	 *
-	 * @param string	$id		The module identifier
-	 * @param string	$mode	The module mode
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_users($id, $mode)
+	function prune_users()
 	{
 		$this->lang->add_lang('memberlist');
 
@@ -396,7 +382,7 @@ class prune
 					$msg = $this->lang->lang('USER_PRUNE_FAILURE');
 				}
 
-				trigger_error($msg . adm_back_link($this->u_action));
+				return $this->helper->message_back($msg, 'acp_users_prune');
 			}
 			else
 			{
@@ -406,7 +392,7 @@ class prune
 
 				if (empty($user_ids))
 				{
-					trigger_error($this->lang->lang('USER_PRUNE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'USER_PRUNE_FAILURE', 'acp_users_prune');
 				}
 
 				// Assign to template
@@ -416,7 +402,7 @@ class prune
 						'USERNAME'			=> $usernames[$user_id],
 						'USER_ID'			=> $user_id,
 						'U_PROFILE'			=> get_username_string('profile', $user_id, $usernames[$user_id]),
-						'U_USER_ADMIN'		=> $this->auth->acl_get('a_user') ? append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $this->user->session_id) : '',
+						'U_USER_ADMIN'		=> $this->auth->acl_get('a_user') ? $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $user_id], true, $this->user->session_id) : '',
 					]);
 				}
 
@@ -426,13 +412,12 @@ class prune
 				]);
 
 				confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-					'i'				=> $id,
-					'mode'			=> $mode,
 					'prune'			=> 1,
-
-					'deleteposts'	=> $this->request->variable('deleteposts', 0),
 					'action'		=> $this->request->variable('action', ''),
+					'deleteposts'	=> $this->request->variable('deleteposts', 0),
 				]), 'confirm_body_prune.html');
+
+				return redirect($this->helper->route('acp_users_prune'));
 			}
 		}
 
@@ -474,12 +459,14 @@ class prune
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'			=> $this->u_action,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
-			'S_GROUP_LIST'		=> $s_group_list,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
+			'S_GROUP_LIST'		=> $s_group_list,
 			'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
+			'U_ACTION'			=> $this->helper->route('acp_users_prune'),
 		]);
+
+		return $this->helper->render('acp_prune_users.html', 'ACP_PRUNE_USERS');
 	}
 
 	/**
@@ -556,7 +543,7 @@ class prune
 
 			if ((!empty($active) && count($active) !== 3) || (!empty($joined_before) && count($joined_before) !== 3) || (!empty($joined_after) && count($joined_after) !== 3))
 			{
-				trigger_error($this->lang->lang('WRONG_ACTIVE_JOINED_DATE') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'WRONG_ACTIVE_JOINED_DATE', 'acp_users_prune');
 			}
 
 			$key_match = ['lt' => '<', 'gt' => '>', 'eq' => '='];

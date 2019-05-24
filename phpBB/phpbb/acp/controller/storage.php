@@ -188,7 +188,7 @@ class storage
 			'STORAGE_STATS'	=> $storage_stats,
 		]);
 
-		return $this->helper->render('acp_storage.html', $this->lang->lang('ACP_SETTINGS_STORAGE'));
+		return $this->helper->render('acp_storage.html', 'ACP_SETTINGS_STORAGE');
 	}
 
 	/**

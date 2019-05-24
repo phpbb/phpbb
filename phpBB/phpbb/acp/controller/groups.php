@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class groups
 {
 	/** @var \phpbb\auth\auth */
@@ -41,6 +44,9 @@ class groups
 
 	/** @var \phpbb\groupposition\teampage */
 	protected $group_teampage;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -72,11 +78,6 @@ class groups
 	/** @var bool Whether or not this user is a founder */
 	protected $is_founder;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -89,6 +90,7 @@ class groups
 	 * @param \phpbb\group\helper					$group_helper		Group helper object
 	 * @param \phpbb\groupposition\legend			$group_legend		Group position: legend object
 	 * @param \phpbb\groupposition\teampage			$group_teampage		Group position: teampage object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
 	 * @param \phpbb\language\language				$lang				Language object
 	 * @param \phpbb\pagination						$pagination			Pagination object
 	 * @param \phpbb\request\request				$request			Request object
@@ -109,6 +111,7 @@ class groups
 		\phpbb\group\helper $group_helper,
 		\phpbb\groupposition\legend $group_legend,
 		\phpbb\groupposition\teampage $group_teampage,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
@@ -129,6 +132,7 @@ class groups
 		$this->group_helper		= $group_helper;
 		$this->group_legend		= $group_legend;
 		$this->group_teampage	= $group_teampage;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->pagination		= $pagination;
 		$this->request			= $request;
@@ -143,21 +147,24 @@ class groups
 		$this->is_founder		= (int) $user->data['user_type'] === USER_FOUNDER;
 	}
 
-	function main($id, $mode)
+	function main($mode, $action = '', $g = 0, $page = 1)
 	{
 		$this->lang->add_lang('acp/groups');
 
-		$this->tpl_name = 'acp_groups';
-		$this->page_title = 'ACP_GROUPS_MANAGE';
+		switch ($mode)
+		{
+			case 'position':
+				return $this->manage_position();
 
+			default:
+				return $this->manage_groups($action, $g, $page);
+		}
+	}
+
+	public function manage_groups($action, $group_id, $page)
+	{
 		$form_key = 'acp_groups';
 		add_form_key($form_key);
-
-		if ($mode === 'position')
-		{
-			$this->manage_position();
-			return;
-		}
 
 		if (!function_exists('group_user_attributes'))
 		{
@@ -165,15 +172,17 @@ class groups
 		}
 
 		// Check and set some common vars
-		$action		= $this->request->is_set_post('add') ? 'add' : ($this->request->is_set_post('addusers') ? 'addusers' : $this->request->variable('action', ''));
+		$action		= $this->request->is_set_post('addusers') ? 'addusers' : $action;
+		$action		= $this->request->is_set_post('add') ? 'add' : $action;
 		$update		= $this->request->is_set_post('update');
 
-		$group_id	= $this->request->variable('g', 0);
 		$mark_ary	= $this->request->variable('mark', [0]);
 		$name_ary	= $this->request->variable('usernames', '', true);
 		$leader		= $this->request->variable('leader', 0);
 		$default	= $this->request->variable('default', 0);
-		$start		= $this->request->variable('start', 0);
+
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
 
 		// Clear some vars
 		$group_row = [];
@@ -190,15 +199,15 @@ class groups
 			$group_row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			if (!$group_row)
+			if ($group_row === false)
 			{
-				trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(404, 'NO_GROUP', 'acp_groups_manage');
 			}
 
 			// Check if the user is allowed to manage this group if set to founder only.
 			if ($this->is_founder === false && $group_row['group_founder_manage'])
 			{
-				trigger_error($this->lang->lang('NOT_ALLOWED_MANAGE_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(403, 'NOT_ALLOWED_MANAGE_GROUP', 'acp_groups_manage');
 			}
 		}
 
@@ -210,12 +219,12 @@ class groups
 			case 'promote':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_groups_manage');
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
 
 				// Approve, demote or promote
@@ -243,11 +252,11 @@ class groups
 						break;
 					}
 
-					trigger_error($this->lang->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					return $this->helper->message_back($message, 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
-					trigger_error($this->lang->lang($error) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					throw new back_exception(400, $error, ['acp_groups_manage', 'action' => 'list', 'g' => $group_id]);
 				}
 
 			break;
@@ -255,11 +264,11 @@ class groups
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
 				else if (empty($mark_ary))
 				{
-					trigger_error($this->lang->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					throw new back_exception(400, 'NO_USERS', ['acp_groups_manage', 'action' => 'list', 'g' => $group_id]);
 				}
 
 				if (confirm_box(true))
@@ -267,17 +276,17 @@ class groups
 					$group_name = $this->group_helper->get_name($group_row['group_name']);
 					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
-					trigger_error($this->lang->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					return $this->helper->message_back('GROUP_DEFS_UPDATED', 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'action'	=> $action,
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 					]));
+
+					return redirect($this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]));
 				}
 			break;
 
@@ -317,17 +326,17 @@ class groups
 					}
 					while ($start);
 
-					trigger_error($this->lang->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					return $this->helper->message_back('GROUP_DEFS_UPDATED', 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'mark'		=> $mark_ary,
 						'action'	=> $action,
 						'g'			=> $group_id,
 					]));
+
+					return redirect($this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]));
 				}
 			break;
 
@@ -335,18 +344,17 @@ class groups
 			case 'deleteusers':
 				if (empty($mark_ary))
 				{
-					trigger_error($this->lang->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					throw new back_exception(400, 'NO_USERS', ['acp_groups_manage', 'action' => 'list', 'g' => $group_id]);
 				}
 			// no break;
 			case 'delete':
 				if (!$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
-					send_status_line(403, 'Forbidden');
-					trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(403, 'NO_AUTH_OPERATION', 'acp_groups_manage');
 				}
 
 				if (confirm_box(true))
@@ -358,8 +366,7 @@ class groups
 						case 'delete':
 							if (!$this->auth->acl_get('a_groupdel'))
 							{
-								send_status_line(403, 'Forbidden');
-								trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+								throw new back_exception(403, 'NO_AUTH_OPERATION', 'acp_groups_manage');
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -371,42 +378,42 @@ class groups
 						break;
 					}
 
-					$back_link = $action === 'delete' ? $this->u_action : $this->u_action . '&amp;action=list&amp;g=' . $group_id;
-
 					if ($error)
 					{
-						trigger_error($this->lang->lang($error) . adm_back_link($back_link), E_USER_WARNING);
+						$back_error = $action === 'delete' ? 'acp_groups_manage' : ['acp_groups_manage', 'action' => 'list', 'g' => $group_id];
+
+						throw new back_exception(400, $error, $back_error);
 					}
 
 					$message = $action === 'delete' ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($this->lang->lang($message) . adm_back_link($back_link));
+					$params = $action === 'delete' ? [] : ['action' => 'list', 'g' => $group_id];
+
+					return $this->helper->message_back($message, 'acp_groups_manage', $params);
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'mark'		=> $mark_ary,
-						'action'	=> $action,
-						'g'			=> $group_id,
-					]));
+					]), 'confirm_body.html', $this->helper->route('acp_groups_manage', ['action' => 'delete', 'g' => $group_id]));
+
+					return redirect($this->helper->route('acp_groups_manage'));
 				}
 			break;
 
 			case 'addusers':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception('acp_groups_manage');
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($this->lang->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', ['acp_groups_manage', 'action' => 'list', 'g' => $group_id]);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
@@ -415,16 +422,16 @@ class groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($this->lang->lang($error) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					throw new back_exception(400, $error, ['acp_groups_manage', 'action' => 'list', 'g' => $group_id]);
 				}
 
-				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($this->lang->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				$message = $leader ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+
+				return $this->helper->message_back($message, 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 			break;
 
 			case 'edit':
 			case 'add':
-
 				if (!function_exists('display_forums'))
 				{
 					include($this->root_path . 'includes/functions_display.' . $this->php_ext);
@@ -432,13 +439,12 @@ class groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
 
 				if ($action == 'add' && !$this->auth->acl_get('a_groupadd'))
 				{
-					send_status_line(403, 'Forbidden');
-					trigger_error($this->lang->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(403, 'NOT_AUTH_OPERATION', 'acp_groups_manage');
 				}
 
 				$error = [];
@@ -470,17 +476,16 @@ class groups
 						$this->avatar_manager->handle_avatar_delete($this->db, $this->user, $avatar_data, $this->tables['groups'], 'group_');
 
 						$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-						trigger_error($this->lang->lang($message) . adm_back_link($this->u_action));
+
+						return $this->helper->message_back($message, 'acp_groups_manage');
 					}
 					else
 					{
 						confirm_box(false, $this->lang->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
-							'i'				=> $id,
-							'mode'			=> $mode,
-							'action'		=> $action,
-							'g'				=> $group_id,
 							'avatar_delete'	=> true,
 						]));
+
+						return redirect($this->helper->route('acp_groups_manage'));
 					}
 				}
 
@@ -489,7 +494,7 @@ class groups
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new form_invalid_exception('acp_groups_manage');
 					}
 
 					$group_name	= $this->request->variable('group_name', '', true);
@@ -724,7 +729,8 @@ class groups
 							$this->cache->destroy('sql', [$this->tables['groups'], $this->tables['teampage']]);
 
 							$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-							trigger_error($this->lang->lang($message) . adm_back_link($this->u_action));
+
+							return $this->helper->message_back($message, 'acp_groups_manage');
 						}
 					}
 
@@ -835,27 +841,27 @@ class groups
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=groups&amp;u=' . $this->request->variable('u', 0));
+						$u_back = $this->helper->route('acp_users_manage', ['mode' => 'groups', 'u' => $this->request->variable('u', 0)]);
 					break;
 
 					default:
-						$u_back = $this->u_action;
+						$u_back = $this->helper->route('acp_groups_manage');
 					break;
 				}
 
 				$s_error = !empty($error);
 
 				$this->template->assign_vars([
-					'S_ERROR'			=> $s_error,
-					'ERROR_MSG'			=> $s_error ? implode('<br />', $error) : '',
+					'S_ERROR'				=> $s_error,
+					'ERROR_MSG'				=> $s_error ? implode('<br />', $error) : '',
 
-					'S_EDIT'			=> true,
-					'S_ADD_GROUP'		=> ($action === 'add') ? true : false,
-					'S_GROUP_PERM'		=> ($action === 'add' && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
-					'S_INCLUDE_SWATCH'	=> true,
-					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
-					'S_USER_FOUNDER'	=> $this->is_founder,
-					'S_AVATARS_ENABLED'	=> ($this->config['allow_avatar'] && $avatars_enabled),
+					'S_EDIT'				=> true,
+					'S_ADD_GROUP'			=> $action === 'add',
+					'S_GROUP_PERM'			=> ($action === 'add' && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
+					'S_INCLUDE_SWATCH'		=> true,
+					'S_SPECIAL_GROUP'		=> $group_type == GROUP_SPECIAL,
+					'S_USER_FOUNDER'		=> $this->is_founder,
+					'S_AVATARS_ENABLED'		=> $this->config['allow_avatar'] && $avatars_enabled,
 
 					'GROUP_NAME'			=> $this->group_helper->get_name($group_name),
 					'GROUP_INTERNAL_NAME'	=> $group_name,
@@ -864,10 +870,10 @@ class groups
 					'GROUP_FOUNDER_MANAGE'	=> (isset($group_row['group_founder_manage']) && $group_row['group_founder_manage']) ? ' checked="checked"' : '',
 					'GROUP_LEGEND'			=> (isset($group_row['group_legend']) && $group_row['group_legend']) ? ' checked="checked"' : '',
 					'GROUP_TEAMPAGE'		=> (isset($group_row['group_teampage']) && $group_row['group_teampage']) ? ' checked="checked"' : '',
-					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
-					'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
-					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
-					'GROUP_SKIP_AUTH'		=> (!empty($group_row['group_skip_auth'])) ? ' checked="checked"' : '',
+					'GROUP_MESSAGE_LIMIT'	=> isset($group_row['group_message_limit']) ? $group_row['group_message_limit'] : 0,
+					'GROUP_MAX_RECIPIENTS'	=> isset($group_row['group_max_recipients']) ? $group_row['group_max_recipients'] : 0,
+					'GROUP_COLOUR'			=> isset($group_row['group_colour']) ? $group_row['group_colour'] : '',
+					'GROUP_SKIP_AUTH'		=> !empty($group_row['group_skip_auth']) ? ' checked="checked"' : '',
 
 					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
@@ -877,8 +883,8 @@ class groups
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, ($this->is_founder ? false : 0)),
 					'AVATAR'				=> empty($avatar) ? '<img src="' . $this->admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $this->config['avatar_filesize'],
-					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+					'AVATAR_WIDTH'			=> isset($group_row['group_avatar_width']) ? $group_row['group_avatar_width'] : '',
+					'AVATAR_HEIGHT'			=> isset($group_row['group_avatar_height']) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
@@ -892,7 +898,7 @@ class groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
+					'U_ACTION'			=> $this->helper->route('acp_groups_manage', ['action' => $action, 'g' => $group_id]),
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				]);
 
@@ -928,17 +934,14 @@ class groups
 				];
 				extract($this->dispatcher->trigger_event('core.acp_manage_group_display_form', compact($vars)));
 
-				return;
+				return $this->helper->render('acp_groups.html', 'ACP_GROUPS_MANAGE');
 			break;
 
 			case 'list':
-
 				if (!$group_id)
 				{
-					trigger_error($this->lang->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_GROUP', 'acp_groups_manage');
 				}
-
-				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
 				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_colour, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
@@ -958,9 +961,9 @@ class groups
 						'USER_POSTS'		=> $row['user_posts'],
 						'JOINED'			=> $row['user_regdate'] ? $this->user->format_date($row['user_regdate']) : ' - ',
 
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+						'S_GROUP_DEFAULT'	=> $row['group_id'] == $group_id,
 
-						'U_USER_EDIT'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
 					]);
 				}
 				$this->db->sql_freeresult($result);
@@ -982,8 +985,10 @@ class groups
 					$s_action_options .= '<option value="' . $option . '">' . $this->lang->lang('GROUP_' . $lang) . '</option>';
 				}
 
-				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_members, $this->config['topics_per_page'], $start);
+				$this->pagination->generate_template_pagination([
+					'routes' => ['acp_groups_manage', 'acp_groups_manage_pagination'],
+					'params' => ['action' => $action, 'g' => $group_id],
+				], 'pagination', 'page', $total_members, $limit, $start);
 
 				$this->template->assign_vars([
 					'S_LIST'			=> true,
@@ -992,10 +997,10 @@ class groups
 
 					'GROUP_NAME'	=> $this->group_helper->get_name($group_row['group_name']),
 
-					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route('acp_groups_manage', ['action' => $action, 'g' => $group_id]),
+					'U_BACK'			=> $this->helper->route('acp_groups_manage'),
 					'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
+					'U_DEFAULT_ALL'		=> $this->helper->route('acp_groups_manage', ['action' => 'set_default_on_all', 'g' => $group_id]),
 				]);
 
 				// Grab the members
@@ -1005,7 +1010,7 @@ class groups
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 0
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
+				$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 				$pending = false;
 
@@ -1025,19 +1030,19 @@ class groups
 						'USER_POSTS'		=> $row['user_posts'],
 						'JOINED'			=> $row['user_regdate'] ? $this->user->format_date($row['user_regdate']) : ' - ',
 
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+						'S_GROUP_DEFAULT'	=> $row['group_id'] == $group_id,
 
-						'U_USER_EDIT'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
 					]);
 				}
 				$this->db->sql_freeresult($result);
 
-				return;
+				return $this->helper->render('acp_groups.html', 'GROUP_MEMBERS');
 			break;
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'		=> $this->u_action,
+			'U_ACTION'		=> $this->helper->route('acp_groups_manage'),
 			'S_GROUP_ADD'	=> (bool) $this->auth->acl_get('a_groupadd'),
 		]);
 
@@ -1050,7 +1055,7 @@ class groups
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
+			$type = $row['group_type'] == GROUP_SPECIAL ? 'special' : 'normal';
 
 			// used to determine what type a group is
 			$lookup[$row['group_id']] = $type;
@@ -1098,19 +1103,18 @@ class groups
 
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 
-					'U_LIST'			=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
-					'U_EDIT'			=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
-					'U_DELETE'			=> $this->auth->acl_get('a_groupdel') ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
+					'U_LIST'			=> $this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]),
+					'U_EDIT'			=> $this->helper->route('acp_groups_manage', ['action' => 'edit', 'g' => $group_id]),
+					'U_DELETE'			=> $this->auth->acl_get('a_groupdel') ? $this->helper->route('acp_groups_manage', ['action' => 'delete', 'g' => $group_id]) : '',
 				]);
 			}
 		}
+
+		return $this->helper->render('acp_groups.html', 'ACP_GROUPS_MANAGE');
 	}
 
 	public function manage_position()
 	{
-		$this->tpl_name = 'acp_groups_position';
-		$this->page_title = 'ACP_GROUPS_POSITION';
-
 		$field = $this->request->variable('field', '');
 		$action = $this->request->variable('action', '');
 		$group_id = $this->request->variable('g', 0);
@@ -1122,7 +1126,7 @@ class groups
 		if ($field && !in_array($field, ['legend', 'teampage']))
 		{
 			// Invalid mode
-			trigger_error($this->lang->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(400, 'NO_MODE', 'acp_groups_positions');
 		}
 		else if ($field && in_array($field, ['legend', 'teampage']))
 		{
@@ -1151,9 +1155,10 @@ class groups
 					break;
 				}
 			}
+			// @todo is thrown, but @throws tag is missing in respective DocBlocks
 			catch (\phpbb\groupposition\exception $exception)
 			{
-				trigger_error($this->lang->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, $exception->getMessage(), 'acp_groups_positions');
 			}
 		}
 		else if ($field === 'legend')
@@ -1173,9 +1178,10 @@ class groups
 					break;
 				}
 			}
+			// @todo is thrown, but @throws tag is missing in respective DocBlocks
 			catch (\phpbb\groupposition\exception $exception)
 			{
-				trigger_error($this->lang->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, $exception->getMessage(), 'acp_groups_positions');
 			}
 		}
 		else
@@ -1186,13 +1192,13 @@ class groups
 					$this->config->set('teampage_forums', $this->request->variable('teampage_forums', 0));
 					$this->config->set('teampage_memberships', $this->request->variable('teampage_memberships', 0));
 
-					trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_groups_positions');
 				break;
 
 				case 'set_config_legend':
 					$this->config->set('legend_sort_groupname', $this->request->variable('legend_sort_groupname', 0));
 
-					trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_groups_positions');
 				break;
 			}
 		}
@@ -1216,9 +1222,10 @@ class groups
 					'GROUP_COLOUR'	=> $row['group_colour'] ? '#' . $row['group_colour'] : '',
 					'GROUP_TYPE'	=> $this->lang->lang($this->group_legend->group_type_language($row['group_type'])),
 
-					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE'		=> "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+					// @todo generate_link_hash() ?
+					'U_MOVE_DOWN'	=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'move_down', 'g' => $group_id]),
+					'U_MOVE_UP'		=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'move_up', 'g' => $group_id]),
+					'U_DELETE'		=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'delete', 'g' => $group_id]),
 				]);
 			}
 			else
@@ -1226,20 +1233,20 @@ class groups
 				$this->template->assign_block_vars('add_legend', [
 					'GROUP_ID'		=> (int) $row['group_id'],
 					'GROUP_NAME'	=> $this->group_helper->get_name($row['group_name']),
-					'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+					'GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 				]);
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$category_url_param = (($category_id) ? '&amp;c=' . $category_id : '');
+		$cat_param = $category_id ? ['c' => $category_id] : [];
 
 		$sql = 'SELECT t.*, g.group_name, g.group_colour, g.group_type
 			FROM ' . $this->tables['teampage'] . ' t
 			LEFT JOIN ' . $this->tables['groups'] . ' g
 				ON (t.group_id = g.group_id)
-			WHERE t.teampage_parent = ' . $category_id . '
-				OR t.teampage_id = ' . $category_id . '
+			WHERE t.teampage_parent = ' . (int) $category_id . '
+				OR t.teampage_id = ' . (int) $category_id . '
 			ORDER BY t.teampage_position ASC';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -1267,10 +1274,11 @@ class groups
 				'GROUP_COLOUR'	=> $row['group_colour'] ? '#' . $row['group_colour'] : '',
 				'GROUP_TYPE'	=> $group_type,
 
-				'U_CATEGORY'	=> !$row['group_id'] ? "{$this->u_action}&amp;c=" . $row['teampage_id'] : '',
-				'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=teampage&amp;action=move_down{$category_url_param}&amp;t=" . $row['teampage_id'],
-				'U_MOVE_UP'		=> "{$this->u_action}&amp;field=teampage&amp;action=move_up{$category_url_param}&amp;t=" . $row['teampage_id'],
-				'U_DELETE'		=> "{$this->u_action}&amp;field=teampage&amp;action=delete{$category_url_param}&amp;t=" . $row['teampage_id'],
+				// @todo generate_link_hash() ??
+				'U_CATEGORY'	=> !$row['group_id'] ? $this->helper->route('acp_groups_positions', ['c' => $row['teampage_id']]) : '',
+				'U_MOVE_DOWN'	=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'move_down', 't' => $row['teampage_id']] + $cat_param),
+				'U_MOVE_UP'		=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'move_up', 't' => $row['teampage_id']] + $cat_param),
+				'U_DELETE'		=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'delete', 't' => $row['teampage_id']] + $cat_param),
 			]);
 		}
 		$this->db->sql_freeresult($result);
@@ -1288,7 +1296,7 @@ class groups
 			$this->template->assign_block_vars('add_teampage', [
 				'GROUP_ID'		=> (int) $row['group_id'],
 				'GROUP_NAME'	=> $group_name,
-				'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+				'GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 			]);
 		}
 		$this->db->sql_freeresult($result);
@@ -1300,10 +1308,11 @@ class groups
 
 			'S_TEAMPAGE_CATEGORY'		=> $category_id,
 
-			'U_ACTION'					=> $this->u_action,
-			'U_ACTION_LEGEND'			=> $this->u_action . '&amp;field=legend',
-			'U_ACTION_TEAMPAGE'			=> $this->u_action . '&amp;field=teampage' . $category_url_param,
-			'U_ACTION_TEAMPAGE_CAT'		=> $this->u_action . '&amp;field=teampage_cat',
+			'U_ACTION'					=> $this->helper->route('acp_groups_positions'),
+			'U_ACTION_LEGEND'			=> $this->helper->route('acp_groups_positions', ['field' => 'legend']),
+			'U_ACTION_TEAMPAGE'			=> $this->helper->route('acp_groups_positions', ['field' => 'teampage'] + $cat_param),
 		]);
+
+		return $this->helper->render('acp_groups_position.html', 'ACP_GROUPS_POSITION');
 	}
 }

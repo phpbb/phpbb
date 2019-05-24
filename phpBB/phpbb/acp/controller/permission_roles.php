@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class permission_roles
 {
 	/** @var \phpbb\acp\helper\auth_admin */
@@ -20,6 +23,9 @@ class permission_roles
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -48,16 +54,12 @@ class permission_roles
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\acp\helper\auth_admin		$auth_admin		Auth admin object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\permissions				$permissions	Permissions object
@@ -71,6 +73,7 @@ class permission_roles
 	public function __construct(
 		\phpbb\acp\helper\auth_admin $auth_admin,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\permissions $permissions,
@@ -84,6 +87,7 @@ class permission_roles
 	{
 		$this->auth_admin	= $auth_admin;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->permissions	= $permissions;
@@ -96,7 +100,7 @@ class permission_roles
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode)
 	{
 		$this->lang->add_lang('acp/permissions');
 		add_permission_language();
@@ -106,8 +110,6 @@ class permission_roles
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		$this->tpl_name = 'acp_permission_roles';
-
 		$action = $this->request->variable('action', '');
 		$action = $this->request->is_set_post('add') ? 'add' : $action;
 		$submit	= $this->request->is_set_post('submit');
@@ -116,41 +118,45 @@ class permission_roles
 		$form_key = 'acp_permissions';
 		add_form_key($form_key);
 
-		if (!$role_id && in_array($action, ['remove', 'edit', 'move_up', 'move_down']))
-		{
-			trigger_error($this->lang->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
 		switch ($mode)
 		{
 			case 'admin_roles':
 				$permission_type = 'a_';
-				$this->page_title = 'ACP_ADMIN_ROLES';
+				$l_mode = 'ACP_ADMIN_ROLES';
+				$u_mode = 'acp_permissions_roles_admin';
 			break;
 
 			case 'user_roles':
 				$permission_type = 'u_';
-				$this->page_title = 'ACP_USER_ROLES';
+				$l_mode = 'ACP_USER_ROLES';
+				$u_mode = 'acp_permissions_roles_user';
 			break;
 
 			case 'mod_roles':
 				$permission_type = 'm_';
-				$this->page_title = 'ACP_MOD_ROLES';
+				$l_mode = 'ACP_MOD_ROLES';
+				$u_mode = 'acp_permissions_roles_mod';
 			break;
 
 			case 'forum_roles':
 				$permission_type = 'f_';
-				$this->page_title = 'ACP_FORUM_ROLES';
+				$l_mode = 'ACP_FORUM_ROLES';
+				$u_mode = 'acp_permissions_roles_forum';
 			break;
 
 			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
+				throw new back_exception(400, 'NO_MODE', 'acp_permissions');
 			break;
 		}
 
+		if (!$role_id && in_array($action, ['remove', 'edit', 'move_up', 'move_down']))
+		{
+			throw new back_exception(400, 'NO_ROLE_SELECTED', $u_mode);
+		}
+
 		$this->template->assign_vars([
-			'L_TITLE'		=> $this->lang->lang($this->page_title),
-			'L_EXPLAIN'		=> $this->lang->lang($this->page_title . '_EXPLAIN'),
+			'L_TITLE'		=> $this->lang->lang($l_mode),
+			'L_EXPLAIN'		=> $this->lang->lang($l_mode . '_EXPLAIN'),
 		]);
 
 		// Take action... admin submitted something
@@ -168,7 +174,7 @@ class permission_roles
 
 					if ($role_row === false)
 					{
-						trigger_error($this->lang->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(404, 'NO_ROLE_SELECTED', $u_mode);
 					}
 
 					if (confirm_box(true))
@@ -177,16 +183,16 @@ class permission_roles
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, [$this->lang->lang($role_row['role_name'])]);
 
-						trigger_error($this->lang->lang('ROLE_DELETED') . adm_back_link($this->u_action));
+						return $this->helper->message_back('ROLE_DELETED', $u_mode);
 					}
 					else
 					{
 						confirm_box(false, 'DELETE_ROLE', build_hidden_fields([
-							'i'			=> $id,
-							'mode'		=> $mode,
 							'action'	=> $action,
 							'role_id'	=> $role_id,
 						]));
+
+						return redirect($this->helper->route($u_mode));
 					}
 				break;
 
@@ -202,28 +208,29 @@ class permission_roles
 
 					if ($role_row === false)
 					{
-						trigger_error($this->lang->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(404, 'NO_ROLE_SELECTED', $u_mode);
 					}
 				// no break;
 
 				case 'add':
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->lang->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+						throw new form_invalid_exception($u_mode);
 					}
 
+					$role_row = !empty($role_row) ? $role_row : [];
 					$role_name = $this->request->variable('role_name', '', true);
-					$role_description = $this->request->variable('role_description', '', true);
-					$auth_settings = $this->request->variable('setting', ['' => 0]);
+					$role_desc = $this->request->variable('role_description', '', true);
+					$auth_settings= $this->request->variable('setting', ['' => 0]);
 
 					if (!$role_name)
 					{
-						trigger_error($this->lang->lang('NO_ROLE_NAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'NO_ROLE_NAME_SPECIFIED', $u_mode);
 					}
 
-					if (utf8_strlen($role_description) > 4000)
+					if (utf8_strlen($role_desc) > 4000)
 					{
-						trigger_error($this->lang->lang('ROLE_DESCRIPTION_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'ROLE_DESCRIPTION_LONG', $u_mode);
 					}
 
 					// if we add/edit a role we check the name to be unique among the settings...
@@ -238,12 +245,12 @@ class permission_roles
 					// Make sure we only print out the error if we add the role or change it's name
 					if ($row && ($mode === 'add' || ($mode === 'edit' && $role_row['role_name'] != $role_name)))
 					{
-						trigger_error($this->lang->lang('ROLE_NAME_ALREADY_EXIST', $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'ROLE_NAME_ALREADY_EXIST', $u_mode, $role_name);
 					}
 
 					$sql_ary = [
 						'role_name'			=> (string) $role_name,
-						'role_description'	=> (string) $role_description,
+						'role_description'	=> (string) $role_desc,
 						'role_type'			=> (string) $permission_type,
 					];
 
@@ -277,7 +284,7 @@ class permission_roles
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, [$this->lang->lang($role_name)]);
 
-					trigger_error($this->lang->lang('ROLE_' . strtoupper($action) . '_SUCCESS') . adm_back_link($this->u_action));
+					return $this->helper->message_back('ROLE_' . utf8_strtoupper($action) . '_SUCCESS', $u_mode);
 				break;
 			}
 		}
@@ -354,16 +361,16 @@ class permission_roles
 					$this->db->sql_freeresult($result);
 				}
 
-				if ($role_row === false)
+				if (empty($role_row))
 				{
-					trigger_error($this->lang->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'NO_ROLE_SELECTED', $u_mode);
 				}
 
 				$this->template->assign_vars([
 					'S_EDIT'			=> true,
 
-					'U_ACTION'			=> $this->u_action . "&amp;action={$action}&amp;role_id={$role_id}",
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route($u_mode, ['action' => $action, 'role_id' => $role_id]),
+					'U_BACK'			=> $this->helper->route($u_mode),
 
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
@@ -408,14 +415,14 @@ class permission_roles
 					}
 				}
 
-				return;
+				return $this->helper->render('acp_permission_roles.html', $l_mode);
 			break;
 
 			case 'move_up':
 			case 'move_down':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_permission_roles'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception($u_mode);
 				}
 
 				$sql = 'SELECT role_order
@@ -487,11 +494,11 @@ class permission_roles
 				'ROLE_NAME'				=> $this->lang->lang($row['role_name']),
 				'ROLE_DESCRIPTION'		=> $this->lang->is_set($row['role_description']) ? $this->lang->lang($row['role_description']) : nl2br($row['role_description']),
 
-				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
-				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
-				'U_DISPLAY_ITEMS'	=> $row['role_id'] == $display_item ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to',
+				'U_EDIT'			=> $this->helper->route($u_mode, ['action' => 'edit', 'role_id' => $row['role_id']]),
+				'U_REMOVE'			=> $this->helper->route($u_mode, ['action' => 'remove', 'role_id' => $row['role_id']]),
+				'U_MOVE_UP'			=> $this->helper->route($u_mode, ['action' => 'move_up', 'role_id' => $row['role_id'], 'hash' => generate_link_hash('acp_permission_roles')]),
+				'U_MOVE_DOWN'		=> $this->helper->route($u_mode, ['action' => 'move_down', 'role_id' => $row['role_id'], 'hash' => generate_link_hash('acp_permission_roles')]),
+				'U_DISPLAY_ITEMS'	=> $row['role_id'] == $display_item ? '' : $this->helper->route($u_mode, ['display_item' => $row['role_id'], '#' => 'assigned_to']),
 			]);
 
 			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $this->lang->lang($row['role_name']) . '</option>';
@@ -512,6 +519,8 @@ class permission_roles
 			$hold_ary = $this->auth_admin->get_role_mask($display_item);
 			$this->auth_admin->display_role_mask($hold_ary);
 		}
+
+		return $this->helper->render('acp_permission_roles.html', $l_mode);
 	}
 
 	/**

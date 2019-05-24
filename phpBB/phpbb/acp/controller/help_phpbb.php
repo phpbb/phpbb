@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+
 class help_phpbb
 {
 	/** @var \phpbb\config\config */
@@ -20,6 +22,9 @@ class help_phpbb
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -42,26 +47,23 @@ class help_phpbb
 	/** @var string phpBB collection url */
 	protected $collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config			Config object
-	 * @param \phpbb\event\dispatcher	$dispatcher		Event dispatcher object
-	 * @param \phpbb\language\language	$lang			Language object
-	 * @param \phpbb\request\request	$request		Request object
-	 * @param \phpbb\template\template	$template		Template object
-	 * @param string					$admin_path		phpBB admin path
-	 * @param string					$root_path		phpBB root path
-	 * @param string					$php_ext		php File extension
+	 * @param \phpbb\config\config			$config			Config object
+	 * @param \phpbb\event\dispatcher		$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller	$helper			ACP Controller helper object
+	 * @param \phpbb\language\language		$lang			Language object
+	 * @param \phpbb\request\request		$request		Request object
+	 * @param \phpbb\template\template		$template		Template object
+	 * @param string						$admin_path		phpBB admin path
+	 * @param string						$root_path		phpBB root path
+	 * @param string						$php_ext		php File extension
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -72,6 +74,7 @@ class help_phpbb
 	{
 		$this->config		= $config;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -81,15 +84,12 @@ class help_phpbb
 		$this->php_ext		= $php_ext;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		if (!class_exists('phpbb_questionnaire_data_collector'))
 		{
 			include($this->root_path . 'includes/questionnaire/questionnaire.' . $this->php_ext);
 		}
-
-		$this->tpl_name = 'acp_help_phpbb';
-		$this->page_title = 'ACP_HELP_PHPBB';
 
 		$errors = [];
 		$submit = $this->request->is_set_post('submit');
@@ -99,6 +99,7 @@ class help_phpbb
 
 		if ($submit && !check_form_key($form_key))
 		{
+			// @todo errors are never assigned to the template??
 			$errors[] = $this->lang->lang('FORM_INVALID');
 
 			$submit = false;
@@ -143,15 +144,15 @@ class help_phpbb
 			{
 				if ((strpos($response, 'Thank you') !== false || strpos($response, 'Flood protection') !== false))
 				{
-					trigger_error($this->lang->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
+					return $this->helper->message_back('THANKS_SEND_STATISTICS', 'acp_help_phpbb');
 				}
 				else
 				{
-					trigger_error($this->lang->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
+					throw new back_exception(400, 'FAIL_SEND_STATISTICS', 'acp_help_phpbb');
 				}
 			}
 
-			trigger_error($this->lang->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+			return $this->helper->message_back('CONFIG_UPDATED', 'acp_help_phpbb');
 		}
 
 		$this->template->assign_vars([
@@ -162,8 +163,8 @@ class help_phpbb
 
 			'S_COLLECT_STATS'		=> !empty($this->config['help_send_statistics']),
 			'U_COLLECT_STATS'		=> $this->collect_url,
-			'U_ACP_MAIN'			=> append_sid("{$this->admin_path}index.$this->php_ext"),
-			'U_ACTION'				=> $this->u_action,
+			'U_ACP_MAIN'			=> $this->helper->route('acp_index'),
+			'U_ACTION'				=> $this->helper->route('acp_help_phpbb'),
 		]);
 
 		$raw = $collector->get_data_raw();
@@ -190,5 +191,7 @@ class help_phpbb
 				]);
 			}
 		}
+
+		return $this->helper->render('acp_help_phpbb.html', 'ACP_HELP_PHPBB');
 	}
 }

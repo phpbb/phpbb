@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class bbcodes
 {
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -23,6 +26,9 @@ class bbcodes
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -45,17 +51,13 @@ class bbcodes
 	/** @var string BBCode table */
 	protected $bbcode_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\request\request				$request		Request object
@@ -68,6 +70,7 @@ class bbcodes
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -80,6 +83,7 @@ class bbcodes
 		$this->cache		= $cache;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -90,7 +94,7 @@ class bbcodes
 		$this->bbcode_table	= $bbcode_table;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -104,11 +108,12 @@ class bbcodes
 
 		if ($submit && !check_form_key($form_key))
 		{
-			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new form_invalid_exception('acp_bbcodes');
 		}
 
 		$bbcode_match = $bbcode_tpl = $bbcode_helpline = '';
 		$display_on_posting = 0;
+		$row = [];
 
 		// Set up mode-specific vars
 		switch ($action)
@@ -121,9 +126,9 @@ class bbcodes
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->lang->lang('BBCODE_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'BBCODE_NOT_EXIST', 'acp_bbcodes');
 				}
 
 				$bbcode_tpl			= htmlspecialchars($row['bbcode_tpl']);
@@ -141,9 +146,9 @@ class bbcodes
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->lang->lang('BBCODE_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(404, 'BBCODE_NOT_EXIST', 'acp_bbcodes');
 				}
 			// No break here
 
@@ -160,10 +165,17 @@ class bbcodes
 		{
 			case 'edit':
 			case 'add':
+				$params = ['action' => ($action === 'add' ? 'create' : 'modify')];
+
+				if ($bbcode_id)
+				{
+					$params['bbcode'] = $bbcode_id;
+				}
+
 				$tpl_ary = [
 					'S_EDIT_BBCODE'		=> true,
-					'U_BACK'			=> $this->u_action,
-					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
+					'U_BACK'			=> $this->helper->route('acp_bbcodes'),
+					'U_ACTION'			=> $this->helper->route('acp_bbcodes', $params),
 
 					'L_BBCODE_USAGE_EXPLAIN'	=> $this->lang->lang('BBCODE_USAGE_EXPLAIN', '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'				=> $bbcode_match,
@@ -198,7 +210,7 @@ class bbcodes
 					]);
 				}
 
-				return;
+				return $this->helper->render('acp_bbcodes.html', 'ACP_BBCODES');
 			break;
 
 			case 'modify':
@@ -253,7 +265,7 @@ class bbcodes
 						// Grab the end, interrogate the last closing tag
 						if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
 						{
-							trigger_error($this->lang->lang('BBCODE_INVALID_TAG_NAME') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'BBCODE_INVALID_TAG_NAME', 'acp_bbcodes');
 						}
 					}
 
@@ -268,22 +280,22 @@ class bbcodes
 
 					if (!preg_match('%\\[' . $test . '[^]]*].*?\\[/' . $test . ']%s', $bbcode_match))
 					{
-						trigger_error($this->lang->lang('BBCODE_OPEN_ENDED_TAG') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'BBCODE_OPEN_ENDED_TAG', 'acp_bbcodes');
 					}
 
 					if (strlen($data['bbcode_tag']) > 16)
 					{
-						trigger_error($this->lang->lang('BBCODE_TAG_TOO_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'BBCODE_TAG_TOO_LONG', 'acp_bbcodes');
 					}
 
 					if (strlen($bbcode_match) > 4000)
 					{
-						trigger_error($this->lang->lang('BBCODE_TAG_DEF_TOO_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'BBCODE_TAG_DEF_TOO_LONG', 'acp_bbcodes');
 					}
 
 					if (strlen($bbcode_helpline) > 255)
 					{
-						trigger_error($this->lang->lang('BBCODE_HELPLINE_TOO_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'BBCODE_HELPLINE_TOO_LONG', 'acp_bbcodes');
 					}
 
 					$sql_ary = array_merge($sql_ary, [
@@ -323,7 +335,7 @@ class bbcodes
 
 						if ($bbcode_id > BBCODE_LIMIT)
 						{
-							trigger_error($this->lang->lang('TOO_MANY_BBCODES') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'TOO_MANY_BBCODES', 'acp_bbcodes');
 						}
 
 						$sql_ary['bbcode_id'] = (int) $bbcode_id;
@@ -367,7 +379,7 @@ class bbcodes
 					];
 					extract($this->dispatcher->trigger_event('core.acp_bbcodes_modify_create_after', compact($vars)));
 
-					trigger_error($this->lang->lang($lang) . adm_back_link($this->u_action));
+					return $this->helper->message_back($lang, 'acp_bbcodes');
 				}
 				else
 				{
@@ -379,6 +391,8 @@ class bbcodes
 						'bbcode_helpline'		=> $bbcode_helpline,
 						'display_on_posting'	=> $display_on_posting,
 					])), 'confirm_bbcode.html');
+
+					return redirect($this->helper->route('acp_bbcodes'));
 				}
 			break;
 
@@ -432,25 +446,23 @@ class bbcodes
 								],
 							]);
 						}
+
+						return $this->helper->message_back('BBCODE_DELETED', 'acp_bbcodes');
 					}
 					else
 					{
 						confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-							'i'			=> $id,
-							'mode'		=> $mode,
 							'action'	=> $action,
 							'bbcode'	=> $bbcode_id,
 						]));
+
+						return redirect($this->helper->route('acp_bbcodes'));
 					}
 				}
 			break;
 		}
 
-		$u_action = $this->u_action;
-
-		$template_data = [
-			'U_ACTION'		=> $this->u_action . '&amp;action=add',
-		];
+		$template_data = ['U_ACTION' => $this->helper->route('acp_bbcodes', ['action' => 'add'])];
 
 		$sql_ary = [
 			'SELECT'	=> 'b.*',
@@ -465,10 +477,9 @@ class bbcodes
 		 * @var string	action			Type of the action: modify|create
 		 * @var array	sql_ary			The SQL array to get custom bbcode data
 		 * @var array	template_data	Array with form template data
-		 * @var string	u_action		The u_action link
 		 * @since 3.1.0-a3
 		 */
-		$vars = ['action', 'sql_ary', 'template_data', 'u_action'];
+		$vars = ['action', 'sql_ary', 'template_data'];
 		extract($this->dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
 
 		$this->template->assign_vars($template_data);
@@ -479,8 +490,8 @@ class bbcodes
 		{
 			$bbcodes_array = [
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
-				'U_EDIT'			=> $u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
+				'U_EDIT'			=> $this->helper->route('acp_bbcodes', ['action' => 'edit', 'bbcode' => $row['bbcode_id']]),
+				'U_DELETE'			=> $this->helper->route('acp_bbcodes', ['action' => 'delete', 'bbcode' => $row['bbcode_id']]),
 			];
 
 			/**
@@ -489,19 +500,16 @@ class bbcodes
 			 * @event core.acp_bbcodes_display_bbcodes
 			 * @var array	row				Array with current bbcode data
 			 * @var array	bbcodes_array	Array of bbcodes template data
-			 * @var string	u_action		The u_action link
 			 * @since 3.1.0-a3
 			 */
-			$vars = ['bbcodes_array', 'row', 'u_action'];
+			$vars = ['bbcodes_array', 'row'];
 			extract($this->dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
 
 			$this->template->assign_block_vars('bbcodes', $bbcodes_array);
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->tpl_name = 'acp_bbcodes';
-		$this->page_title = 'ACP_BBCODES';
-		// @todo $this->helper->render('acp_bbcodes.html', $this->lang->lang('ACP_BBCODES'));
+		return $this->helper->render('acp_bbcodes.html', 'ACP_BBCODES');
 	}
 
 	/**
@@ -518,7 +526,7 @@ class bbcodes
 
 		if (!preg_match('/^[a-zA-Z0-9_-]+$/', $bbcode_tag))
 		{
-			trigger_error($this->lang->lang('BBCODE_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(400, 'BBCODE_INVALID', 'acp_bbcodes');
 		}
 
 		return [

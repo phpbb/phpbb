@@ -13,6 +13,9 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 /**
  * @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
  */
@@ -26,6 +29,9 @@ class icons
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -45,13 +51,11 @@ class icons
 	/** @var string phpBB root path */
 	protected $root_path;
 
+	/** @var string phpBB web path */
+	protected $web_path;
+
 	/** @var array phpBB tables */
 	protected $tables;
-
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
 
 	/**
 	 * Constructor.
@@ -59,8 +63,10 @@ class icons
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\config\config					$config			Config object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\pagination						$pagination		Pagination object
+	 * @param \phpbb\path_helper					$path_helper	Path helper object
 	 * @param \phpbb\request\request				$request		Request object
 	 * @param \phpbb\template\template				$template		Template object
 	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
@@ -71,8 +77,10 @@ class icons
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\pagination $pagination,
+		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\textformatter\cache_interface $tf_cache,
@@ -83,6 +91,7 @@ class icons
 		$this->cache		= $cache;
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->pagination	= $pagination;
 		$this->request		= $request;
@@ -90,10 +99,11 @@ class icons
 		$this->tf_cache		= $tf_cache;
 
 		$this->root_path	= $root_path;
+		$this->web_path		= $path_helper->update_web_root_path($root_path);
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main($mode, $page = 1)
 	{
 		$this->lang->add_lang('acp/posting');
 
@@ -114,6 +124,7 @@ class icons
 		{
 			case 'smilies':
 				$lang		= 'SMILIES';
+				$route		= 'acp_smilies';
 				$table		= $this->tables['smilies'];
 				$fields		= 'smiley';
 				$img_path	= $this->config['smilies_path'];
@@ -121,6 +132,7 @@ class icons
 
 			case 'icons':
 				$lang		= 'ICONS';
+				$route		= 'acp_topic_icons';
 				$table		= $this->tables['icons'];
 				$fields		= 'icons';
 				$img_path	= $this->config['icons_path'];
@@ -128,14 +140,12 @@ class icons
 
 			default:
 				$lang		= '';
+				$route		= '';
 				$table		= '';
 				$fields		= '';
 				$img_path	= '';
 			break;
 		}
-
-		$this->page_title = 'ACP_' . $lang;
-		$this->tpl_name = 'acp_icons';
 
 		// Clear some arrays
 		$_images = $_paks = [];
@@ -323,8 +333,8 @@ class icons
 
 				$this->template->assign_vars([
 					'S_EDIT'		=> true,
-					'S_SMILIES'		=> ($mode === 'smilies') ? true : false,
-					'S_ADD'			=> ($action === 'add') ? true : false,
+					'S_SMILIES'		=> $mode === 'smilies',
+					'S_ADD'			=> $action === 'add',
 
 					'S_ORDER_LIST_DISPLAY'			=> $order_list . $order_lists[1],
 					'S_ORDER_LIST_UNDISPLAY'		=> $order_list . $order_lists[0],
@@ -343,8 +353,8 @@ class icons
 					'COLSPAN'		=> $colspan,
 					'ID'			=> $icon_id,
 
-					'U_BACK'		=> $this->u_action,
-					'U_ACTION'		=> $this->u_action . '&amp;action=' . (($action === 'add') ? 'create' : 'modify'),
+					'U_BACK'		=> $this->helper->route($route),
+					'U_ACTION'		=> $this->helper->route($route, ['action' => ($action === 'add' ? 'create' : 'modify')]),
 				]);
 
 				foreach ($data as $img => $img_row)
@@ -352,7 +362,7 @@ class icons
 					$this->template->assign_block_vars('items', [
 						'IMG'		=> $img,
 						'A_IMG'		=> addslashes($img),
-						'IMG_SRC'	=> $this->root_path . $img_path . '/' . $img,
+						'IMG_SRC'	=> $this->web_path . $img_path . '/' . $img,
 
 						'CODE'		=> ($mode === 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',
 						'EMOTION'	=> ($mode === 'smilies' && isset($img_row['emotion'])) ? $img_row['emotion'] : '',
@@ -378,7 +388,7 @@ class icons
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
 
-						'IMG_SRC'			=> $this->root_path . $img_path . '/' . $default_row['smiley_url'],
+						'IMG_SRC'			=> $this->web_path . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 
 						'CODE'				=> $default_row['code'],
@@ -389,7 +399,7 @@ class icons
 					]);
 				}
 
-				return;
+				return $this->helper->render('acp_icons.html', 'ACP_' . $lang);
 
 			break;
 
@@ -398,7 +408,7 @@ class icons
 
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception($route);
 				}
 
 				// Get items to create/modify
@@ -456,7 +466,7 @@ class icons
 
 					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
 					{
-						trigger_error($this->lang->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'TOO_MANY_SMILIES', $route, [SMILEY_LIMIT]);
 					}
 				}
 
@@ -571,25 +581,25 @@ class icons
 				$this->cache->destroy('sql', $table);
 				$this->tf_cache->invalidate();
 
-				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$error_msgs = '';
 				foreach ($errors as $img => $error)
 				{
 					$error_msgs .= '<br />' . $this->lang->lang($error, $img);
 				}
-				if ($action === 'modify')
+
+				$suffix = $action === 'modify' ? '_EDITED' : '_ADDED';
+
+				if (!$icons_updated)
 				{
-					trigger_error($this->lang->lang($lang . '_EDITED', $icons_updated) . $error_msgs . adm_back_link($this->u_action), $level);
+					throw new back_exception(400, $this->lang->lang($lang . $suffix) . $error_msgs, $route);
 				}
 				else
 				{
-					trigger_error($this->lang->lang($lang . '_ADDED', $icons_updated) . $error_msgs . adm_back_link($this->u_action), $level);
+					return $this->helper->message_back($this->lang->lang($lang . $suffix) . $error_msgs, $route);
 				}
-
 			break;
 
 			case 'import':
-
 				$pak = $this->request->variable('pak', '');
 				$current = $this->request->variable('current', '');
 
@@ -599,12 +609,12 @@ class icons
 
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new form_invalid_exception($route);
 					}
 
 					if (!($pak_ary = @file($this->root_path . $img_path . '/' . $pak)))
 					{
-						trigger_error($this->lang->lang('PAK_FILE_NOT_READABLE') . adm_back_link($this->u_action), E_USER_WARNING);
+						throw new back_exception(400, 'PAK_FILE_NOT_READABLE', $route);
 					}
 
 					// Make sure the pak_ary is valid
@@ -615,12 +625,12 @@ class icons
 							if ((count($data[1]) !== 4 && $mode === 'icons') ||
 								((count($data[1]) !== 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode === 'smilies' ))
 							{
-								trigger_error($this->lang->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
+								throw new back_exception(400, 'WRONG_PAK_TYPE', $route);
 							}
 						}
 						else
 						{
-							trigger_error($this->lang->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'WRONG_PAK_TYPE', $route);
 						}
 					}
 
@@ -673,7 +683,7 @@ class icons
 						$smiley_count = (int) $this->db->get_row_count($table);
 						if ($smiley_count + count($pak_ary) > SMILEY_LIMIT)
 						{
-							trigger_error($this->lang->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+							throw new back_exception(400, 'TOO_MANY_SMILIES', $route, [SMILEY_LIMIT]);
 						}
 					}
 
@@ -685,7 +695,7 @@ class icons
 							if ((count($data[1]) !== 4 && $mode === 'icons') ||
 								(count($data[1]) !== 6 && $mode === 'smilies'))
 							{
-								trigger_error($this->lang->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
+								throw new back_exception(400, 'WRONG_PAK_TYPE', $route);
 							}
 
 							$code = '';
@@ -743,6 +753,7 @@ class icons
 										'emotion'			=> $emotion,
 									]);
 								}
+
 								$this->db->sql_query("INSERT INTO $table " . $this->db->sql_build_array('INSERT', $sql));
 							}
 						}
@@ -752,7 +763,7 @@ class icons
 					$this->cache->destroy('sql', $table);
 					$this->tf_cache->invalidate();
 
-					trigger_error($this->lang->lang($lang . '_IMPORT_SUCCESS') . adm_back_link($this->u_action));
+					return $this->helper->message_back($lang . '_IMPORT_SUCCESS', $route);
 				}
 				else
 				{
@@ -774,30 +785,23 @@ class icons
 						'L_CURRENT_EXPLAIN'	=> $this->lang->lang('CURRENT_' . $lang . '_EXPLAIN'),
 						'L_IMPORT_SUBMIT'	=> $this->lang->lang('IMPORT_' . $lang),
 
-						'U_BACK'		=> $this->u_action,
-						'U_ACTION'		=> $this->u_action . '&amp;action=import',
+						'U_BACK'		=> $this->helper->route($route),
+						'U_ACTION'		=> $this->helper->route($route, ['acton' => 'import']),
 					]);
 				}
 			break;
 
 			case 'export':
-				$this->page_title = 'EXPORT_' . $lang;
-				$this->tpl_name = 'message_body';
+				$l_export = 'EXPORT_' . $lang;
+				$u_export = $this->helper->route($route, ['action' => 'send', 'hash' => generate_link_hash('acp_icons')]);
 
-				$this->template->assign_vars([
-					'MESSAGE_TITLE'		=> $this->lang->lang('EXPORT_' . $lang),
-					'MESSAGE_TEXT'		=> $this->lang->lang('EXPORT_' . $lang . '_EXPLAIN', '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
-
-					'S_USER_NOTICE'		=> true,
-				]);
-
-				return;
+				return $this->helper->message($l_export . '_EXPLAIN', ['<a href="' . $u_export . '">', '</a>'], $l_export);
 			break;
 
 			case 'send':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception($route);
 				}
 
 				$pak = '';
@@ -839,7 +843,7 @@ class icons
 				}
 				else
 				{
-					trigger_error($this->lang->lang('NO_' . strtoupper($fields) . '_EXPORT') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_' . strtoupper($fields) . '_EXPORT', $route);
 				}
 
 			break;
@@ -885,15 +889,17 @@ class icons
 							],
 						]);
 					}
+
+					return $this->helper->message_back($notice, $route);
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'i'			=> $id,
-						'mode'		=> $mode,
 						'id'		=> $icon_id,
 						'action'	=> 'delete',
 					]));
+
+					return redirect($this->helper->route('acp_icons'));
 				}
 
 			break;
@@ -902,7 +908,7 @@ class icons
 			case 'move_down':
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new form_invalid_exception($route);
 				}
 
 				// Get current order id...
@@ -949,6 +955,8 @@ class icons
 					$json_response = new \phpbb\json_response;
 					$json_response->send(['success'	=> $move_executed]);
 				}
+
+				return $this->helper->message_back($move_executed, $route);
 			break;
 		}
 
@@ -989,12 +997,13 @@ class icons
 
 			'S_SMILIES'			=> ($mode === 'smilies') ? true : false,
 
-			'U_ACTION'			=> $this->u_action,
-			'U_IMPORT'			=> $this->u_action . '&amp;action=import',
-			'U_EXPORT'			=> $this->u_action . '&amp;action=export',
+			'U_ACTION'			=> $this->helper->route($route),
+			'U_IMPORT'			=> $this->helper->route($route, ['action' => 'import']),
+			'U_EXPORT'			=> $this->helper->route($route, ['action' => 'export']),
 		]);
 
-		$pagination_start = $this->request->variable('start', 0);
+		$limit = (int) $this->config['smilies_per_page'];
+		$start = ($page - 1) * $limit;
 		$spacer = false;
 
 		$item_count = (int) $this->db->get_row_count($table);
@@ -1002,7 +1011,7 @@ class icons
 		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
-		$result = $this->db->sql_query_limit($sql, $this->config['smilies_per_page'], $pagination_start);
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$alt_text = ($mode === 'smilies') ? $row['code'] : (($mode === 'icons' && !empty($row['icons_alt'])) ? $row['icons_alt'] : $row['icons_url']);
@@ -1010,16 +1019,16 @@ class icons
 			$this->template->assign_block_vars('items', [
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
-				'IMG_SRC'		=> $this->root_path . $img_path . '/' . $row[$fields . '_url'],
+				'IMG_SRC'		=> $this->web_path . $img_path . '/' . $row[$fields . '_url'],
 				'WIDTH'			=> $row[$fields . '_width'],
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> isset($row['code']) ? $row['code'] : '',
 				'EMOTION'		=> isset($row['emotion']) ? $row['emotion'] : '',
 
-				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
-				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
+				'U_EDIT'		=> $this->helper->route($route, ['action' => 'edit', 'id' => $row[$fields . '_id']]),
+				'U_DELETE'		=> $this->helper->route($route, ['action' => 'delete', 'id' => $row[$fields . '_id']]),
+				'U_MOVE_UP'		=> $this->helper->route($route, ['action' => 'move_up', 'id' => $row[$fields . '_id'], 'hash' => generate_link_hash('acp_icons')]),
+				'U_MOVE_DOWN'	=> $this->helper->route($route, ['action' => 'move_down', 'id' => $row[$fields . '_id'], 'hash' => generate_link_hash('acp_icons')]),
 			]);
 
 			if (!$spacer && !$row['display_on_posting'])
@@ -1029,6 +1038,10 @@ class icons
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $item_count, $this->config['smilies_per_page'], $pagination_start);
+		$this->pagination->generate_template_pagination([
+			'routes' => [$route, $route . '_pagination'],
+		], 'pagination', 'page', $item_count, $limit, $start);
+
+		return $this->helper->render('acp_icons.html', 'ACP_' . $lang);
 	}
 }

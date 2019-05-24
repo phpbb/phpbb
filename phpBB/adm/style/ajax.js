@@ -191,6 +191,7 @@ phpbb.addAjaxCallback('ext_disable', function(res) {
  */
 function submitPermissions() {
 	var $form = $('form#set-permissions'),
+		$dark = $('#darkenwrapper'),
 		fieldsetList = $form.find('fieldset[id^=perm]'),
 		formDataSets = [],
 		dataSetIndex = 0,
@@ -200,8 +201,7 @@ function submitPermissions() {
 	// Set proper start values for handling refresh of page
 	var permissionSubmitSize = 0,
 		permissionRequestCount = 0,
-		forumIds = [],
-		permissionSubmitFailed = false;
+		forumIds = [];
 
 	if ($submitAllButton !== $submitButton) {
 		fieldsetList = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id);
@@ -244,63 +244,88 @@ function submitPermissions() {
 		permissionRequestCount++;
 		var $dark = $('#darkenwrapper');
 
-		if (res.S_USER_WARNING) {
-			phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-			permissionSubmitFailed = true;
-		} else if (!permissionSubmitFailed && res.S_USER_NOTICE) {
-			// Display success message at the end of submitting the form
-			if (permissionRequestCount >= permissionSubmitSize) {
-				var $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-				var $alertBoxLink = $alert.find('p.alert_text > a');
+		// Display success message at the end of submitting the form
+		if (permissionRequestCount >= permissionSubmitSize) {
+			var $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT + '<br /><br />' + res.MESSAGE_BACK);
+			var $alertBoxLink = $alert.find('p.alert_text > a');
 
-				// Create form to submit instead of normal "Back to previous page" link
-				if ($alertBoxLink) {
-					// Remove forum_id[] from URL
-					$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/g, ''));
-					var previousPageForm = '<form action="' + $alertBoxLink.attr('href') + '" method="post">';
+			// Create form to submit instead of normal "Back to previous page" link
+			if ($alertBoxLink) {
+				// Remove forum_id[] from URL
+				$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/g, ''));
+				var previousPageForm = '<form action="' + $alertBoxLink.attr('href') + '" method="post">';
+				$.each(forumIds, function (key, value) {
+					previousPageForm += '<input type="text" name="forum_id[]" value="' + value + '" />';
+				});
+				previousPageForm += '</form>';
+
+				$alertBoxLink.on('click', function (e) {
+					var $previousPageForm = $(previousPageForm);
+					$('body').append($previousPageForm);
+					e.preventDefault();
+					$previousPageForm.submit();
+				});
+			}
+
+			// Do not allow closing alert
+			$dark.off('click');
+			$alert.find('.alert_close').hide();
+
+			if (typeof res.REFRESH_DATA !== 'undefined') {
+				setTimeout(function () {
+					// Create forum to submit using POST. This will prevent
+					// exceeding the maximum length of URLs
+					var form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/g, '') + '" method="post">';
 					$.each(forumIds, function (key, value) {
-						previousPageForm += '<input type="text" name="forum_id[]" value="' + value + '" />';
+						form += '<input type="text" name="forum_id[]" value="' + value + '" />';
 					});
-					previousPageForm += '</form>';
+					form += '</form>';
+					$form = $(form);
+					$('body').append($form);
 
-					$alertBoxLink.on('click', function (e) {
-						var $previousPageForm = $(previousPageForm);
-						$('body').append($previousPageForm);
-						e.preventDefault();
-						$previousPageForm.submit();
+					// Hide the alert even if we refresh the page, in case the user
+					// presses the back button.
+					$dark.fadeOut(phpbb.alertTime, function () {
+						if (typeof $alert !== 'undefined') {
+							$alert.hide();
+						}
 					});
-				}
 
-				// Do not allow closing alert
-				$dark.off('click');
-				$alert.find('.alert_close').hide();
-
-				if (typeof res.REFRESH_DATA !== 'undefined') {
-					setTimeout(function () {
-						// Create forum to submit using POST. This will prevent
-						// exceeding the maximum length of URLs
-						var form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/g, '') + '" method="post">';
-						$.each(forumIds, function (key, value) {
-							form += '<input type="text" name="forum_id[]" value="' + value + '" />';
-						});
-						form += '</form>';
-						$form = $(form);
-						$('body').append($form);
-
-						// Hide the alert even if we refresh the page, in case the user
-						// presses the back button.
-						$dark.fadeOut(phpbb.alertTime, function () {
-							if (typeof $alert !== 'undefined') {
-								$alert.hide();
-							}
-						});
-
-						// Submit form
-						$form.submit();
-					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
-				}
+					// Submit form
+					$form.submit();
+				}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 			}
 		}
+	}
+
+	/**
+	 * Handler for AJAX errors
+	 */
+	function errorHandler(jqXHR, textStatus, errorThrown) {
+		if (typeof console !== 'undefined' && console.log) {
+			console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
+		}
+
+		phpbb.clearLoadingTimeout();
+		var responseText, errorText = false;
+
+		try {
+			responseText = JSON.parse(jqXHR.responseText);
+			responseText = responseText.message;
+		} catch (e) {}
+
+		if (typeof responseText === 'string' && responseText.length > 0) {
+			errorText = responseText;
+		} else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+			errorText = errorThrown;
+		} else {
+			errorText = $dark.attr('data-ajax-error-text-' + textStatus);
+			if (typeof errorText !== 'string' || !errorText.length) {
+				errorText = $dark.attr('data-ajax-error-text');
+			}
+		}
+
+		phpbb.alert($dark.attr('data-ajax-error-title'), errorText);
 	}
 
 	// Create AJAX request for each form data set
@@ -314,7 +339,7 @@ function submitPermissions() {
 				'&' + $form.children('input[type=hidden]').serialize() +
 				'&' + $form.find('input[type=checkbox][name^=inherit]').serialize(),
 			success: handlePermissionReturn,
-			error: handlePermissionReturn
+			error: errorHandler,
 		});
 	});
 }

@@ -13,6 +13,10 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\http_exception;
+use phpbb\exception\form_invalid_exception;
+
 class styles
 {
 	/** @var \phpbb\auth\auth */
@@ -29,6 +33,9 @@ class styles
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -64,10 +71,7 @@ class styles
 	protected $mode;
 
 	/** @var string */
-	protected $u_base_action;
-
-	/** @var array */
-	protected $s_hidden_fields;
+	protected $u_mode;
 
 	/** @var string */
 	protected $styles_path;
@@ -84,11 +88,6 @@ class styles
 	/** @var array */
 	protected $reserved_style_names = ['adm', 'admin', 'all'];
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -97,6 +96,7 @@ class styles
 	 * @param \phpbb\config\config					$config			Config object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
 	 * @param \phpbb\language\language				$lang			Language object
 	 * @param \phpbb\log\log						$log			Log object
 	 * @param \phpbb\request\request				$request		Request object
@@ -114,6 +114,7 @@ class styles
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -131,6 +132,7 @@ class styles
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -144,18 +146,14 @@ class styles
 		$this->tables		= $tables;
 	}
 
-	public function main($id, $mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang('acp/styles');
 
 		$this->default_style	= $this->config['default_style'];
 		$this->styles_path		= $this->root_path . $this->styles_path_absolute . '/';
 
-		$this->u_base_action	= append_sid("{$this->admin_path}index.{$this->php_ext}", "i={$id}");
-		$this->s_hidden_fields	= ['mode' => $mode];
-
-		$this->tpl_name			= 'acp_styles';
-		$this->page_title		= 'ACP_CAT_STYLES';
+		$this->u_mode			= 'acp_styles_' . $mode;
 		$this->mode				= $mode;
 
 		$action			= $this->request->variable('action', '');
@@ -177,18 +175,20 @@ class styles
 
 			if (!$is_valid_request)
 			{
-				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new form_invalid_exception($this->u_mode);
 			}
 		}
 
+		$s_hidden_fields = ['mode' => $mode];
+
 		if ($action !== '')
 		{
-			$this->s_hidden_fields['action'] = $action;
+			$s_hidden_fields['action'] = $action;
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'			=> $this->u_base_action,
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields($this->s_hidden_fields),
+			'U_ACTION'			=> $this->helper->route($this->u_mode),
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 		]);
 
 		/**
@@ -207,39 +207,29 @@ class styles
 		switch ($action)
 		{
 			case 'install':
-				$this->action_install();
-
-				return;
+				return $this->action_install();
 
 			case 'uninstall':
-				$this->action_uninstall();
-
-				return;
+				return $this->action_uninstall();
 
 			case 'activate':
-				$this->action_activate();
-
-				return;
+				return $this->action_activate();
 
 			case 'deactivate':
-				$this->action_deactivate();
-
-				return;
+				return $this->action_deactivate();
 
 			case 'details':
-				$this->action_details();
-
-				return;
+				return $this->action_details();
 
 			default:
-				$this->frontend();
+				return $this->frontend();
 		}
 	}
 
 	/**
 	 * Main page.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function frontend()
 	{
@@ -248,26 +238,25 @@ class styles
 		// Check mode
 		switch ($this->mode)
 		{
-			case 'style':
+			case 'manage':
 				$this->welcome_message('ACP_STYLES', 'ACP_STYLES_EXPLAIN');
-				$this->show_installed();
 
-				return;
+				return $this->show_installed();
 
 			case 'install':
 				$this->welcome_message('INSTALL_STYLES', 'INSTALL_STYLES_EXPLAIN');
-				$this->show_available();
 
-				return;
+				return $this->show_available();
+
+			default:
+				throw new back_exception(400, 'NO_MADE', $this->u_mode);
 		}
-
-		trigger_error($this->lang->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
 	}
 
 	/**
 	 * Install style(s).
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_install()
 	{
@@ -287,6 +276,7 @@ class styles
 			if (in_array($dir, $this->reserved_style_names))
 			{
 				$messages[] = $this->lang->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
+
 				continue;
 			}
 
@@ -310,6 +300,7 @@ class styles
 					$messages[] = $this->lang->lang('STYLE_INSTALLED', htmlspecialchars($style['style_name']));
 				}
 			}
+
 			if (!$found)
 			{
 				$messages[] = $this->lang->lang('STYLE_NOT_INSTALLED', htmlspecialchars($dir));
@@ -325,20 +316,20 @@ class styles
 		// Show message
 		if (empty($messages))
 		{
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(404, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		$message = implode('<br />', $messages);
-		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=style' . '">&laquo; ' . $this->lang->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
-		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=install' . '">&raquo; ' . $this->lang->lang('STYLE_INSTALLED_RETURN_UNINSTALLED_STYLES') . '</a>';
+		$message .= '<br /><br /><a href="' . $this->helper->route('acp_styles_manage') . '">&laquo; ' . $this->lang->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
+		$message .= '<br /><br /><a href="' . $this->helper->route('acp_styles_install') . '">&raquo; ' . $this->lang->lang('STYLE_INSTALLED_RETURN_UNINSTALLED_STYLES') . '</a>';
 
-		trigger_error($message, E_USER_NOTICE);
+		return $this->helper->message($message);
 	}
 
 	/**
 	 * Confirm styles removal.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_uninstall()
 	{
@@ -349,8 +340,7 @@ class styles
 		if (confirm_box(true))
 		{
 			// Uninstall
-			$this->action_uninstall_confirmed($ids, $this->request->variable('confirm_delete_files', false));
-			return;
+			return $this->action_uninstall_confirmed($ids, $this->request->variable('confirm_delete_files', false));
 		}
 
 		$this->template->assign_var('S_CONFIRM_DELETE', true);
@@ -362,7 +352,7 @@ class styles
 		]), 'acp_styles.html');
 
 		// Canceled - show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
@@ -370,7 +360,7 @@ class styles
 	 *
 	 * @param array		$ids			List of style IDs
 	 * @param bool		$delete_files	If true, script will attempt to remove files for selected styles
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_uninstall_confirmed(array $ids, $delete_files)
 	{
@@ -383,12 +373,13 @@ class styles
 		{
 			if (!$id)
 			{
-				trigger_error($this->lang->lang('INVALID_STYLE_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception('INVALID_STYLE_ID', $this->u_mode);
 			}
 			if ($id == $default)
 			{
-				trigger_error($this->lang->lang('UNINSTALL_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'UNINSTALL_DEFAULT', $this->u_mode);
 			}
+
 			$uninstalled[$id] = false;
 		}
 
@@ -412,6 +403,7 @@ class styles
 			if (is_string($result))
 			{
 				$messages[] = $result;
+
 				continue;
 			}
 
@@ -430,7 +422,7 @@ class styles
 		if (empty($messages))
 		{
 			// Nothing to uninstall?
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(400, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		// Log action
@@ -443,13 +435,13 @@ class styles
 		$this->cache->purge();
 
 		// Show message
-		trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_NOTICE);
+		return $this->helper->message_back(implode('<br />', $messages), $this->u_mode);
 	}
 
 	/**
 	 * Activate styles.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_activate()
 	{
@@ -466,13 +458,13 @@ class styles
 		$this->cache->destroy('sql', $this->tables['styles']);
 
 		// Show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
 	 * Deactivate styles.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_deactivate()
 	{
@@ -484,7 +476,7 @@ class styles
 		{
 			if ($id == $this->default_style)
 			{
-				trigger_error($this->lang->lang('DEACTIVATE_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new back_exception(400, 'DEACTIVATE_DEFAULT', $this->u_mode);
 			}
 		}
 
@@ -504,13 +496,13 @@ class styles
 		$this->cache->destroy('sql', $this->tables['styles']);
 
 		// Show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
 	 * Show style details.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_details()
 	{
@@ -518,7 +510,7 @@ class styles
 
 		if (!$id)
 		{
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(404, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		// Get all styles
@@ -539,7 +531,7 @@ class styles
 
 		if ($style === false)
 		{
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(404, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		// Read style configuration file
@@ -557,10 +549,9 @@ class styles
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new form_invalid_exception($this->u_mode);
 			}
 
-			$update_action = $this->u_action . '&amp;action=details&amp;id=' . $id;
 			$update = [
 				'style_name'		=> $this->request->variable('style_name', $style['style_name']),
 				'style_parent_id'	=> $this->request->variable('style_parent', (int) $style['style_parent_id']),
@@ -572,13 +563,13 @@ class styles
 			{
 				if (!strlen($update['style_name']))
 				{
-					trigger_error($this->lang->lang('STYLE_ERR_STYLE_NAME') . adm_back_link($update_action), E_USER_WARNING);
+					throw new back_exception(400, 'STYLE_ERR_STYLE_NAME', [$this->u_mode, ['action' => 'details', 'id' => $id]]);
 				}
 				foreach ($styles as $row)
 				{
 					if ($row['style_name'] == $update['style_name'])
 					{
-						trigger_error($this->lang->lang('STYLE_ERR_NAME_EXIST') . adm_back_link($update_action), E_USER_WARNING);
+						throw new back_exception(400,'STYLE_ERR_NAME_EXIST', [$this->u_mode, ['action' => 'details', 'id' => $id]]);
 					}
 				}
 			}
@@ -607,7 +598,7 @@ class styles
 
 					if (!$found)
 					{
-						trigger_error($this->lang->lang('STYLE_ERR_INVALID_PARENT') . adm_back_link($update_action), E_USER_WARNING);
+						throw new back_exception(400, 'STYLE_ERR_INVALID_PARENT', [$this->u_mode, ['action' => 'details', 'id' => $id]]);
 					}
 				}
 				else
@@ -625,7 +616,7 @@ class styles
 			{
 				if (!$update['style_active'] && $this->default_style == $style['style_id'])
 				{
-					trigger_error($this->lang->lang('DEACTIVATE_DEFAULT') . adm_back_link($update_action), E_USER_WARNING);
+					throw new back_exception(400, 'DEACTIVATE_DEFAULT', [$this->u_mode, ['action' => 'details', 'id' => $id]]);
 				}
 			}
 			else
@@ -663,15 +654,15 @@ class styles
 			{
 				if (!$style['style_active'])
 				{
-					trigger_error($this->lang->lang('STYLE_DEFAULT_CHANGE_INACTIVE') . adm_back_link($update_action), E_USER_WARNING);
+					throw new back_exception(400, 'STYLE_DEFAULT_CHANGE_INACTIVE', [$this->u_mode, ['action' => 'details', 'id' => $id]]);
 				}
+
 				$this->config->set('default_style', $id);
 				$this->cache->purge();
 			}
 
 			// Show styles list
-			$this->frontend();
-			return;
+			return $this->frontend();
 		}
 
 		// Show page title
@@ -700,12 +691,14 @@ class styles
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
 			'S_STYLE_DEFAULT'	=> $style['style_id'] == $this->default_style,
 		]);
+
+		return $this->helper->render('acp_styles.html', 'ACP_STYLES_MANAGE');
 	}
 
 	/**
 	 * List installed styles.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function show_installed()
 	{
@@ -714,7 +707,7 @@ class styles
 
 		if (empty($styles))
 		{
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(404, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		usort($styles, [$this, 'sort_styles']);
@@ -764,12 +757,14 @@ class styles
 				'L_ACTION'		=> $this->lang->lang('STYLE_UNINSTALL'),
 			]);
 		}
+
+		return $this->helper->render('acp_styles.html', 'ACP_STYLES_MANAGE');
 	}
 
 	/**
 	 * Show list of styles that can be installed.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function show_available()
 	{
@@ -779,7 +774,7 @@ class styles
 		// Show styles
 		if (empty($styles))
 		{
-			trigger_error($this->lang->lang('NO_UNINSTALLED_STYLE') . adm_back_link($this->u_base_action), E_USER_NOTICE);
+			throw new http_exception(400, 'NO_UNINSTALLED_STYLE');
 		}
 
 		usort($styles, [$this, 'sort_styles']);
@@ -831,6 +826,8 @@ class styles
 				'L_ACTION'		=> $this->lang->lang('INSTALL_STYLES'),
 			]);
 		}
+
+		return $this->helper->render('acp_styles.html', 'ACP_STYLES_MANAGE');
 	}
 
 	/**
@@ -1094,15 +1091,15 @@ class styles
 			// Details
 			$actions[] = [
 				'L_ACTION'	=> $this->lang->lang('DETAILS'),
-				'U_ACTION'	=> $this->u_action . '&amp;action=details&amp;id=' . $style['style_id'],
+				'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'details', 'id' => $style['style_id']]),
 			];
 
 			// Activate/Deactivate
 			$action_name = ($style['style_active'] ? 'de' : '') . 'activate';
 
 			$actions[] = [
-				'L_ACTION'	=> $this->lang->lang['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE'],
-				'U_ACTION'	=> $this->u_action . '&amp;action=' . $action_name . '&amp;hash=' . generate_link_hash($action_name) . '&amp;id=' . $style['style_id'],
+				'L_ACTION'	=> $this->lang->lang(['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE']),
+				'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => $action_name, 'id' => $style['style_id'], 'hash' => generate_link_hash($action_name)]),
 			];
 
 			/*			// Export
@@ -1114,7 +1111,7 @@ class styles
 			// Uninstall
 			$actions[] = [
 				'L_ACTION'	=> $this->lang->lang('STYLE_UNINSTALL'),
-				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
+				'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'uninstall', 'id' => $style['style_id'], 'hash' => generate_link_hash('uninstall')]),
 			];
 
 			// Preview
@@ -1135,7 +1132,7 @@ class styles
 			else
 			{
 				$actions[] = [
-					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
+					'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'install', 'dir' => urlencode($style['style_path']), 'hash' => generate_link_hash('install')]),
 					'L_ACTION'	=> $this->lang->lang('INSTALL_STYLE'),
 				];
 			}
@@ -1179,7 +1176,7 @@ class styles
 	protected function welcome_message($title, $description)
 	{
 		$this->template->assign_vars([
-			'L_TITLE'	=> $this->lang->lang[$title],
+			'L_TITLE'	=> $this->lang->lang($title),
 			'L_EXPLAIN'	=> $this->lang->is_set($description) ? $this->lang->lang($description) : '',
 		]);
 	}
@@ -1453,7 +1450,7 @@ class styles
 
 		if ($error && empty($items))
 		{
-			trigger_error($this->lang->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			throw new back_exception(404, 'NO_MATCHING_STYLES_FOUND', $this->u_mode);
 		}
 
 		return $items;

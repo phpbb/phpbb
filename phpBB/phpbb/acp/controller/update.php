@@ -18,6 +18,9 @@ class update
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -36,24 +39,21 @@ class update
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config				Config object
-	 * @param \phpbb\language\language	$lang				Language object
-	 * @param \phpbb\request\request	$request			Request object
-	 * @param \phpbb\template\template	$template			Template object
-	 * @param \phpbb\version_helper		$version_helper		Version helper object
-	 * @param string					$root_path			phpBB root path
-	 * @param string					$php_ext			php File extension
+	 * @param \phpbb\config\config			$config				Config object
+	 * @param \phpbb\acp\helper\controller	$helper				ACP Controller helper object
+	 * @param \phpbb\language\language		$lang				Language object
+	 * @param \phpbb\request\request		$request			Request object
+	 * @param \phpbb\template\template		$template			Template object
+	 * @param \phpbb\version_helper			$version_helper		Version helper object
+	 * @param string						$root_path			phpBB root path
+	 * @param string						$php_ext			php File extension
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -63,6 +63,7 @@ class update
 	)
 	{
 		$this->config			= $config;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->request			= $request;
 		$this->template			= $template;
@@ -72,12 +73,9 @@ class update
 		$this->php_ext			= $php_ext;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('install');
-
-		$this->tpl_name = 'acp_update';
-		$this->page_title = 'ACP_VERSION_CHECK';
 
 		try
 		{
@@ -112,8 +110,8 @@ class update
 			'S_VERSION_UPGRADEABLE'	=> !empty($upgrades_available),
 			'S_UP_TO_DATE'			=> empty($updates_available),
 
-			'U_ACTION'				=> $this->u_action,
-			'U_VERSIONCHECK_FORCE'	=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
+			'U_ACTION'				=> $this->helper->route('acp_update'),
+			'U_VERSIONCHECK_FORCE'	=> $this->helper->route('acp_update', ['versioncheck_force' => true]),
 		]);
 
 		// Incomplete update?
@@ -125,5 +123,7 @@ class update
 				'INCOMPLETE_INSTRUCTIONS'	=> $this->lang->lang('UPDATE_INCOMPLETE_EXPLAIN', $this->root_path . 'install/app.php/update'),
 			]);
 		}
+
+		return $this->helper->render('acp_update.html', 'ACP_VERSION_CHECK');
 	}
 }

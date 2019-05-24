@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+
 class email
 {
 	/** @var \phpbb\config\config */
@@ -23,6 +25,9 @@ class email
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -51,17 +56,13 @@ class email
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\request\request			$request		Request object
@@ -76,6 +77,7 @@ class email
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -90,6 +92,7 @@ class email
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -102,7 +105,7 @@ class email
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/email');
 
@@ -214,7 +217,7 @@ class email
 				{
 					$this->db->sql_freeresult($result);
 
-					trigger_error($this->lang->lang('NO_USER') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(400, 'NO_USER', 'acp_mass_email');
 				}
 
 				$i = $j = 0;
@@ -348,13 +351,11 @@ class email
 
 				if ($error_send === false)
 				{
-					trigger_error($this->lang->lang('EMAIL_SENT' . ($use_queue ? '_QUEUE' : '')) . adm_back_link($this->u_action));
+					return $this->helper->message_back('EMAIL_SENT' . ($use_queue ? '_QUEUE' : ''), 'acp_mass_email');
 				}
 				else
 				{
-					$u_critical = append_sid("{$this->admin_path}index.$this->php_ext", 'i=logs&amp;mode=critical');
-
-					trigger_error($this->lang->lang('EMAIL_SEND_ERROR', '<a href="' . $u_critical . '">', '</a>') . adm_back_link($this->u_action), E_USER_WARNING);
+					throw new back_exception(503, 'EMAIL_SEND_ERROR', 'acp_mass_email', ['<a href="' . $this->helper->route('acp_logs_error') . '">', '</a>']);
 				}
 			}
 		}
@@ -392,7 +393,7 @@ class email
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options,
 			'S_GROUP_OPTIONS'		=> $select_list,
 
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->helper->route('acp_mass_email'),
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
 		];
 
@@ -410,8 +411,6 @@ class email
 
 		$this->template->assign_vars($template_data);
 
-		$this->tpl_name = 'acp_email';
-		$this->page_title = 'ACP_MASS_EMAIL';
-		// @todo return $this->helper->render('acp_email.html', $this->lang->lang('ACP_MASS_EMAIL'));
+		return $this->helper->render('acp_email.html', 'ACP_MASS_EMAIL');
 	}
 }

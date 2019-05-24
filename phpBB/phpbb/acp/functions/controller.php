@@ -168,7 +168,7 @@ class controller
 		$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 		$this->template->assign_vars([
-			'PAGE_TITLE'				=> $page_title,
+			'PAGE_TITLE'				=> $this->lang->lang($page_title),
 			'USERNAME'					=> $this->user->data['username'],
 
 			'ADMIN_ROOT_PATH'			=> $this->web_path . $this->admin_path,

@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\back_exception;
+
 class bots
 {
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -23,6 +25,9 @@ class bots
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -48,17 +53,13 @@ class bots
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\cache\driver\driver_interface	$cache		Cache object
 	 * @param \phpbb\config\config					$config		Config object
 	 * @param \phpbb\db\driver\driver_interface		$db			Database object
+	 * @param \phpbb\acp\helper\controller			$helper		ACP Controller helper object
 	 * @param \phpbb\language\language				$lang		Language object
 	 * @param \phpbb\log\log						$log		Log object
 	 * @param \phpbb\request\request				$request	Request object
@@ -72,6 +73,7 @@ class bots
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -85,6 +87,7 @@ class bots
 		$this->cache		= $cache;
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->request		= $request;
@@ -96,7 +99,7 @@ class bots
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	function main()
 	{
 		$this->lang->add_lang('acp/bots');
 
@@ -173,16 +176,17 @@ class bots
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_BOT_DELETE', false, [implode($this->lang->lang('COMMA_SEPARATOR'), $bot_name_ary)]);
 
-						trigger_error($this->lang->lang('BOT_DELETED') . adm_back_link($this->u_action));
+						return $this->helper->message_back('BOT_DELETED', 'acp_bots');
 					}
 					else
 					{
 						confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-							'mode'		=> $mode,
 							'action'	=> $action,
 							'id'		=> $bot_id,
 							'mark'		=> $mark,
 						]));
+
+						return redirect($this->helper->route('acp_bots'));
 					}
 				}
 			break;
@@ -271,7 +275,7 @@ class bots
 
 							if ($group_row === false)
 							{
-								trigger_error($this->lang->lang('NO_BOT_GROUP') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								throw new back_exception(404, 'NO_BOT_GROUP', ['acp_bots', 'action' => $action, 'id' => $bot_id]);
 							}
 
 							$user_id = user_add([
@@ -307,7 +311,7 @@ class bots
 
 							if ($row === false)
 							{
-								trigger_error($this->lang->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								throw new back_exception(404, 'NO_BOT', ['acp_bots', 'action' => $action, 'id' => $bot_id]);
 							}
 
 							$sql_ary = [
@@ -345,7 +349,7 @@ class bots
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_BOT_' . $log_action, false, [$bot_row['bot_name']]);
 
-						trigger_error($this->lang->lang('BOT_' . $log_action) . adm_back_link($this->u_action));
+						return $this->helper->message_back('BOT_' . $log_action, 'acp_bots');
 					}
 				}
 				else if ($bot_id)
@@ -360,7 +364,7 @@ class bots
 
 					if ($bot_row === false)
 					{
-						trigger_error($this->lang->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+						throw new back_exception(404, 'NO_BOT', ['acp_bots', 'action' => $action, 'id' => $bot_id]);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];
@@ -380,8 +384,8 @@ class bots
 
 				$this->template->assign_vars([
 					'L_TITLE'		=> $this->lang->lang('BOT_' . $l_title),
-					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
-					'U_BACK'		=> $this->u_action,
+					'U_ACTION'		=> $this->helper->route('acp_bots', ['action' => $action, 'id' => $bot_id]),
+					'U_BACK'		=> $this->helper->route('acp_bots'),
 					'ERROR_MSG'		=> $s_error ? implode('<br />', $errors) : '',
 
 					'BOT_NAME'		=> $bot_row['bot_name'],
@@ -395,7 +399,7 @@ class bots
 					'S_ERROR'			=> $s_error,
 				]);
 
-				return;
+				return $this->helper->render('acp_bots.html', 'BOT_' . $l_title);
 			break;
 		}
 
@@ -415,7 +419,7 @@ class bots
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'		=> $this->u_action,
+			'U_ACTION'		=> $this->helper->route('acp_bots'),
 			'S_BOT_OPTIONS'	=> $s_options,
 		]);
 
@@ -434,17 +438,15 @@ class bots
 				'BOT_ID'		=> $row['bot_id'],
 				'LAST_VISIT'	=> $row['user_lastvisit'] ? $this->user->format_date($row['user_lastvisit']) : $this->lang->lang('BOT_NEVER'),
 
-				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
 				'L_ACTIVATE_DEACTIVATE'	=> $this->lang->lang($active_lang),
-				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
-				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete",
+				'U_ACTIVATE_DEACTIVATE'	=> $this->helper->route('acp_bots', ['action' => $active_value, 'id' => $row['bot_id']]),
+				'U_DELETE'				=> $this->helper->route('acp_bots', ['action' => 'delete', 'id' => $row['bot_id']]),
+				'U_EDIT'				=> $this->helper->route('acp_bots', ['action' => 'edit', 'id' => $row['bot_id']]),
 			]);
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->tpl_name = 'acp_bots';
-		$this->page_title = 'ACP_BOTS';
-		// @todo $this->helper->render('acp_bots.html', $this->lang->lang('ACP_BOTS'));
+		return $this->helper->render('acp_bots.html', 'ACP_BOTS');
 	}
 
 	/**

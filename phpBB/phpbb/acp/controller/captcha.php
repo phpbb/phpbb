@@ -13,7 +13,7 @@
 
 namespace phpbb\acp\controller;
 
-use phpbb\exception\http_exception;
+use phpbb\exception\back_exception;
 
 class captcha
 {
@@ -182,11 +182,11 @@ class captcha
 					else
 					{
 
-						throw new http_exception(400, $this->lang->lang('CAPTCHA_UNAVAILABLE') . $this->helper->adm_back_link('acp_settings_captcha'));
+						throw new back_exception(400, 'CAPTCHA_UNAVAILABLE', 'acp_settings_captcha');
 					}
 				}
 
-				return $this->helper->message_back('CONFIG_UPDATED','acp_settings_captcha');
+				return $this->helper->message_back('CONFIG_UPDATED', 'acp_settings_captcha');
 			}
 			else
 			{
@@ -222,7 +222,7 @@ class captcha
 				]);
 			}
 
-			return $this->helper->render('acp_captcha.html', $this->lang->lang('ACP_VC_SETTINGS'));
+			return $this->helper->render('acp_captcha.html', 'ACP_VC_SETTINGS');
 		}
 	}
 
