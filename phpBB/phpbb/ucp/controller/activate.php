@@ -13,6 +13,8 @@
 
 namespace phpbb\ucp\controller;
 
+use phpbb\exception\http_exception;
+
 class activate
 {
 	/** @var \phpbb\auth\auth */
@@ -26,6 +28,9 @@ class activate
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,11 +59,6 @@ class activate
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -66,6 +66,7 @@ class activate
 	 * @param \phpbb\config\config				$config					Config object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\log\log					$log					Log object
 	 * @param \phpbb\notification\manager		$notification_manager	Notification manager object
@@ -81,6 +82,7 @@ class activate
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\notification\manager $notification_manager,
@@ -96,6 +98,7 @@ class activate
 		$this->config				= $config;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->notification_manager	= $notification_manager;
@@ -108,7 +111,12 @@ class activate
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	/**
+	 * Activate an account.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	function main()
 	{
 		$user_id = $this->request->variable('u', 0);
 		$key = $this->request->variable('k', '');
@@ -122,18 +130,17 @@ class activate
 
 		if ($user_row === false)
 		{
-			trigger_error('NO_USER');
+			throw new http_exception(404, 'NO_USER');
 		}
 
 		if ($user_row['user_type'] <> USER_INACTIVE && !$user_row['user_newpasswd'])
 		{
-			meta_refresh(3, append_sid("{$this->root_path}index.$this->php_ext"));
-			trigger_error('ALREADY_ACTIVATED');
+			throw new http_exception(400, 'ALREADY_ACTIVATED');
 		}
 
 		if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL || $user_row['user_actkey'] !== $key)
 		{
-			trigger_error('WRONG_ACTIVATION');
+			throw new http_exception(400, 'WRONG_ACTIVATION');
 		}
 
 		// Do not allow activating by non administrators when admin activation is on
@@ -143,10 +150,10 @@ class activate
 		{
 			if (!$this->user->data['is_registered'])
 			{
-				login_box('', $this->lang->lang('NO_AUTH_OPERATION'));
+				return login_box('', $this->lang->lang('NO_AUTH_OPERATION'));
 			}
-			send_status_line(403, 'Forbidden');
-			trigger_error('NO_AUTH_OPERATION');
+
+			throw new http_exception(403, 'NO_AUTH_OPERATION');
 		}
 
 		$update_password = (bool) $user_row['user_newpasswd'];
@@ -175,8 +182,6 @@ class activate
 
 		if (!$update_password)
 		{
-			include_once($this->root_path . 'includes/functions_user.' . $this->php_ext);
-
 			user_active_flip('activate', $user_row['user_id']);
 
 			$sql = 'UPDATE ' . $this->tables['users'] . "
@@ -238,7 +243,8 @@ class activate
 		$vars = ['user_row', 'message'];
 		extract($this->dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
 
-		meta_refresh(3, append_sid("{$this->root_path}index.$this->php_ext"));
-		trigger_error($this->lang->lang($message));
+		$this->helper->assign_meta_refresh_var(3, append_sid("{$this->root_path}index.$this->php_ext"));
+
+		return $this->helper->message($this->lang->lang($message));
 	}
 }

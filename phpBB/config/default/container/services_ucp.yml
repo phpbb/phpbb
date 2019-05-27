@@ -1,4 +1,40 @@
 services:
+# --- Helpers --- #
+    ucp.constructor:
+        class: \phpbb\ucp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+# --- Controllers --- #
+    ucp.account:
+        class: \phpbb\ucp\controller\account
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@ucp.activate'
+            - '@ucp.confirm'
+            - '@ucp.login_link'
+            - '@ucp.permissions'
+            - '@ucp.register'
+            - '@ucp.remind'
+            - '@ucp.resend'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     ucp.activate:
         class: \phpbb\ucp\controller\activate
         arguments:
@@ -6,6 +42,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@notification_manager'
@@ -22,6 +59,7 @@ services:
             - '@attachment.manager'
             - '@config'
             - '@dbal.conn'
+            - '@controller.helper'
             - '@language'
             - '@pagination'
             - '@request'
@@ -34,6 +72,7 @@ services:
     ucp.auth_link:
         class: \phpbb\ucp\controller\auth_link
         arguments:
+            - '@controller.helper'
             - '@language'
             - '@auth.provider_collection'
             - '@request'
@@ -47,6 +86,21 @@ services:
             - '@config'
             - '@request'
 
+    ucp.front:
+        class: \phpbb\ucp\controller\front
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
     ucp.groups:
         class: \phpbb\ucp\controller\groups
         arguments:
@@ -56,6 +110,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@group_helper'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -73,6 +128,7 @@ services:
             - '@captcha.factory'
             - '@config'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@auth.provider_collection'
             - '@request'
@@ -81,8 +137,8 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    ucp.main:
-        class: \phpbb\ucp\controller\main
+    ucp.manage:
+        class: \phpbb\ucp\controller\manage
         arguments:
             - '@auth'
             - '@cache'
@@ -90,8 +146,8 @@ services:
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
-            - '@log'
             - '@pagination'
             - '@request'
             - '@template'
@@ -104,6 +160,7 @@ services:
         class: \phpbb\ucp\controller\notifications
         arguments:
             - '@config'
+            - '@controller.helper'
             - '@language'
             - '@notification_manager'
             - '@pagination'
@@ -113,17 +170,20 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    ucp.prefs:
-        class: \phpbb\ucp\controller\prefs
+    ucp.permissions:
+        class: \phpbb\ucp\controller\permissions
         arguments:
             - '@auth'
-            - '@config'
+            - '@acp.auth_admin'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
+            - '@log'
             - '@request'
-            - '@template'
             - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
             - '%tables%'
 
     ucp.profile:
@@ -154,6 +214,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@notification_manager'
             - '@passwords.manager'
@@ -165,12 +226,13 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
-    ucp.reminder:
-        class: \phpbb\ucp\controller\reminder
+    ucp.remind:
+        class: \phpbb\ucp\controller\remind
         arguments:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@passwords.manager'
             - '@request'
@@ -186,6 +248,7 @@ services:
             - '@auth'
             - '@config'
             - '@dbal.conn'
+            - '@controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -194,12 +257,27 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
+    ucp.settings:
+        class: \phpbb\ucp\controller\settings
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables%'
+
     ucp.zebra:
         class: \phpbb\ucp\controller\zebra
         arguments:
             - '@auth'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@request'
             - '@template'

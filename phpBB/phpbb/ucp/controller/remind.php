@@ -11,7 +11,12 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
+
+use phpbb\exception\back_exception;
+use phpbb\exception\http_exception;
+use phpbb\exception\form_invalid_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class remind
 {
@@ -23,6 +28,9 @@ class remind
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -48,17 +56,13 @@ class remind
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config				$config				Config object
 	 * @param \phpbb\db\driver\driver_interface	$db					Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\passwords\manager			$password_manager	Password manager object
 	 * @param \phpbb\request\request			$request			Request object
@@ -72,6 +76,7 @@ class remind
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\passwords\manager $password_manager,
 		\phpbb\request\request $request,
@@ -85,6 +90,7 @@ class remind
 		$this->config			= $config;
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
+		$this->helper			= $helper;
 		$this->lang				= $lang;
 		$this->password_manager	= $password_manager;
 		$this->request			= $request;
@@ -96,16 +102,23 @@ class remind
 		$this->tables			= $tables;
 	}
 
-	function main($id, $mode)
+	/**
+	 * Display and handle the "Send password" page.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	function main()
 	{
 		if (!$this->config['allow_password_reset'])
 		{
-			trigger_error($this->lang->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
+			throw new http_exception(400, $this->lang->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
 		}
 
-		$username	= $this->request->variable('username', '', true);
+		$u_mode		= ['ucp_account', 'mode' => 'send_password'];
+
 		$email		= strtolower($this->request->variable('email', ''));
 		$submit		= $this->request->is_set_post('submit');
+		$username	= $this->request->variable('username', '', true);
 
 		$form_key = 'ucp_remind';
 		add_form_key($form_key);
@@ -114,12 +127,12 @@ class remind
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->lang->lang('FORM_INVALID'));
+				throw new form_invalid_exception($u_mode);
 			}
 
 			if (empty($email))
 			{
-				trigger_error($this->lang->lang('NO_EMAIL_USER'));
+				throw new back_exception(400, 'NO_EMAIL_USER', $u_mode);
 			}
 
 			$sql_array = [
@@ -138,11 +151,7 @@ class remind
 			 * @var array	sql_array	Fully assembled SQL query with keys SELECT, FROM, WHERE
 			 * @since 3.1.11-RC1
 			 */
-			$vars = [
-				'email',
-				'username',
-				'sql_array',
-			];
+			$vars = ['email', 'username', 'sql_array'];
 			extract($this->dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
 
 			$sql = $this->db->sql_build_query('SELECT', $sql_array);
@@ -164,7 +173,7 @@ class remind
 
 				if (empty($rowset))
 				{
-					trigger_error($message);
+					throw new back_exception(404, $message, $u_mode);
 				}
 
 				$user_row = $rowset[0];
@@ -172,12 +181,12 @@ class remind
 
 				if (!$user_row)
 				{
-					trigger_error($message);
+					throw new back_exception(404, $message, $u_mode);
 				}
 
 				if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
 				{
-					trigger_error($message);
+					throw new back_exception(400, $message, $u_mode);
 				}
 
 				// Check users permissions
@@ -186,10 +195,8 @@ class remind
 
 				if (!$auth2->acl_get('u_chgpasswd'))
 				{
-					trigger_error($message);
+					throw new back_exception(400, $message, $u_mode);
 				}
-
-				$server_url = generate_board_url();
 
 				// Make password at least 8 characters long, make it longer if admin wants to.
 				// gen_rand_string() however has a limit of 12 or 13.
@@ -216,22 +223,21 @@ class remind
 				$messenger->assign_vars([
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'PASSWORD'		=> htmlspecialchars_decode($user_password),
-					'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k=$user_act_key",
+					'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_row['user_id'], 'k' => $user_act_key], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 				]);
 
 				$messenger->send($user_row['user_notify_type']);
 
-				trigger_error($message);
+				return $this->helper->message($message);
 			}
 		}
 
 		$this->template->assign_vars([
-			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=sendpassword'),
+			'USERNAME'			=> $username,
+			'S_PROFILE_ACTION'	=> $this->helper->route('ucp_account', ['mode' => 'send_password']),
 		]);
 
-		$this->tpl_name = 'ucp_remind';
-		$this->page_title = 'UCP_REMIND';
+		return $this->helper->render('ucp_remind.html', $this->lang->lang('UCP_REMIND'));
 	}
 }

@@ -11,9 +11,9 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
 
-class prefs
+class settings
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
@@ -26,6 +26,9 @@ class prefs
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,6 +57,7 @@ class prefs
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
@@ -65,6 +69,7 @@ class prefs
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -76,6 +81,7 @@ class prefs
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -84,17 +90,25 @@ class prefs
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
+	/**
+	 * Handle various modes for the UCPs "Settings" category.
+	 *
+	 * @param string	$mode		The mode (global|display|post)
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	function main($mode)
 	{
 		$submit = $this->request->is_set_post('submit');
 
-		$error = [];
+		$errors = [];
 		$s_hidden_fields = '';
 
 		switch ($mode)
 		{
-			case 'personal':
-				add_form_key('ucp_prefs_personal');
+			case 'global':
+				$form_key = 'ucp_prefs_personal';
+				add_form_key($form_key);
+
 				$data = [
 					'notifymethod'	=> $this->request->variable('notifymethod', $this->user->data['user_notify_type']),
 					'dateformat'	=> $this->request->variable('dateformat', $this->user->data['user_dateformat'], true),
@@ -110,7 +124,7 @@ class prefs
 
 				if ($data['notifymethod'] == NOTIFY_IM && (!$this->config['jab_enable'] || !$this->user->data['user_jabber'] || !@extension_loaded('xml')))
 				{
-					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
+					// Jabber isn't enabled, or no jabber field filled in. Update the users table to be sure its correct.
 					$data['notifymethod'] = NOTIFY_BOTH;
 				}
 
@@ -122,11 +136,11 @@ class prefs
 				 * @event core.ucp_prefs_personal_data
 				 * @var bool	submit		Do we display the form only or did the user press submit
 				 * @var array	data		Array with current ucp options data
-				 * @var array	error		Array with list of errors
+				 * @var array	errors		Array with list of errors
 				 * @since 3.1.0-a1
 				 * @changed 3.1.4-RC1 Added error variable to the event
 				 */
-				$vars = ['submit', 'data', 'error'];
+				$vars = ['submit', 'data', 'errors'];
 				extract($this->dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
 
 				if ($submit)
@@ -140,18 +154,18 @@ class prefs
 						$data['user_style'] = (int) $this->user->data['user_style'];
 					}
 
-					$error = array_merge(validate_data($data, [
+					$errors = array_merge(validate_data($data, [
 						'dateformat'	=> ['string', false, 1, 64],
 						'lang'			=> ['language_iso_name'],
 						'tz'			=> ['timezone'],
-					]), $error);
+					]), $errors);
 
-					if (!check_form_key('ucp_prefs_personal'))
+					if (!check_form_key($form_key))
 					{
-						$error[] = 'FORM_INVALID';
+						$errors[] = 'FORM_INVALID';
 					}
 
-					if (empty($error))
+					if (empty($errors))
 					{
 						$sql_ary = [
 							'user_allow_pm'			=> $data['allowpm'],
@@ -183,13 +197,16 @@ class prefs
 							WHERE user_id = ' . $this->user->data['user_id'];
 						$this->db->sql_query($sql);
 
-						meta_refresh(3, $this->u_action);
-						$message = $this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						$route = $this->helper->route('ucp_settings_global');
+						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+
+						$this->helper->assign_meta_refresh_var(3, $route);
+
+						return $this->helper->message($this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $return);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map([$this->lang, 'lang'], $error);
+					$errors = array_map([$this->lang, 'lang'], $errors);
 				}
 
 				$dateformat_options = '';
@@ -243,7 +260,7 @@ class prefs
 				$this->db->sql_freeresult($result);
 
 				$this->template->assign_vars([
-					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
+					'ERROR'				=> !empty($errors) ? implode('<br />', $errors) : '',
 
 					'S_NOTIFY_EMAIL'	=> $data['notifymethod'] == NOTIFY_EMAIL,
 					'S_NOTIFY_IM'		=> $data['notifymethod'] == NOTIFY_IM,
@@ -270,8 +287,9 @@ class prefs
 				]);
 			break;
 
-			case 'view':
-				add_form_key('ucp_prefs_view');
+			case 'display':
+				$form_key = 'ucp_prefs_view';
+				add_form_key($form_key);
 
 				$data = [
 					'topic_sk'		=> $this->request->variable('topic_sk', !empty($this->user->data['user_topic_sortby_type']) ? $this->user->data['user_topic_sortby_type'] : 't'),
@@ -305,7 +323,7 @@ class prefs
 
 				if ($submit)
 				{
-					$error = validate_data($data, [
+					$errors = validate_data($data, [
 						'topic_sk'	=> [
 							['string', false, 1, 1],
 							['match', false, '#(a|r|s|t|v)#'],
@@ -324,12 +342,12 @@ class prefs
 						],
 					]);
 
-					if (!check_form_key('ucp_prefs_view'))
+					if (!check_form_key($form_key))
 					{
-						$error[] = 'FORM_INVALID';
+						$errors[] = 'FORM_INVALID';
 					}
 
-					if (empty($error))
+					if (empty($errors))
 					{
 						$this->user->optionset('viewimg', $data['images']);
 						$this->user->optionset('viewflash', $data['flash']);
@@ -369,16 +387,27 @@ class prefs
 							WHERE user_id = ' . (int) $this->user->data['user_id'];
 						$this->db->sql_query($sql);
 
-						meta_refresh(3, $this->u_action);
-						$message = $this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						$route = $this->helper->route('ucp_settings_display');
+						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+
+						$this->helper->assign_meta_refresh_var(3, $route);
+
+						return $this->helper->message($this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $return);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map([$this->lang, 'lang'], $error);
+					$errors = array_map([$this->lang, 'lang'], $errors);
 				}
 
 				$sort_dir_text = ['a' => $this->lang->lang('ASCENDING'), 'd' => $this->lang->lang('DESCENDING')];
+
+				// Variables passed by reference below
+				$s_limit_topic_days = '';
+				$s_sort_topic_key = '';
+				$s_sort_topic_dir = '';
+				$s_limit_post_days = '';
+				$s_sort_post_key = '';
+				$s_sort_post_dir = '';
 
 				// Topic ordering options
 				$limit_topic_days = [0 => $this->lang->lang('ALL_TOPICS'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
@@ -421,7 +450,7 @@ class prefs
 				}
 
 				/**
-				 * Run code before view form is displayed
+				 * Run code before view form is displayed.
 				 *
 				 * @event core.ucp_prefs_view_after
 				 * @var bool	submit				Do we display the form only or did the user press submit
@@ -463,7 +492,7 @@ class prefs
 				extract($this->dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
 
 				$this->template->assign_vars([
-					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
+					'ERROR'				=> !empty($errors) ? implode('<br />', $errors) : '',
 
 					'S_IMAGES'			=> $data['images'],
 					'S_FLASH'			=> $data['flash'],
@@ -472,7 +501,7 @@ class prefs
 					'S_AVATARS'			=> $data['avatars'],
 					'S_DISABLE_CENSORS'	=> $data['wordcensor'],
 
-					'S_CHANGE_CENSORS'		=> ($this->auth->acl_get('u_chgcensors') && $this->config['allow_nocensors']) ? true : false,
+					'S_CHANGE_CENSORS'		=> (bool) ($this->auth->acl_get('u_chgcensors') && $this->config['allow_nocensors']),
 
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
@@ -484,13 +513,15 @@ class prefs
 			break;
 
 			case 'post':
+				$form_key = 'ucp_prefs_post';
+				add_form_key($form_key);
+
 				$data = [
 					'bbcode'	=> $this->request->variable('bbcode', $this->user->optionget('bbcode')),
 					'smilies'	=> $this->request->variable('smilies', $this->user->optionget('smilies')),
 					'sig'		=> $this->request->variable('sig', $this->user->optionget('attachsig')),
 					'notify'	=> $this->request->variable('notify', (bool) $this->user->data['user_notify']),
 				];
-				add_form_key('ucp_prefs_post');
 
 				/**
 				 * Add UCP edit posting defaults data before they are assigned to the template or submitted
@@ -507,7 +538,7 @@ class prefs
 
 				if ($submit)
 				{
-					if (check_form_key('ucp_prefs_post'))
+					if (check_form_key($form_key))
 					{
 						$this->user->optionset('bbcode', $data['bbcode']);
 						$this->user->optionset('smilies', $data['smilies']);
@@ -541,9 +572,12 @@ class prefs
 						$msg = $this->lang->lang('FORM_INVALID');
 					}
 
-					meta_refresh(3, $this->u_action);
-					$message = $msg . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-					trigger_error($message);
+					$route = $this->helper->route('ucp_settings_post');
+					$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+
+					$this->helper->assign_meta_refresh_var(3, $route);
+
+					return $this->helper->message($msg . '<br /><br />' . $return);
 				}
 
 				$this->template->assign_vars([
@@ -560,27 +594,29 @@ class prefs
 		 *
 		 * @event core.ucp_prefs_modify_common
 		 * @var array	data				Array with current/submitted UCP options data
-		 * @var array	error				Errors data
+		 * @var array	errors				Errors data
 		 * @var string	mode				UCP prefs operation mode
 		 * @var string	s_hidden_fields		Hidden fields data
 		 * @since 3.1.0-RC3
 		 */
 		$vars = [
 			'data',
-			'error',
+			'errors',
 			'mode',
 			's_hidden_fields',
 		];
 		extract($this->dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
 
+		$l_mode = $this->lang->lang('UCP_SETTINGS_' . utf8_strtoupper($mode));
+		$t_mode = $mode === 'global' ? 'ucp_prefs_personal.html' : ($mode === 'display' ? 'ucp_prefs_view.html' : "ucp_prefs_{$mode}.html");
+
 		$this->template->assign_vars([
-			'L_TITLE'			=> $this->lang->lang('UCP_PREFS_' . strtoupper($mode)),
+			'L_TITLE'			=> $l_mode,
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action,
 		]);
 
-		$this->tpl_name = 'ucp_prefs_' . $mode;
-		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);
+		return $this->helper->render($t_mode, $l_mode);
 	}
 }

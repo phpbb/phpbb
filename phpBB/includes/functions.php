@@ -4251,6 +4251,11 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		return;
 	}
 
+	/** @var \phpbb\cp\menu\menu $cp_menu */
+	$cp_menu = $phpbb_container->get('cp.menu');
+
+	$cp_menu->build('ucp');
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{

@@ -11,7 +11,9 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
+
+use phpbb\exception\http_exception;
 
 /**
  * ucp_login_link
@@ -28,6 +30,9 @@ class login_link
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -50,17 +55,13 @@ class login_link
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\captcha\factory			$captcha_factory		Captcha factory object
 	 * @param \phpbb\config\config				$config					Config object
 	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\auth\provider_collection	$provider_collection	Auth provider collection
 	 * @param \phpbb\request\request			$request				Request object
@@ -73,6 +74,7 @@ class login_link
 		\phpbb\captcha\factory $captcha_factory,
 		\phpbb\config\config $config,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\auth\provider_collection $provider_collection,
 		\phpbb\request\request $request,
@@ -85,6 +87,7 @@ class login_link
 		$this->captcha_factory		= $captcha_factory;
 		$this->config				= $config;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->provider_collection	= $provider_collection;
 		$this->request				= $request;
@@ -96,10 +99,17 @@ class login_link
 	}
 
 	/**
-	 * Generates the ucp_login_link page and handles login link process.
+	 * Generates and handle the login link process.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function main($id, $mode)
+	function main()
 	{
+		if ($this->user->data['is_registered'])
+		{
+			return redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+		}
+
 		// Initialize necessary variables
 		$login_error = null;
 		$login_username = null;
@@ -159,7 +169,7 @@ class login_link
 						$this->user->session_create($login_result['user_row']['user_id'], false, false, true);
 
 						// Perform a redirect as the account has been linked
-						redirect(append_sid($this->root_path . 'index.' . $this->php_ext));
+						return redirect(append_sid($this->root_path . 'index.' . $this->php_ext));
 					}
 				}
 			}
@@ -173,7 +183,7 @@ class login_link
 			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields($data),
 
 			// Registration elements
-			'REGISTER_ACTION'		=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=register'),
+			'REGISTER_ACTION'		=> $this->helper->route('ucp_account', ['mode' => 'register']),
 
 			// Login elements
 			'LOGIN_ERROR'			=> $login_error,
@@ -197,8 +207,7 @@ class login_link
 
 		$this->template->assign_vars($tpl_ary);
 
-		$this->tpl_name = 'ucp_login_link';
-		$this->page_title = 'UCP_LOGIN_LINK';
+		return $this->helper->render('ucp_login_link.html', $this->lang->lang('UCP_LOGIN_LINK'));
 	}
 
 	/**
@@ -263,7 +272,7 @@ class login_link
 			// Handle all errors first
 			if ($result['status'] == LOGIN_BREAK)
 			{
-				trigger_error($result['error_msg']);
+				throw new http_exception(400, $result['error_msg']);
 			}
 
 			switch ($result['status'])
@@ -283,7 +292,7 @@ class login_link
 				case LOGIN_ERROR_PASSWORD_CONVERT:
 					$login_error = $this->lang->lang(
 						[$result['error_msg']],
-						$this->config['email_enable'] ? '<a href="' . append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=sendpassword') . '">' : '',
+						$this->config['email_enable'] ? '<a href="' . $this->helper->route('ucp_account', ['mode' => 'send_password']) . '">' : '',
 						$this->config['email_enable'] ? '</a>' : '',
 						$this->config['board_contact'] ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
 						$this->config['board_contact'] ? '</a>' : ''

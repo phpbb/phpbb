@@ -27,6 +27,12 @@ class manager
 	/** @var \phpbb\acp\helper\constructor */
 	protected $acp_constructor;
 
+	/** @var \phpbb\mcp\helper\constructor */
+	protected $mcp_constructor;
+
+	/** @var \phpbb\ucp\helper\constructor */
+	protected $ucp_constructor;
+
 	/** @var \phpbb\cp\helper\auth */
 	protected $cp_auth;
 
@@ -47,19 +53,31 @@ class manager
 	 * Constructor.
 	 *
 	 * @param \phpbb\di\service_collection		$acp_collection		ACP Menu item collection
+	 * @param \phpbb\di\service_collection		$mcp_collection		MCP Menu item collection
+	 * @param \phpbb\di\service_collection		$ucp_collection		UCP Menu item collection
 	 * @param \phpbb\acp\helper\constructor		$acp_constructor	ACP Construct object
+	 * @param \phpbb\mcp\helper\constructor		$mcp_constructor	MCP Construct object
+	 * @param \phpbb\ucp\helper\constructor		$ucp_constructor	UCP Construct object
 	 * @param \phpbb\cp\helper\auth				$cp_auth			Control panel auth object
 	 * @param \phpbb\cp\helper\language			$cp_lang			Control panel language object
 	 */
 	public function __construct(
 		\phpbb\di\service_collection $acp_collection,
+		\phpbb\di\service_collection $mcp_collection,
+		\phpbb\di\service_collection $ucp_collection,
 		\phpbb\acp\helper\constructor $acp_constructor,
+		\phpbb\mcp\helper\constructor $mcp_constructor,
+		\phpbb\ucp\helper\constructor $ucp_constructor,
 		helper\auth $cp_auth,
 		helper\language $cp_lang
 	)
 	{
 		$this->acp_collection	= $acp_collection;
+		$this->mcp_collection	= $mcp_collection;
+		$this->ucp_collection	= $ucp_collection;
 		$this->acp_constructor	= $acp_constructor;
+		$this->mcp_constructor	= $mcp_constructor;
+		$this->ucp_constructor	= $ucp_constructor;
 
 		$this->cp_auth			= $cp_auth;
 		$this->cp_lang			= $cp_lang;
@@ -95,8 +113,8 @@ class manager
 	{
 		return [
 			'acp'	=> $this->acp_collection,
-		#	'mcp'	=> $this->mcp_collection, // @todo
-		#	'ucp'	=> $this->ucp_collection, // @todo
+			'mcp'	=> $this->mcp_collection,
+			'ucp'	=> $this->ucp_collection,
 		];
 	}
 

@@ -11,12 +11,17 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
+
+use phpbb\exception\form_invalid_exception;
 
 class notifications
 {
 	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -42,15 +47,11 @@ class notifications
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\config\config				$config					Config object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\notification\manager		$notification_manager	Notification manager object
 	 * @param \phpbb\pagination					$pagination				Pagination object
@@ -62,6 +63,7 @@ class notifications
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\notification\manager $notification_manager,
 		\phpbb\pagination $pagination,
@@ -73,6 +75,7 @@ class notifications
 	)
 	{
 		$this->config				= $config;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->notification_manager	= $notification_manager;
 		$this->pagination			= $pagination;
@@ -84,18 +87,27 @@ class notifications
 		$this->php_ext				= $php_ext;
 	}
 
-	public function main($id, $mode)
+	/**
+	 * Display and handle the notifications modes.
+	 *
+	 * @param string	$mode		The notifications mode (manage|settings)
+	 * @param int		$page		The page number
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function main($mode, $page = 1)
 	{
-		$form_key = 'ucp_notificaiton';
+		$form_key = 'ucp_notification';
 		add_form_key($form_key);
 
-		$start		= $this->request->variable('start', 0);
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
+
 		$form_time	= $this->request->variable('form_time', 0);
 		$form_time	= ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
 		switch ($mode)
 		{
-			case 'notification_options':
+			case 'settings':
 				$subscriptions = $this->notification_manager->get_global_subscriptions(false);
 
 				// Add/remove subscriptions
@@ -103,7 +115,7 @@ class notifications
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->lang->lang('FORM_INVALID'));
+						throw new form_invalid_exception('ucp_settings_notifications');
 					}
 
 					$notification_methods = $this->notification_manager->get_subscription_methods();
@@ -126,28 +138,30 @@ class notifications
 						}
 					}
 
-					meta_refresh(3, $this->u_action);
-					$message = $this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-					trigger_error($message);
+					$route = $this->helper->route('ucp_settings_notifications');
+					$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
+
+					$this->helper->assign_meta_refresh_var(3, $route);
+
+					return $this->helper->message($this->lang->lang('PREFERENCES_UPDATED') . '<br /><br />' . $return);
 				}
 
 				$this->output_notification_methods('notification_methods');
 
 				$this->output_notification_types($subscriptions, 'notification_types');
-
-				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
-				$this->tpl_name = 'ucp_notifications';
 			break;
 
-			case 'notification_list':
+			case 'manage':
 			default:
 				// Mark all items read
 				if ($this->request->variable('mark', '') === 'all' && check_link_hash($this->request->variable('token', ''), 'mark_all_notifications_read'))
 				{
 					$this->notification_manager->mark_notifications(false, false, $this->user->data['user_id'], $form_time);
 
-					meta_refresh(3, $this->u_action);
+					$route = $this->helper->route('ucp_manage_notifications');
 					$message = $this->lang->lang('NOTIFICATIONS_MARK_ALL_READ_SUCCESS');
+
+					$this->helper->assign_meta_refresh_var(3, $route);
 
 					if ($this->request->is_ajax())
 					{
@@ -158,9 +172,10 @@ class notifications
 							'success'		=> true,
 						]);
 					}
-					$message .= '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 
-					trigger_error($message);
+					$return = '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
+
+					return $this->helper->message($message . $return);
 				}
 
 				// Mark specific notifications read
@@ -168,7 +183,7 @@ class notifications
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error('FORM_INVALID');
+						throw new form_invalid_exception('ucp_manage_notifications');
 					}
 
 					$mark_read = $this->request->variable('mark', [0]);
@@ -181,7 +196,7 @@ class notifications
 
 				$notifications = $this->notification_manager->load_notifications('notification.method.board', [
 					'start'			=> $start,
-					'limit'			=> $this->config['topics_per_page'],
+					'limit'			=> $limit,
 					'count_total'	=> true,
 				]);
 
@@ -191,27 +206,30 @@ class notifications
 					$this->template->assign_block_vars('notification_list', $notification->prepare_for_display());
 				}
 
-				$base_url = append_sid("{$this->root_path}ucp.$this->php_ext", "i=ucp_notifications&amp;mode=notification_list");
-				$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $notifications['total_count']);
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $this->config['topics_per_page'], $start);
+				$start = $this->pagination->validate_start($start, $limit, $notifications['total_count']);
+				$this->pagination->generate_template_pagination([
+					'routes' => ['ucp_manage_notifications', 'ucp_manage_notifications_pagination'],
+				], 'pagination', 'page', $notifications['total_count'], $limit, $start);
 
 				$this->template->assign_vars([
 					'TOTAL_COUNT'	=> $notifications['total_count'],
-					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
+					'U_MARK_ALL'	=> $this->helper->route('ucp_manage_notifications', ['mark' => 'all', 'token' => generate_link_hash('mark_all_notifications_read')]),
 				]);
-
-				$this->page_title = 'UCP_NOTIFICATION_LIST';
-				$this->tpl_name = 'ucp_notifications';
 			break;
 		}
 
-		$this->template->assign_vars([
-			'TITLE'				=> $this->lang->lang($this->page_title),
-			'TITLE_EXPLAIN'		=> $this->lang->lang($this->page_title . '_EXPLAIN'),
+		$l_mode = $this->lang->lang('UCP_' . utf8_strtoupper($mode) . '_NOTIFICATIONS');
+		$s_mode = $mode === 'settings' ? 'notification_options' : 'notification_list';
 
-			'MODE'				=> $mode,
+		$this->template->assign_vars([
+			'TITLE'				=> $l_mode,
+			'TITLE_EXPLAIN'		=> $this->lang->lang('UCP_' . utf8_strtoupper($s_mode) . '_EXPLAIN'),
+
+			'MODE'				=> $s_mode,
 			'FORM_TIME'			=> time(),
 		]);
+
+		return $this->helper->render('ucp_notifications.html', $l_mode);
 	}
 
 	/**
@@ -254,7 +272,7 @@ class notifications
 			}
 		}
 
-		$this->template->assign_var(strtoupper($block) . '_COLS', $notification_methods + 1);
+		$this->template->assign_var(utf8_strtoupper($block) . '_COLS', count($notification_methods) + 1);
 	}
 
 	/**

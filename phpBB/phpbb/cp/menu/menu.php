@@ -73,11 +73,6 @@ class menu
 		$this->lang				= $lang;
 		$this->symfony_request	= $symfony_request;
 		$this->template			= $template;
-
-		$this->collection	= null;
-		$this->actives		= [];
-		$this->items		= [];
-		$this->panel		= '';
 	}
 
 	/**
@@ -88,6 +83,10 @@ class menu
 	 */
 	public function build($cp)
 	{
+		// Reset the menu items
+		$this->actives		= [];
+		$this->items		= [];
+
 		// Set the control panel type
 		$this->panel = $cp;
 
@@ -123,23 +122,26 @@ class menu
 		$route = $this->symfony_request->get('_route');
 		$route = str_replace($this->cp_manager->get_route_pagination(), '', $route);
 
-		$item = $this->collection[$route];
-
-		$this->actives[] = $route;
-
-		while ($item !== null)
+		if ($this->collection->offsetExists($route))
 		{
-			$parent = $item->get_parent();
+			$item = $this->collection[$route];
 
-			if ($this->collection->offsetExists($parent))
-			{
-				$this->actives[] = $parent;
+			$this->actives[] = $route;
 
-				$item = $this->collection->offsetGet($parent);
-			}
-			else
+			while ($item !== null)
 			{
-				$item = null;
+				$parent = $item->get_parent();
+
+				if ($this->collection->offsetExists($parent))
+				{
+					$this->actives[] = $parent;
+
+					$item = $this->collection->offsetGet($parent);
+				}
+				else
+				{
+					$item = null;
+				}
 			}
 		}
 	}

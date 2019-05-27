@@ -1,0 +1,387 @@
+services:
+    ucp_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: ucp }
+
+    ucp_account:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route:
+                path: /{mode}
+                defaults:
+                    _controller: ucp.account:main
+                    mode: ''
+                requirements:
+                    mode: "activate|resend_activation|send_password|register|confirm|
+                            login_link|login|logout|
+                            terms|privacy|
+                            permissions_switch|permissions_restore|
+                            delete_cookies"
+
+# --- UCP > Overview -- #
+    ucp_cat_overview:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'ucp_index'
+
+    ucp_index:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_overview'
+            $route:
+                path: /index
+                defaults:
+                    _controller: ucp.front:main
+
+# --- UCP > Manage --- #
+    ucp_cat_manage:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'ucp_manage_subscriptions'
+
+    ucp_manage_subscriptions:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $route:
+                path: /manage/subscriptions
+                defaults:
+                    _controller: ucp.manage:main
+                    mode: 'subscriptions'
+
+    ucp_manage_bookmarks:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'cfg_allow_bookmarks'
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /manage/bookmarks
+                defaults:
+                    _controller: ucp.manage:main
+                    mode: 'bookmarks'
+                    page: 1
+
+    ucp_manage_notifications:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'cfg_allow_board_notifications'
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /manage/notifications
+                defaults:
+                    _controller: ucp.notifications:main
+                    mode: 'manage'
+                    page: 1
+
+    ucp_manage_drafts:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /manage/drafts
+                defaults:
+                    _controller: ucp.manage:main
+                    mode: 'drafts'
+                    page: 1
+
+    ucp_manage_attachments:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_u_attach'
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /manage/attachments
+                defaults:
+                    _controller: ucp.attachments:main
+                    page: 1
+
+    ucp_manage_remember_me:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $route:
+                path: /manage/remember_me
+                defaults:
+                    _controller: ucp.manage:main
+                    mode: 'remember_me'
+
+    ucp_manage_oauth:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'authmethod_oauth'
+            $icon: ''
+            $parent: 'ucp_cat_manage'
+            $route:
+                path: /manage/oauth
+                defaults:
+                    _controller: ucp.auth_link:main
+
+# --- UCP > Profile --- #
+    ucp_cat_profile:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: ucp_profile_account
+
+    ucp_profile_account:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_profile'
+            $route:
+                path: /profile/account
+                defaults:
+                    _controller: ucp.profile:main
+                    mode: 'account'
+
+    ucp_profile:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_u_chgprofileinfo'
+            $icon: ''
+            $parent: 'ucp_cat_profiel'
+            $route:
+                path: /profile
+                defaults:
+                    _controller: ucp.profile:main
+                    mode: 'profile'
+
+    ucp_profile_signature:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_u_sig'
+            $icon: ''
+            $parent: 'ucp_cat_profile'
+            $route:
+                path: /profile/signature
+                defaults:
+                    _controller: ucp.profile:main
+                    mode: 'signature'
+
+    ucp_profile_avatar:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'cfg_allow_avatar'
+            $icon: ''
+            $parent: 'ucp_cat_profile'
+            $route:
+                path: /profile/avatar
+                defaults:
+                    _controller: ucp.profile:main
+                    mode: 'avatar'
+
+# --- UCP > Settings --- #
+    ucp_cat_settings:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: ucp_settings_global
+
+    ucp_settings_global:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_settings'
+            $route:
+                path: /settings/global
+                defaults:
+                    _controller: ucp.settings:main
+                    mode: 'global'
+
+    ucp_settings_post:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_settings'
+            $route:
+                path: /settings/post
+                defaults:
+                    _controller: ucp.settings:main
+                    mode: 'post'
+
+    ucp_settings_display:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_settings'
+            $route:
+                path: /settings/display
+                defaults:
+                    _controller: ucp.settings:main
+                    mode: 'display'
+
+    ucp_settings_notifications:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_settings'
+            $route:
+                path: /settings/notifications
+                defaults:
+                    _controller: ucp.notifications:main
+                    mode: 'settings'
+
+# --- UCP > Groups --- #
+    ucp_cat_groups:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: ucp_groups_edit
+
+    ucp_groups_edit:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_groups'
+            $route:
+                path: /groups/edit
+                defaults:
+                    _controller: ucp.groups:main
+                    mode: 'membership'
+
+    ucp_groups_manage:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_groups'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /groups/manage/{action}/{g}
+                defaults:
+                    _controller: ucp.groups:main
+                    mode: 'manage'
+                    page: 1
+                    action: ''
+                    g: 0
+
+# --- UCP > Zebra --- #
+    ucp_cat_zebra:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: ucp_zebra_friends
+
+    ucp_zebra_friends:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_zebra'
+            $route:
+                path: /friends
+                defaults:
+                    _controller: ucp.zebra:main
+                    mode: 'friends'
+
+    ucp_zebra_foes:
+        tags: { name: ucp }
+        class: \phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'ucp_cat_zebra'
+            $route:
+                path: /foes
+                defaults:
+                    _controller: ucp.zebra:main
+                    mode: 'foes'

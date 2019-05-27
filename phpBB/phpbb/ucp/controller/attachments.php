@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
 
 class attachments
 {
@@ -23,6 +23,9 @@ class attachments
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -48,17 +51,13 @@ class attachments
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\attachment\manager			$attachment_manager	Attachment manager object
+	 * @param \phpbb\attachment\manager			$attachment_manager		Attachment manager object
 	 * @param \phpbb\config\config				$config					Config object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\pagination					$pagination				Pagination object
 	 * @param \phpbb\request\request			$request				Request object
@@ -72,6 +71,7 @@ class attachments
 		\phpbb\attachment\manager $attachment_manager,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
@@ -85,6 +85,7 @@ class attachments
 		$this->attachment_manager	= $attachment_manager;
 		$this->config				= $config;
 		$this->db					= $db;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->pagination			= $pagination;
 		$this->request				= $request;
@@ -96,9 +97,17 @@ class attachments
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	/**
+	 * Display a user's attachments.
+	 *
+	 * @param int		$page		The page number
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	function main($page = 1)
 	{
-		$start		= $this->request->variable('start', 0);
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
+
 		$sort_key	= $this->request->variable('sk', 'a');
 		$sort_dir	= $this->request->variable('sd', 'a');
 
@@ -136,13 +145,19 @@ class attachments
 			{
 				$this->attachment_manager->delete('attach', $delete_ids);
 
-				meta_refresh(3, $this->u_action);
-				$message = (count($delete_ids) === 1 ? $this->lang->lang('ATTACHMENT_DELETED') : $this->lang->lang('ATTACHMENTS_DELETED')) . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-				trigger_error($message);
+				$route = $this->helper->route('ucp_manage_attachments');
+				$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
+				$message = count($delete_ids) === 1 ? $this->lang->lang('ATTACHMENT_DELETED') : $this->lang->lang('ATTACHMENTS_DELETED');
+
+				$this->helper->assign_meta_refresh_var(3, $route);
+
+				return $this->helper->message($message . '<br /><br />' . $return);
 			}
 			else
 			{
 				confirm_box(false, count($delete_ids) === 1 ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', build_hidden_fields($s_hidden_fields));
+
+				return redirect($this->helper->route('ucp_manage_attachments'));
 			}
 		}
 
@@ -176,14 +191,16 @@ class attachments
 
 		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . $this->tables['attachments'] . '
-			WHERE poster_id = ' . (int) $this->user->data['user_id'] . '
-				AND is_orphan = 0';
+			WHERE is_orphan = 0
+				AND poster_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
 		$num_attachments = (int) $this->db->sql_fetchfield('num_attachments');
 		$this->db->sql_freeresult($result);
 
+		$row_count = 0;
+
 		// Ensure start is a valid value
-		$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $num_attachments);
+		$start = $this->pagination->validate_start($start, $limit, $num_attachments);
 
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 			FROM ' . $this->tables['attachments'] . ' a
@@ -194,9 +211,7 @@ class attachments
 			WHERE a.poster_id = ' . (int) $this->user->data['user_id'] . "
 				AND a.is_orphan = 0
 			ORDER BY $order_by";
-		$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
-
-		$row_count = 0;
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 		if ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_var('S_ATTACHMENT_ROWS', true);
@@ -205,6 +220,7 @@ class attachments
 			{
 				if ($row['in_message'])
 				{
+					// @todo PM
 					$view_topic = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;p={$row['post_msg_id']}");
 				}
 				else
@@ -238,8 +254,10 @@ class attachments
 		}
 		$this->db->sql_freeresult($result);
 
-		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $this->config['topics_per_page'], $start);
+		$this->pagination->generate_template_pagination([
+			'routes' => ['ucp_manage_attachments', 'ucp_manage_attachments_pagination'],
+			'params' => ['sk' => $sort_key, 'sd' => $sort_dir],
+		], 'pagination', 'page', $num_attachments, $limit, $start);
 
 		$this->template->assign_vars([
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
@@ -249,20 +267,27 @@ class attachments
 
 			'S_DISPLAY_MARK_ALL'	=> (bool) $num_attachments,
 			'S_DISPLAY_PAGINATION'	=> (bool) $num_attachments,
-			'S_UCP_ACTION'			=> $this->u_action,
+			'S_UCP_ACTION'			=> $this->helper->route('ucp_manage_attachments'),
 			'S_SORT_OPTIONS'		=> $s_sort_key,
 			'S_ORDER_SELECT'		=> $s_sort_dir,
 
-			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FILESIZE'		=> $this->u_action . "&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_DOWNLOADS'		=> $this->u_action . "&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_POST_TIME'		=> $this->u_action . "&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_TOPIC_TITLE'	=> $this->u_action . "&amp;sk=g&amp;sd=" . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_FILENAME'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('a', $sort_key, $sort_dir)),
+			'U_SORT_FILE_COMMENT'	=> $this->helper->route('ucp_manage_attachments', $this->get_params('b', $sort_key, $sort_dir)),
+			'U_SORT_EXTENSION'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('c', $sort_key, $sort_dir)),
+			'U_SORT_FILESIZE'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('d', $sort_key, $sort_dir)),
+			'U_SORT_DOWNLOADS'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('e', $sort_key, $sort_dir)),
+			'U_SORT_POST_TIME'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('f', $sort_key, $sort_dir)),
+			'U_SORT_TOPIC_TITLE'	=> $this->helper->route('ucp_manage_attachments', $this->get_params('g', $sort_key, $sort_dir)),
 		]);
 
-		$this->tpl_name = 'ucp_attachments';
-		$this->page_title = 'UCP_ATTACHMENTS';
+		return $this->helper->render('ucp_attachments.html', $this->lang->lang('UCP_ATTACHMENTS'));
+	}
+
+	protected function get_params($key, $sort_key, $sort_dir)
+	{
+		return [
+			'sk' => $key,
+			'sd' => ($sort_key === $key && $sort_dir === 'a') ? 'd' : 'a',
+		];
 	}
 }

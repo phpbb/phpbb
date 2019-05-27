@@ -11,9 +11,11 @@
  *
  */
 
-namespace phpbb\mcp\controller;
+namespace phpbb\ucp\controller;
 
-class main
+use phpbb\exception\back_exception;
+
+class manage
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
@@ -32,6 +34,9 @@ class main
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -57,11 +62,6 @@ class main
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -71,6 +71,7 @@ class main
 	 * @param \phpbb\content_visibility			$content_visibility		Content visibility object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\pagination					$pagination				Pagination object
 	 * @param \phpbb\request\request			$request				Request object
@@ -87,6 +88,7 @@ class main
 		\phpbb\content_visibility $content_visibility,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
@@ -103,6 +105,7 @@ class main
 		$this->content_visibility	= $content_visibility;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->pagination			= $pagination;
 		$this->request				= $request;
@@ -114,216 +117,24 @@ class main
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	/**
+	 * Handle various modes for the UCPs "Manage" category.
+	 *
+	 * @param string	$mode		The mode (subscriptions|bookmarks|drafts|remember_me)
+	 * @param int		$page		The page number
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	function main($mode, $page = 1)
 	{
 		switch ($mode)
 		{
-			case 'front':
-				$this->lang->add_lang('memberlist');
-
-				$sql_from = $this->tables['topics'] . ' t ';
-				$sql_select = '';
-
-				if ($this->config['load_db_track'])
-				{
-					$sql_from .= ' LEFT JOIN ' . $this->tables['topics_posted'] . ' tp ON (tp.topic_id = t.topic_id
-						AND tp.user_id = ' . $this->user->data['user_id'] . ')';
-					$sql_select .= ', tp.topic_posted';
-				}
-
-				if ($this->config['load_db_lastread'])
-				{
-					$sql_from .= ' LEFT JOIN ' . $this->tables['topics_track'] . ' tt ON (tt.topic_id = t.topic_id
-						AND tt.user_id = ' . $this->user->data['user_id'] . ')';
-					$sql_select .= ', tt.mark_time';
-
-					$sql_from .= ' LEFT JOIN ' . $this->tables['forums_track'] . ' ft ON (ft.forum_id = t.forum_id
-						AND ft.user_id = ' . $this->user->data['user_id'] . ')';
-					$sql_select .= ', ft.mark_time AS forum_mark_time';
-				}
-
-				$topic_type = $this->lang->lang('VIEW_TOPIC_GLOBAL');
-				$folder = 'global_read';
-				$folder_new = 'global_unread';
-
-				// Get cleaned up list... return only those forums having the f_read permission
-				$forum_ary = $this->auth->acl_getf('f_read', true);
-				$forum_ary = array_unique(array_keys($forum_ary));
-				$topic_list = $rowset = [];
-
-				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
-				if (!empty($forum_ary))
-				{
-					/**
-					 * Modify sql variables before query is processed
-					 *
-					 * @event core.ucp_main_front_modify_sql
-					 * @var string	sql_select	SQL select
-					 * @var string	sql_from	SQL from
-					 * @var array	forum_ary	Forum array
-					 * @since 3.2.4-RC1
-					 */
-					$vars = [
-						'sql_select',
-						'sql_from',
-						'forum_ary',
-					];
-					extract($this->dispatcher->trigger_event('core.ucp_main_front_modify_sql', compact($vars)));
-
-					$sql = "SELECT t.* $sql_select
-						FROM $sql_from
-						WHERE t.topic_type = " . POST_GLOBAL . '
-							AND ' . $this->db->sql_in_set('t.forum_id', $forum_ary) . '
-						ORDER BY t.topic_last_post_time DESC, t.topic_last_post_id DESC';
-					$result = $this->db->sql_query($sql);
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$topic_list[] = $row['topic_id'];
-						$rowset[$row['topic_id']] = $row;
-					}
-					$this->db->sql_freeresult($result);
-				}
-
-				$topic_forum_list = [];
-				foreach ($rowset as $t_id => $row)
-				{
-					// @todo variable never defined?
-					if (isset($forum_tracking_info[$row['forum_id']]))
-					{
-						$row['forum_mark_time'] = $forum_tracking_info[$row['forum_id']];
-					}
-
-					$topic_forum_list[(int) $row['forum_id']]['forum_mark_time'] = ($this->config['load_db_lastread'] && $this->user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
-					$topic_forum_list[(int) $row['forum_id']]['topics'][] = (int) $t_id;
-				}
-
-				$topic_tracking_info = $tracking_topics = [];
-				if ($this->config['load_db_lastread'])
-				{
-					foreach ($topic_forum_list as $f_id => $topic_row)
-					{
-						$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, [$f_id => $topic_row['forum_mark_time']]);
-					}
-				}
-				else
-				{
-					foreach ($topic_forum_list as $f_id => $topic_row)
-					{
-						$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics']);
-					}
-				}
-				unset($topic_forum_list);
-
-				foreach ($topic_list as $topic_id)
-				{
-					$row = &$rowset[$topic_id];
-
-					$forum_id = $row['forum_id'];
-					$topic_id = $row['topic_id'];
-
-					$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
-
-					$folder_img = $unread_topic ? $folder_new : $folder;
-					$folder_alt = $unread_topic ? 'UNREAD_POSTS' : ($row['topic_status'] == ITEM_LOCKED ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
-
-					if ($row['topic_status'] == ITEM_LOCKED)
-					{
-						$folder_img .= '_locked';
-					}
-
-					// Posted image?
-					if (!empty($row['topic_posted']) && $row['topic_posted'])
-					{
-						$folder_img .= '_mine';
-					}
-
-					$topicrow = [
-						'FORUM_ID'					=> $forum_id,
-						'TOPIC_ID'					=> $topic_id,
-						'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'FIRST_POST_TIME'			=> $this->user->format_date($row['topic_time']),
-						'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
-						'LAST_POST_TIME'			=> $this->user->format_date($row['topic_last_post_time']),
-						'LAST_VIEW_TIME'			=> $this->user->format_date($row['topic_last_view_time']),
-						'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-						'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-						'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-						'TOPIC_TITLE'				=> censor_text($row['topic_title']),
-						'TOPIC_TYPE'				=> $topic_type,
-
-						'TOPIC_IMG_STYLE'		=> $folder_img,
-						'TOPIC_FOLDER_IMG'		=> $this->user->img($folder_img, $folder_alt),
-						'ATTACH_ICON_IMG'		=> ($this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $this->user->img('icon_topic_attach', '') : '',
-
-						'S_USER_POSTED'			=> (bool) (!empty($row['topic_posted']) && $row['topic_posted']),
-						'S_UNREAD'				=> $unread_topic,
-
-						'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'U_LAST_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
-						'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-						'U_NEWEST_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-						'U_VIEW_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", "f=$forum_id&amp;t=$topic_id"),
-					];
-
-					/**
-					 * Add template variables to a front topics row.
-					 *
-					 * @event core.ucp_main_front_modify_template_vars
-					 * @var array	topicrow		Array containing the template variables for the row
-					 * @var array	row				Array containing the subscribed forum row data
-					 * @var int		forum_id		Forum ID
-					 * @var string	folder_img		Folder image
-					 * @var string	folder_alt		Alt text for the folder image
-					 * @since 3.2.4-RC1
-					 */
-					$vars = [
-						'topicrow',
-						'row',
-						'forum_id',
-						'folder_img',
-						'folder_alt',
-					];
-					extract($this->dispatcher->trigger_event('core.ucp_main_front_modify_template_vars', compact($vars)));
-
-					$this->template->assign_block_vars('topicrow', $topicrow);
-				}
-
-				if ($this->config['load_user_activity'])
-				{
-					if (!function_exists('display_user_activity'))
-					{
-						include_once($this->root_path . 'includes/functions_display.' . $this->php_ext);
-					}
-
-					display_user_activity($this->user->data);
-				}
-
-				// Do the relevant calculations
-				$member_days	= max(1, round((time() - $this->user->data['user_regdate']) / 86400));
-				$posts_per_day	= $this->user->data['user_posts'] / $member_days;
-				$percentage		= $this->config['num_posts'] ? min(100, ($this->user->data['user_posts'] / $this->config['num_posts']) * 100) : 0;
-
-				$this->template->assign_vars([
-					'JOINED'			=> $this->user->format_date($this->user->data['user_regdate']),
-					'LAST_ACTIVE'		=> empty($last_active) ? ' - ' : $this->user->format_date($last_active),
-					'POSTS'				=> $this->user->data['user_posts'] ? $this->user->data['user_posts'] : 0,
-					'POSTS_DAY'			=> $this->lang->lang('POST_DAY', $posts_per_day),
-					'POSTS_PCT'			=> $this->lang->lang('POST_PCT', $percentage),
-					'USER_COLOR'		=> !empty($this->user->data['user_colour']) ? $this->user->data['user_colour'] : '',
-					'WARNINGS'			=> $this->user->data['user_warnings'] ? $this->user->data['user_warnings'] : 0,
-
-					'U_SEARCH_USER'		=> $this->auth->acl_get('u_search') ? append_sid("{$this->root_path}search.$this->php_ext", 'author_id=' . $this->user->data['user_id'] . '&amp;sr=posts') : '',
-				]);
-			break;
-
-			case 'subscribed':
+			case 'subscriptions':
 				include($this->root_path . 'includes/functions_display.' . $this->php_ext);
 
 				$this->lang->add_lang('viewforum');
 
-				add_form_key('ucp_front_subscribed');
+				$form_key = 'ucp_front_subscribed';
+				add_form_key($form_key);
 
 				$unwatch = $this->request->is_set_post('unwatch');
 
@@ -337,7 +148,7 @@ class main
 
 				if ($unwatch)
 				{
-					if (check_form_key('ucp_front_subscribed'))
+					if (check_form_key($form_key))
 					{
 						$forums = array_keys($this->request->variable('f', [0 => 0]));
 						$topics = array_keys($this->request->variable('t', [0 => 0]));
@@ -378,9 +189,11 @@ class main
 						$msg = $this->lang->lang('FORM_INVALID');
 					}
 
-					$message = $msg . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . append_sid("{$this->root_path}ucp.$this->php_ext", "i=$id&amp;mode=subscribed") . '">', '</a>');
-					meta_refresh(3, append_sid("{$this->root_path}ucp.$this->php_ext", "i=$id&amp;mode=subscribed"));
-					trigger_error($message);
+					$message = $msg . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->helper->route('ucp_manage_subscriptions') . '">', '</a>');
+
+					$this->helper->assign_meta_refresh_var(3, $this->helper->route('ucp_manage_subscriptions'));
+
+					return $this->helper->message($message);
 				}
 
 				$forbidden_forums = [];
@@ -448,7 +261,7 @@ class main
 						}
 						else
 						{
-							$forum_check = isset($tracking_topics['f'][$forum_id]) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $this->config['board_startdate']) : $this->user->data['user_lastmark'];
+							$forum_check = (isset($tracking_topics) && isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $this->config['board_startdate']) : $this->user->data['user_lastmark'];
 						}
 
 						$unread_forum = (bool) $row['forum_last_post_time'] > $forum_check;
@@ -538,7 +351,7 @@ class main
 						$forbidden_forums = array_unique(array_keys($forbidden_forums));
 					}
 
-					$this->assign_topiclist('subscribed', $forbidden_forums);
+					$this->assign_topiclist('subscriptions', $page, $forbidden_forums);
 				}
 
 				$this->template->assign_vars([
@@ -563,11 +376,10 @@ class main
 				{
 					$s_hidden_fields = ['unbookmark' => 1];
 					$topics = $this->request->is_set_post('t') ? array_keys($this->request->variable('t', [0 => 0])) : [];
-					$url = $this->u_action;
 
 					if (empty($topics))
 					{
-						trigger_error('NO_BOOKMARKS_SELECTED');
+						throw new back_exception(400, 'NO_BOOKMARKS_SELECTED', 'ucp_manage_bookmarks');
 					}
 
 					foreach ($topics as $topic_id)
@@ -582,29 +394,33 @@ class main
 								AND ' . $this->db->sql_in_set('topic_id', $topics);
 						$this->db->sql_query($sql);
 
-						meta_refresh(3, $url);
-						$message = $this->lang->lang('BOOKMARKS_REMOVED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $url . '">', '</a>');
-						trigger_error($message);
+						$message = $this->lang->lang('BOOKMARKS_REMOVED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->helper->route('ucp_manage_bookmarks') . '">', '</a>');
+
+						$this->helper->assign_meta_refresh_var(3, $this->helper->route('ucp_manage_bookmarks'));
+
+						return $this->helper->message($message);
 					}
 					else
 					{
 						confirm_box(false, 'REMOVE_SELECTED_BOOKMARKS', build_hidden_fields($s_hidden_fields));
+
+						return redirect($this->helper->route('ucp_manage_bookmarks'));
 					}
 				}
 
 				$forbidden_forums = $this->auth->acl_getf('!f_read', true);
 				$forbidden_forums = array_unique(array_keys($forbidden_forums));
 
-				$this->assign_topiclist('bookmarks', $forbidden_forums);
+				$this->assign_topiclist('bookmarks', $page, $forbidden_forums);
 			break;
 
 			case 'drafts':
 				$this->lang->add_lang('posting');
 
-				$pm_drafts = false; // @todo ($this->p_master->p_name == 'pm') ? true : false;
 				$this->template->assign_var('S_SHOW_DRAFTS', true);
 
-				add_form_key('ucp_draft');
+				$form_key = 'ucp_draft';
+				add_form_key($form_key);
 
 				$edit		= $this->request->is_set('edit');
 				$delete		= $this->request->is_set_post('delete');
@@ -619,7 +435,7 @@ class main
 
 				if ($delete)
 				{
-					if (check_form_key('ucp_draft'))
+					if (check_form_key($form_key))
 					{
 						$drafts = array_keys($this->request->variable('d', [0 => 0]));
 
@@ -639,9 +455,11 @@ class main
 						$msg = $this->lang->lang('FORM_INVALID');
 					}
 
-					$message = $msg . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-					meta_refresh(3, $this->u_action);
-					trigger_error($message);
+					$message = $msg . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->helper->route('ucp_manage_drafts') . '">', '</a>');
+
+					$this->helper->assign_meta_refresh_var(3, $this->helper->route('ucp_manage_drafts'));
+
+					return $this->helper->message($message);
 				}
 
 				if ($submit && $edit)
@@ -649,16 +467,16 @@ class main
 					$draft_subject = $this->request->variable('subject', '', true);
 					$draft_message = $this->request->variable('message', '', true);
 
-					if (check_form_key('ucp_draft'))
+					if (check_form_key($form_key))
 					{
 						if ($draft_message && $draft_subject)
 						{
 							// $this->auth->acl_gets can't be used here because it will check for global forum permissions in this case
 							// In general we don't need too harsh checking here for permissions, as this will be handled later when submitting
-							$bbcode_status = $this->auth->acl_get('u_pm_bbcode') || $this->auth->acl_getf_global('f_bbcode');
-							$smilies_status = $this->auth->acl_get('u_pm_smilies') || $this->auth->acl_getf_global('f_smilies');
-							$img_status = $this->auth->acl_get('u_pm_img') || $this->auth->acl_getf_global('f_img');
-							$flash_status = $this->auth->acl_get('u_pm_flash') || $this->auth->acl_getf_global('f_flash');
+							$bbcode_status	= $this->auth->acl_get('u_pm_bbcode') || $this->auth->acl_getf_global('f_bbcode');
+							$smilies_status	= $this->auth->acl_get('u_pm_smilies') || $this->auth->acl_getf_global('f_smilies');
+							$flash_status	= $this->auth->acl_get('u_pm_flash') || $this->auth->acl_getf_global('f_flash');
+							$img_status		= $this->auth->acl_get('u_pm_img') || $this->auth->acl_getf_global('f_img');
 
 							$message_parser->message = $draft_message;
 							$message_parser->parse($bbcode_status, $this->config['allow_post_links'], $smilies_status, $img_status, $flash_status, true, $this->config['allow_post_links']);
@@ -674,10 +492,11 @@ class main
 									AND user_id = ' . (int) $this->user->data['user_id'];
 							$this->db->sql_query($sql);
 
-							$message = $this->lang->lang('DRAFT_UPDATED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+							$message = $this->lang->lang('DRAFT_UPDATED') . '<br /><br />' . $this->lang->lang('RETURN_UCP', '<a href="' . $this->helper->route('ucp_manage_drafts') . '">', '</a>');
 
-							meta_refresh(3, $this->u_action);
-							trigger_error($message);
+							$this->helper->assign_meta_refresh_var(3, $this->helper->route('ucp_manage_drafts'));
+
+							return $this->helper->message($message);
 						}
 						else
 						{
@@ -692,26 +511,13 @@ class main
 
 				$draft_rows = $topic_ids = [];
 
-				if (!$pm_drafts)
-				{
-					$sql = 'SELECT d.*, f.forum_name
-						FROM ' . $this->tables['drafts'] . ' d, 
-							' . $this->tables['forums'] . ' f
-						WHERE d.user_id = ' . (int) $this->user->data['user_id'] . ' ' .
-							($edit ? 'AND d.draft_id = ' . (int) $draft_id : '') . '
-							AND f.forum_id = d.forum_id
-						ORDER BY d.save_time DESC';
-				}
-				else
-				{
-					$sql = 'SELECT * FROM ' . $this->tables['drafts'] . '
-						WHERE user_id = ' . $this->user->data['user_id'] . ' ' .
-							($edit ? 'AND d.draft_id = ' . (int) $draft_id : '') . '
-							AND forum_id = 0
-							AND topic_id = 0
-						ORDER BY save_time DESC';
-				}
-
+				$sql = 'SELECT d.*, f.forum_name
+					FROM ' . $this->tables['drafts'] . ' d, 
+						' . $this->tables['forums'] . ' f
+					WHERE d.user_id = ' . (int) $this->user->data['user_id'] . ' ' .
+						($edit ? 'AND d.draft_id = ' . (int) $draft_id : '') . '
+						AND f.forum_id = d.forum_id
+					ORDER BY d.save_time DESC';
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -743,10 +549,10 @@ class main
 				$row_count = 0;
 				foreach ($draft_rows as $draft)
 				{
-					$link_topic = $link_forum = $link_pm = false;
+					$link_topic = $link_forum = false;
 					$insert_url = $view_url = $title = '';
 
-					if (isset($topic_rows[$draft['topic_id']]) && $this->auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+					if (isset($topic_rows) && isset($topic_rows[$draft['topic_id']]) && $this->auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 					{
 						$link_topic = true;
 						$view_url = append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id']);
@@ -761,11 +567,6 @@ class main
 						$title = $draft['forum_name'];
 
 						$insert_url = append_sid("{$this->root_path}posting.$this->php_ext", 'f=' . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id']);
-					}
-					else if ($pm_drafts)
-					{
-						$link_pm = true;
-						$insert_url = append_sid("{$this->root_path}ucp.$this->php_ext", "i=$id&amp;mode=compose&amp;d=" . $draft['draft_id']);
 					}
 
 					if (!$submit)
@@ -785,14 +586,14 @@ class main
 						'FORUM_ID'			=> (int) $draft['forum_id'],
 						'TOPIC_ID'			=> (int) $draft['topic_id'],
 
+						'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 						'S_LINK_TOPIC'		=> $link_topic,
 						'S_LINK_FORUM'		=> $link_forum,
-						'S_LINK_PM'			=> $link_pm,
-						'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+						'S_LINK_PM'			=> false,
 
-						'U_VIEW'			=> $view_url,
-						'U_VIEW_EDIT'		=> $this->u_action . '&amp;edit=' . $draft['draft_id'],
 						'U_INSERT'			=> $insert_url,
+						'U_VIEW'			=> $view_url,
+						'U_VIEW_EDIT'		=> $this->helper->route('ucp_manage_drafts', ['edit' => $draft['draft_id']]),
 					];
 
 					$row_count++;
@@ -812,35 +613,92 @@ class main
 					$this->template->assign_var('S_DRAFT_ROWS', $row_count);
 				}
 			break;
+
+			case 'remember_me':
+				$form_key = 'ucp_autologin_keys';
+				add_form_key($form_key);
+
+				if ($this->request->is_set_post('submit'))
+				{
+					if (!check_form_key($form_key))
+					{
+						$this->template->assign_var('ERROR', $this->lang->lang('FORM_INVALID'));
+					}
+					else
+					{
+						$keys = $this->request->variable('keys', ['']);
+
+						if (!empty($keys))
+						{
+							foreach ($keys as $key => $id)
+							{
+								$keys[$key] = $this->db->sql_like_expression($id . $this->db->get_any_char());
+							}
+
+							$sql_where = '(key_id ' . implode(' OR key_id ', $keys) . ')';
+							$sql = 'DELETE FROM ' . $this->tables['sessions_keys'] . '
+							WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+							AND ' . $sql_where ;
+							$this->db->sql_query($sql);
+
+							$route = $this->helper->route('ucp_manage_remember_me');
+							$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
+
+							$this->helper->assign_meta_refresh_var(3, $route);
+
+							return $this->helper->message($this->lang->lang('AUTOLOGIN_SESSION_KEYS_DELETED') . '<br /><br />' . $return);
+						}
+					}
+				}
+
+				$sql = 'SELECT key_id, last_ip, last_login
+					FROM ' . $this->tables['sessions_keys'] . '
+					WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+					ORDER BY last_login ASC';
+				$result = $this->db->sql_query($sql);
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$this->template->assign_block_vars('sessions', [
+						'IP'			=> $row['last_ip'],
+						'KEY'			=> substr($row['key_id'], 0, 8),
+						'LOGIN_TIME'	=> $this->user->format_date($row['last_login']),
+					]);
+				}
+
+				$this->db->sql_freeresult($result);
+			break;
 		}
 
-		$this->template->assign_vars([
-			'L_TITLE'			=> $this->lang->lang('UCP_MAIN_' . strtoupper($mode)),
+		$l_mode = $this->lang->lang('UCP_MANAGE_' . utf8_strtoupper($mode));
+		$t_mode = $mode === 'remember_me' ? 'ucp_profile_autologin_keys.html' : ($mode === 'subscriptions' ? 'ucp_main_subscribed.html' : "ucp_main_{$mode}.html");
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode === 'watched' || ($mode === 'drafts' && !$this->request->is_set('edit', \phpbb\request\request_interface::GET))) ? true : false,
+		$this->template->assign_vars([
+			'L_TITLE'				=> $l_mode,
+
+			'S_DISPLAY_MARK_ALL'	=> ($mode === 'drafts' && !$this->request->is_set('edit', \phpbb\request\request_interface::GET)) ? true : false,
 			'S_HIDDEN_FIELDS'		=> isset($s_hidden_fields) ? $s_hidden_fields : '',
-			'S_UCP_ACTION'			=> $this->u_action,
+			'S_UCP_ACTION'			=> $this->helper->route("ucp_manage_{$mode}"),
 
 			'LAST_POST_IMG'			=> $this->user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 			'NEWEST_POST_IMG'		=> $this->user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 		]);
 
-		// Set desired template
-		$this->tpl_name = 'ucp_main_' . $mode;
-		$this->page_title = 'UCP_MAIN_' . strtoupper($mode);
+		return $this->helper->render($t_mode, $l_mode);
 	}
 
 	/**
 	 * Build and assign topiclist for bookmarks/subscribed topics.
 	 *
-	 * @param string	$mode
+	 * @param string	$mode					The mode (subscriptions|bookmarks)
+	 * @param int		$page					The page number
 	 * @param array		$forbidden_forum_ary
 	 * @return void
 	 */
-	function assign_topiclist($mode = 'subscribed', array $forbidden_forum_ary = [])
+	protected function assign_topiclist($mode = 'subscriptions', $page = 1, array $forbidden_forum_ary = [])
 	{
-		$start = $this->request->variable('start', 0);
-		$table = $mode === 'subscribed' ? $this->tables['topics_watch'] : $this->tables['bookmarks'];
+		$limit = (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $limit;
+		$table = $mode === 'subscriptions' ? $this->tables['topics_watch'] : $this->tables['bookmarks'];
 
 		// Grab icons
 		$icons = $this->cache_service->obtain_icons();
@@ -864,8 +722,10 @@ class main
 		 * @event core.ucp_main_topiclist_count_modify_query
 		 * @var array	sql_array				The subscribed/bookmarked topics query
 		 * @var array	forbidden_forum_ary		The list of forbidden forums
-		 * @var string	mode					The type of topic list ('subscribed' or 'bookmarks')
+		 * @var string	mode					The type of topic list ('subscriptions' or 'bookmarks')
+		 * @var int		page					The page number
 		 * @since 3.1.10-RC1
+		 * @changed 4.0.0 Added page variable
 		 */
 		$vars = [
 			'sql_array',
@@ -881,13 +741,15 @@ class main
 
 		if ($topics_count)
 		{
-			$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $topics_count);
-			$this->pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $topics_count, $this->config['topics_per_page'], $start);
+			$start = $this->pagination->validate_start($start, $limit, $topics_count);
+			$this->pagination->generate_template_pagination([
+				'routes' => ["ucp_manage_{$mode}", "ucp_manage_{$mode}_pagination"],
+			], 'pagination', 'page', $topics_count, $limit, $start);
 
 			$this->template->assign_var('TOTAL_TOPICS', $this->lang->lang('VIEW_FORUM_TOPICS', (int) $topics_count));
 		}
 
-		if ($mode === 'subscribed')
+		if ($mode === 'subscriptions')
 		{
 			$sql_array = [
 				'SELECT'	=> 't.*, f.forum_name',
@@ -944,7 +806,7 @@ class main
 		 * @event core.ucp_main_topiclist_modify_query
 		 * @var array	sql_array				The subscribed/bookmarked topics query
 		 * @var array	forbidden_forum_ary		The list of forbidden forums
-		 * @var string	mode					The type of topic list ('subscribed' or 'bookmarks')
+		 * @var string	mode					The type of topic list ('subscriptions' or 'bookmarks')
 		 * @since 3.1.10-RC1
 		 */
 		$vars = [
@@ -957,7 +819,7 @@ class main
 		$topic_list = $topic_forum_list = $global_announce_list = $rowset = [];
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$topic_id = isset($row['b_topic_id']) ? (int) $row['b_topic_id'] : (int) $row['topic_id'];

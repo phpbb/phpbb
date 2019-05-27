@@ -215,7 +215,7 @@ class main
 
 				confirm_box(false, $this->lang->lang($confirm_lang), build_hidden_fields([
 					'action'	=> $action,
-				]));
+				]), 'confirm_body.html', $this->helper->get_current_url());
 
 				return redirect($this->helper->route('acp_index'));
 			}
