@@ -819,7 +819,7 @@
                 "oauth",
                 "security"
             ],
-            "time": "2016-07-12T22:15:00+00:00"
+            "time": "2018-02-14T22:37:14+00:00"
         },
         {
             "name": "marc1706/fast-image-size",
@@ -1038,7 +1038,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2017-03-13T16:22:52+00:00"
+            "time": "2018-04-04T21:48:54+00:00"
         },
         {
             "name": "patchwork/utf8",
@@ -1287,16 +1287,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "76138c98161b2a063ecb28f5a46f9212a04aad1a"
+                "reference": "504d538593350150e50c9de0a48418bb0a48e540"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/76138c98161b2a063ecb28f5a46f9212a04aad1a",
-                "reference": "76138c98161b2a063ecb28f5a46f9212a04aad1a",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/504d538593350150e50c9de0a48418bb0a48e540",
+                "reference": "504d538593350150e50c9de0a48418bb0a48e540",
                 "shasum": ""
             },
             "require": {
@@ -1308,6 +1308,7 @@
             "require-dev": {
                 "matthiasmullie/minify": "*",
                 "php-coveralls/php-coveralls": "*",
+                "phpunit/phpunit": "<6",
                 "s9e/regexp-builder": "1.*"
             },
             "suggest": {
@@ -1348,7 +1349,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2019-04-26T12:32:18+00:00"
+            "time": "2019-05-15T00:08:12+00:00"
         },
         {
             "name": "seld/jsonlint",
@@ -3139,7 +3140,8 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net"
+                    "email": "mrook@php.net",
+                    "role": "Lead"
                 },
                 {
                     "name": "Phing Community",
