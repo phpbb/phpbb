@@ -84,7 +84,7 @@ class qa
 		$db->sql_freeresult($result);
 
 		// fallback to the board default lang
-		if (!count($this->question_ids))
+		if (empty($this->question_ids))
 		{
 			$this->question_lang = $config['default_lang'];
 
@@ -101,7 +101,7 @@ class qa
 		}
 
 		// final fallback to any language
-		if (!count($this->question_ids))
+		if (empty($this->question_ids))
 		{
 			$this->question_lang = '';
 
@@ -225,7 +225,7 @@ class qa
 		{
 			return false;
 		}
-		else if (empty($this->question_text) || !count($this->question_ids))
+		else if (empty($this->question_text) || empty($this->question_ids))
 		{
 			/** @var \phpbb\log\log_interface $phpbb_log */
 			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
@@ -310,7 +310,7 @@ class qa
 			}
 			while ($row = $db->sql_fetchrow($result));
 
-			if (count($sql_in))
+			if (!empty($sql_in))
 			{
 				$sql = 'DELETE FROM ' . $this->table_qa_confirm . '
 					WHERE ' . $db->sql_in_set('confirm_id', $sql_in);
@@ -394,7 +394,7 @@ class qa
 
 		$error = '';
 
-		if (!count($this->question_ids))
+		if (empty($this->question_ids))
 		{
 			/** @var \phpbb\log\log_interface $phpbb_log */
 			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
@@ -438,7 +438,7 @@ class qa
 	{
 		global $db, $user;
 
-		if (!count($this->question_ids))
+		if (empty($this->question_ids))
 		{
 			return;
 		}
@@ -464,7 +464,7 @@ class qa
 	{
 		global $db, $user;
 
-		if (!count($this->question_ids))
+		if (empty($this->question_ids))
 		{
 			return;
 		}
@@ -535,7 +535,7 @@ class qa
 	{
 		global $db, $user;
 
-		if (!strlen($this->confirm_id) || !count($this->question_ids))
+		if (!strlen($this->confirm_id) || empty($this->question_ids))
 		{
 			return false;
 		}
@@ -978,7 +978,7 @@ class qa
 
 		if (!isset($langs[$question_data['lang_iso']]) ||
 			!strlen($question_data['question_text']) ||
-			!count($question_data['answers']) ||
+			empty($question_data['answers']) ||
 			!is_array($question_data['answers']))
 		{
 			return false;
