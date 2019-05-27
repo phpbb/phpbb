@@ -1843,27 +1843,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		garbage_collection();
 	}
 
-	// Redirect via an HTML form for PITA webservers
-	if (@preg_match('#WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
-	{
-		header('Refresh: 0; URL=' . $url);
-
-		echo '<!DOCTYPE html>';
-		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
-		echo '<head>';
-		echo '<meta charset="utf-8">';
-		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
-		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
-		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
-		echo '</head>';
-		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
-		echo '</body>';
-		echo '</html>';
-
-		exit;
-	}
-
 	// Behave as per HTTP/1.1 spec for others
 	header('Location: ' . $url);
 	exit;
