@@ -272,6 +272,16 @@ class attachment extends controller
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	protected function prepare($file)
+	{
+		parent::prepare($file);
+
+		$this->response->setPivate();
+	}
+
+	/**
 	 * Handles authentication when downloading attachments from a post or topic
 	 *
 	 * @param int $topic_id The id of the topic that we are downloading from
