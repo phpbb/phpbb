@@ -1242,7 +1242,7 @@ class acp_attachments
 
 					// Capitalises the group name and checks if its key exists in the language file
 					$up_group_name = utf8_strtoupper($extensions[$row['extension']]['group_name']);
-					$ext_group_name = (!empty($up_group_name)) ? (isset($user->lang['EXT_GROUP_' .  $up_group_name]) ? $user->lang['EXT_GROUP_' .  $up_group_name] : '') : '';
+					$ext_group_name = !empty($up_group_name) ? (isset($user->lang['EXT_GROUP_' .  $up_group_name]) ? $user->lang['EXT_GROUP_' .  $up_group_name] : 'EXT_GROUP_' . $up_group_name) : '';
 
 					$template->assign_block_vars('attachments', array(
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
