@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "902062b6787accb7fd7a7bba87a920b0",
+    "content-hash": "44cdf49950698d551f2b3caa79597665",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1286,30 +1286,67 @@
             "time": "2016-02-11T07:05:27+00:00"
         },
         {
-            "name": "s9e/text-formatter",
-            "version": "1.4.4",
+            "name": "s9e/regexp-builder",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "504d538593350150e50c9de0a48418bb0a48e540"
+                "url": "https://github.com/s9e/RegexpBuilder.git",
+                "reference": "59d0167a909659d718f53964f7653d2c83a5f8fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/504d538593350150e50c9de0a48418bb0a48e540",
-                "reference": "504d538593350150e50c9de0a48418bb0a48e540",
+                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/59d0167a909659d718f53964f7653d2c83a5f8fe",
+                "reference": "59d0167a909659d718f53964f7653d2c83a5f8fe",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": ">=7.2",
+                "php": ">=5.5.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<5.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "s9e\\RegexpBuilder\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Single-purpose library that generates regular expressions that match a list of strings.",
+            "homepage": "https://github.com/s9e/RegexpBuilder/",
+            "keywords": [
+                "regexp"
+            ],
+            "time": "2019-04-26T17:55:23+00:00"
+        },
+        {
+            "name": "s9e/text-formatter",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/TextFormatter.git",
+                "reference": "f15541ce19e9af7eeb48b8b91b3ee93bec5f2f9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/f15541ce19e9af7eeb48b8b91b3ee93bec5f2f9b",
+                "reference": "f15541ce19e9af7eeb48b8b91b3ee93bec5f2f9b",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-filter": "*",
-                "lib-pcre": ">=7.2",
-                "php": ">=5.4.7"
+                "lib-pcre": ">=8.13",
+                "php": ">=7.1",
+                "s9e/regexp-builder": "^1.4"
             },
             "require-dev": {
                 "matthiasmullie/minify": "*",
-                "php-coveralls/php-coveralls": "*",
-                "phpunit/phpunit": "<6",
-                "s9e/regexp-builder": "1.*"
+                "phpunit/phpunit": "^7"
             },
             "suggest": {
                 "ext-curl": "Improves the performance of the MediaEmbed plugin and some JavaScript minifiers",
@@ -1321,6 +1358,9 @@
                 "ext-zlib": "Enables gzip compression when scraping content via the MediaEmbed plugin"
             },
             "type": "library",
+            "extra": {
+                "version": "2.0.0"
+            },
             "autoload": {
                 "psr-4": {
                     "s9e\\TextFormatter\\": "src"
@@ -1349,7 +1389,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2019-05-15T00:08:12+00:00"
+            "time": "2019-05-31T17:56:58+00:00"
         },
         {
             "name": "seld/jsonlint",
@@ -2057,7 +2097,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
