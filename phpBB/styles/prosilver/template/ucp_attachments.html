@@ -44,7 +44,7 @@
 				</dt>
 				<dd class="extra">{attachrow.DOWNLOAD_COUNT}</dd>
 				<dd class="time"><span>{attachrow.POST_TIME}</span></dd>
-				<dd class="mark"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1" /></dd>
+				<dd class="mark"><input type="checkbox" name="attachment[{attachrow.ATTACH_ID}]" value="1"{% if attachrow.S_LOCKED %} disabled title="{{ lang('ATTACHMENT_LOCKED') }}"{% endif %} /></dd>
 			</dl>
 		</li>
 		<!-- END attachrow -->

@@ -29,7 +29,7 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container, $request;
+		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container, $request, $auth;
 
 		$start		= $request->variable('start', 0);
 		$sort_key	= $request->variable('sk', 'a');
@@ -41,16 +41,27 @@ class ucp_attachments
 		if ($delete && count($delete_ids))
 		{
 			// Validate $delete_ids...
-			$sql = 'SELECT attach_id
-				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE poster_id = ' . $user->data['user_id'] . '
-					AND is_orphan = 0
-					AND ' . $db->sql_in_set('attach_id', $delete_ids);
+			$sql = 'SELECT a.attach_id, p.post_edit_locked, t.topic_status, f.forum_id, f.forum_status
+				FROM ' . ATTACHMENTS_TABLE . ' a
+				LEFT JOIN ' . POSTS_TABLE . ' p
+					ON (a.post_msg_id = p.post_id AND a.in_message = 0)
+				LEFT JOIN ' . TOPICS_TABLE . ' t
+					ON (t.topic_id = p.topic_id AND a.in_message = 0)
+				LEFT JOIN ' . FORUMS_TABLE . ' f
+					ON (f.forum_id = t.forum_id AND a.in_message = 0)
+				WHERE a.poster_id = ' . $user->data['user_id'] . '
+					AND a.is_orphan = 0
+					AND ' . $db->sql_in_set('a.attach_id', $delete_ids);
 			$result = $db->sql_query($sql);
 
 			$delete_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				if (!$auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']))
+				{
+					continue;
+				}
+
 				$delete_ids[] = $row['attach_id'];
 			}
 			$db->sql_freeresult($result);
@@ -124,10 +135,12 @@ class ucp_attachments
 		$pagination = $phpbb_container->get('pagination');
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $num_attachments);
 
-		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
+		$sql = 'SELECT a.*, t.topic_title, pr.message_subject as message_title, p.post_edit_locked, t.topic_status, f.forum_id, f.forum_status
 			FROM ' . ATTACHMENTS_TABLE . ' a
+				LEFT JOIN ' . POSTS_TABLE . ' p ON (a.post_msg_id = p.post_id AND a.in_message = 0)
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
-				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
+				LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = t.forum_id AND a.in_message = 0)
+				LEFT JOIN ' . PRIVMSGS_TABLE . ' pr ON (a.post_msg_id = pr.msg_id AND a.in_message = 1)
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
 				AND a.is_orphan = 0
 			ORDER BY $order_by";
@@ -164,6 +177,7 @@ class ucp_attachments
 					'TOPIC_ID'			=> $row['topic_id'],
 
 					'S_IN_MESSAGE'		=> $row['in_message'],
+					'S_LOCKED'			=> !$row['in_message'] && !$auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']),
 
 					'U_VIEW_ATTACHMENT'	=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $row['attach_id']),
 					'U_VIEW_TOPIC'		=> $view_topic)

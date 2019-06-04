@@ -89,6 +89,7 @@ $lang = array_merge($lang, array(
 	'ATTACHMENTS_EXPLAIN'			=> 'This is a list of attachments you have made in posts to this board.',
 	'ATTACHMENTS_DELETED'			=> 'Attachments successfully deleted.',
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
+	'ATTACHMENT_LOCKED'				=> 'This topic is locked, you cannot delete the attachment.',
 	'AUTOLOGIN_SESSION_KEYS_DELETED'=> 'The selected "Remember Me" login keys were successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
 	'AVATAR_DRIVER_GRAVATAR_TITLE'	=> 'Gravatar',
