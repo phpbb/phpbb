@@ -1,0 +1,485 @@
+services:
+    mcp_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: mcp }
+
+# --- MCP > Main --- #
+    mcp_cat_main:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_index'
+
+    mcp_index:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'mcp_cat_main'
+            $route:
+                path: /index
+                defaults:
+                    _controller: mcp.front:main
+
+    mcp_view_forum:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: '($forum_id || $topic_id || $post_id) && acl_m_,$forum_id'
+            $icon: ''
+            $parent: 'mcp_cat_main'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /forum
+                defaults:
+                    _controller: mcp.main:main
+                    mode: 'forum'
+                    page: 1
+
+    mcp_view_topic:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: '($topic_id || $post_id) && acl_m_,$forum_id'
+            $icon: ''
+            $parent: 'mcp_cat_main'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /topic
+                defaults:
+                    _controller: mcp.main:main
+                    mode: 'topic'
+                    page: 1
+
+    mcp_view_post:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: '$post_id && (acl_m_,$forum_id || (!$forum_id && aclf_m_))'
+            $icon: ''
+            $parent: 'mcp_cat_main'
+            $route:
+                path: /post
+                defaults:
+                    _controller: mcp.main:main
+                    mode: 'post'
+
+# --- MCP > Moderation --- #
+    mcp_cat_moderation:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_unapproved_topics'
+
+    mcp_unapproved_topics:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_approve'
+            $icon: ''
+            $parent: 'mcp_cat_moderation'
+            $route:
+                path: /unapproved/topics
+                defaults:
+                    _controller: mcp.moderation:main
+                    mode: 'unapproved_topics'
+
+    mcp_unapproved_posts:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_approve'
+            $icon: ''
+            $parent: 'mcp_cat_moderation'
+            $route:
+                path: /unapproved/posts
+                defaults:
+                    _controller: mcp.moderation:main
+                    mode: 'unapproved_posts'
+
+    mcp_approve_details:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_approve'
+            $icon: ''
+            $parent: 'mcp_cat_moderation'
+            $before: ''
+            $display: false
+            $page: ''
+            $route:
+                path: unapproved/details
+                defaults:
+                    _controller: mcp.moderation:main
+                    mode: 'approve_details'
+
+    mcp_deleted_topics:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_approve'
+            $icon: ''
+            $parent: 'mcp_cat_moderation'
+            $route:
+                path: /deleted/topics
+                defaults:
+                    _controller: mcp.moderation:main
+                    mode: 'deleted_topics'
+
+    mcp_deleted_posts:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_approve'
+            $icon: ''
+            $parent: 'mcp_cat_moderation'
+            $route:
+                path: /deleted/posts
+                defaults:
+                    _controller: mcp.moderation:main
+                    mode: 'deleted_posts'
+
+# --- MCP > Reports --- #
+    mcp_cat_reports:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_reports_open'
+
+    mcp_reports_open:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /report/post/open
+                defaults:
+                    _controller: mcp.reports:main
+                    mode: 'open'
+                    page: 1
+
+    mcp_reports_closed:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /report/post/closed
+                defaults:
+                    _controller: mcp.reports:main
+                    mode: 'closed'
+                    page: 1
+
+    mcp_report_details:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $display: false
+            $page: ''
+            $route:
+                path: /report/post/details
+                defaults:
+                    _controller: mcp.reports:main
+                    mode: 'details'
+
+    mcp_pm_reports_open:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_pm_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /report/pm/open
+                defaults:
+                    _controller: mcp.pm_reports:main
+                    page: 1
+                    mode: 'open'
+
+    mcp_pm_reports_closed:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_pm_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /report/pm/closed
+                defaults:
+                    _controller: mcp.pm_reports:main
+                    page: 1
+                    mode: 'closed'
+
+    mcp_pm_report_details:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_report'
+            $icon: ''
+            $parent: 'mcp_cat_reports'
+            $before: ''
+            $display: false
+            $page: ''
+            $route:
+                path: /report/pm/details
+                defaults:
+                    _controller: mcp.pm_reports:main
+                    mode: 'details'
+
+# --- MCP > Warnings --- #
+    mcp_cat_warnings:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_warn_overview'
+
+    mcp_warn_overview:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_warn'
+            $icon: ''
+            $parent: 'mcp_cat_warnings'
+            $route:
+                path: /warn
+                defaults:
+                    _controller: mcp.warn:warn_overview
+
+    mcp_warn_list:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_warn'
+            $icon: ''
+            $parent: 'mcp_cat_warnings'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /warn/list
+                defaults:
+                     _controller: mcp.warn:warn_list
+                     page: 1
+
+    mcp_warn_user:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'aclf_m_warn'
+            $icon: ''
+            $parent: 'mcp_cat_warnings'
+            $route:
+                path: /warn/user/{u}
+                defaults:
+                    _controller: mcp.warn:warn_user
+                    u: 0
+
+    mcp_warn_post:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_warn && acl_f_read,$forum_id && $post_id'
+            $icon: ''
+            $parent: 'mcp_cat_warnings'
+            $route:
+                path: /warn/post
+                defaults:
+                    _controller: mcp.warn:warn_post
+
+# --- MCP > Notes --- #
+    mcp_cat_notes:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_notes_user'
+
+    mcp_notes_user:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: 'mcp_cat_notes'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /notes/{u}
+                defaults:
+                    _controller: mcp.notes:main
+                    u: 0
+
+# --- MCP > Logs --- #
+    mcp_cat_logs:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_logs_overview'
+
+    mcp_logs_overview:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_ || aclf_m_'
+            $icon: ''
+            $parent: 'mcp_cat_logs'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /logs
+                defaults:
+                    _controller: mcp.logs:main
+                    mode: 'overview'
+                    page: 1
+
+    mcp_logs_forum:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_,$forum_id && ($forum_id || $topic_id)'
+            $icon: ''
+            $parent: 'mcp_cat_logs'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /logs/forum
+                defaults:
+                    _controller: mcp.logs:main
+                    mode: 'forum'
+                    page: 1
+
+    mcp_logs_topic:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_,$forum_id && $topic_id'
+            $icon: ''
+            $parent: 'mcp_cat_logs'
+            $before: ''
+            $page: 'page'
+            $route:
+                path: /logs/topic
+                defaults:
+                    _controller: mcp.logs:main
+                    mode: 'topic'
+                    page: 1
+
+# --- MCP > Bans ---- #
+    mcp_cat_bans:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: ''
+            $icon: ''
+            $parent: ''
+            $route: 'mcp_ban_email'
+
+    mcp_ban_email:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_ban'
+            $icon: ''
+            $parent: 'mcp_cat_bans'
+            $route:
+                path: /ban/email
+                defaults:
+                    _controller: mcp.ban:main
+                    mode: 'email'
+
+    mcp_ban_user:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_ban'
+            $icon: ''
+            $parent: 'mcp_cat_bans'
+            $route:
+                path: /ban/user
+                defaults:
+                    _controller: mcp.ban:main
+                    mode: 'user'
+
+    mcp_ban_ip:
+        tags: { name: mcp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_m_ban'
+            $icon: ''
+            $parent: 'mcp_cat_bans'
+            $route:
+                path: /ban/ip
+                defaults:
+                    _controller: mcp.ban:main
+                    mode: 'ip'

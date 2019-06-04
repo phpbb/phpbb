@@ -24,6 +24,9 @@ class front
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -51,6 +54,7 @@ class front
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
@@ -63,6 +67,7 @@ class front
 		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -75,6 +80,7 @@ class front
 		$this->auth			= $auth;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -85,13 +91,12 @@ class front
 		$this->tables		= $tables;
 	}
 
-	public function view($id)
+	public function main()
 	{
-		/** @todo */
-		global $module;
+		$this->lang->add_lang('acp/common');
 
 		// Latest 5 unapproved
-		if ($module->loaded('queue'))
+		if ($this->auth->acl_getf_global('m_approve'))
 		{
 			$forum_id = $this->request->variable('f', 0);
 			$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_approve')));
@@ -182,10 +187,12 @@ class front
 					$result = $this->db->sql_query($sql);
 					while ($row = $this->db->sql_fetchrow($result))
 					{
+						$row_params = ['f' => (int) $row['forum_id'], 't' => (int) $row['topic_id'], 'p' => (int) $row['post_id']];
+
 						$this->template->assign_block_vars('unapproved', [
-							'U_POST_DETAILS'	=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
-							'U_MCP_FORUM'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']),
-							'U_MCP_TOPIC'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+							'U_POST_DETAILS'	=> $this->helper->route('mcp_approve_details', $row_params),
+							'U_MCP_FORUM'		=> $this->helper->route('mcp_view_forum', $row_params),
+							'U_MCP_TOPIC'		=> $this->helper->route('mcp_view_topic', $row_params),
 							'U_FORUM'			=> append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $row['forum_id']),
 							'U_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 
@@ -206,12 +213,12 @@ class front
 				}
 
 				$s_hidden_fields = build_hidden_fields([
-					'redirect'	=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=main' . ($forum_id ? '&amp;f=' . $forum_id : '')),
+					'redirect'	=> $this->helper->route('mcp_index', ($forum_id ? ['f' => $forum_id] : [])),
 				]);
 
 				$this->template->assign_vars([
 					'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
-					'S_MCP_QUEUE_ACTION'	=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=queue"),
+					'S_MCP_QUEUE_ACTION'	=> $this->helper->route('mcp_unapproved_topics'),
 					'L_UNAPPROVED_TOTAL'	=> $this->lang->lang('UNAPPROVED_POSTS_TOTAL', (int) $total),
 					'S_HAS_UNAPPROVED_POSTS'=> $total !== 0,
 				]);
@@ -219,7 +226,7 @@ class front
 		}
 
 		// Latest 5 reported
-		if ($module->loaded('reports'))
+		if ($this->auth->acl_getf_global('m_report'))
 		{
 			$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_report')));
 
@@ -253,7 +260,10 @@ class front
 				if ($total)
 				{
 					$sql_ary = [
-						'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+						'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, p.post_attachment, 
+										u.username, u.username_clean, u.user_colour, u.user_id, 
+										u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, 
+										t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 						'FROM'		=> [
 							$this->tables['reports']			=> 'r',
@@ -297,10 +307,12 @@ class front
 					$result = $this->db->sql_query_limit($sql, 5);
 					while ($row = $this->db->sql_fetchrow($result))
 					{
+						$row_params = ['f' => (int) $row['forum_id'], 't' => (int) $row['topic_id'], 'p' => (int) $row['post_id']];
+
 						$this->template->assign_block_vars('report', [
-							'U_POST_DETAILS'	=> append_sid("{$this->root_path}mcp.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
-							'U_MCP_FORUM'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view"),
-							'U_MCP_TOPIC'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
+							'U_POST_DETAILS'	=> $this->helper->route('mcp_report_details', $row_params),
+							'U_MCP_FORUM'		=> $this->helper->route('mcp_view_forum', $row_params),
+							'U_MCP_TOPIC'		=> $this->helper->route('mcp_view_topic', $row_params),
 							'U_FORUM'			=> append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $row['forum_id']),
 							'U_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 
@@ -333,10 +345,10 @@ class front
 		}
 
 		// Latest 5 reported PMs
-		if ($module->loaded('pm_reports') && $this->auth->acl_get('m_pm_report'))
+		if ($this->auth->acl_get('m_pm_report'))
 		{
+			$this->lang->add_lang('ucp');
 			$this->template->assign_var('S_SHOW_PM_REPORTS', true);
-			$this->lang->add_lang(['ucp']);
 
 			$sql = 'SELECT COUNT(r.report_id) AS total
 				FROM ' . $this->tables['reports'] . ' r, 
@@ -417,36 +429,36 @@ class front
 		}
 
 		// Latest 5 logs
-		if ($module->loaded('logs'))
+		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
+
+		if (!empty($forum_list))
 		{
-			$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
+			$log_count = false;
+			$log = [];
+			view_log('mod', $log, $log_count, 5, 0, $forum_list);
 
-			if (!empty($forum_list))
+			foreach ($log as $row)
 			{
-				$log_count = false;
-				$log = [];
-				view_log('mod', $log, $log_count, 5, 0, $forum_list);
-
-				foreach ($log as $row)
-				{
-					$this->template->assign_block_vars('log', [
-						'USERNAME'		=> $row['username_full'],
-						'IP'			=> $row['ip'],
-						'TIME'			=> $this->user->format_date($row['time']),
-						'ACTION'		=> $row['action'],
-						'U_VIEW_TOPIC'	=> !empty($row['viewtopic']) ? $row['viewtopic'] : '',
-						'U_VIEWLOGS'	=> !empty($row['viewlogs']) ? $row['viewlogs'] : '',
-					]);
-				}
+				$this->template->assign_block_vars('log', [
+					'USERNAME'		=> $row['username_full'],
+					'IP'			=> $row['ip'],
+					'TIME'			=> $this->user->format_date($row['time']),
+					'ACTION'		=> $row['action'],
+					'U_VIEW_TOPIC'	=> !empty($row['viewtopic']) ? $row['viewtopic'] : '',
+					'U_VIEWLOGS'	=> !empty($row['viewlogs']) ? $row['viewlogs'] : '',
+				]);
 			}
-
-			$this->template->assign_vars([
-				'S_SHOW_LOGS'	=> !empty($forum_list),
-				'S_HAS_LOGS'	=> !empty($log),
-			]);
 		}
 
-		$this->template->assign_var('S_MCP_ACTION', append_sid("{$this->root_path}mcp.$this->php_ext"));
-		make_jumpbox(append_sid("{$this->root_path}mcp.$this->php_ext", 'i=main&amp;mode=forum_view'), 0, false, 'm_', true);
+		$this->template->assign_vars([
+			'S_SHOW_LOGS'	=> !empty($forum_list),
+			'S_HAS_LOGS'	=> !empty($log),
+
+			'S_MCP_ACTION'	=> $this->helper->route('mcp_index'),
+		]);
+
+		make_jumpbox($this->helper->route('mcp_view_forum'), 0, false, 'm_', true);
+
+		return $this->helper->render('mcp_front.html', $this->lang->lang('MCP_INDEX'));
 	}
 }

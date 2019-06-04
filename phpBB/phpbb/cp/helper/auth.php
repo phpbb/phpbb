@@ -21,9 +21,6 @@ class auth
 	/** @var \phpbb\config\config  */
 	protected $config;
 
-	/** @var \phpbb\event\dispatcher  */
-	protected $dispatcher;
-
 	/** @var \phpbb\request\request  */
 	protected $request;
 
@@ -33,14 +30,12 @@ class auth
 	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
-		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\extension\manager $ext_manager,
 		\phpbb\request\request $request
 	)
 	{
 		$this->auth			= $auth;
 		$this->config		= $config;
-		$this->dispatcher	= $dispatcher;
 		$this->request		= $request;
 
 		$this->extensions	= array_keys($ext_manager->all_enabled());
@@ -50,10 +45,9 @@ class auth
 	 * Check the item's authorisation.
 	 *
 	 * @param string	$auth			The item's authorisation
-	 * @param int		$forum_id		The forum identifier
 	 * @return bool						Whether the current user is allowed to access this item
 	 */
-	public function check_auth($auth, $forum_id = 0)
+	public function check_auth($auth, $forum_id = 0, $topic_id = 0, $post_id = 0)
 	{
 		$auth = trim($auth);
 
@@ -74,6 +68,7 @@ class auth
 		);
 
 		$tokens = $matches[0];
+
 		for ($i = 0, $size = count($tokens); $i < $size; $i++)
 		{
 			// Make sure we are not transferring preg_match data
@@ -91,8 +86,8 @@ class auth
 					// Preserve operators
 				break;
 
-				// Unset "," as that is used to join "$id" with "acl_*"
 				case ',':
+					// Unset "," as that is used to join "$forum_id" with "acl_*"
 					unset($tokens[$i]);
 				break;
 
@@ -102,10 +97,12 @@ class auth
 						!empty($tokens[$i + 1])
 						&& $tokens[$i + 1] === ','
 						&& !empty($tokens[$i + 2])
-						&& $tokens[$i + 2] === '$id'
+						&& $tokens[$i + 2] === '$forum_id'
 					)
 					{
-						$token = (bool) $this->auth->acl_get($match[1], (int) $forum_id);
+						// We have to make sure a forum id is set,
+						// as acl_get() always returns true if the forum id is set to 0.
+						$token = $forum_id ? (bool) $this->auth->acl_get($match[1], (int) $forum_id) : false;
 					}
 					else
 					{
@@ -118,9 +115,31 @@ class auth
 					$token = (bool) $this->auth->acl_getf_global($match[1]);
 				break;
 
-				// Forum identifier: $id or !$id
-				case (preg_match('#(!)*\$id#', $token, $match) ? true : false):
-					$token = (bool) ($match[1] === '!' ? empty($forum_id) : !empty($forum_id));
+				// Identifier: $forum_id or !$forum_id (forum_id|topic_id|post_id)
+				case (preg_match('#(!)*\$(forum|topic|post)_id#', $token, $match) ? true : false):
+					switch ($match[2])
+					{
+						case 'forum':
+							if ($i > 0 && !isset($tokens[$i - 1]))
+							{
+								// This forum identifier is part of the $this->auth check
+								unset($tokens[$i]);
+
+								continue;
+							}
+
+							$token = (bool) (!empty($match[1]) ? empty($forum_id) : !empty($forum_id));
+						break;
+						case 'topic':
+							$token = (bool) (!empty($match[1]) ? empty($topic_id) : !empty($topic_id));
+						break;
+						case 'post':
+							$token = (bool) (!empty($match[1]) ? empty($post_id) : !empty($post_id));
+						break;
+						default:
+							unset($tokens[$i]);
+						break;
+					}
 				break;
 
 				// Config setting: $config['']
@@ -144,36 +163,7 @@ class auth
 				break;
 
 				default:
-					$auth_token = '';
-
-					/**
-					 * Check custom tokens for control panel's item authorisation.
-					 *
-					 * Previously core.module_auth
-					 *
-					 * @event core.cp_item_auth
-					 * @var string	auth_token		Set to a boolean
-					 * @var string	item_auth		The item's auth string
-					 * @var int		forum_id		The current forum identifier
-					 * @since 4.0.0
-					 */
-					$vars = ['auth_token', 'item_auth', 'forum_id'];
-					extract($this->dispatcher->trigger_event('core.cp_item_auth', compact($vars)));
-
-					switch (true)
-					{
-						case $auth_token === true:
-							$token = true;
-						break;
-
-						case $auth_token === false:
-							$token = false;
-						break;
-
-						default:
-							unset($tokens[$i]);
-						break;
-					}
+					unset($tokens[$i]);
 				break;
 			}
 		}
@@ -245,8 +235,8 @@ class auth
 				case ($value === ')'):
 					$j = $i--;
 
-					// Is there an operator, otherwise default to "and"
-					$switch = !empty($operator[$i]) ? $operator[$i] : '&&';
+					// Is there an operator
+					$switch = !empty($operator[$i]) ? $operator[$i] : '';
 
 					switch ($switch)
 					{
@@ -268,10 +258,14 @@ class auth
 							// Preserve a "false" value
 							$auth[$i] = !$auth[$i] ? $auth[$i] : $auth[$j];
 						break;
+
+						default:
+							$auth[$i] = $auth[$j];
+						break;
 					}
 
 					// Unset this depth level
-					unset ($auth[$j], $operator[$j], $j);
+					unset($auth[$j], $operator[$j], $j);
 				break;
 			}
 		}

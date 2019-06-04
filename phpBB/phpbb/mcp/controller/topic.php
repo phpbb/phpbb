@@ -13,6 +13,9 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\runtime_exception;
+
 class topic
 {
 	/** @var \phpbb\auth\auth */
@@ -30,6 +33,9 @@ class topic
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
@@ -39,8 +45,8 @@ class topic
 	/** @var \phpbb\mcp\controller\forum */
 	protected $mcp_forum;
 
-	/** @var \phpbb\mcp\controller\queue */
-	protected $mcp_queue;
+	/** @var \phpbb\mcp\controller\moderation */
+	protected $mcp_moderation;
 
 	/** @var \phpbb\pagination */
 	protected $pagination;
@@ -71,10 +77,11 @@ class topic
 	 * @param \phpbb\content_visibility			$content_visibility	Content visibility object
 	 * @param \phpbb\db\driver\driver_interface	$db					Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\log\log					$log				Log object
 	 * @param \phpbb\mcp\controller\forum		$mcp_forum			MCP Forum controller object
-	 * @param \phpbb\mcp\controller\queue		$mcp_queue			MCP Queue controller object
+	 * @param \phpbb\mcp\controller\moderation	$mcp_moderation		MCP Moderation controller object
 	 * @param \phpbb\pagination					$pagination			Pagination object
 	 * @param \phpbb\request\request			$request			Request object
 	 * @param \phpbb\template\template			$template			Template object
@@ -89,10 +96,11 @@ class topic
 		\phpbb\content_visibility $content_visibility,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		forum $mcp_forum,
-		queue $mcp_queue,
+		moderation $mcp_moderation,
 		\phpbb\pagination $pagination,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -107,10 +115,11 @@ class topic
 		$this->content_visibility	= $content_visibility;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->mcp_forum			= $mcp_forum;
-		$this->mcp_queue			= $mcp_queue;
+		$this->mcp_moderation		= $mcp_moderation;
 		$this->pagination			= $pagination;
 		$this->request				= $request;
 		$this->template				= $template;
@@ -121,26 +130,56 @@ class topic
 		$this->tables				= $tables;
 	}
 
-	public function view($id, $mode, $action)
+	public function main($page)
 	{
 		$this->lang->add_lang('viewtopic');
 
-		$url = append_sid("{$this->root_path}mcp.$this->php_ext?" . phpbb_extra_url());
+		$topic_id	= $this->request->variable('t', 0);
+		$post_id	= $this->request->variable('p', 0);
 
-		$topic_id = $this->request->variable('t', 0);
 		$topic_info = phpbb_get_topic_data([$topic_id], false, true);
+
+		if (empty($topic_id) && !empty($post_id))
+		{
+			$sql = 'SELECT topic_id
+				FROM ' . $this->tables['posts'] . '
+				WHERE post_id = ' . (int) $post_id;
+			$result = $this->db->sql_query($sql);
+			$topic_id = (int) $this->db->sql_fetchfield('topic_id');
+			$this->db->sql_freeresult($result);
+		}
 
 		if (empty($topic_info))
 		{
-			trigger_error('TOPIC_NOT_EXIST');
+			throw new back_exception(404, 'TOPIC_NOT_EXIST', 'mcp_index');
 		}
 
 		$topic_info = $topic_info[$topic_id];
 
+		$forum_id	= (int) $topic_info['forum_id'];
+		$topic_id	= (int) $topic_info['topic_id'];
+		$post_id	= $post_id ? (int) $post_id : (int) $topic_info['topic_first_post_id'];
+
+		$params = array_filter([
+			'f' => $forum_id,
+			't' => $topic_id,
+			'p' => $post_id,
+		]);
+
+		$u_mode = array_merge(['mcp_view_topic'], $params);
+
+		$action = $this->request->variable('action', '');
+
+		if (($forum_action = $this->request->variable('forum_action', '')) !== ''
+			&& $this->request->variable('sort', false, false, \phpbb\request\request_interface::POST)
+		)
+		{
+			$action = $forum_action;
+		}
+
 		// Set up some vars
 		$icon_id		= $this->request->variable('icon', 0);
 		$subject		= $this->request->variable('subject', '', true);
-		$start			= $this->request->variable('start', 0);
 		$sort_days_old	= $this->request->variable('st_old', 0);
 		$forum_id		= $this->request->variable('f', 0);
 		$to_topic_id	= $this->request->variable('to_topic_id', 0);
@@ -152,7 +191,7 @@ class topic
 		// Resync Topic?
 		if ($action === 'resync')
 		{
-			$this->mcp_forum->resync_topics([$topic_id]);
+			return $this->mcp_forum->resync_topics([$topic_id], 'topic');
 		}
 
 		// Split Topic?
@@ -160,7 +199,14 @@ class topic
 		{
 			if (!$sort)
 			{
-				$this->split_topic($action, $topic_id, $to_forum_id, $subject);
+				try
+				{
+					return $this->split_topic($action, $topic_id, $to_forum_id, $subject);
+				}
+				catch (runtime_exception $e)
+				{
+					$this->template->assign_var('MESSAGE', $this->lang->lang($e->getMessage()));
+				}
 			}
 
 			$action = 'split';
@@ -171,7 +217,14 @@ class topic
 		{
 			if (!$sort)
 			{
-				$this->merge_posts($topic_id, $to_topic_id);
+				try
+				{
+					return $this->merge_posts($topic_id, $to_topic_id);
+				}
+				catch (runtime_exception $e)
+				{
+					$this->template->assign_var('MESSAGE', $this->lang->lang($e->getMessage()));
+				}
 			}
 
 			$action = 'merge';
@@ -190,17 +243,17 @@ class topic
 
 			if (empty($post_id_list))
 			{
-				trigger_error('NO_POST_SELECTED');
+				throw new back_exception(400, 'NO_POST_SELECTED', $u_mode);
 			}
 
 			if (!$sort)
 			{
-				$this->mcp_queue->approve_posts($action, $post_id_list, $id, $mode);
+				return $this->mcp_moderation->approve_posts($action, $post_id_list, $u_mode);
 			}
 		}
 
 		// Jumpbox, sort selects and that kind of things
-		make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_', true);
+		make_jumpbox($this->helper->route('mcp_view_forum', $params), $topic_info['forum_id'], false, 'm_', true);
 		$where_sql = ($action === 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
 
 		$sort_days = $total = 0;
@@ -208,7 +261,7 @@ class topic
 		$sort_by_sql = $sort_order_sql = [];
 		phpbb_mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
-		$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$limit_time_sql = $sort_days ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 		if ($total === -1)
 		{
@@ -220,6 +273,9 @@ class topic
 		{
 			$posts_per_page = $total;
 		}
+
+		$start = ($page - 1) * $posts_per_page;
+		$start = $this->request->is_set('start') ? $this->request->variable('start', 0) : $start;
 
 		if ((!empty($sort_days_old) && $sort_days_old != $sort_days) || $total <= $posts_per_page)
 		{
@@ -330,6 +386,7 @@ class topic
 				$has_deleted_posts = true;
 			}
 
+			$post_params = array_merge($params, ['p' => $row['post_id']]);
 			$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 			$post_row = [
@@ -352,9 +409,9 @@ class topic
 				'S_CHECKED'				=> (bool) (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)),
 				'S_HAS_ATTACHMENTS'		=> (bool) !empty($attachments[$row['post_id']]),
 
-				'U_POST_DETAILS'		=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . ($forum_id ? "&amp;f=$forum_id" : ''),
-				'U_MCP_APPROVE'			=> $this->auth->acl_get('m_approve', $topic_info['forum_id']) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
-				'U_MCP_REPORT'			=> $this->auth->acl_get('m_report', $topic_info['forum_id']) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
+				'U_POST_DETAILS'		=> $this->helper->route('mcp_view_post', $post_params),
+				'U_MCP_APPROVE'			=> $this->auth->acl_get('m_approve', $topic_info['forum_id']) ? $this->helper->route('mcp_approve_details', $post_params) : '',
+				'U_MCP_REPORT'			=> $this->auth->acl_get('m_report', $topic_info['forum_id']) ? $this->helper->route('mcp_report_details', $post_params) : '',
 			];
 
 			/**
@@ -436,10 +493,21 @@ class topic
 			'post_ids'	=> $post_id_list,
 		]);
 
-		$base_url = append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir");
 		if ($posts_per_page)
 		{
-			$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $posts_per_page, $start);
+			$pagination_params = [
+				'action'		=> $action,
+				'to_topic_id'	=> $to_topic_id,
+				'posts_per_page'=> $posts_per_page,
+				'sk'			=> $sort_key,
+				'sd'			=> $sort_dir,
+				'st'			=> $sort_days,
+			];
+
+			$this->pagination->generate_template_pagination([
+				'routes' => [],
+				'params' => array_merge($params, $pagination_params),
+			], 'pagination', 'page', $total, $posts_per_page, $start);
 		}
 
 		$this->template->assign_vars([
@@ -458,7 +526,7 @@ class topic
 			'DELETED_IMG'		=> $this->user->img('icon_topic_deleted', 'POST_DELETED_RESTORE'),
 			'INFO_IMG'			=> $this->user->img('icon_post_info', 'VIEW_INFO'),
 
-			'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
+			'S_MCP_ACTION'		=> $this->helper->route('mcp_view_topic' . ($page > 1 ? '_pagination' : ''), array_merge($params, ['page' => $page])),
 			'S_FORUM_SELECT'	=> $to_forum_id ? make_forum_select($to_forum_id, false, false, true, true, true) : make_forum_select($topic_info['forum_id'], false, false, true, true, true),
 
 			'S_CAN_SPLIT'		=> (bool) $this->auth->acl_get('m_split', $topic_info['forum_id']),
@@ -478,13 +546,15 @@ class topic
 			'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 			'S_TOPIC_ICON'			=> $icon_id,
 
-			'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select" . ($forum_id ? "&amp;f=$forum_id" : ''),
+			'U_SELECT_TOPIC'	=> $this->helper->route('mcp_view_forum', ['f' => $forum_id, 'action' => 'merge_select']),
 
 			'RETURN_TOPIC'		=> $this->lang->lang('RETURN_TOPIC', '<a href="' . append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 			'RETURN_FORUM'		=> $this->lang->lang('RETURN_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
 			'TOTAL_POSTS'		=> $this->lang->lang('VIEW_TOPIC_POSTS', (int) $total),
 		]);
+
+		return $this->helper->render('mcp_topic.html', $this->lang->lang('MCP_MAIN_TOPIC_VIEW'));
 	}
 
 	/**
@@ -494,7 +564,7 @@ class topic
 	 * @param int		$topic_id		The topic identifier
 	 * @param int		$to_forum_id	The forum identifier
 	 * @param string	$subject		The new topic subject
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function split_topic($action, $topic_id, $to_forum_id, $subject)
 	{
@@ -504,13 +574,12 @@ class topic
 
 		if (empty($post_id_list))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_POST_SELECTED'));
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		if (!phpbb_check_ids($post_id_list, $this->tables['posts'], 'post_id', ['m_split']))
 		{
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		$post_id = $post_id_list[0];
@@ -518,8 +587,7 @@ class topic
 
 		if (empty($post_info))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_POST_SELECTED'));
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		$post_info = $post_info[$post_id];
@@ -528,39 +596,33 @@ class topic
 		// Make some tests
 		if (!$subject)
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('EMPTY_SUBJECT'));
-			return;
+			throw new runtime_exception('EMPTY_SUBJECT');
 		}
 
 		if ($to_forum_id <= 0)
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_DESTINATION_FORUM'));
-			return;
+			throw new runtime_exception('NO_DESTINATION_FORUM');
 		}
 
 		$forum_info = phpbb_get_forum_data([$to_forum_id], 'f_post');
 
 		if (empty($forum_info))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('USER_CANNOT_POST'));
-			return;
+			throw new runtime_exception('USER_CANNOT_POST');
 		}
 
 		$forum_info = $forum_info[$to_forum_id];
 
 		if ($forum_info['forum_type'] != FORUM_POST)
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('FORUM_NOT_POSTABLE'));
-			return;
+			throw new runtime_exception('FORUM_NOT_POSTABLE');
 		}
 
 		$redirect = $this->request->variable('redirect', build_url(['quickmod']));
 
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> 'main',
 			'f'				=> $forum_id,
 			't'				=> $topic_id,
-			'mode'			=> 'topic_view',
 			'start'			=> $start,
 			'action'		=> $action,
 			'subject'		=> $subject,
@@ -605,12 +667,6 @@ class topic
 				$result = $this->db->sql_query_limit($sql, 0, $start);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
-					// If split from selected post (split_beyond), we split the unapproved items too.
-					if (($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE) && !$this->auth->acl_get('m_approve', $row['forum_id']))
-					{
-//					continue;		@todo why is this commented out?
-					}
-
 					// Start to store post_ids as soon as we see the first post that was selected
 					if ($row['post_id'] == $post_id)
 					{
@@ -627,7 +683,7 @@ class topic
 
 			if (empty($post_id_list))
 			{
-				trigger_error('NO_POST_SELECTED');
+				throw new runtime_exception('NO_POST_SELECTED');
 			}
 
 			$icon_id = $this->request->variable('icon', 0);
@@ -690,7 +746,7 @@ class topic
 
 				if (!class_exists($search_type))
 				{
-					trigger_error('NO_SUCH_SEARCH_MODULE');
+					throw new runtime_exception('NO_SUCH_SEARCH_MODULE');
 				}
 
 				$error = false;
@@ -700,7 +756,7 @@ class topic
 
 				if ($error)
 				{
-					trigger_error($error);
+					throw new runtime_exception($error);
 				}
 
 				$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
@@ -749,8 +805,6 @@ class topic
 				$this->db->sql_multi_insert($this->tables['bookmarks'], $sql_ary);
 			}
 
-			$success_msg = 'TOPIC_SPLIT_SUCCESS';
-
 			// Update forum statistics
 			$this->config->increment('num_topics', 1, false);
 
@@ -759,12 +813,15 @@ class topic
 			$redirect = $this->request->variable('redirect', "{$this->root_path}viewtopic.$this->php_ext?f=$to_forum_id&amp;t=$to_topic_id");
 			$redirect = reapply_sid($redirect);
 
-			meta_refresh(3, $redirect);
-			trigger_error($this->lang->lang($success_msg) . '<br /><br />' . $return_link);
+			$this->helper->assign_meta_refresh_var(3, $redirect);
+
+			return $this->helper->message($this->lang->lang('TOPIC_SPLIT_SUCCESS') . '<br /><br />' . $return_link);
 		}
 		else
 		{
 			confirm_box(false, ($action === 'split_all') ? 'SPLIT_TOPIC_ALL' : 'SPLIT_TOPIC_BEYOND', $s_hidden_fields);
+
+			return redirect($redirect);
 		}
 	}
 
@@ -773,14 +830,13 @@ class topic
 	 *
 	 * @param int		$topic_id		The "from" topic identifier
 	 * @param int		$to_topic_id	The "to" topic identifier
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function merge_posts($topic_id, $to_topic_id)
 	{
 		if (!$to_topic_id)
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_FINAL_TOPIC_SELECTED'));
-			return;
+			throw new runtime_exception('NO_FINAL_TOPIC_SELECTED');
 		}
 
 		$sync_topics = [$topic_id, $to_topic_id];
@@ -789,8 +845,7 @@ class topic
 
 		if (empty($topic_data) || empty($topic_data[$to_topic_id]))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_FINAL_TOPIC_SELECTED'));
-			return;
+			throw new runtime_exception('NO_FINAL_TOPIC_SELECTED');
 		}
 
 		$sync_forums = [];
@@ -806,21 +861,18 @@ class topic
 
 		if (empty($post_id_list))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_POST_SELECTED'));
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		if (!phpbb_check_ids($post_id_list, $this->tables['posts'], 'post_id', ['m_merge']))
 		{
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		$redirect = $this->request->variable('redirect', build_url(['quickmod']));
 
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> 'main',
 			't'				=> $topic_id,
-			'mode'			=> 'topic_view',
 			'action'		=> 'merge_posts',
 			'start'			=> $start,
 			'redirect'		=> $redirect,
@@ -841,9 +893,6 @@ class topic
 				'topic_id' => (int) $to_topic_id,
 				$topic_data['topic_title'],
 			]);
-
-			// Message and return links
-			$success_msg = 'POSTS_MERGED_SUCCESS';
 
 			// Does the original topic still exist? If yes, link back to it
 			$sql = 'SELECT forum_id
@@ -896,12 +945,15 @@ class topic
 			];
 			extract($this->dispatcher->trigger_event('core.mcp_topics_merge_posts_after', compact($vars)));
 
-			meta_refresh(3, $redirect);
-			trigger_error($this->lang->lang($success_msg) . '<br /><br />' . $return_link);
+			$this->helper->assign_meta_refresh_var(3, $redirect);
+
+			return $this->helper->message($this->lang->lang('POSTS_MERGED_SUCCESS') . '<br /><br />' . $return_link);
 		}
 		else
 		{
 			confirm_box(false, 'MERGE_POSTS', $s_hidden_fields);
+
+			return redirect($redirect);
 		}
 	}
 }

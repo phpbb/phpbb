@@ -13,7 +13,6 @@
 
 namespace phpbb\acp\controller;
 
-use phpbb\exception\back_exception;
 use phpbb\exception\http_exception;
 use phpbb\exception\runtime_exception;
 
@@ -165,9 +164,9 @@ class main
 
 			$this->template->assign_vars([
 				'S_RESTORE_PERMISSIONS'		=> true,
-				'U_RESTORE_PERMISSIONS'		=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm'),
+				'U_RESTORE_PERMISSIONS'		=> $this->helper->route('ucp_account', ['mode' => 'permissions_restore']),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->lang->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, $this->helper->route('ucp_account', ['mode' => 'permissions_restore'])),
 			]);
 
 			return $this->helper->render('acp_main.html', 'ACP_INDEX');

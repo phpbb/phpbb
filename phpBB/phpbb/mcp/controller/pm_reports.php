@@ -13,6 +13,9 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\http_exception;
+
 class pm_reports
 {
 	/** @var \phpbb\auth\auth */
@@ -23,6 +26,9 @@ class pm_reports
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,17 +60,13 @@ class pm_reports
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\auth\auth					$auth					Auth object
 	 * @param \phpbb\config\config				$config					Config object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
+	 * @param \phpbb\controller\helper			$helper					Controller helper
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param reports							$mcp_reports			MCP Report controller object
 	 * @param \phpbb\notification\manager		$notification_manager	Notification manager object
@@ -80,6 +82,7 @@ class pm_reports
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		reports $mcp_reports,
 		\phpbb\notification\manager $notification_manager,
@@ -95,6 +98,7 @@ class pm_reports
 		$this->auth					= $auth;
 		$this->config				= $config;
 		$this->db					= $db;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->mcp_reports			= $mcp_reports;
 		$this->notification_manager	= $notification_manager;
@@ -108,38 +112,39 @@ class pm_reports
 		$this->tables				= $tables;
 	}
 
-	function main($id, $mode)
+	public function main($mode, $page = 1)
 	{
-		/** @todo */
-		global $action;
-
 		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
 		include_once($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
 
-		$start = $this->request->variable('start', 0);
+		$action = $this->request->variable('action', ['' => '']);
+		$action = is_array($action) && !empty($action) ? key($action) : $this->request->variable('action', '');
 
-		$this->page_title = 'MCP_PM_REPORTS';
+		$limit = (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $limit;
+
+		$route = $route = $mode === 'details' ? 'mcp_pm_report_details' : "mcp_pm_reports_{$mode}";
 
 		switch ($action)
 		{
 			case 'close':
 			case 'delete':
-				include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-
 				$report_id_list = $this->request->variable('report_id_list', [0]);
 
 				if (empty($report_id_list))
 				{
-					trigger_error('NO_REPORT_SELECTED');
+					$route .= $page > 1 ? '_pagination' : '';
+
+					throw new back_exception(400, 'NO_REPORT_SELECTED', [$route, 'page' => $page]);
 				}
 
-				$this->mcp_reports->close_report($report_id_list, $mode, $action, true);
+				return $this->mcp_reports->close_report($report_id_list, $mode, $action, true);
 			break;
 		}
 
 		switch ($mode)
 		{
-			case 'pm_report_details':
+			case 'details':
 				$this->lang->add_lang(['posting', 'viewforum', 'viewtopic', 'ucp']);
 
 				$report_id = $this->request->variable('r', 0);
@@ -157,7 +162,7 @@ class pm_reports
 
 				if (!$report_id || !$report)
 				{
-					trigger_error('NO_REPORT');
+					throw new http_exception(404, 'NO_REPORT');
 				}
 
 				$this->notification_manager->mark_notifications_by_parent('report_pm', $report_id, $this->user->data['user_id']);
@@ -169,7 +174,7 @@ class pm_reports
 
 				if (empty($pm_info))
 				{
-					trigger_error('NO_REPORT_SELECTED');
+					throw new http_exception(400, 'REPORT_CLOSED');
 				}
 
 				$pm_info = $pm_info[$pm_id];
@@ -221,6 +226,18 @@ class pm_reports
 					}
 				}
 
+				$lookup = $this->request->variable('lookup', '');
+
+				$s_info = $this->auth->acl_getf_global('m_info');
+				$s_warn = $this->auth->acl_get('m_warn');
+
+				$u_notes_reporter	= $this->helper->route('mcp_notes_user', ['u' => (int) $report['user_id']]);
+				$u_notes_user		= $this->helper->route('mcp_notes_user', ['u' => (int) $pm_info['user_id']]);
+				$u_report			= $this->helper->route('mcp_pm_report_details', ['r' => $report_id]);
+				$u_return			= $this->helper->route(($pm_info['message_reported'] ? 'mcp_pm_reports_open' : 'mcp_pm_reports_closed'));
+				$u_warn_reporter	= $this->helper->route('mcp_warn_user', ['u' => (int) $report['user_id']]);
+				$u_warn_user		= $this->helper->route('mcp_warn_user', ['u' => (int) $pm_info['user_id']]);
+
 				$this->template->assign_vars([
 					'S_MCP_REPORT'			=> true,
 					'S_USER_NOTES'			=> true,
@@ -228,18 +245,18 @@ class pm_reports
 					'S_CAN_VIEWIP'			=> $this->auth->acl_getf_global('m_info'),
 					'S_POST_REPORTED'		=> $pm_info['message_reported'],
 					'S_REPORT_CLOSED'		=> $report['report_closed'],
-					'S_CLOSE_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
+					'S_CLOSE_ACTION'		=> $u_report,
 
-					'U_MCP_REPORT'				=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
-					'U_MCP_REPORTER_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
-					'U_MCP_USER_NOTES'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $pm_info['author_id']),
-					'U_MCP_WARN_REPORTER'		=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
-					'U_MCP_WARN_USER'			=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $pm_info['author_id']) : '',
+					'U_MCP_REPORT'				=> $u_report,
+					'U_MCP_REPORTER_NOTES'		=> $u_notes_reporter,
+					'U_MCP_USER_NOTES'			=> $u_notes_user,
+					'U_MCP_WARN_REPORTER'		=> $s_warn ? $u_warn_reporter : '',
+					'U_MCP_WARN_USER'			=> $s_warn ? $u_warn_user : '',
 
 					'EDIT_IMG'					=> $this->user->img('icon_post_edit', $this->lang->lang('EDIT_POST')),
 					'MINI_POST_IMG'				=> $this->user->img('icon_post_target', 'POST'),
 
-					'RETURN_REPORTS'			=> $this->lang->lang('RETURN_REPORTS', '<a href="' . append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports' . (($pm_info['message_reported']) ? '&amp;mode=pm_reports' : '&amp;mode=pm_reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
+					'RETURN_REPORTS'			=> $this->lang->lang('RETURN_REPORTS', '<a href="' . $u_return . '">', '</a>'),
 					'REPORTED_IMG'				=> $this->user->img('icon_topic_reported', $this->lang->lang('POST_REPORTED')),
 					'REPORT_DATE'				=> $this->user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,
@@ -261,33 +278,34 @@ class pm_reports
 					'POST_SUBJECT'			=> $pm_info['message_subject'] ? $pm_info['message_subject'] : $this->lang->lang('NO_SUBJECT'),
 					'POST_DATE'				=> $this->user->format_date($pm_info['message_time']),
 					'POST_IP'				=> $pm_info['author_ip'],
-					'POST_IPADDR'			=> ($this->auth->acl_getf_global('m_info') && $this->request->variable('lookup', '')) ? @gethostbyaddr($pm_info['author_ip']) : '',
+					'POST_IPADDR'			=> ($s_info && $lookup) ? @gethostbyaddr($pm_info['author_ip']) : '',
 					'POST_ID'				=> $pm_info['msg_id'],
 
-					'U_LOOKUP_IP'			=> $this->auth->acl_getf_global('m_info') ? $this->u_action . '&amp;r=' . $report_id . '&amp;pm=' . $pm_id . '&amp;lookup=' . $pm_info['author_ip'] . '#ip' : '',
+					'U_LOOKUP_IP'			=> $s_info ? $this->helper->route('mcp_pm_report_details', ['r' => $report_id, 'pm' => $pm_id, 'lookup' => $pm_info['author_ip'], '#' => 'ip']) : '',
 				]);
 
-				$this->tpl_name = 'mcp_post';
+				return $this->helper->render('mcp_post.html', $this->lang->lang('MCP_PM_REPORT_DETAILS'));
 			break;
 
-			case 'pm_reports':
-			case 'pm_reports_closed':
+			case 'open':
+			case 'closed':
 				$this->lang->add_lang(['ucp']);
 
+				$sort_mode = $mode === 'open' ? 'pm_reports': 'pm_reports_closed';
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
 				$sort_by_sql = $sort_order_sql = [];
-				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total);
+				phpbb_mcp_sorting($sort_mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total);
 
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-				if ($mode === 'pm_reports')
+				if ($mode === 'open')
 				{
-					$report_state = 'p.message_reported = 1 AND r.report_closed = 0';
+					$report_state = 'AND p.message_reported = 1 AND r.report_closed = 0';
 				}
 				else
 				{
-					$report_state = 'r.report_closed = 1';
+					$report_state = 'AND r.report_closed = 1';
 				}
 
 				$i = 0;
@@ -297,15 +315,15 @@ class pm_reports
 					FROM ' . $this->tables['privmsgs'] . ' p, 
 						' . $this->tables['reports'] . ' r 
 						' . ($sort_order_sql[0] === 'u' ? ', ' . $this->tables['users'] . ' u' : '') .
-						($sort_order_sql[0] === 'r' ? ', ' . $this->tables['users'] . ' ru' : '') . "
-					WHERE $report_state
+							($sort_order_sql[0] === 'r' ? ', ' . $this->tables['users'] . ' ru' : '') . '
+					WHERE r.post_id = 0
 						AND r.pm_id = p.msg_id
-						" . ($sort_order_sql[0] === 'u' ? 'AND u.user_id = p.author_id' : '') . '
+						' . ($sort_order_sql[0] === 'u' ? 'AND u.user_id = p.author_id' : '') . '
 						' . ($sort_order_sql[0] === 'r' ? 'AND ru.user_id = r.user_id' : '') . "
-						AND r.post_id = 0
+						$report_state
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
-				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
+				$result = $this->db->sql_query_limit($sql, $limit, $start);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$report_ids[] = (int) $row['report_id'];
@@ -340,7 +358,7 @@ class pm_reports
 						{
 							$row = $pm_by_id[$message_id];
 							$this->template->assign_block_vars('postrow', [
-								'U_VIEW_DETAILS'			=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=pm_reports&amp;mode=pm_report_details&amp;r={$row['report_id']}"),
+								'U_VIEW_DETAILS'		=> $this->helper->route('mcp_pm_report_details', ['r' => (int) $row['report_id']]),
 
 								'PM_AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour']),
 								'PM_AUTHOR_COLOUR'		=> get_username_string('colour', $row['author_id'], $row['username'], $row['user_colour']),
@@ -364,23 +382,31 @@ class pm_reports
 					}
 				}
 
-				$base_url = $this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $this->config['topics_per_page'], $start);
+				$this->pagination->generate_template_pagination([
+					'routes' => [$route, "{$route}_pagination"],
+					'params' => ['sk' => $sort_key, 'sd' => $sort_dir, 'st' => $sort_days],
+				], 'pagination', 'page', $total, $limit, $start);
+
+				$l_mode = 'MCP_PM_REPORTS_' . utf8_strtoupper($mode);
 
 				// Now display the page
 				$this->template->assign_vars([
-					'L_EXPLAIN'				=> $mode === 'pm_reports' ? $this->lang->lang('MCP_PM_REPORTS_OPEN_EXPLAIN') : $this->lang->lang('MCP_PM_REPORTS_CLOSED_EXPLAIN'),
-					'L_TITLE'				=> $mode === 'pm_reports' ? $this->lang->lang('MCP_PM_REPORTS_OPEN') : $this->lang->lang('MCP_PM_REPORTS_CLOSED'),
+					'L_EXPLAIN'		=> $this->lang->lang("{$l_mode}_EXPLAIN"),
+					'L_TITLE'		=> $this->lang->lang($l_mode),
 
-					'S_PM'					=> true,
-					'S_MCP_ACTION'			=> $this->u_action,
-					'S_CLOSED'				=> $mode === 'pm_reports_closed',
+					'S_PM'			=> true,
+					'S_MCP_ACTION'	=> $this->helper->route($route),
+					'S_CLOSED'		=> $mode === 'closed',
 
-					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> $this->lang->lang('LIST_REPORTS', (int) $total),
+					'TOTAL'			=> $total,
+					'TOTAL_REPORTS'	=> $this->lang->lang('LIST_REPORTS', (int) $total),
 				]);
 
-				$this->tpl_name = 'mcp_reports';
+				return $this->helper->render('mcp_reports.html', $this->lang->lang($l_mode));
+			break;
+
+			default:
+				throw new back_exception(400, 'NO_MODE', 'mcp_pm_reports_open');
 			break;
 		}
 	}

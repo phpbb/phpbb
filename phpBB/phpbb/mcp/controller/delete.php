@@ -11,7 +11,9 @@
  *
  */
 
-namespace phpbb\mcp\functions;
+namespace phpbb\mcp\controller;
+
+use phpbb\exception\http_exception;
 
 class delete
 {
@@ -23,6 +25,9 @@ class delete
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,6 +59,7 @@ class delete
 	 * @param \phpbb\auth\auth					$auth				Auth object
 	 * @param \phpbb\content_visibility			$content_visibility	Content visibility object
 	 * @param \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\log\log					$log				Log object
 	 * @param \phpbb\request\request			$request			Request object
@@ -67,6 +73,7 @@ class delete
 		\phpbb\auth\auth $auth,
 		\phpbb\content_visibility $content_visibility,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
@@ -80,6 +87,7 @@ class delete
 		$this->auth					= $auth;
 		$this->content_visibility	= $content_visibility;
 		$this->db					= $db;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->request				= $request;
@@ -99,13 +107,13 @@ class delete
 	 * @param bool		$is_soft				Whether or not we're soft deleting
 	 * @param string	$soft_delete_reason		The soft delete reason
 	 * @param string	$action					The action
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function delete_posts(array $post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
+	public function delete_posts(array $post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 	{
 		if (!phpbb_check_ids($post_ids, $this->tables['posts'], 'post_id', [$is_soft ? 'm_softdelete' : 'm_delete']))
 		{
-			return;
+			throw new http_exception(404, 'NO_POST_SELECTED');
 		}
 
 		$redirect = $this->request->variable('redirect', build_url(['action', 'quickmod']));
@@ -114,13 +122,14 @@ class delete
 		$return_link = [];
 		$topic_id = $affected_topics = $deleted_topics = 0;
 
+		$success_msg = '';
+
 		$s_hidden_fields = [
 			'post_id_list'	=> $post_ids,
 			'f'				=> $forum_id,
 			'action'		=> $action,
 			'redirect'		=> $redirect,
 		];
-		$success_msg = '';
 
 		if (confirm_box(true) && $is_soft)
 		{
@@ -212,8 +221,8 @@ class delete
 			$topic_id_list = [];
 
 			$sql = 'SELECT DISTINCT topic_id
-			FROM ' . $this->tables['posts'] . '
-			WHERE ' . $this->db->sql_in_set('post_id', $post_ids);
+				FROM ' . $this->tables['posts'] . '
+				WHERE ' . $this->db->sql_in_set('post_id', $post_ids);
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -241,8 +250,8 @@ class delete
 			delete_posts('post_id', $post_ids);
 
 			$sql = 'SELECT COUNT(topic_id) AS topics_left
-			FROM ' . $this->tables['topics'] . '
-			WHERE ' . $this->db->sql_in_set('topic_id', $topic_id_list);
+				FROM ' . $this->tables['topics'] . '
+				WHERE ' . $this->db->sql_in_set('topic_id', $topic_id_list);
 			$result = $this->db->sql_query_limit($sql, 1);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -296,22 +305,23 @@ class delete
 			{
 				// If there are only soft deleted posts, we display a message why the option is not available
 				$sql = 'SELECT post_id
-				FROM ' . $this->tables['posts'] . '
-				WHERE ' . $this->db->sql_in_set('post_id', $post_ids) . '
-					AND post_visibility <> ' . ITEM_DELETED;
+					FROM ' . $this->tables['posts'] . '
+					WHERE ' . $this->db->sql_in_set('post_id', $post_ids) . '
+						AND post_visibility <> ' . ITEM_DELETED;
 				$result = $this->db->sql_query_limit($sql, 1);
 				$only_softdeleted = !$this->db->sql_fetchfield('post_id');
 				$this->db->sql_freeresult($result);
 			}
 
 			$this->template->assign_vars([
-				'DELETE_POST_PERMANENTLY_EXPLAIN'	=> $this->lang->lang('DELETE_POST_PERMANENTLY', count($post_ids)),
+				'DELETE_POST_PERMANENTLY_EXPLAIN'	=> $this->lang->lang('DELETE_POST_PERMANENTLY', (int) count($post_ids)),
 				'S_ALLOWED_DELETE'					=> (bool) $this->auth->acl_get('m_delete', $forum_id),
 				'S_ALLOWED_SOFTDELETE'				=> (bool) $this->auth->acl_get('m_softdelete', $forum_id),
 				'S_SOFTDELETED'						=> (bool) $only_softdeleted,
 			]);
 
-			$l_confirm = count($post_ids) === 1 ? 'DELETE_POST' : 'DELETE_POSTS';
+			$s_count = count($post_ids);
+			$l_confirm = $s_count === 1 ? 'DELETE_POST' : 'DELETE_POSTS';
 			if ($only_softdeleted)
 			{
 				$l_confirm .= '_PERMANENTLY';
@@ -322,7 +332,7 @@ class delete
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
+			confirm_box(false, [$l_confirm, $s_count], build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 
 		$redirect = $this->request->variable('redirect', "index.$this->php_ext");
@@ -330,17 +340,18 @@ class delete
 
 		if (!$success_msg)
 		{
-			redirect($redirect);
+			return redirect($redirect);
 		}
 		else
 		{
 			if ($affected_topics != 1 || $deleted_topics || !$topic_id)
 			{
-				$redirect = append_sid("{$this->root_path}mcp.$this->php_ext", "f=$forum_id&i=main&mode=forum_view", false);
+				$redirect = $this->helper->route('mcp_view_forum', ['f' => $forum_id]);
 			}
 
-			meta_refresh(3, $redirect);
-			trigger_error($success_msg . '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
+			$this->helper->assign_meta_refresh_var(3, $redirect);
+
+			return $this->helper->message($success_msg . '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 		}
 	}
 
@@ -351,13 +362,13 @@ class delete
 	 * @param bool		$is_soft				Whether or not we're soft deleting
 	 * @param string	$soft_delete_reason		The soft delete reason
 	 * @param string	$action					The action
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function delete_topics(array $topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 	{
 		if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', [$is_soft ? 'm_softdelete' : 'm_delete']))
 		{
-			return;
+			throw new http_exception(404, 'TOPIC_NOT_EXIST');
 		}
 
 		$redirect = $this->request->variable('redirect', build_url(['action', 'quickmod']));
@@ -428,9 +439,9 @@ class delete
 
 			// If there are only shadow topics, we neither need a reason nor softdelete
 			$sql = 'SELECT topic_id
-			FROM ' . $this->tables['topics'] . '
-			WHERE ' . $this->db->sql_in_set('topic_id', $topic_ids) . '
-				AND topic_moved_id = 0';
+				FROM ' . $this->tables['topics'] . '
+				WHERE ' . $this->db->sql_in_set('topic_id', $topic_ids) . '
+					AND topic_moved_id = 0';
 			$result = $this->db->sql_query_limit($sql, 1);
 			$only_shadow = !$this->db->sql_fetchfield('topic_id');
 			$this->db->sql_freeresult($result);
@@ -440,9 +451,9 @@ class delete
 			{
 				// If there are only soft deleted topics, we display a message why the option is not available
 				$sql = 'SELECT topic_id
-				FROM ' . $this->tables['topics'] . '
-				WHERE ' . $this->db->sql_in_set('topic_id', $topic_ids) . '
-					AND topic_visibility <> ' . ITEM_DELETED;
+					FROM ' . $this->tables['topics'] . '
+					WHERE ' . $this->db->sql_in_set('topic_id', $topic_ids) . '
+						AND topic_visibility <> ' . ITEM_DELETED;
 				$result = $this->db->sql_query_limit($sql, 1);
 				$only_softdeleted = !$this->db->sql_fetchfield('topic_id');
 				$this->db->sql_freeresult($result);
@@ -491,12 +502,15 @@ class delete
 
 		if (!$success_msg)
 		{
-			redirect($redirect);
+			return redirect($redirect);
 		}
 		else
 		{
-			meta_refresh(3, $redirect);
-			trigger_error($this->lang->lang($success_msg) . '<br /><br />' . $this->lang->lang('RETURN_' . $redirect_message, '<a href="' . $redirect . '">', '</a>'));
+			$return_page = $this->lang->lang('RETURN_' . $redirect_message, '<a href="' . $redirect . '">', '</a>');
+
+			$this->helper->assign_meta_refresh_var(3, $redirect);
+
+			return $this->helper->message($this->lang->lang($success_msg) . '<br /><br />' . $return_page);
 		}
 	}
 }

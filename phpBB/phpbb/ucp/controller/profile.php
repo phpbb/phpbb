@@ -14,6 +14,7 @@
 namespace phpbb\ucp\controller;
 
 use phpbb\exception\back_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * ucp_profile
@@ -276,8 +277,6 @@ class profile
 
 							include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 
-							$server_url = generate_board_url();
-
 							$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 							$messenger = new \messenger(false);
@@ -291,7 +290,7 @@ class profile
 
 							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
-								'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u={$this->user->data['user_id']}&k=$user_actkey",
+								'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $this->user->data['user_id'], 'k' => $user_actkey], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 							]);
 
 							$messenger->send(NOTIFY_EMAIL);
@@ -506,7 +505,7 @@ class profile
 						// Update Custom Fields
 						$this->pf_manager->update_profile_field_data($this->user->data['user_id'], $cp_data);
 
-						$route = $this->helper->route('ucp_profile');
+						$route = $this->helper->route('ucp_profile_profile');
 						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
 
 						$this->helper->assign_meta_refresh_var(3, $route);
@@ -867,7 +866,7 @@ class profile
 		}
 
 		// @todo rename template files?
-		$s_mode = 'ucp_profile' . ($mode !== 'profile' ? "_{$mode}" : '');
+		$s_mode = "ucp_profile_{$mode}";
 		$l_mode = $this->lang->lang(utf8_strtoupper($s_mode));
 		$u_mode = $this->helper->route($s_mode);
 		$t_mode = $mode === 'profile' ? 'profile_info' : ($mode === 'account' ? 'reg_details' : $mode);

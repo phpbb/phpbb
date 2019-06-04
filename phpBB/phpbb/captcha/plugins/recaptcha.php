@@ -74,8 +74,8 @@ class recaptcha extends captcha_abstract
 		/** @var \phpbb\language\language $lang */
 		$lang = $phpbb_container->get('language');
 
-		/** @var \phpbb\acp\helper\controller $helper */
-		$helper = $phpbb_container->get('acp.controller.helper');
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -101,7 +101,7 @@ class recaptcha extends captcha_abstract
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 
-			return $helper->message($lang->lang('CONFIG_UPDATED') . $helper->adm_back_link('acp_settings_captcha'));
+			return $acp_controller_helper->message_back('CONFIG_UPDATED', 'acp_settings_captcha');
 		}
 		else if ($submit)
 		{
@@ -118,10 +118,10 @@ class recaptcha extends captcha_abstract
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template(),
 				'CAPTCHA_NAME'		=> $this->get_service_name(),
-				'U_ACTION'			=> $helper->route('acp_settings_captcha'),
+				'U_ACTION'			=> $acp_controller_helper->route('acp_settings_captcha'),
 			));
 
-			return $helper->render('captcha_recaptcha_acp.html', $lang->lang('ACP_VC_SETTINGS'));
+			return $acp_controller_helper->render('captcha_recaptcha_acp.html', $lang->lang('ACP_VC_SETTINGS'));
 		}
 	}
 

@@ -13,6 +13,10 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+use phpbb\exception\http_exception;
+
 class post
 {
 	/** @var \phpbb\auth\auth */
@@ -26,6 +30,9 @@ class post
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -61,6 +68,7 @@ class post
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\pagination					$pagination		Pagination object
@@ -76,6 +84,7 @@ class post
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -91,6 +100,7 @@ class post
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -103,25 +113,36 @@ class post
 		$this->tables		= $tables;
 	}
 
-	public function post_details($id, $mode, $action)
+	public function main()
 	{
 		$this->lang->add_lang('posting');
 
-		$post_id = $this->request->variable('p', 0);
-		$start	= $this->request->variable('start', 0);
+		$action = $this->request->variable('action', '');
+		$post_id	= $this->request->variable('p', 0);
 
 		// Get post data
 		$post_info = phpbb_get_post_data([$post_id], false, true);
 
-		add_form_key('mcp_post_details');
-
 		if (empty($post_info))
 		{
-			trigger_error('POST_NOT_EXIST');
+			throw new back_exception(404, 'POST_NOT_EXIST', 'mcp_index');
 		}
 
 		$post_info = $post_info[$post_id];
-		$url = append_sid("{$this->root_path}mcp.$this->php_ext?" . phpbb_extra_url());
+
+		$forum_id	= (int) $post_info['forum_id'];
+		$topic_id	= (int) $post_info['topic_id'];
+		$post_id	= (int) $post_info['post_id'];
+
+		$route = 'mcp_view_post';
+		$params = ['f' => $forum_id, 't' => $topic_id, 'p' => $post_id];
+		$u_mode = array_merge([$route], $params);
+
+		$limit = (int) $this->config['posts_per_page'];
+		$start = $this->request->variable('start', 0);
+
+		$form_key = 'mcp_post_details';
+		add_form_key($form_key);
 
 		switch ($action)
 		{
@@ -136,14 +157,14 @@ class post
 
 					$this->template->assign_vars([
 						'WHOIS'			=> user_ipwhois($ip),
-						'RETURN_POST'	=> $this->lang->lang('RETURN_POST', '<a href="' . append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+						'RETURN_POST'	=> $this->lang->lang('RETURN_POST', '<a href="' . $this->helper->route($route, $params) . '">', '</a>'),
 						'L_RETURN_POST'	=> $this->lang->lang('RETURN_POST', '', ''),
-						'U_RETURN_POST'	=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+						'U_RETURN_POST'	=> $this->helper->route($route, $params),
 					]);
 				}
 
 				// We're done with the whois page so return
-				return;
+				return $this->helper->render('mcp_whois.html', $this->lang->lang('WHOIS'));
 			break;
 
 			case 'chgposter':
@@ -168,19 +189,17 @@ class post
 
 				if ($row === false)
 				{
-					trigger_error('NO_USER');
+					throw new back_exception(404, 'NO_USER', $u_mode);
 				}
 
 				if ($this->auth->acl_get('m_chgposter', $post_info['forum_id']))
 				{
-					if (check_form_key('mcp_post_details'))
+					if (!check_form_key($form_key))
 					{
-						change_poster($post_info, $row);
+						throw new form_invalid_exception($u_mode);
 					}
-					else
-					{
-						trigger_error('FORM_INVALID');
-					}
+
+					$this->change_poster($post_info, $row);
 				}
 			break;
 
@@ -288,9 +307,9 @@ class post
 		$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 
 		$mcp_post_template_data = [
-			'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode parameters
-			'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
-			'U_APPROVE_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
+			'U_MCP_ACTION'			=> $this->helper->route($route, ['quickmod' => true]),
+			'U_POST_ACTION'			=> $this->helper->route($route, $params),
+			'U_APPROVE_ACTION'		=> $this->helper->route('mcp_approve_posts', $params),
 
 			'S_CAN_VIEWIP'			=> (bool) $this->auth->acl_get('m_info', $post_info['forum_id']),
 			'S_CAN_CHGPOSTER'		=> (bool) $this->auth->acl_get('m_chgposter', $post_info['forum_id']),
@@ -307,14 +326,14 @@ class post
 			'DELETED_MESSAGE'		=> $l_deleted_by,
 			'DELETE_REASON'			=> $post_info['post_delete_reason'],
 
-			'U_EDIT'				=> $this->auth->acl_get('m_edit', $post_info['forum_id']) ? append_sid("{$this->root_path}posting.$this->php_ext", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+			'U_EDIT'				=> $this->auth->acl_get('m_edit', $post_info['forum_id']) ? append_sid("{$this->root_path}posting.$this->php_ext", array_merge($params, ['mode' => 'edit'])) : '',
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
-			'U_MCP_APPROVE'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-			'U_MCP_REPORT'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-			'U_MCP_USER_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-			'U_MCP_WARN_USER'		=> $this->auth->acl_get('m_warn') ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-			'U_VIEW_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-			'U_VIEW_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
+			'U_MCP_APPROVE'			=> $this->helper->route('mcp_approve_details', $params),
+			'U_MCP_REPORT'			=> $this->helper->route('mcp_report_details', $params),
+			'U_MCP_USER_NOTES'		=> $this->helper->route('mcp_notes_user', array_merge($params, ['u' => $post_info['user_id']])),
+			'U_MCP_WARN_USER'		=> $this->auth->acl_get('m_warn') ? $this->helper->route('mcp_warn_user', array_merge($params, ['u' => $post_info['user_id']])) : '',
+			'U_VIEW_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", array_merge($params, ['#' => 'p' . $post_id])),
+			'U_VIEW_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", $params),
 
 			'MINI_POST_IMG'			=> $post_unread ? $this->user->img('icon_post_target_unread', 'UNREAD_POST') : $this->user->img('icon_post_target', 'POST'),
 
@@ -339,8 +358,8 @@ class post
 			'POST_ID'				=> $post_info['post_id'],
 			'SIGNATURE'				=> $post_info['user_sig'],
 
-			'U_LOOKUP_IP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
-			'U_WHOIS'				=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+			'U_LOOKUP_IP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? $this->helper->route($route, array_merge($params, ['lookup' => $post_info['poster_ip'], '#' => 'ip'])) : '',
+			'U_WHOIS'				=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? $this->helper->route($route, array_merge($params, ['action' => 'whois', 'ip' => $post_info['poster_ip']])) : '',
 		];
 
 		$s_additional_opts = false;
@@ -371,7 +390,7 @@ class post
 		// Get User Notes
 		$log_data = [];
 		$log_count = false;
-		view_log('user', $log_data, $log_count, $this->config['posts_per_page'], 0, 0, 0, $post_info['user_id']);
+		view_log('user', $log_data, $log_count, $limit, 0, 0, 0, $post_info['user_id']);
 
 		if (!empty($log_data))
 		{
@@ -442,7 +461,7 @@ class post
 
 			if ($rdns_ip_num !== 'all')
 			{
-				$this->template->assign_var('U_LOOKUP_ALL', "$url&amp;i=main&amp;mode=post_details&amp;rdns=all");
+				$this->template->assign_var('U_LOOKUP_ALL', $this->helper->route($route, array_merge($params, ['rdns' => 'all'])));
 			}
 
 			$num_users = false;
@@ -450,7 +469,7 @@ class post
 			if ($start_users)
 			{
 				$num_users = $this->get_num_posters_for_ip($post_info['poster_ip']);
-				$start_users = $this->pagination->validate_start($start_users, $this->config['posts_per_page'], $num_users);
+				$start_users = $this->pagination->validate_start($start_users, $limit, $num_users);
 			}
 
 			// Get other users who've posted under this IP
@@ -462,7 +481,7 @@ class post
 					AND poster_id <> " . (int) $post_info['poster_id'] . "
 				GROUP BY poster_id
 				ORDER BY postings DESC, poster_id ASC";
-			$result = $this->db->sql_query_limit($sql, $this->config['posts_per_page'], $start_users);
+			$result = $this->db->sql_query_limit($sql, $limit, $start_users);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$page_users++;
@@ -470,21 +489,17 @@ class post
 			}
 			$this->db->sql_freeresult($result);
 
-			if ($page_users == $this->config['posts_per_page'] || $start_users)
+			if ($page_users == $limit || $start_users)
 			{
 				if ($num_users === false)
 				{
 					$num_users = $this->get_num_posters_for_ip($post_info['poster_ip']);
 				}
 
-				$this->pagination->generate_template_pagination(
-					$url . '&amp;i=main&amp;mode=post_details',
-					'pagination',
-					'start_users',
-					$num_users,
-					$this->config['posts_per_page'],
-					$start_users
-				);
+				$this->pagination->generate_template_pagination([
+					'routes' => [$route],
+					'params' => $params,
+				], 'pagination', 'start_users', $num_users, $limit, $start_users);
 			}
 
 			if (!empty($users_ary))
@@ -525,7 +540,7 @@ class post
 			if ($start_ips)
 			{
 				$num_ips = $this->get_num_ips_for_poster($post_info['poster_id']);
-				$start_ips = $this->pagination->validate_start($start_ips, $this->config['posts_per_page'], $num_ips);
+				$start_ips = $this->pagination->validate_start($start_ips, $limit, $num_ips);
 			}
 
 			$page_ips = 0;
@@ -535,7 +550,7 @@ class post
 				WHERE poster_id = ' . (int) $post_info['poster_id'] . "
 				GROUP BY poster_ip
 				ORDER BY postings DESC, poster_ip ASC";
-			$result = $this->db->sql_query_limit($sql, $this->config['posts_per_page'], $start_ips);
+			$result = $this->db->sql_query_limit($sql, $limit, $start_ips);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$page_ips++;
@@ -547,27 +562,23 @@ class post
 					'NUM_POSTS'		=> $row['postings'],
 					'L_POST_S'		=> $row['postings'] == 1 ? $this->lang->lang('POST') : $this->lang->lang('POSTS'),
 
-					'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
-					'U_WHOIS'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"),
+					'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : $this->helper->route($route, array_merge($params, ['rdns' => $row['poster_ip'], '#' => 'ip'])),
+					'U_WHOIS'		=> $this->helper->route($route, array_merge($params, ['action' => 'whois', 'ip' => $row['poster_ip']])),
 				]);
 			}
 			$this->db->sql_freeresult($result);
 
-			if ($page_ips == $this->config['posts_per_page'] || $start_ips)
+			if ($page_ips == $limit || $start_ips)
 			{
 				if ($num_ips === false)
 				{
 					$num_ips = $this->get_num_ips_for_poster($post_info['poster_id']);
 				}
 
-				$this->pagination->generate_template_pagination(
-					$url . '&amp;i=main&amp;mode=post_details',
-					'pagination_ips',
-					'start_ips',
-					$num_ips,
-					$this->config['posts_per_page'],
-					$start_ips
-				);
+				$this->pagination->generate_template_pagination([
+					'routes' => [$route],
+					'params' => $params,
+				], 'pagination_ips', 'start_ips', $num_ips, $limit, $start_ips);
 			}
 
 			$user_select = '';
@@ -584,6 +595,8 @@ class post
 
 			$this->template->assign_var('S_USER_SELECT', $user_select);
 		}
+
+		return $this->helper->render('mcp_post.html', $this->lang->lang('MCP_MAIN_POST_DETAILS'));
 	}
 
 	/**
@@ -736,7 +749,7 @@ class post
 
 		if (empty($post_info))
 		{
-			trigger_error('POST_NOT_EXIST');
+			throw new http_exception(404, 'POST_NOT_EXIST');
 		}
 
 		$post_info = $post_info[$post_id];

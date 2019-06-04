@@ -223,7 +223,7 @@ class account
 		$title = $mode === 'terms' ? 'TERMS_USE' : 'PRIVACY';
 		$message = $mode === 'terms' ? 'TERMS_OF_USE_CONTENT' : 'PRIVACY_POLICY';
 
-		if ($this->lang->is_set($message))
+		if (!$this->lang->is_set($message))
 		{
 			if ($this->user->data['is_registered'])
 			{
@@ -240,7 +240,7 @@ class account
 			'AGREEMENT_TEXT'	=> $this->lang->lang($message, $this->config['sitename'], generate_board_url()),
 
 			'L_BACK'			=> $this->lang->lang('BACK_TO_PREV'),
-			'U_BACK'			=> append_sid("{$this->root_path}index.{$this->php_ext}", 'mode=login'),
+			'U_BACK'			=> $this->helper->route('ucp_account', ['mode' => 'login']),
 		]);
 
 		return $this->helper->render('ucp_agreement.html', $this->lang->lang($title));
@@ -310,7 +310,7 @@ class account
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_COOKIES', '');
+			confirm_box(false, 'DELETE_COOKIES', '', 'confirm_body.html', $this->helper->get_current_url());
 
 			return redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
 		}

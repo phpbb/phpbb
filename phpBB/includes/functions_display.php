@@ -28,6 +28,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	global $phpbb_root_path, $phpEx, $config;
 	global $request, $phpbb_dispatcher, $phpbb_container;
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
 
@@ -631,8 +634,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_SUBFORUM_STR'		=> $l_subforums,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
-			'U_UNAPPROVED_POSTS'	=> ($row['forum_id_unapproved_posts']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_posts&amp;f=' . $row['forum_id_unapproved_posts']) : '',
+			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? $controller_helper->route('mcp_unapproved_topics', ['f' => $row['forum_id_unapproved_topics']], false, $user->session_id) : '',
+			'U_UNAPPROVED_POSTS'	=> ($row['forum_id_unapproved_posts']) ? $controller_helper->route('mcp_unapproved_posts', ['f' => $row['forum_id_unapproved_posts']], false, $user->session_id) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url,
@@ -1563,7 +1566,10 @@ function phpbb_get_user_rank($user_data, $user_posts)
 */
 function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false, $check_can_receive_pm = true)
 {
-	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
+	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher, $phpbb_container;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -1672,8 +1678,8 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
 
 		'U_SEARCH_USER' => ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
-		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
+		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? $controller_helper->route('mcp_notes_user', ['u' => $user_id], false, $user->session_id) : '',
+		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? $controller_helper->route('mcp_warn_user', ['u' => $user_id], false, $user->session_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',

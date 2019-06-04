@@ -645,8 +645,8 @@ class qa
 		/** @var \phpbb\language\language $lang */
 		$lang = $phpbb_container->get('language');
 
-		/** @var \phpbb\acp\helper\controller $helper */
-		$helper = $phpbb_container->get('acp.controller.helper');
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
 
 		$lang->add_lang(['acp/board', 'captcha_qa']);
 
@@ -663,10 +663,11 @@ class qa
 		$question_id = $request->variable('question_id', 0);
 
 		// we have two pages, so users might want to navigate from one to the other
-		$list_url = $helper->route('acp_settings_captcha', ['configure' => true, 'select_captcha' => $this->get_service_name()]);
+		$route = 'acp_settings_captcha';
+		$params = ['configure' => true, 'select_captcha' => $this->get_service_name()];
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $helper->route('acp_settings_captcha'),
+			'U_ACTION'		=> $acp_controller_helper->route('acp_settings_captcha'),
 			'QUESTION_ID'	=> $question_id ,
 			'CLASS'			=> $this->get_service_name(),
 		));
@@ -684,7 +685,7 @@ class qa
 				{
 					$this->acp_delete_question($question_id);
 
-					return $helper->message($lang->lang('QUESTION_DELETED') . $helper->adm_back_link($list_url, false));
+					return $acp_controller_helper->message_back('QUESTION_DELETED', $route, $params);
 				}
 				else
 				{
@@ -716,7 +717,7 @@ class qa
 			}
 
 			$template->assign_vars(array(
-				'U_LIST' => $list_url,
+				'U_LIST' => $acp_controller_helper->route($route, $params),
 			));
 
 			if ($question_id)
@@ -766,7 +767,7 @@ class qa
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 
-					return $helper->message($lang->lang('CONFIG_UPDATED') . $helper->adm_back_link($list_url, false));
+					return $acp_controller_helper->message_back('CONFIG_UPDATED', $route, $params);
 				}
 			}
 			else if ($submit)
@@ -775,7 +776,7 @@ class qa
 			}
 		}
 
-		return $helper->render('captcha_qa_acp.html', $lang->lang('ACP_VC_SETTINGS'));
+		return $acp_controller_helper->render('captcha_qa_acp.html', $lang->lang('ACP_VC_SETTINGS'));
 	}
 
 	/**
@@ -785,17 +786,16 @@ class qa
 	{
 		global $db, $template, $phpbb_container;
 
-		/** @var \phpbb\acp\helper\controller $helper */
-		$helper = $phpbb_container->get('acp.controller.helper');
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
+
+		$template->assign_vars(array(
+			'S_LIST'	=> true,
+		));
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_captcha_questions;
 		$result = $db->sql_query($sql);
-
-		$template->assign_vars(array(
-			'S_LIST'			=> true,
-		));
-
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$params = ['question_id' => $row['question_id'], 'configure' => true, 'select_captcha' => $this->get_service_name()];
@@ -804,8 +804,8 @@ class qa
 				'QUESTION_TEXT'		=> $row['question_text'],
 				'QUESTION_ID'		=> $row['question_id'],
 				'QUESTION_LANG'		=> $row['lang_iso'],
-				'U_DELETE'			=> $helper->route('acp_settings_captcha', array_merge(['action' => 'delete'], $params)),
-				'U_EDIT'			=> $helper->route('acp_settings_captcha', array_merge(['action' => 'edit'], $params)),
+				'U_DELETE'			=> $acp_controller_helper->route('acp_settings_captcha', array_merge(['action' => 'delete'], $params)),
+				'U_EDIT'			=> $acp_controller_helper->route('acp_settings_captcha', array_merge(['action' => 'edit'], $params)),
 			));
 		}
 		$db->sql_freeresult($result);

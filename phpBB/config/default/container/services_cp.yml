@@ -1,6 +1,6 @@
 services:
     cp.manager:
-        class: \phpbb\cp\manager
+        class: phpbb\cp\manager
         arguments:
             - '@acp_collection'
             - '@mcp_collection'
@@ -9,29 +9,38 @@ services:
             - '@mcp.constructor'
             - '@ucp.constructor'
             - '@cp.auth'
-            - '@cp.lang'
+            - '@cp.identifiers'
+            - '@cp.language'
 
     cp.menu:
-        class: \phpbb\cp\menu\menu
+        class: phpbb\cp\menu\menu
         arguments:
             - '@cp.auth'
+            - '@cp.identifiers'
             - '@cp.manager'
             - '@controller.helper'
             - '@language'
+            - '@request'
             - '@symfony_request'
             - '@template'
 
     cp.auth:
-        class: \phpbb\cp\helper\auth
+        class: phpbb\cp\helper\auth
         arguments:
             - '@auth'
             - '@config'
-            - '@dispatcher'
             - '@ext.manager'
             - '@request'
 
-    cp.lang:
-        class: \phpbb\cp\helper\language
+    cp.identifiers:
+        class: phpbb\cp\helper\identifiers
+        arguments:
+            - '@dbal.conn'
+            - '@request'
+            - '%tables%'
+
+    cp.language:
+        class: phpbb\cp\helper\language
         arguments:
             - '@config'
             - '@ext.manager'

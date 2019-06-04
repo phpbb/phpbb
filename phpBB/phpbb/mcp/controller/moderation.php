@@ -13,7 +13,10 @@
 
 namespace phpbb\mcp\controller;
 
-class queue
+use phpbb\exception\back_exception;
+use phpbb\exception\http_exception;
+
+class moderation
 {
 	/** @var \phpbb\auth\auth */
 	protected $auth;
@@ -30,13 +33,16 @@ class queue
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $lang;
 
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\mcp\functions\delete */
+	/** @var \phpbb\mcp\controller\delete */
 	protected $mcp_delete;
 
 	/** @var \phpbb\notification\manager */
@@ -66,11 +72,6 @@ class queue
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -79,9 +80,10 @@ class queue
 	 * @param \phpbb\content_visibility					$content_visibility		Content visibility
 	 * @param \phpbb\db\driver\driver_interface			$db						Database object
 	 * @param \phpbb\event\dispatcher					$dispatcher				Event dispatcher
+	 * @param \phpbb\controller\helper					$helper					Controller helper object
 	 * @param \phpbb\language\language					$lang					Language object
 	 * @param \phpbb\log\log							$log					Log object
-	 * @param \phpbb\mcp\functions\delete				$mcp_delete				MCP Delete functions
+	 * @param \phpbb\mcp\controller\delete				$mcp_delete				MCP Delete functions
 	 * @param \phpbb\notification\manager				$notification_manager	Notification manager object
 	 * @param \phpbb\pagination							$pagination				Pagination object
 	 * @param \phpbb\report\report_reason_list_provider	$reason_provider		Report reason list provider object
@@ -98,9 +100,10 @@ class queue
 		\phpbb\content_visibility $content_visibility,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
-		\phpbb\mcp\functions\delete $mcp_delete,
+		delete $mcp_delete,
 		\phpbb\notification\manager $notification_manager,
 		\phpbb\pagination $pagination,
 		\phpbb\report\report_reason_list_provider $reason_provider,
@@ -117,6 +120,7 @@ class queue
 		$this->content_visibility	= $content_visibility;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->mcp_delete			= $mcp_delete;
@@ -132,17 +136,18 @@ class queue
 		$this->tables				= $tables;
 	}
 
-	public function main($id, $mode)
+	public function main($mode, $page = 1)
 	{
-		/** @todo */
-		global $action;
-
 		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
 
-		$forum_id = $this->request->variable('f', 0);
-		$start = $this->request->variable('start', 0);
+		$action = $this->request->variable('action', ['' => '']);
+		$action = is_array($action) && !empty($action) ? key($action) : $this->request->variable('action', '');
 
-		$this->page_title = 'MCP_QUEUE';
+		$forum_id = $this->request->variable('f', 0);
+
+		// Mode variables
+		$l_mode = 'MCP_QUEUE_' . utf8_strtoupper($mode);
+		$u_mode = "mcp_{$mode}";
 
 		switch ($action)
 		{
@@ -155,15 +160,29 @@ class queue
 
 				if (!empty($post_id_list))
 				{
-					$this->approve_posts($action, $post_id_list, 'queue', $mode);
+					$u_approve = $action === 'approve' ? ['mcp_unapproved_posts'] : ['mcp_deleted_posts'];
+
+					if ($forum_id)
+					{
+						$u_approve['f'] = $forum_id;
+					}
+
+					return $this->approve_posts($action, $post_id_list, $u_approve);
 				}
 				else if (!empty($topic_id_list))
 				{
-					$this->approve_topics($action, $topic_id_list, 'queue', $mode);
+					$u_approve = $action === 'approve' ? ['mcp_unapproved_topics'] : ['mcp_deleted_topics'];
+
+					if ($forum_id)
+					{
+						$u_approve['f'] = $forum_id;
+					}
+
+					return $this->approve_topics($action, $topic_id_list, $u_approve);
 				}
 				else
 				{
-					trigger_error('NO_POST_SELECTED');
+					throw new back_exception(400, 'NO_POST_SELECTED', $u_mode);
 				}
 			break;
 
@@ -174,15 +193,15 @@ class queue
 
 				if (!empty($post_id_list))
 				{
-					$this->mcp_delete->delete_posts($post_id_list, false, $delete_reason, $action);
+					return $this->mcp_delete->delete_posts($post_id_list, false, $delete_reason, $action);
 				}
 				else if (!empty($topic_id_list))
 				{
-					$this->mcp_delete->delete_topics($topic_id_list, false, $delete_reason, $action);
+					return $this->mcp_delete->delete_topics($topic_id_list, false, $delete_reason, $action);
 				}
 				else
 				{
-					trigger_error('NO_POST_SELECTED');
+					throw new back_exception(400, 'NO_POST_SELECTED', $u_mode);
 				}
 			break;
 
@@ -190,10 +209,9 @@ class queue
 				$post_id_list = $this->request->variable('post_id_list', [0]);
 				$topic_id_list = $this->request->variable('topic_id_list', [0]);
 
-				if (!empty($topic_id_list) && $mode == 'deleted_topics')
+				if (!empty($topic_id_list) && $mode === 'deleted_topics')
 				{
-					$this->mcp_delete->delete_topics($topic_id_list, false, '', 'disapprove');
-					return;
+					return $this->mcp_delete->delete_topics($topic_id_list, false, '', 'disapprove');
 				}
 
 				if (!class_exists('messenger'))
@@ -205,7 +223,7 @@ class queue
 				{
 					$post_id_list = [];
 
-					$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : [ITEM_UNAPPROVED, ITEM_REAPPROVE];
+					$post_visibility = $mode === 'deleted_topics' ? ITEM_DELETED : [ITEM_UNAPPROVED, ITEM_REAPPROVE];
 					$sql = 'SELECT post_id
 						FROM ' . $this->tables['posts'] . '
 						WHERE ' . $this->db->sql_in_set('post_visibility', $post_visibility) . '
@@ -220,569 +238,621 @@ class queue
 
 				if (!empty($post_id_list))
 				{
-					$this->disapprove_posts($post_id_list, 'queue', $mode);
+					$u_disapprove = !empty($topic_id_list) ? ['mcp_unapproved_topics'] : ['mcp_unapproved_posts'];
+
+					if ($forum_id)
+					{
+						$u_disapprove['f'] = $forum_id;
+					}
+
+					return $this->disapprove_posts($post_id_list, $u_disapprove);
 				}
 				else
 				{
-					trigger_error('NO_POST_SELECTED');
+					throw new back_exception(400, 'NO_POST_SELECTED', $u_mode);
 				}
 			break;
 		}
 
-		switch ($mode)
+		if ($mode === 'approve_details')
 		{
-			case 'approve_details':
-				$this->tpl_name = 'mcp_post';
+			return $this->approve_details();
+		}
 
-				$this->lang->add_lang(['posting', 'viewtopic']);
+		# --- Start of the main pages --- #
+		$this->lang->add_lang(['viewtopic', 'viewforum']);
 
-				$post_id = $this->request->variable('p', 0);
-				$topic_id = $this->request->variable('t', 0);
+		// Pagination variables
+		$limit = (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $limit;
 
-				if ($topic_id)
-				{
-					$topic_info = phpbb_get_topic_data([$topic_id], 'm_approve');
-					if (isset($topic_info[$topic_id]['topic_first_post_id']))
-					{
-						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
+		// General variables
+		$m_perm		= 'm_approve';
+		$is_topics	= $mode === 'unapproved_topics' || $mode === 'deleted_topics';
+		$is_restore	= $mode === 'deleted_posts' || $mode === 'deleted_topics';
+		$visibility	= !$is_restore ? [ITEM_UNAPPROVED, ITEM_REAPPROVE] : [ITEM_DELETED];
 
-						$this->notification_manager->mark_notifications('topic_in_queue', $topic_id, $this->user->data['user_id']);
-					}
-					else
-					{
-						$topic_id = 0;
-					}
-				}
+		// Topic and forum variables
+		$topic_id	= $this->request->variable('t', 0);
+		$topic_info	= [];
+		$forum_info = [];
 
-				$this->notification_manager->mark_notifications('post_in_queue', $post_id, $this->user->data['user_id']);
+		if ($topic_id)
+		{
+			$topic_info = phpbb_get_topic_data([$topic_id]);
 
-				$post_info = phpbb_get_post_data([$post_id], 'm_approve', true);
+			if (empty($topic_info))
+			{
+				throw new back_exception(404, 'TOPIC_NOT_EXIST', [$u_mode, 'f' => $forum_id]);
+			}
 
-				if (empty($post_info))
-				{
-					trigger_error('NO_POST_SELECTED');
-				}
+			$topic_info	= (array) $topic_info[$topic_id];
+			$forum_id	= (int) $topic_info['forum_id'];
+		}
 
-				$post_info = $post_info[$post_id];
+		// Flipped so we can isset() the forum IDs
+		$forum_list_read	= array_flip(get_forum_list('f_read', true, true));
+		$forum_list_approve	= get_forum_list($m_perm, false, true);
 
-				if ($post_info['topic_first_post_id'] != $post_id && topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
-				{
-					$this->template->assign_vars([
-						'S_TOPIC_REVIEW'	=> true,
-						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
-						'TOPIC_TITLE'		=> $post_info['topic_title'],
-					]);
-				}
+		// Remove forums we cannot read
+		foreach ($forum_list_approve as $k => $forum_data)
+		{
+			if (!isset($forum_list_read[$forum_data['forum_id']]))
+			{
+				unset($forum_list_approve[$k]);
+			}
+		}
+		unset($forum_list_read);
 
-				$attachments = $topic_tracking_info = [];
+		if (!$forum_id)
+		{
+			$forum_list = [];
 
-				// Get topic tracking info
-				if ($this->config['load_db_lastread'])
-				{
-					$tmp_topic_data = [$post_info['topic_id'] => $post_info];
-					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, [$post_info['forum_id'] => $post_info['forum_mark_time']]);
-					unset($tmp_topic_data);
-				}
-				else
-				{
-					$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
-				}
+			foreach ($forum_list_approve as $row)
+			{
+				$forum_list[] = (int) $row['forum_id'];
+			}
 
-				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+			if (empty($forum_list))
+			{
+				throw new http_exception(403, 'NOT_MODERATOR');
+			}
 
-				// Process message, leave it uncensored
-				$parse_flags = ($post_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
-				$message = generate_text_for_display($post_info['post_text'], $post_info['bbcode_uid'], $post_info['bbcode_bitfield'], $parse_flags, false);
+			$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
+				FROM ' . $this->tables['forums'] . '
+				WHERE ' . $this->db->sql_in_set('forum_id', $forum_list);
+			$result = $this->db->sql_query($sql);
+			$forum_info['forum_topics_approved'] = (int) $this->db->sql_fetchfield('sum_forum_topics');
+			$this->db->sql_freeresult($result);
+		}
+		else
+		{
+			$forum_info = phpbb_get_forum_data([$forum_id], $m_perm);
 
-				if ($post_info['post_attachment'] && $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $post_info['forum_id']))
-				{
-					$sql = 'SELECT *
-						FROM ' . $this->tables['attachments'] . '
-						WHERE post_msg_id = ' . (int) $post_id . '
-							AND in_message = 0
-						ORDER BY filetime DESC, post_msg_id ASC';
-					$result = $this->db->sql_query($sql);
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$attachments[] = $row;
-					}
-					$this->db->sql_freeresult($result);
+			if (empty($forum_info))
+			{
+				throw new http_exception(403, 'NOT_MODERATOR');
+			}
 
-					if (!empty($attachments))
-					{
-						$update_count = [];
-						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
-					}
+			$forum_list = $forum_id;
+		}
 
-					// Display not already displayed Attachments for this post, we already parsed them. ;)
-					if (!empty($attachments))
-					{
-						$this->template->assign_var('S_HAS_ATTACHMENTS', true);
+		$forum_options = '<option value="0' . ($forum_id === 0 ? '" selected="selected' : '') . '">' . $this->lang->lang('ALL_FORUMS') . '</option>';
+		foreach ($forum_list_approve as $row)
+		{
+			$forum_options .= '<option value="' . $row['forum_id'] . ($forum_id == $row['forum_id'] ? '" selected="selected' : '') . '">' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $this->lang->lang('ELLIPSIS')) . '</option>';
+		}
 
-						foreach ($attachments as $attachment)
-						{
-							$this->template->assign_block_vars('attachment', [
-								'DISPLAY_ATTACHMENT'	=> $attachment,
-							]);
-						}
-					}
-				}
+		$sort_days = $total = 0;
+		$sort_key = $sort_dir = '';
+		$sort_by_sql = $sort_order_sql = [];
+		phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				// Deleting information
-				if ($post_info['post_visibility'] == ITEM_DELETED && $post_info['post_delete_user'])
-				{
-					// User having deleted the post also being the post author?
-					if (!$post_info['post_delete_user'] || $post_info['post_delete_user'] == $post_info['poster_id'])
-					{
-						$display_username = get_username_string('full', $post_info['poster_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']);
-					}
-					else
-					{
-						$sql = 'SELECT u.user_id, u.username, u.user_colour
-							FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['users'] . ' u
-							WHERE p.post_id = ' . (int) $post_info['post_id'] . '
-								AND p.post_delete_user = u.user_id';
-						$result = $this->db->sql_query($sql);
-						$post_delete_userinfo = $this->db->sql_fetchrow($result);
-						$this->db->sql_freeresult($result);
+		$limit_time_sql = $sort_days ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-						$display_username = get_username_string('full', $post_info['post_delete_user'], $post_delete_userinfo['username'], $post_delete_userinfo['user_colour']);
-					}
+		$forum_names = [];
 
-					$l_deleted_by = $this->lang->lang('DELETED_INFORMATION', $display_username, $this->user->format_date($post_info['post_delete_time'], false, true));
-				}
-				else
-				{
-					$l_deleted_by = '';
-				}
+		if (!$is_topics)
+		{
+			$sql = 'SELECT p.post_id
+				FROM ' . $this->tables['posts'] . ' p, 
+					' . $this->tables['topics'] . ' t' .
+					($sort_order_sql[0] === 'u' ? ', ' . $this->tables['users'] . ' u' : '') . '
+				WHERE ' . $this->db->sql_in_set('p.forum_id', $forum_list) . '
+					AND ' . $this->db->sql_in_set('p.post_visibility', $visibility) . '
+					' . ($sort_order_sql[0] === 'u' ? 'AND u.user_id = p.poster_id' : '') . '
+					' . ($topic_id ? 'AND p.topic_id = ' . (int) $topic_id : '') . "
+					AND t.topic_id = p.topic_id
+					AND (t.topic_visibility <> p.post_visibility
+						OR t.topic_delete_user = 0)
+					$limit_time_sql
+				ORDER BY $sort_order_sql";
 
-				$post_url = append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
-				$topic_url = append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
+			/**
+			 * Alter sql query to get posts in queue to be accepted
+			 *
+			 * @event core.mcp_queue_get_posts_query_before
+			 * @var string	sql						Associative array with the query to be executed
+			 * @var array	forum_list				List of forums that contain the posts
+			 * @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+			 * @var int		topic_id				If topic_id not equal to 0, the topic id to filter the posts to display
+			 * @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+			 * @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
+			 * @since 3.1.0-RC3
+			 */
+			$vars = [
+				'sql',
+				'forum_list',
+				'visibility_const',
+				'topic_id',
+				'limit_time_sql',
+				'sort_order_sql',
+			];
+			extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_query_before', compact($vars)));
 
-				$post_data = [
-					'S_MCP_QUEUE'			=> true,
-					'U_APPROVE_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
-					'S_CAN_DELETE_POST'		=> $this->auth->acl_get('m_delete', $post_info['forum_id']),
-					'S_CAN_VIEWIP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']),
-					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> $post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE,
-					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
-					'S_USER_NOTES'			=> true,
-					'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED),
-					'DELETED_MESSAGE'		=> $l_deleted_by,
-					'DELETE_REASON'			=> $post_info['post_delete_reason'],
+			$i = 0;
+			$post_ids = [];
 
-					'U_EDIT'				=> ($this->auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$this->root_path}posting.$this->php_ext", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-					'U_MCP_APPROVE'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_REPORT'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_USER_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-					'U_VIEW_POST'			=> $post_url,
-					'U_VIEW_TOPIC'			=> $topic_url,
+			$result = $this->db->sql_query_limit($sql, $limit, $start);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$post_ids[] = (int) $row['post_id'];
+				$row_num[(int) $row['post_id']] = $i++;
+			}
+			$this->db->sql_freeresult($result);
 
-					'MINI_POST_IMG'			=> ($post_unread) ? $this->user->img('icon_post_target_unread', 'UNREAD_POST') : $this->user->img('icon_post_target', 'POST'),
-
-					'RETURN_QUEUE'			=> $this->lang->lang('RETURN_QUEUE', '<a href="' . append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
-					'RETURN_POST'			=> $this->lang->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>'),
-					'RETURN_TOPIC_SIMPLE'	=> $this->lang->lang('RETURN_TOPIC_SIMPLE', '<a href="' . $topic_url . '">', '</a>'),
-					'REPORTED_IMG'			=> $this->user->img('icon_topic_reported', $this->lang->lang('POST_REPORTED')),
-					'UNAPPROVED_IMG'		=> $this->user->img('icon_topic_unapproved', $this->lang->lang('POST_UNAPPROVED')),
-					'EDIT_IMG'				=> $this->user->img('icon_post_edit', $this->lang->lang('EDIT_POST')),
-
-					'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
-					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
-					'POST_AUTHOR'			=> get_username_string('username', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
-					'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
-
-					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> $post_info['post_subject'],
-					'POST_DATE'				=> $this->user->format_date($post_info['post_time']),
-					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($this->auth->acl_get('m_info', $post_info['forum_id']) && $this->request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
-					'POST_ID'				=> $post_info['post_id'],
-					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
-
-					'U_LOOKUP_IP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
-				];
+			if (!empty($post_ids))
+			{
+				$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
+					FROM ' . $this->tables['posts'] . ' p, 
+						' . $this->tables['topics'] . ' t, 
+						' . $this->tables['users'] . ' u
+					WHERE ' . $this->db->sql_in_set('p.post_id', $post_ids) . '
+						AND t.topic_id = p.topic_id
+						AND u.user_id = p.poster_id
+					ORDER BY ' . $sort_order_sql;
 
 				/**
-				* Alter post awaiting approval template before it is rendered
-				*
-				* @event core.mcp_queue_approve_details_template
-				* @var int		post_id		Post ID
-				* @var int		topic_id	Topic ID
-				* @var array	topic_info	Topic data
-				* @var array	post_info	Post data
-				* @var array	post_data	Post template data
-				* @var string	message		Post message
-				* @var string	post_url	Post URL
-				* @var string	topic_url	Topic URL
-				* @since 3.2.2-RC1
-				*/
+				 * Alter sql query to get information on all posts in queue
+				 *
+				 * @event core.mcp_queue_get_posts_for_posts_query_before
+				 * @var string	sql						String with the query to be executed
+				 * @var array	forum_list				List of forums that contain the posts
+				 * @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+				 * @var int		topic_id				topic_id in the page request
+				 * @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+				 * @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
+				 * @since 3.2.3-RC2
+				 */
 				$vars = [
-					'post_id',
+					'sql',
+					'forum_list',
+					'visibility_const',
 					'topic_id',
-					'topic_info',
-					'post_info',
-					'post_data',
-					'message',
-					'post_url',
-					'topic_url',
+					'limit_time_sql',
+					'sort_order_sql',
 				];
-				extract($this->dispatcher->trigger_event('core.mcp_queue_approve_details_template', compact($vars)));
+				extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_for_posts_query_before', compact($vars)));
 
-				$this->template->assign_vars($post_data);
-			break;
+				$post_data = $rowset = [];
 
-			case 'unapproved_topics':
-			case 'unapproved_posts':
-			case 'deleted_topics':
-			case 'deleted_posts':
-				$m_perm = 'm_approve';
-				$is_topics = ($mode == 'unapproved_topics' || $mode == 'deleted_topics') ? true : false;
-				$is_restore = ($mode == 'deleted_posts' || $mode == 'deleted_topics') ? true : false;
-				$visibility_const = (!$is_restore) ? [ITEM_UNAPPROVED, ITEM_REAPPROVE] : ITEM_DELETED;
-
-				$this->lang->add_lang(['viewtopic', 'viewforum']);
-
-				$topic_id = $this->request->variable('t', 0);
-				$topic_info = $forum_info = [];
-
-				if ($topic_id)
+				$result = $this->db->sql_query($sql);
+				while ($row = $this->db->sql_fetchrow($result))
 				{
-					$topic_info = phpbb_get_topic_data([$topic_id]);
+					$forum_names[] = (int) $row['forum_id'];
+					$post_data[(int) $row['post_id']] = $row;
+				}
+				$this->db->sql_freeresult($result);
 
-					if (empty($topic_info))
-					{
-						trigger_error('TOPIC_NOT_EXIST');
-					}
-
-					$topic_info = $topic_info[$topic_id];
-					$forum_id = (int) $topic_info['forum_id'];
+				foreach ($post_ids as $post_id)
+				{
+					$rowset[] = $post_data[$post_id];
 				}
 
-				$forum_list_approve = get_forum_list($m_perm, false, true);
-				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
-
-				// Remove forums we cannot read
-				foreach ($forum_list_approve as $k => $forum_data)
-				{
-					if (!isset($forum_list_read[$forum_data['forum_id']]))
-					{
-						unset($forum_list_approve[$k]);
-					}
-				}
-				unset($forum_list_read);
-
-				if (!$forum_id)
-				{
-					$forum_list = [];
-					foreach ($forum_list_approve as $row)
-					{
-						$forum_list[] = (int) $row['forum_id'];
-					}
-
-					if (empty($forum_list))
-					{
-						trigger_error('NOT_MODERATOR');
-					}
-
-					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
-						FROM ' . $this->tables['forums'] . '
-						WHERE ' . $this->db->sql_in_set('forum_id', $forum_list);
-					$result = $this->db->sql_query($sql);
-					$forum_info['forum_topics_approved'] = (int) $this->db->sql_fetchfield('sum_forum_topics');
-					$this->db->sql_freeresult($result);
-				}
-				else
-				{
-					$forum_info = phpbb_get_forum_data([$forum_id], $m_perm);
-
-					if (empty($forum_info))
-					{
-						trigger_error('NOT_MODERATOR');
-					}
-
-					$forum_list = $forum_id;
-				}
-
-				$forum_options = '<option value="0' . ($forum_id === 0 ? '" selected="selected' : '') . '">' . $this->lang->lang('ALL_FORUMS') . '</option>';
-				foreach ($forum_list_approve as $row)
-				{
-					$forum_options .= '<option value="' . $row['forum_id'] . ($forum_id == $row['forum_id'] ? '" selected="selected' : '') . '">' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $this->lang->lang('ELLIPSIS')) . '</option>';
-				}
-
-				$sort_days = $total = 0;
-				$sort_key = $sort_dir = '';
-				$sort_by_sql = $sort_order_sql = [];
-				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
-
-				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
-
-				$forum_names = [];
-
-				if (!$is_topics)
-				{
-					$sql = 'SELECT p.post_id
-						FROM ' . $this->tables['posts'] . ' p, 
-							' . $this->tables['topics'] . ' t' .
-							($sort_order_sql[0] === 'u' ? ', ' . $this->tables['users'] . ' u' : '') . '
-						WHERE ' . $this->db->sql_in_set('p.forum_id', $forum_list) . '
-							AND ' . $this->db->sql_in_set('p.post_visibility', $visibility_const) . '
-							' . ($sort_order_sql[0] === 'u' ? 'AND u.user_id = p.poster_id' : '') . '
-							' . ($topic_id ? 'AND p.topic_id = ' . (int) $topic_id : '') . "
-							AND t.topic_id = p.topic_id
-							AND (t.topic_visibility <> p.post_visibility
-								OR t.topic_delete_user = 0)
-							$limit_time_sql
-						ORDER BY $sort_order_sql";
-
-					/**
-					* Alter sql query to get posts in queue to be accepted
-					*
-					* @event core.mcp_queue_get_posts_query_before
-					* @var string	sql						Associative array with the query to be executed
-					* @var array	forum_list				List of forums that contain the posts
-					* @var int		visibility_const		Integer with one of the possible ITEM_* constant values
-					* @var int		topic_id				If topic_id not equal to 0, the topic id to filter the posts to display
-					* @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-					* @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
-					* @since 3.1.0-RC3
-					*/
-					$vars = [
-						'sql',
-						'forum_list',
-						'visibility_const',
-						'topic_id',
-						'limit_time_sql',
-						'sort_order_sql',
-					];
-					extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_query_before', compact($vars)));
-
-					$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
-
-					$i = 0;
-					$post_ids = [];
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$post_ids[] = (int) $row['post_id'];
-						$row_num[(int) $row['post_id']] = $i++;
-					}
-					$this->db->sql_freeresult($result);
-
-					if (!empty($post_ids))
-					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
-							FROM ' . $this->tables['posts'] . ' p, 
-								' . $this->tables['topics'] . ' t, 
-								' . $this->tables['users'] . ' u
-							WHERE ' . $this->db->sql_in_set('p.post_id', $post_ids) . '
-								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id
-							ORDER BY ' . $sort_order_sql;
-
-						/**
-						* Alter sql query to get information on all posts in queue
-						*
-						* @event core.mcp_queue_get_posts_for_posts_query_before
-						* @var string	sql						String with the query to be executed
-						* @var array	forum_list				List of forums that contain the posts
-						* @var int		visibility_const		Integer with one of the possible ITEM_* constant values
-						* @var int		topic_id				topic_id in the page request
-						* @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-						* @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
-						* @since 3.2.3-RC2
-						*/
-						$vars = [
-							'sql',
-							'forum_list',
-							'visibility_const',
-							'topic_id',
-							'limit_time_sql',
-							'sort_order_sql',
-						];
-						extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_for_posts_query_before', compact($vars)));
-
-						$result = $this->db->sql_query($sql);
-
-						$post_data = $rowset = [];
-						while ($row = $this->db->sql_fetchrow($result))
-						{
-							$forum_names[] = (int) $row['forum_id'];
-							$post_data[(int) $row['post_id']] = $row;
-						}
-						$this->db->sql_freeresult($result);
-
-						foreach ($post_ids as $post_id)
-						{
-							$rowset[] = (int) $post_data[$post_id];
-						}
-						unset($post_data, $post_ids);
-					}
-					else
-					{
-						$rowset = [];
-					}
-				}
-				else
-				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
-						FROM ' . $this->tables['topics'] . ' t
-						WHERE ' . $this->db->sql_in_set('forum_id', $forum_list) . '
-							AND ' . $this->db->sql_in_set('topic_visibility', $visibility_const) . "
-							AND topic_delete_user <> 0
-							$limit_time_sql
-						ORDER BY $sort_order_sql";
-
-					/**
-					 * Alter sql query to get information on all topics in the list of forums provided.
-					 *
-					 * @event core.mcp_queue_get_posts_for_topics_query_before
-					 * @var string	sql						String with the query to be executed
-					 * @var array	forum_list				List of forums that contain the posts
-					 * @var int		visibility_const		Integer with one of the possible ITEM_* constant values
-					 * @var int		topic_id				topic_id in the page request
-					 * @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
-					 * @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
-					 * @since 3.1.0-RC3
-					 */
-					$vars = [
-						'sql',
-						'forum_list',
-						'visibility_const',
-						'topic_id',
-						'limit_time_sql',
-						'sort_order_sql',
-					];
-					extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_for_topics_query_before', compact($vars)));
-
-					$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
-
-					$rowset = [];
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$forum_names[] = (int) $row['forum_id'];
-						$rowset[] = $row;
-					}
-					$this->db->sql_freeresult($result);
-				}
-
-				if (!empty($forum_names))
-				{
-					// Select the names for the forum_ids
-					$sql = 'SELECT forum_id, forum_name
-						FROM ' . $this->tables['forums'] . '
-						WHERE ' . $this->db->sql_in_set('forum_id', $forum_names);
-					$result = $this->db->sql_query($sql, 3600);
-
-					$forum_names = [];
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						$forum_names[(int) $row['forum_id']] = $row['forum_name'];
-					}
-					$this->db->sql_freeresult($result);
-				}
-
-				foreach ($rowset as $row)
-				{
-					if (empty($row['post_username']))
-					{
-						$row['post_username'] = $row['username'] ?: $this->lang->lang('GUEST');
-					}
-
-					$post_row = [
-						'U_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-						'U_VIEWFORUM'		=> append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $row['forum_id']),
-						'U_VIEWPOST'		=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'	=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
-
-						'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-						'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-						'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-						'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-
-						'POST_ID'		=> $row['post_id'],
-						'TOPIC_ID'		=> $row['topic_id'],
-						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
-						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $this->lang->lang('NO_SUBJECT'),
-						'TOPIC_TITLE'	=> $row['topic_title'],
-						'POST_TIME'		=> $this->user->format_date($row['post_time']),
-						'S_HAS_ATTACHMENTS'	=> $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
-					];
-
-					/**
-					 * Alter sql query to get information on all topics in the list of forums provided.
-					 *
-					 * @event core.mcp_queue_get_posts_modify_post_row
-					 * @var array	post_row	Template variables for current post
-					 * @var array	row			Post data
-					 * @var array	forum_names	Forum names
-					 * @since 3.2.3-RC2
-					 */
-					$vars = [
-						'post_row',
-						'row',
-						'forum_names',
-					];
-					extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_modify_post_row', compact($vars)));
-
-					$this->template->assign_block_vars('postrow', $post_row);
-				}
-				unset($rowset, $forum_names);
-
-				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $this->config['topics_per_page'], $start);
-
-				// Now display the page
-				$this->template->assign_vars([
-					'L_TITLE'				=> $this->lang->lang('MCP_QUEUE_' . strtoupper($mode)),
-					'L_EXPLAIN'				=> $this->lang->lang('MCP_QUEUE_' . strtoupper($mode) . '_EXPLAIN'),
-					'L_DISPLAY_ITEMS'		=> !$is_topics ? $this->lang->lang('DISPLAY_POSTS') : $this->lang->lang('DISPLAY_TOPICS'),
-					'L_ONLY_TOPIC'			=> $topic_id ? $this->lang->lang('ONLY_TOPIC', $topic_info['topic_title']) : '',
-
-					'S_FORUM_OPTIONS'		=> $forum_options,
-					'S_MCP_ACTION'			=> build_url(['t', 'f', 'sd', 'st', 'sk']),
-					'S_TOPICS'				=> (bool) $is_topics,
-					'S_RESTORE'				=> (bool) $is_restore,
-
-					'TOPIC_ID'				=> (int) $topic_id,
-					'TOTAL'					=> $this->lang->lang(((!$is_topics) ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
-				]);
-
-				$this->tpl_name = 'mcp_queue';
-			break;
+				unset($post_data, $post_ids);
+			}
+			else
+			{
+				$rowset = [];
+			}
 		}
+		else
+		{
+			$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
+				FROM ' . $this->tables['topics'] . ' t
+				WHERE ' . $this->db->sql_in_set('forum_id', $forum_list) . '
+					AND ' . $this->db->sql_in_set('topic_visibility', $visibility) . "
+					AND topic_delete_user <> 0
+					$limit_time_sql
+				ORDER BY $sort_order_sql";
+
+			/**
+			 * Alter sql query to get information on all topics in the list of forums provided.
+			 *
+			 * @event core.mcp_queue_get_posts_for_topics_query_before
+			 * @var string	sql						String with the query to be executed
+			 * @var array	forum_list				List of forums that contain the posts
+			 * @var int		visibility_const		Integer with one of the possible ITEM_* constant values
+			 * @var int		topic_id				topic_id in the page request
+			 * @var string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+			 * @var string	sort_order_sql			String with the ORDER BY SQL code used in this query
+			 * @since 3.1.0-RC3
+			 */
+			$vars = [
+				'sql',
+				'forum_list',
+				'visibility_const',
+				'topic_id',
+				'limit_time_sql',
+				'sort_order_sql',
+			];
+			extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_for_topics_query_before', compact($vars)));
+
+			$rowset = [];
+
+			$result = $this->db->sql_query_limit($sql, $limit, $start);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$forum_names[] = (int) $row['forum_id'];
+				$rowset[] = $row;
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		if (!empty($forum_names))
+		{
+			// Select the names for the forum_ids
+			$sql = 'SELECT forum_id, forum_name
+				FROM ' . $this->tables['forums'] . '
+				WHERE ' . $this->db->sql_in_set('forum_id', $forum_names);
+			$result = $this->db->sql_query($sql, 3600);
+
+			$forum_names = [];
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$forum_names[(int) $row['forum_id']] = $row['forum_name'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		foreach ($rowset as $row)
+		{
+			if (empty($row['post_username']))
+			{
+				$row['post_username'] = $row['username'] ? $row['username'] : $this->lang->lang('GUEST');
+			}
+
+			$post_row = [
+				'U_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+				'U_VIEWFORUM'		=> append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $row['forum_id']),
+				'U_VIEWPOST'		=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode === 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
+				'U_VIEW_DETAILS'	=> $this->helper->route('mcp_approve_details', ['f' => $row['forum_id'], 't' => $row['topic_id'], 'p' => $row['post_id']]),
+
+				'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+				'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+				'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+				'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+
+				'POST_ID'			=> $row['post_id'],
+				'TOPIC_ID'			=> $row['topic_id'],
+				'FORUM_NAME'		=> $forum_names[$row['forum_id']],
+				'POST_SUBJECT'		=> $row['post_subject'] !== '' ? $row['post_subject'] : $this->lang->lang('NO_SUBJECT'),
+				'TOPIC_TITLE'		=> $row['topic_title'],
+				'POST_TIME'			=> $this->user->format_date($row['post_time']),
+				'S_HAS_ATTACHMENTS'	=> $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
+			];
+
+			/**
+			 * Alter sql query to get information on all topics in the list of forums provided.
+			 *
+			 * @event core.mcp_queue_get_posts_modify_post_row
+			 * @var array	post_row	Template variables for current post
+			 * @var array	row			Post data
+			 * @var array	forum_names	Forum names
+			 * @since 3.2.3-RC2
+			 */
+			$vars = [
+				'post_row',
+				'row',
+				'forum_names',
+			];
+			extract($this->dispatcher->trigger_event('core.mcp_queue_get_posts_modify_post_row', compact($vars)));
+
+			$this->template->assign_block_vars('postrow', $post_row);
+		}
+
+		unset($rowset, $forum_names);
+
+		$this->pagination->generate_template_pagination([
+			'routes' => [$u_mode, "{$u_mode}_pagination"],
+			'params' => ['f' => $forum_id, 'st' => $sort_days, 'sk' => $sort_key, 'sd' => $sort_dir],
+		], 'pagination', 'page', $total, $limit, $start);
+
+		// Now display the page
+		$this->template->assign_vars([
+			'L_TITLE'				=> $this->lang->lang($l_mode),
+			'L_EXPLAIN'				=> $this->lang->lang($l_mode . '_EXPLAIN'),
+			'L_DISPLAY_ITEMS'		=> !$is_topics ? $this->lang->lang('DISPLAY_POSTS') : $this->lang->lang('DISPLAY_TOPICS'),
+			'L_ONLY_TOPIC'			=> $topic_id ? $this->lang->lang('ONLY_TOPIC', $topic_info['topic_title']) : '',
+
+			'S_FORUM_OPTIONS'		=> $forum_options,
+			'S_MCP_ACTION'			=> $this->helper->route($u_mode),
+			'S_TOPICS'				=> (bool) $is_topics,
+			'S_RESTORE'				=> (bool) $is_restore,
+
+			'TOPIC_ID'				=> (int) $topic_id,
+			'TOTAL'					=> $this->lang->lang((!$is_topics ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
+		]);
+
+		return $this->helper->render('mcp_queue.html', $this->lang->lang($l_mode));
+	}
+
+	protected function approve_details()
+	{
+		$this->lang->add_lang(['posting', 'viewtopic']);
+
+		$topic_id = $this->request->variable('t', 0);
+		$post_id = $this->request->variable('p', 0);
+
+		$u_back = 'mcp_unapproved_posts';
+
+		// Get all required post info
+		if (!$post_id)
+		{
+			$u_back = 'mcp_unapproved_topics';
+
+			$topic_info = phpbb_get_topic_data([$topic_id], 'm_approve');
+
+			if (empty($topic_info))
+			{
+				throw new back_exception(400, 'NO_POST_SELECTED', $u_back);
+			}
+
+			$topic_info = $topic_info[$topic_id];
+
+			$post_id = (int) $topic_info['topic_first_post_id'];
+		}
+
+		$post_info = phpbb_get_post_data([$post_id], 'm_approve', true);
+
+		if (empty($post_info))
+		{
+			throw new back_exception(400, 'NO_POST_SELECTED', $u_back);
+		}
+
+		$post_info = $post_info[$post_id];
+
+		// Approving a topic or a post?
+		$s_topic = $post_id === (int) $post_info['topic_first_post_id'];
+
+		// Identifiers
+		$forum_id = (int) $post_info['forum_id'];
+		$topic_id = (int) $post_info['topic_id'];
+		$post_id = (int) $post_info['post_id'];
+		$user_id = (int) $post_info['poster_id'];
+
+		$params = [
+			'f' => $forum_id,
+			't' => $topic_id,
+			'p' => $post_id,
+		];
+
+		// Mark some notifications
+		if ($s_topic)
+		{
+			$this->notification_manager->mark_notifications('topic_in_queue', $topic_id, $this->user->data['user_id']);
+		}
+
+		$this->notification_manager->mark_notifications('post_in_queue', $post_id, $this->user->data['user_id']);
+
+		if (!$s_topic)
+		{
+			$topic_review = topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false);
+
+			if ($topic_review)
+			{
+				$this->template->assign_vars([
+					'S_TOPIC_REVIEW'	=> true,
+					'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
+					'TOPIC_TITLE'		=> $post_info['topic_title'],
+				]);
+			}
+		}
+
+		$attachments = $topic_tracking_info = [];
+
+		// Get topic tracking info
+		if ($this->config['load_db_lastread'])
+		{
+			$tmp_topic_data = [$post_info['topic_id'] => $post_info];
+			$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, [$post_info['forum_id'] => $post_info['forum_mark_time']]);
+			unset($tmp_topic_data);
+		}
+		else
+		{
+			$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+		}
+
+		$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+
+		// Process message, leave it uncensored
+		$parse_flags = ($post_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$message = generate_text_for_display($post_info['post_text'], $post_info['bbcode_uid'], $post_info['bbcode_bitfield'], $parse_flags, false);
+
+		if ($post_info['post_attachment'] && $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $post_info['forum_id']))
+		{
+			$sql = 'SELECT *
+				FROM ' . $this->tables['attachments'] . '
+				WHERE post_msg_id = ' . (int) $post_id . '
+					AND in_message = 0
+				ORDER BY filetime DESC, post_msg_id ASC';
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$attachments[] = $row;
+			}
+			$this->db->sql_freeresult($result);
+
+			if (!empty($attachments))
+			{
+				$update_count = [];
+				parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
+			}
+
+			// Display not already displayed Attachments for this post, we already parsed them. ;)
+			if (!empty($attachments))
+			{
+				$this->template->assign_var('S_HAS_ATTACHMENTS', true);
+
+				foreach ($attachments as $attachment)
+				{
+					$this->template->assign_block_vars('attachment', ['DISPLAY_ATTACHMENT' => $attachment,]);
+				}
+			}
+		}
+
+		// Deleting information
+		if ($post_info['post_visibility'] == ITEM_DELETED && $post_info['post_delete_user'])
+		{
+			// User having deleted the post also being the post author?
+			if (!$post_info['post_delete_user'] || $post_info['post_delete_user'] == $post_info['poster_id'])
+			{
+				$display_username = get_username_string('full', $post_info['poster_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']);
+			}
+			else
+			{
+				$sql = 'SELECT u.user_id, u.username, u.user_colour
+					FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['users'] . ' u
+					WHERE p.post_id = ' . (int) $post_info['post_id'] . '
+						AND p.post_delete_user = u.user_id';
+				$result = $this->db->sql_query($sql);
+				$post_delete_userinfo = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				$display_username = get_username_string('full', $post_info['post_delete_user'], $post_delete_userinfo['username'], $post_delete_userinfo['user_colour']);
+			}
+
+			$l_deleted_by = $this->lang->lang('DELETED_INFORMATION', $display_username, $this->user->format_date($post_info['post_delete_time'], false, true));
+		}
+		else
+		{
+			$l_deleted_by = '';
+		}
+
+		// Links
+		$u_edit = append_sid("{$this->root_path}posting.{$this->php_ext}", array_merge($params, ['mode' => 'edit']));
+		$u_post = append_sid("{$this->root_path}viewtopic.$this->php_ext", array_merge($params, ['#' => "p{$post_id}"]));
+		$u_topic = append_sid("{$this->root_path}viewtopic.$this->php_ext", ['f' => $forum_id, 't' => $topic_id]);
+
+		$u_mode = $this->helper->route('mcp_approve_details', $params);
+		$u_note = $this->helper->route('mcp_notes_user', ['u' => $user_id]);
+		$u_warn = $this->helper->route('mcp_warn_user', ['u' => $user_id]);
+		$u_prev = $this->helper->route($s_topic ? 'mcp_unapproved_topics' : 'mcp_unapproved_posts');
+
+		$post_data = [
+			'S_MCP_QUEUE'			=> true,
+			'U_APPROVE_ACTION'		=> $u_mode,
+			'S_CAN_DELETE_POST'		=> false,
+			'S_CAN_VIEWIP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']),
+			'S_POST_REPORTED'		=> $post_info['post_reported'],
+			'S_POST_UNAPPROVED'		=> $post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE,
+			'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
+			'S_USER_NOTES'			=> true,
+			'S_POST_DELETED'		=> $post_info['post_visibility'] == ITEM_DELETED,
+			'DELETED_MESSAGE'		=> $l_deleted_by,
+			'DELETE_REASON'			=> $post_info['post_delete_reason'],
+
+			'U_EDIT'				=> $this->auth->acl_get('m_edit', $post_info['forum_id']) ? $u_edit : '',
+			'U_MCP_APPROVE'			=> $u_mode,
+			'U_MCP_REPORT'			=> $this->helper->route('mcp_report_details', ['f' => $post_info['forum_id'], 't' => $post_info['topic_id'], 'p' => $post_id]),
+			'U_MCP_USER_NOTES'		=> $u_note,
+			'U_MCP_WARN_USER'		=> $this->auth->acl_get('m_warn') ? $u_warn : '',
+			'U_VIEW_POST'			=> $u_post,
+			'U_VIEW_TOPIC'			=> $u_topic,
+
+			'MINI_POST_IMG'			=> $post_unread ? $this->user->img('icon_post_target_unread', 'UNREAD_POST') : $this->user->img('icon_post_target', 'POST'),
+
+			'RETURN_QUEUE'			=> $this->lang->lang('RETURN_QUEUE', '<a href="' . $u_prev . '">', '</a>'),
+			'RETURN_POST'			=> $this->lang->lang('RETURN_POST', '<a href="' . $u_post . '">', '</a>'),
+			'RETURN_TOPIC_SIMPLE'	=> $this->lang->lang('RETURN_TOPIC_SIMPLE', '<a href="' . $u_topic . '">', '</a>'),
+			'REPORTED_IMG'			=> $this->user->img('icon_topic_reported', $this->lang->lang('POST_REPORTED')),
+			'UNAPPROVED_IMG'		=> $this->user->img('icon_topic_unapproved', $this->lang->lang('POST_UNAPPROVED')),
+			'EDIT_IMG'				=> $this->user->img('icon_post_edit', $this->lang->lang('EDIT_POST')),
+
+			'POST_AUTHOR_FULL'		=> get_username_string('full', $user_id, $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $user_id, $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+			'POST_AUTHOR'			=> get_username_string('username', $user_id, $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+			'U_POST_AUTHOR'			=> get_username_string('profile', $user_id, $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+
+			'POST_PREVIEW'			=> $message,
+			'POST_SUBJECT'			=> $post_info['post_subject'],
+			'POST_DATE'				=> $this->user->format_date($post_info['post_time']),
+			'POST_IP'				=> $post_info['poster_ip'],
+			'POST_IPADDR'			=> ($this->auth->acl_get('m_info', $post_info['forum_id']) && $this->request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+			'POST_ID'				=> $post_info['post_id'],
+			'S_FIRST_POST'			=> $s_topic,
+
+			'U_LOOKUP_IP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? $this->helper->route('mcp_approve_details', array_merge($params, ['lookup' => $post_info['poster_ip'], '#' => 'ip'])) : '',
+		];
+
+		/**
+		 * Alter post awaiting approval template before it is rendered
+		 *
+		 * @event core.mcp_queue_approve_details_template
+		 * @var int		post_id		Post ID
+		 * @var int		topic_id	Topic ID
+		 * @var array	topic_info	Topic data
+		 * @var array	post_info	Post data
+		 * @var array	post_data	Post template data
+		 * @var string	message		Post message
+		 * @var string	post_url	Post URL
+		 * @var string	topic_url	Topic URL
+		 * @since 3.2.2-RC1
+		 */
+		$vars = [
+			'post_id',
+			'topic_id',
+			'topic_info',
+			'post_info',
+			'post_data',
+			'message',
+			'post_url',
+			'topic_url',
+		];
+		extract($this->dispatcher->trigger_event('core.mcp_queue_approve_details_template', compact($vars)));
+
+		$this->template->assign_vars($post_data);
+
+		return $this->helper->render('mcp_post.html', $this->lang->lang('MCP_QUEUE_APPROVE_DETAILS'));
 	}
 
 	/**
 	 * Approve/Restore posts.
 	 *
-	 * @param string	$action				Action we perform on the posts (approve|restore)
-	 * @param array		$post_id_list		The post identifiers
-	 * @param string	$id					The active module identifier
-	 * @param string	$mode				The active module mode
-	 * @return void
+	 * @param string		$action				Action we perform on the posts (approve|restore)
+	 * @param array			$post_id_list		The post identifiers
+	 * @param string|array	$u_mode				The controller route
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function approve_posts($action, array $post_id_list, $id, $mode)
+	public function approve_posts($action, array $post_id_list, $u_mode)
 	{
 		if (!phpbb_check_ids($post_id_list, $this->tables['posts'], 'post_id', ['m_approve']))
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('NOT_AUTHORISED');
+			throw new back_exception(403, 'NOT_AUTHORISED', $u_mode);
 		}
 
-		$redirect = $this->request->variable('redirect', build_url(['quickmod']));
-		$redirect = reapply_sid($redirect);
-		$post_url = '';
+		$route	= is_array($u_mode) ? array_shift($u_mode) : $u_mode;
+		$params	= is_array($u_mode) ? $u_mode : [];
+
+		$u_return = $this->helper->route($route, $params);
+		$u_post = '';
+
 		$approve_log = [];
 		$num_topics = 0;
 
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> $id,
-			'mode'			=> $mode,
 			'post_id_list'	=> $post_id_list,
 			'action'		=> $action,
-			'redirect'		=> $redirect,
 		]);
 
 		$post_info = phpbb_get_post_data($post_id_list, 'm_approve');
@@ -818,7 +888,7 @@ class queue
 					$topic_info[$topic_id]['last_post'] = true;
 				}
 
-				$post_url = append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+				$u_post = append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
 
 				$approve_log[] = [
 					'forum_id'		=> (int) $post_data['forum_id'],
@@ -925,7 +995,6 @@ class queue
 			 * @var int		num_topics			Variable containing number of topics
 			 * @var bool	notify_poster		Variable telling if the post should be notified or not
 			 * @var string	success_msg			Variable containing the language key for the success message
-			 * @var string	redirect			Variable containing the redirect url
 			 * @since 3.1.4-RC1
 			 */
 			$vars = [
@@ -935,15 +1004,15 @@ class queue
 				'num_topics',
 				'notify_poster',
 				'success_msg',
-				'redirect',
 			];
 			extract($this->dispatcher->trigger_event('core.approve_posts_after', compact($vars)));
 
-			meta_refresh(3, $redirect);
 			$message = $this->lang->lang($success_msg);
 
 			if ($this->request->is_ajax())
 			{
+				meta_refresh(3, $u_return);
+
 				$json_response = new \phpbb\json_response;
 				$json_response->send([
 					'MESSAGE_TITLE'		=> $this->lang->lang('INFORMATION'),
@@ -952,14 +1021,18 @@ class queue
 					'visible'			=> true,
 				]);
 			}
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $u_return . '">', '</a>');
 
 			// If approving one post, also give links back to post...
-			if (count($post_info) === 1 && $post_url)
+			if (count($post_info) === 1 && $u_post)
 			{
-				$message .= '<br /><br />' . $this->lang->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>');
+				$message .= '<br /><br />' . $this->lang->lang('RETURN_POST', '<a href="' . $u_post . '">', '</a>');
 			}
-			trigger_error($message);
+
+			$this->helper->assign_meta_refresh_var(3, $u_return);
+
+			return $this->helper->message($message);
 		}
 		else
 		{
@@ -997,40 +1070,40 @@ class queue
 			{
 				$action_msg .= '_POST' . (count($post_id_list) === 1 ? '' : 'S');
 			}
-			confirm_box(false, $action_msg, $s_hidden_fields, 'mcp_approve.html');
-		}
 
-		redirect($redirect);
+			confirm_box(false, $action_msg, $s_hidden_fields, 'mcp_approve.html');
+
+			return redirect($u_return);
+		}
 	}
 
 	/**
-	* Approve/Restore topics
-	*
-	* @param $action		string	Action we perform on the posts ('approve' or 'restore')
-	* @param $topic_id_list	array	IDs of the topics to approve/restore
-	* @param $id			mixed	Category of the current active module
-	* @param $mode			string	Active module
-	* @return void
-	*/
-	public function approve_topics($action, $topic_id_list, $id, $mode)
+	 * Approve/Restore topics.
+	 *
+	 * @param string			$action				Action we perform on the posts ('approve' or 'restore')
+	 * @param array			$topic_id_list		The topic identifiers
+	 * @param string|array	$u_mode				The controller route
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function approve_topics($action, array $topic_id_list, $u_mode)
 	{
 		if (!phpbb_check_ids($topic_id_list, $this->tables['topics'], 'topic_id', ['m_approve']))
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('NOT_AUTHORISED');
+			throw new back_exception(403, 'NOT_AUTHORISED', $u_mode);
 		}
 
-		$redirect = $this->request->variable('redirect', build_url(['quickmod']));
-		$redirect = reapply_sid($redirect);
-		$success_msg = $topic_url = '';
+		$route	= is_array($u_mode) ? array_shift($u_mode) : $u_mode;
+		$params	= is_array($u_mode) ? $u_mode : [];
+
+		$u_return = $this->helper->route($route, $params);
+		$u_topic = '';
+
+		$success_msg = '';
 		$approve_log = [];
 
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> $id,
-			'mode'			=> $mode,
 			'topic_id_list'	=> $topic_id_list,
 			'action'		=> $action,
-			'redirect'		=> $redirect,
 		]);
 
 		$topic_info = phpbb_get_topic_data($topic_id_list, 'm_approve');
@@ -1046,7 +1119,7 @@ class queue
 				$this->content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $this->user->data['user_id'], time(), '');
 				$first_post_ids[$topic_id] = (int) $topic_data['topic_first_post_id'];
 
-				$topic_url = append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
+				$u_topic = append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
 
 				$approve_log[] = [
 					'forum_id'		=> (int) $topic_data['forum_id'],
@@ -1140,11 +1213,12 @@ class queue
 			];
 			extract($this->dispatcher->trigger_event('core.approve_topics_after', compact($vars)));
 
-			meta_refresh(3, $redirect);
 			$message = $this->lang->lang($success_msg);
 
 			if ($this->request->is_ajax())
 			{
+				meta_refresh(3, $u_return);
+
 				$json_response = new \phpbb\json_response;
 				$json_response->send([
 					'MESSAGE_TITLE'		=> $this->lang->lang('INFORMATION'),
@@ -1153,14 +1227,17 @@ class queue
 					'visible'			=> true,
 				]);
 			}
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $u_return . '">', '</a>');
 
 			// If approving one topic, also give links back to topic...
-			if (count($topic_info) === 1 && $topic_url)
+			if (count($topic_info) === 1 && $u_topic)
 			{
-				$message .= '<br /><br />' . $this->lang->lang('RETURN_TOPIC', '<a href="' . $topic_url . '">', '</a>');
+				$message .= '<br /><br />' . $this->lang->lang('RETURN_TOPIC', '<a href="' . $u_topic . '">', '</a>');
 			}
-			trigger_error($message);
+
+			$this->helper->assign_meta_refresh_var(3, $u_return);
+
+			return $this->helper->message($message);
 		}
 		else
 		{
@@ -1188,29 +1265,30 @@ class queue
 			]);
 
 			confirm_box(false, strtoupper($action) . '_TOPIC' . (count($topic_id_list) === 1 ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
-		}
 
-		redirect($redirect);
+			return redirect($u_return);
+		}
 	}
 
 	/**
-	* Disapprove Post
-	*
-	* @param $post_id_list	array	IDs of the posts to disapprove/delete
-	* @param $id			mixed	Category of the current active module
-	* @param $mode			string	Active module
-	* @return void
-	*/
-	public function disapprove_posts($post_id_list, $id, $mode)
+	 * Disapprove Post.
+	 *
+	 * @param array			$post_id_list		The post identifiers
+	 * @param string|array	$u_mode				The controller route
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function disapprove_posts(array $post_id_list, $u_mode)
 	{
 		if (!phpbb_check_ids($post_id_list, $this->tables['posts'], 'post_id', ['m_approve']))
 		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('NOT_AUTHORISED');
+			throw new back_exception(403, 'NOT_AUTHORISED', $u_mode);
 		}
 
-		$redirect	= $this->request->variable('redirect', build_url(['t', 'mode', 'quickmod']) . "&amp;mode=$mode");
-		$redirect	= reapply_sid($redirect);
+		$route	= is_array($u_mode) ? array_shift($u_mode) : $u_mode;
+		$params	= is_array($u_mode) ? $u_mode : [];
+
+		$u_return = $this->helper->route($route, $params);
+
 		$reason		= $this->request->variable('reason', '', true);
 		$reason_id	= $this->request->variable('reason_id', 0);
 
@@ -1218,11 +1296,8 @@ class queue
 		$additional_msg = '';
 
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> $id,
-			'mode'			=> $mode,
 			'post_id_list'	=> $post_id_list,
 			'action'		=> 'disapprove',
-			'redirect'		=> $redirect,
 		]);
 
 		$notify_poster = $this->request->is_set('notify_poster');
@@ -1279,7 +1354,7 @@ class queue
 			// Build a list of posts to be disapproved and get the related topics real replies count
 			foreach ($post_info as $post_id => $post_data)
 			{
-				if ($mode === 'unapproved_topics' && $post_data['post_visibility'] == ITEM_APPROVED)
+				if ($route === 'mcp_unapproved_topics' && $post_data['post_visibility'] == ITEM_APPROVED)
 				{
 					continue;
 				}
@@ -1298,7 +1373,7 @@ class queue
 			// Do not try to disapprove if no posts are selected
 			if (empty($post_disapprove_list))
 			{
-				trigger_error('NO_POST_SELECTED');
+				throw new back_exception(400, 'NO_POST_SELECTED', $u_mode);
 			}
 
 			// Now we build the log array
@@ -1473,22 +1548,6 @@ class queue
 				$success_msg .= '_DELETED_SUCCESS';
 			}
 
-			// If we came from viewtopic, we try to go back to it.
-			if (strpos($redirect, $this->root_path . 'viewtopic.' . $this->php_ext) === 0)
-			{
-				if ($num_disapproved_topics == 0)
-				{
-					// So we need to remove the post id part from the Url
-					$redirect = str_replace("&amp;p={$post_id_list[0]}#p{$post_id_list[0]}", '', $redirect);
-				}
-				else
-				{
-					// However this is only possible if the topic still exists,
-					// Otherwise we go back to the viewforum page
-					$redirect = append_sid($this->root_path . 'viewforum.' . $this->php_ext, 'f=' . $this->request->variable('f', 0));
-				}
-			}
-
 			/**
 			 * Perform additional actions during post(s) disapproval
 			 *
@@ -1505,7 +1564,6 @@ class queue
 			 * @var bool	is_disapproving				Variable telling if anything is going to be disapproved
 			 * @var bool	notify_poster				Variable telling if the post should be notified or not
 			 * @var string	success_msg					Variable containing the language key for the success message
-			 * @var string	redirect					Variable containing the redirect url
 			 * @since 3.1.4-RC1
 			 */
 			$vars = [
@@ -1521,17 +1579,17 @@ class queue
 				'is_disapproving',
 				'notify_poster',
 				'success_msg',
-				'redirect',
 			];
 			extract($this->dispatcher->trigger_event('core.disapprove_posts_after', compact($vars)));
 
 			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
 
-			meta_refresh(3, $redirect);
 			$message = $this->lang->lang($success_msg);
 
 			if ($this->request->is_ajax())
 			{
+				meta_refresh(3, $u_return);
+
 				$json_response = new \phpbb\json_response;
 				$json_response->send([
 					'MESSAGE_TITLE'		=> $this->lang->lang('INFORMATION'),
@@ -1540,8 +1598,11 @@ class queue
 					'visible'			=> false,
 				]);
 			}
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
-			trigger_error($message);
+			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $u_return . '">', '</a>');
+
+			$this->helper->assign_meta_refresh_var(3, $u_return);
+
+			return $this->helper->message($message);
 		}
 		else
 		{
@@ -1562,6 +1623,7 @@ class queue
 
 			$l_confirm_msg = 'DISAPPROVE_POST';
 			$confirm_template = 'mcp_approve.html';
+
 			if ($is_disapproving)
 			{
 				$this->reason_provider->display_reasons($reason_id);
@@ -1583,8 +1645,8 @@ class queue
 			]);
 
 			confirm_box(false, $l_confirm_msg, $s_hidden_fields, $confirm_template);
-		}
 
-		redirect($redirect);
+			return redirect($u_return);
+		}
 	}
 }

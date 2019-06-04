@@ -13,6 +13,8 @@
 
 namespace phpbb\notification\type;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 /**
 * Private message reported notifications class
 * This class handles notifications for private messages when they are reported
@@ -150,8 +152,7 @@ class report_pm extends \phpbb\notification\type\pm
 
 			/** @deprecated	3.2.6-RC1	(to be removed in 4.0.0) use {SUBJECT} instead in report_pm.txt */
 			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
-
-			'U_VIEW_REPORT'	=> generate_board_url() . "/mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
+			'U_VIEW_REPORT'	=> $this->helper->route('mcp_pm_report_details', ['r' => $this->item_parent_id], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 		);
 	}
 
@@ -162,7 +163,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details");
+		return $this->helper->route('mcp_pm_report_details', ['r' => $this->item_parent_id]);
 	}
 
 	/**

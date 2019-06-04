@@ -13,6 +13,9 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\form_invalid_exception;
+
 class warn
 {
 	/** @var \phpbb\auth\auth */
@@ -26,6 +29,9 @@ class warn
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -54,11 +60,6 @@ class warn
 	/** @var array phpBB tables */
 	protected $tables;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -66,6 +67,7 @@ class warn
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\pagination					$pagination		Pagination object
@@ -76,11 +78,12 @@ class warn
 	 * @param string							$php_ext		php File extension
 	 * @param array								$tables			phpBB tables
 	 */
-	function __construct(
+	public function __construct(
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -96,6 +99,7 @@ class warn
 		$this->config		= $config;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -108,50 +112,13 @@ class warn
 		$this->tables		= $tables;
 	}
 
-	function main($id, $mode)
-	{
-		$action = $this->request->variable('action', ['' => '']);
-		$action = is_array($action) ? key($action) : $action;
-		$this->page_title = 'MCP_WARN';
-
-		add_form_key('mcp_warn');
-
-		switch ($mode)
-		{
-			case 'front':
-				$this->warn_front_view();
-				$this->tpl_name = 'mcp_warn_front';
-			break;
-
-			case 'list':
-				$this->warn_list_view();
-				$this->tpl_name = 'mcp_warn_list';
-			break;
-
-			case 'warn_post':
-				$this->warn_post_view($action);
-				$this->tpl_name = 'mcp_warn_post';
-			break;
-
-			case 'warn_user':
-				$this->warn_user_view($action);
-				$this->tpl_name = 'mcp_warn_user';
-			break;
-		}
-	}
-
 	/**
-	 * Generates the summary on the main page of the warning module.
+	 * Display a summary of user warnings.
 	 *
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	protected function warn_front_view()
+	public function warn_overview()
 	{
-		$this->template->assign_vars([
-			'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
-			'U_POST_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user'),
-		]);
-
 		// Obtain a list of the 5 naughtiest users....
 		// These are the 5 users with the highest warning count
 		$highest = [];
@@ -167,7 +134,7 @@ class warn
 				'WARNING_TIME'	=> $this->user->format_date($row['user_last_warning']),
 				'WARNINGS'		=> $row['user_warnings'],
 
-				'U_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+				'U_NOTES'		=> $this->helper->route('mcp_notes_user', ['u' => (int) $row['user_id']]),
 			]);
 		}
 
@@ -186,29 +153,36 @@ class warn
 				'WARNING_TIME'	=> $this->user->format_date($row['warning_time']),
 				'WARNINGS'		=> $row['user_warnings'],
 
-				'U_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+				'U_NOTES'		=> $this->helper->route('mcp_notes_user', ['u' => (int) $row['user_id']]),
 			]);
 		}
 		$this->db->sql_freeresult($result);
+
+		return $this->helper->render('mcp_warn_front.html', $this->lang->lang('MCP_WARN'));
 	}
 
 	/**
 	 * Lists all users with warnings.
 	 *
-	 * @return void
+	 * @param int		$page		The page number
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	protected function warn_list_view()
+	public function warn_list($page = 1)
 	{
 		$this->lang->add_lang('memberlist');
 
-		$start	= $this->request->variable('start', 0);
-		$st		= $this->request->variable('st', 0);
-		$sk		= $this->request->variable('sk', 'b');
-		$sd		= $this->request->variable('sd', 'd');
+		// Pagination variables
+		$limit = (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $limit;
 
-		$limit_days = [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
-		$sort_by_text = ['a' => $this->lang->lang('SORT_USERNAME'), 'b' => $this->lang->lang('SORT_DATE'), 'c' => $this->lang->lang('SORT_WARNINGS')];
-		$sort_by_sql = ['a' => 'username_clean', 'b' => 'user_last_warning', 'c' => 'user_warnings'];
+		// Sorting variables
+		$st = $this->request->variable('st', 0);
+		$sk = $this->request->variable('sk', 'b');
+		$sd = $this->request->variable('sd', 'd');
+
+		$limit_days		= [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
+		$sort_by_text	= ['a' => $this->lang->lang('SORT_USERNAME'), 'b' => $this->lang->lang('SORT_DATE'), 'c' => $this->lang->lang('SORT_WARNINGS')];
+		$sort_by_sql	= ['a' => 'username_clean', 'b' => 'user_last_warning', 'c' => 'user_warnings'];
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -220,7 +194,7 @@ class warn
 		$users = [];
 		$user_count = 0;
 
-		view_warned_users($users, $user_count, $this->config['topics_per_page'], $start, $sql_where, $sql_sort);
+		view_warned_users($users, $user_count, $limit, $start, $sql_where, $sql_sort);
 
 		foreach ($users as $row)
 		{
@@ -230,12 +204,16 @@ class warn
 				'WARNING_TIME'	=> $this->user->format_date($row['user_last_warning']),
 				'WARNINGS'		=> $row['user_warnings'],
 
-				'U_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+				'U_NOTES'		=> $this->helper->route('mcp_notes_user', ['u' => (int) $row['user_id']]),
 			]);
 		}
 
-		$base_url = append_sid("{$this->root_path}mcp.$this->php_ext", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd");
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $user_count, $this->config['topics_per_page'], $start);
+		parse_str(html_entity_decode($u_sort_param), $sort_param);
+
+		$this->pagination->generate_template_pagination([
+			'routes' => ['mcp_warn_list', 'mcp_warn_list_pagination'],
+			'params' => $sort_param,
+		], 'pagination', 'page', $user_count, $limit, $start);
 
 		$this->template->assign_vars([
 			'TOTAL_USERS'			=> $this->lang->lang('LIST_USERS', (int) $user_count),
@@ -245,25 +223,203 @@ class warn
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'U_POST_ACTION'			=> $this->u_action,
+			'U_POST_ACTION'			=> $this->helper->route('mcp_warn_list'),
 		]);
+
+		return $this->helper->render('mcp_warn_list.html', $this->lang->lang('MCP_WARN_LIST'));
+	}
+
+	/**
+	 * Handles warning the user.
+	 *
+	 * @param int		$u			The user identifier
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function warn_user($u = 0)
+	{
+		$user_id = $u ? $u : $this->request->variable('user_id', 0);
+
+		if ($user_id || $this->request->is_set_post('submituser'))
+		{
+			$username	= $this->request->variable('username', '', true);
+
+			$sql_where = $user_id ? 'user_id = ' . (int) $user_id : "username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
+
+			$sql = 'SELECT *
+				FROM ' . $this->tables['users'] . '
+				WHERE ' . $sql_where;
+			$result = $this->db->sql_query($sql);
+			$user_row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if ($user_row === false)
+			{
+				throw new back_exception(404, 'NO_USER', 'mcp_warn_user');
+			}
+
+			// Prevent someone from warning themselves
+			if ($user_row['user_id'] == $this->user->data['user_id'])
+			{
+				throw new back_exception(404, 'CANNOT_WARN_SELF', 'mcp_warn_user');
+			}
+
+			$user_id = $user_row['user_id'];
+
+			$action = $this->request->variable('action', ['' => '']);
+			$action = is_array($action) ? key($action) : $this->request->variable('action', '');
+
+			$notify = $this->request->is_set('notify_user');
+			$warning = $this->request->variable('warning', '', true);
+
+			// Check if can send a notification
+			if ($this->config['allow_privmsg'])
+			{
+				$auth2 = new \phpbb\auth\auth();
+				$auth2->acl($user_row);
+
+				$s_can_notify = (bool) $auth2->acl_get('u_readpm');
+
+				unset($auth2);
+			}
+			else
+			{
+				$s_can_notify = false;
+			}
+
+			// Prevent against clever people
+			if ($notify && !$s_can_notify)
+			{
+				$notify = false;
+			}
+
+			$form_key = 'mcp_warn';
+			add_form_key($form_key);
+
+			if ($warning && $action === 'add_warning')
+			{
+				if (!check_form_key($form_key))
+				{
+					throw new form_invalid_exception(['mcp_warn_user', 'u' => $user_id]);
+				}
+
+				$s_mcp_warn_user = true;
+				$message = $this->lang->lang('USER_WARNING_ADDED');
+
+				/**
+				 * Event for before warning a user from MCP.
+				 *
+				 * If setting the $s_mcp_warn_user to false, please update the $message aswell.
+				 *
+				 * @event core.mcp_warn_user_before
+				 * @var array	user_row		The entire user row
+				 * @var string	warning			The warning message
+				 * @var string	message			Message display to the moderator
+				 * @var bool	notify			If true, we notify the user for the warning
+				 * @var bool	s_mcp_warn_user If true, we add the warning else we omit it
+				 * @since 3.1.0-b4
+				 */
+				$vars = [
+					'user_row',
+					'warning',
+					'notify',
+					's_mcp_warn_user',
+				];
+				extract($this->dispatcher->trigger_event('core.mcp_warn_user_before', compact($vars)));
+
+				if ($s_mcp_warn_user)
+				{
+					$this->add_warning($user_row, $warning, $notify);
+
+					/**
+					 * Event for after warning a user from MCP.
+					 *
+					 * @event core.mcp_warn_user_after
+					 * @var array	user_row	The entire user row
+					 * @var string	warning		The warning message
+					 * @var bool	notify		If true, the user was notified for the warning
+					 * @var string	message		Message displayed to the moderator
+					 * @since 3.1.0-b4
+					 */
+					$vars = [
+						'user_row',
+						'warning',
+						'notify',
+						'message',
+					];
+					extract($this->dispatcher->trigger_event('core.mcp_warn_user_after', compact($vars)));
+
+					$u_notes = $this->helper->route('mcp_notes_user', ['u' => $user_id]);
+					$return = $this->lang->lang('RETURN_PAGE', '<a href="' . $u_notes . '">', '</a>');
+
+					$this->helper->assign_meta_refresh_var(2, $u_notes);
+
+					return $this->helper->render($message . '<br /><br />' . $return);
+				}
+
+				// The warning was omitted by: @event core.mcp_warn_user_before
+				throw new back_exception(503, $message, ['mcp_warn_user', 'u' => $user_id]);
+			}
+
+			// Generate the appropriate user information for the user we are looking at
+			if (!function_exists('phpbb_get_user_rank'))
+			{
+				include($this->root_path . 'includes/functions_display.' . $this->php_ext);
+			}
+
+			$rank	= phpbb_get_user_rank($user_row, $user_row['user_posts']);
+			$avatar	= phpbb_get_user_avatar($user_row);
+
+			// OK, they didn't submit a warning so lets build the page for them to do so
+			$this->template->assign_vars([
+				'RANK_TITLE'		=> $rank['title'],
+				'JOINED'			=> $this->user->format_date($user_row['user_regdate']),
+				'POSTS'				=> (int) $user_row['user_posts'],
+				'WARNINGS'			=> (int) $user_row['user_warnings'],
+
+				'USERNAME_FULL'		=> get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+				'USERNAME_COLOUR'	=> get_username_string('colour', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+				'USERNAME'			=> get_username_string('username', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+				'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+
+				'AVATAR_IMG'		=> $avatar,
+				'RANK_IMG'			=> $rank['img'],
+
+				'S_CAN_NOTIFY'		=> $s_can_notify,
+
+				'U_POST_ACTION'		=> $this->helper->route('mcp_warn_user', ['u' => $user_id]),
+			]);
+		}
+		else
+		{
+			// Select a user
+			$this->template->assign_vars([
+				'S_FIND_USERNAME'	=> true,
+				'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
+				'U_POST_ACTION'		=> $this->helper->route('mcp_warn_user'),
+			]);
+		}
+
+		return $this->helper->render('mcp_warn_user.html', $this->lang->lang('MCP_WARN_USER'));
 	}
 
 	/**
 	 * Handles warning the user when the warning is for a specific post.
 	 *
-	 * @param string	$action		The action
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	protected function warn_post_view($action)
+	public function warn_post()
 	{
-		$post_id	= $this->request->variable('p', 0);
-		$forum_id	= $this->request->variable('f', 0);
-		$notify		= $this->request->is_set('notify_user');
-		$warning	= $this->request->variable('warning', '', true);
+		$post_id = $this->request->variable('p', 0);
+
+		$action = $this->request->variable('action', ['' => '']);
+		$action = is_array($action) ? key($action) : $this->request->variable('action', '');
+
+		$notify = $this->request->is_set('notify_user');
+		$warning = $this->request->variable('warning', '', true);
 
 		$sql = 'SELECT u.*, p.*
-			FROM ' . $this->tables['posts'] . ' p, ' . $this->tables['users'] . ' u
+			FROM ' . $this->tables['posts'] . ' p, 
+				' . $this->tables['users'] . ' u
 			WHERE p.post_id = ' . (int) $post_id . '
 				AND u.user_id = p.poster_id';
 		$result = $this->db->sql_query($sql);
@@ -272,19 +428,19 @@ class warn
 
 		if ($user_row === false)
 		{
-			trigger_error('NO_POST');
+			throw new back_exception(404, 'NO_POST', 'mcp_warn_overview');
 		}
 
 		// There is no point issuing a warning to ignored users (ie anonymous and bots)
 		if ($user_row['user_type'] == USER_IGNORE)
 		{
-			trigger_error('CANNOT_WARN_ANONYMOUS');
+			throw new back_exception(400, 'CANNOT_WARN_ANONYMOUS', 'mcp_warn_overview');
 		}
 
 		// Prevent someone from warning themselves
 		if ($user_row['user_id'] == $this->user->data['user_id'])
 		{
-			trigger_error('CANNOT_WARN_SELF');
+			throw new back_exception(400, 'CANNOT_WARN_SELF', 'mcp_warn_overview');
 		}
 
 		// Check if there is already a warning for this post to prevent multiple
@@ -298,17 +454,13 @@ class warn
 
 		if ($row !== false)
 		{
-			trigger_error('ALREADY_WARNED');
+			throw new back_exception(400, 'ALREADY_WARNED', 'mcp_warn_overview');
 		}
 
-		$user_id = $user_row['user_id'];
-
-		if (strpos($this->u_action, "&amp;f=$forum_id&amp;p=$post_id") === false)
-		{
-			// @todo
-			// $this->p_master->adjust_url("&amp;f=$forum_id&amp;p=$post_id");
-			$this->u_action .= "&amp;f=$forum_id&amp;p=$post_id";
-		}
+		$forum_id = (int) $user_row['forum_id'];
+		$topic_id = (int) $user_row['topic_id'];
+		$post_id = (int) $user_row['post_id'];
+		$user_id = (int) $user_row['user_id'];
 
 		// Check if can send a notification
 		if ($this->config['allow_privmsg'])
@@ -331,69 +483,76 @@ class warn
 			$notify = false;
 		}
 
+		$form_key = 'mcp_warn';
+		add_form_key($form_key);
+
 		if ($warning && $action === 'add_warning')
 		{
-			if (check_form_key('mcp_warn'))
+			if (!check_form_key($form_key))
 			{
-				$s_mcp_warn_post = true;
+				throw new form_invalid_exception(['mcp_warn_post', 'f' => $forum_id, 't' => $topic_id, 'p' => $post_id]);
+			}
+
+			$s_mcp_warn_post = true;
+			$message = $this->lang->lang('USER_WARNING_ADDED');
+
+			/**
+			 * Event for before warning a user for a post.
+			 *
+			 * If setting the $s_mcp_warn_post to false, please update the $message aswell.
+			 *
+			 * @event core.mcp_warn_post_before
+			 * @var array	user_row		The entire user row
+			 * @var string	warning			The warning message
+			 * @var string	message			Message displayed to the moderator
+			 * @var bool	notify			If true, we notify the user for the warning
+			 * @var int		post_id			The post id for which the warning is added
+			 * @var bool	s_mcp_warn_post If true, we add the warning else we omit it
+			 * @since 3.1.0-b4
+			 */
+			$vars = [
+				'user_row',
+				'warning',
+				'notify',
+				'post_id',
+				's_mcp_warn_post',
+			];
+			extract($this->dispatcher->trigger_event('core.mcp_warn_post_before', compact($vars)));
+
+			if ($s_mcp_warn_post)
+			{
+				$this->add_warning($user_row, $warning, $notify, $post_id);
 
 				/**
-				* Event for before warning a user for a post.
-				*
-				* @event core.mcp_warn_post_before
-				* @var array	user_row		The entire user row
-				* @var string	warning			The warning message
-				* @var bool		notify			If true, we notify the user for the warning
-				* @var int		post_id			The post id for which the warning is added
-				* @var bool		s_mcp_warn_post If true, we add the warning else we omit it
-				* @since 3.1.0-b4
-				*/
+				 * Event for after warning a user for a post.
+				 *
+				 * @event core.mcp_warn_post_after
+				 * @var array	user_row	The entire user row
+				 * @var string	warning		The warning message
+				 * @var bool	notify		If true, the user was notified for the warning
+				 * @var int		post_id		The post id for which the warning is added
+				 * @var string	message		Message displayed to the moderator
+				 * @since 3.1.0-b4
+				 */
 				$vars = [
 					'user_row',
 					'warning',
 					'notify',
 					'post_id',
-					's_mcp_warn_post',
+					'message',
 				];
-				extract($this->dispatcher->trigger_event('core.mcp_warn_post_before', compact($vars)));
+				extract($this->dispatcher->trigger_event('core.mcp_warn_post_after', compact($vars)));
 
-				if ($s_mcp_warn_post)
-				{
-					add_warning($user_row, $warning, $notify, $post_id);
-					$message = $this->lang->lang('USER_WARNING_ADDED');
+				$u_notes = $this->helper->route('mcp_notes_user', ['u' => $user_id, 'f' => $forum_id, 't' => $topic_id, 'p' => $post_id]);
+				$return = $this->lang->lang('RETURN_PAGE', '<a href="' . $u_notes . '">', '</a>');
 
-					/**
-					* Event for after warning a user for a post.
-					*
-					* @event core.mcp_warn_post_after
-					* @var array	user_row	The entire user row
-					* @var string	warning		The warning message
-					* @var bool		notify		If true, the user was notified for the warning
-					* @var int		post_id		The post id for which the warning is added
-					* @var string	message		Message displayed to the moderator
-					* @since 3.1.0-b4
-					*/
-					$vars = [
-						'user_row',
-						'warning',
-						'notify',
-						'post_id',
-						'message',
-					];
-					extract($this->dispatcher->trigger_event('core.mcp_warn_post_after', compact($vars)));
-				}
-			}
-			else
-			{
-				$message = $this->lang->lang('FORM_INVALID');
+				$this->helper->assign_meta_refresh_var(2, $u_notes);
+
+				return $this->helper->render($message . '<br /><br />' . $return);
 			}
 
-			if (!empty($message))
-			{
-				$redirect = append_sid("{$this->root_path}mcp.$this->php_ext", "i=notes&amp;mode=user_notes&amp;u=$user_id");
-				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
-			}
+			// The warning was omitted by: @event core.mcp_warn_user_before
+			throw new back_exception(503, $message, ['mcp_warn_post', 'f' => $forum_id, 't' => $topic_id, 'p' => $post_id]);
 		}
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
@@ -428,162 +587,10 @@ class warn
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,
 
-			'U_POST_ACTION'		=> $this->u_action,
-		]);
-	}
-
-	/**
-	 * Handles warning the user.
-	 *
-	 * @param string	$action		The action
-	 * @return int					The user identifier
-	 */
-	protected function warn_user_view($action)
-	{
-		$user_id	= $this->request->variable('u', 0);
-		$username	= $this->request->variable('username', '', true);
-		$notify		= $this->request->is_set('notify_user');
-		$warning	= $this->request->variable('warning', '', true);
-
-		$sql_where = $user_id ? 'user_id = ' . (int) $user_id : "username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
-
-		$sql = 'SELECT *
-			FROM ' . $this->tables['users'] . '
-			WHERE ' . $sql_where;
-		$result = $this->db->sql_query($sql);
-		$user_row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if ($user_row === false)
-		{
-			trigger_error('NO_USER');
-		}
-
-		// Prevent someone from warning themselves
-		if ($user_row['user_id'] == $this->user->data['user_id'])
-		{
-			trigger_error('CANNOT_WARN_SELF');
-		}
-
-		$user_id = $user_row['user_id'];
-
-		if (strpos($this->u_action, "&amp;u=$user_id") === false)
-		{
-			// @todo
-			// $this->p_master->adjust_url('&amp;u=' . $user_id);
-			$this->u_action .= "&amp;u=$user_id";
-		}
-
-		// Check if can send a notification
-		if ($this->config['allow_privmsg'])
-		{
-			$auth2 = new \phpbb\auth\auth();
-			$auth2->acl($user_row);
-			$s_can_notify = ($auth2->acl_get('u_readpm')) ? true : false;
-			unset($auth2);
-		}
-		else
-		{
-			$s_can_notify = false;
-		}
-
-		// Prevent against clever people
-		if ($notify && !$s_can_notify)
-		{
-			$notify = false;
-		}
-
-		if ($warning && $action === 'add_warning')
-		{
-			if (check_form_key('mcp_warn'))
-			{
-				$s_mcp_warn_user = true;
-
-				/**
-				* Event for before warning a user from MCP.
-				*
-				* @event core.mcp_warn_user_before
-				* @var array	user_row		The entire user row
-				* @var string	warning			The warning message
-				* @var bool		notify			If true, we notify the user for the warning
-				* @var bool		s_mcp_warn_user If true, we add the warning else we omit it
-				* @since 3.1.0-b4
-				*/
-				$vars = [
-					'user_row',
-					'warning',
-					'notify',
-					's_mcp_warn_user',
-				];
-				extract($this->dispatcher->trigger_event('core.mcp_warn_user_before', compact($vars)));
-
-				if ($s_mcp_warn_user)
-				{
-					add_warning($user_row, $warning, $notify);
-					$message = $this->lang->lang('USER_WARNING_ADDED');
-
-					/**
-					* Event for after warning a user from MCP.
-					*
-					* @event core.mcp_warn_user_after
-					* @var array	user_row	The entire user row
-					* @var string	warning		The warning message
-					* @var bool		notify		If true, the user was notified for the warning
-					* @var string	message		Message displayed to the moderator
-					* @since 3.1.0-b4
-					*/
-					$vars = [
-						'user_row',
-						'warning',
-						'notify',
-						'message',
-					];
-					extract($this->dispatcher->trigger_event('core.mcp_warn_user_after', compact($vars)));
-				}
-			}
-			else
-			{
-				$message = $this->lang->lang('FORM_INVALID');
-			}
-
-			if (!empty($message))
-			{
-				$redirect = append_sid("{$this->root_path}mcp.$this->php_ext", "i=notes&amp;mode=user_notes&amp;u=$user_id");
-				meta_refresh(2, $redirect);
-				trigger_error($message . '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
-			}
-		}
-
-		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('phpbb_get_user_rank'))
-		{
-			include($this->root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
-		$user_rank_data	= phpbb_get_user_rank($user_row, $user_row['user_posts']);
-		$avatar_img		= phpbb_get_user_avatar($user_row);
-
-		// OK, they didn't submit a warning so lets build the page for them to do so
-		$this->template->assign_vars([
-			'RANK_TITLE'		=> $user_rank_data['title'],
-			'JOINED'			=> $this->user->format_date($user_row['user_regdate']),
-			'POSTS'				=> $user_row['user_posts'] ? $user_row['user_posts'] : 0,
-			'WARNINGS'			=> $user_row['user_warnings'] ? $user_row['user_warnings'] : 0,
-
-			'USERNAME_FULL'		=> get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
-			'USERNAME_COLOUR'	=> get_username_string('colour', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
-			'USERNAME'			=> get_username_string('username', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
-			'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
-
-			'AVATAR_IMG'		=> $avatar_img,
-			'RANK_IMG'			=> $user_rank_data['img'],
-
-			'S_CAN_NOTIFY'		=> $s_can_notify,
-
-			'U_POST_ACTION'		=> $this->u_action,
+			'U_POST_ACTION'		=> $this->helper->route('mcp_warn_post', ['f' => $forum_id, 't' => $topic_id, 'p' => $post_id]),
 		]);
 
-		return $user_id;
+		return $this->helper->render('mcp_warn_post.html', $this->lang->lang('MCP_WARN_POST'));
 	}
 
 	/**

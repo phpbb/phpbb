@@ -15,6 +15,7 @@ namespace phpbb\ucp\controller;
 
 use phpbb\exception\back_exception;
 use phpbb\exception\http_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class register
 {
@@ -212,20 +213,20 @@ class register
 		$auth_provider = null;
 
 		// Handle login_link data added to $_hidden_fields
-		$data = $this->get_login_link_data_array();
+		$link_data = $this->get_login_link_data_array();
 
-		if (!empty($data))
+		if (!empty($link_data))
 		{
 			// Confirm that we have all necessary data
 			$auth_provider = $this->provider_collection->get_provider($this->request->variable('auth_provider', ''));
 
-			$result = $auth_provider->login_link_has_necessary_data($data);
+			$result = $auth_provider->login_link_has_necessary_data($link_data);
 			if ($result !== null)
 			{
 				$errors[] = $this->lang->lang($result);
 			}
 
-			$s_hidden_fields = array_merge($s_hidden_fields, $this->get_login_link_data_for_hidden_fields($data));
+			$s_hidden_fields = array_merge($s_hidden_fields, $this->get_login_link_data_for_hidden_fields($link_data));
 		}
 
 		if (!$agreed || ($coppa === false && $this->config['coppa_enable']) || ($coppa && !$this->config['coppa_enable']))
@@ -430,8 +431,6 @@ class register
 
 			if (empty($errors))
 			{
-				$server_url = generate_board_url();
-
 				// Which group by default?
 				$group_name = $coppa ? 'REGISTERED_COPPA' : 'REGISTERED';
 
@@ -556,7 +555,7 @@ class register
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'WELCOME_MSG'	=> htmlspecialchars_decode($this->lang->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-						'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u=$user_id&k=$user_actkey",
+						'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_id, 'k' => $user_actkey], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 					]);
 
 					if ($coppa)
@@ -607,11 +606,11 @@ class register
 				}
 
 				// Perform account linking if necessary
-				if (!empty($data))
+				if (!empty($link_data))
 				{
-					$data['user_id'] = (int) $user_id;
+					$link_data['user_id'] = (int) $user_id;
 
-					$result = $auth_provider->link_account($data);
+					$result = $auth_provider->link_account($link_data);
 
 					if ($result)
 					{

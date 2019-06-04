@@ -15,6 +15,7 @@ namespace phpbb\acp\controller;
 
 use phpbb\exception\back_exception;
 use phpbb\exception\form_invalid_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class inactive
 {
@@ -299,7 +300,7 @@ class inactive
 							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $this->user->format_date($row['user_regdate'], false, true),
-								'U_ACTIVATE'	=> generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
+								'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $row['user_id'], 'k' => $row['user_actkey']], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 							]);
 
 							$messenger->send($row['user_notify_type']);

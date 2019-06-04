@@ -13,6 +13,8 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+
 class logs
 {
 	/** @var \phpbb\auth\auth */
@@ -23,6 +25,9 @@ class logs
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -45,17 +50,13 @@ class logs
 	/** @var string phpBB topics table */
 	protected $topics_table;
 
-	/** @todo replace */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\pagination					$pagination		Pagination object
@@ -68,6 +69,7 @@ class logs
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -80,6 +82,7 @@ class logs
 		$this->auth			= $auth;
 		$this->config		= $config;
 		$this->db			= $db;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->log			= $log;
 		$this->pagination	= $pagination;
@@ -90,21 +93,21 @@ class logs
 		$this->topics_table	= $topics_table;
 	}
 
-	function main($id, $mode)
+	public function main($mode, $page = 1)
 	{
 		$this->lang->add_lang('acp/common');
 
-		$this->tpl_name = 'mcp_logs';
-		$this->page_title = 'MCP_LOGS';
-
 		$action = $this->request->variable('action', ['' => '']);
-		$action = is_array($action) ? key($action) : $this->request->variable('action', '');
+		$action = is_array($action) && !empty($action) ? key($action) : $this->request->variable('action', '');
 
 		// Set up general vars
-		$start			= $this->request->variable('start', 0);
-		$marked			= $this->request->variable('mark', [0]);
-		$delete_mark	= $action === 'del_marked';
 		$delete_all		= $action === 'del_all';
+		$delete_mark	= $action === 'del_marked';
+		$marked			= $this->request->variable('mark', [0]);
+
+		// Set up pagination vars
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
 
 		// Sort keys
 		$sort_days	= $this->request->variable('st', 0);
@@ -114,26 +117,31 @@ class logs
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
 		$forum_list[] = 0;
 
-		$forum_id = $topic_id = 0;
+		// Set up current route
+		$route = $page === 1 ? "mcp_logs_{$mode}" : "mcp_logs_{$mode}_pagination";
+		$params = array_filter(['f' => $this->request->variable('f', 0), 't' => $this->request->variable('t', 0)]);
+		$u_mode = $this->helper->route($route, array_merge(['page' => $page], $params));
+
+		$forum_id = 0;
+		$topic_id = 0;
 
 		switch ($mode)
 		{
-			case 'front':
+			case 'overview':
 			break;
 
-			case 'forum_logs':
+			case 'forum':
 				$forum_id = $this->request->variable('f', 0);
 
 				if (!in_array($forum_id, $forum_list))
 				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NOT_AUTHORISED');
+					throw new back_exception(403, 'NOT_AUTHORISED', 'mcp_logs_overview');
 				}
 
 				$forum_list = [$forum_id];
 			break;
 
-			case 'topic_logs':
+			case 'topic':
 				$topic_id = $this->request->variable('t', 0);
 
 				$sql = 'SELECT forum_id
@@ -145,8 +153,7 @@ class logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
-					send_status_line(403, 'Forbidden');
-					trigger_error('NOT_AUTHORISED');
+					throw new back_exception(403, 'NOT_AUTHORISED', 'mcp_logs_overview');
 				}
 
 				$forum_list = [$forum_id];
@@ -181,7 +188,7 @@ class logs
 						$conditions['log_time'] = ['>=', time() - ($sort_days * 86400)];
 					}
 
-					if ($mode === 'topic_logs')
+					if ($mode === 'topic')
 					{
 						$conditions['topic_id'] = (int) $topic_id;
 					}
@@ -192,26 +199,20 @@ class logs
 			else
 			{
 				confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-					'i'			=> $id,
-					'mode'		=> $mode,
-					'action'	=> $this->request->variable('action', ['' => '']),
+					'action'	=> $action,
+					'mark'		=> $marked,
 					'f'			=> $forum_id,
 					't'			=> $topic_id,
-					'start'		=> $start,
-					'mark'		=> $marked,
-					'delmarked'	=> $delete_mark,
-					'delall'	=> $delete_all,
-					'st'		=> $sort_days,
-					'sd'		=> $sort_dir,
-					'sk'		=> $sort_key,
 				]));
+
+				return redirect($u_mode);
 			}
 		}
 
 		// Sorting
-		$limit_days = [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
-		$sort_by_text = ['u' => $this->lang->lang('SORT_USERNAME'), 't' => $this->lang->lang('SORT_DATE'), 'i' => $this->lang->lang('SORT_IP'), 'o' => $this->lang->lang('SORT_ACTION')];
-		$sort_by_sql = ['u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation'];
+		$limit_days		= [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];
+		$sort_by_text	= ['u' => $this->lang->lang('SORT_USERNAME'), 't' => $this->lang->lang('SORT_DATE'), 'i' => $this->lang->lang('SORT_IP'), 'o' => $this->lang->lang('SORT_ACTION')];
+		$sort_by_sql	= ['u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation'];
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -221,15 +222,19 @@ class logs
 		$sql_sort	= $sort_by_sql[$sort_key] . ' ' . ($sort_dir === 'd' ? 'DESC' : 'ASC');
 
 		$keywords = $this->request->variable('keywords', '', true);
-		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
+		$keywords_params = !empty($keywords) ? ['keywords' => urlencode(htmlspecialchars_decode($keywords))] : [];
 
 		// Grab log data
 		$log_data = [];
 		$log_count = 0;
-		$start = view_log('mod', $log_data, $log_count, $this->config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
+		$start = view_log('mod', $log_data, $log_count, $limit, $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
 
-		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $this->config['topics_per_page'], $start);
+		parse_str(html_entity_decode($u_sort_param), $sort_params);
+
+		$this->pagination->generate_template_pagination([
+			'routes' => ["mcp_logs_{$mode}", "mcp_logs_{$mode}_pagination"],
+			'params' => array_merge($params, $sort_params, $keywords_params),
+		], 'pagination', 'page', $log_count, $limit, $start);
 
 		$this->template->assign_vars([
 			'TOTAL'					=> $this->lang->lang('TOTAL_LOGS', (int) $log_count),
@@ -243,7 +248,7 @@ class logs
 			'S_LOGS'				=> (bool) $log_count > 0,
 			'S_KEYWORDS'			=> $keywords,
 
-			'U_POST_ACTION'			=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
+			'U_POST_ACTION'			=> $this->helper->route($route, array_merge(['page' => $page], $sort_params, $keywords_params)),
 		]);
 
 		foreach ($log_data as $row)
@@ -267,5 +272,7 @@ class logs
 				'USERNAME'		=> $row['username_full'],
 			]);
 		}
+
+		return $this->helper->render('mcp_logs.html', $this->lang->lang('MCP_LOGS'));
 	}
 }

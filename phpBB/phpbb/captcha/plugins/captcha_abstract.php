@@ -86,7 +86,7 @@ abstract class captcha_abstract
 
 	function get_template()
 	{
-		global $config, $user, $template, $phpEx, $phpbb_root_path;
+		global $config, $user, $template, $phpEx, $phpbb_root_path, $phpbb_container;
 
 		if ($this->is_solved())
 		{
@@ -94,7 +94,10 @@ abstract class captcha_abstract
 		}
 		else
 		{
-			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
+			/** @var \phpbb\controller\helper $controller_helper */
+			$controller_helper = $phpbb_container->get('controller.helper');
+
+			$link = $controller_helper->route('ucp_account', ['mode' => 'confirm', 'confirm_id' => $this->confirm_id, 'type' => $this->type]);
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
@@ -117,8 +120,8 @@ abstract class captcha_abstract
 	{
 		global $config, $template, $request, $phpbb_container;
 
-		/** @var \phpbb\acp\helper\controller $helper */
-		$helper = $phpbb_container->get('acp.controller.helper');
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
 
 		$variables = [];
 
@@ -134,7 +137,7 @@ abstract class captcha_abstract
 
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> $helper->route('acp_settings_captcha', $params),
+			'CONFIRM_IMAGE'		=> $acp_controller_helper->route('acp_settings_captcha', $params),
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 

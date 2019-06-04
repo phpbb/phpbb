@@ -13,6 +13,9 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\runtime_exception;
+
 class forum
 {
 	/** @var \phpbb\auth\auth */
@@ -32,6 +35,9 @@ class forum
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -69,6 +75,7 @@ class forum
 	 * @param \phpbb\content_visibility			$content_visibility		Content visibility object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
 	 * @param \phpbb\language\language			$lang					Language object
 	 * @param \phpbb\log\log					$log					Log object
 	 * @param \phpbb\pagination					$pagination				Pagination object
@@ -86,6 +93,7 @@ class forum
 		\phpbb\content_visibility $content_visibility,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
 		\phpbb\pagination $pagination,
@@ -103,6 +111,7 @@ class forum
 		$this->content_visibility	= $content_visibility;
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->lang					= $lang;
 		$this->log					= $log;
 		$this->pagination			= $pagination;
@@ -115,36 +124,70 @@ class forum
 		$this->tables				= $tables;
 	}
 
-	public function view($id, $mode, $action, $forum_info)
+	public function main($page)
 	{
 		$this->lang->add_lang(['viewtopic', 'viewforum']);
 
-		include_once($this->root_path . 'includes/functions_display.' . $this->php_ext);
+		$forum_id	= $this->request->variable('f', 0);
+		$topic_id	= (int) $this->request->variable('t', 0);
+		$post_id	= (int) $this->request->variable('p', 0);
+
+		if (empty($forum_id))
+		{
+			if ($post_id)
+			{
+				$sql = 'SELECT forum_id 
+					FROM ' . $this->tables['posts'] . '
+					WHERE post_id = ' . (int) $post_id;
+				$result = $this->db->sql_query($sql);
+				$forum_id = (int) $this->db->sql_fetchfield('forum_id');
+				$this->db->sql_freeresult($result);
+			}
+			else if ($topic_id)
+			{
+				$sql = 'SELECT forum_id 
+					FROM ' . $this->tables['topics'] . '
+					WHERE topic_id = ' . (int) $topic_id;
+				$result = $this->db->sql_query($sql);
+				$forum_id = (int) $this->db->sql_fetchfield('forum_id');
+				$this->db->sql_freeresult($result);
+			}
+		}
+
+		$forum_info = phpbb_get_forum_data($forum_id, 'm_', true);
+
+		if (empty($forum_info))
+		{
+			throw new back_exception('mcp_index');
+		}
+
+		$forum_info = $forum_info[$forum_id];
+		$forum_id	= (int) $forum_info['forum_id'];
+
+		$source_topic_ids = [$topic_id];
+		$topic_id_list	= $this->request->variable('topic_id_list', [0]);
+		$post_id_list	= $this->request->variable('post_id_list', [0]);
+		$to_topic_id	= $this->request->variable('to_topic_id', 0);
+
+		$action = $this->request->variable('action', '');
+
+		if (($forum_action = $this->request->variable('forum_action', '')) !== ''
+			&& $this->request->variable('sort', false, false, \phpbb\request\request_interface::POST)
+		)
+		{
+			$action = $forum_action;
+		}
 
 		// merge_topic is the quick mod action, merge_topics is the mcp_forum action, and merge_select is the mcp_topic action
-		$merge_select = ($action === 'merge_select' || $action === 'merge_topic' || $action === 'merge_topics') ? true : false;
+		$merge_select = (bool) ($action === 'merge_select' || $action === 'merge_topic' || $action === 'merge_topics');
 
-		$forum_id			= $forum_info['forum_id'];
-		$start				= $this->request->variable('start', 0);
-		$topic_id_list		= $this->request->variable('topic_id_list', [0]);
-		$post_id_list		= $this->request->variable('post_id_list', [0]);
-		$source_topic_ids	= [$this->request->variable('t', 0)];
-		$to_topic_id		= $this->request->variable('to_topic_id', 0);
-
-		$url_extra = '';
-		$url_extra .= $forum_id ? "&amp;f=$forum_id" : '';
-		$url_extra .= $GLOBALS['topic_id'] ? '&amp;t=' . $GLOBALS['topic_id'] : '';
-		$url_extra .= $GLOBALS['post_id'] ? '&amp;p=' . $GLOBALS['post_id'] : '';
-		$url_extra .= $GLOBALS['user_id'] ? '&amp;u=' . $GLOBALS['user_id'] : '';
-
-		$url = append_sid("{$this->root_path}mcp.$this->php_ext?$url_extra");
+		include_once($this->root_path . 'includes/functions_display.' . $this->php_ext);
 
 		// Resync Topics
 		switch ($action)
 		{
 			case 'resync':
-				$topic_ids = $this->request->variable('topic_id_list', [0]);
-				$this->resync_topics($topic_ids);
+				return $this->resync_topics($topic_id_list, 'forum');
 			break;
 
 			/** @noinspection PhpMissingBreakStatementInspection */
@@ -155,7 +198,14 @@ class forum
 			case 'merge_topic':
 				if ($to_topic_id)
 				{
-					$this->merge_topics($forum_id, $source_topic_ids, $to_topic_id);
+					try
+					{
+						return $this->merge_topics($forum_id, $source_topic_ids, $to_topic_id);
+					}
+					catch (runtime_exception $e)
+					{
+						$this->template->assign_var('MESSAGE', $this->lang->lang($e->getMessage()));
+					}
 				}
 			break;
 		}
@@ -184,25 +234,34 @@ class forum
 		];
 		extract($this->dispatcher->trigger_event('core.mcp_forum_view_before', compact($vars)));
 
-		$selected_ids = '';
+		$selected_ids = [];
+
 		if (!empty($post_id_list) && $action !=='merge_topics')
 		{
 			foreach ($post_id_list as $num => $post_id)
 			{
-				$selected_ids .= '&amp;post_id_list[' . $num . ']=' . $post_id;
+				$selected_ids["post_id_list[{$num}"] = (int) $post_id;
 			}
 		}
 		else if (!empty($topic_id_list) && $action === 'merge_topics')
 		{
 			foreach ($topic_id_list as $num => $topic_id)
 			{
-				$selected_ids .= '&amp;topic_id_list[' . $num . ']=' . $topic_id;
+				$selected_ids["topic_id_list[{$num}]"] = (int) $topic_id;
 			}
 		}
 
-		make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . ($merge_select ? $selected_ids : ''), $forum_id, false, 'm_', true);
+		// Lets set up some identifiers
+		$params = array_filter([
+			'f' => $forum_id,
+			't' => $topic_id,
+			'p' => $post_id,
+			'action' => $action,
+		]);
 
-		$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $this->config['topics_per_page'];
+		$merge_params = $merge_select ? array_merge($params, $selected_ids) : $params;
+
+		make_jumpbox($this->helper->route('mcp_view_forum', $merge_params), $forum_id, false, 'm_', true);
 
 		$sort_days = $total = 0;
 		$sort_key = $sort_dir = '';
@@ -212,12 +271,15 @@ class forum
 		$forum_topics = $total === -1 ? $forum_info['forum_topics_approved'] : $total;
 		$limit_time_sql = $sort_days ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-		$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . ($merge_select ? $selected_ids : '');
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
+		// Pagination
+		$topics_per_page = ($forum_info['forum_topics_per_page']) ? (int) $forum_info['forum_topics_per_page'] : (int) $this->config['topics_per_page'];
+		$start = ($page - 1) * $topics_per_page;
+		$start = $this->request->is_set('start') ? $this->request->variable('start', 0) : $start;
 
-		/** @todo Check what the correct replacement is. "a_viewlogs" used for now. */
-		// $s_view_forum_logs = $module->loaded('logs');
-		$s_view_forum_logs = $this->auth->acl_get('a_viewlogs');
+		$this->pagination->generate_template_pagination([
+			'routes' => ['mcp_view_forum', 'mcp_view_forum_pagination'],
+			'params' => array_merge($merge_params, ['sk' => $sort_key, 'sd' => $sort_dir, 'st' => $sort_days]),
+		], 'pagination', 'page', $forum_topics, $topics_per_page, $start);
 
 		$this->template->assign_vars([
 			'ACTION'				=> $action,
@@ -238,16 +300,16 @@ class forum
 			'S_CAN_LOCK'			=> $this->auth->acl_get('m_lock', $forum_id),
 			'S_CAN_SYNC'			=> $this->auth->acl_get('m_', $forum_id),
 			'S_CAN_APPROVE'			=> $this->auth->acl_get('m_approve', $forum_id),
-			'S_MERGE_SELECT'		=> $merge_select ? true : false,
+			'S_MERGE_SELECT'		=> (bool) $merge_select,
 			'S_CAN_MAKE_NORMAL'		=> $this->auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id),
 			'S_CAN_MAKE_STICKY'		=> $this->auth->acl_get('f_sticky', $forum_id),
 			'S_CAN_MAKE_ANNOUNCE'	=> $this->auth->acl_get('f_announce', $forum_id),
 			'S_CAN_MAKE_ANNOUNCE_GLOBAL'	=> $this->auth->acl_get('f_announce_global', $forum_id),
 
 			'U_VIEW_FORUM'			=> append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id),
-			'U_VIEW_FORUM_LOGS'		=> ($this->auth->acl_gets('a_', 'm_', $forum_id) && $s_view_forum_logs) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
+			'U_VIEW_FORUM_LOGS'		=> ($this->auth->acl_gets('a_', 'm_', $forum_id) && $this->auth->acl_get('a_viewlogs')) ? $this->helper->route('mcp_logs_forum', ['f' => $forum_id]) : '',
 
-			'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . ($merge_select ? $selected_ids : ''),
+			'S_MCP_ACTION'			=> $this->helper->route('mcp_view_forum' . ($page > 1 ? '_pagination' : ''), array_merge(['page' => $page], $merge_params)),
 
 			'TOTAL_TOPICS'			=> $this->lang->lang('VIEW_FORUM_TOPICS', (int) $forum_topics),
 		]);
@@ -311,7 +373,7 @@ class forum
 		// If there is more than one page, but we have no topic list, then the start parameter is... erm... out of sync
 		if (empty($topic_list) && $forum_topics && $start > 0)
 		{
-			redirect($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode");
+			return redirect($this->helper->route('mcp_view_forum', $params));
 		}
 
 		// Get topic tracking info
@@ -351,8 +413,8 @@ class forum
 			$topic_unapproved	= (($row_ary['topic_visibility'] == ITEM_UNAPPROVED || $row_ary['topic_visibility'] == ITEM_REAPPROVE) && $this->auth->acl_get('m_approve', $row_ary['forum_id'])) ? true : false;
 			$posts_unapproved	= ($row_ary['topic_visibility'] == ITEM_APPROVED && $row_ary['topic_posts_unapproved'] && $this->auth->acl_get('m_approve', $row_ary['forum_id'])) ? true : false;
 			$topic_deleted		= $row_ary['topic_visibility'] == ITEM_DELETED;
-			$u_mcp_queue		= ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . ($topic_unapproved ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row_ary['topic_id'] : '';
-			$u_mcp_queue		= (!$u_mcp_queue && $topic_deleted) ? $url . '&amp;i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
+			$u_mcp_moderation	= ($topic_unapproved || $posts_unapproved) ? $this->helper->route('mcp_' . $topic_unapproved ? 'approve_details' : 'unapproved_posts', ['f' => $row_ary['forum_id'], 't' => $row_ary['topic_id']]) : '';
+			$u_mcp_moderation	= (!$u_mcp_moderation && $topic_deleted) ? $this->helper->route('mcp_deleted_topics', ['f' => $row_ary['forum_id'], 't' => $row_ary['topic_id']]) : $u_mcp_moderation;
 
 			$topic_row = [
 				'ATTACH_ICON_IMG'		=> ($this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $this->user->img('icon_topic_attach', $this->lang->lang('TOTAL_ATTACHMENTS')) : '',
@@ -395,18 +457,18 @@ class forum
 					'TOPIC_ID'			=> (int) $row_ary['topic_moved_id'],
 					'S_MOVED_TOPIC'		=> true,
 					'U_VIEW_TOPIC'		=> append_sid("{$this->root_path}viewtopic.$this->php_ext", "t={$row_ary['topic_moved_id']}"),
-					'U_DELETE_TOPIC'	=> $this->auth->acl_get('m_delete', $forum_id) ? append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row_ary['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
+					'U_DELETE_TOPIC'	=> $this->auth->acl_get('m_delete', $forum_id) ? $this->helper->route('mcp_view_forum', ['f' => $forum_id, 'action' => 'delete_topic', 'topic_id_list[]' => $row_ary['topic_id']]) : '',
 				]);
 			}
 			else
 			{
 				if ($action === 'merge_topic' || $action === 'merge_topics')
 				{
-					$u_select_topic = $url . "&amp;i=$id&amp;mode=forum_view&amp;action=$action&amp;to_topic_id=" . $row_ary['topic_id'] . $selected_ids;
+					$u_select_topic = $this->helper->route('mcp_view_forum', array_merge($merge_params, ['to_topic_id' => $row_ary['topic_id']]));
 				}
 				else
 				{
-					$u_select_topic = $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row_ary['topic_id'] . $selected_ids;
+					$u_select_topic = $this->helper->route('mcp_view_topic', array_merge($merge_params, ['action' => 'merge', 'to_topic_id' => $row_ary['topic_id']]));
 				}
 
 				$topic_row = array_merge($topic_row, [
@@ -416,13 +478,14 @@ class forum
 					'S_SELECT_TOPIC'	=> (bool) ($merge_select && !in_array($row_ary['topic_id'], $source_topic_ids)),
 
 					'U_SELECT_TOPIC'	=> $u_select_topic,
-					'U_VIEW_TOPIC'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;f=$forum_id&amp;t={$row_ary['topic_id']}&amp;mode=topic_view"),
-					'U_MCP_QUEUE'		=> $u_mcp_queue,
-					'U_MCP_REPORT'		=> $this->auth->acl_get('m_report', $forum_id) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=main&amp;mode=topic_view&amp;t=' . $row_ary['topic_id'] . '&amp;action=reports') : '',
+					'U_VIEW_TOPIC'		=> $this->helper->route('mcp_view_topic', ['f' => $forum_id, 't' => $row_ary['topic_id']]),
+					'U_MCP_QUEUE'		=> $u_mcp_moderation,
+					'U_MCP_REPORT'		=> $this->auth->acl_get('m_report', $forum_id) ? $this->helper->route('mcp_view_topic', ['f' => $forum_id, 't' => $row_ary['topic_id'], 'action' => 'reports']) : '',
 				]);
 			}
 
 			$row = $row_ary;
+
 			/**
 			 * Modify the topic data before it is assigned to the template in MCP
 			 *
@@ -439,25 +502,36 @@ class forum
 
 			$this->template->assign_block_vars('topicrow', $topic_row);
 		}
+
 		unset($topic_rows);
+
+		return $this->helper->render('mcp_forum.html', $this->lang->lang('MCP_MAIN_FORUM_VIEW'));
 	}
 
 	/**
 	 * Resynchronise topics.
 	 *
 	 * @param array		$topic_ids		The topic identifiers
-	 * @return void
+	 * @param string	$mode			The "view" mode (forum|topic)
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function resync_topics(array $topic_ids)
+	public function resync_topics(array $topic_ids, $mode)
 	{
+		$route = "mcp_view_{$mode}";
+		$params = array_filter([
+			'f' => $this->request->variable('f', 0),
+			't' => $this->request->variable('t', 0),
+			'p' => $this->request->variable('p', 0),
+		]);
+
 		if (empty($topic_ids))
 		{
-			trigger_error('NO_TOPIC_SELECTED');
+			throw new back_exception(400, 'NO_TOPIC_SELECTED', [$route, $params]);
 		}
 
 		if (!phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', ['m_']))
 		{
-			return;
+			throw new back_exception(400, 'NO_TOPIC_SELECTED', [$route, $params]);
 		}
 
 		// Sync everything and perform extra checks separately
@@ -481,14 +555,13 @@ class forum
 		}
 		$this->db->sql_freeresult($result);
 
-		$msg = count($topic_ids) === 1 ? $this->lang->lang('TOPIC_RESYNC_SUCCESS') : $this->lang->lang('TOPICS_RESYNC_SUCCESS');
+		$u_back		= $this->helper->route($route, $params);
+		$return		= $this->lang->lang('RETURN_PAGE', '<a href="' . $u_back . '">', '</a>');
+		$message	= count($topic_ids) === 1 ? $this->lang->lang('TOPIC_RESYNC_SUCCESS') : $this->lang->lang('TOPICS_RESYNC_SUCCESS');
 
-		$redirect = $this->request->variable('redirect', $this->user->data['session_page']);
+		$this->helper->assign_meta_refresh_var(3, $u_back);
 
-		meta_refresh(3, $redirect);
-		trigger_error($msg . '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
-
-		return;
+		return $this->helper->message($message . '<br /><br />' . $return);
 	}
 
 	/**
@@ -497,20 +570,25 @@ class forum
 	 * @param int		$forum_id		The forum identifier
 	 * @param array		$topic_ids		The topic identifiers
 	 * @param int		$to_topic_id	The "to" topic identifier
-	 * @return void
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function merge_topics($forum_id, array $topic_ids, $to_topic_id)
+	protected function merge_topics($forum_id, array $topic_ids, $to_topic_id)
 	{
+		$route = 'mcp_view_forum';
+		$params = array_filter([
+			'f' => $this->request->variable('f', 0),
+			't' => $this->request->variable('t', 0),
+			'p' => $this->request->variable('p', 0),
+		]);
+
 		if (empty($topic_ids))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_TOPIC_SELECTED'));
-			return;
+			throw new runtime_exception('NO_TOPIC_SELECTED');
 		}
 
 		if (empty($to_topic_id))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_FINAL_TOPIC_SELECTED'));
-			return;
+			throw new runtime_exception('NO_FINAL_TOPIC_SELECTED');
 		}
 
 		$sync_topics = array_merge($topic_ids, [$to_topic_id]);
@@ -519,8 +597,7 @@ class forum
 
 		if (empty($all_topic_data) || empty($all_topic_data[$to_topic_id]))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_FINAL_TOPIC_SELECTED'));
-			return;
+			throw new runtime_exception('NO_FINAL_TOPIC_SELECTED');
 		}
 
 		$sync_forums = [];
@@ -532,9 +609,8 @@ class forum
 			$topic_views = max($topic_views, $data['topic_views']);
 		}
 
-		$to_topic_data	= $all_topic_data[$to_topic_id];
-		$post_id_list	= $this->request->variable('post_id_list', [0]);
-		$start			= $this->request->variable('start', 0);
+		$to_topic_data = $all_topic_data[$to_topic_id];
+		$post_id_list = $this->request->variable('post_id_list', [0]);
 
 		if (empty($post_id_list) && !empty($topic_ids))
 		{
@@ -553,30 +629,21 @@ class forum
 
 		if (empty($post_id_list))
 		{
-			$this->template->assign_var('MESSAGE', $this->lang->lang('NO_POST_SELECTED'));
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
 		if (!phpbb_check_ids($post_id_list, $this->tables['posts'], 'post_id', ['m_merge']))
 		{
-			return;
+			throw new runtime_exception('NO_POST_SELECTED');
 		}
 
-		$redirect = $this->request->variable('redirect', "{$this->root_path}mcp.$this->php_ext?f=$forum_id&amp;i=main&amp;mode=forum_view");
-
 		$s_hidden_fields = build_hidden_fields([
-			'i'				=> 'main',
 			'f'				=> $forum_id,
-			'post_id_list'	=> $post_id_list,
-			'to_topic_id'	=> $to_topic_id,
-			'mode'			=> 'forum_view',
 			'action'		=> 'merge_topics',
-			'start'			=> $start,
-			'redirect'		=> $redirect,
+			'post_id_list'	=> $post_id_list,
 			'topic_id_list'	=> $topic_ids,
+			'to_topic_id'	=> $to_topic_id,
 		]);
-
-		$return_link = '';
 
 		if (confirm_box(true))
 		{
@@ -596,9 +663,6 @@ class forum
 				WHERE topic_id = ' . (int) $to_topic_id;
 			$this->db->sql_query($sql);
 
-			// Message and return links
-			$success_msg = 'POSTS_MERGED_SUCCESS';
-
 			if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
 			{
 				include($this->root_path . 'includes/functions_database_helper.' . $this->php_ext);
@@ -616,11 +680,6 @@ class forum
 			sync('topic', 'topic_id', $sync_topics, true);
 			sync('forum', 'forum_id', $sync_forums, true, true);
 
-			// Link to the new topic
-			$return_link .= ($return_link ? '<br /><br />' : '') . $this->lang->lang('RETURN_NEW_TOPIC', '<a href="' . append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
-			$redirect = $this->request->variable('redirect', "{$this->root_path}viewtopic.$this->php_ext?f=$to_forum_id&amp;t=$to_topic_id");
-			$redirect = reapply_sid($redirect);
-
 			/**
 			 * Perform additional actions after merging topics.
 			 *
@@ -629,18 +688,26 @@ class forum
 			 * @var	int		to_topic_id				The ID of the topic into which the rest are merged
 			 * @since 3.1.11-RC1
 			 */
-			$vars = [
-				'all_topic_data',
-				'to_topic_id',
-			];
+			$vars = ['all_topic_data', 'to_topic_id',];
 			extract($this->dispatcher->trigger_event('core.mcp_forum_merge_topics_after', compact($vars)));
 
-			meta_refresh(3, $redirect);
-			trigger_error($this->lang->lang($success_msg) . '<br /><br />' . $return_link);
+			$u_back		= $this->helper->route($route, $params);
+			$u_topic	= append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id);
+
+			$l_back		= $this->lang->lang('RETURN_PAGE', '<a href="' . $u_back . '">', '</a>');
+			$l_topic	= $this->lang->lang('RETURN_NEW_TOPIC', '<a href="' . $u_topic . '">', '</a>');
+
+			$message	= $this->lang->lang('POSTS_MERGED_SUCCESS');
+
+			$this->helper->assign_meta_refresh_var(3, $u_topic);
+
+			return $this->helper->message($message . '<br /><br />' . $l_back . '<br /><br />' . $l_topic);
 		}
 		else
 		{
 			confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
+
+			return redirect($this->helper->route($route, $params));
 		}
 	}
 }

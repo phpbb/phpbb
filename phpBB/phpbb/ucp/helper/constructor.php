@@ -30,6 +30,9 @@ class constructor implements \phpbb\cp\constructor_interface
 	/** @var \phpbb\language\language */
 	protected $lang;
 
+	/** @var \phpbb\symfony_request */
+	protected $symfony_request;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -48,16 +51,17 @@ class constructor implements \phpbb\cp\constructor_interface
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\auth\auth					$auth			Auth object
-	 * @param \phpbb\config\config				$config			Config object
-	 * @param \phpbb\db\driver\driver_interface	$db				Database object
-	 * @param \phpbb\controller\helper			$helper			Controller helper object
-	 * @param \phpbb\language\language			$lang			Language object
-	 * @param \phpbb\template\template			$template		Template object
-	 * @param \phpbb\user						$user			User object
-	 * @param string							$root_path		phpBB root path
-	 * @param string							$php_ext		php File extension
-	 * @param array								$tables			phpBB tables
+	 * @param \phpbb\auth\auth					$auth				Auth object
+	 * @param \phpbb\config\config				$config				Config object
+	 * @param \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
+	 * @param \phpbb\language\language			$lang				Language object
+	 * @param \phpbb\symfony_request			$symfony_request	Symfony request object
+	 * @param \phpbb\template\template			$template			Template object
+	 * @param \phpbb\user						$user				User object
+	 * @param string							$root_path			phpBB root path
+	 * @param string							$php_ext			php File extension
+	 * @param array								$tables				phpBB tables
 	 */
 	public function __construct(
 		\phpbb\auth\auth $auth,
@@ -65,6 +69,7 @@ class constructor implements \phpbb\cp\constructor_interface
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
+		\phpbb\symfony_request $symfony_request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
 		$root_path,
@@ -72,17 +77,18 @@ class constructor implements \phpbb\cp\constructor_interface
 		$tables
 	)
 	{
-		$this->auth			= $auth;
-		$this->config		= $config;
-		$this->db			= $db;
-		$this->helper		= $helper;
-		$this->lang			= $lang;
-		$this->template		= $template;
-		$this->user			= $user;
+		$this->auth				= $auth;
+		$this->config			= $config;
+		$this->db				= $db;
+		$this->helper			= $helper;
+		$this->lang				= $lang;
+		$this->symfony_request	= $symfony_request;
+		$this->template			= $template;
+		$this->user				= $user;
 
-		$this->root_path	= $root_path;
-		$this->php_ext		= $php_ext;
-		$this->tables		= $tables;
+		$this->root_path		= $root_path;
+		$this->php_ext			= $php_ext;
+		$this->tables			= $tables;
 	}
 
 	/**
@@ -94,26 +100,46 @@ class constructor implements \phpbb\cp\constructor_interface
 
 		require($this->root_path . 'includes/functions_user.' . $this->php_ext);
 
-		// Only registered users can go beyond this point
-		if (!$this->user->data['is_registered'])
+		/**
+		 * There are a vew "global" modes in the UCP,
+		 * that are allowed through the basic checks.
+		 *
+		 * All these modes are routed through the "ucp_account" route.
+		 * Currently, these modes are:
+		 * 		activate
+		 * 		confirm
+		 * 		delete_cookies
+		 * 		login
+		 * 		login_link
+		 * 		logout
+		 * 		permissions_restore
+		 * 		permissions_switch
+		 * 		privacy
+		 * 		register
+		 * 		resend_activation
+		 * 		send_password
+		 * 		terms
+		 */
+		$global_mode = $this->symfony_request->get('_route') === 'ucp_account';
+
+		if (!$global_mode)
 		{
-			if ($this->user->data['is_bot'])
+			// Only registered users can go beyond this point
+			if (!$this->user->data['is_registered'])
 			{
-				redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+				if ($this->user->data['is_bot'])
+				{
+					redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+				}
+
+				login_box('', $this->lang->lang('LOGIN_EXPLAIN_UCP'));
 			}
 
-			login_box('', $this->lang->lang('LOGIN_EXPLAIN_UCP'));
+			$this->output_friends();
 		}
-
-		$this->output_friends();
 
 		// Setting a variable to let the style designer know where he is...
 		$this->template->assign_var('S_IN_UCP', true);
-
-		$this->template->assign_block_vars('navlinks', [
-			'BREADCRUMB_NAME'	=> $this->lang->lang('UCP'),
-			'U_BREADCRUMB'		=> $this->helper->route('ucp_index'),
-		]);
 	}
 
 	/**

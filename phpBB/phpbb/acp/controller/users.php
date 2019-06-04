@@ -16,6 +16,7 @@ namespace phpbb\acp\controller;
 
 use phpbb\exception\back_exception;
 use phpbb\exception\form_invalid_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class users
 {
@@ -471,8 +472,6 @@ class users
 									include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 								}
 
-								$server_url = generate_board_url();
-
 								$activation_key = gen_rand_string(mt_rand(6, 10));
 								$email_template = $user_row['user_type'] == USER_NORMAL ? 'user_reactivate_account' : 'user_resend_inactive';
 
@@ -512,7 +511,7 @@ class users
 								$messenger->assign_vars([
 									'WELCOME_MSG'	=> htmlspecialchars_decode($this->lang->lang('WELCOME_SUBJECT', $this->config['sitename'])),
 									'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
-									'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k=$activation_key",
+									'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_row['user_id'], 'k' => $$activation_key], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 								]);
 
 								$messenger->send(NOTIFY_EMAIL);
@@ -1224,10 +1223,10 @@ class users
 					'S_USER_INACTIVE'		=> $user_row['user_type'] == USER_INACTIVE,
 					'S_USER_IP'				=> !empty($user_row['user_ip']),
 
-					'U_MCP_QUEUE'			=> $this->auth->acl_getf_global('m_approve') ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue', true, $this->user->session_id) : '',
+					'U_MCP_QUEUE'			=> $this->auth->acl_getf_global('m_approve') ? $this->helper->route('mcp_unapproved_topics', [], false, $this->user->session_id) : '',
 					'U_SEARCH_USER'			=> ($this->config['load_search'] && $this->auth->acl_get('u_search')) ? append_sid("{$this->root_path}search.$this->php_ext", "author_id={$user_row['user_id']}&amp;sr=posts") : '',
 					'U_SHOW_IP'				=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'ip' => ($ip === 'ip' ? 'hostname' : 'ip')]),
-					'U_SWITCH_PERMISSIONS'	=> ($this->auth->acl_get('a_switchperm') && $this->user->data['user_id'] != $user_row['user_id']) ? append_sid("{$this->root_path}ucp.$this->php_ext", "mode=switch_perm&amp;u={$user_row['user_id']}&amp;hash=" . generate_link_hash('switchperm')) : '',
+					'U_SWITCH_PERMISSIONS'	=> ($this->auth->acl_get('a_switchperm') && $this->user->data['user_id'] != $user_row['user_id']) ? $this->helper->route('ucp_account', ['mode' => 'permissions_switch', 'u' => $user_row['user_id'], 'hash' => generate_link_hash('switchperm')]) : '',
 					'U_WHOIS'				=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'action' => 'whois', 'user_ip' => $user_row['user_ip']]),
 				]);
 			break;

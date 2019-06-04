@@ -133,4 +133,14 @@ interface item_interface
 	 * @return string
 	 */
 	public function get_page();
+
+	/**
+	 * Get this item's display property.
+	 *
+	 * This can be set to false,
+	 * if this item should not be displayed in the menu.
+	 *
+	 * @return bool
+	 */
+	public function get_display();
 }

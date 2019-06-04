@@ -8,28 +8,27 @@ services:
 
     ucp_account:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
+            $display: false
             $auth: ''
             $icon: ''
             $parent: ''
+            $before: ''
+            $page: ''
             $route:
                 path: /{mode}
                 defaults:
                     _controller: ucp.account:main
                     mode: ''
                 requirements:
-                    mode: "activate|resend_activation|send_password|register|confirm|
-                            login_link|login|logout|
-                            terms|privacy|
-                            permissions_switch|permissions_restore|
-                            delete_cookies"
+                    mode: "activate|resend_activation|send_password|register|confirm|login_link|login|logout|terms|privacy|permissions_switch|permissions_restore|delete_cookies"
 
 # --- UCP > Overview -- #
     ucp_cat_overview:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -39,7 +38,7 @@ services:
 
     ucp_index:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -53,7 +52,7 @@ services:
 # --- UCP > Manage --- #
     ucp_cat_manage:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -63,7 +62,7 @@ services:
 
     ucp_manage_subscriptions:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -77,7 +76,7 @@ services:
 
     ucp_manage_bookmarks:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'cfg_allow_bookmarks'
@@ -94,7 +93,7 @@ services:
 
     ucp_manage_notifications:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'cfg_allow_board_notifications'
@@ -111,7 +110,7 @@ services:
 
     ucp_manage_drafts:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -128,7 +127,7 @@ services:
 
     ucp_manage_attachments:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'acl_u_attach'
@@ -144,7 +143,7 @@ services:
 
     ucp_manage_remember_me:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -158,7 +157,7 @@ services:
 
     ucp_manage_oauth:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'authmethod_oauth'
@@ -172,7 +171,7 @@ services:
 # --- UCP > Profile --- #
     ucp_cat_profile:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -182,7 +181,7 @@ services:
 
     ucp_profile_account:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -194,37 +193,23 @@ services:
                     _controller: ucp.profile:main
                     mode: 'account'
 
-    ucp_profile:
+    ucp_profile_profile:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'acl_u_chgprofileinfo'
             $icon: ''
-            $parent: 'ucp_cat_profiel'
+            $parent: 'ucp_cat_profile'
             $route:
                 path: /profile
                 defaults:
                     _controller: ucp.profile:main
                     mode: 'profile'
 
-    ucp_profile_signature:
-        tags: { name: ucp }
-        class: \phpbb\cp\menu\item
-        shared: false
-        arguments:
-            $auth: 'acl_u_sig'
-            $icon: ''
-            $parent: 'ucp_cat_profile'
-            $route:
-                path: /profile/signature
-                defaults:
-                    _controller: ucp.profile:main
-                    mode: 'signature'
-
     ucp_profile_avatar:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: 'cfg_allow_avatar'
@@ -236,10 +221,24 @@ services:
                     _controller: ucp.profile:main
                     mode: 'avatar'
 
+    ucp_profile_signature:
+        tags: { name: ucp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'acl_u_sig'
+            $icon: ''
+            $parent: 'ucp_cat_profile'
+            $route:
+                path: /profile/signature
+                defaults:
+                    _controller: ucp.profile:main
+                    mode: 'signature'
+
 # --- UCP > Settings --- #
     ucp_cat_settings:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -249,7 +248,7 @@ services:
 
     ucp_settings_global:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -263,7 +262,7 @@ services:
 
     ucp_settings_post:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -277,7 +276,7 @@ services:
 
     ucp_settings_display:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -291,7 +290,7 @@ services:
 
     ucp_settings_notifications:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -306,7 +305,7 @@ services:
 # --- UCP > Groups --- #
     ucp_cat_groups:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -316,7 +315,7 @@ services:
 
     ucp_groups_edit:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -330,7 +329,7 @@ services:
 
     ucp_groups_manage:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -350,7 +349,7 @@ services:
 # --- UCP > Zebra --- #
     ucp_cat_zebra:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -360,7 +359,7 @@ services:
 
     ucp_zebra_friends:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''
@@ -374,7 +373,7 @@ services:
 
     ucp_zebra_foes:
         tags: { name: ucp }
-        class: \phpbb\cp\menu\item
+        class: phpbb\cp\menu\item
         shared: false
         arguments:
             $auth: ''

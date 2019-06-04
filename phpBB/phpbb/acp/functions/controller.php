@@ -202,7 +202,7 @@ class controller
 			'T_SMILIES_PATH'			=> "{$this->web_path}{$this->config['smilies_path']}/",
 			'T_FONT_AWESOME_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->web_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
 
-			'U_LOGOUT'					=> append_sid("{$this->web_path}ucp.$this->php_ext", 'mode=logout'),
+			'U_LOGOUT'					=> $this->helper->route('ucp_account', ['mode' => 'logout']),
 			'U_ADM_LOGOUT'				=> $this->helper->route('acp_index', ['action' => 'admlogout']),
 			'U_ADM_INDEX'				=> $this->helper->route('acp_index'),
 			'U_INDEX'					=> append_sid("{$this->web_path}index.$this->php_ext"),

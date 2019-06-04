@@ -2153,6 +2153,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
+	/** @var \phpbb\acp\functions\controller $acp_functions */
 	$acp_functions = $phpbb_container->get('acp.functions.controller');
 
 	$confirm = ($language->lang('YES') === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
@@ -2276,6 +2277,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 {
 	global $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	$err = '';
 	$form_name = 'login';
@@ -2430,7 +2434,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
-					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+					($config['email_enable']) ? '<a href="' . $controller_helper->route('ucp_account', ['mode' => 'send_password']) . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
 					'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
 					'</a>'
@@ -2526,11 +2530,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
-		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
-		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
-		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
-		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
+		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? $controller_helper->route('ucp_account', ['mode' => 'send_password']) : '',
+		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? $controller_helper->route('ucp_account', ['mode' => 'resend_activation']) : '',
+		'U_TERMS_USE'			=> $controller_helper->route('ucp_account', ['mode' => 'terms']),
+		'U_PRIVACY'				=> $controller_helper->route('ucp_account', ['mode' => 'privacy']),
+		'UA_PRIVACY'			=> addslashes($controller_helper->route('ucp_account', ['mode' => 'privacy'])),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
@@ -3504,6 +3508,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 
 			global $phpbb_container;
+
+			/** @var \phpbb\acp\functions\controller $acp_functions */
 			$acp_functions = $phpbb_container->get('acp.functions.controller');
 
 			if (!defined('HEADER_INC'))
@@ -4251,9 +4257,14 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		return;
 	}
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	/** @var \phpbb\cp\menu\menu $cp_menu */
 	$cp_menu = $phpbb_container->get('cp.menu');
 
+	// Make sure to call MCP first, to save a query in \phpbb\cp\helper\identifiers
+	$cp_menu->build('mcp');
 	$cp_menu->build('ucp');
 
 	// gzip_compression
@@ -4284,13 +4295,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
+		$u_login_logout = $controller_helper->route('ucp_account', ['mode' => 'logout'], true, $user->session_id);
 		$l_login_logout = $user->lang['LOGOUT'];
 	}
 	else
 	{
 		$redirect = $request->variable('redirect', rawurlencode($user->page['page']));
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
+		$u_login_logout = $controller_helper->route('ucp_account', ['mode' => 'login', 'redirect' => $redirect]);
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -4427,8 +4438,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
@@ -4466,9 +4475,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
-		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
-		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
-		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
+		'U_VIEW_ALL_NOTIFICATIONS'		=> $controller_helper->route('ucp_manage_notifications'),
+		'U_MARK_ALL_NOTIFICATIONS'		=> $controller_helper->route('ucp_manage_notifications', ['mark' => 'all', 'token' => $notification_mark_hash]),
+		'U_NOTIFICATION_SETTINGS'		=> $controller_helper->route('ucp_settings_notifications'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'] && $config['allow_board_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
@@ -4496,8 +4505,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
 		'U_SITE_HOME'			=> $config['site_home_url'],
-		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
+		'U_REGISTER'			=> $controller_helper->route('ucp_account', ['mode' => 'register']),
+		'U_PROFILE'				=> $controller_helper->route('ucp_index'),
 		'U_USER_PROFILE'		=> get_username_string('profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
 		'U_FAQ'					=> $controller_helper->route('phpbb_help_faq_controller'),
@@ -4506,13 +4515,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),
 		'U_SEARCH_UNREAD'		=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unreadposts'),
 		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
-		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
+		'U_DELETE_COOKIES'		=> $controller_helper->route('ucp_account', ['mode' => 'delete_cookies']),
 		'U_CONTACT_US'			=> ($config['contact_admin_form_enable'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
 		'U_TEAM'				=> (!$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
-		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
-		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
-		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
-		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
+		'U_TERMS_USE'			=> $controller_helper->route('ucp_account', ['mode' => 'terms']),
+		'U_PRIVACY'				=> $controller_helper->route('ucp_account', ['mode' => 'privacy']),
+		'UA_PRIVACY'			=> addslashes($controller_helper->route('ucp_account', ['mode' => 'privacy'])),
+		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? $controller_helper->route('ucp_account', ['mode' => 'permissions_restore']) : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
@@ -4537,7 +4546,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? $controller_helper->route('ucp_account', ['mode' => 'login']) : $controller_helper->route('acp_index', [], false, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> $s_login_redirect,
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -4719,7 +4728,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $phpEx;
-	global $request, $phpbb_dispatcher, $phpbb_admin_path;
+	global $request, $phpbb_dispatcher, $phpbb_container, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -4741,6 +4750,9 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
@@ -4748,8 +4760,8 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
-		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
-	);
+		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? $controller_helper->route('acp_index', [], false, $user->session_id) : '',
+	));
 
 	// Call cron-type script
 	$call_cron = false;

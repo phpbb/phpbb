@@ -13,6 +13,9 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\back_exception;
+use phpbb\exception\http_exception;
+
 class ban
 {
 	/** @var \phpbb\acp\controller\ban */
@@ -26,6 +29,9 @@ class ban
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
 
 	/** @var \phpbb\language\language */
 	protected $lang;
@@ -45,11 +51,6 @@ class ban
 	/** @var string phpBB users table */
 	protected $users_table;
 
-	/** @todo */
-	public $page_title;
-	public $tpl_name;
-	public $u_action;
-
 	/**
 	 * Constructor.
 	 *
@@ -57,6 +58,7 @@ class ban
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
 	 * @param \phpbb\language\language			$lang			Language object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
@@ -69,6 +71,7 @@ class ban
 		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -81,6 +84,7 @@ class ban
 		$this->auth			= $auth;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
 		$this->lang			= $lang;
 		$this->request		= $request;
 		$this->template		= $template;
@@ -90,7 +94,7 @@ class ban
 		$this->users_table	= $users_table;
 	}
 
-	function main($id, $mode)
+	public function main($mode)
 	{
 		$this->lang->add_lang(['acp/ban', 'acp/users']);
 
@@ -99,10 +103,11 @@ class ban
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
+		$l_mode = $this->lang->lang(utf8_strtoupper($mode) . '_BAN');
+		$u_mode = $this->helper->route("mcp_ban_{$mode}");
+
 		$bansubmit		= $this->request->is_set_post('bansubmit');
 		$unbansubmit	= $this->request->is_set_post('unbansubmit');
-
-		$this->tpl_name = 'mcp_ban';
 
 		/**
 		 * Use this event to pass perform actions when a ban is issued or revoked
@@ -166,7 +171,7 @@ class ban
 
 					if ($abort_ban)
 					{
-						trigger_error($abort_ban);
+						throw new back_exception(503, $abort_ban, $u_mode);
 					}
 
 					user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
@@ -195,7 +200,9 @@ class ban
 					];
 					extract($this->dispatcher->trigger_event('core.mcp_ban_after', compact($vars)));
 
-					trigger_error($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . '<br /><br /><a href="' . $this->u_action . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>');
+					$return = $this->lang->lang('RETURN_PAGE', '<a href="' . $u_mode . '">&laquo; ', '</a>');
+
+					return $this->helper->message($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . '<br /><br />' . $return);
 				}
 				else
 				{
@@ -221,6 +228,8 @@ class ban
 					extract($this->dispatcher->trigger_event('core.mcp_ban_confirm', compact($vars)));
 
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields($hidden_fields));
+
+					return redirect($u_mode);
 				}
 			}
 		}
@@ -234,15 +243,18 @@ class ban
 				{
 					user_unban($mode, $ban);
 
-					trigger_error($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . '<br /><br /><a href="' . $this->u_action . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>');
+					$return = $this->lang->lang('RETURN_PAGE', '<a href="' . $u_mode . '">&laquo; ', '</a>');
+
+					return $this->helper->message($this->lang->lang('BAN_UPDATE_SUCCESSFUL') . '<br /><br />' . $return);
 				}
 				else
 				{
 					confirm_box(false, $this->lang->lang('CONFIRM_OPERATION'), build_hidden_fields([
-						'mode'			=> $mode,
 						'unbansubmit'	=> true,
 						'unban'			=> $ban,
 					]));
+
+					return redirect($u_mode);
 				}
 			}
 		}
@@ -257,7 +269,6 @@ class ban
 		}
 
 		// Define language vars
-		$this->page_title = $this->lang->lang(strtoupper($mode) . '_BAN');
 		$l_ban_cell = '';
 
 		switch ($mode)
@@ -278,7 +289,7 @@ class ban
 		$this->acp_ban->display_ban_options($mode);
 
 		$this->template->assign_vars([
-			'L_TITLE'				=> $this->page_title,
+			'L_TITLE'				=> $l_mode,
 			'L_EXPLAIN'				=> $this->lang->lang(strtoupper($mode) . '_BAN_EXPLAIN'),
 			'L_BAN_CELL'			=> $this->lang->lang($l_ban_cell),
 			'L_BAN_EXCLUDE_EXPLAIN'	=> $this->lang->lang(strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'),
@@ -288,13 +299,13 @@ class ban
 
 			'S_USERNAME_BAN'		=> $mode === 'user',
 
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $u_mode,
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
 		]);
 
 		if ($mode === 'email' && !$this->auth->acl_get('a_user'))
 		{
-			return;
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		// As a "service" we will check if any post id is specified and populate the username of the poster id if given
@@ -308,6 +319,7 @@ class ban
 				FROM ' . $this->users_table . '
 				WHERE user_id = ' . (int) $user_id;
 			$result = $this->db->sql_query($sql);
+
 			switch ($mode)
 			{
 				case 'user':
@@ -322,6 +334,7 @@ class ban
 					$pre_fill = (string) $this->db->sql_fetchfield('user_email');
 				break;
 			}
+
 			$this->db->sql_freeresult($result);
 		}
 		else if ($post_id)
@@ -349,9 +362,11 @@ class ban
 
 		if ($pre_fill)
 		{
-			// left for legacy template compatibility
+			// Left for legacy template compatibility
 			$this->template->assign_var('USERNAMES', $pre_fill);
 			$this->template->assign_var('BAN_QUANTIFIER', $pre_fill);
 		}
+
+		return $this->helper->render('mcp_ban.html', $l_mode);
 	}
 }

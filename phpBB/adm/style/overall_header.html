@@ -110,9 +110,7 @@ function popup(url, width, height, name)
 		<div id="tabs">
 			<ul>
 				{% for category in acp_menu %}
-					{% if category.ITEMS %}
-						<li class="tab{% if category.S_ACTIVE %} activetab{% endif %}"><a href="{{ category.U_VIEW }}">{{ category.TITLE }}</a></li>
-					{% endif %}
+					<li class="tab{% if category.S_ACTIVE %} activetab{% endif %}"><a href="{{ category.U_VIEW }}">{{ category.TITLE }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>

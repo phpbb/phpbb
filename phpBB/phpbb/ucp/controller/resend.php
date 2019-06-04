@@ -15,6 +15,7 @@ namespace phpbb\ucp\controller;
 
 use phpbb\exception\back_exception;
 use phpbb\exception\form_invalid_exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class resend
 {
@@ -173,7 +174,7 @@ class resend
 				$messenger->assign_vars([
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'WELCOME_MSG'	=> htmlspecialchars_decode($this->lang->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+					'U_ACTIVATE'	=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_row['user_id'], 'k' => $user_row['user_actkey']], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 				]);
 
 				if ($coppa)
@@ -207,7 +208,7 @@ class resend
 					$messenger->assign_vars([
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$this->php_ext?mode=viewprofile&u={$user_row['user_id']}",
-						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+						'U_ACTIVATE'		=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_row['user_id'], 'k' => $user_row['user_actkey']], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 					]);
 
 					$messenger->send($row['user_notify_type']);

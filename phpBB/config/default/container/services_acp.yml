@@ -1,7 +1,7 @@
 services:
 # --- Helpers --- #
     acp.auth_admin:
-        class: \phpbb\acp\helper\auth_admin
+        class: phpbb\acp\helper\auth_admin
         arguments:
             - '@auth'
             - '@cache.driver'
@@ -18,13 +18,13 @@ services:
             - '%tables%'
 
     acp.controller.helper:
-        class: \phpbb\acp\helper\controller
+        class: phpbb\acp\helper\controller
         parent: controller.helper
         calls:
             - ['set_functions', ['@acp.functions.controller']]
 
     acp.constructor:
-        class: \phpbb\acp\helper\constructor
+        class: phpbb\acp\helper\constructor
         arguments:
             - '@auth'
             - '@controller.helper'
@@ -38,7 +38,7 @@ services:
 
 # --- Functions --- #
     acp.functions.controller:
-        class: \phpbb\acp\functions\controller
+        class: phpbb\acp\functions\controller
         arguments:
             - '@auth'
             - '@config'
@@ -58,7 +58,7 @@ services:
 
 # --- Controllers --- #
     acp.attachments:
-        class: \phpbb\acp\controller\attachments
+        class: phpbb\acp\controller\attachments
         arguments:
             - '@attachment.manager'
             - '@auth'
@@ -82,7 +82,7 @@ services:
             - '%tables%'
 
     acp.ban:
-        class: \phpbb\acp\controller\ban
+        class: phpbb\acp\controller\ban
         arguments:
             - '@dbal.conn'
             - '@dispatcher'
@@ -96,7 +96,7 @@ services:
             - '%tables%'
 
     acp.bbcodes:
-        class: \phpbb\acp\controller\bbcodes
+        class: phpbb\acp\controller\bbcodes
         arguments:
             - '@cache.driver'
             - '@dbal.conn'
@@ -111,7 +111,7 @@ services:
             - '%tables.bbcodes%'
 
     acp.board:
-        class: \phpbb\acp\controller\board
+        class: phpbb\acp\controller\board
         arguments:
             - '@auth.provider_collection'
             - '@avatar.manager'
@@ -131,7 +131,7 @@ services:
             - '%tables%'
 
     acp.bots:
-        class: \phpbb\acp\controller\bots
+        class: phpbb\acp\controller\bots
         arguments:
             - '@cache.driver'
             - '@config'
@@ -147,7 +147,7 @@ services:
             - '%tables%'
 
     acp.captcha:
-        class: \phpbb\acp\controller\captcha
+        class: phpbb\acp\controller\captcha
         arguments:
             - '@config'
             - '@captcha.factory'
@@ -159,7 +159,7 @@ services:
             - '@user'
 
     acp.contact:
-        class: \phpbb\acp\controller\contact
+        class: phpbb\acp\controller\contact
         arguments:
             - '@config'
             - '@config_text'
@@ -171,7 +171,7 @@ services:
             - '%core.php_ext%'
 
     acp.database:
-        class: \phpbb\acp\controller\database
+        class: phpbb\acp\controller\database
         arguments:
             - '@cache.driver'
             - '@dbal.conn'
@@ -188,7 +188,7 @@ services:
             - '%core.table_prefix%'
 
     acp.disallow:
-        class: \phpbb\acp\controller\disallow
+        class: phpbb\acp\controller\disallow
         arguments:
             - '@cache.driver'
             - '@dbal.conn'
@@ -201,7 +201,7 @@ services:
             - '%tables.disallow%'
 
     acp.email:
-        class: \phpbb\acp\controller\email
+        class: phpbb\acp\controller\email
         arguments:
             - '@config'
             - '@dbal.conn'
@@ -218,7 +218,7 @@ services:
             - '%tables%'
 
     acp.extensions:
-        class: \phpbb\acp\controller\extensions
+        class: phpbb\acp\controller\extensions
         arguments:
             - '@config'
             - '@ext.composer.manager'
@@ -238,7 +238,7 @@ services:
             - '%core.php_ext%'
 
     acp.forums:
-        class: \phpbb\acp\controller\forums
+        class: phpbb\acp\controller\forums
         arguments:
             - '@attachment.manager'
             - '@auth'
@@ -260,7 +260,7 @@ services:
             - '%tables%'
 
     acp.groups:
-        class: \phpbb\acp\controller\groups
+        class: phpbb\acp\controller\groups
         arguments:
             - '@auth'
             - '@avatar.manager'
@@ -283,7 +283,7 @@ services:
             - '%tables%'
 
     acp.help_phpbb:
-        class: \phpbb\acp\controller\help_phpbb
+        class: phpbb\acp\controller\help_phpbb
         arguments:
             - '@config'
             - '@dispatcher'
@@ -296,7 +296,7 @@ services:
             - '%core.php_ext%'
 
     acp.icons:
-        class: \phpbb\acp\controller\icons
+        class: phpbb\acp\controller\icons
         arguments:
             - '@cache.driver'
             - '@config'
@@ -312,7 +312,7 @@ services:
             - '%tables%'
 
     acp.inactive:
-        class: \phpbb\acp\controller\inactive
+        class: phpbb\acp\controller\inactive
         arguments:
             - '@auth'
             - '@config'
@@ -330,7 +330,7 @@ services:
             - '%tables.users%'
 
     acp.jabber:
-        class: \phpbb\acp\controller\jabber
+        class: phpbb\acp\controller\jabber
         arguments:
             - '@config'
             - '@dbal.conn'
@@ -345,7 +345,7 @@ services:
             - '%tables.users%'
 
     acp.language:
-        class: \phpbb\acp\controller\language
+        class: phpbb\acp\controller\language
         arguments:
             - '@config'
             - '@dbal.conn'
@@ -362,7 +362,7 @@ services:
             - '%tables%'
 
     acp.logs:
-        class: \phpbb\acp\controller\logs
+        class: phpbb\acp\controller\logs
         arguments:
             - '@auth'
             - '@config'
@@ -375,7 +375,7 @@ services:
             - '@user'
 
     acp.main:
-        class: \phpbb\acp\controller\main
+        class: phpbb\acp\controller\main
         arguments:
             - '@auth'
             - '@cache.driver'
@@ -399,7 +399,7 @@ services:
             - '%tables%'
 
     acp.permission_roles:
-        class: \phpbb\acp\controller\permission_roles
+        class: phpbb\acp\controller\permission_roles
         arguments:
             - '@acp.auth_admin'
             - '@dbal.conn'
@@ -415,7 +415,7 @@ services:
             - '%tables%'
 
     acp.permissions:
-        class: \phpbb\acp\controller\permissions
+        class: phpbb\acp\controller\permissions
         arguments:
             - '@auth'
             - '@acp.auth_admin'
@@ -435,13 +435,13 @@ services:
             - '%tables%'
 
     acp.php_info:
-        class: \phpbb\acp\controller\php_info
+        class: phpbb\acp\controller\php_info
         arguments:
             - '@acp.controller.helper'
             - '@template'
 
     acp.profile:
-        class: \phpbb\acp\controller\profile
+        class: phpbb\acp\controller\profile
         arguments:
             - '@config'
             - '@dbal.conn'
@@ -460,7 +460,7 @@ services:
             - '%tables%'
 
     acp.prune:
-        class: \phpbb\acp\controller\prune
+        class: phpbb\acp\controller\prune
         arguments:
             - '@auth'
             - '@dbal.conn'
@@ -478,7 +478,7 @@ services:
             - '%tables%'
 
     acp.ranks:
-        class: \phpbb\acp\controller\ranks
+        class: phpbb\acp\controller\ranks
         arguments:
             - '@cache.driver'
             - '@config'
@@ -496,7 +496,7 @@ services:
             - '%tables%'
 
     acp.reasons:
-        class: \phpbb\acp\controller\reasons
+        class: phpbb\acp\controller\reasons
         arguments:
             - '@dbal.conn'
             - '@acp.controller.helper'
@@ -508,7 +508,7 @@ services:
             - '%tables%'
 
     acp.search:
-        class: \phpbb\acp\controller\search
+        class: phpbb\acp\controller\search
         arguments:
             - '@auth'
             - '@config'
@@ -527,7 +527,7 @@ services:
             - '%tables%'
 
     acp.storage:
-        class: \phpbb\acp\controller\storage
+        class: phpbb\acp\controller\storage
         arguments:
             - '@config'
             - '@dispatcher'
@@ -540,7 +540,7 @@ services:
             - '@user'
 
     acp.styles:
-        class: \phpbb\acp\controller\styles
+        class: phpbb\acp\controller\styles
         arguments:
             - '@auth'
             - '@cache.driver'
@@ -560,7 +560,7 @@ services:
             - '%tables%'
 
     acp.update:
-        class: \phpbb\acp\controller\update
+        class: phpbb\acp\controller\update
         arguments:
             - '@config'
             - '@acp.controller.helper'
@@ -572,7 +572,7 @@ services:
             - '%core.php_ext%'
 
     acp.users:
-        class: \phpbb\acp\controller\users
+        class: phpbb\acp\controller\users
         arguments:
             - '@attachment.manager'
             - '@auth'
@@ -598,7 +598,7 @@ services:
             - '%tables%'
 
     acp.words:
-        class: \phpbb\acp\controller\words
+        class: phpbb\acp\controller\words
         arguments:
             - '@cache.driver'
             - '@dbal.conn'

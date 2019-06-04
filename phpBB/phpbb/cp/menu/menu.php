@@ -18,6 +18,9 @@ class menu
 	/** @var \phpbb\cp\helper\auth */
 	protected $cp_auth;
 
+	/** @var \phpbb\cp\helper\identifiers */
+	protected $cp_ids;
+
 	/** @var \phpbb\cp\manager */
 	protected $cp_manager;
 
@@ -26,6 +29,9 @@ class menu
 
 	/** @var \phpbb\language\language */
 	protected $lang;
+
+	/** @var \phpbb\request\request */
+	protected $request;
 
 	/** @var \phpbb\symfony_request */
 	protected $symfony_request;
@@ -45,32 +51,35 @@ class menu
 	/** @var string The control panel type (acp|mcp|ucp) */
 	protected $panel;
 
-	/** @var string The ACP extensions category service definition */
-	protected $extensions_category = 'acp_cat_extensions';
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\cp\helper\auth		$cp_auth				Control panel auth object
-	 * @param \phpbb\cp\manager			$cp_manager				Control panel manager object
-	 * @param \phpbb\controller\helper	$helper					Controller helper object
-	 * @param \phpbb\language\language	$lang					Language object
-	 * @param \phpbb\symfony_request	$symfony_request		Symfony request object
-	 * @param \phpbb\template\template	$template				Template object
+	 * @param \phpbb\cp\helper\auth				$cp_auth			Control panel auth object
+	 * @param \phpbb\cp\manager					$cp_manager			Control panel manager object
+	 * @param \phpbb\cp\helper\identifiers		$cp_ids				Control panel identifiers object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
+	 * @param \phpbb\language\language			$lang				Language object
+	 * @param \phpbb\request\request			$request			Request object
+	 * @param \phpbb\symfony_request			$symfony_request	Symfony request object
+	 * @param \phpbb\template\template			$template			Template object
 	 */
 	public function __construct(
 		\phpbb\cp\helper\auth $cp_auth,
+		\phpbb\cp\helper\identifiers $cp_ids,
 		\phpbb\cp\manager $cp_manager,
 		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
+		\phpbb\request\request $request,
 		\phpbb\symfony_request $symfony_request,
 		\phpbb\template\template $template
 	)
 	{
 		$this->cp_auth			= $cp_auth;
+		$this->cp_ids			= $cp_ids;
 		$this->cp_manager		= $cp_manager;
 		$this->helper			= $helper;
 		$this->lang				= $lang;
+		$this->request			= $request;
 		$this->symfony_request	= $symfony_request;
 		$this->template			= $template;
 	}
@@ -93,6 +102,9 @@ class menu
 		// Get the menu items collection
 		$this->collection = $this->cp_manager->get_collection($cp);
 
+		// Get identifiers for item authentication
+		$this->cp_ids->get_identifiers($cp);
+
 		// Build a menu, all items indexed per parent
 		$this->build_menu();
 
@@ -102,11 +114,20 @@ class menu
 		// Build the navigation menu tree
 		$menu = $this->build_menu_tree();
 
-		// Handle the initial "empty" extensions category
-		$menu = $this->update_extensions_category_route($menu);
-
 		// Assign the menu to the template
 		$this->template->assign_block_vars_array("{$cp}_menu", $menu);
+
+		if (!empty($this->actives))
+		{
+			// Get the active category
+			$category = end($this->actives);
+
+			if (isset($menu[$category]))
+			{
+				// Assign the active category to the template
+				$this->template->assign_vars(["{$cp}_menu_active" => $menu[$category]]);
+			}
+		}
 	}
 
 	/**
@@ -184,23 +205,46 @@ class menu
 	{
 		$menu = [];
 
-		/** @var item $item */
+		/** @var \phpbb\cp\menu\item $item */
 		foreach ($this->items[$parent] as $name => $item)
 		{
-			if ($this->cp_auth->check_auth($item->get_auth()))
+			// If the authorisation requirements are met
+			if ($this->cp_auth->check_auth($item->get_auth(),
+				$this->cp_ids->get_forum_id(),
+				$this->cp_ids->get_topic_id(),
+				$this->cp_ids->get_post_id()
+			))
 			{
+				// Is this a category?
+				$s_category = (bool) is_string($item->get_route());
+
+				// Set up this item's template variables
 				$variables = $this->get_item_variables($name, $item);
 
+				// Does this item have any children?
 				if (!empty($this->items[$name]))
 				{
+					// Iterate over all the children
 					$variables['ITEMS'] = $this->build_menu_tree($name);
+
+					// If this is a category and the categories pre-defined route is not available
+					if ($s_category && empty($variables['ITEMS'][$item->get_route()]))
+					{
+						// Get the first child of the category
+						$first = reset($variables['ITEMS']);
+
+						// Set the first child's route as the category's route
+						$variables['U_VIEW'] = $first['U_VIEW'];
+					}
 				}
 
-				$menu[$name] = $variables;
-
-				if ($parent === '' && $name === end($this->actives))
+				// If it's not a category or the category has children
+				// And the display is set to true, or if it's in the active items
+				if ((!$s_category || !empty($variables['ITEMS'])) &&
+					($item->get_display() || in_array($name, $this->actives)))
 				{
-					$this->template->assign_vars(["{$this->panel}_menu_active" => $variables]);
+					// Add it the to menu
+					$menu[$name] = $variables;
 				}
 			}
 		}
@@ -218,14 +262,22 @@ class menu
 	protected function get_item_variables($name, $item)
 	{
 		$s_category = (bool) is_string($item->get_route());
-		$s_extension = (bool) ($name === $this->extensions_category);
+
+		$u_view = '';
+
+		if ($item->get_route() !== '')
+		{
+			$route = $s_category ? $item->get_route() : $name;
+
+			$u_view = $this->helper->route($route, $this->cp_ids->get_params($this->panel));
+		}
 
 		return [
 			'ICON'		=> $item->get_icon(),
 			'TITLE'		=> $this->lang->lang(utf8_strtoupper($name)),
 			'S_CAT'		=> $s_category,
 			'S_ACTIVE'	=> in_array($name, $this->actives),
-			'U_VIEW'	=> !$s_extension ? $this->helper->route($s_category ? $item->get_route() : $name) : '',
+			'U_VIEW'	=> $u_view,
 		];
 	}
 
@@ -248,24 +300,5 @@ class menu
 			[$name => $item],
 			array_slice($this->items[$parent], $index)
 		);
-	}
-
-	/**
-	 * Update the initial "empty" extensions category route.
-	 *
-	 * @param array		$menu		The control panel navigation menu
-	 * @return array
-	 */
-	protected function update_extensions_category_route(array $menu)
-	{
-		if (!empty($menu[$this->extensions_category]['ITEMS']))
-		{
-			$items = $menu[$this->extensions_category]['ITEMS'];
-			$item = reset($items);
-
-			$menu[$this->extensions_category]['U_VIEW'] = $item['U_VIEW'];
-		}
-
-		return $menu;
 	}
 }

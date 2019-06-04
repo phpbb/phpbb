@@ -1,11 +1,12 @@
 services:
-# --- Functions --- #
-    mcp.functions.delete:
-        class: \phpbb\mcp\functions\delete
+# --- Helpers --- #
+    mcp.constructor:
+        class: phpbb\mcp\helper\constructor
         arguments:
             - '@auth'
-            - '@content.visibility'
+            - '@cp.identifiers'
             - '@dbal.conn'
+            - '@controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -16,12 +17,13 @@ services:
 
 # --- Controllers --- #
     mcp.ban:
-        class: \phpbb\mcp\controller\ban
+        class: phpbb\mcp\controller\ban
         arguments:
             - '@acp.ban'
             - '@auth'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@request'
             - '@template'
@@ -29,8 +31,24 @@ services:
             - '%core.php_ext%'
             - '%tables.users%'
 
+    mcp.functions.delete:
+        class: phpbb\mcp\controller\delete
+        arguments:
+            - '@auth'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
     mcp.forum:
-        class: \phpbb\mcp\controller\forum
+        class: phpbb\mcp\controller\forum
         arguments:
             - '@auth'
             - '@cache'
@@ -38,6 +56,7 @@ services:
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -49,13 +68,13 @@ services:
             - '%tables%'
 
     mcp.front:
-        class: \phpbb\mcp\controller\front
+        class: phpbb\mcp\controller\front
         arguments:
             - '@auth'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
-            - '@log'
             - '@request'
             - '@template'
             - '@user'
@@ -64,11 +83,12 @@ services:
             - '%tables%'
 
     mcp.logs:
-        class: \phpbb\mcp\controller\logs
+        class: phpbb\mcp\controller\logs
         arguments:
             - '@auth'
             - '@config'
             - '@dbal.conn'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
@@ -78,7 +98,7 @@ services:
             - '%tables.topics%'
 
     mcp.main:
-        class: \phpbb\mcp\controller\main
+        class: phpbb\mcp\controller\main
         arguments:
             - '@auth'
             - '@config'
@@ -99,64 +119,15 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
-    mcp.notes:
-        class: \phpbb\mcp\controller\notes
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@language'
-            - '@log'
-            - '@pagination'
-            - '@request'
-            - '@template'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '%tables%'
-
-    mcp.pm_reports:
-        class: \phpbb\mcp\controller\pm_reports
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@language'
-            - '@mcp.reports'
-            - '@notification_manager'
-            - '@pagination'
-            - '@request'
-            - '@template'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '%tables%'
-
-    mcp.post:
-        class: \phpbb\mcp\controller\post
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@dispatcher'
-            - '@language'
-            - '@log'
-            - '@pagination'
-            - '@request'
-            - '@template'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '%tables%'
-
-    mcp.queue:
-        class: \phpbb\mcp\controller\queue
+    mcp.moderation:
+        class: phpbb\mcp\controller\moderation
         arguments:
             - '@auth'
             - '@config'
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@mcp.functions.delete'
@@ -170,13 +141,67 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
-    mcp.reports:
-        class: \phpbb\mcp\controller\reports
+    mcp.notes:
+        class: phpbb\mcp\controller\notes
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.pm_reports:
+        class: phpbb\mcp\controller\pm_reports
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@mcp.reports'
+            - '@notification_manager'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.post:
+        class: phpbb\mcp\controller\post
         arguments:
             - '@auth'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.reports:
+        class: phpbb\mcp\controller\reports
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@notification_manager'
@@ -189,17 +214,18 @@ services:
             - '%tables%'
 
     mcp.topic:
-        class: \phpbb\mcp\controller\topic
+        class: phpbb\mcp\controller\topic
         arguments:
             - '@auth'
             - '@config'
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@mcp.forum'
-            - '@mcp.queue'
+            - '@mcp.moderation'
             - '@pagination'
             - '@request'
             - '@template'
@@ -209,12 +235,13 @@ services:
             - '%tables%'
 
     mcp.warn:
-        class: \phpbb\mcp\controller\warn
+        class: phpbb\mcp\controller\warn
         arguments:
             - '@auth'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
             - '@pagination'
