@@ -114,6 +114,15 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
+		$controller_helper = new \phpbb\controller\helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			$config,
+			$this->createMock('\phpbb\symfony_request'),
+			$request,
+			$this->createMock('\phpbb\routing\helper')
+		);
+
 		// Container
 		$phpbb_container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
@@ -129,6 +138,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
 		$phpbb_container->set('storage.attachment', $storage);
+		$phpbb_container->set('controller.helper', $controller_helper);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');

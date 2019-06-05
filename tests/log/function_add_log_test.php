@@ -164,8 +164,16 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 			'\phpbb\datetime'
 		));
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			new \phpbb\config\config([]),
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
 
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$user->ip = 'user_ip';
 		if ($user_id)

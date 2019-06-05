@@ -29,8 +29,16 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			new \phpbb\config\config([]),
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
 
-		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$this->assertTrue($log->is_enabled(), 'Initialise failed');
 
@@ -60,8 +68,16 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			new \phpbb\config\config([]),
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
 
-		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;
