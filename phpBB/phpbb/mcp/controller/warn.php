@@ -321,6 +321,7 @@ class warn
 				$vars = [
 					'user_row',
 					'warning',
+					'message',
 					'notify',
 					's_mcp_warn_user',
 				];
@@ -513,6 +514,7 @@ class warn
 			$vars = [
 				'user_row',
 				'warning',
+				'message',
 				'notify',
 				'post_id',
 				's_mcp_warn_post',

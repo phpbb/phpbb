@@ -48,8 +48,8 @@ class ban
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @var string phpBB users table */
-	protected $users_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -64,7 +64,7 @@ class ban
 	 * @param \phpbb\template\template			$template		Template object
 	 * @param string							$root_path		phpBB root path
 	 * @param string							$php_ext		php File extension
-	 * @param string							$users_table	phpBB users table
+	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\acp\controller\ban $acp_ban,
@@ -77,7 +77,7 @@ class ban
 		\phpbb\template\template $template,
 		$root_path,
 		$php_ext,
-		$users_table
+		$tables
 	)
 	{
 		$this->acp_ban		= $acp_ban;
@@ -91,7 +91,7 @@ class ban
 
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
-		$this->users_table	= $users_table;
+		$this->tables		= $tables;
 	}
 
 	public function main($mode)
@@ -316,7 +316,7 @@ class ban
 		if ($user_id && $user_id <> ANONYMOUS)
 		{
 			$sql = 'SELECT username, user_email, user_ip
-				FROM ' . $this->users_table . '
+				FROM ' . $this->tables['users'] . '
 				WHERE user_id = ' . (int) $user_id;
 			$result = $this->db->sql_query($sql);
 

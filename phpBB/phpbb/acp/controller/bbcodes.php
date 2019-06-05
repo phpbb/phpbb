@@ -48,8 +48,8 @@ class bbcodes
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string BBCode table */
-	protected $bbcode_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -64,7 +64,7 @@ class bbcodes
 	 * @param \phpbb\template\template				$template		Template object
 	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
 	 * @param \phpbb\user							$user			User object
-	 * @param string								$bbcode_table	BBCode table
+	 * @param array									$tables		phpBB tables
 	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
@@ -77,7 +77,7 @@ class bbcodes
 		\phpbb\template\template $template,
 		\phpbb\textformatter\cache_interface $tf_cache,
 		\phpbb\user $user,
-		$bbcode_table
+		$tables
 	)
 	{
 		$this->cache		= $cache;
@@ -91,7 +91,7 @@ class bbcodes
 		$this->tf_cache		= $tf_cache;
 		$this->user			= $user;
 
-		$this->bbcode_table	= $bbcode_table;
+		$this->tables		= $tables;
 	}
 
 	public function main()
@@ -120,7 +120,7 @@ class bbcodes
 		{
 			case 'edit':
 				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
-					FROM ' . $this->bbcode_table . '
+					FROM ' . $this->tables['bbcodes'] . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
@@ -140,7 +140,7 @@ class bbcodes
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case 'modify':
 				$sql = 'SELECT bbcode_id, bbcode_tag
-					FROM ' . $this->bbcode_table . '
+					FROM ' . $this->tables['bbcodes'] . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
@@ -256,7 +256,7 @@ class bbcodes
 					if (($action === 'modify' && strtolower($data['bbcode_tag']) !== strtolower($row['bbcode_tag'])) || ($action === 'create'))
 					{
 						$sql = 'SELECT 1 as test
-							FROM ' . $this->bbcode_table . '
+							FROM ' . $this->tables['bbcodes'] . '
 							WHERE ' . $this->db->sql_lower_text('bbcode_tag') . " = '" . $this->db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
 						$result = $this->db->sql_query($sql);
 						$info = $this->db->sql_fetchrow($result);
@@ -313,7 +313,7 @@ class bbcodes
 					if ($action === 'create')
 					{
 						$sql = 'SELECT MAX(bbcode_id) as max_bbcode_id
-							FROM ' . $this->bbcode_table;
+							FROM ' . $this->tables['bbcodes'];
 						$result = $this->db->sql_query($sql);
 						$row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
@@ -340,9 +340,9 @@ class bbcodes
 
 						$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
-						$sql = 'INSERT INTO ' . $this->bbcode_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+						$sql = 'INSERT INTO ' . $this->tables['bbcodes'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 						$this->db->sql_query($sql);
-						$this->cache->destroy('sql', $this->bbcode_table);
+						$this->cache->destroy('sql', $this->tables['bbcodes']);
 						$this->tf_cache->invalidate();
 
 						$lang = 'BBCODE_ADDED';
@@ -350,11 +350,11 @@ class bbcodes
 					}
 					else
 					{
-						$sql = 'UPDATE ' . $this->bbcode_table . '
+						$sql = 'UPDATE ' . $this->tables['bbcodes'] . '
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE bbcode_id = ' . $bbcode_id;
 						$this->db->sql_query($sql);
-						$this->cache->destroy('sql', $this->bbcode_table);
+						$this->cache->destroy('sql', $this->tables['bbcodes']);
 						$this->tf_cache->invalidate();
 
 						$lang = 'BBCODE_EDITED';
@@ -398,7 +398,7 @@ class bbcodes
 
 			case 'delete':
 				$sql = 'SELECT bbcode_tag
-					FROM ' . $this->bbcode_table . '
+					FROM ' . $this->tables['bbcodes'] . '
 					WHERE bbcode_id = ' . (int) $bbcode_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
@@ -410,10 +410,10 @@ class bbcodes
 					{
 						$bbcode_tag = $row['bbcode_tag'];
 
-						$sql = 'DELETE FROM ' . $this->bbcode_table . ' WHERE bbcode_id = ' . (int) $bbcode_id;
+						$sql = 'DELETE FROM ' . $this->tables['bbcodes'] . ' WHERE bbcode_id = ' . (int) $bbcode_id;
 						$this->db->sql_query($sql);
 
-						$this->cache->destroy('sql', $this->bbcode_table);
+						$this->cache->destroy('sql', $this->tables['bbcodes']);
 
 						$this->tf_cache->invalidate();
 
@@ -466,7 +466,7 @@ class bbcodes
 
 		$sql_ary = [
 			'SELECT'	=> 'b.*',
-			'FROM'		=> [$this->bbcode_table => 'b'],
+			'FROM'		=> [$this->tables['bbcodes'] => 'b'],
 			'ORDER_BY'	=> 'b.bbcode_tag',
 		];
 

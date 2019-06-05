@@ -42,8 +42,8 @@ class disallow
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string Disallowed username table */
-	protected $disallow_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -56,7 +56,7 @@ class disallow
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\template\template				$template			Template object
 	 * @param \phpbb\user							$user				User object
-	 * @param string								$disallow_table		Disallowed username table
+	 * @param array									$tables				phpBB tables
 	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
@@ -67,7 +67,7 @@ class disallow
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
-		$disallow_table
+		$tables
 	)
 	{
 		$this->cache			= $cache;
@@ -79,7 +79,7 @@ class disallow
 		$this->template			= $template;
 		$this->user				= $user;
 
-		$this->disallow_table	= $disallow_table;
+		$this->tables			= $tables;
 	}
 
 	public function main()
@@ -108,7 +108,7 @@ class disallow
 			}
 
 			$sql = 'SELECT disallow_id
-				FROM ' . $this->disallow_table . "
+				FROM ' . $this->tables['disallow'] . "
 				WHERE disallow_username = '" . $this->db->sql_escape($disallowed_user) . "'";
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -119,7 +119,7 @@ class disallow
 				throw new back_exception(400, 'DISALLOW_ALREADY', 'acp_disallow_usernames');
 			}
 
-			$sql = 'INSERT INTO ' . $this->disallow_table . ' ' . $this->db->sql_build_array('INSERT', ['disallow_username' => $disallowed_user]);
+			$sql = 'INSERT INTO ' . $this->tables['disallow'] . ' ' . $this->db->sql_build_array('INSERT', ['disallow_username' => $disallowed_user]);
 			$this->db->sql_query($sql);
 
 			$this->cache->destroy('_disallowed_usernames');
@@ -137,7 +137,7 @@ class disallow
 				throw new back_exception(400, 'NO_USERNAME_SPECIFIED', 'acp_disallow_usernames');
 			}
 
-			$sql = 'DELETE FROM ' . $this->disallow_table . '
+			$sql = 'DELETE FROM ' . $this->tables['disallow'] . '
 				WHERE disallow_id = ' . (int) $disallowed_id;
 			$this->db->sql_query($sql);
 
@@ -152,7 +152,7 @@ class disallow
 
 		// Grab the current list of disallowed usernames...
 		$sql = 'SELECT *
-			FROM ' . $this->disallow_table;
+			FROM ' . $this->tables['disallow'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

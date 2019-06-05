@@ -25,9 +25,11 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	/**
 	 * Constructor.
 	 *
+	 * The service is optional, as it is not available in the installer.
+	 *
 	 * @param \phpbb\cp\manager		$cp_manager		Control panel manager object
 	 */
-	public function __construct(\phpbb\cp\manager $cp_manager)
+	public function __construct(\phpbb\cp\manager $cp_manager = null)
 	{
 		$this->cp_manager	= $cp_manager;
 	}
@@ -42,18 +44,21 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	 */
 	public function on_kernel_request(GetResponseEvent $event)
 	{
-		$route = $event->getRequest()->attributes->get('_route');
-
-		$route = str_replace($this->cp_manager->get_route_pagination(), '', $route);
-
-		/** @var \phpbb\di\service_collection $services */
-		foreach ($this->cp_manager->get_collections() as $cp => $services)
+		if ($this->cp_manager !== null)
 		{
-			if ($services->offsetExists($route))
-			{
-				$this->cp_manager->setup_cp($cp, $route);
+			$route = $event->getRequest()->attributes->get('_route');
 
-				continue;
+			$route = str_replace($this->cp_manager->get_route_pagination(), '', $route);
+
+			/** @var \phpbb\di\service_collection $services */
+			foreach ($this->cp_manager->get_collections() as $cp => $services)
+			{
+				if ($services->offsetExists($route))
+				{
+					$this->cp_manager->setup_cp($cp, $route);
+
+					continue;
+				}
 			}
 		}
 	}

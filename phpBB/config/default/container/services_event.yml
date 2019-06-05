@@ -18,7 +18,7 @@ services:
     kernel_request_subscriber:
         class: phpbb\event\kernel_request_subscriber
         arguments:
-            - '@cp.manager'
+            - '@?cp.manager'
         tags:
             - { name: kernel.event_subscriber }
 

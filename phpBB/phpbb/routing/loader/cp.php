@@ -36,9 +36,11 @@ class cp extends Loader
 	/**
 	 * Constructor.
 	 *
+	 * The service is optional, as it is not available in the installer.
+	 *
 	 * @param \phpbb\cp\manager		$cp_manager		Control panel manager object
 	 */
-	public function __construct(\phpbb\cp\manager $cp_manager)
+	public function __construct(\phpbb\cp\manager $cp_manager = null)
 	{
 		$this->cp_manager = $cp_manager;
 	}
@@ -48,6 +50,11 @@ class cp extends Loader
 	 */
 	public function load($resource, $type = null)
 	{
+		if ($this->cp_manager === null)
+		{
+			return [];
+		}
+
 		$collection = new RouteCollection();
 
 		foreach ($this->cp_manager->get_collections() as $cp => $items)

@@ -47,8 +47,8 @@ class logs
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string phpBB topics table */
-	protected $topics_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -63,7 +63,7 @@ class logs
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
 	 * @param \phpbb\user						$user			User object
-	 * @param string							$topics_table	phpBB topics table
+	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\auth\auth $auth,
@@ -76,7 +76,7 @@ class logs
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
-		$topics_table
+		$tables
 	)
 	{
 		$this->auth			= $auth;
@@ -90,7 +90,7 @@ class logs
 		$this->template		= $template;
 		$this->user			= $user;
 
-		$this->topics_table	= $topics_table;
+		$this->tables		= $tables;
 	}
 
 	public function main($mode, $page = 1)
@@ -145,7 +145,7 @@ class logs
 				$topic_id = $this->request->variable('t', 0);
 
 				$sql = 'SELECT forum_id
-					FROM ' . $this->topics_table . '
+					FROM ' . $this->tables['topics'] . '
 					WHERE topic_id = ' . $topic_id;
 				$result = $this->db->sql_query($sql);
 				$forum_id = (int) $this->db->sql_fetchfield('forum_id');

@@ -617,7 +617,6 @@ class search
 		unset($data, $error);
 		unset($search, $statistics);
 
-
 		$this->template->assign_vars([
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->helper->route('acp_search_index', ['hash' => generate_link_hash('acp_search')]),
@@ -651,7 +650,6 @@ class search
 			'L_PROGRESS'			=> $this->lang->lang($l_type),
 			'L_PROGRESS_EXPLAIN'	=> $this->lang->lang($l_type . '_EXPLAIN'),
 		]);
-
 
 		return $this->helper->render('progress_bar.html', $l_type);
 	}

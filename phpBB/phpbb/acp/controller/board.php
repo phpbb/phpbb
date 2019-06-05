@@ -39,7 +39,6 @@ class board
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
-
 	/** @var \phpbb\acp\helper\controller */
 	protected $helper;
 
@@ -728,7 +727,6 @@ class board
 				]);
 				$messenger->send(NOTIFY_EMAIL);
 
-
 				return $this->helper->message_back('TEST_EMAIL_SEND', 'acp_settings_email');
 			}
 			else
@@ -837,7 +835,6 @@ class board
 				}
 			}
 		}
-
 
 		return $this->helper->render('acp_board.html', $l_mode);
 	}

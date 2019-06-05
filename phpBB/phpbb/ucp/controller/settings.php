@@ -198,7 +198,7 @@ class settings
 						$this->db->sql_query($sql);
 
 						$route = $this->helper->route('ucp_settings_global');
-						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
 
 						$this->helper->assign_meta_refresh_var(3, $route);
 
@@ -388,7 +388,7 @@ class settings
 						$this->db->sql_query($sql);
 
 						$route = $this->helper->route('ucp_settings_display');
-						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+						$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
 
 						$this->helper->assign_meta_refresh_var(3, $route);
 
@@ -573,7 +573,7 @@ class settings
 					}
 
 					$route = $this->helper->route('ucp_settings_post');
-					$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');;
+					$return = $this->lang->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
 
 					$this->helper->assign_meta_refresh_var(3, $route);
 

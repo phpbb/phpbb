@@ -51,8 +51,8 @@ class jabber
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @var string phpBB users table */
-	protected $users_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -67,7 +67,7 @@ class jabber
 	 * @param \phpbb\user						$user			User object
 	 * @param string							$root_path		phpBB root path
 	 * @param string							$php_ext		php File extension
-	 * @param string							$users_table	phpBB users table
+	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\config\config $config,
@@ -80,7 +80,7 @@ class jabber
 		\phpbb\user $user,
 		$root_path,
 		$php_ext,
-		$users_table
+		$tables
 	)
 	{
 		$this->config		= $config;
@@ -94,7 +94,7 @@ class jabber
 
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
-		$this->users_table	= $users_table;
+		$this->tables		= $tables;
 	}
 
 	public function main()
@@ -155,7 +155,7 @@ class jabber
 				// We update the user table to be sure all users that have IM as notify type are set to both as notify type
 				// We set this to both because users still have their jabber address entered
 				// and may want to receive jabber notifications again once it is re-enabled.
-				$sql = 'UPDATE ' . $this->users_table . '
+				$sql = 'UPDATE ' . $this->tables['users'] . '
 					SET user_notify_type = ' . NOTIFY_BOTH . '
 					WHERE user_notify_type = ' . NOTIFY_IM;
 				$this->db->sql_query($sql);

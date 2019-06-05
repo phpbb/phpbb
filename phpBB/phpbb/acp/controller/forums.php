@@ -456,8 +456,6 @@ class forums
 							'U_PROGRESS_BAR'		=> $this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar', 'start' => $topics_done, 'total' => $row['total_topics']]),
 							'UA_PROGRESS_BAR'		=> addslashes($this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar', 'start' => $topics_done, 'total' => $row['total_topics']])),
 						]);
-
-
 					}
 				}
 

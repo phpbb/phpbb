@@ -208,7 +208,7 @@ class post
 				 * This event allows you to handle custom post moderation options
 				 *
 				 * @event core.mcp_post_additional_options
-				 * @va string	action		Post moderation action name
+				 * @var string	action		Post moderation action name
 				 * @var array	post_info	Information on the affected post
 				 * @since 3.1.5-RC1
 				 */

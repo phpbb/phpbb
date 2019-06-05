@@ -29,7 +29,7 @@ services:
             - '@template'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%tables.users%'
+            - '%tables%'
 
     mcp.functions.delete:
         class: phpbb\mcp\controller\delete
@@ -95,7 +95,7 @@ services:
             - '@request'
             - '@template'
             - '@user'
-            - '%tables.topics%'
+            - '%tables%'
 
     mcp.main:
         class: phpbb\mcp\controller\main

@@ -48,8 +48,8 @@ class words
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string phpBB words table */
-	protected $words_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -63,7 +63,7 @@ class words
 	 * @param \phpbb\template\template				$template		Template object
 	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
 	 * @param \phpbb\user							$user			User object
-	 * @param string								$words_table	phpBB words table
+	 * @param array									$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\cache\driver\driver_interface $cache,
@@ -75,7 +75,7 @@ class words
 		\phpbb\template\template $template,
 		\phpbb\textformatter\cache_interface $tf_cache,
 		\phpbb\user $user,
-		$words_table
+		$tables
 	)
 	{
 		$this->cache		= $cache;
@@ -88,7 +88,7 @@ class words
 		$this->tf_cache		= $tf_cache;
 		$this->user			= $user;
 
-		$this->words_table	= $words_table;
+		$this->tables		= $tables;
 	}
 
 	public function main()
@@ -117,7 +117,7 @@ class words
 				}
 
 				$sql = 'SELECT *
-					FROM ' . $this->words_table . '
+					FROM ' . $this->tables['words'] . '
 					WHERE word_id = ' . (int) $word_id;
 				$result = $this->db->sql_query($sql);
 				$word_info = $this->db->sql_fetchrow($result);
@@ -165,12 +165,12 @@ class words
 
 				if ($word_id)
 				{
-					$sql = 'UPDATE ' . $this->words_table . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . (int) $word_id;
+					$sql = 'UPDATE ' . $this->tables['words'] . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . (int) $word_id;
 					$this->db->sql_query($sql);
 				}
 				else
 				{
-					$sql = 'INSERT INTO ' . $this->words_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$sql = 'INSERT INTO ' . $this->tables['words'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 					$this->db->sql_query($sql);
 				}
 
@@ -191,13 +191,13 @@ class words
 				if (confirm_box(true))
 				{
 					$sql = 'SELECT word
-						FROM ' . $this->words_table . '
+						FROM ' . $this->tables['words'] . '
 						WHERE word_id = ' . (int) $word_id;
 					$result = $this->db->sql_query($sql);
 					$deleted_word = $this->db->sql_fetchfield('word');
 					$this->db->sql_freeresult($result);
 
-					$sql = 'DELETE FROM ' . $this->words_table . '
+					$sql = 'DELETE FROM ' . $this->tables['words'] . '
 						WHERE word_id = ' . (int) $word_id;
 					$this->db->sql_query($sql);
 
@@ -226,7 +226,7 @@ class words
 		]);
 
 		$sql = 'SELECT *
-			FROM ' . $this->words_table . '
+			FROM ' . $this->tables['words'] . '
 			ORDER BY word';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))

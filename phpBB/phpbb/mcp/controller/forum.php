@@ -688,7 +688,7 @@ class forum
 			 * @var	int		to_topic_id				The ID of the topic into which the rest are merged
 			 * @since 3.1.11-RC1
 			 */
-			$vars = ['all_topic_data', 'to_topic_id',];
+			$vars = ['all_topic_data', 'to_topic_id'];
 			extract($this->dispatcher->trigger_event('core.mcp_forum_merge_topics_after', compact($vars)));
 
 			$u_back		= $this->helper->route($route, $params);

@@ -207,6 +207,7 @@ class main
 
 			default:
 				$response = null;
+				$quickmod = $this->request->is_set('quickmod', false);
 
 				/**
 				 * This event allows you to handle custom quickmod options
@@ -214,6 +215,7 @@ class main
 				 * @event core.modify_quickmod_actions
 				 * @var string	action		Topic quick moderation action name
 				 * @var bool	quickmod	Flag indicating whether MCP is in quick moderation mode
+				 * @var null	response	Variable that can be set to a Symfony Response
 				 * @since 3.1.0-a4
 				 * @changed 3.1.0-RC4 Added variables: action, quickmod
 				 * @changed 4.0.0 Added variables: response
@@ -221,7 +223,9 @@ class main
 				$vars = ['action', 'quickmod', 'response'];
 				extract($this->dispatcher->trigger_event('core.modify_quickmod_actions', compact($vars)));
 
-				if (!empty($response))
+				unset($quickmod);
+
+				if ($response instanceof \Symfony\Component\HttpFoundation\Response)
 				{
 					return $response;
 				}

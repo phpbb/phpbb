@@ -76,7 +76,6 @@ services:
             - '@request'
             - '@template'
             - '@user'
-            - '%core.adm_relative_path%'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables%'
@@ -108,7 +107,7 @@ services:
             - '@template'
             - '@text_formatter.cache'
             - '@user'
-            - '%tables.bbcodes%'
+            - '%tables%'
 
     acp.board:
         class: phpbb\acp\controller\board
@@ -198,7 +197,7 @@ services:
             - '@request'
             - '@template'
             - '@user'
-            - '%tables.disallow%'
+            - '%tables%'
 
     acp.email:
         class: phpbb\acp\controller\email
@@ -327,7 +326,7 @@ services:
             - '%core.adm_relative_path%'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%tables.users%'
+            - '%tables%'
 
     acp.jabber:
         class: phpbb\acp\controller\jabber
@@ -342,7 +341,7 @@ services:
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%tables.users%'
+            - '%tables%'
 
     acp.language:
         class: phpbb\acp\controller\language
@@ -609,4 +608,4 @@ services:
             - '@template'
             - '@text_formatter.cache'
             - '@user'
-            - '%tables.words%'
+            - '%tables%'

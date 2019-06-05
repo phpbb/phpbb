@@ -13,7 +13,6 @@
 
 namespace phpbb\acp\controller;
 
-
 use phpbb\exception\back_exception;
 use phpbb\exception\form_invalid_exception;
 
@@ -64,9 +63,6 @@ class attachments
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string phpBB admin path */
-	protected $admin_path;
-
 	/** @var string phpBB root path */
 	protected $root_path;
 
@@ -101,7 +97,6 @@ class attachments
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\template\template				$template			Template object
 	 * @param \phpbb\user							$user				User object
-	 * @param string								$admin_path			phpBB admin path
 	 * @param string								$root_path			phpBB root path
 	 * @param string								$php_ext			php File extension
 	 * @param array									$tables				phpBB tables
@@ -123,7 +118,6 @@ class attachments
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
-		$admin_path,
 		$root_path,
 		$php_ext,
 		$tables
@@ -145,7 +139,6 @@ class attachments
 		$this->template				= $template;
 		$this->user					= $user;
 
-		$this->admin_path			= $admin_path;
 		$this->root_path			= $root_path;
 		$this->web_path				= $path_helper->update_web_root_path($root_path);
 		$this->php_ext				= $php_ext;

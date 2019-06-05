@@ -58,8 +58,8 @@ class inactive
 	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @var string phpBB users table */
-	protected $users_table;
+	/** @var array phpBB tables */
+	protected $tables;
 
 	/**
 	 * Constructor.
@@ -77,7 +77,7 @@ class inactive
 	 * @param string							$admin_path		phpBB admin path
 	 * @param string							$root_path		phpBB root path
 	 * @param string							$php_ext		php File extension
-	 * @param string							$users_table	phpBB users table
+	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
 		\phpbb\auth\auth $auth,
@@ -93,7 +93,7 @@ class inactive
 		$admin_path,
 		$root_path,
 		$php_ext,
-		$users_table
+		$tables
 	)
 	{
 		$this->auth			= $auth;
@@ -110,7 +110,7 @@ class inactive
 		$this->admin_path	= $admin_path;
 		$this->root_path	= $root_path;
 		$this->php_ext		= $php_ext;
-		$this->users_table	= $users_table;
+		$this->tables		= $tables;
 	}
 
 	public function main($page = 1)
@@ -162,7 +162,7 @@ class inactive
 					$user_affected = [];
 
 					$sql = 'SELECT user_id, username
-						FROM ' . $this->users_table . '
+						FROM ' . $this->tables['users'] . '
 						WHERE ' . $this->db->sql_in_set('user_id', $mark);
 					$result = $this->db->sql_query($sql);
 					while ($row = $this->db->sql_fetchrow($result))
@@ -177,7 +177,7 @@ class inactive
 
 						// Get those 'being activated'...
 						$sql = 'SELECT user_id, username' . (($this->config['require_activation'] == USER_ACTIVATION_ADMIN) ? ', user_email, user_lang' : '') . '
-							FROM ' . $this->users_table . '
+							FROM ' . $this->tables['users'] . '
 							WHERE ' . $this->db->sql_in_set('user_id', $mark) . '
 								AND user_type = ' . USER_INACTIVE;
 						$result = $this->db->sql_query($sql);
@@ -270,7 +270,7 @@ class inactive
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
-						FROM ' . $this->users_table . '
+						FROM ' . $this->tables['users'] . '
 						WHERE ' . $this->db->sql_in_set('user_id', $mark) . '
 							AND user_inactive_reason';
 
@@ -313,7 +313,7 @@ class inactive
 						$messenger->save_queue();
 
 						// Add the remind state to the database
-						$sql = 'UPDATE ' . $this->users_table . '
+						$sql = 'UPDATE ' . $this->tables['users'] . '
 							SET user_reminded = user_reminded + 1,
 								user_reminded_time = ' . time() . '
 							WHERE ' . $this->db->sql_in_set('user_id', $user_ids);

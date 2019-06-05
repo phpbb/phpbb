@@ -808,7 +808,7 @@ class profile
 		 * @var string	action		Action that is being performed
 		 * @since 3.2.2-RC1
 		 */
-		$vars = ['action',];
+		$vars = ['action'];
 		extract($this->dispatcher->trigger_event('core.acp_profile_action', compact($vars)));
 
 		$s_one_need_edit = false;

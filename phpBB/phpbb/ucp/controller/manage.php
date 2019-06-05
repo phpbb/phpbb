@@ -731,6 +731,7 @@ class manage
 			'sql_array',
 			'forbidden_forum_ary',
 			'mode',
+			'page',
 		];
 		extract($this->dispatcher->trigger_event('core.ucp_main_topiclist_count_modify_query', compact($vars)));
 

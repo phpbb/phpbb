@@ -48,7 +48,7 @@ services:
     routing.loader.cp:
         class: phpbb\routing\loader\cp
         arguments:
-            - '@cp.manager'
+            - '@?cp.manager'
         tags:
             - { name: routing.loader }
 
