@@ -1,2 +1,4 @@
 parameters:
     enabled_4: true
+    tables.foo_bar: '%core.table_prefix%foo_bar'
+    tables.acl_groups: '%core.table_prefix%some_other'
