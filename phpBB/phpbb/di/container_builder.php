@@ -158,12 +158,17 @@ class container_builder
 			}
 			else
 			{
-				$this->container_extensions = array(new extension\core($this->get_config_path()));
+				$this->container_extensions = [
+					new extension\core($this->get_config_path()),
+				];
 
 				if ($this->use_extensions)
 				{
 					$this->load_extensions();
 				}
+
+				// Add tables extension after all extensions
+				$this->container_extensions[] = new extension\tables();
 
 				// Inject the config
 				if ($this->config_php_file)
