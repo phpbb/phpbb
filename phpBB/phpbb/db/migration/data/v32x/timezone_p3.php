@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db\migration\data\v310;
+namespace phpbb\db\migration\data\v32x;
 
 class timezone_p3 extends \phpbb\db\migration\migration
 {
