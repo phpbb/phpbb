@@ -158,10 +158,7 @@ class container_builder
 			}
 			else
 			{
-				$this->container_extensions = [
-					new extension\core($this->get_config_path()),
-					new extension\tables(),
-				];
+				$this->container_extensions = array(new extension\core($this->get_config_path()));
 
 				if ($this->use_extensions)
 				{
