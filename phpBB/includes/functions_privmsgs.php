@@ -490,7 +490,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				'bcc'				=> explode(':', $row['bcc_address']),
 				'friend'			=> (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['friend'] : 0,
 				'foe'				=> (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['foe'] : 0,
-				'user_in_group'		=> array($user->data['group_id']),
+				'user_in_group'		=> $user->data['group_id'],
 				'author_in_group'	=> array())
 			);
 
