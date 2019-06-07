@@ -36,7 +36,7 @@
 			<p class="author">
 				<span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{history_row.MINI_POST}</span></span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
 				<br />
-				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}
+				{L_MESSAGE_BY_AUTHOR} <!-- EVENT ucp_pm_history_row_message_author_username_prepend -->{history_row.MESSAGE_AUTHOR_FULL}<!-- EVENT ucp_pm_history_row_message_author_username_append -->
 			</p>
 			<div class="content"><!-- IF history_row.MESSAGE -->{history_row.MESSAGE}<!-- ELSE --><span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span><!-- ENDIF --></div>
 			<div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div>
@@ -54,4 +54,3 @@
 		<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
 	</a>
 </p>
-
