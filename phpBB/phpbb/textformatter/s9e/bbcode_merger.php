@@ -14,7 +14,7 @@
 namespace phpbb\textformatter\s9e;
 
 use phpbb\textformatter\s9e\factory;
-use s9e\TextFormatter\Configurator\Helpers\TemplateHelper;
+use s9e\TextFormatter\Configurator\Helpers\TemplateLoader;
 use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 
 class bbcode_merger
@@ -91,9 +91,9 @@ class bbcode_merger
 	*/
 	protected function indent_template($template)
 	{
-		$dom = TemplateHelper::loadTemplate($template);
+		$dom = TemplateLoader::load($template);
 		$dom->formatOutput = true;
-		$template = TemplateHelper::saveTemplate($dom);
+		$template = TemplateLoader::save($dom);
 
 		// Remove the first level of indentation if the template starts with whitespace
 		if (preg_match('(^\\n +)', $template, $m))

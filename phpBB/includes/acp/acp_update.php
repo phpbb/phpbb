@@ -59,17 +59,19 @@ class acp_update
 
 		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 
-		$template->assign_vars(array(
-			'S_UP_TO_DATE'			=> empty($updates_available),
-			'U_ACTION'				=> $this->u_action,
-			'U_VERSIONCHECK_FORCE'	=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
+		$template_ary = [
+			'S_UP_TO_DATE'				=> empty($updates_available),
+			'U_ACTION'					=> $this->u_action,
+			'U_VERSIONCHECK_FORCE'		=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
 
-			'CURRENT_VERSION'		=> $config['version'],
+			'CURRENT_VERSION'			=> $config['version'],
 
-			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $update_link),
+			'UPDATE_INSTRUCTIONS'		=> $user->lang('UPDATE_INSTRUCTIONS', $update_link),
 			'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
 			'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
-		));
+		];
+
+		$template->assign_vars($template_ary);
 
 		// Incomplete update?
 		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))

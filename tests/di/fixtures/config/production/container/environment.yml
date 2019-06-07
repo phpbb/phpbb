@@ -1,5 +1,8 @@
 parameters:
     core: true
+    tables.acl_groups: '%core.table_prefix%acl_groups'
+    tables.acl_options: '%core.table_prefix%acl_options'
+    tables.acl_roles: '%core.table_prefix%acl_roles'
 
 services:
     config.php:
