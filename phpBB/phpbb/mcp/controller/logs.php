@@ -222,7 +222,7 @@ class logs
 		$sql_sort	= $sort_by_sql[$sort_key] . ' ' . ($sort_dir === 'd' ? 'DESC' : 'ASC');
 
 		$keywords = $this->request->variable('keywords', '', true);
-		$keywords_params = !empty($keywords) ? ['keywords' => urlencode(htmlspecialchars_decode($keywords))] : [];
+		$keywords_params = !empty($keywords) ? ['keywords' => htmlspecialchars_decode($keywords)] : [];
 
 		// Grab log data
 		$log_data = [];

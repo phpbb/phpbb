@@ -145,7 +145,7 @@ class logs
 		}
 
 		$keywords = $this->request->variable('keywords', '', true);
-		$keywords_param = !empty($keywords) ? urlencode(htmlspecialchars_decode($keywords)) : '';
+		$keywords_param = !empty($keywords) ? htmlspecialchars_decode($keywords) : '';
 
 		// Sorting
 		$limit_days		= [0 => $this->lang->lang('ALL_ENTRIES'), 1 => $this->lang->lang('1_DAY'), 7 => $this->lang->lang('7_DAYS'), 14 => $this->lang->lang('2_WEEKS'), 30 => $this->lang->lang('1_MONTH'), 90 => $this->lang->lang('3_MONTHS'), 180 => $this->lang->lang('6_MONTHS'), 365 => $this->lang->lang('1_YEAR')];

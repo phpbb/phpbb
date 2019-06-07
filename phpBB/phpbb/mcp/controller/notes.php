@@ -250,7 +250,7 @@ class notes
 			$sql_sort	= $sort_by_sql[$sk] . ' ' . ($sd === 'd' ? 'DESC' : 'ASC');
 
 			$keywords = $this->request->variable('keywords', '', true);
-			$keywords_param = !empty($keywords) ? ['keywords' => urlencode(htmlspecialchars_decode($keywords))] : [];
+			$keywords_param = !empty($keywords) ? ['keywords' => htmlspecialchars_decode($keywords)] : [];
 
 			$log_data = [];
 			$log_count = 0;

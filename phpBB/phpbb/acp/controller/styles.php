@@ -1132,7 +1132,7 @@ class styles
 			else
 			{
 				$actions[] = [
-					'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'install', 'dir' => urlencode($style['style_path']), 'hash' => generate_link_hash('install')]),
+					'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'install', 'dir' => $style['style_path'], 'hash' => generate_link_hash('install')]),
 					'L_ACTION'	=> $this->lang->lang('INSTALL_STYLE'),
 				];
 			}

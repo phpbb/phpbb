@@ -309,7 +309,7 @@ class post
 		$mcp_post_template_data = [
 			'U_MCP_ACTION'			=> $this->helper->route($route, ['quickmod' => true]),
 			'U_POST_ACTION'			=> $this->helper->route($route, $params),
-			'U_APPROVE_ACTION'		=> $this->helper->route('mcp_approve_posts', $params),
+			'U_APPROVE_ACTION'		=> $this->helper->route('mcp_unapproved_posts', $params),
 
 			'S_CAN_VIEWIP'			=> (bool) $this->auth->acl_get('m_info', $post_info['forum_id']),
 			'S_CAN_CHGPOSTER'		=> (bool) $this->auth->acl_get('m_chgposter', $post_info['forum_id']),

@@ -479,7 +479,7 @@ class delete
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
+			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html', $this->helper->get_current_url());
 		}
 
 		$topic_id = $this->request->variable('t', 0);
@@ -491,12 +491,12 @@ class delete
 		}
 		else if ($is_soft && $topic_id)
 		{
-			$redirect = append_sid("{$this->root_path}viewtopic.$this->php_ext", 't=' . $topic_id);
+			$redirect = append_sid("{$this->root_path}viewtopic.$this->php_ext", 't=' . $topic_id, true, false, true);
 			$redirect_message = 'TOPIC';
 		}
 		else
 		{
-			$redirect = append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id);
+			$redirect = append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id, true, false, true);
 			$redirect_message = 'FORUM';
 		}
 

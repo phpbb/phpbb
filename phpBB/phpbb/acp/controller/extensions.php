@@ -243,7 +243,7 @@ class extensions
 
 				if (confirm_box(true))
 				{
-					return redirect($this->hash_route('enable', $ext_name));
+					return redirect($this->ext_route('enable', $ext_name, true));
 				}
 				else
 				{
@@ -279,7 +279,7 @@ class extensions
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
-							meta_refresh(0, $this->hash_route('enable', $ext_name));
+							meta_refresh(0, $this->ext_route('enable', $ext_name, true));
 
 							return $this->helper->message('EXTENSION_ENABLE_IN_PROGRESS');
 						}
@@ -301,7 +301,7 @@ class extensions
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('enabled', [
-						'DISABLE'	=> $this->helper->route('acp_extensions_manage', ['action' => 'disable_pre', 'ext' => urlencode($ext_name)]),
+						'DISABLE'	=> $this->ext_route( 'disable_pre', $ext_name),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -322,7 +322,7 @@ class extensions
 
 				if (confirm_box(true))
 				{
-					return redirect($this->hash_route('disable', $ext_name));
+					return redirect($this->ext_route('disable', $ext_name, true));
 				}
 				else
 				{
@@ -348,7 +348,7 @@ class extensions
 					{
 						$this->template->assign_var('S_NEXT_STEP', true);
 
-						meta_refresh(0, $this->hash_route('disable', $ext_name));
+						meta_refresh(0, $this->ext_route('disable', $ext_name, true));
 
 						return $this->helper->message('EXTENSION_DISABLE_IN_PROGRESS');
 					}
@@ -359,8 +359,8 @@ class extensions
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->helper->route('acp_extensions_manage', ['action' => 'enable_pre', 'ext' => urlencode($ext_name)]),
-						'DELETE_DATA'	=> $this->helper->route('acp_extensions_manage', ['action' => 'delete_data_pre', 'ext' => urlencode($ext_name)]),
+						'ENABLE'		=> $this->ext_route('enable_pre', $ext_name),
+						'DELETE_DATA'	=> $this->ext_route('delete_data_pre', $ext_name),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -381,7 +381,7 @@ class extensions
 
 				if (confirm_box(true))
 				{
-					return redirect($this->hash_route('delete_data', $ext_name));
+					return redirect($this->ext_route('delete_data', $ext_name, true));
 				}
 				else
 				{
@@ -409,7 +409,7 @@ class extensions
 						{
 							$this->template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->hash_route('delete_data', $ext_name));
+							meta_refresh(0, $this->ext_route('delete_data', $ext_name, true));
 
 							return $this->helper->message('EXTENSION_DELETE_DATA_IN_PROGRESS');
 						}
@@ -424,7 +424,7 @@ class extensions
 				if ($this->request->is_ajax())
 				{
 					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->helper->route('acp_extensions_manage', ['action' => 'enable_pre', 'ext' => urlencode($ext_name)]),
+						'ENABLE'		=> $this->ext_route('enable_pre', $ext_name),
 					]);
 
 					$json_response = new \phpbb\json_response;
@@ -826,7 +826,7 @@ class extensions
 
 				foreach ($types[$type]['actions'] as $action)
 				{
-					$actions[strtoupper($action)] = $this->helper->route('acp_extensions_manage', ['action' => "{$action}_pre", 'ext' => urlencode($ext_name)]);
+					$actions[strtoupper($action)] = $this->ext_route("{$action}_pre", $ext_name);
 				}
 
 				$this->output_actions($types[$type]['block'], $actions);
@@ -834,9 +834,9 @@ class extensions
 				if ($type !== 'available' && isset($managed_packages[$block_vars['META_NAME']]))
 				{
 					$this->output_actions($types[$type]['block'], [
-						'UPDATE'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'update', 'extension' => urlencode($block_vars['META_NAME'])]),
+						'UPDATE'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'update', 'extension' => $block_vars['META_NAME']]),
 						'REMOVE'	=> [
-							'url'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'remove', 'extension' => urlencode($block_vars['META_NAME'])]),
+							'url'	=> $this->helper->route('acp_extensions_catalog', ['action' => 'remove', 'extension' => $block_vars['META_NAME']]),
 							'color'	=> '#bc2a4d',
 						],
 					]);
@@ -924,13 +924,19 @@ class extensions
 	 * @param string	$extension		The extension name
 	 * @return string
 	 */
-	protected function hash_route($action, $extension)
+	protected function ext_route($action, $extension, $hash = false)
 	{
-		return $this->helper->route('acp_extensions_manage', [
+		$params = [
 			'action'	=> $action,
-			'ext'		=> urlencode($extension),
-			'hash'		=> generate_link_hash("{$action}.{$extension}"),
-		]);
+			'ext'		=> $extension,
+		];
+
+		if ($hash)
+		{
+			$params['hash'] = generate_link_hash("{$action}.{$extension}");
+		}
+
+		return $this->helper->route('acp_extensions_manage', $params);
 	}
 
 	/**

@@ -42,7 +42,7 @@ class main
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\mcp\functions\delete */
+	/** @var \phpbb\mcp\controller\delete */
 	protected $mcp_delete;
 
 	/** @var forum */
@@ -86,7 +86,7 @@ class main
 	 * @param \phpbb\controller\helper			$helper				Controller helper object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\log\log					$log				Log object
-	 * @param \phpbb\mcp\functions\delete		$mcp_delete			MCP Delete functions object
+	 * @param \phpbb\mcp\controller\delete		$mcp_delete			MCP Delete controller object
 	 * @param \phpbb\mcp\controller\forum		$mcp_forum			MCP Forum controller object
 	 * @param \phpbb\mcp\controller\post		$mcp_post			MCP Post controller	object
 	 * @param \phpbb\mcp\controller\topic		$mcp_topic			MCP Topic controller object
@@ -106,7 +106,7 @@ class main
 		\phpbb\controller\helper $helper,
 		\phpbb\language\language $lang,
 		\phpbb\log\log $log,
-		\phpbb\mcp\functions\delete $mcp_delete,
+		delete $mcp_delete,
 		forum $mcp_forum,
 		post $mcp_post,
 		topic $mcp_topic,
@@ -177,7 +177,7 @@ class main
 			case 'unlock_post':
 				$post_ids = $this->get_ids(false);
 
-				$this->lock_unlock($action, $post_ids);
+				return $this->lock_unlock($action, $post_ids);
 			break;
 
 			case 'make_announce':
@@ -299,7 +299,7 @@ class main
 	 */
 	public function get_ids($topic = true)
 	{
-		$quickmod	= $this->request->is_set('quickmod', false);
+		$quickmod	= $this->request->is_set('quickmod');
 		$message	= $topic ? 'NO_TOPIC_SELECTED' : 'NO_POST_SELECTED';
 		$id_list	= $topic ? 'topic_id_list' : 'post_id_list';
 		$id_solo	= $topic ? 't' : 'p';
@@ -442,7 +442,7 @@ class main
 		}
 		else
 		{
-			confirm_box(false, strtoupper($action) . '_' . $l_prefix . (count($ids) === 1 ? '' : 'S'), $s_hidden_fields);
+			confirm_box(false, strtoupper($action) . '_' . $l_prefix . (count($ids) === 1 ? '' : 'S'), $s_hidden_fields, 'confirm_body.html', $this->helper->get_current_url());
 
 			return redirect($redirect);
 		}
@@ -1316,24 +1316,24 @@ class main
 		}
 		else
 		{
-			confirm_box(false, count($topic_ids) === 1 ? 'RESTORE_TOPIC' : 'RESTORE_TOPICS', $s_hidden_fields);
+			confirm_box(false, count($topic_ids) === 1 ? 'RESTORE_TOPIC' : 'RESTORE_TOPICS', $s_hidden_fields, 'confirm_body.html', $this->helper->get_current_url());
 		}
 
 		$topic_id = $this->request->variable('t', 0);
 		if (!$this->request->is_set('quickmod', \phpbb\request\request_interface::REQUEST))
 		{
 			$redirect = $this->request->variable('redirect', "index.$this->php_ext");
-			$redirect = reapply_sid($redirect);
+			$redirect = reapply_sid($redirect, true);
 			$redirect_message = 'PAGE';
 		}
 		else if ($topic_id)
 		{
-			$redirect = append_sid("{$this->root_path}viewtopic.$this->php_ext", 't=' . $topic_id);
+			$redirect = append_sid("{$this->root_path}viewtopic.$this->php_ext", 't=' . $topic_id, true, false, true);
 			$redirect_message = 'TOPIC';
 		}
 		else
 		{
-			$redirect = append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id);
+			$redirect = append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id, true, false, true);
 			$redirect_message = 'FORUM';
 		}
 

@@ -129,7 +129,7 @@ class constructor implements \phpbb\cp\constructor_interface
 			$allow_user = false;
 
 			// Except if the user is using one of the quickmod tools for users
-			if ($this->request->is_set('quickmod', false))
+			if ($this->request->is_set('quickmod'))
 			{
 				$action = $this->request->variable('action', ['' => '']);
 				$action = is_array($action) && !empty($action) ? key($action) : $this->request->variable('action', '');

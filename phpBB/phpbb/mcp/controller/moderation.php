@@ -83,7 +83,7 @@ class moderation
 	 * @param \phpbb\controller\helper					$helper					Controller helper object
 	 * @param \phpbb\language\language					$lang					Language object
 	 * @param \phpbb\log\log							$log					Log object
-	 * @param \phpbb\mcp\controller\delete				$mcp_delete				MCP Delete functions
+	 * @param \phpbb\mcp\controller\delete				$mcp_delete				MCP Delete controller object
 	 * @param \phpbb\notification\manager				$notification_manager	Notification manager object
 	 * @param \phpbb\pagination							$pagination				Pagination object
 	 * @param \phpbb\report\report_reason_list_provider	$reason_provider		Report reason list provider object

@@ -31,7 +31,7 @@ services:
             - '%core.php_ext%'
             - '%tables%'
 
-    mcp.functions.delete:
+    mcp.delete:
         class: phpbb\mcp\controller\delete
         arguments:
             - '@auth'
@@ -105,11 +105,11 @@ services:
             - '@content.visibility'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@log'
-            - '@mcp.functions.delete'
+            - '@mcp.delete'
             - '@mcp.forum'
-            - '@mcp.front'
             - '@mcp.post'
             - '@mcp.topic'
             - '@request'
@@ -130,7 +130,7 @@ services:
             - '@controller.helper'
             - '@language'
             - '@log'
-            - '@mcp.functions.delete'
+            - '@mcp.delete'
             - '@notification_manager'
             - '@pagination'
             - '@phpbb.report.report_reason_list_provider'

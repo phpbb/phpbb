@@ -613,7 +613,7 @@ $s_quickmod_action = $controller_helper->route('mcp_view_topic', [
 	't'			=> $topic_id,
 	'start'		=> $start,
 	'quickmod'	=> true,
-	'redirect'	=> urlencode(str_replace('&amp;', '&', $viewtopic_url)),
+	'redirect'	=> str_replace('&amp;', '&', $viewtopic_url),
 ], true, $user->session_id);
 
 $quickmod_array = array(
@@ -2044,11 +2044,11 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-		'U_APPROVE_ACTION'	=> $controller_helper->route('mcp_unapproved_posts', array_merge($row_params, ['redirect' => urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))])),
+		'U_APPROVE_ACTION'	=> $controller_helper->route('mcp_unapproved_posts', array_merge($row_params, ['redirect' => str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id'])])),
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $controller_helper->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? $controller_helper->route('mcp_report_details', $row_params, true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? $controller_helper->route('mcp_approve_details', $row_params, true, $user->session_id) : '',
-		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? $controller_helper->route((($topic_data['topic_visibility'] != ITEM_DELETED) ? 'deleted_posts' : 'deleted_topics'), $row_params, true, $user->session_id) : '',
+		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? $controller_helper->route((($topic_data['topic_visibility'] != ITEM_DELETED) ? 'mcp_deleted_posts' : 'mcp_deleted_topics'), $row_params, true, $user->session_id) : '',
 		'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
