@@ -45,6 +45,9 @@ class auth
 	 * Check the item's authorisation.
 	 *
 	 * @param string	$auth			The item's authorisation
+	 * @param int		$forum_id		The forum identifier
+	 * @param int		$topic_id		The topic identifier
+	 * @param int		$post_id		The post identifier
 	 * @return bool						Whether the current user is allowed to access this item
 	 */
 	public function check_auth($auth, $forum_id = 0, $topic_id = 0, $post_id = 0)
@@ -125,7 +128,7 @@ class auth
 								// This forum identifier is part of the $this->auth check
 								unset($tokens[$i]);
 
-								continue;
+								break;
 							}
 
 							$token = (bool) (!empty($match[1]) ? empty($forum_id) : !empty($forum_id));

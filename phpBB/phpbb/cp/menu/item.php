@@ -45,6 +45,7 @@ class item implements item_interface
 	 * @param string		$parent		Item's parent
 	 * @param string		$before		Item's before sibling
 	 * @param string		$page		Item's pagination variable
+	 * @param bool			$display	Item's display property
 	 */
 	public function __construct($auth = '', $icon = '', $route = '', $parent = '', $before = '', $page = '', $display = true)
 	{

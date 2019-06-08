@@ -7,9 +7,6 @@ imports:
     - { resource: ../../default/container/services_php.yml }
     - { resource: ../../default/container/services_routing.yml }
     - { resource: ../../default/container/services_twig.yml }
-    - { resource: ../../default/container/services_acp_menu.yml }
-    - { resource: ../../default/container/services_mcp_menu.yml }
-    - { resource: ../../default/container/services_ucp_menu.yml }
 
 services:
     cache.driver:
