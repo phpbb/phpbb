@@ -40,7 +40,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
+		$crawler = self::request('GET', 'app.php/admin/settings/feed?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
@@ -66,7 +66,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		// Special config (Guest can't see attachments)
 		$this->add_lang('acp/permissions');
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&sid={$this->sid}&icat=16&mode=setting_group_global&group_id[0]=1");
+		$crawler = self::request('GET', 'app.php/admin/permissions/global/group?group_id[0]=1&sid=' . $this->sid);
 		self::assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
@@ -128,7 +128,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->create_user('disapprove_user');
 		$this->add_user_group('NEWLY_REGISTERED', array('disapprove_user'));
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #1',
 		));
@@ -145,7 +145,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 
 		// 'Feeds #1.1' is a sub-forum of 'Feeds #1'
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=6&mode=manage&parent_id={$this->data['forums']['Feeds #1']}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage/' . $this->data['forums']['Feeds #1'] . '?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #1.1',
 		));
@@ -156,7 +156,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		self::submit($form);
 
 		// 'Feeds #news' will be used for feed.php?mode=news
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #news',
 		));
@@ -167,7 +167,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		self::submit($form);
 
 		// 'Feeds #exclude' will not be displayed on app.php/feed/forums
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #exclude',
 		));
@@ -190,7 +190,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 		));
 
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
+		$crawler = self::request('GET', 'app.php/admin/settings/feed?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 
@@ -865,7 +865,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
+		$crawler = self::request('GET', 'app.php/admin/settings/post?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();

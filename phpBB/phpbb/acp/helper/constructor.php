@@ -110,12 +110,10 @@ class constructor implements \phpbb\cp\constructor_interface
 		define('IN_ADMIN', true);
 
 		// Set custom style for admin area
-		$this->template->set_custom_style([
-			[
-				'name'		=> 'adm',
-				'ext_path'	=> 'adm/style/',
-			],
-		], $this->admin_path . 'style');
+		$this->template->set_custom_style([[
+			'name'		=> 'adm',
+			'ext_path'	=> 'adm/style/',
+		]], $this->admin_path . 'style');
 
 		$this->template->assign_vars([
 			'T_ASSETS_PATH'		=> $this->web_path . 'assets',

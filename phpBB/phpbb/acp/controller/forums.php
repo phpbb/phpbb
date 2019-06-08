@@ -139,6 +139,7 @@ class forums
 	{
 		$this->lang->add_lang('acp/forums');
 
+		$action		= $action ? $action : $this->request->variable('action', '');
 		$forum_id	= $f;
 		$parent_id	= $p;
 		$update		= $this->request->is_set_post('update');

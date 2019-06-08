@@ -21,13 +21,25 @@ class controller extends \phpbb\controller\helper
 	/** @var \phpbb\acp\functions\controller */
 	protected $functions;
 
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
 	/**
-	 * @param \phpbb\acp\functions\controller	$functions
+	 * @param \phpbb\acp\functions\controller $functions
 	 * @return void
 	 */
 	public function set_functions(\phpbb\acp\functions\controller $functions)
 	{
-		$this->functions = $functions;
+		$this->functions	= $functions;
+	}
+
+	/**
+	 * @param string $admin_path
+	 * @return void
+	 */
+	public function set_admin_path($admin_path)
+	{
+		$this->admin_path	= $admin_path;
 	}
 
 	/**
@@ -44,6 +56,11 @@ class controller extends \phpbb\controller\helper
 	 */
 	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = false)
 	{
+		$this->template->set_custom_style([[
+			'name'		=> 'adm',
+			'ext_path'	=> 'adm/style/',
+		]], $this->admin_path . 'style');
+
 		$this->functions->adm_page_header($page_title);
 
 		$this->template->set_filenames(['body' => $template_file]);

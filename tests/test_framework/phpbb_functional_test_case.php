@@ -22,8 +22,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $root_url;
 	static protected $install_success = false;
 
+	/** @var \phpbb\cache\driver\file */
 	protected $cache = null;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db = null;
+
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager = null;
 
 	/**
@@ -192,6 +197,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
+	/**
+	 * @return \phpbb\db\driver\driver_interface
+	 */
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -318,6 +326,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
 		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
 		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
+		$container->register('cp.manager', '\\phpbb\\cp\\manager')->setArguments([
+			new \Symfony\Component\DependencyInjection\Reference('acp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('mcp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('ucp_collection'),
+		]);
 		$container->compile();
 
 		$language = $container->get('language');
@@ -420,9 +433,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/enable_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -450,9 +463,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/disable_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -480,9 +493,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/delete_data_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -702,8 +715,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'\phpbb\datetime'
 		));
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			$config,
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
 
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
@@ -744,8 +765,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'\phpbb\datetime'
 		));
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$user,
+			$config,
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
 
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
@@ -779,7 +808,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php');
+		$crawler = self::request('GET', 'app.php/user/index');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -802,10 +831,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$crawler = self::request('GET', 'app.php/user/logout?sid=' . $this->sid);
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
-
 	}
 
 	/**
@@ -823,7 +851,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return;
 		}
 
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/index?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -1377,6 +1405,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
-		return self::request('GET', substr($link, strpos($link, 'mcp.')));
+		return self::request('GET', substr($link, strpos($link, 'app.')));
 	}
 }

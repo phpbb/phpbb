@@ -608,31 +608,22 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 // Quick mod tools
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
-$s_quickmod_action = $controller_helper->route('mcp_view_topic', [
-	'f'			=> $forum_id,
-	't'			=> $topic_id,
-	'start'		=> $start,
-	'quickmod'	=> true,
-	'redirect'	=> str_replace('&amp;', '&', $viewtopic_url),
-], true, $user->session_id);
-
 $quickmod_array = array(
-//	'key'			=> array('LANG_KEY', $userHasPermissions),
-
-	'lock'					=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster']))),
-	'unlock'				=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id))),
+	//	'action'		=> array('LANG_KEY', $userHasPermissions, optionalRoute),
+	'lock'				=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster']))),
+	'unlock'			=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id))),
 	'delete_topic'		=> array('DELETE_TOPIC', ($auth->acl_get('m_delete', $forum_id) || (($topic_data['topic_visibility'] != ITEM_DELETED) && $auth->acl_get('m_softdelete', $forum_id)))),
 	'restore_topic'		=> array('RESTORE_TOPIC', (($topic_data['topic_visibility'] == ITEM_DELETED) && $auth->acl_get('m_approve', $forum_id))),
-	'move'					=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
-	'split'					=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
-	'merge'					=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
-	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id)),
-	'fork'					=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
+	'move'				=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
+	'split'				=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
+	'merge'				=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
+	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id), 'mcp_view_forum'),
+	'fork'				=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
 	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
 	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
-	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
+	'make_announce'		=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
 	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
-	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
+	'topic_logs'		=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id), 'mcp_logs_topic'),
 );
 
 /**
@@ -662,11 +653,23 @@ $vars = array(
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_before', compact($vars)));
 
+$s_quickmod_params = [
+	'f'			=> $forum_id,
+	't'			=> $topic_id,
+	'start'		=> $start,
+	'quickmod'	=> true,
+	'redirect'	=> str_replace('&amp;', '&', $viewtopic_url),
+];
+
+$s_quickmod_action = $controller_helper->route('mcp_view_topic', $s_quickmod_params, true, $user->session_id);
+
 foreach ($quickmod_array as $option => $qm_ary)
 {
 	if (!empty($qm_ary[1]))
 	{
-		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
+		$quickmod_action = !empty($qm_ary[2]) ? $controller_helper->route($qm_ary[2], $s_quickmod_params, true, $user->session_id) : $s_quickmod_action;
+
+		phpbb_add_quickmod_option($quickmod_action, $option, $qm_ary[0]);
 	}
 }
 

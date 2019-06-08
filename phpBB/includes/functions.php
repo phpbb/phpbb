@@ -4300,7 +4300,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 	else
 	{
-		$redirect = $request->variable('redirect', rawurlencode($user->page['page']));
+		$redirect = $request->variable('redirect', $user->page['page']);
 		$u_login_logout = $controller_helper->route('ucp_account', ['mode' => 'login', 'redirect' => $redirect]);
 		$l_login_logout = $user->lang['LOGIN'];
 	}

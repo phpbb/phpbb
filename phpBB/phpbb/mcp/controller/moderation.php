@@ -844,8 +844,10 @@ class moderation
 		$route	= is_array($u_mode) ? array_shift($u_mode) : $u_mode;
 		$params	= is_array($u_mode) ? $u_mode : [];
 
-		$u_return = $this->helper->route($route, $params);
 		$u_post = '';
+		$u_return = $this->helper->route($route, $params);
+		$redirect = $this->request->variable('redirect', $u_return);
+		$redirect = reapply_sid($redirect);
 
 		$approve_log = [];
 		$num_topics = 0;
@@ -1011,7 +1013,7 @@ class moderation
 
 			if ($this->request->is_ajax())
 			{
-				meta_refresh(3, $u_return);
+				meta_refresh(3, $redirect);
 
 				$json_response = new \phpbb\json_response;
 				$json_response->send([
@@ -1022,7 +1024,7 @@ class moderation
 				]);
 			}
 
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $u_return . '">', '</a>');
+			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 
 			// If approving one post, also give links back to post...
 			if (count($post_info) === 1 && $u_post)
@@ -1030,7 +1032,7 @@ class moderation
 				$message .= '<br /><br />' . $this->lang->lang('RETURN_POST', '<a href="' . $u_post . '">', '</a>');
 			}
 
-			$this->helper->assign_meta_refresh_var(3, $u_return);
+			$this->helper->assign_meta_refresh_var(3, $redirect);
 
 			return $this->helper->message($message);
 		}
@@ -1288,6 +1290,8 @@ class moderation
 		$params	= is_array($u_mode) ? $u_mode : [];
 
 		$u_return = $this->helper->route($route, $params);
+		$redirect = $this->request->variable('redirect', $u_return);
+		$redirect = reapply_sid($redirect);
 
 		$reason		= $this->request->variable('reason', '', true);
 		$reason_id	= $this->request->variable('reason_id', 0);
@@ -1298,6 +1302,7 @@ class moderation
 		$s_hidden_fields = build_hidden_fields([
 			'post_id_list'	=> $post_id_list,
 			'action'		=> 'disapprove',
+			'redirect'		=> $redirect,
 		]);
 
 		$notify_poster = $this->request->is_set('notify_poster');
@@ -1532,11 +1537,11 @@ class moderation
 
 			if ($num_disapproved_topics)
 			{
-				$success_msg = ($num_disapproved_topics == 1) ? 'TOPIC' : 'TOPICS';
+				$success_msg = $num_disapproved_topics === 1 ? 'TOPIC' : 'TOPICS';
 			}
 			else
 			{
-				$success_msg = ($num_disapproved_posts == 1) ? 'POST' : 'POSTS';
+				$success_msg = $num_disapproved_posts === 1 ? 'POST' : 'POSTS';
 			}
 
 			if ($is_disapproving)
@@ -1546,6 +1551,22 @@ class moderation
 			else
 			{
 				$success_msg .= '_DELETED_SUCCESS';
+			}
+
+			// If we came from viewtopic, we try to go back to it.
+			if (strpos($redirect, $this->root_path . 'viewtopic.' . $this->php_ext) !== false)
+			{
+				if ($num_disapproved_topics === 0)
+				{
+					// So we need to remove the post id part from the Url
+					$redirect = str_replace("&amp;p={$post_id_list[0]}#p{$post_id_list[0]}", '', $redirect);
+				}
+				else
+				{
+					// However this is only possible if the topic still exists,
+					// Otherwise we go back to the viewforum page
+					$redirect = append_sid($this->root_path . 'viewforum.' . $this->php_ext, 'f=' . $this->request->variable('f', 0));
+				}
 			}
 
 			/**
@@ -1588,7 +1609,7 @@ class moderation
 
 			if ($this->request->is_ajax())
 			{
-				meta_refresh(3, $u_return);
+				meta_refresh(3, $redirect);
 
 				$json_response = new \phpbb\json_response;
 				$json_response->send([
@@ -1598,9 +1619,10 @@ class moderation
 					'visible'			=> false,
 				]);
 			}
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $u_return . '">', '</a>');
 
-			$this->helper->assign_meta_refresh_var(3, $u_return);
+			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			$this->helper->assign_meta_refresh_var(3, $redirect);
 
 			return $this->helper->message($message);
 		}
@@ -1646,7 +1668,7 @@ class moderation
 
 			confirm_box(false, $l_confirm_msg, $s_hidden_fields, $confirm_template);
 
-			return redirect($u_return);
+			return redirect($redirect);
 		}
 	}
 }

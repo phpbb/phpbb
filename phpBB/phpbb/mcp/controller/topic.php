@@ -546,7 +546,7 @@ class topic
 			'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 			'S_TOPIC_ICON'			=> $icon_id,
 
-			'U_SELECT_TOPIC'	=> $this->helper->route('mcp_view_forum', ['f' => $forum_id, 'action' => 'merge_select']),
+			'U_SELECT_TOPIC'	=> $this->helper->route('mcp_view_forum', ['f' => $forum_id, 't' => $topic_id, 'action' => 'merge_select']),
 
 			'RETURN_TOPIC'		=> $this->lang->lang('RETURN_TOPIC', '<a href="' . append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 			'RETURN_FORUM'		=> $this->lang->lang('RETURN_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),

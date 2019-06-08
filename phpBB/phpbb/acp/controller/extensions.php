@@ -226,7 +226,7 @@ class extensions
 				}
 				catch (runtime_exception $e)
 				{
-					throw new http_exception(503, $e->getMessage(), 'acp_extensions_manage', $e->get_parameters());
+					throw new back_exception(503, $e->getMessage(), 'acp_extensions_manage', $e->get_parameters());
 				}
 
 				$extension = $this->extension_manager->get_extension($ext_name);
@@ -370,7 +370,7 @@ class extensions
 					]);
 				}
 
-				return $this->helper->message_back('EXTENSION_DIABLE_SUCCESS', 'acp_extensions_manage');
+				return $this->helper->message_back('EXTENSION_DISABLE_SUCCESS', 'acp_extensions_manage');
 			break;
 
 			case 'delete_data_pre':
@@ -922,6 +922,7 @@ class extensions
 	 *
 	 * @param string	$action			The action
 	 * @param string	$extension		The extension name
+	 * @param bool		$hash			If a link has should be generated and appended
 	 * @return string
 	 */
 	protected function ext_route($action, $extension, $hash = false)

@@ -20,7 +20,7 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 {
 	public function get_url()
 	{
-		return 'ucp.php?i=ucp_profile&mode=avatar';
+		return 'app.php/user/profile/avatar';
 	}
 
 	public function avatar_ucp_groups_data()
@@ -64,7 +64,7 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 			)
 		);
 
-		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . '?sid=' . $this->sid);
 		$avatar_link = $crawler->filter('img')->attr('src');
 		$crawler = self::request('GET', $avatar_link . '&sid=' . $this->sid, array(), false);
 		$content = self::$client->getResponse()->getContent();

@@ -21,7 +21,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=registration&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/settings/registration?sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$form['config[enable_confirm]']->setValue('0');
 		$crawler = self::submit($form);
@@ -36,7 +36,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?mode=register');
+		$crawler = self::request('GET', 'app.php/user/register');
 		$this->assertContainsLang('REGISTRATION', $crawler->filter('div.content h2')->text());
 
 		$form = $crawler->selectButton('I agree to these terms')->form();
@@ -60,7 +60,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 	public function test_default_subscription_options()
 	{
 		$this->login('user-reg-test');
-		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/settings/notifications?sid=' . $this->sid);
 		$this->assert_checkbox_is_checked($crawler, 'notification.type.post_notification.method.email');
 		$this->assert_checkbox_is_checked($crawler, 'notification.type.topic_notification.method.email');
 	}

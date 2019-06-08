@@ -62,7 +62,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	public function test_extensions_list()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage?sid=' . $this->sid);
 		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#main')->text());
 		$this->assertContains('phpBB 3.1 Extension Testing', $crawler->filter('#main')->text());
 		$this->assertContains('Details', $crawler->filter('#main')->text());
@@ -70,7 +70,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	public function test_extensions_details()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo%2Fbar&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details/foo/bar?sid=' . $this->sid);
 
 		// Test whether the details are displayed
 		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#main')->text());
@@ -86,7 +86,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	public function test_extensions_details_notexists()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=not%2Fexists&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details/not/exists?sid=' . $this->sid);
 
 		// Error message because the files do not exist
 		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('#main')->text());

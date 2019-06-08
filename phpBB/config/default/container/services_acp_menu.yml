@@ -707,7 +707,7 @@ services:
             $icon: ''
             $parent: acp_permissions_global
             $route:
-                path: /permissions/global/admins
+                path: /permissions/global/admin
                 defaults:
                     _controller: acp.permissions:main
                     mode: 'setting_admin_global'
@@ -1160,6 +1160,8 @@ services:
                     _controller: acp.extensions:manage
                     action: 'list'
                     ext: ''
+                requirements:
+                    ext: "[^?]+"
 
     acp_extensions_catalog:
         tags: { name: acp }

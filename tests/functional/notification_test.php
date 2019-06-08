@@ -44,7 +44,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 	public function test_user_subscriptions($checkbox_name, $expected_status)
 	{
 		$this->login();
-		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
+		$crawler = self::request('GET', 'app.php/user/settings/notifications');
 
 		$cplist = $crawler->filter('.table1');
 		if ($expected_status)
@@ -74,14 +74,14 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$this->login();
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications');
+		$crawler = self::request('GET', 'app.php/user/manage/notifications');
 
 		// At least one notification should exist
 		$this->assertGreaterThan(0, $crawler->filter('#notification-button strong')->text());
 
 		// Get form token
 		$link = $crawler->selectLink($this->lang('NOTIFICATIONS_MARK_ALL_READ'))->link()->getUri();
-		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
+		$crawler = self::request('GET', substr($link, strpos($link, 'app.')));
 		$this->assertCount(1, $crawler->filter('#notification-button strong.badge.hidden'));
 		$this->assertEquals("0", $crawler->filter('#notification-button strong.badge.hidden')->text());
 	}

@@ -169,7 +169,6 @@ class users
 		$user_id		= $u ? $u : $this->request->variable('u', 0);
 		$mode			= $this->request->is_set_post('mode') ? $this->request->variable('mode', '', true) : $mode;
 		$u_mode			= ['acp_users_manage', 'mode' => $mode, 'u' => (int) $user_id];
-		$u_user_action	= $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 
 		$error		= [];
 		$action		= $this->request->variable('action', '');
@@ -227,6 +226,8 @@ class users
 				throw new back_exception(404, 'NO_USER', $u_mode);
 			}
 		}
+
+		$u_user_action = $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => (int) $user_id]);
 
 		// Generate content for all modes
 		$sql_array = [

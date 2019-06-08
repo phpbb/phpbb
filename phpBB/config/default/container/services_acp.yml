@@ -22,6 +22,7 @@ services:
         parent: controller.helper
         calls:
             - ['set_functions', ['@acp.functions.controller']]
+            - ['set_admin_path', ['%core.adm_relative_path%']]
 
     acp.constructor:
         class: phpbb\acp\helper\constructor
