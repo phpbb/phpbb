@@ -22,7 +22,7 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/permissions');
-		$this->visit('adm/index.php?i=acp_permissions&mode=setting_forum_local&sid=' . $this->sid);
+		$this->visit('app.php/admin/permissions/forum?sid=' . $this->sid);
 
 		// Select forums
 		$elements = $this->find_element('cssSelector', 'select#forum')

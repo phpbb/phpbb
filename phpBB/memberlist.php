@@ -87,6 +87,9 @@ switch ($mode)
 /** @var \phpbb\group\helper $group_helper */
 $group_helper = $phpbb_container->get('group_helper');
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 $start	= $request->variable('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
@@ -793,20 +796,20 @@ switch ($mode)
 			'S_GROUP_OPTIONS'			=> $group_options,
 			'S_CUSTOM_FIELDS'			=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'				=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+			'U_USER_ADMIN'				=> ($auth->acl_get('a_user')) ? $controller_helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $user_id], false, $user->session_id) : '',
+			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? $controller_helper->route('mcp_ban_user', ['u' => $user_id], true, $user->session_id) : '',
+			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? $controller_helper->route('mcp_unapproved_topics', [], true, $user->session_id) : '',
 
-			'U_SWITCH_PERMISSIONS'		=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
-			'U_EDIT_SELF'				=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_profile&amp;mode=profile_info') : '',
+			'U_SWITCH_PERMISSIONS'		=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? $controller_helper->route('ucp_account', ['mode' => 'permissions_switch', 'u' => $user_id, 'hash' => generate_link_hash('switchperm')]) : '',
+			'U_EDIT_SELF'				=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? $controller_helper->route('ucp_profile_profile') : '',
 
 			'S_USER_NOTES'				=> ($user_notes_enabled) ? true : false,
 			'S_WARN_USER'				=> ($warn_user_enabled) ? true : false,
 			'S_ZEBRA'					=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'				=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_ADD_FOE'					=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_REMOVE_FRIEND'			=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
-			'U_REMOVE_FOE'				=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
+			'U_ADD_FRIEND'				=> (!$friend && !$foe && $friends_enabled) ? $controller_helper->route('ucp_zebra_friends', ['add' => urlencode(htmlspecialchars_decode($member['username']))]) : '',
+			'U_ADD_FOE'					=> (!$friend && !$foe && $foes_enabled) ? $controller_helper->route('ucp_zebra_foes', ['add' => urlencode(htmlspecialchars_decode($member['username']))]) : '',
+			'U_REMOVE_FRIEND'			=> ($friend && $friends_enabled) ? $controller_helper->route('ucp_zebra_friends', ['remove' => true, 'usernames[]' => $user_id]) : '',
+			'U_REMOVE_FOE'				=> ($foe && $foes_enabled) ? $controller_helper->route('ucp_zebra_foes', ['remove' => true, 'usernames[]' => $user_id]) : '',
 
 			'U_CANONICAL'				=> generate_board_url() . '/' . append_sid("memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id, true, ''),
 		);
@@ -1332,8 +1335,8 @@ switch ($mode)
 				'RANK_IMG_SRC'	=> $group_rank_data['img_src'],
 
 				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',
-				'U_MANAGE'		=> ($can_manage_group) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_groups&amp;mode=manage') : false,)
-			);
+				'U_MANAGE'		=> ($can_manage_group) ? $controller_helper->route('ucp_groups_manage') : false,
+			));
 
 			$sql_select = ', ug.group_leader';
 			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';

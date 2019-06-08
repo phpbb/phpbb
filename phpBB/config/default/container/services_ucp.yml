@@ -1,0 +1,289 @@
+services:
+# --- Helpers --- #
+    ucp.constructor:
+        class: phpbb\ucp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@symfony_request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+# --- Controllers --- #
+    ucp.account:
+        class: phpbb\ucp\controller\account
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@ucp.activate'
+            - '@ucp.confirm'
+            - '@ucp.login_link'
+            - '@ucp.permissions'
+            - '@ucp.register'
+            - '@ucp.remind'
+            - '@ucp.resend'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    ucp.activate:
+        class: phpbb\ucp\controller\activate
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.attachments:
+        class: phpbb\ucp\controller\attachments
+        arguments:
+            - '@attachment.manager'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.auth_link:
+        class: phpbb\ucp\controller\auth_link
+        arguments:
+            - '@controller.helper'
+            - '@language'
+            - '@auth.provider_collection'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    ucp.confirm:
+        class: phpbb\ucp\controller\confirm
+        arguments:
+            - '@captcha.factory'
+            - '@config'
+            - '@request'
+
+    ucp.front:
+        class: phpbb\ucp\controller\front
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.groups:
+        class: phpbb\ucp\controller\groups
+        arguments:
+            - '@auth'
+            - '@avatar.manager'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@group_helper'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.login_link:
+        class: phpbb\ucp\controller\login_link
+        arguments:
+            - '@captcha.factory'
+            - '@config'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@auth.provider_collection'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    ucp.manage:
+        class: phpbb\ucp\controller\manage
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.notifications:
+        class: phpbb\ucp\controller\notifications
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@notification_manager'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    ucp.permissions:
+        class: phpbb\ucp\controller\permissions
+        arguments:
+            - '@auth'
+            - '@acp.auth_admin'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.profile:
+        class: phpbb\ucp\controller\profile
+        arguments:
+            - '@auth'
+            - '@avatar.manager'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@passwords.manager'
+            - '@profilefields.manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.register:
+        class: phpbb\ucp\controller\register
+        arguments:
+            - '@captcha.factory'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@notification_manager'
+            - '@passwords.manager'
+            - '@profilefields.manager'
+            - '@auth.provider_collection'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.remind:
+        class: phpbb\ucp\controller\remind
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@passwords.manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.resend:
+        class: phpbb\ucp\controller\resend
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    ucp.settings:
+        class: phpbb\ucp\controller\settings
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables%'
+
+    ucp.zebra:
+        class: phpbb\ucp\controller\zebra
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'

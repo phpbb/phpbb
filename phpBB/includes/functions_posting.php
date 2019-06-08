@@ -302,7 +302,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 */
 function posting_gen_topic_icons($mode, $icon_id)
 {
-	global $phpbb_root_path, $config, $template, $cache;
+	global $phpbb_root_path, $phpbb_path_helper, $config, $template, $cache;
 
 	// Grab icons
 	$icons = $cache->obtain_icons();
@@ -314,7 +314,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (count($icons))
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->update_web_root_path($phpbb_root_path);
 
 		foreach ($icons as $id => $data)
 		{
@@ -887,6 +887,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $user, $auth, $db, $template;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 	$sql_sort = ($mode == 'post_review') ? 'ASC' : 'DESC';
@@ -1115,7 +1118,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_TIME'			=> $row['post_time'],
 			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? $controller_helper->route('mcp_view_post', ['f' => $forum_id, 't' => $topic_id, 'p' => $row['post_id']], false, $user->session_id) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		);
 

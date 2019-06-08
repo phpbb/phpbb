@@ -119,7 +119,7 @@ class post_in_queue extends \phpbb\notification\type\post
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "i=queue&amp;mode=approve_details&amp;f={$this->get_data('forum_id')}&amp;p={$this->item_id}");
+		return $this->helper->route('mcp_approve_details', ['f' => $this->get_data('forum_id'), 'p' => $this->item_id]);
 	}
 
 	/**

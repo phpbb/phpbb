@@ -38,7 +38,7 @@ if (empty($lang) || !is_array($lang))
 
 // Board Settings
 $lang = array_merge($lang, array(
-	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, give it a fitting name and description, and among other settings adjust the default values for timezone and language.',
+	'ACP_SETTINGS_BOARD_EXPLAIN'	=> 'Here you can determine the basic operation of your board, give it a fitting name and description, and among other settings adjust the default values for timezone and language.',
 	'BOARD_INDEX_TEXT'				=> 'Board index text',
 	'BOARD_INDEX_TEXT_EXPLAIN'		=> 'This text is displayed as the board index in the board’s breadcrumbs. If not specified, it will default to “Board index”.',
 	'BOARD_STYLE'					=> 'Board style',
@@ -70,7 +70,7 @@ $lang = array_merge($lang, array(
 
 // Board Features
 $lang = array_merge($lang, array(
-	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
+	'ACP_SETTINGS_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
 
 	'ALLOW_ATTACHMENTS'			=> 'Allow attachments',
 	'ALLOW_BIRTHDAYS'			=> 'Allow birthdays',
@@ -104,7 +104,7 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_SETTINGS_AVATAR_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
 	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br>If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
@@ -129,7 +129,7 @@ $lang = array_merge($lang, array(
 
 // Message Settings
 $lang = array_merge($lang, array(
-	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
+	'ACP_SETTINGS_PM_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
 	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
@@ -158,7 +158,7 @@ $lang = array_merge($lang, array(
 
 // Post Settings
 $lang = array_merge($lang, array(
-	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
+	'ACP_SETTINGS_POST_EXPLAIN'			=> 'Here you can set all default settings for posting.',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOWED_SCHEMES_LINKS'				=> 'Allowed schemes in links',
@@ -203,7 +203,7 @@ $lang = array_merge($lang, array(
 
 // Signature Settings
 $lang = array_merge($lang, array(
-	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures.',
+	'ACP_SETTINGS_SIGNATURE_EXPLAIN'	=> 'Here you can set all default settings for signatures.',
 
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
@@ -221,7 +221,7 @@ $lang = array_merge($lang, array(
 
 // Registration Settings
 $lang = array_merge($lang, array(
-	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
+	'ACP_SETTINGS_REGISTRATION_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
 
 	'ACC_ACTIVATION'				=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations. <em>“Board-wide email” must be enabled in order to use user or admin activation.</em>',
@@ -235,7 +235,6 @@ $lang = array_merge($lang, array(
 	'ACC_DISABLE'				=> 'Disable registration',
 	'ACC_NONE'					=> 'No activation (immediate access)',
 	'ACC_USER'					=> 'By user (email verification)',
-//	'ACC_USER_ADMIN'			=> 'User + Admin',
 	'ALLOW_EMAIL_REUSE'			=> 'Allow email address re-use',
 	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same email address.',
 	'COPPA'						=> 'COPPA',
@@ -266,7 +265,7 @@ $lang = array_merge($lang, array(
 // Feeds
 $lang = array_merge($lang, array(
 	'ACP_FEED_MANAGEMENT'				=> 'General syndication feeds settings',
-	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This module makes available various ATOM feeds, parsing any BBCode in posts to make them readable in external feeds.',
+	'ACP_SETTINGS_FEED_EXPLAIN'			=> 'This module makes available various ATOM feeds, parsing any BBCode in posts to make them readable in external feeds.',
 
 	'ACP_FEED_GENERAL'					=> 'General feed settings',
 	'ACP_FEED_POST_BASED'				=> 'Post-based feed settings',
@@ -348,7 +347,7 @@ $lang = array_merge($lang, array(
 
 // Cookie Settings
 $lang = array_merge($lang, array(
-	'ACP_COOKIE_SETTINGS_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in. If you have problems with users staying logging in to your board, visit the <strong><a href="https://www.phpbb.com/support/go/cookie-settings">phpBB.com Knowledge Base - Fixing incorrect cookie settings</a></strong>.',
+	'ACP_SETTINGS_COOKIE_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in. If you have problems with users staying logging in to your board, visit the <strong><a href="https://www.phpbb.com/support/go/cookie-settings">phpBB.com Knowledge Base - Fixing incorrect cookie settings</a></strong>.',
 
 	'COOKIE_DOMAIN'				=> 'Cookie domain',
 	'COOKIE_DOMAIN_EXPLAIN'		=> 'In most cases the cookie domain is optional. Leave it blank if you are unsure.<br><br> In the case where you have a board integrated with other software or have multiple domains, then to determine the cookie domain you need to do the following. If you have something like <i>example.com</i> and <i>forums.example.com</i>, or perhaps <i>forums.example.com</i> and <i>blog.example.com</i>. Remove the subdomains until you find the common domain, <i>example.com</i>. Now add a dot in front of the common domain and you would enter .example.com (note the dot at the beginning).',
@@ -381,7 +380,7 @@ $lang = array_merge($lang, array(
 
 // Load Settings
 $lang = array_merge($lang, array(
-	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
+	'ACP_SETTINGS_LOAD_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 
 	'ALLOW_CDN'						=> 'Allow usage of third party content delivery networks',
 	'ALLOW_CDN_EXPLAIN'				=> 'If this setting is enabled, some files will be served from external third party servers instead of your server. This reduces the network bandwidth required by your server, but may present a privacy issue for some board administrators. In a default phpBB installation, this includes loading “jQuery” and the font “Open Sans” from Google’s content delivery network.',
@@ -427,7 +426,7 @@ $lang = array_merge($lang, array(
 
 // Auth settings
 $lang = array_merge($lang, array(
-	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default four plug-ins are provided: DB, LDAP, Apache, and OAuth. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
+	'ACP_SETTINGS_AUTH_EXPLAIN'	=> 'phpBB supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default four plug-ins are provided: DB, LDAP, Apache, and OAuth. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
@@ -463,7 +462,7 @@ $lang = array_merge($lang, array(
 
 // Server Settings
 $lang = array_merge($lang, array(
-	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependent settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
+	'ACP_SETTINGS_SERVER_EXPLAIN'	=> 'Here you define server and domain dependent settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 
 	'ENABLE_GZIP'				=> 'Enable GZip compression',
 	'ENABLE_GZIP_EXPLAIN'		=> 'Generated content will be compressed prior to sending it to the user. This can reduce network traffic but will also increase CPU usage on both server and client side. Requires zlib PHP extension to be loaded.',
@@ -497,7 +496,7 @@ $lang = array_merge($lang, array(
 
 // Security Settings
 $lang = array_merge($lang, array(
-	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
+	'ACP_SETTINGS_SECURITY_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
 
 	'ALL'							=> 'All',
 	'ALLOW_AUTOLOGIN'				=> 'Allow "Remember Me" logins',
@@ -552,7 +551,7 @@ $lang = array_merge($lang, array(
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
+	'ACP_SETTINGS_EMAIL_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
 
 	'ADMIN_EMAIL'					=> 'From email address',
 	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the from address on all emails, the technical contact email address. It will always be used as the <samp>Sender</samp> address in emails.',

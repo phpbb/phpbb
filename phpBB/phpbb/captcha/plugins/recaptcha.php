@@ -66,17 +66,22 @@ class recaptcha extends captcha_abstract
 		throw new \Exception('No generator class given.');
 	}
 
-	function acp_page($id, $module)
+	function acp_page()
 	{
-		global $config, $template, $user, $phpbb_log, $request;
+		global $config, $template, $user, $request;
+		global $phpbb_container, $phpbb_log;
+
+		/** @var \phpbb\language\language $lang */
+		$lang = $phpbb_container->get('language');
+
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
 			'recaptcha_privkey'				=> 'RECAPTCHA_PRIVKEY',
 		);
 
-		$module->tpl_name = 'captcha_recaptcha_acp';
-		$module->page_title = 'ACP_VC_SETTINGS';
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
@@ -95,26 +100,28 @@ class recaptcha extends captcha_abstract
 			}
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
+
+			return $acp_controller_helper->message_back('CONFIG_UPDATED', 'acp_settings_captcha');
 		}
 		else if ($submit)
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			throw new \phpbb\exception\http_exception(400, $lang->lang('FORM_INVALID'));
 		}
 		else
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
+				$var = $request->is_set($captcha_var) ? $request->variable($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
 
 			$template->assign_vars(array(
-				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
+				'CAPTCHA_PREVIEW'	=> $this->get_demo_template(),
 				'CAPTCHA_NAME'		=> $this->get_service_name(),
-				'U_ACTION'			=> $module->u_action,
+				'U_ACTION'			=> $acp_controller_helper->route('acp_settings_captcha'),
 			));
 
+			return $acp_controller_helper->render('captcha_recaptcha_acp.html', $lang->lang('ACP_VC_SETTINGS'));
 		}
 	}
 
@@ -154,7 +161,7 @@ class recaptcha extends captcha_abstract
 		}
 	}
 
-	function get_demo_template($id)
+	function get_demo_template()
 	{
 		return $this->get_template();
 	}

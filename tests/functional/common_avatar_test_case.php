@@ -33,7 +33,7 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 
 	private function set_acp_settings()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/settings/avatars?sid=' . $this->sid);
 		// Check the default entries we should have
 		$this->assertContainsLang('ALLOW_GRAVATAR', $crawler->text());
 		$this->assertContainsLang('ALLOW_REMOTE_UPLOAD', $crawler->text());
@@ -52,7 +52,7 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 
 	public function assert_avatar_submit($expected, $type, $data, $delete = false, $button_text = 'SUBMIT')
 	{
-		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . '?sid=' . $this->sid);
 
 		// Test if setting a gravatar avatar properly works
 		$form = $crawler->selectButton($this->lang($button_text))->form();

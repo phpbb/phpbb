@@ -56,7 +56,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 		$crawler = self::$client->request(
 			'POST',
-			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
+			self::$root_url . 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
 			array('add_file' => $this->lang('ADD_FILE')),
 			array('fileupload' => $file)
 		);
@@ -95,7 +95,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 
 		// Make sure check_attachment_content is set to false
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_attachments&mode=attach');
+		$crawler = self::request('GET', 'app.php/admin/settings/attachments?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form(array(
 			'config[check_attachment_content]'	=> 0,
@@ -112,7 +112,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$this->assertContainsLang('UNABLE_GET_IMAGE_SIZE', $crawler->text());
 
 		// Reset check_attachment_content to default (enabled)
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_attachments&mode=attach');
+		$crawler = self::request('GET', 'app.php/admin/settings/attachments?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form(array(
 			'config[check_attachment_content]'	=> 1,

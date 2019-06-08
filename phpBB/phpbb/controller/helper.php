@@ -164,6 +164,7 @@ class helper
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message_text,
 			'MESSAGE_TITLE'	=> $message_title,
+			'S_USER_NOTICE'	=> $code === 200,
 		));
 
 		return $this->render('message_body.html', $message_title, $code);

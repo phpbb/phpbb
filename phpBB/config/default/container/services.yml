@@ -1,10 +1,13 @@
 imports:
+    - { resource: services_acp.yml }
+    - { resource: services_acp_menu.yml }
     - { resource: services_attachment.yml }
     - { resource: services_auth.yml }
     - { resource: services_avatar.yml }
     - { resource: services_captcha.yml }
     - { resource: services_console.yml }
     - { resource: services_content.yml }
+    - { resource: services_cp.yml }
     - { resource: services_cron.yml }
     - { resource: services_db.yml }
     - { resource: services_event.yml }
@@ -16,6 +19,8 @@ imports:
     - { resource: services_hook.yml }
     - { resource: services_http.yml }
     - { resource: services_language.yml }
+    - { resource: services_mcp.yml }
+    - { resource: services_mcp_menu.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
     - { resource: services_module.yml }
@@ -30,6 +35,8 @@ imports:
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
+    - { resource: services_ucp.yml }
+    - { resource: services_ucp_menu.yml }
 
     - { resource: tables.yml }
     - { resource: parameters.yml }
@@ -126,6 +133,7 @@ services:
             - '@user'
             - '@auth'
             - '@dispatcher'
+            - '@controller.helper'
             - '%core.root_path%'
             - '%core.adm_relative_path%'
             - '%core.php_ext%'

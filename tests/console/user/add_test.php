@@ -24,11 +24,21 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 {
 	public function get_command_tester($question_answers = [])
 	{
+		$controller_helper = new phpbb_mock_controller_helper(
+			$this->createMock('\phpbb\template\template'),
+			$this->user,
+			$this->config,
+			$this->createMock('\phpbb\symfony_request'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\routing\helper')
+		);
+
 		$application = new Application();
 		$application->add(new add(
 			$this->user,
 			$this->db,
 			$this->config,
+			$controller_helper,
 			$this->language,
 			$this->passwords_manager,
 			$this->phpbb_root_path,

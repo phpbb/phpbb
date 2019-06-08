@@ -13,6 +13,8 @@
 
 namespace phpbb\notification\type;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 /**
 * Admin activation notifications class
 * This class handles notifications for users requiring admin activation
@@ -152,7 +154,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 		return array(
 			'USERNAME'			=> htmlspecialchars_decode($username),
 			'U_USER_DETAILS'	=> "{$board_url}/memberlist.{$this->php_ext}?mode=viewprofile&u={$this->item_id}",
-			'U_ACTIVATE'		=> "{$board_url}/ucp.{$this->php_ext}?mode=activate&u={$this->item_id}&k={$this->get_data('user_actkey')}",
+			'U_ACTIVATE'		=> $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $this->item_id, 'k' => $this->get_data('user_actkey')], false, false, UrlGeneratorInterface::ABSOLUTE_URL),
 		);
 	}
 

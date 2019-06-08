@@ -1,0 +1,612 @@
+services:
+# --- Helpers --- #
+    acp.auth_admin:
+        class: phpbb\acp\helper\auth_admin
+        arguments:
+            - '@auth'
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@group_helper'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@acl.permissions'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.controller.helper:
+        class: phpbb\acp\helper\controller
+        parent: controller.helper
+        calls:
+            - ['set_functions', ['@acp.functions.controller']]
+            - ['set_admin_path', ['%core.adm_relative_path%']]
+
+    acp.constructor:
+        class: phpbb\acp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@controller.helper'
+            - '@language'
+            - '@path_helper'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# --- Functions --- #
+    acp.functions.controller:
+        class: phpbb\acp\functions\controller
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@service_container'
+            - '@cp.menu'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# --- Controllers --- #
+    acp.attachments:
+        class: phpbb\acp\controller\attachments
+        arguments:
+            - '@attachment.manager'
+            - '@auth'
+            - '@cache.driver'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@filesystem'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.ban:
+        class: phpbb\acp\controller\ban
+        arguments:
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.bbcodes:
+        class: phpbb\acp\controller\bbcodes
+        arguments:
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@text_formatter.cache'
+            - '@user'
+            - '%tables%'
+
+    acp.board:
+        class: phpbb\acp\controller\board
+        arguments:
+            - '@auth.provider_collection'
+            - '@avatar.manager'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@text_formatter.cache'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.bots:
+        class: phpbb\acp\controller\bots
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.captcha:
+        class: phpbb\acp\controller\captcha
+        arguments:
+            - '@config'
+            - '@captcha.factory'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    acp.contact:
+        class: phpbb\acp\controller\contact
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    acp.database:
+        class: phpbb\acp\controller\database
+        arguments:
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@dbal.tools'
+            - '@dbal.extractor'
+            - '@filesystem.temp'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@storage.backup'
+            - '@template'
+            - '@user'
+            - '%core.table_prefix%'
+
+    acp.disallow:
+        class: phpbb\acp\controller\disallow
+        arguments:
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables%'
+
+    acp.email:
+        class: phpbb\acp\controller\email
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.extensions:
+        class: phpbb\acp\controller\extensions
+        arguments:
+            - '@config'
+            - '@ext.composer.manager'
+            - '@dispatcher'
+            - '@ext.manager'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@php_ini'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%extensions.composer.output%'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    acp.forums:
+        class: phpbb\acp\controller\forums
+        arguments:
+            - '@attachment.manager'
+            - '@auth'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@passwords.manager'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.groups:
+        class: phpbb\acp\controller\groups
+        arguments:
+            - '@auth'
+            - '@avatar.manager'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@groupposition.legend'
+            - '@groupposition.teampage'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.help_phpbb:
+        class: phpbb\acp\controller\help_phpbb
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    acp.icons:
+        class: phpbb\acp\controller\icons
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@pagination'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@text_formatter.cache'
+            - '%core.root_path%'
+            - '%tables%'
+
+    acp.inactive:
+        class: phpbb\acp\controller\inactive
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.jabber:
+        class: phpbb\acp\controller\jabber
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.language:
+        class: phpbb\acp\controller\language
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@language.helper.language_file'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.logs:
+        class: phpbb\acp\controller\logs
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    acp.main:
+        class: phpbb\acp\controller\main
+        arguments:
+            - '@auth'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@filesystem'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@storage.avatar'
+            - '@template'
+            - '@text_formatter.cache'
+            - '@user'
+            - '@version_helper'
+            - '%allow_install_dir%'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.permission_roles:
+        class: phpbb\acp\controller\permission_roles
+        arguments:
+            - '@acp.auth_admin'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@acl.permissions'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.permissions:
+        class: phpbb\acp\controller\permissions
+        arguments:
+            - '@auth'
+            - '@acp.auth_admin'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@group_helper'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@acl.permissions'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.php_info:
+        class: phpbb\acp\controller\php_info
+        arguments:
+            - '@acp.controller.helper'
+            - '@template'
+
+    acp.profile:
+        class: phpbb\acp\controller\profile
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dbal.tools'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@profilefields.type_collection'
+            - '@profilefields.manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.prune:
+        class: phpbb\acp\controller\prune
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.ranks:
+        class: phpbb\acp\controller\ranks
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%tables%'
+
+    acp.reasons:
+        class: phpbb\acp\controller\reasons
+        arguments:
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables%'
+
+    acp.search:
+        class: phpbb\acp\controller\search
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@ext.manager'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.storage:
+        class: phpbb\acp\controller\storage
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@storage.provider_collection'
+            - '@request'
+            - '@storage.storage_collection'
+            - '@template'
+            - '@user'
+
+    acp.styles:
+        class: phpbb\acp\controller\styles
+        arguments:
+            - '@auth'
+            - '@cache.driver'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@text_formatter.cache'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.update:
+        class: phpbb\acp\controller\update
+        arguments:
+            - '@config'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@version_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    acp.users:
+        class: phpbb\acp\controller\users
+        arguments:
+            - '@attachment.manager'
+            - '@auth'
+            - '@acp.auth_admin'
+            - '@avatar.manager'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@pagination'
+            - '@passwords.manager'
+            - '@profilefields.manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    acp.words:
+        class: phpbb\acp\controller\words
+        arguments:
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@acp.controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@text_formatter.cache'
+            - '@user'
+            - '%tables%'

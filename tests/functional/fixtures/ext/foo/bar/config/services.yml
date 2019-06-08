@@ -10,11 +10,71 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    foo_bar.controller.admin:
+        class: foo\bar\controller\admin_controller
+        arguments:
+            - '@acp.controller.helper'
+            - '@language'
+
+    foo_bar.controller.user:
+        class: foo\bar\controller\user_controller
+        arguments:
+            - '@controller.helper'
+            - '@language'
+
     foo_bar.listener.permission:
         class: foo\bar\event\permission
         tags:
             - { name: event.listener }
+
     foo_bar.listener.user_setup:
         class: foo\bar\event\user_setup
         tags:
             - { name: event.listener }
+
+    # Menu items
+    acp_foo_bar_title:
+        tags: { name: acp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'ext_foo/bar'
+            $icon: ''
+            $parent: acp_cat_extensions
+            $route: acp_foo_bar_mode
+
+    acp_foo_bar_mode:
+        tags: { name: acp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'ext_foo/bar'
+            $icon: ''
+            $parent: acp_foo_bar_title
+            $route:
+                path: /foo/bar
+                defaults:
+                    _controller: foo_bar.controller.admin:main
+
+    ucp_foo_bar_title:
+        tags: { name: ucp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'ext_foo/bar'
+            $icon: ''
+            $parent: ''
+            $route: ucp_foo_bar_mode
+
+    ucp_foo_bar_mode:
+        tags: { name: ucp }
+        class: phpbb\cp\menu\item
+        shared: false
+        arguments:
+            $auth: 'ext_foo/bar'
+            $icon: ''
+            $parent: ucp_foo_bar_title
+            $route:
+                path: /foo/bar
+                defaults:
+                    _controller: foo_bar.controller.user:main

@@ -104,7 +104,6 @@ $lang = array_merge($lang, array(
 	'FORK_TOPICS_CONFIRM'	=> 'Are you sure you want to copy the selected topics?',
 	'FORUM_DESC'			=> 'Description',
 	'FORUM_NAME'			=> 'Forum name',
-	'FORUM_NOT_EXIST'		=> 'The forum you selected does not exist.',
 	'FORUM_NOT_POSTABLE'	=> 'The forum you selected cannot be posted to.',
 	'FORUM_STATUS'			=> 'Forum status',
 	'FORUM_STYLE'			=> 'Forum style',
@@ -213,9 +212,6 @@ $lang = array_merge($lang, array(
 
 	'MCP_WARN'				=> 'Warnings',
 	'MCP_WARN_FRONT'		=> 'Front page',
-	'MCP_WARN_LIST'			=> 'List warnings',
-	'MCP_WARN_POST'			=> 'Warn for specific post',
-	'MCP_WARN_USER'			=> 'Warn user',
 
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to move the selected posts?',
 	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can move selected posts into another topic. The posts will be split from this topic and merged into the other topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',
@@ -413,7 +409,7 @@ $lang = array_merge($lang, array(
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board warning issued',
 	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s .',
-	'NO_WARNINGS'	=> 'No warnings exist.',
+	'NO_WARNINGS'			=> 'No warnings exist.',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s.',
 

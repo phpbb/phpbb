@@ -155,7 +155,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> append_sid("phpBB/viewtopic.$phpEx", 'f=23&amp;t=56'),
 				'viewpost'			=> '',
-				'viewlogs'			=> append_sid("phpBB/mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=56'),
+				'viewlogs'			=> append_sid('phpBB/mod/logs/topic?t=56'),
 			),
 			7 => array(
 				'id'				=> 7,
@@ -411,8 +411,14 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				2	=> 'plural (%d)',
 			),
 		);
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
+		$controller_helper->expects($this->any())
+			->method('route')
+			->with($this->stringContains('mcp_logs_topic'),
+				$this->arrayHasKey('t'))
+			->will($this->returnValue('phpBB/mod/logs/topic?t=56'));
 
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$log = array();
 		$this->assertEquals($expected_returned, view_log($mode, $log, $log_count, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords));

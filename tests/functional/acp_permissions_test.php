@@ -29,7 +29,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// Permissions tab
 		// XXX hardcoded id
-		$crawler = self::request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/permissions?sid=' . $this->sid);
 		// these language strings are html
 		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}
@@ -37,7 +37,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	public function test_select_user()
 	{
 		// User permissions
-		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/permissions/global/user?sid=' . $this->sid);
 		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
 
 		// Select admin
@@ -61,7 +61,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 				'user permission',
 				'u_',
 				'u_hideonline',
-				'setting_user_global',
+				'global/user',
 				'user_id',
 				2,
 			),
@@ -69,20 +69,18 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 				'moderator permission',
 				'm_',
 				'm_ban',
-				'setting_mod_global',
+				'global/mod',
 				'group_id',
 				4,
 			),
-			/* Admin does not work yet, probably because founder can do everything
 			array(
 				'admin permission',
 				'a_',
 				'a_forum',
-				'setting_admin_global',
+				'global/admin',
 				'group_id',
 				5,
 			),
-			*/
 		);
 	}
 
@@ -92,7 +90,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	public function test_change_permission($description, $permission_type, $permission, $mode, $object_name, $object_id)
 	{
 		// Get the form
-		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
+		$crawler = self::request('GET', "app.php/admin/permissions/$mode?${object_name}[0]=$object_id&type=$permission_type&sid={$this->sid}");
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		// XXX globals for \phpbb\auth\auth, refactor it later
@@ -122,6 +120,8 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// XXX hardcoded id
 		$user_data = $auth->obtain_user_data(2);
 		$auth->acl($user_data);
-		$this->assertEquals(0, $auth->acl_get($permission));
+		// The user is a founder, therefore admin permissions are always set to YES.
+		// for admin permissions, so expect 1 there, 0 everywhere else.
+		$this->assertEquals((int) ($permission_type === 'a_'), $auth->acl_get($permission));
 	}
 }

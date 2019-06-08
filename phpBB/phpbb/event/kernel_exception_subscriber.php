@@ -44,21 +44,37 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*/
 	protected $language;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\acp\functions\controller */
+	protected $acp_functions;
+
 	/** @var \phpbb\request\type_cast_helper */
 	protected $type_caster;
 
 	/**
-	* Construct method
-	*
-	* @param \phpbb\template\template	$template	Template object
-	* @param \phpbb\language\language	$language	Language object
-	* @param bool						$debug		Set to true to show full exception messages
-	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\language\language $language, $debug = false)
+	 * Construct method
+	 *
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
+	 * @param \phpbb\acp\functions\controller	$acp_functions	ACP Controller functions object
+	 * @param bool								$debug			Set to true to show full exception messages
+	 */
+	public function __construct(
+		\phpbb\template\template $template,
+		\phpbb\language\language $language,
+		\phpbb\controller\helper $helper,
+		\phpbb\acp\functions\controller $acp_functions,
+		$debug = false
+	)
 	{
 		$this->debug = $debug || defined('DEBUG');
 		$this->template = $template;
 		$this->language = $language;
+		$this->helper = $helper;
+		$this->acp_functions = $acp_functions;
 		$this->type_caster = new \phpbb\request\type_cast_helper();
 	}
 
@@ -66,7 +82,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	* This listener is run when the KernelEvents::EXCEPTION event is triggered
 	*
 	* @param GetResponseForExceptionEvent $event
-	* @return null
+	* @return void
 	*/
 	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
@@ -89,24 +105,47 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
-			page_header($this->language->lang('INFORMATION'));
+			if (defined('IN_ADMIN'))
+			{
+				$this->acp_functions->adm_page_header($this->language->lang('INFORMATION'));
+			}
+			else
+			{
+				page_header($this->language->lang('INFORMATION'));
+			}
 
-			$this->template->assign_vars(array(
+			$message_back = '';
+
+			if ($exception instanceof \phpbb\exception\back_exception and $exception->get_route_name() !== '')
+			{
+				$u_back = $this->helper->route($exception->get_route_name(), $exception->get_route_params());
+				$message_back = $this->language->lang('RETURN_PAGE', '<a href="' . $u_back . '">', '</a>');
+			}
+
+			$this->template->assign_vars([
 				'MESSAGE_TITLE' => $this->language->lang('INFORMATION'),
 				'MESSAGE_TEXT'  => $message,
-			));
+				'MESSAGE_BACK'	=> $message_back,
+			]);
 
-			$this->template->set_filenames(array(
+			$this->template->set_filenames([
 				'body' => 'message_body.html',
-			));
+			]);
 
-			page_footer(true, false, false);
+			if (defined('IN_ADMIN'))
+			{
+				$this->acp_functions->adm_page_footer();
+			}
+			else
+			{
+				page_footer(true, false, false);
+			}
 
 			$response = new Response($this->template->assign_display('body'), 500);
 		}
 		else
 		{
-			$data = array();
+			$data = [];
 
 			if (!empty($message))
 			{
@@ -132,8 +171,8 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 	static public function getSubscribedEvents()
 	{
-		return array(
+		return [
 			KernelEvents::EXCEPTION		=> 'on_kernel_exception',
-		);
+		];
 	}
 }

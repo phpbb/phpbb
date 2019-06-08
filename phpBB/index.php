@@ -211,6 +211,9 @@ if ($show_birthdays)
 	$template->assign_block_vars_array('birthdays', $birthdays);
 }
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 // Add form token for login box
 add_form_key('login', '_LOGIN');
 
@@ -229,13 +232,13 @@ $template->assign_vars(array(
 	'FORUM_LOCKED_IMG'		=> $user->img('forum_read_locked', 'NO_UNREAD_POSTS_LOCKED'),
 	'FORUM_UNREAD_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'UNREAD_POSTS_LOCKED'),
 
-	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
-	'U_SEND_PASSWORD'           => ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
+	'S_LOGIN_ACTION'			=> $controller_helper->route('ucp_account', ['mode' => 'login']),
+	'U_SEND_PASSWORD'           => ($config['email_enable']) ? $controller_helper->route('ucp_account', ['mode' => 'send_password']) : '',
 	'S_DISPLAY_BIRTHDAY_LIST'	=> $show_birthdays,
 	'S_INDEX'					=> true,
 
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
-	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
+	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? $controller_helper->route('mcp_index', [], false, $user->session_id) : '')
 );
 
 $page_title = ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['INDEX'];

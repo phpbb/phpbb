@@ -116,14 +116,14 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->add_lang(array('acp/groups', 'acp/posting'));
 
 		// Set a group rank to the registered users
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_groups&mode=manage&action=edit&g=2");
+		$crawler = self::request('GET', 'app.php/admin/groups/manage/edit/2?sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$form['group_rank']->select('1');
 		$crawler = self::submit($form);
 		$this->assertContainsLang('GROUP_UPDATED', $crawler->filter('.successbox')->text());
 
 		// Set a rank image for site_admin
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_ranks&mode=ranks&action=edit&id=1");
+		$crawler = self::request('GET', 'app.php/admin/ranks?action=edit&id=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$form['rank_image']->select('valid.jpg');
 		$crawler = self::submit($form);

@@ -27,6 +27,7 @@ services:
         abstract: true
         arguments:
             - '@dbal.conn'
+            - '@controller.helper'
             - '@language'
             - '@user'
             - '@auth'
@@ -203,6 +204,7 @@ services:
         class: phpbb\notification\method\email
         shared: false
         arguments:
+            - '@controller.helper'
             - '@user_loader'
             - '@user'
             - '@config'
@@ -215,6 +217,7 @@ services:
         class: phpbb\notification\method\jabber
         shared: false
         arguments:
+            - '@controller.helper'
             - '@user_loader'
             - '@user'
             - '@config'

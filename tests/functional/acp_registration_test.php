@@ -36,15 +36,15 @@ class phpbb_functional_acp_registration_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=registration&sid=' . $this->sid);
-		$this->assertContainsLang('ACP_REGISTER_SETTINGS_EXPLAIN', $this->get_content());
+		$crawler = self::request('GET', 'app.php/admin/settings/registration?sid=' . $this->sid);
+		$this->assertContainsLang('ACP_SETTINGS_REGISTRATION_EXPLAIN', $this->get_content());
 
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['config[require_activation]']->select(USER_ACTIVATION_ADMIN);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('ACC_ACTIVATION_WARNING', $crawler->filter('div.main')->text());
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=registration&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/settings/registration?sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['config[require_activation]']->select(USER_ACTIVATION_NONE);
 		$crawler = self::submit($form);
