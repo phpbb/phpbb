@@ -118,7 +118,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function test_login()
 	{
 		$this->add_lang('ucp');
-		$crawler = self::request('GET', 'ucp.php');
+		$crawler = self::request('GET', 'app.php/user/index');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();

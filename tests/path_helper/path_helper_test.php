@@ -292,14 +292,14 @@ class phpbb_path_helper_test extends phpbb_test_case
 				array('base' => 'test.php', 'params' => array('topic' => 'post=5', 'f' => '3')),
 			),
 			array(
-				'mcp.php?&amp;t=4&amp;f=3',
+				'app.php/mod/forum?&amp;t=4&amp;f=3',
 				true,
-				array('base' => 'mcp.php', 'params' => array('t' => '4', 'f' => '3')),
+				array('base' => 'app.php/mod/forum', 'params' => array('t' => '4', 'f' => '3')),
 			),
 			array(
-				'mcp.php?=4&amp;f=3',
+				'app.php/mod/topic?=4&amp;f=3',
 				true,
-				array('base' => 'mcp.php', 'params' => array('f' => '3')),
+				array('base' => 'app.php/mod/topic', 'params' => array('f' => '3')),
 			),
 			array(
 				'index.php?ready',
