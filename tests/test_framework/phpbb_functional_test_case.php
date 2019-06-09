@@ -456,7 +456,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -486,7 +486,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -516,7 +516,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');

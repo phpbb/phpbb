@@ -346,7 +346,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			// Wait for extension to be fully enabled
 			while (count($meta_refresh))
 			{
-				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				preg_match('#url=.+/(app.+)#', $meta_refresh->getAttribute('content'), $match);
 				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
 				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
 			}
@@ -381,7 +381,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			// Wait for extension to be fully enabled
 			while (count($meta_refresh))
 			{
-				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				preg_match('#url=.+/(app.+)#', $meta_refresh->getAttribute('content'), $match);
 				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
 				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
 			}
@@ -416,7 +416,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			// Wait for extension to be fully enabled
 			while (count($meta_refresh))
 			{
-				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				preg_match('#url=.+/(app.+)#', $meta_refresh->getAttribute('content'), $match);
 				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
 				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
 			}
