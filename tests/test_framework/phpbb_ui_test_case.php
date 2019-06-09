@@ -219,6 +219,20 @@ class phpbb_ui_test_case extends phpbb_test_case
 			->without_compiled_container()
 			->get_container();
 
+		$loader = new \Symfony\Component\DependencyInjection\Loader\YamlFileLoader(
+			$container,
+			new \Symfony\Component\Config\FileLocator(
+				\phpbb\filesystem\helper::realpath($phpbb_root_path . 'config')
+			)
+		);
+		$loader->load('default/container/services_acp_menu.yml');
+		$loader->load('default/container/services_mcp_menu.yml');
+		$loader->load('default/container/services_ucp_menu.yml');
+		$container->register('cp.manager', '\\phpbb\\cp\\manager')->setArguments([
+			new \Symfony\Component\DependencyInjection\Reference('acp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('mcp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('ucp_collection'),
+		]);
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
 		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
