@@ -81,15 +81,6 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->add_lang('acp/extensions');
 	}
 
-	/** @todo goldy */
-	protected function get_url($action = '', $extension_name = '')
-	{
-		$action = $action ? "/$action" : '';
-		$extension_name = $extension_name ? "/$extension_name" : '';
-
-		return "app.php/admin/extensions/manage{$action}{$extension_name}?sid={$this->sid}";
-	}
-
 	public function test_list()
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
@@ -198,7 +189,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('.errorbox')->text());
 
 		// foo is not disabled (redirect to list)
-		$crawler = self::request('GET',  'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());

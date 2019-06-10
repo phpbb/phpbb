@@ -52,45 +52,4 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 		self::assert_response_xml();
 		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
 	}
-
-	/** @todo goldy
-	public function test_ucp()
-	{
-		$this->login();
-
-		$crawler = self::request('GET', 'app.php/user/index');
-		$this->assertGreaterThan(0, $crawler->filter('#tabs .tab')->count());
-		$this->assertEquals(1, $crawler->filter('#tabs .activetab')->count());
-
-		$this->assertGreaterThan(0, $crawler->filter('#navigation li')->count());
-		$this->assertEquals(1, $crawler->filter('#navigation #active-subsection')->count());
-	}
-
-	public function test_mcp()
-	{
-		$this->login();
-
-		$crawler = self::request('GET', 'app.php/mod/index');
-		$this->assertGreaterThan(0, $crawler->filter('#tabs .tab')->count());
-		$this->assertEquals(1, $crawler->filter('#tabs .activetab')->count());
-
-		$this->assertGreaterThan(0, $crawler->filter('#navigation li')->count());
-		$this->assertEquals(1, $crawler->filter('#navigation #active-subsection')->count());
-	}
-
-	public function test_acp()
-	{
-		$this->login();
-		$this->admin_login();
-
-		$crawler = self::request('GET', 'app.php/admin/index');
-		$this->assertGreaterThan(0, $crawler->filter('#tabs .tab')->count());
-		$this->assertEquals(1, $crawler->filter('#tabs .activetab')->count());
-
-		$this->assertGreaterThan(0, $crawler->filter('#menu .menu-block')->count());
-		$this->assertGreaterThan(0, $crawler->filter('#menu li')->count());
-		$this->assertEquals(1, $crawler->filter('#menu .menu-block.active')->count());
-		$this->assertEquals(1, $crawler->filter('#menu #activemenu')->count());
-	}
-	 */
 }
