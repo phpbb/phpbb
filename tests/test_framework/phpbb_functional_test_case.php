@@ -860,7 +860,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return;
 		}
 
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/index?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
