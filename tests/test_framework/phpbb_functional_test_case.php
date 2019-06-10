@@ -442,9 +442,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('%2F', '/', $extension);
+		$ext_path = str_replace('/', '%2F', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/enable_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -456,7 +456,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -472,9 +472,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('%2F', '/', $extension);
+		$ext_path = str_replace('/', '%2F', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/disable_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -486,7 +486,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -502,9 +502,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('%2F', '/', $extension);
+		$ext_path = str_replace('/', '%2F', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/delete_data_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -516,7 +516,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Wait for extension to be fully enabled
 		while (count($meta_refresh))
 		{
-			preg_match('#url=.+/(app.+)#', $meta_refresh->attr('content'), $match);
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
 			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -817,7 +817,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'app.php/user/index');
+		$crawler = self::request('GET', 'ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -840,7 +840,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'app.php/user/logout?sid=' . $this->sid);
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 	}
@@ -860,7 +860,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return;
 		}
 
-		$crawler = self::request('GET', 'app.php/admin/index?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
