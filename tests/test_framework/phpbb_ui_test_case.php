@@ -533,7 +533,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$this->getDriver()->manage()->deleteAllCookies();
 
-		$this->visit('app.php/admin/index?sid=' . $this->sid);
+		$this->visit('adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $this->getDriver()->getPageSource());
 
 		$this->find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);

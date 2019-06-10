@@ -31,24 +31,16 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		// Disable the logs
 		$skip_add_log = true;
 
-		$config = new \phpbb\config\config([]);
 		$db = $this->db = $this->new_dbal();
-		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $config, $this->db, $phpbb_root_path, $phpEx);
+		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = $this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$controller_helper = new phpbb_mock_controller_helper(
-			$this->createMock('\phpbb\template\template'),
-			$user,
-			$config,
-			$this->createMock('\phpbb\symfony_request'),
-			$this->createMock('\phpbb\request\request'),
-			$this->createMock('\phpbb\routing\helper')
-		);
 		$auth = $this->createMock('\phpbb\auth\auth');
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		// Correctly set the root path for this test to this directory, so the classes can be found

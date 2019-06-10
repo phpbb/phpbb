@@ -73,7 +73,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 				'group_id',
 				4,
 			),
-			/*
+			/* Admin does not work yet, probably because founder can do everything
 			array(
 				'admin permission',
 				'a_',
@@ -122,10 +122,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// XXX hardcoded id
 		$user_data = $auth->obtain_user_data(2);
 		$auth->acl($user_data);
-		// @todo goldy
 		$this->assertEquals(0, $auth->acl_get($permission));
-		// The user is a founder, therefore admin permissions are always set to YES.
-		// for admin permissions, so expect 1 there, 0 everywhere else.
-		// $this->assertEquals((int) ($permission_type === 'a_'), $auth->acl_get($permission));
 	}
 }

@@ -22,13 +22,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $root_url;
 	static protected $install_success = false;
 
-	/** @var \phpbb\cache\driver\file */
 	protected $cache = null;
-
-	/** @var \phpbb\db\driver\driver_interface */
 	protected $db = null;
-
-	/** @var \phpbb\extension\manager */
 	protected $extension_manager = null;
 
 	/**
@@ -197,9 +192,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
-	/**
-	 * @return \phpbb\db\driver\driver_interface
-	 */
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -322,6 +314,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			->without_compiled_container()
 			->get_container();
 
+		$container->register('cp.manager', '\\phpbb\\cp\\manager')->setArguments([
+			new \Symfony\Component\DependencyInjection\Reference('acp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('mcp_collection'),
+			new \Symfony\Component\DependencyInjection\Reference('ucp_collection'),
+		])->setSynthetic(true);
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
 		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
@@ -710,14 +707,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'\phpbb\datetime'
 		));
 		$auth = $this->createMock('\phpbb\auth\auth');
-		$controller_helper = new phpbb_mock_controller_helper(
-			$this->createMock('\phpbb\template\template'),
-			$user,
-			$config,
-			$this->createMock('\phpbb\symfony_request'),
-			$this->createMock('\phpbb\request\request'),
-			$this->createMock('\phpbb\routing\helper')
-		);
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
@@ -760,14 +750,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'\phpbb\datetime'
 		));
 		$auth = $this->createMock('\phpbb\auth\auth');
-		$controller_helper = new phpbb_mock_controller_helper(
-			$this->createMock('\phpbb\template\template'),
-			$user,
-			$config,
-			$this->createMock('\phpbb\symfony_request'),
-			$this->createMock('\phpbb\request\request'),
-			$this->createMock('\phpbb\routing\helper')
-		);
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
@@ -829,6 +812,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
+
 	}
 
 	/**
@@ -1400,6 +1384,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
-		return self::request('GET', substr($link, strpos($link, 'app.')));
+		return self::request('GET', substr($link, strpos($link, 'mcp.')));
 	}
 }

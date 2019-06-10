@@ -16,9 +16,6 @@
 */
 class phpbb_functional_jumpbox_test extends phpbb_functional_test_case
 {
-	/** @var Symfony\Component\DomCrawler\Crawler */
-	protected $crawler;
-
 	public function test_jumpbox()
 	{
 		$this->login();

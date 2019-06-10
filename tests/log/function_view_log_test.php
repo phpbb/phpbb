@@ -154,8 +154,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'viewforum'			=> append_sid("phpBB/viewforum.$phpEx", 'f=23'),
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> append_sid("phpBB/viewtopic.$phpEx", 'f=23&amp;t=56'),
-				'viewpost'			=> '',
-				'viewlogs'			=> append_sid('phpBB/mod/logs/topic?t=56'),
+				'viewpost'			=> false,
+				'viewlogs'			=> 'phpBB/mod/logs/topic?t=56'
 			),
 			7 => array(
 				'id'				=> 7,
@@ -414,8 +414,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$controller_helper->expects($this->any())
 			->method('route')
-			->with($this->stringContains('mcp_logs_topic'),
-				$this->arrayHasKey('t'))
+			->with($this->stringContains('mcp_logs_topic'), $this->arrayHasKey('t'))
 			->will($this->returnValue('phpBB/mod/logs/topic?t=56'));
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);

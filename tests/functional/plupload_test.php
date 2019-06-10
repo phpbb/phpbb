@@ -93,7 +93,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			$crawler = self::$client->request(
 				'POST',
-				self::$root_url . $url . '&sid=' . $this->sid,
+				$url . '&sid=' . $this->sid,
 				array(
 					'chunk' => $i,
 					'chunks' => self::CHUNKS,

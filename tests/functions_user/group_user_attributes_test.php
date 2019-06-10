@@ -144,16 +144,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 			->method('get')
 			->with('cache.driver')
 			->will($this->returnValue($cache_driver));
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$controller_helper = new phpbb_mock_controller_helper(
-			$this->createMock('\phpbb\template\template'),
-			new \phpbb\user($lang, '\phpbb\datetime'),
-			new \phpbb\config\config([]),
-			$this->createMock('\phpbb\symfony_request'),
-			$this->createMock('\phpbb\request\request'),
-			$this->createMock('\phpbb\routing\helper')
-		);
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		group_user_attributes('default', $group_id, array($user_id), false, 'group_name', $group_row);

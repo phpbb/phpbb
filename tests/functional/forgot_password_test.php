@@ -42,6 +42,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'ucp.php?mode=sendpassword');
 		$this->assertContains($this->lang('UCP_PASSWORD_RESET_DISABLED', '', ''), $crawler->text());
+
 	}
 
 	public function tearDown(): void

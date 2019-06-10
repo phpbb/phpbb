@@ -74,7 +74,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$this->login();
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET',  'ucp.php?i=ucp_notifications');
+		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications');
 
 		// At least one notification should exist
 		$this->assertGreaterThan(0, $crawler->filter('#notification-button strong')->text());
