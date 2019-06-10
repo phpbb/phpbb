@@ -47,7 +47,7 @@ class functional_permission_roles_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/permissions');
-		$crawler = self::request('GET', 'app.php/admin/permissions/forum?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&mode=setting_forum_local&sid=' . $this->sid);
 
 		// Select forums
 		$form = $crawler->filter('form[id=select_victim]')->form();
@@ -76,7 +76,7 @@ class functional_permission_roles_test extends phpbb_functional_test_case
 
 		$form_values = $form->getValues();
 		$form_values['action[apply_all_permissions]'] = true;
-		$crawler = self::request('POST', 'app.php/admin/permissions/forum?sid=' . $this->sid, $form_values);
+		$crawler = self::request('POST', 'adm/index.php?i=acp_permissions&mode=setting_forum_local&sid=' . $this->sid, $form_values);
 		$this->assertContainsLang('AUTH_UPDATED', $crawler->text());
 
 		$this->logout();

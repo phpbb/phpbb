@@ -24,23 +24,21 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$user_id = $this->create_user('reset-password-test-user', 'reset-password-test-user@test.com');
 
 		// test without email
-		$crawler = self::request('GET', 'app.php/user/send_password?sid=' . $this->sid);
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form();
-		$crawler = self::submit($form, [], false);
-		self::assert_response_html(400);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
 		// test with non-existent email
-		$crawler = self::request('GET', 'app.php/user/send_password?sid=' . $this->sid);
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'	=> 'non-existent@email.com',
 		));
-		$crawler = self::submit($form, [], false);
-		self::assert_response_html(404);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
 
 		// test with correct email
-		$crawler = self::request('GET', 'app.php/user/send_password?sid=' . $this->sid);
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> 'reset-password-test-user@test.com',
 		));
@@ -56,7 +54,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->create_user('reset-password-test-user1', 'reset-password-test-user@test.com');
 
 		// Test that username is now also required
-		$crawler = self::request('GET', 'app.php/user/send_password?sid=' . $this->sid);
+		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> 'reset-password-test-user@test.com',
 		));
@@ -93,32 +91,31 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function data_activate_new_password()
 	{
 		return array(
-			array('WRONG_ACTIVATION', 400, false, 'FOOBAR'),
-			array('ALREADY_ACTIVATED', 400, 2, 'FOOBAR'),
-			array('PASSWORD_ACTIVATED', 200, false, false),
-			array('ALREADY_ACTIVATED', 400, false, false),
+			array('WRONG_ACTIVATION', false, 'FOOBAR'),
+			array('ALREADY_ACTIVATED', 2, 'FOOBAR'),
+			array('PASSWORD_ACTIVATED', false, false),
+			array('ALREADY_ACTIVATED', false, false),
 		);
 	}
 
 	/**
 	* @dataProvider data_activate_new_password
 	*/
-	public function test_activate_new_password($expected, $status_code, $user_id, $act_key)
+	public function test_activate_new_password($expected, $user_id, $act_key)
 	{
 		$this->add_lang('ucp');
 		$this->get_user_data('reset-password-test-user');
 		$user_id = (!$user_id) ? $this->user_data['user_id'] : $user_id;
 		$act_key = (!$act_key) ? $this->user_data['user_actkey'] : $act_key;
 
-		$crawler = self::request('GET', "app.php/user/activate?u={$user_id}&k={$act_key}&sid={$this->sid}", [], false);
-		self::assert_response_html($status_code);
+		$crawler = self::request('GET', "ucp.php?mode=activate&u=$user_id&k=$act_key&sid={$this->sid}");
 		$this->assertContainsLang($expected, $crawler->text());
 	}
 
 	public function test_login()
 	{
 		$this->add_lang('ucp');
-		$crawler = self::request('GET', 'app.php/user/index');
+		$crawler = self::request('GET', 'ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -138,7 +135,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		$this->logout();
 
-		$crawler = self::request('GET', 'app.php/user/index');
+		$crawler = self::request('GET', 'ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
@@ -161,7 +158,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->add_lang('acp/users');
 
 		// Go to user account page
-		$crawler = self::request('GET', 'app.php/admin/users/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_users&mode=overview&sid=' . $this->sid);
 		$this->assertContainsLang('FIND_USERNAME', $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton('Submit')->form();
@@ -173,8 +170,8 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$crawler = self::submit($form, array('action' => 'active'));
 
 		$this->assertContainsLang('USER_ADMIN_DEACTIVED', $crawler->filter('html')->text());
-		$link = $crawler->selectLink('Return to the previous page')->link();
-		$crawler = self::request('GET', preg_replace('#(.+)(app\.php.+)#', '$2', $link->getUri()));
+		$link = $crawler->selectLink('Back to previous page')->link();
+		$crawler = self::request('GET', preg_replace('#(.+)(adm/index.php.+)#', '$2', $link->getUri()));
 
 		// Ensure again that actkey is empty after deactivation
 		$this->get_user_data('reset-password-test-user');

@@ -20,7 +20,7 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 {
 	public function get_url()
 	{
-		return 'app.php/admin/groups/manage/edit/5';
+		return 'adm/index.php?i=acp_groups&mode=manage&action=edit&g=5';
 	}
 
 	public function avatar_acp_groups_data()
@@ -77,7 +77,7 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 	// Test if avatar was really deleted
 	public function test_no_avatar_acp_groups()
 	{
-		$crawler = self::request('GET', $this->get_url() . '?sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form_data = $form->getValues();
 		$this->assertEmpty($form_data['avatar_type']);

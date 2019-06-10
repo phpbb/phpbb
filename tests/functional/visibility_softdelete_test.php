@@ -23,7 +23,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Soft Delete #1',
 		));
@@ -33,7 +33,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		));
 		$crawler = self::submit($form);
 
-		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Soft Delete #2',
 		));
@@ -50,7 +50,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->add_user_group("GLOBAL_MODERATORS", 'no m_delete moderator', true);
 
 		// Set m_delete to never
-		$crawler = self::request('GET', "app.php/admin/permissions/global/user?user_id[0]={$second_user}&type=m_&sid={$this->sid}");
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&user_id[0]=$second_user&type=m_&sid={$this->sid}");
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		$data = array("setting[$second_user][0][m_delete]" => ACL_NEVER);
 		$form->setValues($data);
@@ -681,7 +681,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #2 with bang'], 'MERGE_TOPIC', $crawler);
 		$this->assertContainsLang('SELECT_MERGE', $crawler->text());
 
-		$crawler = self::request('GET', "app.php/mod/forum?f={$this->data['forums']['Soft Delete #1']}&t={$this->data['topics']['Soft Delete Topic #2 with bang']}&action=merge_topic&to_topic_id={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+		$crawler = self::request('GET', "mcp.php?f={$this->data['forums']['Soft Delete #1']}&t={$this->data['topics']['Soft Delete Topic #2 with bang']}&i=main&mode=forum_view&action=merge_topic&to_topic_id={$this->data['topics']['Soft Delete Topic #1']}");
 		$this->assertContainsLang('MERGE_TOPICS_CONFIRM', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();

@@ -24,7 +24,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Prune Shadow',
 		));
@@ -105,7 +105,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 			),
 		));
 
-		$crawler = self::request('GET', "app.php/mod/forum?f={$this->data['forums']['Prune Shadow']}&action=move&start=0&topic_id_list[]={$this->data['topics']['Prune Shadow #1']}&sid={$this->sid}");
+		$crawler = self::request('GET', "mcp.php?f={$this->data['forums']['Prune Shadow']}&i=main&action=move&mode=forum_view&start=0&topic_id_list[]={$this->data['topics']['Prune Shadow #1']}&sid={$this->sid}");
 		$form = $crawler->selectButton('confirm')->form(array(
 			'to_forum_id'	=> 2,
 			'move_leave_shadow' => true,

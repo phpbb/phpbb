@@ -21,7 +21,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/settings/pm?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=board&mode=message");
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
@@ -54,7 +54,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/settings/pm?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=board&mode=message");
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();

@@ -20,7 +20,7 @@ class phpbb_functional_avatar_acp_users_test extends phpbb_functional_common_ava
 {
 	public function get_url()
 	{
-		return 'app.php/admin/users/manage/avatar/2';
+		return 'adm/index.php?i=acp_users&u=2&mode=avatar';
 	}
 
 	public function avatar_acp_users_data()

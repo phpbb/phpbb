@@ -23,7 +23,7 @@ class phpbb_functional_group_create_test extends phpbb_functional_test_case
 		$this->admin_login();
 		$this->add_lang('acp/groups');
 
-		$crawler = self::request('GET', 'app.php/admin/groups/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form, array('group_name' => 'testtest'));
 

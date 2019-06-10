@@ -195,7 +195,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 	protected function set_quote_depth($depth)
 	{
-		$crawler = self::request('GET', 'app.php/admin/settings/post?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 		$values['config[max_quote_depth]'] = $depth;
@@ -285,7 +285,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		);
 
 		// Update allowed schemes
-		$crawler = self::request('GET', 'app.php/admin/settings/post?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 		$values['config[allowed_schemes_links]'] = 'https,tcp';

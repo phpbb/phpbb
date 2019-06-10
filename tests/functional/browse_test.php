@@ -53,6 +53,7 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
 	}
 
+	/** @todo goldy
 	public function test_ucp()
 	{
 		$this->login();
@@ -91,4 +92,5 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 		$this->assertEquals(1, $crawler->filter('#menu .menu-block.active')->count());
 		$this->assertEquals(1, $crawler->filter('#menu #activemenu')->count());
 	}
+	 */
 }

@@ -23,7 +23,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Disapprove Test #1',
 		));
@@ -257,7 +257,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 
 	protected function set_flood_interval($flood_interval)
 	{
-		$crawler = self::request('GET', 'app.php/admin/settings/post?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();

@@ -21,7 +21,7 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 		$this->login();
 
-		$crawler = self::request('GET', 'app.php/user/profile?sid=' . $this->sid);
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
 		$this->assertContainsLang('UCP_PROFILE_PROFILE_INFO', $crawler->filter('#cp-main h2')->text());
 
 		$form = $crawler->selectButton('Submit')->form(array(
@@ -36,7 +36,7 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
 
-		$crawler = self::request('GET', 'app.php/user/profile?sid=' . $this->sid);
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
 		$form = $crawler->selectButton('Submit')->form();
 
 		$this->assertEquals('phpbb', $form->get('pf_phpbb_facebook')->getValue());

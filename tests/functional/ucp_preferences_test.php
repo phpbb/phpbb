@@ -21,8 +21,8 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 		$this->login();
 
-		$crawler = self::request('GET', 'app.php/user/settings/display?sid=' . $this->sid);
-		$this->assertContainsLang('UCP_SETTINGS_DISPLAY', $crawler->filter('#cp-main h2')->text());
+		$crawler = self::request('GET', 'ucp.php?i=ucp_prefs&mode=view');
+		$this->assertContainsLang('UCP_PREFS_VIEW', $crawler->filter('#cp-main h2')->text());
 
 		$form = $crawler->selectButton('Submit')->form(array(
 			'topic_sk'	=> 'a',
@@ -42,8 +42,8 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 		$this->login();
 
-		$crawler = self::request('GET', 'app.php/user/settings/display?sid=' . $this->sid);
-		$this->assertContainsLang('UCP_SETTINGS_DISPLAY', $crawler->filter('#cp-main h2')->text());
+		$crawler = self::request('GET', 'ucp.php?i=ucp_prefs&mode=view');
+		$this->assertContainsLang('UCP_PREFS_VIEW', $crawler->filter('#cp-main h2')->text());
 		$form = $crawler->selectButton('Submit')->form();
 
 		if (!method_exists($form, 'disableValidation'))
@@ -71,8 +71,8 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 		$this->login();
 
-		$crawler = self::request('GET', 'app.php/user/settings/display?sid=' . $this->sid);
-		$this->assertContainsLang('UCP_SETTINGS_DISPLAY', $crawler->filter('#cp-main h2')->text());
+		$crawler = self::request('GET', 'ucp.php?i=ucp_prefs&mode=view');
+		$this->assertContainsLang('UCP_PREFS_VIEW', $crawler->filter('#cp-main h2')->text());
 		$form = $crawler->selectButton('Submit')->form();
 
 		$this->assertEquals('a', $form->get('topic_sk')->getValue());

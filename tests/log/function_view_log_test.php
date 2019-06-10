@@ -155,7 +155,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> append_sid("phpBB/viewtopic.$phpEx", 'f=23&amp;t=56'),
 				'viewpost'			=> '',
-				'viewlogs'			=> append_sid('phpBB/mod/logs/topic?t=56'),
+				'viewlogs'			=> append_sid("phpBB/mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=56'),
 			),
 			7 => array(
 				'id'				=> 7,

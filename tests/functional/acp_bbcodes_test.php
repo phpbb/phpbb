@@ -22,7 +22,7 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		// Create the BBCode
-		$crawler = self::request('GET', 'app.php/admin/bbcodes?action=add&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_bbcodes&sid=' . $this->sid . '&mode=bbcodes&action=add');
 		$form = $crawler->selectButton('Submit')->form(array(
 			'bbcode_match' => '[mod="{TEXT1}"]{TEXT2}[/mod]',
 			'bbcode_tpl'   => '<div>{TEXT1}</div><div>{TEXT2}</div>'

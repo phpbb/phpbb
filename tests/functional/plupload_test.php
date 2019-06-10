@@ -137,7 +137,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		self::$client->setServerParameter('HTTP_X_PHPBB_USING_PLUPLOAD', '1');
 		self::$client->request(
 			'POST',
-			self::$root_url . $url . '&sid=' . $this->sid,
+			$url . '&sid=' . $this->sid,
 			array(
 				'chunk' => '0',
 				'chunks' => '1',

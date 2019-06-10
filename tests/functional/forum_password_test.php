@@ -21,7 +21,7 @@ class phpbb_functional_forum_password_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Password protected',
 		));

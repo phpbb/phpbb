@@ -27,7 +27,7 @@ class phpbb_functional_jumpbox_test extends phpbb_functional_test_case
 		$this->check_valid_jump('Your first forum');
 
 		$link = $this->crawler->filter('#jumpbox')->selectLink('Your first category')->link()->getUri();
-		$this->crawler = self::request('GET', substr($link, strpos($link, 'app.')));
+		$this->crawler = self::request('GET', substr($link, strpos($link, 'mcp.')));
 		$this->check_valid_jump('Your first category');
 	}
 

@@ -61,7 +61,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 
 		// logout
-		$crawler = self::request('GET', 'app.php/user/logout?sid=' . $this->sid);
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
 
 		// look for a register link, which should be visible only when logged out
 		$crawler = self::request('GET', 'index.php');
@@ -74,7 +74,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		// check that we are logged in
-		$crawler = self::request('GET', 'app.php/admin/index?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 	}
 }

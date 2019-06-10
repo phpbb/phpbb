@@ -40,7 +40,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
-		$crawler = self::request('GET', 'app.php/admin/settings/search?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
@@ -78,7 +78,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function create_search_index($backend = null)
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request('GET', 'app.php/admin/database/search?sid=' . $this->sid);
+		$crawler = self::request('GET',  'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
 		$form = $crawler->selectButton('Create index')->form();
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,
@@ -95,7 +95,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function delete_search_index()
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request('GET', 'app.php/admin/database/search?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
 		$form = $crawler->selectButton('Delete index')->form();
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,

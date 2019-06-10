@@ -39,7 +39,7 @@ class phpbb_functional_ucp_pm_test extends phpbb_functional_test_case
 
 	protected function set_allow_pm($enable_pm)
 	{
-		$crawler = self::request('GET', 'app.php/admin/settings/pm?sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=message');
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
