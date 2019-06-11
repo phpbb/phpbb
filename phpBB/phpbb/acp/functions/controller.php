@@ -153,7 +153,7 @@ class controller
 
 		$this->user->update_session_infos();
 
-		$this->cp_menu->build('acp');
+		#$this->cp_menu->build('acp');
 
 		// gzip_compression
 		if ($this->config['gzip_compress'])

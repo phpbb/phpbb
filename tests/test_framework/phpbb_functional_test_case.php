@@ -314,11 +314,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 			->without_compiled_container()
 			->get_container();
 
-		$container->register('cp.manager', '\\phpbb\\cp\\manager')->setArguments([
-			new \Symfony\Component\DependencyInjection\Reference('acp_collection'),
-			new \Symfony\Component\DependencyInjection\Reference('mcp_collection'),
-			new \Symfony\Component\DependencyInjection\Reference('ucp_collection'),
-		])->setSynthetic(true);
+	#	$container->register('cp.manager', '\\phpbb\\cp\\manager')->setArguments([
+	#		new \Symfony\Component\DependencyInjection\Reference('acp_collection'),
+	#		new \Symfony\Component\DependencyInjection\Reference('mcp_collection'),
+	#		new \Symfony\Component\DependencyInjection\Reference('ucp_collection'),
+	#	])->setSynthetic(true);
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
 		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
