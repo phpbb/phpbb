@@ -21,6 +21,9 @@ class auth
 	/** @var \phpbb\config\config  */
 	protected $config;
 
+	/** @var \phpbb\extension\manager */
+	protected $ext_manager;
+
 	/** @var \phpbb\request\request  */
 	protected $request;
 
@@ -36,9 +39,8 @@ class auth
 	{
 		$this->auth			= $auth;
 		$this->config		= $config;
+		$this->ext_manager	= $ext_manager;
 		$this->request		= $request;
-
-		$this->extensions	= array_keys($ext_manager->all_enabled());
 	}
 
 	/**
@@ -157,6 +159,11 @@ class auth
 
 				// Extension is enabled
 				case (preg_match('#ext_([a-zA-Z0-9_/]+)#', $token, $match) ? true : false):
+					if ($this->extensions === null)
+					{
+						$this->extensions = array_keys($this->ext_manager->all_enabled());
+					}
+
 					$token = (bool) in_array($match[1], $this->extensions);
 				break;
 
