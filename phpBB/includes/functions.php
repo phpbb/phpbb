@@ -4263,8 +4263,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$cp_menu = $phpbb_container->get('cp.menu');
 
 	// Make sure to call MCP first, to save a query in \phpbb\cp\helper\identifiers
-	$cp_menu->build('mcp');
-	$cp_menu->build('ucp');
+	# @todo goldy $cp_menu->build('mcp');
+	# @todo goldy $cp_menu->build('ucp');
 
 	// gzip_compression
 	if ($config['gzip_compress'])

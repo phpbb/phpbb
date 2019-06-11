@@ -89,6 +89,7 @@ class constructor
 	 */
 	public function setup($cp, $route)
 	{
+		/*
 		$collection = $this->cp_manager->get_collection($cp);
 
 		$item = $collection->offsetGet($route);
@@ -121,7 +122,7 @@ class constructor
 		while ($item !== null);
 
 		$this->cp_lang->load_cp_language_files($cp);
-
+*/
 		$this->get_constructor($cp)->setup();
 	}
 }
