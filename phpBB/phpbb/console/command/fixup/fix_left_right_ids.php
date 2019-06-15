@@ -75,7 +75,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$i = 1;
-			$where = array("module_class = '" . $this->db->sql_escape($row['module_class']) . "'");
+			$where = array("module_class = " . $this->db->sql_quote($row['module_class']));
 			$this->fix_ids_tree($i, 'module_id', MODULES_TABLE, 0, $where);
 		}
 		$this->db->sql_freeresult($result);

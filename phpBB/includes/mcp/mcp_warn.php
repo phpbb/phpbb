@@ -377,7 +377,7 @@ class mcp_warn
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 		$warning = $request->variable('warning', '', true);
 
-		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = " . $db->sql_quote(utf8_clean_string($username));
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '

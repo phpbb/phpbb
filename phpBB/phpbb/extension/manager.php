@@ -203,7 +203,7 @@ class manager
 
 		$sql = 'SELECT COUNT(ext_name) as row_count
 			FROM ' . $this->extension_table . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			WHERE ext_name = " . $this->db->sql_quote($name);
 		$result = $this->db->sql_query($sql);
 		$count = $this->db->sql_fetchfield('row_count');
 		$this->db->sql_freeresult($result);
@@ -212,7 +212,7 @@ class manager
 		{
 			$sql = 'UPDATE ' . $this->extension_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+				WHERE ext_name = " . $this->db->sql_quote($name);
 			$this->db->sql_query($sql);
 		}
 		else
@@ -283,7 +283,7 @@ class manager
 
 			$sql = 'UPDATE ' . $this->extension_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+				WHERE ext_name = " . $this->db->sql_quote($name);
 			$this->db->sql_query($sql);
 
 			if ($this->cache)
@@ -303,7 +303,7 @@ class manager
 
 		$sql = 'UPDATE ' . $this->extension_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			WHERE ext_name = " . $this->db->sql_quote($name);
 		$this->db->sql_query($sql);
 
 		if ($this->cache)
@@ -368,7 +368,7 @@ class manager
 
 			$sql = 'UPDATE ' . $this->extension_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $extension_data) . "
-				WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+				WHERE ext_name = " . $this->db->sql_quote($name);
 			$this->db->sql_query($sql);
 
 			if ($this->cache)
@@ -382,7 +382,7 @@ class manager
 		unset($this->extensions[$name]);
 
 		$sql = 'DELETE FROM ' . $this->extension_table . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
+			WHERE ext_name = " . $this->db->sql_quote($name);
 		$this->db->sql_query($sql);
 
 		if ($this->cache)

@@ -120,12 +120,12 @@ class reclean extends command
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$i++;
-			$username_clean = $this->db->sql_escape(utf8_clean_string($row['username']));
+			$username_clean = utf8_clean_string($row['username']);
 
 			if ($username_clean != $row['username_clean'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET username_clean = '$username_clean'
+					SET username_clean = " . $this->db->sql_quote($username_clean) . "
 					WHERE user_id = {$row['user_id']}";
 				$this->db->sql_query($sql);
 

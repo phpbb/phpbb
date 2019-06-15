@@ -55,7 +55,7 @@ class acp_disallow
 
 			$sql = 'SELECT disallow_id
 				FROM ' . DISALLOW_TABLE . "
-				WHERE disallow_username = '" . $db->sql_escape($disallowed_user) . "'";
+				WHERE disallow_username = " . $db->sql_quote($disallowed_user);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

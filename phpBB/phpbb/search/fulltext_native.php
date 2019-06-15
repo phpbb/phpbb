@@ -424,7 +424,7 @@ class fulltext_native extends \phpbb\search\base
 						$len = utf8_strlen(str_replace('*', '', $word_part));
 						if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
 						{
-							$id_words[] = '\'' . $this->db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+							$id_words[] = $this->db->sql_quote(str_replace('*', '%', $word_part));
 							$non_common_words[] = $word_part;
 						}
 						else
@@ -474,7 +474,7 @@ class fulltext_native extends \phpbb\search\base
 					$len = utf8_strlen(str_replace('*', '', $word));
 					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
 					{
-						$this->{$mode . '_ids'}[] = '\'' . $this->db->sql_escape(str_replace('*', '%', $word)) . '\'';
+						$this->{$mode . '_ids'}[] = $this->db->sql_quote(str_replace('*', '%', $word));
 					}
 					else
 					{

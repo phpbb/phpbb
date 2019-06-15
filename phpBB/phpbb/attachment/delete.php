@@ -448,7 +448,7 @@ class delete
 		// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
 		$sql = 'SELECT COUNT(attach_id) AS num_entries
 		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE physical_filename = '" . $this->db->sql_escape(utf8_basename($filename)) . "'";
+		WHERE physical_filename = " . $this->db->sql_quote(utf8_basename($filename));
 		$result = $this->db->sql_query($sql);
 		$num_entries = (int) $this->db->sql_fetchfield('num_entries');
 		$this->db->sql_freeresult($result);

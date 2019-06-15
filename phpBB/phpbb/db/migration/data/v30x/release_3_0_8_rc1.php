@@ -101,7 +101,7 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 
 					$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
 						SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . "
-						WHERE group_name = '" . $this->db->sql_escape($lang_val) . "'";
+						WHERE group_name = " . $this->db->sql_quote($lang_val);
 					$this->sql_query($sql);
 
 					$extension_groups_updated[$lang_key] = true;

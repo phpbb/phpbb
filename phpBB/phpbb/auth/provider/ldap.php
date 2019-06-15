@@ -200,7 +200,7 @@ class ldap extends \phpbb\auth\provider\base
 
 				$sql ='SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
+					WHERE username_clean = " . $this->db->sql_quote(utf8_clean_string($username));
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);

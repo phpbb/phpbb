@@ -589,7 +589,7 @@ function phpbb_convert_authentication($mode)
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+			WHERE group_name = " . $db->sql_quote('BOTS');
 		$result = $db->sql_query($sql);
 		$bot_group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);
@@ -1448,7 +1448,7 @@ function phpbb_attachment_extension_group_name()
 
 			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-					WHERE group_name = '" . $db->sql_escape($lang_val) . "'";
+					WHERE group_name = " . $db->sql_quote($lang_val);
 			$db->sql_query($sql);
 
 			$extension_groups_updated[$lang_key] = true;

@@ -190,7 +190,7 @@ class acp_bbcodes
 					{
 						$sql = 'SELECT 1 as test
 							FROM ' . BBCODES_TABLE . "
-							WHERE LOWER(bbcode_tag) = '" . $db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
+							WHERE LOWER(bbcode_tag) = " . $db->sql_quote(strtolower($data['bbcode_tag']));
 						$result = $db->sql_query($sql);
 						$info = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);

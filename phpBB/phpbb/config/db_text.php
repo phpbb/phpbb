@@ -98,8 +98,8 @@ class db_text
 		foreach ($map as $key => $value)
 		{
 			$sql = 'UPDATE ' . $this->table . "
-				SET config_value = '" . $this->db->sql_escape($value) . "'
-				WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+				SET config_value = " . $this->db->sql_quote($value) . "
+				WHERE config_name = " . $this->db->sql_quote($key);
 			$this->db->sql_query($sql);
 
 			if (!$this->db->sql_affectedrows())

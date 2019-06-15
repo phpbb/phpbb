@@ -223,7 +223,7 @@ class mssql_extractor extends base_extractor
 
 		$sql = "SELECT COLUMN_NAME, DATA_TYPE
 			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME = '" . $this->db->sql_escape($table_name) . "'";
+			WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME = " . $this->db->sql_quote($table_name);
 		$result_fields = $this->db->sql_query($sql);
 
 		$i_num_fields = 0;

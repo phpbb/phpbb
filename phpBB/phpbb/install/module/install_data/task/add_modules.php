@@ -510,8 +510,8 @@ class add_modules extends \phpbb\install\task_base
 		{
 			$sql = 'SELECT module_id, left_id, right_id
 				FROM ' . MODULES_TABLE . "
-				WHERE module_langname = '" . $this->db->sql_escape($cat_name) . "'
-					AND module_class = '" . $this->db->sql_escape($module_class) . "'";
+				WHERE module_langname = " . $this->db->sql_quote($cat_name) . "
+					AND module_class = " . $this->db->sql_quote($module_class);
 			$result = $this->db->sql_query_limit($sql, 1);
 			$row2 = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -520,8 +520,8 @@ class add_modules extends \phpbb\install\task_base
 			{
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_langname = '" . $this->db->sql_escape($mod_name) . "'
-						AND module_class = '" . $this->db->sql_escape($module_class) . "'
+					WHERE module_langname = " . $this->db->sql_quote($mod_name) . "
+						AND module_class = " . $this->db->sql_quote($module_class) . "
 						AND module_basename <> ''";
 				$result = $this->db->sql_query_limit($sql, 1);
 				$row = $this->db->sql_fetchrow($result);

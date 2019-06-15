@@ -70,7 +70,7 @@ function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver_interface
 		{
 			$sql = "UPDATE $table
 				SET $column = " . (int) $to_value . "
-				WHERE $column = '" . $db->sql_escape($from_value) . "'";
+				WHERE $column = " . $db->sql_quote($from_value);
 			$queries[] = $sql;
 		}
 		else
@@ -80,7 +80,7 @@ function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver_interface
 			{
 				$sql = "UPDATE $table
 					SET $column = " . (int) $to_value . "
-					WHERE $column = '" . $db->sql_escape($from_value) . "'
+					WHERE $column = " . $db->sql_quote($from_value) . "
 					AND " . $db->sql_in_set('user_id', $different_user_ids);
 				$queries[] = $sql;
 			}
@@ -161,7 +161,7 @@ function phpbb_update_rows_avoiding_duplicates_notify_status(\phpbb\db\driver\dr
 			{
 				$sql = "UPDATE $table
 					SET $column = " . (int) $to_value . "
-					WHERE $column = '" . $db->sql_escape($from_value) . "'";
+					WHERE $column = " . $db->sql_quote($from_value);
 				$queries[] = $sql;
 			}
 			else
@@ -171,7 +171,7 @@ function phpbb_update_rows_avoiding_duplicates_notify_status(\phpbb\db\driver\dr
 				{
 					$sql = "UPDATE $table
 						SET $column = " . (int) $to_value . "
-						WHERE $column = '" . $db->sql_escape($from_value) . "'
+						WHERE $column = " . $db->sql_quote($from_value) . "
 						AND " . $db->sql_in_set('user_id', $different_user_ids);
 					$queries[] = $sql;
 				}

@@ -39,7 +39,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$row['user_sig'] = preg_replace('/\:[0-9a-z]{8}\]/', ":$bbcode_uid]", $row['user_sig']);
 
-		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = '" . $db->sql_escape($row['user_sig']) . "'
+		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = " . $db->sql_quote($row['user_sig']) . "
 			WHERE user_id = " . $row['user_id'];
 		$db->sql_query($sql);
 
@@ -73,7 +73,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$row['post_text'] = preg_replace('/\:[0-9a-z]{8}\]/', ":$bbcode_uid]", $row['post_text']);
 		
-		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = '" . $db->sql_escape($row['post_text']) . "'
+		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = " . $db->sql_quote($row['post_text']) . "
 			WHERE post_id = " . $row['post_id'];
 		$db->sql_query($sql);
 
@@ -105,7 +105,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$row['message_text'] = preg_replace('/\:[0-9a-z]{8}\]/', ":$bbcode_uid]", $row['message_text']);
 		
-		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET message_text = '" . $db->sql_escape($row['message_text']) . "'
+		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET message_text = " . $db->sql_quote($row['message_text']) . "
 			WHERE msg_id = " . $row['msg_id'];
 		$db->sql_query($sql);
 

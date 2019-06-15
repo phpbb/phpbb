@@ -119,8 +119,8 @@ class token_storage implements TokenStorageInterface
 		$sql = 'UPDATE ' . $this->oauth_token_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $data) . '
 				WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-					' . ((int) $this->user->data['user_id'] === ANONYMOUS ? "AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'" : '') . "
-					AND provider = '" . $this->db->sql_escape($service) . "'";
+					' . ((int) $this->user->data['user_id'] === ANONYMOUS ? "AND session_id = " . $this->db->sql_quote($this->user->data['session_id']) : '') . "
+					AND provider = " . $this->db->sql_quote($service);
 		$this->db->sql_query($sql);
 
 		if (!$this->db->sql_affectedrows())
@@ -176,11 +176,11 @@ class token_storage implements TokenStorageInterface
 
 		$sql = 'DELETE FROM ' . $this->oauth_token_table . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'] . "
-				AND provider = '" . $this->db->sql_escape($service) . "'";
+				AND provider = " . $this->db->sql_quote($service);
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
-			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+			$sql .= " AND session_id = " . $this->db->sql_quote($this->user->data['session_id']);
 		}
 
 		$this->db->sql_query($sql);
@@ -200,7 +200,7 @@ class token_storage implements TokenStorageInterface
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
-			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+			$sql .= " AND session_id = " . $this->db->sql_quote($this->user->data['session_id']);
 		}
 
 		$this->db->sql_query($sql);
@@ -292,11 +292,11 @@ class token_storage implements TokenStorageInterface
 
 		$sql = 'DELETE FROM ' . $this->oauth_state_table . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'] . "
-				AND provider = '" . $this->db->sql_escape($service) . "'";
+				AND provider = " . $this->db->sql_quote($service);
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
-			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+			$sql .= " AND session_id = " . $this->db->sql_quote($this->user->data['session_id']);
 		}
 
 		$this->db->sql_query($sql);
@@ -316,7 +316,7 @@ class token_storage implements TokenStorageInterface
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
-			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+			$sql .= " AND session_id = " . $this->db->sql_quote($this->user->data['session_id']);
 		}
 
 		$this->db->sql_query($sql);
@@ -341,7 +341,7 @@ class token_storage implements TokenStorageInterface
 					'user_id' => (int) $user_id
 				)) . '
 				WHERE user_id = ' . (int) $this->user->data['user_id'] . "
-					AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+					AND session_id = " . $this->db->sql_quote($this->user->data['session_id']);
 		$this->db->sql_query($sql);
 	}
 

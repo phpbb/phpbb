@@ -417,7 +417,7 @@ class acp_bots
 		// Admins might want to use names otherwise forbidden, thus we only check for duplicates.
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($newname)) . "'";
+			WHERE username_clean = " . $db->sql_quote(utf8_clean_string($newname));
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

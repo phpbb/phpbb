@@ -268,8 +268,8 @@ abstract class captcha_abstract
 				'code'			=> (string) $this->code,
 				'seed'			=> (int) $this->seed)) . '
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\'
-					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
+				confirm_id = ' . $db->sql_quote($this->confirm_id) . '
+					AND session_id = ' . $db->sql_quote($user->session_id);
 		$db->sql_query($sql);
 	}
 
@@ -291,8 +291,8 @@ abstract class captcha_abstract
 				'seed'			=> (int) $this->seed)) . '
 				, attempts = attempts + 1
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\'
-					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
+				confirm_id = ' . $db->sql_quote($this->confirm_id) . '
+					AND session_id = ' . $db->sql_quote($user->session_id);
 		$db->sql_query($sql);
 	}
 
@@ -305,8 +305,8 @@ abstract class captcha_abstract
 
 		$sql = 'SELECT code, seed, attempts
 			FROM ' . CONFIRM_TABLE . "
-			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
+			WHERE confirm_id = " . $db->sql_quote($this->confirm_id) . "
+				AND session_id = " . $db->sql_quote($user->session_id) . "
 				AND confirm_type = " . $this->type;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -338,7 +338,7 @@ abstract class captcha_abstract
 		global $db, $user;
 
 		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+			WHERE session_id = " . $db->sql_quote($user->session_id) . "
 				AND confirm_type = " . (int) $this->type;
 		$db->sql_query($sql);
 

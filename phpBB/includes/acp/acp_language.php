@@ -216,8 +216,8 @@ class acp_language
 					$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
-						SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
-						WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
+						SET user_lang = " . $db->sql_quote($config['default_lang']) . "
+						WHERE user_lang = " . $db->sql_quote($row['lang_iso']);
 					$db->sql_query($sql);
 
 					// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
@@ -282,7 +282,7 @@ class acp_language
 
 				$sql = 'SELECT lang_iso
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
+					WHERE lang_iso = " . $db->sql_quote($lang_iso);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -312,7 +312,7 @@ class acp_language
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+					WHERE lang_iso = " . $db->sql_quote($config['default_lang']);
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);

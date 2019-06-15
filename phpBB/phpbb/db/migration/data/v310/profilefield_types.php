@@ -56,8 +56,8 @@ class profilefield_types extends \phpbb\db\migration\migration
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "profile_fields
-				SET field_type = '" . $this->db->sql_escape($this->convert_phpbb30_field_type($row['field_type'])) . "'
-				WHERE field_type = '" . $this->db->sql_escape($row['field_type']) . "'";
+				SET field_type = " . $this->db->sql_quote($this->convert_phpbb30_field_type($row['field_type'])) . "
+				WHERE field_type = " . $this->db->sql_quote($row['field_type']);
 			$this->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
@@ -74,8 +74,8 @@ class profilefield_types extends \phpbb\db\migration\migration
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "profile_fields_lang
-				SET field_type = '" . $this->db->sql_escape($this->convert_phpbb30_field_type($row['field_type'])) . "'
-				WHERE field_type = '" . $this->db->sql_escape($row['field_type']) . "'";
+				SET field_type = " . $this->db->sql_quote($this->convert_phpbb30_field_type($row['field_type'])) . "
+				WHERE field_type = " . $this->db->sql_quote($row['field_type']);
 			$this->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);

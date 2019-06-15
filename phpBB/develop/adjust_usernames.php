@@ -27,7 +27,7 @@ $result = $db->sql_query($sql);
 while ($row = $db->sql_fetchrow($result))
 {
 	$sql = 'UPDATE ' . USERS_TABLE . "
-		SET username_clean = '" . $db->sql_escape(utf8_clean_string($row['username'])) . "'
+		SET username_clean = " . $db->sql_quote(utf8_clean_string($row['username'])) . "
 		WHERE user_id = " . $row['user_id'];
 	$db->sql_query($sql);
 

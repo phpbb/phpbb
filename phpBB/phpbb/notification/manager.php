@@ -667,10 +667,10 @@ class manager
 
 		$sql = 'SELECT notify
 			FROM ' . $this->user_notifications_table . "
-			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+			WHERE item_type = " . $this->db->sql_quote($item_type) . "
 				AND item_id = " . (int) $item_id . '
 				AND user_id = ' .(int) $user_id . "
-				AND method = '" . $this->db->sql_escape($method) . "'";
+				AND method = " . $this->db->sql_quote($method);
 		$this->db->sql_query($sql);
 		$current = $this->db->sql_fetchfield('notify');
 		$this->db->sql_freeresult();
@@ -691,10 +691,10 @@ class manager
 		{
 			$sql = 'UPDATE ' . $this->user_notifications_table . "
 				SET notify = 1
-				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+				WHERE item_type = " . $this->db->sql_quote($item_type) . "
 					AND item_id = " . (int) $item_id . '
 					AND user_id = ' .(int) $user_id . "
-					AND method = '" . $this->db->sql_escape($method) . "'";
+					AND method = " . $this->db->sql_quote($method);
 			$this->db->sql_query($sql);
 		}
 	}
@@ -723,10 +723,10 @@ class manager
 
 		$sql = 'UPDATE ' . $this->user_notifications_table . "
 			SET notify = 0
-			WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
+			WHERE item_type = " . $this->db->sql_quote($item_type) . "
 				AND item_id = " . (int) $item_id . '
 				AND user_id = ' .(int) $user_id . "
-				AND method = '" . $this->db->sql_escape($method) . "'";
+				AND method = " . $this->db->sql_quote($method);
 		$this->db->sql_query($sql);
 
 		if (!$this->db->sql_affectedrows())
@@ -756,7 +756,7 @@ class manager
 	{
 		$sql = 'UPDATE ' . $this->notification_types_table . "
 			SET notification_type_enabled = 0
-			WHERE notification_type_name = '" . $this->db->sql_escape($notification_type_name) . "'";
+			WHERE notification_type_name = " . $this->db->sql_quote($notification_type_name);
 		$this->db->sql_query($sql);
 	}
 
@@ -806,7 +806,7 @@ class manager
 	{
 		$sql = 'UPDATE ' . $this->notification_types_table . "
 			SET notification_type_enabled = 1
-			WHERE notification_type_name = '" . $this->db->sql_escape($notification_type_name) . "'";
+			WHERE notification_type_name = " . $this->db->sql_quote($notification_type_name);
 		$this->db->sql_query($sql);
 	}
 

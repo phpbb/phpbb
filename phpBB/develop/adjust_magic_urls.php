@@ -43,7 +43,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($new_content != $row['user_sig'])
 	{
-		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = '" . $db->sql_escape($new_content) . "'
+		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = " . $db->sql_quote($new_content) . "
 			WHERE user_id = " . $row['user_id'];
 		$db->sql_query($sql);
 
@@ -73,7 +73,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['post_text'] != $new_content)
 	{
-		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = '" . $db->sql_escape($new_content) . "'
+		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = " . $db->sql_quote($new_content) . "
 			WHERE post_id = " . $row['post_id'];
 		$db->sql_query($sql);
 
@@ -102,7 +102,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['message_text'] != $new_content)
 	{
-		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET bbcode_bitfield = '" . $db->sql_escape($new_content) . "'
+		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET bbcode_bitfield = " . $db->sql_quote($new_content) . "
 			WHERE msg_id = " . $row['msg_id'];
 		$db->sql_query($sql);
 

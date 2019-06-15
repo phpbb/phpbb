@@ -98,7 +98,7 @@ class db extends \phpbb\config\config
 	public function delete($key, $use_cache = true)
 	{
 		$sql = 'DELETE FROM ' . $this->table . "
-			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+			WHERE config_name = " . $this->db->sql_quote($key);
 		$this->db->sql_query($sql);
 
 		unset($this->config[$key]);
@@ -137,12 +137,12 @@ class db extends \phpbb\config\config
 	public function set_atomic($key, $old_value, $new_value, $use_cache = true)
 	{
 		$sql = 'UPDATE ' . $this->table . "
-			SET config_value = '" . $this->db->sql_escape($new_value) . "'
-			WHERE config_name = '" . $this->db->sql_escape($key) . "'";
+			SET config_value = " . $this->db->sql_quote($new_value) . "
+			WHERE config_name = " . $this->db->sql_quote($key);
 
 		if ($old_value !== false)
 		{
-			$sql .= " AND config_value = '" . $this->db->sql_escape($old_value) . "'";
+			$sql .= " AND config_value = " . $this->db->sql_quote($old_value);
 		}
 
 		$this->db->sql_query($sql);
@@ -192,7 +192,7 @@ class db extends \phpbb\config\config
 
 		$this->db->sql_query('UPDATE ' . $this->table . '
 			SET config_value = ' . $sql_update . "
-			WHERE config_name = '" . $this->db->sql_escape($key) . "'");
+			WHERE config_name = " . $this->db->sql_quote($key));
 
 		if ($use_cache)
 		{

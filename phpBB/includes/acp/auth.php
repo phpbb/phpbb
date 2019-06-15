@@ -340,7 +340,7 @@ class auth_admin extends \phpbb\auth\auth
 		// Get available roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = " . $db->sql_quote($permission_type) . "
 			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 
@@ -880,7 +880,7 @@ class auth_admin extends \phpbb\auth\auth
 		// Remove those having a role assigned... the correct type of course...
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($flag) . "'";
+			WHERE role_type = " . $db->sql_quote($flag);
 		$result = $db->sql_query($sql);
 
 		$role_ids = array();
@@ -1313,7 +1313,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_permissions = '" . $db->sql_escape($user_permissions) . "',
+			SET user_permissions = " . $db->sql_quote($user_permissions) . ",
 				user_perm_from = $from_user_id
 			WHERE user_id = " . $to_user_id;
 		$db->sql_query($sql);

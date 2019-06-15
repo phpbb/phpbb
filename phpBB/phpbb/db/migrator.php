@@ -602,7 +602,7 @@ class migrator
 			if (!$state['migration_schema_done'])
 			{
 				$sql = 'DELETE FROM ' . $this->migrations_table . "
-					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+					WHERE migration_name = " . $this->db->sql_quote($name);
 				$this->db->sql_query($sql);
 
 				$this->last_run_migration = false;
@@ -841,7 +841,7 @@ class migrator
 		{
 			$sql = 'UPDATE ' . $this->migrations_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $migration_row) . "
-				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+				WHERE migration_name = " . $this->db->sql_quote($name);
 			$this->db->sql_query($sql);
 		}
 		else
