@@ -181,10 +181,9 @@ class messenger
 	/**
 	* Adds X-AntiAbuse headers
 	*
-	* @param array $config		Configuration array
-	* @param user $user			A user object
-	*
-	* @return null
+	* @param \phpbb\config\config	$config		Config object
+	* @param \phpbb\user			$user		User object
+	* @return void
 	*/
 	function anti_abuse_headers($config, $user)
 	{
