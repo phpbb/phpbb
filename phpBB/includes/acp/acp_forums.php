@@ -986,6 +986,13 @@ class acp_forums
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
+		// No Emojis
+		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
+		{
+			$character_list = implode('<br>', $matches[0]);
+			$errors[] = $user->lang('FORUM_NAME_EMOJI', $character_list);
+		}
+
 		if (utf8_strlen($forum_data_ary['forum_desc']) > 4000)
 		{
 			$errors[] = $user->lang['FORUM_DESC_TOO_LONG'];
