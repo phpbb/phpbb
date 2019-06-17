@@ -71,9 +71,10 @@ interface provider_interface
 	 * options with whatever configuraton values are passed to it as an array.
 	 * It then returns the name of the acp file related to this authentication
 	 * provider.
-	 * @param	array	$new_config Contains the new configuration values that
-	 *								have been set in acp_board.
-	 * @return	array|null		Returns null if not implemented or an array with
+	 *
+	 * @param \phpbb\config\config	$new_config	Contains the new configuration values
+	 * 											that have been set in acp_board.
+	 * @return array|null		Returns null if not implemented or an array with
 	 *							the template file name and an array of the vars
 	 *							that the template needs that must conform to the
 	 *							following example:
