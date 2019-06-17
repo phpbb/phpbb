@@ -97,6 +97,7 @@ $lang = array_merge($lang, array(
 	'FORUM_LINK_TRACK_EXPLAIN'			=> 'Records the number of times a forum link was clicked.',
 	'FORUM_NAME'						=> 'Forum name',
 	'FORUM_NAME_EMPTY'					=> 'You must enter a name for this forum.',
+	'FORUM_NAME_EMOJI'					=> 'The forum name you entered is invalid.<br>It contains the following unsupported characters:<br>%s',
 	'FORUM_PARENT'						=> 'Parent forum',
 	'FORUM_PASSWORD'					=> 'Forum password',
 	'FORUM_PASSWORD_CONFIRM'			=> 'Confirm forum password',
