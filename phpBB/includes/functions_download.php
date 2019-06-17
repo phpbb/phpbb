@@ -196,7 +196,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Now the tricky part... let's dance
-	header('Cache-Control: public');
+	header('Cache-Control: private');
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
@@ -451,7 +451,7 @@ function set_modified_headers($stamp, $browser)
 		{
 			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
-			header('Cache-Control: public');
+			header('Cache-Control: private');
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 			return true;
 		}
