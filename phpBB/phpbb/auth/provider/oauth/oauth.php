@@ -264,7 +264,7 @@ class oauth extends \phpbb\auth\provider\base
 			}
 
 			// Retrieve the user's account
-			$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type, user_login_attempts
+			$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_ip, user_type, user_login_attempts
 				FROM ' . $this->users_table . '
 					WHERE user_id = ' . (int) $row['user_id'];
 			$result = $this->db->sql_query($sql);
