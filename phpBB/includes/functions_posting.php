@@ -1274,6 +1274,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				delete_topics('topic_id', array($topic_id), false);
 
 				$phpbb_content_visibility->remove_topic_from_statistic($data, $sql_data);
+				$config->increment('num_posts', -1, false);
 
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (count($update_sql))
