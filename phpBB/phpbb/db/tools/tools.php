@@ -576,7 +576,7 @@ class tools implements tools_interface
 			{
 				foreach ($indexes as $index_name)
 				{
-					if (!$this->sql_index_exists($table, $index_name))
+					if (!$this->sql_index_exists($table, $index_name) && !$this->sql_unique_index_exists($table, $index_name))
 					{
 						continue;
 					}
