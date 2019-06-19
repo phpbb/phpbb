@@ -11,6 +11,7 @@
 *
 */
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Exception\WebDriverCurlException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
