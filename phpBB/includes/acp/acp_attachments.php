@@ -1253,7 +1253,6 @@ class acp_attachments
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
 						'REAL_FILENAME'		=> (!$row['in_message']) ? utf8_basename((string) $row['real_filename']) : '',
 						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
-						'EXT_GROUP_NAME'	=> $ext_group_name,
 						'EXT_GROUP_NAME'	=> $this->lang->is_set('EXT_GROUP_' . $up_group_name) ?  $this->lang->lang('EXT_GROUP_' . $up_group_name) : $extensions[$row['extension']]['group_name'],
 						'COMMENT'			=> $comment,
 						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
