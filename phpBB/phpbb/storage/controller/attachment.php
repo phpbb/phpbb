@@ -243,6 +243,9 @@ class attachment extends controller
 		);
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
+		// TODO: The next lines should go better in prepare, also the mimetype is handled by the storage table
+		// so probably can be removed
+
 		// Content-type header
 		$this->response->headers->set('Content-Type', $attachment['mimetype']);
 
@@ -276,9 +279,9 @@ class attachment extends controller
 	 */
 	protected function prepare($file)
 	{
-		parent::prepare($file);
+		$this->response->setPivate();	// But default should be private, but make sure of it
 
-		$this->response->setPivate();
+		parent::prepare($file);
 	}
 
 	/**
@@ -405,6 +408,7 @@ class attachment extends controller
 
 	/**
 	 * Check if downloading item is allowed
+	 * FIXME (See: https://tracker.phpbb.com/browse/PHPBB3-15264 and http://area51.phpbb.com/phpBB/viewtopic.php?f=81&t=51921)
 	 */
 	protected function download_allowed()
 	{

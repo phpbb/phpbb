@@ -119,8 +119,6 @@ class controller
 	 */
 	protected function prepare($file)
 	{
-		$this->response->setPublic();
-
 		$file_info = $this->storage->file_info($file);
 
 		if (!$this->response->headers->has('Content-Type'))

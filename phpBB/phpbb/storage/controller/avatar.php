@@ -96,6 +96,8 @@ class avatar extends controller
 	 */
 	protected function prepare($file)
 	{
+		$this->response->setPublic();
+
 		$disposition = $this->response->headers->makeDisposition(
 			ResponseHeaderBag::DISPOSITION_INLINE,
 			rawurlencode($file)
