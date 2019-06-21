@@ -424,8 +424,17 @@
 	<!-- BEGIN attachments -->
 		<tr>
 			<td>
-				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
-				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
+				<!-- IF ! attachments.S_IN_MESSAGE -->{# File info of attachments in private messages is hidden #}
+					<a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br />
+					{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />
+				<!-- ENDIF -->
+				{attachments.L_DOWNLOAD_COUNT}<br />
+				<!-- IF attachments.S_IN_MESSAGE -->
+					{L_IN} {L_PRIVATE_MESSAGE}
+					<!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->
+				<!-- ELSE -->
+					{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a>
+				<!-- ENDIF -->
 			</td>
 			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
 			<td class="centered-text">{attachments.FILESIZE}</td>
