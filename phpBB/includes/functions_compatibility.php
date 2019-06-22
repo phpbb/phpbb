@@ -894,17 +894,14 @@ function parse_cfg_file($filename, $lines = false)
 {
 	$parsed_items = array();
 
-	if ($lines === false)
-	{
+	if ($lines === false) {
 		$lines = file($filename);
 	}
 
-	foreach ($lines as $line)
-	{
+	foreach ($lines as $line) {
 		$line = trim($line);
 
-		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
-		{
+		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false) {
 			continue;
 		}
 
@@ -912,34 +909,97 @@ function parse_cfg_file($filename, $lines = false)
 		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))), ENT_COMPAT);
 		$value = trim(substr($line, $delim_pos + 1));
 
-		if (in_array($value, array('off', 'false', '0')))
-		{
+		if (in_array($value, array('off', 'false', '0'))) {
 			$value = false;
-		}
-		else if (in_array($value, array('on', 'true', '1')))
-		{
+		} else if (in_array($value, array('on', 'true', '1'))) {
 			$value = true;
-		}
-		else if (!trim($value))
-		{
+		} else if (!trim($value)) {
 			$value = '';
-		}
-		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
-		{
-			$value = htmlspecialchars(substr($value, 1, strlen($value)-2), ENT_COMPAT);
-		}
-		else
-		{
+		} else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"')) {
+			$value = htmlspecialchars(substr($value, 1, strlen($value) - 2), ENT_COMPAT);
+		} else {
 			$value = htmlspecialchars($value, ENT_COMPAT);
 		}
 
 		$parsed_items[$key] = $value;
 	}
 
-	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
-	{
+	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name']) {
 		unset($parsed_items['parent']);
 	}
 
 	return $parsed_items;
+}
+
+/**
+* Wraps an url into a simple html page. Used to display attachments in IE.
+* this is a workaround for now; might be moved to template system later
+* direct any complaints to 1 Microsoft Way, Redmond
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
+*/
+function wrap_img_in_html($src, $title)
+{
+	echo '<!DOCTYPE html>';
+	echo '<html>';
+	echo '<head>';
+	echo '<meta charset="utf-8">';
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+	echo '<title>' . $title . '</title>';
+	echo '</head>';
+	echo '<body>';
+	echo '<div>';
+	echo '<img src="' . $src . '" alt="' . $title . '" />';
+	echo '</div>';
+	echo '</body>';
+	echo '</html>';
+}
+
+/**
+* Garbage Collection
+*
+* @param bool $exit		Whether to die or not.
+*
+* @return null
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
+*/
+function file_gc($exit = true)
+{
+	global $cache, $db;
+
+	if (!empty($cache))
+	{
+		$cache->unload();
+	}
+
+	$db->sql_close();
+
+	if ($exit)
+	{
+		exit;
+	}
+}
+
+/**
+* Check if the browser is internet explorer version 7+
+*
+* @param string $user_agent	User agent HTTP header
+* @param int $version IE version to check against
+*
+* @return bool true if internet explorer version is greater than $version
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
+*/
+function phpbb_is_greater_ie_version($user_agent, $version)
+{
+	if (preg_match('/msie (\d+)/', strtolower($user_agent), $matches))
+	{
+		$ie_version = (int) $matches[1];
+		return ($ie_version > $version);
+	}
+	else
+	{
+		return false;
+	}
 }
