@@ -254,14 +254,16 @@ class attachment extends controller
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
-				rawurlencode(htmlspecialchars_decode($attachment['real_filename']))
+				$attachment['real_filename'],
+				$this->filenameFallback($attachment['real_filename'])
 			);
 		}
 		else
 		{
 			$disposition = $this->response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-				rawurlencode(htmlspecialchars_decode($attachment['real_filename']))
+				$attachment['real_filename'],
+				$this->filenameFallback($attachment['real_filename'])
 			);
 		}
 
@@ -275,11 +277,21 @@ class attachment extends controller
 	}
 
 	/**
+	 * Remove non valid characters https://github.com/symfony/http-foundation/commit/c7df9082ee7205548a97031683bc6550b5dc9551
+	 */
+	protected function filenameFallback($filename)
+	{
+		$filename = preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\/'], '', $filename);
+
+		return (!empty($filename)) ?: 'File';
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	protected function prepare($file)
 	{
-		$this->response->setPivate();	// But default should be private, but make sure of it
+		$this->response->setPrivate();	// But default should be private, but make sure of it
 
 		parent::prepare($file);
 	}
