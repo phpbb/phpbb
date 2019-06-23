@@ -11,6 +11,7 @@
 *
 */
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Exception\WebDriverCurlException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -75,6 +76,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		try {
 			$capabilities = DesiredCapabilities::chrome();
+			$chromeOptions = (new ChromeOptions)->addArguments(['headless', 'disable-gpu']);
+			$capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 			self::$webDriver = RemoteWebDriver::create(
 				self::$host . ':' . self::$port,
 				$capabilities,
