@@ -132,7 +132,7 @@ class acp_attachments
 				$s_assigned_groups = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
+					$row['group_name'] = (isset($user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])])) ? $user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])] : $row['group_name'];
 					$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
 				}
 				$db->sql_freeresult($result);
@@ -577,7 +577,7 @@ class acp_attachments
 							$group_id = $db->sql_nextid();
 						}
 
-						$group_name = (isset($user->lang['EXT_GROUP_' . $group_name])) ? $user->lang['EXT_GROUP_' . $group_name] : $group_name;
+						$group_name = (isset($user->lang['EXT_GROUP_' . utf8_strtoupper($group_name)])) ? $user->lang['EXT_GROUP_' . utf8_strtoupper($group_name)] : $group_name;
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
 					}
 
@@ -879,7 +879,7 @@ class acp_attachments
 						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
 						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",
 
-						'GROUP_NAME'	=> (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'],
+						'GROUP_NAME'	=> (isset($user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])])) ? $user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])] : $row['group_name'],
 						'CATEGORY'		=> $cat_lang[$row['cat_id']],
 						)
 					);
@@ -1434,7 +1434,7 @@ class acp_attachments
 		$group_name = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
+			$row['group_name'] = (isset($user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])])) ? $user->lang['EXT_GROUP_' . utf8_strtoupper($row['group_name'])] : $row['group_name'];
 			$group_name[] = $row;
 		}
 		$db->sql_freeresult($result);
