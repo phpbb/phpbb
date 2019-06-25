@@ -424,7 +424,7 @@
 	{% for attachments in attachments %}
 		<tr>
 			<td>
-				{{ lang('EXTENSION_GROUP') ~ lang('COLON') }} <strong>{% if attachments.EXT_GROUP_NAME %}{{ attachments.EXT_GROUP_NAME }}{% else %}{{ lang('NO_EXT_GROUP') }}{% endif %}</strong>
+				{{ lang('EXTENSION_GROUP') ~ lang('COLON') }} <strong>{{ attachments.EXT_GROUP_NAME }}</strong>
 				{% if attachments.S_IN_MESSAGE %}
 					<br>{{ attachments.L_DOWNLOAD_COUNT }}
 					<br>{{ lang('IN') }} {{ lang('PRIVATE_MESSAGE') }}
