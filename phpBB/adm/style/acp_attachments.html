@@ -425,7 +425,7 @@
 		<tr>
 			<td>
 				<!-- IF ! attachments.S_IN_MESSAGE -->{# File info of attachments in private messages is hidden #}
-					<a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br />
+					<a href="{attachments.U_FILE}"><strong>{attachments.REAL_FILENAME}</strong></a><br />
 					{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />
 				<!-- ENDIF -->
 				{attachments.L_DOWNLOAD_COUNT}<br />
