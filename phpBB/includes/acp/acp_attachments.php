@@ -1249,14 +1249,10 @@ class acp_attachments
 						'FILESIZE'			=> get_formatted_filesize((int) $row['filesize']),
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
 						'REAL_FILENAME'		=> utf8_basename((string) $row['real_filename']),
-						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
 						'EXT_GROUP_NAME'	=> $this->lang->is_set('EXT_GROUP_' . $extensions[$row['extension']]['group_name']) ?  $this->lang->lang('EXT_GROUP_' . $extensions[$row['extension']]['group_name']) : $extensions[$row['extension']]['group_name'],
 						'COMMENT'			=> $comment,
 						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
 						'ATTACH_ID'			=> (int) $row['attach_id'],
-						'POST_ID'			=> (int) $row['post_msg_id'],
-						'TOPIC_ID'			=> (int) $row['topic_id'],
-						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? (int) $post_ids[$row['attach_id']] : '',
 
 						'L_DOWNLOAD_COUNT'	=> $user->lang($l_downloaded_viewed, (int) $row['download_count']),
 
