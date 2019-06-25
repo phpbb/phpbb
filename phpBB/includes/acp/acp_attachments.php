@@ -440,7 +440,7 @@ class acp_attachments
 				if ($row = $db->sql_fetchrow($result))
 				{
 					$old_group_id = $row['group_id'];
-					donsions[$row['extens
+					do
 					{
 						$s_spacer = false;
 
