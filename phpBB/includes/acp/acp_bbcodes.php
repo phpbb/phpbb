@@ -33,18 +33,12 @@ class acp_bbcodes
 		// Set up general vars
 		$action	= $request->variable('action', '');
 		$bbcode_id = $request->variable('bbcode', 0);
-		$submit = $request->is_set_post('submit');
 
 		$this->tpl_name = 'acp_bbcodes';
 		$this->page_title = 'ACP_BBCODES';
 		$form_key = 'acp_bbcodes';
 
 		add_form_key($form_key);
-
-		if ($submit && !check_form_key($form_key))
-		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
 
 		// Set up mode-specific vars
 		switch ($action)
@@ -179,6 +173,12 @@ class acp_bbcodes
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
 				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
+
+				if (!$warn_text && !check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$warn_text || confirm_box(true))
 				{
 					$data = $this->build_regexp($bbcode_match, $bbcode_tpl);
