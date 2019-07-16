@@ -228,6 +228,10 @@ class parser implements \phpbb\textformatter\parser_interface
 			{
 				$errors[] = array($msg);
 			}
+			else if ($msg === 'INVALID_FONT_SIZE')
+			{
+				$errors[] = [$msg, $context['invalid_size']];
+			}
 		}
 
 		// Deduplicate error messages. array_unique() only works on strings so we have to serialize
@@ -335,6 +339,13 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	static public function filter_font_size($size, $max_size, Logger $logger)
 	{
+		if (!is_int($size))
+		{
+			$logger->err('INVALID_FONT_SIZE', ['invalid_size' => htmlspecialchars($size)]);
+
+			return false;
+		}
+
 		if ($max_size && $size > $max_size)
 		{
 			$logger->err('MAX_FONT_SIZE_EXCEEDED', array('max_size' => $max_size));
