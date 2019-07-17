@@ -339,7 +339,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	static public function filter_font_size($size, $max_size, Logger $logger)
 	{
-		if (!is_int($size))
+		if (!is_numeric($size))
 		{
 			$logger->err('INVALID_FONT_SIZE', ['invalid_size' => htmlspecialchars($size)]);
 
