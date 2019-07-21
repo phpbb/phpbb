@@ -76,6 +76,10 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		$chunk_size = ceil(filesize($this->path . 'valid.jpg') / self::CHUNKS);
 		$handle = fopen($this->path . 'valid.jpg', 'rb');
 
+		$crawler = self::$client->request('POST', $url . '&sid=' . $this->sid);
+
+		$file_form_data = $this->get_hidden_fields($crawler, $url);
+
 		for ($i = 0; $i < self::CHUNKS; $i++)
 		{
 			$chunk = fread($handle, $chunk_size);
@@ -94,13 +98,13 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			$crawler = self::$client->request(
 				'POST',
 				$url . '&sid=' . $this->sid,
-				array(
+				array_merge(array(
 					'chunk' => $i,
 					'chunks' => self::CHUNKS,
 					'name' => md5('valid') . '.jpg',
 					'real_filename' => 'valid.jpg',
 					'add_file' => $this->lang('ADD_FILE'),
-				),
+				), $file_form_data),
 				array('fileupload' => $file),
 				array('X-PHPBB-USING-PLUPLOAD' => '1')
 			);
@@ -134,17 +138,19 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		);
 
+		$file_form_data = $this->get_hidden_fields(null, $url);
+
 		self::$client->setServerParameter('HTTP_X_PHPBB_USING_PLUPLOAD', '1');
 		self::$client->request(
 			'POST',
 			$url . '&sid=' . $this->sid,
-			array(
+			array_merge(array(
 				'chunk' => '0',
 				'chunks' => '1',
 				'name' => md5('valid') . '.jpg',
 				'real_filename' => 'valid.jpg',
 				'add_file' => $this->lang('ADD_FILE'),
-			),
+			), $file_form_data),
 			array('fileupload' => $file)
 		);
 
