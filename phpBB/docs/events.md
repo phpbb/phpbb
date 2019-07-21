@@ -988,6 +988,20 @@ mcp_move_before
 * Since: 3.1.10-RC1
 * Purpose: Add content before move topic/post form
 
+mcp_move_destination_forum_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_move.html
+* Since: 3.2.8-RC1
+* Purpose: Add content after the destination select element in the move topic/post form
+
+mcp_move_destination_forum_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_move.html
+* Since: 3.2.8-RC1
+* Purpose: Add content before the destination select element in the move topic/post form
+
 mcp_post_additional_options
 ===
 * Locations:
