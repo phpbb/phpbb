@@ -3,6 +3,10 @@
 	margin-bottom: 1em;
 }
 
+.attach-row-tpl {
+	display: none;
+}
+
 .file-list td {
 	vertical-align: middle;
 }
