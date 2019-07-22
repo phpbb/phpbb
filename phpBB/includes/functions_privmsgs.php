@@ -1966,7 +1966,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth;
+	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth, $phpbb_dispatcher;
 
 	// Select all receipts and the author from the pm we currently view, to only display their pm-history
 	$sql = 'SELECT author_id, user_id
@@ -2087,7 +2087,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			$previous_history_pm = $prev_id;
 		}
 
-		$template->assign_block_vars('history_row', array(
+		$template_vars = array(
 			'MESSAGE_AUTHOR_QUOTE'		=> (($decoded_message) ? addslashes(get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username'])) : ''),
 			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
@@ -2109,8 +2109,25 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'USER_ID'			=> $row['user_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : ''
 		);
+
+		/**
+		* Modify the template vars for displaying the message history in private message
+		*
+		* @event core.message_history_modify_template_vars
+		* @var array	template_vars		Array containing the query
+		* @var array	row					Array containing the action user row
+		* @since 3.2.8-RC1
+		*/
+		$vars = array(
+			'template_vars',
+			'row',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.message_history_modify_template_vars', compact($vars)));
+
+		$template->assign_block_vars('history_row', $template_vars);
+
 		unset($rowset[$i]);
 		$prev_id = $id;
 	}
