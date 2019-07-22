@@ -21,7 +21,7 @@ class qa
 {
 	var $confirm_id;
 	var $answer;
-	var $question_ids;
+	var $question_ids = [];
 	var $question_text;
 	var $question_lang;
 	var $question_strict;
