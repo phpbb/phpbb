@@ -188,7 +188,7 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 
 		$sql = 'SHOW VARIABLES
-			LIKE \'ft\_%\'';
+			LIKE \'%ft\_%\'';
 		$result = $this->db->sql_query($sql);
 
 		$mysql_info = array();
@@ -198,8 +198,16 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->config->set('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
-		$this->config->set('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+		if ($engine === 'MyISAM')
+		{
+			$this->config->set('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
+			$this->config->set('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+		}
+		else if ($engine === 'InnoDB')
+		{
+			$this->config->set('fulltext_mysql_max_word_len', $mysql_info['innodb_ft_max_token_size']);
+			$this->config->set('fulltext_mysql_min_word_len', $mysql_info['innodb_ft_min_token_size']);
+		}
 
 		return false;
 	}
