@@ -41,6 +41,22 @@ class mcp_main
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
+		/**
+		* Event to perform additional actions before an MCP action is executed.
+		*
+		* @event core.mcp_main_before
+		* @var	string	action				The action that is about to be performed
+		* @var	string	mode				The mode in which the MCP is accessed, e.g. front, forum_view, topic_view, post_details, quickmod
+		* @var	boolean	quickmod			Whether or not the action is performed via QuickMod
+		* @since 3.2.8-RC1
+		*/
+		$vars = [
+			'action',
+			'mode',
+			'quickmod',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.mcp_main_before', compact($vars)));
+
 		switch ($action)
 		{
 			case 'lock':
