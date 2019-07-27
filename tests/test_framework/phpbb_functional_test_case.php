@@ -234,7 +234,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$config = new \phpbb\config\config(array());
+		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
 		$factory = new \phpbb\db\tools\factory();
 		$db_tools = $factory->get($db);
