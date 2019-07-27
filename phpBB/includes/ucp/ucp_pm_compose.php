@@ -1007,6 +1007,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
 		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
+
+		/**
+		* This event allows you to modify the PM subject of the PM being quoted
+		*
+		* @event core.pm_modify_message_subject
+		* @var	string		message_subject		String with the PM subject already censored.
+		* @since 3.2.8-RC1
+		*/
+		$vars = array('message_subject');
+		extract($phpbb_dispatcher->trigger_event('core.pm_modify_message_subject', compact($vars)));
 	}
 
 	if ($action == 'forward' && !$preview && !$refresh && !$submit)
