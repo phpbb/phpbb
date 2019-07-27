@@ -28,7 +28,7 @@ class acp_attachments
 	protected $config;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
@@ -57,7 +57,7 @@ class acp_attachments
 		$this->id = $id;
 		$this->db = $db;
 		$this->config = $config;
-		$this->lang = $phpbb_container->get('language');
+		$this->language = $phpbb_container->get('language');
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
@@ -1249,7 +1249,7 @@ class acp_attachments
 						'FILESIZE'			=> get_formatted_filesize((int) $row['filesize']),
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
 						'REAL_FILENAME'		=> utf8_basename((string) $row['real_filename']),
-						'EXT_GROUP_NAME'	=> $this->lang->is_set('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) ?  $this->lang->lang('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) : $extensions[$row['extension']]['group_name'],
+						'EXT_GROUP_NAME'	=> $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) ?  $this->language->lang('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) : $extensions[$row['extension']]['group_name'],
 						'COMMENT'			=> $comment,
 						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
 						'ATTACH_ID'			=> (int) $row['attach_id'],
