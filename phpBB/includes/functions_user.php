@@ -1732,7 +1732,7 @@ function phpbb_validate_timezone($timezone)
  * @return mixed							Either false if validation succeeded or a string which will be
  *											used as the error message (with the variable name appended)
  */
-function validate_username($username, $allowed_username = false)
+function validate_username($username, $allowed_username = false, $allow_all_names = false)
 {
 	global $config, $db, $user, $cache;
 
@@ -1815,13 +1815,16 @@ function validate_username($username, $allowed_username = false)
 		return 'USERNAME_TAKEN';
 	}
 
-	$bad_usernames = $cache->obtain_disallowed_usernames();
-
-	foreach ($bad_usernames as $bad_username)
+	if (!$allow_all_names)
 	{
-		if (preg_match('#^' . $bad_username . '$#', $clean_username))
+		$bad_usernames = $cache->obtain_disallowed_usernames();
+
+		foreach ($bad_usernames as $bad_username)
 		{
-			return 'USERNAME_DISALLOWED';
+			if (preg_match('#^' . $bad_username . '$#', $clean_username))
+			{
+				return 'USERNAME_DISALLOWED';
+			}
 		}
 	}
 
