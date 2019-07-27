@@ -24,6 +24,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 
 		$this->passwords_drivers = array(
 			'passwords.driver.argon2i'	=> new \phpbb\passwords\driver\argon2i($config, $this->driver_helper),
+			'passwords.driver.argon2id'	=> new \phpbb\passwords\driver\argon2id($config, $this->driver_helper),
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
 			'passwords.driver.bcrypt'	=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper, 10),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
@@ -427,6 +428,9 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
 			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
 			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=2,p=2$MXB4OW5sczE5TnFPYkEuYQ$2bxaMIp8+9x37O6v8zkqpBU72ohCibUrtgVZw7vyr5Q', false),
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=128,t=2,p=2$RWV2VFAuWXk5bTVjbktOLg$Nt7Z7koa25SVRSKr3RKqjwKz26FENDuU+aL1DfMcWRo', true),
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=1,p=2$Rmw5M21IUFZDVEltYU0uTA$GIObGbHV6sOw5OQEtF8z+2ESztT96OWhCk17sUlwLAY', true),
 		);
 	}
 
