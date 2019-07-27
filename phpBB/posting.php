@@ -1690,6 +1690,20 @@ if ($generate_quote)
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
 {
 	$post_data['post_subject'] = ((strpos($post_data['post_subject'], 'Re: ') !== 0) ? 'Re: ' : '') . censor_text($post_data['post_subject']);
+
+	$post_subject = $post_data['post_subject'];
+
+	/**
+	* This event allows you to modify the post subject of the post being quoted
+	*
+	* @event core.posting_modify_post_subject
+	* @var	string		post_subject	String with the post subject already censored.
+	* @since 3.2.8-RC1
+	*/
+	$vars = array('post_subject');
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_post_subject', compact($vars)));
+
+	$post_data['post_subject'] = $post_subject;
 }
 
 $attachment_data = $message_parser->attachment_data;
