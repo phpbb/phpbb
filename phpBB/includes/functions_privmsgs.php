@@ -1985,15 +1985,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	$recipients = array_unique($recipients);
 
 	// Get History Messages (could be newer)
-	$sql_array = array(
-		'SELECT'	=> 'SELECT t.*, p.*, u.*',
-		'FROM'		=> array(
-			PRIVMSGS_TABLE		=> 'p',
-			PRIVMSGS_TO_TABLE	=> 't',
-			USERS_TABLE			=> 'u'
-		)
-	);
-	
 	$sql_where = 't.msg_id = p.msg_id
 			AND p.author_id = u.user_id
 			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
@@ -2013,12 +2004,14 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> $sql_array['SELECT'],
-		'FROM'		=> $sql_array['FROM'],
+		'SELECT'	=> 'SELECT t.*, p.*, u.*',
+		'FROM'		=> array(
+			PRIVMSGS_TABLE		=> 'p',
+			PRIVMSGS_TO_TABLE	=> 't',
+			USERS_TABLE			=> 'u'
+		),
 		'LEFT_JOIN'	=> array(),
-
 		'WHERE'		=> $sql_where,
-
 		'ORDER_BY'	=> 'p.message_time DESC',
 	);
 
@@ -2033,6 +2026,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	extract($phpbb_dispatcher->trigger_event('core.message_history_modify_sql_ary', compact($vars)));
 
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
+	unset($sql_ary);
+
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 
