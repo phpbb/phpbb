@@ -2364,7 +2364,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		// Check form key
-		if ($password && !check_form_key($form_name))
+		if ($password && !defined('IN_CHECK_BAN') && !check_form_key($form_name))
 		{
 			$result = array(
 				'status' => false,
