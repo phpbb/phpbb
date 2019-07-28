@@ -421,17 +421,25 @@
 	</tr>
 	</thead>
 	<tbody>
-	<!-- BEGIN attachments -->
+	{% for attachments in attachments %}
 		<tr>
 			<td>
-				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
-				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
+				{{ lang('EXTENSION_GROUP') ~ lang('COLON') }} <strong>{{ attachments.EXT_GROUP_NAME }}</strong>
+				{% if attachments.S_IN_MESSAGE %}
+					<br>{{ attachments.L_DOWNLOAD_COUNT }}
+					<br>{{ lang('IN') }} {{ lang('PRIVATE_MESSAGE') }}
+				{% else %}
+					<br><a href="{{ attachments.U_FILE }}"><strong>{{ attachments.REAL_FILENAME }}</strong></a>
+					{% if attachments.COMMENT %}<br>{{ attachments.COMMENT }}{% endif %}
+					<br>{{ attachments.L_DOWNLOAD_COUNT }}
+					<br>{{ lang('TOPIC') ~ lang('COLON') }} <a href="{{ attachments.U_VIEW_TOPIC }}">{{ attachments.TOPIC_TITLE }}</a>
+				{% endif %}
 			</td>
-			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
-			<td class="centered-text">{attachments.FILESIZE}</td>
-			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
+			<td>{{ attachments.FILETIME }}<br>{{ lang('POST_BY_AUTHOR') }} {{ attachments.ATTACHMENT_POSTER }}</td>
+			<td class="centered-text">{{ attachments.FILESIZE }}</td>
+			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{{ attachments.ATTACH_ID }}]" /></td>
 		</tr>
-	<!-- END attachments -->
+	{% endfor %}
 	</tbody>
 	</table>
 <!-- ELSE -->
