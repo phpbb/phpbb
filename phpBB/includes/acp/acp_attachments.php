@@ -27,6 +27,9 @@ class acp_attachments
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
@@ -54,6 +57,7 @@ class acp_attachments
 		$this->id = $id;
 		$this->db = $db;
 		$this->config = $config;
+		$this->language = $phpbb_container->get('language');
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
@@ -128,7 +132,7 @@ class acp_attachments
 				$s_assigned_groups = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
+					$row['group_name'] = $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) : $row['group_name'];
 					$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
 				}
 				$db->sql_freeresult($result);
@@ -573,7 +577,7 @@ class acp_attachments
 							$group_id = $db->sql_nextid();
 						}
 
-						$group_name = (isset($user->lang['EXT_GROUP_' . $group_name])) ? $user->lang['EXT_GROUP_' . $group_name] : $group_name;
+						$group_name = $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($group_name)) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($group_name)) : $group_name;
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
 					}
 
@@ -874,7 +878,7 @@ class acp_attachments
 						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
 						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",
 
-						'GROUP_NAME'	=> (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'],
+						'GROUP_NAME'	=> $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) : $row['group_name'],
 						'CATEGORY'		=> $cat_lang[$row['cat_id']],
 						)
 					);
@@ -1239,23 +1243,15 @@ class acp_attachments
 					$display_cat = isset($extensions[$row['extension']]['display_cat']) ? $extensions[$row['extension']]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
 
-					// Capitalises the group name and checks if its key exists in the language file
-					$up_group_name = utf8_strtoupper($extensions[$row['extension']]['group_name']);
-					$ext_group_name = (!empty($up_group_name)) ? (isset($user->lang['EXT_GROUP_' .  $up_group_name]) ? $user->lang['EXT_GROUP_' .  $up_group_name] : '') : '';
-
 					$template->assign_block_vars('attachments', array(
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
 						'FILESIZE'			=> get_formatted_filesize((int) $row['filesize']),
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
-						'REAL_FILENAME'		=> (!$row['in_message']) ? utf8_basename((string) $row['real_filename']) : '',
-						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
-						'EXT_GROUP_NAME'	=> $ext_group_name,
+						'REAL_FILENAME'		=> utf8_basename((string) $row['real_filename']),
+						'EXT_GROUP_NAME'	=> $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) ?  $this->language->lang('EXT_GROUP_' . utf8_strtoupper($extensions[$row['extension']]['group_name'])) : $extensions[$row['extension']]['group_name'],
 						'COMMENT'			=> $comment,
 						'TOPIC_TITLE'		=> (!$row['in_message']) ? (string) $row['topic_title'] : '',
 						'ATTACH_ID'			=> (int) $row['attach_id'],
-						'POST_ID'			=> (int) $row['post_msg_id'],
-						'TOPIC_ID'			=> (int) $row['topic_id'],
-						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? (int) $post_ids[$row['attach_id']] : '',
 
 						'L_DOWNLOAD_COUNT'	=> $user->lang($l_downloaded_viewed, (int) $row['download_count']),
 
@@ -1436,7 +1432,7 @@ class acp_attachments
 		$group_name = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$row['group_name'] = (isset($user->lang['EXT_GROUP_' . $row['group_name']])) ? $user->lang['EXT_GROUP_' . $row['group_name']] : $row['group_name'];
+			$row['group_name'] = $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) : $row['group_name'];
 			$group_name[] = $row;
 		}
 		$db->sql_freeresult($result);
