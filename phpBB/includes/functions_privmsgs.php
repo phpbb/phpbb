@@ -2004,7 +2004,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 'SELECT t.*, p.*, u.*',
+		'SELECT'	=> 't.*, p.*, u.*',
 		'FROM'		=> array(
 			PRIVMSGS_TABLE		=> 'p',
 			PRIVMSGS_TO_TABLE	=> 't',
