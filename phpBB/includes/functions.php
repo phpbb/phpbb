@@ -4112,9 +4112,9 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 *
 * @return string Avatar html
 */
-function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
+function phpbb_get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
 {
-	$row = \phpbb\avatar\manager::clean_row($user_row, 'group');
+	$row = \phpbb\avatar\manager::clean_row($group_row, 'group');
 	return phpbb_get_avatar($row, $alt, $ignore_config, $lazy);
 }
 

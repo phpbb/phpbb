@@ -111,7 +111,13 @@ services:
     group_helper:
         class: phpbb\group\helper
         arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
             - '@language'
+            - '@dispatcher'
+            - '@path_helper'
+            - '@user'
 
     log:
         class: phpbb\log\log
