@@ -98,11 +98,11 @@ class helper
 	 *
 	 * @html Group name spans and links
 	 *
-	 * @param string	$mode				profile (for getting an url to the profile),
-	 *                                        group_name (for obtaining the group name),
-	 *                                        colour (for obtaining the group colour),
-	 *                                        full (for obtaining a coloured group name link to the group's profile),
-	 *                                        no_profile (the same as full but forcing no profile link)
+	 * @param string	$mode				Profile (for getting an url to the profile),
+	 *											group_name (for obtaining the group name),
+	 *											colour (for obtaining the group colour),
+	 *											full (for obtaining a coloured group name link to the group's profile),
+	 *											no_profile (the same as full but forcing no profile link)
 	 * @param int		$group_id			The group id
 	 * @param string	$group_name			The group name
 	 * @param string	$group_colour		The group colour
@@ -195,7 +195,7 @@ class helper
 		 * @var string	custom_profile_url	Optional parameter to specify a profile url.
 		 * @var string	group_name_string	The string that has been generated
 		 * @var array	name_strings		Array of original return templates
-		 * @since 3.2.6-RC1
+		 * @since 3.2.8-RC1
 		 */
 		$vars = array(
 			'mode',
@@ -216,7 +216,7 @@ class helper
 	 *
 	 * @html Group rank image element
 	 *
-	 * @param array		$group_data		the current stored group data
+	 * @param array		$group_data		The current stored group data
 	 *
 	 * @return array					An associative array containing the rank title (title),
 	 * 									the rank image as full img tag (img) and the rank image source (img_src)
@@ -234,7 +234,7 @@ class helper
 		 *
 		 * @event core.get_group_rank_before
 		 * @var	array	group_data		Array with group's data
-		 * @since 3.2.6-RC1
+		 * @since 3.2.8-RC1
 		 */
 
 		$vars = array('group_data');
@@ -264,7 +264,7 @@ class helper
 		 * @event core.get_group_rank_after
 		 * @var	array	group_data		Array with group's data
 		 * @var	array	group_rank_data	Group rank data
-		 * @since 3.2.6-RC1
+		 * @since 3.2.8-RC1
 		 */
 
 		$vars = array(
