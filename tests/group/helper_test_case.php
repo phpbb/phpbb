@@ -59,7 +59,7 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		// Set up authentication data for testing
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock();
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
