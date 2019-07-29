@@ -453,6 +453,38 @@ $join_user_sql = array('a' => true, 't' => false, 's' => false);
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 
+/**
+* Event to add new sorting options
+*
+* @event core.viewtopic_gen_sort_selects_before
+* @var	array	limit_days		Limit results by time
+* @var	array	sort_by_text	Language strings for sorting options
+* @var	array	sort_by_sql		SQL conditions for sorting options
+* @var	array	join_user_sql	SQL joins required for sorting options
+* @var	int		sort_days		User selected sort days
+* @var	string	sort_key		User selected sort key
+* @var	string	sort_dir		User selected sort direction
+* @var	string	s_limit_days	Initial value of limit days selectbox
+* @var	string	s_sort_key		Initial value of sort key selectbox
+* @var	string	s_sort_dir		Initial value of sort direction selectbox
+* @var	string	u_sort_param	Initial value of sorting form action
+* @since 3.2.8-RC1
+*/
+$vars = array(
+	'limit_days',
+	'sort_by_text',
+	'sort_by_sql',
+	'join_user_sql',
+	'sort_days',
+	'sort_key',
+	'sort_dir',
+	's_limit_days',
+	's_sort_key',
+	's_sort_dir',
+	'u_sort_param',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_gen_sort_selects_before', compact($vars)));
+
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
 // Obtain correct post count and ordering SQL if user has
