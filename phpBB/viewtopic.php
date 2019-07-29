@@ -461,7 +461,7 @@ $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 * @var	array	sort_by_text	Language strings for sorting options
 * @var	array	sort_by_sql		SQL conditions for sorting options
 * @var	array	join_user_sql	SQL joins required for sorting options
-* @var	string	sort_days		User selected sort days
+* @var	int		sort_days		User selected sort days
 * @var	string	sort_key		User selected sort key
 * @var	string	sort_dir		User selected sort direction
 * @var	string	s_limit_days	Initial value of limit days selectbox
