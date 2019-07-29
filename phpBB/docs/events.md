@@ -2295,6 +2295,24 @@ topiclist_row_prepend
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
+topiclist_row_topic_by_author_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.2.8-RC1
+* Purpose: Add content into topic rows (after the "by topic author" row)
+
+topiclist_row_topic_by_author_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.2.8-RC1
+* Purpose: Add content into topic rows (before the "by topic author" row)
+
 topiclist_row_topic_title_after
 ===
 * Locations:
