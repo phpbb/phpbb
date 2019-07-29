@@ -86,7 +86,9 @@
 
 					<div class="responsive-hide">
 						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
+						{% EVENT topiclist_row_topic_by_author_before %}
 						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+						{% EVENT topiclist_row_topic_by_author_after %}
 					</div>
 					<!-- EVENT topiclist_row_append -->
 					</div>
