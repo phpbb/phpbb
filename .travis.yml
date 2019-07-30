@@ -19,6 +19,8 @@ matrix:
       env: DB=mysqli
     - php: 7.3
       env: DB=mysqli
+    - php: 7.4snapshot
+      env: DB=mysqli
     - php: nightly
       env: DB=mysqli
   allow_failures:
