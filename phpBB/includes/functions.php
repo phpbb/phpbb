@@ -4581,12 +4581,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	if ($send_headers)
 	{
-		// An array of http headers that phpbb will set. The following event may override these.
+		// An array of http headers that phpBB will set. The following event may override these.
 		$http_headers += array(
 			// application/xhtml+xml not used because of IE
 			'Content-type' => 'text/html; charset=UTF-8',
 			'Cache-Control' => 'private, no-cache="set-cookie"',
 			'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
+			'Referrer-Policy' => 'strict-origin-when-cross-origin',
 		);
 		if (!empty($user->data['is_bot']))
 		{
