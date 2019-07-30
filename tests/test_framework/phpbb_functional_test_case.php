@@ -1384,6 +1384,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
-		return self::request('GET', substr($link, strpos($link, 'mcp.')));
+		return self::request('GET', substr($link, strpos($link, 'app.php/mod')));
 	}
 }
