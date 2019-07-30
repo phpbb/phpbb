@@ -112,12 +112,13 @@ function adm_page_header($page_title)
 		'CONTAINER_EXCEPTION'	=> $phpbb_container->hasParameter('container_exception') ? $phpbb_container->getParameter('container_exception') : false,
 	));
 
-	// An array of http headers that phpbb will set. The following event may override these.
+	// An array of http headers that phpBB will set. The following event may override these.
 	$http_headers = array(
 		// application/xhtml+xml not used because of IE
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
 		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
+		'Referrer-Policy' => 'strict-origin-when-cross-origin',
 	);
 
 	/**
