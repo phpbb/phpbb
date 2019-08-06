@@ -111,7 +111,7 @@ $lang = array_merge($lang, array(
 	'FIRST_OPTION'				=> 'First option',
 
 	'HIDE_PROFILE_FIELD'			=> 'Hide profile field',
-	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Hide the profile field from all other users except the user, administrators and moderators who are still able to see this field. If the Display in user control panel option is disabled, the user will not be able to see or change this field and the field can only be changed by administrators.',
+	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Hide the profile field from all users except administrators and moderators, who are still able to see this field. If the Display in user control panel option is disabled, the user will not be able to see or change this field and the field can only be changed by administrators.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
 	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
