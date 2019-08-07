@@ -1037,6 +1037,20 @@ mcp_topic_options_before
 * Since: 3.1.6-RC1
 * Purpose: Add some options (field, checkbox, ...) before the subject field when split a subject
 
+mcp_topic_post_author_full_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.8-RC1
+* Purpose: Append information to message author username for post details in topic moderation
+
+mcp_topic_post_author_full_prepend
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.8-RC1
+* Purpose: Prepend information to message author username for post details in topic moderation
+
 mcp_topic_postrow_attachments_after
 ===
 * Locations:
@@ -1064,20 +1078,6 @@ mcp_topic_postrow_post_details_after
     + styles/prosilver/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content after post details in topic moderation
-
-mcp_topic_post_author_full_append
-===
-* Locations:
-    + styles/prosilver/template/mcp_topic.html
-* Since: 3.2.8-RC1
-* Purpose: Append information to message author username for post details in topic moderation
-
-mcp_topic_post_author_full_prepend
-===
-* Locations:
-    + styles/prosilver/template/mcp_topic.html
-* Since: 3.2.8-RC1
-* Purpose: Prepend information to message author username for post details in topic moderation
 
 mcp_topic_postrow_post_details_before
 ===
