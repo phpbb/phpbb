@@ -15,8 +15,8 @@
 
 	<!-- IF S_SHOW_POLL_BOX -->
 		<dl>
-			<dt><label for="poll_title">{L_POLL_QUESTION}{L_COLON}</label></dt>
-			<dd><input type="text" name="poll_title" id="poll_title" maxlength="255" value="{POLL_TITLE}" class="inputbox" /></dd>
+			<dt><label for="poll_title">{{ lang('POLL_QUESTION') ~ lang('COLON') }}</label></dt>
+			<dd><input type="text" name="poll_title" id="poll_title" maxlength="100" value="{{ POLL_TITLE }}" class="inputbox" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="poll_option_text">{L_POLL_OPTIONS}{L_COLON}</label><br /><span>{L_POLL_OPTIONS_EXPLAIN}</span></dt>
