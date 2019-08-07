@@ -39,7 +39,8 @@ init:
 before_test:
   - ps: |
       Set-Service wuauserv -StartupType Manual
-      cinst -y php --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+      choco install chocolatey -y --version 0.10.13 --allow-downgrade
+      choco install php -y --version ((choco search php --exact --all-versions -r | select-string -pattern $env:php | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
       Get-ChildItem -Path "c:\tools\php$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1$2')" -Recurse |
           Move-Item -destination "c:\tools\php"
       cd c:\tools\php
@@ -98,7 +99,7 @@ before_test:
         $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\postgres';`n`$dbhost = 'localhost';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'postgres';`n`$dbpasswd = 'Password12!';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
       }
       elseif ($env:db -eq "mariadb") {
-        appveyor-retry cinst -y --force mariadb
+        appveyor-retry choco install mariadb -y --force
         $env:MYSQL_PWD=""
         $cmd = '"C:\Program Files\MariaDB 10.2\bin\mysql" -e "create database phpbb_test;" --user=root'
         iex "& $cmd"
@@ -106,13 +107,13 @@ before_test:
       }
       elseif ($env:db -eq "sqlite") {
         # install sqlite
-        appveyor-retry cinst -y sqlite
+        appveyor-retry choco install sqlite -y
         sqlite3 c:\projects\test.db "create table aTable(field1 int); drop table aTable;"
         $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\sqlite3';`n`$dbhost = 'c:\\projects\\test.db';`n`$dbport = '';`n`$dbname = '';`n`$dbuser = '';`n`$dbpasswd = '';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "c:\\projects\\phpbb\\tests\\test_config.php"
       }
 
       # Install PhantomJS
-      cinst -y phantomjs
+      choco install phantomjs -y
       Start-Process "phantomjs" "--webdriver=8910" | Out-Null
   - ps: |
       cd c:\projects\phpbb\phpBB
@@ -120,7 +121,7 @@ before_test:
       (Get-Content c:\projects\phpbb\phpBB\web.config).replace("`t</system.webServer>", "`t`t<httpErrors errorMode=`"Detailed`" />`n`t</system.webServer>") | Set-Content c:\projects\phpbb\phpBB\web.config
   - cd c:\projects\phpbb\phpBB
   - php ..\composer.phar install
-  - choco install -y urlrewrite
+  - choco install urlrewrite -y
   - ps: New-WebSite -Name 'phpBBTest' -PhysicalPath 'c:\projects\phpbb\phpBB' -Force
   - ps: Import-Module WebAdministration; Set-ItemProperty 'IIS:\Sites\phpBBTest' -name Bindings -value @{protocol='http';bindingInformation='*:80:phpbb.test'}
   - echo Change default anonymous user AUTH to ApplicationPool
@@ -141,3 +142,4 @@ before_test:
 test_script:
   - cd c:\projects\phpbb
   - php -e phpBB\vendor\phpunit\phpunit\phpunit --verbose
+
