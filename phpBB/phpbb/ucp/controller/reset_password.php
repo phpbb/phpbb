@@ -235,9 +235,6 @@ class reset_password
 			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=sendpassword'))
 		);
 
-		//$this->tpl_name = 'ucp_remind';
-		//$this->page_title = 'UCP_REMIND';
-
-		return $this->helper->render('ucp_remind.html', 'UCP_REMIND');
+		return $this->helper->render('ucp_remind.html', $this->language->lang('UCP_REMIND'));
 	}
 }
