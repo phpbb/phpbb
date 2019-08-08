@@ -11,34 +11,105 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\ucp\controller;
+
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\passwords\manager;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
 
 /**
 * ucp_remind
 * Sending password reminders
 */
-class ucp_remind
+class reset_password
 {
-	var $u_action;
+	/** @var config */
+	protected $config;
 
-	function main($id, $mode)
+	/** @var driver_interface */
+	protected $db;
+
+	/** @var dispatcher */
+	protected $dispatcher;
+
+	/** @var helper */
+	protected $helper;
+
+	/** @var language */
+	protected $language;
+
+	/** @var manager */
+	protected $passwords_manager;
+
+	/** @var request_interface */
+	protected $request;
+
+	/** @var template */
+	protected $template;
+
+	/** @var user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string PHP extension */
+	protected $php_ext;
+
+	/**
+	 * ucp_remind constructor.
+	 *
+	 * @param config $config
+	 * @param driver_interface $db
+	 * @param dispatcher $dispatcher
+	 * @param helper $helper
+	 * @param language $language
+	 * @param manager $passwords_manager
+	 * @param request_interface $request
+	 * @param template $template
+	 * @param user $user
+	 * @param $root_path
+	 * @param $php_ext
+	 */
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
+								language $language, manager $passwords_manager, request_interface $request,
+								template $template, user $user, $root_path, $php_ext)
 	{
-		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $template, $phpbb_container, $phpbb_dispatcher;
+		$this->config = $config;
+		$this->db = $db;
+		$this->dispatcher = $dispatcher;
+		$this->helper = $helper;
+		$this->language = $language;
+		$this->passwords_manager = $passwords_manager;
+		$this->request = $request;
+		$this->template = $template;
+		$this->user = $user;
+		$this->root_path = $root_path;
+		$this->php_ext = $php_ext;
+	}
 
-		if (!$config['allow_password_reset'])
+	/**
+	 * Handle controller requests
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function handle()
+	{
+		$this->language->add_lang('ucp');
+
+		if (!$this->config['allow_password_reset'])
 		{
-			trigger_error($user->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
+			trigger_error($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
 		}
 
-		$username	= $request->variable('username', '', true);
-		$email		= strtolower($request->variable('email', ''));
+		$username	= $this->request->variable('username', '', true);
+		$email		= strtolower($this->request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		add_form_key('ucp_remind');
@@ -58,8 +129,8 @@ class ucp_remind
 			$sql_array = array(
 				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
 				'FROM'		=> array(USERS_TABLE => 'u'),
-				'WHERE'		=> "user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'" .
-					(!empty($username) ? " AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : ''),
+				'WHERE'		=> "user_email_hash = '" . $this->db->sql_escape(phpbb_email_hash($email)) . "'" .
+					(!empty($username) ? " AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'" : ''),
 			);
 
 			/**
@@ -76,24 +147,24 @@ class ucp_remind
 				'username',
 				'sql_array',
 			);
-			extract($phpbb_dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
+			extract($this->dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
 
-			$sql = $db->sql_build_query('SELECT', $sql_array);
-			$result = $db->sql_query_limit($sql, 2); // don't waste resources on more rows than we need
-			$rowset = $db->sql_fetchrowset($result);
+			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			$result = $this->db->sql_query_limit($sql, 2); // don't waste resources on more rows than we need
+			$rowset = $this->db->sql_fetchrowset($result);
 
 			if (count($rowset) > 1)
 			{
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'USERNAME_REQUIRED'	=> true,
 					'EMAIL'				=> $email,
 				));
 			}
 			else
 			{
-				$message = $user->lang['PASSWORD_UPDATED_IF_EXISTED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $this->language->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
 				if (empty($rowset))
 				{
@@ -101,7 +172,7 @@ class ucp_remind
 				}
 
 				$user_row = $rowset[0];
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
 				if (!$user_row)
 				{
@@ -126,21 +197,17 @@ class ucp_remind
 
 				// Make password at least 8 characters long, make it longer if admin wants to.
 				// gen_rand_string() however has a limit of 12 or 13.
-				$user_password = gen_rand_string_friendly(max(8, mt_rand((int) $config['min_pass_chars'], (int) $config['max_pass_chars'])));
+				$user_password = gen_rand_string_friendly(max(8, mt_rand((int) $this->config['min_pass_chars'], (int) $this->config['max_pass_chars'])));
 
 				// For the activation key a random length between 6 and 10 will do.
 				$user_actkey = gen_rand_string(mt_rand(6, 10));
 
-				// Instantiate passwords manager
-				/* @var $manager \phpbb\passwords\manager */
-				$passwords_manager = $phpbb_container->get('passwords.manager');
-
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_newpasswd = '" . $db->sql_escape($passwords_manager->hash($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
+					SET user_newpasswd = '" . $this->db->sql_escape($this->passwords_manager->hash($user_password)) . "', user_actkey = '" . $this->db->sql_escape($user_actkey) . "'
 					WHERE user_id = " . $user_row['user_id'];
-				$db->sql_query($sql);
+				$this->db->sql_query($sql);
 
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 
 				$messenger = new messenger(false);
 
@@ -148,12 +215,12 @@ class ucp_remind
 
 				$messenger->set_addresses($user_row);
 
-				$messenger->anti_abuse_headers($config, $user);
+				$messenger->anti_abuse_headers($this->config, $this->user);
 
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'PASSWORD'		=> htmlspecialchars_decode($user_password),
-					'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
+					'U_ACTIVATE'	=> "$server_url/ucp.{$this->php_ext}?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 				);
 
 				$messenger->send($user_row['user_notify_type']);
@@ -162,13 +229,15 @@ class ucp_remind
 			}
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars(array(
 			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> append_sid($phpbb_root_path . 'ucp.' . $phpEx, 'mode=sendpassword'))
+			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=sendpassword'))
 		);
 
-		$this->tpl_name = 'ucp_remind';
-		$this->page_title = 'UCP_REMIND';
+		//$this->tpl_name = 'ucp_remind';
+		//$this->page_title = 'UCP_REMIND';
+
+		return $this->helper->render('ucp_remind.html', 'UCP_REMIND');
 	}
 }
