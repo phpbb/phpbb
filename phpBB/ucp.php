@@ -66,7 +66,7 @@ switch ($mode)
 		/** @var \phpbb\controller\helper $controller_helper */
 		$controller_helper = $phpbb_container->get('controller.helper');
 
-		redirect($controller_helper->route('phpbb_ucp_reset_password_controller'));
+		redirect($controller_helper->route('phpbb_ucp_forgot_password_controller'));
 	break;
 
 	case 'register':

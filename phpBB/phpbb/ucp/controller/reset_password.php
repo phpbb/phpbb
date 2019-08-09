@@ -56,6 +56,9 @@ class reset_password
 	/** @var user */
 	protected $user;
 
+	/** @var array phpBB DB table names */
+	protected $tables;
+
 	/** @var string phpBB root path */
 	protected $root_path;
 
@@ -74,12 +77,13 @@ class reset_password
 	 * @param request_interface $request
 	 * @param template $template
 	 * @param user $user
+	 * @param array $tables
 	 * @param $root_path
 	 * @param $php_ext
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
 								language $language, manager $passwords_manager, request_interface $request,
-								template $template, user $user, $root_path, $php_ext)
+								template $template, user $user, $tables, $root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -94,12 +98,7 @@ class reset_password
 		$this->php_ext = $php_ext;
 	}
 
-	/**
-	 * Handle controller requests
-	 *
-	 * @return \Symfony\Component\HttpFoundation\Response
-	 */
-	public function handle()
+	public function request()
 	{
 		$this->language->add_lang('ucp');
 
@@ -108,9 +107,158 @@ class reset_password
 			trigger_error($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
 		}
 
+		$submit		= $this->request->is_set_post('submit');
 		$username	= $this->request->variable('username', '', true);
 		$email		= strtolower($this->request->variable('email', ''));
-		$submit		= (isset($_POST['submit'])) ? true : false;
+
+		add_form_key('ucp_remind');
+
+		if ($submit)
+		{
+			if (!check_form_key('ucp_remind'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
+			if (empty($email))
+			{
+				trigger_error('NO_EMAIL_USER');
+			}
+
+			$sql_array = array(
+				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
+								. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
+				'FROM'		=> array(USERS_TABLE => 'u'),
+				'WHERE'		=> "user_email_hash = '" . $this->db->sql_escape(phpbb_email_hash($email)) . "'" .
+					(!empty($username) ? " AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'" : ''),
+			);
+
+			/**
+			 * Change SQL query for fetching user data
+			 *
+			 * @event core.ucp_remind_modify_select_sql
+			 * @var	string	email		User's email from the form
+			 * @var	string	username	User's username from the form
+			 * @var	array	sql_array	Fully assembled SQL query with keys SELECT, FROM, WHERE
+			 * @since 3.1.11-RC1
+			 */
+			$vars = array(
+				'email',
+				'username',
+				'sql_array',
+			);
+			extract($this->dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
+
+			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			$result = $this->db->sql_query_limit($sql, 2); // don't waste resources on more rows than we need
+			$rowset = $this->db->sql_fetchrowset($result);
+
+			if (count($rowset) > 1)
+			{
+				$this->db->sql_freeresult($result);
+
+				$this->template->assign_vars(array(
+					'USERNAME_REQUIRED'	=> true,
+					'EMAIL'				=> $email,
+				));
+			}
+			else
+			{
+				$message = $this->language->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+
+				$user_row = empty($rowset) ? [] : $rowset[0];
+				$this->db->sql_freeresult($result);
+
+				if (!$user_row)
+				{
+					trigger_error($message);
+				}
+
+				if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
+				{
+					trigger_error($message);
+				}
+
+				// Do not create multiple valid reset tokens
+				if (!empty($user_row['reset_token']) && (int) $user_row['reset_token_expiration'] <= (time() + $this->config['reset_token_lifetime']))
+				{
+					trigger_error($message);
+				}
+
+				// Check users permissions
+				$auth2 = new \phpbb\auth\auth();
+				$auth2->acl($user_row);
+
+				if (!$auth2->acl_get('u_chgpasswd'))
+				{
+					trigger_error($message);
+				}
+
+				$server_url = generate_board_url();
+
+				// Generate reset token
+				$reset_token = gen_rand_string_friendly(32);
+
+				$sql_ary = array(
+					'reset_token'				=> $reset_token,
+					'reset_token_expiration'	=> time() + $this->config['reset_token_lifetime'],
+				);
+
+				$sql = 'UPDATE ' . $this->tables['users'] . '
+					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE user_id = ' . $user_row['user_id'];
+				$this->db->sql_query($sql);
+
+				include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
+
+				/** @var \messenger $messenger */
+				$messenger = new \messenger(false);
+
+				$messenger->template('user_activate_passwd', $user_row['user_lang']);
+
+				$messenger->set_addresses($user_row);
+
+				$messenger->anti_abuse_headers($this->config, $this->user);
+
+				$messenger->assign_vars(array(
+						'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
+						'U_ACTIVATE'	=> $this->helper->route('phpbb_ucp_reset_password_controller')
+				));
+
+				$messenger->send($user_row['user_notify_type']);
+
+				trigger_error($message);
+			}
+		}
+
+		$this->template->assign_vars(array(
+			'USERNAME'			=> $username,
+			'EMAIL'				=> $email,
+			'S_PROFILE_ACTION'	=> $this->helper->route('phpbb_ucp_forgot_password_controller'),
+		));
+
+		return $this->helper->render('ucp_remind.html', $this->language->lang('UCP_REMIND'));
+	}
+
+	/**
+	 * Handle controller requests
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function reset()
+	{
+		$this->language->add_lang('ucp');
+
+		if (!$this->config['allow_password_reset'])
+		{
+			trigger_error($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
+		}
+
+		$submit		= $this->request->is_set_post('submit');
+		$username	= $this->request->variable('username', '', true);
+		$email		= strtolower($this->request->variable('email', ''));
+		$key		= $this->request->variable('key', '');
+		$user_id	= $this->request->variable('user_id', 0);
 
 		add_form_key('ucp_remind');
 
@@ -232,8 +380,8 @@ class reset_password
 		$this->template->assign_vars(array(
 			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=sendpassword'))
-		);
+			'S_PROFILE_ACTION'	=> $this->helper->route('phpbb_ucp_reset_password_controller'),
+		));
 
 		return $this->helper->render('ucp_remind.html', $this->language->lang('UCP_REMIND'));
 	}
