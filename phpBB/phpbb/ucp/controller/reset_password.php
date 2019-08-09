@@ -221,8 +221,8 @@ class reset_password
 				$messenger->anti_abuse_headers($this->config, $this->user);
 
 				$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
-						'U_ACTIVATE'	=> $this->helper->route('phpbb_ucp_reset_password_controller')
+						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
+						'U_RESET_PASSWORD'	=> $this->helper->route('phpbb_ucp_reset_password_controller')
 				));
 
 				$messenger->send($user_row['user_notify_type']);
