@@ -13,6 +13,7 @@
 
 namespace phpbb\ucp\controller;
 
+use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
@@ -26,8 +27,7 @@ use phpbb\user;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
-* ucp_remind
-* Sending password reminders
+* Handling forgotten passwords via reset password functionality
 */
 class reset_password
 {
@@ -71,7 +71,7 @@ class reset_password
 	protected $php_ext;
 
 	/**
-	 * ucp_remind constructor.
+	 * Reset password controller constructor.
 	 *
 	 * @param config $config
 	 * @param driver_interface $db
@@ -150,18 +150,18 @@ class reset_password
 		$username	= $this->request->variable('username', '', true);
 		$email		= strtolower($this->request->variable('email', ''));
 
-		add_form_key('ucp_remind');
+		add_form_key('ucp_reset_password');
 
 		if ($submit)
 		{
-			if (!check_form_key('ucp_remind'))
+			if (!check_form_key('ucp_reset_password'))
 			{
-				trigger_error('FORM_INVALID');
+				return $this->helper->message('FORM_INVALID');
 			}
 
 			if (empty($email))
 			{
-				trigger_error('NO_EMAIL_USER');
+				return $this->helper->message('NO_EMAIL_USER');
 			}
 
 			$sql_array = [
@@ -211,27 +211,27 @@ class reset_password
 
 				if (!$user_row)
 				{
-					trigger_error($message);
+					return $this->helper->message($message);
 				}
 
 				if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
 				{
-					trigger_error($message);
+					return $this->helper->message($message);
 				}
 
 				// Do not create multiple valid reset tokens
 				if (!empty($user_row['reset_token']) && (int) $user_row['reset_token_expiration'] >= time())
 				{
-					trigger_error($message);
+					return $this->helper->message($message);
 				}
 
 				// Check users permissions
-				$auth2 = new \phpbb\auth\auth();
+				$auth2 = new auth();
 				$auth2->acl($user_row);
 
 				if (!$auth2->acl_get('u_chgpasswd'))
 				{
-					trigger_error($message);
+					return $this->helper->message($message);
 				}
 
 				// Generate reset token
@@ -247,7 +247,10 @@ class reset_password
 					WHERE user_id = ' . $user_row['user_id'];
 				$this->db->sql_query($sql);
 
-				include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
+				if (!class_exists('messenger'))
+				{
+					include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
+				}
 
 				/** @var \messenger $messenger */
 				$messenger = new \messenger(false);
@@ -268,7 +271,7 @@ class reset_password
 
 				$messenger->send($user_row['user_notify_type']);
 
-				trigger_error($message);
+				return $this->helper->message($message);
 			}
 		}
 
@@ -278,7 +281,7 @@ class reset_password
 			'S_PROFILE_ACTION'	=> $this->helper->route('phpbb_ucp_forgot_password_controller'),
 		]);
 
-		return $this->helper->render('ucp_reset_password.html', $this->language->lang('UCP_REMIND'));
+		return $this->helper->render('ucp_reset_password.html', $this->language->lang('RESET_PASSWORD'));
 	}
 
 	/**
@@ -304,7 +307,7 @@ class reset_password
 			return $this->helper->message('NO_USER');
 		}
 
-		add_form_key('ucp_remind');
+		add_form_key('ucp_reset_password');
 
 		$sql_array = [
 			'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
@@ -357,7 +360,7 @@ class reset_password
 
 		if ($submit)
 		{
-			if (!check_form_key('ucp_remind'))
+			if (!check_form_key('ucp_reset_password'))
 			{
 				return $this->helper->message('FORM_INVALID');
 			}
@@ -368,7 +371,7 @@ class reset_password
 			}
 
 			// Check users permissions
-			$auth2 = new \phpbb\auth\auth();
+			$auth2 = new auth();
 			$auth2->acl($user_row);
 
 			if (!$auth2->acl_get('u_chgpasswd'))
@@ -414,7 +417,7 @@ class reset_password
 					$user_row['username']
 				]);
 				meta_refresh(3, append_sid("{$this->root_path}index.{$this->php_ext}"));
-				trigger_error($this->language->lang('PASSWORD_RESET'));
+				return $this->helper->message($this->language->lang('PASSWORD_RESET'));
 			}
 		}
 
@@ -428,6 +431,6 @@ class reset_password
 			]),
 		]);
 
-		return $this->helper->render('ucp_reset_password.html', $this->language->lang('UCP_REMIND'));
+		return $this->helper->render('ucp_reset_password.html', $this->language->lang('RESET_PASSWORD'));
 	}
 }
