@@ -18,6 +18,7 @@ use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher;
 use phpbb\language\language;
+use phpbb\log\log_interface;
 use phpbb\passwords\manager;
 use phpbb\request\request_interface;
 use phpbb\template\template;
@@ -44,6 +45,9 @@ class reset_password
 
 	/** @var language */
 	protected $language;
+
+	/** @var log_interface */
+	protected $log;
 
 	/** @var manager */
 	protected $passwords_manager;
@@ -74,6 +78,7 @@ class reset_password
 	 * @param dispatcher $dispatcher
 	 * @param helper $helper
 	 * @param language $language
+	 * @param log_interface $log
 	 * @param manager $passwords_manager
 	 * @param request_interface $request
 	 * @param template $template
@@ -83,14 +88,15 @@ class reset_password
 	 * @param $php_ext
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
-								language $language, manager $passwords_manager, request_interface $request,
-								template $template, user $user, $tables, $root_path, $php_ext)
+								language $language, log_interface $log, manager $passwords_manager,
+								request_interface $request, template $template, user $user, $tables, $root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
 		$this->helper = $helper;
 		$this->language = $language;
+		$this->log = $log;
 		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->template = $template;
@@ -109,8 +115,26 @@ class reset_password
 
 		if (!$this->config['allow_password_reset'])
 		{
-			$this->helper->message($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
+			trigger_error($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
 		}
+	}
+
+	/**
+	 * Remove reset token for specified user
+	 *
+	 * @param int $user_id User ID
+	 */
+	protected function remove_reset_token(int $user_id)
+	{
+		$sql_ary = [
+			'reset_token'				=> '',
+			'reset_token_expiration'	=> 0,
+		];
+
+		$sql = 'UPDATE ' . $this->tables['users'] . '
+					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE user_id = ' . $user_id;
+		$this->db->sql_query($sql);
 	}
 
 	/**
@@ -180,7 +204,7 @@ class reset_password
 			}
 			else
 			{
-				$message = $this->language->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+				$message = $this->language->lang('PASSWORD_RESET_LINK_SENT') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
 				$user_row = empty($rowset) ? [] : $rowset[0];
 				$this->db->sql_freeresult($result);
@@ -254,7 +278,7 @@ class reset_password
 			'S_PROFILE_ACTION'	=> $this->helper->route('phpbb_ucp_forgot_password_controller'),
 		]);
 
-		return $this->helper->render('ucp_remind.html', $this->language->lang('UCP_REMIND'));
+		return $this->helper->render('ucp_reset_password.html', $this->language->lang('UCP_REMIND'));
 	}
 
 	/**
@@ -272,12 +296,12 @@ class reset_password
 
 		if (empty($reset_token))
 		{
-			$this->helper->message('NO_RESET_TOKEN');
+			return $this->helper->message('NO_RESET_TOKEN');
 		}
 
 		if (!$user_id)
 		{
-			$this->helper->message('NO_USER');
+			return $this->helper->message('NO_USER');
 		}
 
 		add_form_key('ucp_remind');
@@ -314,31 +338,33 @@ class reset_password
 
 		if (empty($user_row))
 		{
-			$this->helper->message($message);
+			return $this->helper->message($message);
 		}
 
 		if (!hash_equals($reset_token, $user_row['reset_token']))
 		{
-			$this->helper->message($message);
+			return $this->helper->message($message);
 		}
 
 		if ($user_row['reset_token_expiration'] < time())
 		{
-			$this->helper->message($message);
+			$this->remove_reset_token($user_id);
+
+			return $this->helper->message($message);
 		}
+
+		$error = [];
 
 		if ($submit)
 		{
 			if (!check_form_key('ucp_remind'))
 			{
-				trigger_error('FORM_INVALID');
+				return $this->helper->message('FORM_INVALID');
 			}
-
-			$message = $this->language->lang('PASSWORD_UPDATED_IF_EXISTED') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
 			if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
 			{
-				trigger_error($message);
+				return $this->helper->message($message);
 			}
 
 			// Check users permissions
@@ -347,46 +373,54 @@ class reset_password
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
-				trigger_error($message);
+				return $this->helper->message($message);
 			}
 
-			$server_url = generate_board_url();
+			if (!function_exists('validate_data'))
+			{
+				include($this->root_path . 'includes/functions_user.' . $this->php_ext);
+			}
 
-			// Make password at least 8 characters long, make it longer if admin wants to.
-			// gen_rand_string() however has a limit of 12 or 13.
-			$user_password = gen_rand_string_friendly(max(8, mt_rand((int) $this->config['min_pass_chars'], (int) $this->config['max_pass_chars'])));
-
-			// For the activation key a random length between 6 and 10 will do.
-			$user_actkey = gen_rand_string(mt_rand(6, 10));
-
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_newpasswd = '" . $this->db->sql_escape($this->passwords_manager->hash($user_password)) . "', user_actkey = '" . $this->db->sql_escape($user_actkey) . "'
-				WHERE user_id = " . $user_row['user_id'];
-			$this->db->sql_query($sql);
-
-			include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-
-			$messenger = new messenger(false);
-
-			$messenger->template('user_activate_passwd', $user_row['user_lang']);
-
-			$messenger->set_addresses($user_row);
-
-			$messenger->anti_abuse_headers($this->config, $this->user);
-
-			$messenger->assign_vars([
-				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
-				'PASSWORD'		=> htmlspecialchars_decode($user_password),
-				'U_ACTIVATE'	=> "$server_url/ucp.{$this->php_ext}?mode=activate&u={$user_row['user_id']}&k=$user_actkey"
-			]);
-
-			$messenger->send($user_row['user_notify_type']);
-
-			trigger_error($message);
+			$data = [
+				'new_password'		=> $this->request->untrimmed_variable('new_password', '', true),
+				'password_confirm'	=> $this->request->untrimmed_variable('new_password_confirm', '', true),
+			];
+			$check_data = [
+				'new_password'		=> [
+					['string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']],
+					['password'],
+				],
+				'password_confirm'	=> ['string', true, $this->config['min_pass_chars'], $this->config['max_pass_chars']],
+			];
+			$error = array_merge($error, validate_data($data, $check_data));
+			if (strcmp($data['new_password'], $data['password_confirm']) !== 0)
+			{
+				$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
+			}
+			if (empty($error))
+			{
+				$sql_ary = [
+					'user_password'				=> $this->passwords_manager->hash($data['new_password']),
+					'user_login_attempts'		=> 0,
+					'reset_token'				=> '',
+					'reset_token_expiration'	=> 0,
+				];
+				$sql = 'UPDATE ' . $this->tables['users'] . '
+							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . (int) $user_row['user_id'];
+				$this->db->sql_query($sql);
+				$this->log->add('user', $user_row['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, [
+					'reportee_id' => $user_row['user_id'],
+					$user_row['username']
+				]);
+				meta_refresh(3, append_sid("{$this->root_path}index.{$this->php_ext}"));
+				trigger_error($this->language->lang('PASSWORD_RESET'));
+			}
 		}
 
 		$this->template->assign_vars([
 			'S_IS_PASSWORD_RESET'	=> true,
+			'ERROR'					=> !empty($error) ? implode('<br />', array_map([$this->language, 'lang'], $error)) : '',
 			'S_PROFILE_ACTION'		=> $this->helper->route('phpbb_ucp_reset_password_controller'),
 			'S_HIDDEN_FIELDS'		=> build_hidden_fields([
 				'u'		=> $user_id,
@@ -394,6 +428,6 @@ class reset_password
 			]),
 		]);
 
-		return $this->helper->render('ucp_remind.html', $this->language->lang('UCP_REMIND'));
+		return $this->helper->render('ucp_reset_password.html', $this->language->lang('UCP_REMIND'));
 	}
 }
