@@ -220,7 +220,7 @@ class reset_password
 				}
 
 				// Do not create multiple valid reset tokens
-				if (!empty($user_row['reset_token']) && (int) $user_row['reset_token_expiration'] <= (time() + $this->config['reset_token_lifetime']))
+				if (!empty($user_row['reset_token']) && (int) $user_row['reset_token_expiration'] >= time())
 				{
 					trigger_error($message);
 				}
@@ -239,7 +239,7 @@ class reset_password
 
 				$sql_ary = [
 					'reset_token'				=> $reset_token,
-					'reset_token_expiration'	=> time() + $this->config['reset_token_lifetime'],
+					'reset_token_expiration'	=> strtotime('+1 day'),
 				];
 
 				$sql = 'UPDATE ' . $this->tables['users'] . '
