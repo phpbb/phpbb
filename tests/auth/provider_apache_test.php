@@ -202,6 +202,8 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_new' => '1',
 			'user_reminded' => '0',
 			'user_reminded_time' => '0',
+			'reset_token' => '',
+			'reset_token_expiration' => '0',
 		);
 
 		$this->assertEquals($expected, $this->provider->autologin());
