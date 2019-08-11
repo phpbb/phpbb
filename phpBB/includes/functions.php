@@ -2734,6 +2734,11 @@ function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = f
 */
 function parse_cfg_file($filename, $lines = false)
 {
+	if (!file_exists($filename))
+	{
+		trigger_error('NO_STYLE_DATA', E_USER_ERROR);
+	}
+
 	$parsed_items = array();
 
 	if ($lines === false)
