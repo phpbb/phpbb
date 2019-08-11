@@ -2045,6 +2045,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				continue;
 			}
 
+			if (preg_match('/[\x{10000}-\x{10FFFF}]/u', $attach_row['attach_comment']))
+			{
+				trigger_error('ATTACH_COMMENT_NO_EMOJIS');
+			}
+
 			if (!$attach_row['is_orphan'])
 			{
 				// update entry in db if attachment already stored in db and filespace
