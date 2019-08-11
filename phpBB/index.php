@@ -211,9 +211,6 @@ if ($show_birthdays)
 	$template->assign_block_vars_array('birthdays', $birthdays);
 }
 
-// Add form token for login box
-add_form_key('login', '_LOGIN');
-
 // Assign index specific vars
 $template->assign_vars(array(
 	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
