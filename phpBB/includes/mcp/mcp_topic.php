@@ -142,14 +142,36 @@ function mcp_topic_view($id, $mode, $action)
 	}
 	$start = $pagination->validate_start($start, $posts_per_page, $total);
 
-	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
-		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
+	$sql_where = (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . '
 			AND ' .	$phpbb_content_visibility->get_visibility_sql('post', $topic_info['forum_id'], 'p.') . '
 			AND p.poster_id = u.user_id ' .
-			$limit_time_sql . '
-		ORDER BY ' . $sort_order_sql;
+			$limit_time_sql;
+
+	$sql_ary = array(
+		'SELECT'	=> 'u.username, u.username_clean, u.user_colour, p.*',
+		'FROM'		=> array(
+			POSTS_TABLE		=> 'p',
+			USERS_TABLE		=> 'u'
+		),
+		'LEFT_JOIN'	=> array(),
+		'WHERE'		=> $sql_where,
+		'ORDER_BY'	=> $sort_order_sql,
+	);
+
+	/**
+	* Event to modify the SQL query before the MCP topic review posts is queried
+	*
+	* @event core.mcp_topic_modify_sql_ary
+	* @var	array	sql_ary		The SQL array to get the data of the MCP topic review posts
+	* @since 3.2.8-RC1
+	*/
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.mcp_topic_modify_sql_ary', compact($vars)));
+
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
+	unset($sql_ary);
+
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = $post_id_list = array();
