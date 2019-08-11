@@ -1073,7 +1073,18 @@ switch ($mode)
 
 				if ($active_time !== false)
 				{
-					$sql_where .= " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . $active_time;
+					if ($active_select === 'lt' && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
+					{
+						$sql_where .= ' AND u.user_lastvisit = 0';
+					}
+					else if ($active_select === 'gt')
+					{
+						$sql_where .= ' AND u.user_lastvisit ' . $find_key_match[$active_select] . ' ' . $active_time;
+					}
+					else
+					{
+						$sql_where .= ' AND (u.user_lastvisit > 0 AND u.user_lastvisit < ' . $active_time . ')';
+					}
 				}
 			}
 
