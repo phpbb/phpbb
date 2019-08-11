@@ -2514,9 +2514,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		));
 	}
 
-	// Add form token for login box
-	add_form_key($form_name, '_LOGIN');
-
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	$login_box_template_data = array(
@@ -2650,9 +2647,6 @@ function login_forum_box($forum_data)
 	extract($phpbb_dispatcher->trigger_event('core.login_forum_box', compact($vars)));
 
 	page_header($user->lang['LOGIN']);
-
-	// Add form token for login box
-	add_form_key('login', '_LOGIN');
 
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
@@ -4424,6 +4418,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
+
+	// Add form token for login box, in case page is presenting a login form.
+	add_form_key('login', '_LOGIN');
+
 	/**
 	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
 	 * @deprecated 3.2.7 (To be removed: 3.3.0-a1)
