@@ -1125,7 +1125,7 @@ class acp_styles
 	{
 		if (!file_exists($this->styles_path . $dir . '/style.cfg'))
 		{
-			trigger_error('NO_STYLE_DATA', E_USER_ERROR);
+			trigger_error($this->user->lang['NO_STYLE_CFG'] . $dir, E_USER_WARNING);
 		}
 
 		static $required = array('name', 'phpbb_version', 'copyright');
