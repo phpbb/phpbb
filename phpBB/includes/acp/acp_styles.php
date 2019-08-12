@@ -1123,9 +1123,10 @@ class acp_styles
 	*/
 	protected function read_style_cfg($dir)
 	{
+		// This should never happen, we give them a red warning because of its relevance.
 		if (!file_exists($this->styles_path . $dir . '/style.cfg'))
 		{
-			trigger_error($this->user->lang['NO_STYLE_CFG'] . $dir, E_USER_WARNING);
+			trigger_error(sprintf($this->user->lang['NO_STYLE_CFG'], $dir), E_USER_WARNING);
 		}
 
 		static $required = array('name', 'phpbb_version', 'copyright');
