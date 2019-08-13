@@ -84,7 +84,8 @@ $lang = array_merge($lang, array(
 	'STYLE_USED_BY'				=> 'Used by (including robots)',
 	'STYLE_VERSION'				=> 'Style version',
 
-	'UNINSTALL_DEFAULT'		=> 'You cannot uninstall the default style.',
+	'UNINSTALL_PROSILVER'		=> 'You cannot uninstall the style “prosilver”.',
+	'UNINSTALL_DEFAULT'			=> 'You cannot uninstall the default style.',
 
 	'BROWSE_STYLES_DATABASE'	=> 'Browse styles database',
 ));
