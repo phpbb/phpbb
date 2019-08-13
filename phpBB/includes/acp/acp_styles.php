@@ -259,6 +259,19 @@ class acp_styles
 		// Get list of styles to uninstall
 		$ids = $this->request_vars('id', 0, true);
 
+		// Don't remove prosilver, you can still deactivate it.
+		$sql = 'SELECT style_id
+			FROM ' . STYLES_TABLE . "
+			WHERE style_name = '" . $this->db->sql_escape('prosilver') . "'";
+		$result = $this->db->sql_query($sql);
+		$prosilver_id = (int) $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (in_array($prosilver_id, $ids))
+		{
+			trigger_error($this->user->lang['UNINSTALL_PROSILVER'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		// Check if confirmation box was submitted
 		if (confirm_box(true))
 		{
@@ -289,14 +302,6 @@ class acp_styles
 	{
 		global $user, $phpbb_log;
 
-		// Don't remove prosilver, you can still deactivate it.
-		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . "
-			WHERE style_name = '" . $this->db->sql_escape('prosilver') . "'";
-		$result = $this->db->sql_query($sql);
-		$prosilver_id = (int) $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
 		$default = $this->default_style;
 		$uninstalled = array();
 		$messages = array();
@@ -304,10 +309,6 @@ class acp_styles
 		// Check styles list
 		foreach ($ids as $id)
 		{
-			if ($id == $prosilver_id)
-			{
-				trigger_error($this->user->lang['UNINSTALL_PROSILVER'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
 			if (!$id)
 			{
 				trigger_error($this->user->lang['INVALID_STYLE_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
