@@ -146,7 +146,9 @@
 		{styles_list.EXTRA}
 		<td class="{$ROW_CLASS} mark" width="20">
 			<!-- IF styles_list.STYLE_ID -->
-				<input class="checkbox" type="checkbox" name="ids[]" value="{styles_list.STYLE_ID}" />
+				{% if styles_list.STYLE_NAME !== 'prosilver' %}
+					<input class="checkbox" type="checkbox" name="ids[]" value="{styles_list.STYLE_ID}" />
+				{% endif %}
 			<!-- ELSE -->
 				<!-- IF styles_list.COMMENT != '' -->
 					&nbsp;
