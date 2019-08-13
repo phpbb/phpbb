@@ -1014,11 +1014,14 @@ class acp_styles
 				'L_ACTION'	=> $this->user->lang['EXPORT']
 			); */
 
-			// Uninstall
-			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['STYLE_UNINSTALL']
-			);
+			if ($style['style_name'] !== 'prosilver')
+			{
+				// Uninstall
+				$actions[] = array(
+					'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
+					'L_ACTION'	=> $this->user->lang['STYLE_UNINSTALL']
+				);
+			}
 
 			// Preview
 			$actions[] = array(
