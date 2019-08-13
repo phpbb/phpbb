@@ -264,12 +264,15 @@ class acp_styles
 			FROM ' . STYLES_TABLE . "
 			WHERE style_name = '" . $this->db->sql_escape('prosilver') . "'";
 		$result = $this->db->sql_query($sql);
-		$prosilver_id = (int) $this->db->sql_fetchrow($result);
+		$prosilver_id = (int) $this->db->sql_fetchfield('style_id');
 		$this->db->sql_freeresult($result);
 
-		if (in_array($prosilver_id, $ids))
+		if ($prosilver_id)
 		{
-			trigger_error($this->user->lang['UNINSTALL_PROSILVER'] . adm_back_link($this->u_action), E_USER_WARNING);
+			if (in_array($prosilver_id, $ids))
+			{
+				trigger_error($this->user->lang('UNINSTALL_PROSILVER') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
 		}
 
 		// Check if confirmation box was submitted
