@@ -267,12 +267,9 @@ class acp_styles
 		$prosilver_id = (int) $this->db->sql_fetchfield('style_id');
 		$this->db->sql_freeresult($result);
 
-		if ($prosilver_id)
+		if ($prosilver_id && in_array($prosilver_id, $ids))
 		{
-			if (in_array($prosilver_id, $ids))
-			{
-				trigger_error($this->user->lang('UNINSTALL_PROSILVER') . adm_back_link($this->u_action), E_USER_WARNING);
-			}
+			trigger_error($this->user->lang('UNINSTALL_PROSILVER') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Check if confirmation box was submitted
