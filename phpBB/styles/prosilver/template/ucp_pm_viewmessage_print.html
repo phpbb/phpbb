@@ -43,12 +43,12 @@
 	<div id="page-footer" class="page-footer">
 		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
 		<div class="copyright">
-			<p>{ CREDIT_LINE }}
+			<p>{{ CREDIT_LINE }}
 			</p>
-			<!-- IF TRANSLATION_INFO -->
+			{% if TRANSLATION_INFO %}
 			<p>{{ TRANSLATION_INFO }}
 			</p>
-			<!-- ENDIF -->
+			{% endif %}
 		</div>
 	</div>
 </div>
