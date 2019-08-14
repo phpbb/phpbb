@@ -37,7 +37,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, [
-	'ACP_STYLES_EXPLAIN'						=> 'Here you can manage the styles available on your board. You can delete, deactivate, activate or reactivate them or install new ones. Please <strong>note</strong> that for obvious reasons like provide proper board operation you cannot uninstall the “<strong><em>prosilver</em></strong>” style. You can also see what a style will look like by using the preview function. Also listed is the total user count for each style, note that overwritten user styles will not be reflected here.',
+	'ACP_STYLES_EXPLAIN'						=> 'Here you can manage the styles available on your board.<br>Overwritten user styles will not be reflected here. Please note you cannot uninstall the “<strong>prosilver</strong>” style as it is phpBB’s default and primary parent style.',
 
 	'CANNOT_BE_INSTALLED'						=> 'Cannot be installed',
 	'CONFIRM_UNINSTALL_STYLES'					=> 'Are you sure you wish to uninstall selected styles?',
