@@ -6,7 +6,9 @@
 
 	<div id="page-footer">
 		<div class="copyright">
-			Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited
+			{% if S_COPYRIGHT_HTML %}
+				{{ CREDIT_LINE }}
+			{% endif %}
 		</div>
 	</div>
 </div>
