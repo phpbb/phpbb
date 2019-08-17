@@ -634,6 +634,21 @@ class oauth extends \phpbb\auth\provider\base
 	*/
 	protected function link_account_perform_link(array $data)
 	{
+		// Check if the external account is already associated with other user
+		$sql = 'SELECT user_id
+			FROM ' . $this->auth_provider_oauth_token_account_assoc . "
+			WHERE provider = '" . $this->db->sql_escape($data['provider']) . "'
+				AND oauth_provider_id = '" . $this->db->sql_escape($data['oauth_provider_id']) . "'";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($row)
+		{
+			trigger_error('AUTH_PROVIDER_OAUTH_ERROR_ALREADY_LINKED');
+		}
+
+		// Link account
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
