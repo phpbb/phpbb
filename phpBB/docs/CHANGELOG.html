@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v327">Changes since 3.2.7</a></li>
 		<li><a href="#v326">Changes since 3.2.6</a></li>
 		<li><a href="#v326rc1">Changes since 3.2.6-RC1</a></li>
 		<li><a href="#v325">Changes since 3.2.5</a></li>
@@ -138,6 +139,80 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v327"></a><h3>Changes since 3.2.7</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13175">PHPBB3-13175</a>] - External accounts can be linked to more than one local account</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14459">PHPBB3-14459</a>] - Check language input for group</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15211">PHPBB3-15211</a>] - Emoji characters in forum name causing SQL errors</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15885">PHPBB3-15885</a>] - Group rank not displaying on memberlist_body</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15897">PHPBB3-15897</a>] - Unicode Characters in Attachment Comment Causes mySQL Error </li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15932">PHPBB3-15932</a>] - Users can delete their attachments in the UCP, even if the post is locked</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15961">PHPBB3-15961</a>] - SMTP support for TLS is forcing use of deprecated TLS 1.0</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15974">PHPBB3-15974</a>] - The link &quot;Back to previous page&quot; can redirect to another page, not the previous one</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15976">PHPBB3-15976</a>] - Changing account settings without changing password resets user_passchg</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15982">PHPBB3-15982</a>] - Q&amp;A captcha plug-in still throws PHP 7.2.x countable warning</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16003">PHPBB3-16003</a>] - Post count not updated when deleting only post in topic</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16021">PHPBB3-16021</a>] - Recognize number of Template Event instances in events.md file</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16040">PHPBB3-16040</a>] - Topic Icon with space in filename isn't displayed by viewforum_body.html</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16048">PHPBB3-16048</a>] - Unable to restore any backup from ACP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16050">PHPBB3-16050</a>] - PHP warning in MCP banning tab on PHP 7.2+</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16053">PHPBB3-16053</a>] - BBCodes using {TEXT} in HTML tags no longer work</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16054">PHPBB3-16054</a>] - Style templates no longer able to login &quot;from any page.&quot;</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16055">PHPBB3-16055</a>] - Unable to login using Oauth via Forums, topics or posts</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16061">PHPBB3-16061</a>] - Migrator never drops unique indexes</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16063">PHPBB3-16063</a>] - board_dst config value is not removed from config table after conversion</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16066">PHPBB3-16066</a>] - Banned or suspended user receives &quot;The submitted form was invalid. Try submitting again.&quot;</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16071">PHPBB3-16071</a>] - Undefined index for custom attachments groups</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16073">PHPBB3-16073</a>] - Fix warning in ACP version check</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16074">PHPBB3-16074</a>] - Twemoji -fe0f sequence not rendering</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16075">PHPBB3-16075</a>] - PM filter “sent to my default usergroup” triggers array to string conversion warning</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16080">PHPBB3-16080</a>] - Warnings When a Style exists on database but not on FTP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16093">PHPBB3-16093</a>] - Attach row template always gets displayed with JS disabled</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16096">PHPBB3-16096</a>] - MySQL full text search always uses MyISAM limits</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16124">PHPBB3-16124</a>] - Incorrect users search by last visit time in memberlist.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16126">PHPBB3-16126</a>] - AppVeyor builds fail due to chocolatey being unable to install PHP</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15745">PHPBB3-15745</a>] - Hardcoded lang in credit line</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15886">PHPBB3-15886</a>] - Group helper functions</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15946">PHPBB3-15946</a>] - Add event - core.posting_modify_row_data</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15967">PHPBB3-15967</a>] - Unambiguous wording in user activation request email to Admin/Moderator</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15984">PHPBB3-15984</a>] - Use of 'Cache-Control: public' for serving files</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16000">PHPBB3-16000</a>] - Provide link to PHP Date Function in both ACP and UCP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16013">PHPBB3-16013</a>] - Do not prevent username changes in ACP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16019">PHPBB3-16019</a>] - Deny prosilver's uninstallation</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16024">PHPBB3-16024</a>] - Add core.topic_review_modify_sql_ary</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16025">PHPBB3-16025</a>] - Add 2 template events *_author_username_{append/prepend}</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16047">PHPBB3-16047</a>] - ACP Private Messages: Wording could be better</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16058">PHPBB3-16058</a>] - Remove sudo required from travis config</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16065">PHPBB3-16065</a>] - Undefined index: user_ip in oauth.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16068">PHPBB3-16068</a>] - Incorrect docblock parameter types</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16070">PHPBB3-16070</a>] - Remove support for WebSTAR and Xitami</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16078">PHPBB3-16078</a>] - Use chrome webdriver for UI tests</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16089">PHPBB3-16089</a>] - Add core.confirm_box_ajax_before</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16097">PHPBB3-16097</a>] - Add core.viewtopic_gen_sort_selects_before</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16101">PHPBB3-16101</a>] - Add Referrer-Policy header</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16102">PHPBB3-16102</a>] - Add core.posting_modify_post_subject</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16103">PHPBB3-16103</a>] - Add core.pm_modify_message_subject</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16106">PHPBB3-16106</a>] - Add core.mcp_main_before</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16107">PHPBB3-16107</a>] - Add mcp_move_destination_forum_before|after</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16108">PHPBB3-16108</a>] - Add topiclist_row_topic_by_author_before|after</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16109">PHPBB3-16109</a>] - Custom Profile Field visibility is incorrectly explained</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16111">PHPBB3-16111</a>] - Add core.message_history_modify_sql_ary</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16113">PHPBB3-16113</a>] - Add core.mcp_topic_modify_sql_ary</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16114">PHPBB3-16114</a>] - Add 2 mcp_topic_post_author_full_{append/prepend}</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16127">PHPBB3-16127</a>] - Add UI for Mass email $max_chunk_size</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16129">PHPBB3-16129</a>] - The attachment's ALT tag is supposed to describe the image, not the file.</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16067">PHPBB3-16067</a>] - Define trusty build environment for travis builds</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16112">PHPBB3-16112</a>] - Update composer dependencies to latest</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16119">PHPBB3-16119</a>] - The text input for poll question has a too high maxlength attribute</li>
+			</ul>
+
 			<a name="v326"></a><h3>Changes since 3.2.6</h3>
 			<h4>Bug</h4>
 			<ul>
