@@ -176,7 +176,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertContains('viewtopic.php?f=' . $this->data['forums']['Disapprove Test #1'] . '&t=' . $this->data['topics']['Disapprove Test Topic #1'], $link_url);
+		$this->assertContains('viewtopic.php?t=' . $this->data['topics']['Disapprove Test Topic #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Disapprove Test Topic #1', $crawler->filter('html')->text());

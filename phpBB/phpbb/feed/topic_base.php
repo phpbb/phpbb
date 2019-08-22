@@ -47,7 +47,7 @@ abstract class topic_base extends attachments_base
 	 */
 	public function adjust_item(&$item_row, &$row)
 	{
-		$item_row['link'] = $this->helper->append_sid('viewtopic.' . $this->phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
+		$item_row['link'] = $this->helper->append_sid('viewtopic.' . $this->phpEx, 'p=' . $row['post_id'] . '#p' . $row['post_id']);
 
 		if ($this->config['feed_item_statistics'])
 		{
