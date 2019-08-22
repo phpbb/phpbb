@@ -17,9 +17,9 @@ class reset_password extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
+		return [
 			'\phpbb\db\migration\data\v330\dev',
-		);
+		];
 	}
 
 	public function update_schema()

@@ -18,6 +18,7 @@ use phpbb\config\config;
 use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher;
+use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\passwords\manager;
@@ -156,7 +157,7 @@ class reset_password
 		{
 			if (!check_form_key('ucp_reset_password'))
 			{
-				return $this->helper->message('FORM_INVALID');
+				throw new http_exception(Response::HTTP_UNAUTHORIZED, 'FORM_INVALID');
 			}
 
 			if (empty($email))
@@ -192,11 +193,10 @@ class reset_password
 			$sql = $this->db->sql_build_query('SELECT', $sql_array);
 			$result = $this->db->sql_query_limit($sql, 2); // don't waste resources on more rows than we need
 			$rowset = $this->db->sql_fetchrowset($result);
+			$this->db->sql_freeresult($result);
 
 			if (count($rowset) > 1)
 			{
-				$this->db->sql_freeresult($result);
-
 				$this->template->assign_vars([
 					'USERNAME_REQUIRED'	=> true,
 					'EMAIL'				=> $email,
@@ -206,13 +206,12 @@ class reset_password
 			{
 				$message = $this->language->lang('PASSWORD_RESET_LINK_SENT') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
-				$user_row = empty($rowset) ? [] : $rowset[0];
-				$this->db->sql_freeresult($result);
-
-				if (!$user_row)
+				if ($rowset === false)
 				{
 					return $this->helper->message($message);
 				}
+
+				$user_row = $rowset[0];
 
 				if ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE)
 				{
@@ -356,7 +355,7 @@ class reset_password
 			return $this->helper->message($message);
 		}
 
-		$error = [];
+		$errors = [];
 
 		if ($submit)
 		{
@@ -395,12 +394,12 @@ class reset_password
 				],
 				'password_confirm'	=> ['string', true, $this->config['min_pass_chars'], $this->config['max_pass_chars']],
 			];
-			$error = array_merge($error, validate_data($data, $check_data));
+			$errors = array_merge($errors, validate_data($data, $check_data));
 			if (strcmp($data['new_password'], $data['password_confirm']) !== 0)
 			{
-				$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
+				$errors[] = $data['password_confirm'] ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 			}
-			if (empty($error))
+			if (empty($errors))
 			{
 				$sql_ary = [
 					'user_password'				=> $this->passwords_manager->hash($data['new_password']),
@@ -423,7 +422,7 @@ class reset_password
 
 		$this->template->assign_vars([
 			'S_IS_PASSWORD_RESET'	=> true,
-			'ERROR'					=> !empty($error) ? implode('<br />', array_map([$this->language, 'lang'], $error)) : '',
+			'ERROR'					=> !empty($errors) ? implode('<br />', array_map([$this->language, 'lang'], $errors)) : '',
 			'S_PROFILE_ACTION'		=> $this->helper->route('phpbb_ucp_reset_password_controller'),
 			'S_HIDDEN_FIELDS'		=> build_hidden_fields([
 				'u'		=> $user_id,
