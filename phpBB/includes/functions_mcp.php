@@ -92,8 +92,7 @@ function phpbb_extra_url()
 {
 	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
-	$url_extra = '';
-	$url_extra .= ($post_id) ? "&amp;p=$post_id" : (($topic_id) ? "&amp;t=$topic_id" : (($forum_id) ? "&amp;f=$forum_id" : ''));
+	$url_extra = ($post_id) ? "&amp;p=$post_id" : (($topic_id) ? "&amp;t=$topic_id" : (($forum_id) ? "&amp;f=$forum_id" : ''));
 	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
 	$url_extra .= ($report_id) ? "&amp;r=$report_id" : '';
 
