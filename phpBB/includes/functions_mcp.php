@@ -51,7 +51,7 @@ function phpbb_module_warn_url($mode, $module_row)
 	{
 		global $forum_id, $post_id;
 
-		$url_extra .= ($post_id) ? "&amp;p=$post_id" : ($forum_id) ? "&amp;f=$forum_id" : '';);
+		$url_extra .= ($post_id) ? "&amp;p=$post_id" : (($forum_id) ? "&amp;f=$forum_id" : '');
 
 		return $url_extra;
 	}
