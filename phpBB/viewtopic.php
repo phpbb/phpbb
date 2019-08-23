@@ -72,19 +72,16 @@ if ($view && !$post_id)
 
 	if ($view == 'unread')
 	{
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$result = $db->sql_query($sql);
+		$forum_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
 		if (!$forum_id)
 		{
-			$sql = 'SELECT forum_id
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$forum_id = (int) $db->sql_fetchfield('forum_id');
-			$db->sql_freeresult($result);
-
-			if (!$forum_id)
-			{
-				trigger_error('NO_TOPIC');
-			}
+			trigger_error('NO_TOPIC');
 		}
 
 		// Get topic tracking info
