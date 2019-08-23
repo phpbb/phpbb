@@ -71,21 +71,21 @@ if ($view && !$post_id)
 {
 
 	if ($view == 'unread')
-{
-	if (!$forum_id)
 	{
-		$sql = 'SELECT forum_id
-			FROM ' . TOPICS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$result = $db->sql_query($sql);
-		$forum_id = (int) $db->sql_fetchfield('forum_id');
-		$db->sql_freeresult($result);
-
 		if (!$forum_id)
 		{
-			trigger_error('NO_TOPIC');
+			$sql = 'SELECT forum_id
+				FROM ' . TOPICS_TABLE . "
+				WHERE topic_id = $topic_id";
+			$result = $db->sql_query($sql);
+			$forum_id = (int) $db->sql_fetchfield('forum_id');
+			$db->sql_freeresult($result);
+
+			if (!$forum_id)
+			{
+				trigger_error('NO_TOPIC');
+			}
 		}
-	}
 
 		// Get topic tracking info
 		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_id);
@@ -143,7 +143,7 @@ if ($view && !$post_id)
 		}
 		else
 		{
-            $forum_id = $row['forum_id'];
+			$forum_id = $row['forum_id'];
 			$sql = 'SELECT topic_id, forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id = ' . $forum_id . "
