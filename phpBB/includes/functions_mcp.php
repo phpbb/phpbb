@@ -55,7 +55,7 @@ function phpbb_module_warn_url($mode, $module_row)
 		{
 			$url_extra = "&amp;p=$post_id";
 		}
-        elseif ($forum_id)
+		else if ($forum_id)
 		{
 			$url_extra = "&amp;f=$forum_id";
 		}
@@ -103,20 +103,19 @@ function phpbb_extra_url()
 {
 	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
-
 	if ($post_id)
 	{
 		$url_extra = "&amp;p=$post_id";
 	}
-	elseif ($topic_id)
+	else if ($topic_id)
 	{
 		$url_extra = "&amp;t=$topic_id";
 	}
-	elseif ($forum_id)
+	else if ($forum_id)
 	{
 		$url_extra = "&amp;f=$forum_id";
 	}
-    else 
+	else
 	{
 		$url_extra = '';
 	}
