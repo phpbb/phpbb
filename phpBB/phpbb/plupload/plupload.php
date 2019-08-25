@@ -216,38 +216,36 @@ class plupload
 	}
 
 	/**
-	* Looks at the list of allowed extensions and generates a string
-	* appropriate for use in configuring plupload with
-	*
-	* @param \phpbb\cache\service $cache
-	* @param string $forum_id The ID of the forum
-	*
-	* @return string
-	*/
+	 * Looks at the list of allowed extensions and generates a string
+	 * appropriate for use in configuring plupload with
+	 *
+	 * @param \phpbb\cache\service	$cache		Cache service object
+	 * @param string				$forum_id	The forum identifier
+	 *
+	 * @return string
+	 */
 	public function generate_filter_string(\phpbb\cache\service $cache, $forum_id)
 	{
+		$groups = [];
+		$filters = [];
+
 		$attach_extensions = $cache->obtain_attach_extensions($forum_id);
 		unset($attach_extensions['_allowed_']);
-		$groups = array();
 
 		// Re-arrange the extension array to $groups[$group_name][]
 		foreach ($attach_extensions as $extension => $extension_info)
 		{
-			if (!isset($groups[$extension_info['group_name']]))
-			{
-				$groups[$extension_info['group_name']] = array();
-			}
-
-			$groups[$extension_info['group_name']][] = $extension;
+			$groups[$extension_info['group_name']]['extensions'][] = $extension;
+			$groups[$extension_info['group_name']]['max_file_size'] = (int) $extension_info['max_filesize'];
 		}
 
-		$filters = array();
-		foreach ($groups as $group => $extensions)
+		foreach ($groups as $group => $group_info)
 		{
 			$filters[] = sprintf(
-				"{title: '%s', extensions: '%s'}",
+				"{title: '%s', extensions: '%s', max_file_size: %s}",
 				addslashes(ucfirst(strtolower($group))),
-				addslashes(implode(',', $extensions))
+				addslashes(implode(',', $group_info['extensions'])),
+				$group_info['max_file_size']
 			);
 		}
 

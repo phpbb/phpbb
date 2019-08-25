@@ -45,7 +45,14 @@ phpbb.plupload = {
 		max_file_size: '{FILESIZE}b',
 		chunk_size: '{CHUNK_SIZE}b',
 		unique_names: true,
-		filters: [{FILTERS}],
+		filters: {
+			mime_types: [
+				{FILTERS}
+			],
+			mime_types_max_file_size: [
+				{FILTERS}
+			],
+		},
 		{S_RESIZE}
 		headers: {'X-PHPBB-USING-PLUPLOAD': '1', 'X-Requested-With': 'XMLHttpRequest'},
 		file_data_name: 'fileupload',
