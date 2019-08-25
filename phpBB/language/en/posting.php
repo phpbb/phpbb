@@ -140,6 +140,7 @@ $lang = array_merge($lang, array(
 	'IMAGES_ARE_OFF'			=> '[img] is <em>OFF</em>',
 	'IMAGES_ARE_ON'				=> '[img] is <em>ON</em>',
 	'INVALID_FILENAME'			=> '%s is an invalid filename.',
+	'INVALID_FONT_SIZE'			=> 'The font size you supplied is invalid: %s',
 
 	'LOAD'						=> 'Load',
 	'LOAD_DRAFT'				=> 'Load draft',
