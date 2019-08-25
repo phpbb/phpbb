@@ -90,6 +90,12 @@ phpbb.plupload.getSerializedData = function() {
 			obj['attachment_data[' + i + '][' + key + ']'] = datum[key];
 		}
 	}
+
+	// Insert form data
+	var $pluploadForm = $(phpbb.plupload.config.form_hook).first();
+	obj.creation_time = $pluploadForm.find('input[type=hidden][name="creation_time"]').val();
+	obj.form_token = $pluploadForm.find('input[type=hidden][name="form_token"]').val();
+
 	return obj;
 };
 
@@ -264,6 +270,17 @@ phpbb.plupload.deleteFile = function(row, attachId) {
 
 			return;
 		}
+
+		// Handle errors while deleting file
+		if (typeof response.error !== 'undefined') {
+			phpbb.alert(phpbb.plupload.lang.ERROR, response.error.message);
+
+			// We will have to assume that the deletion failed. So leave the file status as uploaded.
+			row.find('.file-status').toggleClass('file-uploaded');
+
+			return;
+		}
+
 		phpbb.plupload.update(response, 'removal', index);
 		// Check if the user can upload files now if he had reached the max files limit.
 		phpbb.plupload.handleMaxFilesReached();
