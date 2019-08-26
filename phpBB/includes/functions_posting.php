@@ -2490,7 +2490,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 *				- 'topic_last_poster_name'
 *				- 'topic_last_poster_colour'
 * @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time().
-* @return string An URL to the bumped topic, example: ./viewtopic.php?amptopic_id=2&ampp=3#p3
+* @return string An URL to the bumped topic, example: ./viewtopic.php?p=3#p3
 */
 function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 {
