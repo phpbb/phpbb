@@ -275,9 +275,9 @@ class reset_password
 		}
 
 		$this->template->assign_vars([
-			'USERNAME'			=> $username,
-			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> $this->helper->route('phpbb_ucp_forgot_password_controller'),
+			'USERNAME'					=> $username,
+			'EMAIL'						=> $email,
+			'U_RESET_PASSWORD_ACTION'	=> $this->helper->route('phpbb_ucp_forgot_password_controller'),
 		]);
 
 		return $this->helper->render('ucp_reset_password.html', $this->language->lang('RESET_PASSWORD'));
@@ -421,10 +421,10 @@ class reset_password
 		}
 
 		$this->template->assign_vars([
-			'S_IS_PASSWORD_RESET'	=> true,
-			'ERROR'					=> !empty($errors) ? implode('<br />', array_map([$this->language, 'lang'], $errors)) : '',
-			'S_PROFILE_ACTION'		=> $this->helper->route('phpbb_ucp_reset_password_controller'),
-			'S_HIDDEN_FIELDS'		=> build_hidden_fields([
+			'S_IS_PASSWORD_RESET'		=> true,
+			'ERROR'						=> !empty($errors) ? implode('<br />', array_map([$this->language, 'lang'], $errors)) : '',
+			'U_RESET_PASSWORD_ACTION'	=> $this->helper->route('phpbb_ucp_reset_password_controller'),
+			'S_HIDDEN_FIELDS'			=> build_hidden_fields([
 				'u'		=> $user_id,
 				'token'	=> $reset_token,
 			]),
