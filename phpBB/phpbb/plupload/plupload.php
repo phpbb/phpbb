@@ -283,15 +283,51 @@ class plupload
 	*/
 	public function get_chunk_size()
 	{
-		$max = min(
-			$this->php_ini->getBytes('upload_max_filesize'),
-			$this->php_ini->getBytes('post_max_size'),
-			max(1, $this->php_ini->getBytes('memory_limit')),
-			$this->config['max_filesize']
-		);
+		$max = 0;
 
-		// Use half of the maximum possible to leave plenty of room for other
-		// POST data.
+		$limit = $this->php_ini->getBytes('memory_limit');
+
+		// unlimited is -1 for memory_limit. 0 would be an invalid configuration.
+
+		if ($limit > 0)
+		{
+			$max = $limit;
+		}
+
+		// For all remaining limits, 0 means "unlimited".
+
+		// For each limit, if there is a non-unlimited value to
+		// apply, apply the limit if it's less than whatever non-
+		// unlimited max value is currently set.  Also, apply the
+		// limit if the current max value is otherwise unlimited.
+
+		$limit = $this->php_ini->getBytes('upload_max_filesize');
+
+		if ($limit > 0)
+		{
+			$max = min($limit, max($max, $limit));
+		}
+
+		$limit = $this->php_ini->getBytes('post_max_size');
+
+		if ($limit > 0)
+		{
+			$max = min($limit, max($max, $limit));
+		}
+
+		$limit = $this->config['max_filesize'];
+
+		if ($limit > 0)
+		{
+			$max = min($limit, max($max, $limit));
+		}
+
+		// Only if every limit was 0/unlimited will we still
+		// have a zero value in $max at this point.
+
+		// Use half of the maximum possible to leave plenty of
+		// room for other POST data and be well under limits.
+
 		return floor($max / 2);
 	}
 
