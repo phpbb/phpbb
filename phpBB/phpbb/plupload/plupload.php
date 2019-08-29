@@ -276,8 +276,14 @@ class plupload
 	}
 
 	/**
-	* Checks various php.ini values and the maximum file size to determine
-	* the maximum size chunks a file can be split up into for upload
+	* Checks various php.ini values to determine the maximum chunk
+	* size a file should be split into for upload.
+	*
+	* The intention is to calculate a value which reflects whatever
+	* the most restrictive limit is set to.  And to then set the chunk
+	* size to half that value, to ensure any required transfer overhead
+	* and POST data remains well within the limit.  Or, if all of the
+	* limits are set to unlimited, the chunk size will also be unlimited.
 	*
 	* @return int
 	*/
@@ -285,48 +291,31 @@ class plupload
 	{
 		$max = 0;
 
-		$limit = $this->php_ini->getBytes('memory_limit');
+		// unlimited is -1 for memory_limit. 0 should be an invalid configuration.
+		$limit_memory = $this->php_ini->getBytes('memory_limit');
 
-		// unlimited is -1 for memory_limit. 0 would be an invalid configuration.
-
-		if ($limit > 0)
+		if ($limit_memory > 0)
 		{
-			$max = $limit;
+			$max = $limit_memory;
 		}
 
 		// For all remaining limits, 0 means "unlimited".
 
-		// For each limit, if there is a non-unlimited value to
-		// apply, apply the limit if it's less than whatever non-
-		// unlimited max value is currently set.  Also, apply the
-		// limit if the current max value is otherwise unlimited.
+		$limit_upload = $this->php_ini->getBytes('upload_max_filesize');
 
-		$limit = $this->php_ini->getBytes('upload_max_filesize');
-
-		if ($limit > 0)
+		if ($limit_upload > 0)
 		{
-			$max = min($limit, max($max, $limit));
+			$max = min($limit_upload, $max ? $max : $limit_upload);
 		}
 
-		$limit = $this->php_ini->getBytes('post_max_size');
+		$limit_post = $this->php_ini->getBytes('post_max_size');
 
-		if ($limit > 0)
+		if ($limit_post > 0)
 		{
-			$max = min($limit, max($max, $limit));
+			$max = min($limit_post, $max ? $max : $limit_post);
 		}
-
-		$limit = $this->config['max_filesize'];
-
-		if ($limit > 0)
-		{
-			$max = min($limit, max($max, $limit));
-		}
-
-		// Only if every limit was 0/unlimited will we still
-		// have a zero value in $max at this point.
-
-		// Use half of the maximum possible to leave plenty of
-		// room for other POST data and be well under limits.
+		
+		// $config['max_filesize'] is not a limiter to chunk size.
 
 		return floor($max / 2);
 	}
