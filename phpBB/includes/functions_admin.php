@@ -607,12 +607,6 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	}
 	unset($table_ary);
 
-	if ($auto_sync)
-	{
-		sync('forum', 'forum_id', $forum_ids, true, true);
-		unset($forum_ids);
-	}
-
 	/**
 	 * Perform additional actions after topics move
 	 *
@@ -628,6 +622,12 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		'forum_ids',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.move_topics_after', compact($vars)));
+
+	if ($auto_sync)
+	{
+		sync('forum', 'forum_id', $forum_ids, true, true);
+		unset($forum_ids);
+	}
 }
 
 /**
