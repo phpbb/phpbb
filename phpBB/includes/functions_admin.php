@@ -549,7 +549,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	 * @event core.move_topics_before
 	 * @var	array	topic_ids	Array of the moved topic ids
 	 * @var	string	forum_id	The forum id from where the topics are moved
-	 * @since 3.2.x
+	 * @since 3.2.9-RC1
 	 */
 	$vars = array(
 		'topic_ids',
@@ -614,7 +614,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	 * @var	array	topic_ids	Array of the moved topic ids
 	 * @var	string	forum_id	The forum id from where the topics were moved
 	 * @var	array	forum_ids	Array of the forums where the topics were moved (includes also forum_id)
-	 * @since 3.2.x
+	 * @since 3.2.9-RC1
 	 */
 	$vars = array(
 		'topic_ids',
