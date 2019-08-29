@@ -305,14 +305,14 @@ class plupload
 
 		if ($limit_upload > 0)
 		{
-			$max = min($limit_upload, $max ? $max : $limit_upload);
+			$max = min($limit_upload, ($max ? $max : $limit_upload));
 		}
 
 		$limit_post = $this->php_ini->getBytes('post_max_size');
 
 		if ($limit_post > 0)
 		{
-			$max = min($limit_post, $max ? $max : $limit_post);
+			$max = min($limit_post, ($max ? $max : $limit_post));
 		}
 		
 		// $config['max_filesize'] is not a limiter to chunk size.
