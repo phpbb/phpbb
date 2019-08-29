@@ -314,7 +314,7 @@ class plupload
 		{
 			$max = min($limit_post, ($max ? $max : $limit_post));
 		}
-		
+
 		// $config['max_filesize'] is not a limiter to chunk size.
 
 		return floor($max / 2);
