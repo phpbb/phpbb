@@ -206,7 +206,7 @@ class reset_password
 			{
 				$message = $this->language->lang('PASSWORD_RESET_LINK_SENT') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
-				if ($rowset === false)
+				if (empty($rowset))
 				{
 					return $this->helper->message($message);
 				}
@@ -420,9 +420,13 @@ class reset_password
 			}
 		}
 
+		if (!empty($errors))
+		{
+			$this->template->assign_block_vars_array('PASSWORD_RESET_ERRORS', array_map([$this->language, 'lang'], $errors));
+		}
+
 		$this->template->assign_vars([
 			'S_IS_PASSWORD_RESET'		=> true,
-			'ERROR'						=> !empty($errors) ? implode('<br />', array_map([$this->language, 'lang'], $errors)) : '',
 			'U_RESET_PASSWORD_ACTION'	=> $this->helper->route('phpbb_ucp_reset_password_controller'),
 			'S_HIDDEN_FIELDS'			=> build_hidden_fields([
 				'u'		=> $user_id,
