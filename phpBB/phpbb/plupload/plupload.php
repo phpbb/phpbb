@@ -276,46 +276,36 @@ class plupload
 	}
 
 	/**
-	* Checks various php.ini values to determine the maximum chunk
-	* size a file should be split into for upload.
-	*
-	* The intention is to calculate a value which reflects whatever
-	* the most restrictive limit is set to.  And to then set the chunk
-	* size to half that value, to ensure any required transfer overhead
-	* and POST data remains well within the limit.  Or, if all of the
-	* limits are set to unlimited, the chunk size will also be unlimited.
-	*
-	* @return int
-	*/
+	 * Checks various php.ini values to determine the maximum chunk
+	 * size a file should be split into for upload.
+	 *
+	 * The intention is to calculate a value which reflects whatever
+	 * the most restrictive limit is set to.  And to then set the chunk
+	 * size to half that value, to ensure any required transfer overhead
+	 * and POST data remains well within the limit.  Or, if all of the
+	 * limits are set to unlimited, the chunk size will also be unlimited.
+	 *
+	 * @return int
+	 *
+	 * @access public
+	 */
 	public function get_chunk_size()
 	{
 		$max = 0;
 
-		// unlimited is -1 for memory_limit. 0 should be an invalid configuration.
-		$limit_memory = $this->php_ini->getBytes('memory_limit');
+		$limits = [
+			$this->php_ini->getBytes('memory_limit'),
+			$this->php_ini->getBytes('upload_max_filesize'),
+			$this->php_ini->getBytes('post_max_size'),
+		];
 
-		if ($limit_memory > 0)
+		foreach ($limits as $limit_type)
 		{
-			$max = $limit_memory;
+			if ($limit_type > 0)
+			{
+				$max = ($max !== 0) ? min($limit_type, $max) : $limit_type;
+			}
 		}
-
-		// For all remaining limits, 0 means "unlimited".
-
-		$limit_upload = $this->php_ini->getBytes('upload_max_filesize');
-
-		if ($limit_upload > 0)
-		{
-			$max = min($limit_upload, ($max ? $max : $limit_upload));
-		}
-
-		$limit_post = $this->php_ini->getBytes('post_max_size');
-
-		if ($limit_post > 0)
-		{
-			$max = min($limit_post, ($max ? $max : $limit_post));
-		}
-
-		// $config['max_filesize'] is not a limiter to chunk size.
 
 		return floor($max / 2);
 	}
