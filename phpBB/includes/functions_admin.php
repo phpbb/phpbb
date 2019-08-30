@@ -543,6 +543,20 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		$topic_ids = array($topic_ids);
 	}
 
+	/**
+	 * Perform additional actions before topics move
+	 *
+	 * @event core.move_topics_before
+	 * @var	array	topic_ids	Array of the moved topic ids
+	 * @var	string	forum_id	The forum id from where the topics are moved
+	 * @since 3.2.9-RC1
+	 */
+	$vars = array(
+		'topic_ids',
+		'forum_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.move_topics_before', compact($vars)));
+
 	$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids) . '
 			AND forum_id = ' . $forum_id;
@@ -592,6 +606,22 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	/**
+	 * Perform additional actions after topics move
+	 *
+	 * @event core.move_topics_after
+	 * @var	array	topic_ids	Array of the moved topic ids
+	 * @var	string	forum_id	The forum id from where the topics were moved
+	 * @var	array	forum_ids	Array of the forums where the topics were moved (includes also forum_id)
+	 * @since 3.2.9-RC1
+	 */
+	$vars = array(
+		'topic_ids',
+		'forum_id',
+		'forum_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.move_topics_after', compact($vars)));
 
 	if ($auto_sync)
 	{
