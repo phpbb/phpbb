@@ -116,7 +116,10 @@ class reset_password
 
 		if (!$this->config['allow_password_reset'])
 		{
-			trigger_error($this->language->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>'));
+			throw new http_exception(Response::HTTP_OK, 'UCP_PASSWORD_RESET_DISABLED', [
+				'<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">',
+				'</a>'
+			]);
 		}
 	}
 
