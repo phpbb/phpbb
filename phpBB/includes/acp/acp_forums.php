@@ -1576,6 +1576,19 @@ class acp_forums
 			$db->sql_query($sql);
 		}
 
+		/**
+		 * Event when content has been moved from one forum to another
+		 *
+		 * @event core.acp_manage_forums_move_content
+		 * @var	int		from_id		If of the current parent forum
+		 * @var	int		to_id		If of the new parent forum
+		 * @var	bool	sync		Shall we sync the "to"-forum's data
+		 *
+		 * @since 3.2.9-RC1
+		 */
+		$vars = array('from_id', 'to_id', 'sync');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content_after', compact($vars)));
+
 		if ($sync)
 		{
 			// Delete ghost topics that link back to the same forum then resync counters
