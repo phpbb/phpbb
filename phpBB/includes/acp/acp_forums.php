@@ -1579,7 +1579,7 @@ class acp_forums
 		/**
 		 * Event when content has been moved from one forum to another
 		 *
-		 * @event core.acp_manage_forums_move_content
+		 * @event core.acp_manage_forums_move_content_after
 		 * @var	int		from_id		If of the current parent forum
 		 * @var	int		to_id		If of the new parent forum
 		 * @var	bool	sync		Shall we sync the "to"-forum's data
