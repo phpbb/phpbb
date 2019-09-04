@@ -46,8 +46,6 @@
 	},
 	"homepage": "https://www.phpbb.com",
 	"devDependencies": {
-		"acorn": "^7.0.0",
-		"braces": "^3.0.2",
 		"cssnano": "^4.1.10",
 		"del": "^5.0.0",
 		"gulp": "^4.0.2",
@@ -56,7 +54,6 @@
 		"gulp-rename": "^1.4.0",
 		"gulp-sass": "^4.0.2",
 		"gulp-sourcemaps": "^2.6.5",
-		"gulp-stylefmt": "^1.1.0",
 		"postcss-import": "^12.0.1",
 		"postcss-pxtorem": "^4.0.1",
 		"postcss-sorting": "^5.0.1",
