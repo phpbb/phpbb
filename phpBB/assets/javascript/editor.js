@@ -18,16 +18,9 @@ var is_win = ((clientPC.indexOf('win') !== -1) || (clientPC.indexOf('16bit') !==
 var baseHeight;
 
 /**
-* Shows the help messages in the helpline window
-*/
-function helpline(help) {
-	document.forms[form_name].helpbox.value = help_line[help];
-}
-
-/**
 * Fix a bug involving the TextRange object. From
 * http://www.frostjedi.com/terra/scripts/demo/caretBug.html
-*/ 
+*/
 function initInsertions() {
 	var doc;
 
@@ -104,8 +97,8 @@ function bbfontstyle(bbopen, bbclose) {
 	}
 	// IE
 	else if (document.selection) {
-		var range = textarea.createTextRange(); 
-		range.move("character", new_pos); 
+		var range = textarea.createTextRange();
+		range.move("character", new_pos);
 		range.select();
 		storeCaret(textarea);
 	}
