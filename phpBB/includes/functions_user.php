@@ -1947,7 +1947,7 @@ function validate_user_email($email, $allowed_email = false)
 
 	if (($ban = $user->check_ban(false, false, $email, true)) !== false)
 	{
-		if ($ban !== false)
+		if (!empty($ban))
 		{
 			return !empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : 'EMAIL_BANNED';
 		}
