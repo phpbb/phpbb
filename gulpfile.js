@@ -6,9 +6,8 @@ const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
-const cssnano = require('gulp-cssnano');
+const cssnano = require('cssnano');
 const postcss = require('gulp-postcss');
-const stylefmt = require('gulp-stylefmt');
 const sorting = require('postcss-sorting');
 const atimport = require('postcss-import');
 const torem = require('postcss-pxtorem');
@@ -34,7 +33,6 @@ gulp.task('css', () => {
 			sorting(sortOrder)
 		])
 	)
-	.pipe(stylefmt())
 	.pipe(gulp.dest(build.css));
 
 	return css;
@@ -50,10 +48,10 @@ gulp.task('minify', () => {
 	.pipe(sourcemaps.init())
 	.pipe(
 		postcss([
-			atimport()
+			atimport(),
+			cssnano()
 		])
 	)
-	.pipe(cssnano())
 	.pipe(rename({
 		suffix: '.min',
 		extname: '.css'
