@@ -28,10 +28,12 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 
 	protected function setUp()
 	{
-		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $cache, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		parent::setUp();
 
+		$cache = new \phpbb\cache\driver\file();
+		$cache->purge();
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
