@@ -102,7 +102,9 @@ class ucp_register
 		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 
-		$error = $cp_data = $cp_error = array();
+		$cp_data = ['user_id' => ''];
+
+		$error = $cp_error = array();
 		$s_hidden_fields = array();
 
 		// Handle login_link data added to $_hidden_fields
