@@ -11,7 +11,9 @@ phpbb.alertTime = 100;
 var keymap = {
 	TAB: 9,
 	ENTER: 13,
-	ESC: 27
+	ESC: 27,
+	ARROW_UP: 38,
+	ARROW_DOWN: 40
 };
 
 var $dark = $('#darkenwrapper');
@@ -561,7 +563,8 @@ phpbb.search.setValue = function($input, value, multiline) {
 phpbb.search.setValueOnClick = function($input, value, $row, $container) {
 	$row.click(function() {
 		phpbb.search.setValue($input, value.result, $input.attr('data-multiline'));
-		$container.hide();
+
+		phpbb.search.closeResults($input, $container);
 	});
 };
 
@@ -584,8 +587,15 @@ phpbb.search.filter = function(data, event, sendRequest) {
 		searchID = $this.attr('data-results'),
 		keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline')),
 		cache = phpbb.search.cache.get(searchID),
+		key = event.keyCode || event.which,
 		proceed = true;
 	data[dataName] = keyword;
+
+	// No need to search if enter was pressed
+	// for selecting a value from the results.
+	if (key === keymap.ENTER) {
+		return false;
+	}
 
 	if (cache.timeout) {
 		clearTimeout(cache.timeout);
@@ -697,6 +707,8 @@ phpbb.search.showResults = function(results, $input, $container, callback) {
 		row.appendTo($resultContainer).show();
 	});
 	$container.show();
+
+	phpbb.search.navigateResults($input, $container, $resultContainer);
 };
 
 /**
@@ -708,11 +720,89 @@ phpbb.search.clearResults = function($container) {
 	$container.children(':not(.search-result-tpl)').remove();
 };
 
+/**
+ * Close search results.
+ *
+ * @param {jQuery} $input Search input|textarea.
+ * @param {jQuery} $container Search results container.
+ */
+phpbb.search.closeResults = function($input, $container) {
+	$input.off('.searchNavigation');
+	$container.hide();
+};
+
+/**
+ * Navigate search results.
+ *
+ * @param {jQuery} $input Search input|textarea.
+ * @param {jQuery} $container Search results container.
+ * @param {jQuery} $resultContainer	Search results list container.
+ */
+phpbb.search.navigateResults = function($input, $container, $resultContainer) {
+	// Add a namespace to the event (.searchNavigation),
+	// so it can be unbound specifically later on.
+	$input.on('keydown.searchNavigation', function(event) {
+		let key = event.keyCode || event.which,
+			$active = $resultContainer.children('.active');
+
+		switch (key) {
+			// Set the value for the selected result
+			case keymap.ENTER:
+				if ($active.length) {
+					let value = $active.find('.search-result > span').text();
+
+					phpbb.search.setValue($input, value, $input.attr('data-multiline'));
+				}
+
+				phpbb.search.closeResults($input, $container);
+
+				// Do not submit the form
+				event.preventDefault();
+			break;
+
+			// Close the results
+			case keymap.ESC:
+				phpbb.search.closeResults($input, $container);
+			break;
+
+			// Navigate the results
+			case keymap.ARROW_DOWN:
+			case keymap.ARROW_UP:
+				let up = key === keymap.ARROW_UP;
+
+				if (!$active.length) {
+					if (up) {
+						$resultContainer.children().last().addClass('active');
+					} else {
+						$resultContainer.children().first().addClass('active');
+					}
+				} else {
+					if (up) {
+						if ($active.is(':first-child')) {
+							$resultContainer.children().last().addClass('active');
+						} else {
+							$active.prev().addClass('active');
+						}
+					} else {
+						if ($active.is(':last-child')) {
+							$resultContainer.children().first().addClass('active');
+						} else {
+							$active.next().addClass('active');
+						}
+					}
+
+					$active.removeClass('active');
+				}
+			break;
+		}
+	});
+};
+
 $('#phpbb').click(function() {
 	var $this = $(this);
 
 	if (!$this.is('.live-search') && !$this.parents().is('.live-search')) {
-		$('.live-search').hide();
+		phpbb.search.closeResults($('input, textarea'), $('.live-search'));
 	}
 });
 
