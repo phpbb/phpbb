@@ -1178,11 +1178,33 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
 
-	// Check for out-of-bounds characters that are currently
-	// not supported by utf8_bin in MySQL
+	/**
+	 * Replace Emojis and other 4bit UTF-8 chars, not allowed by utf8_bin MySql, to NCR.
+	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 * Doesn't interfere with Japanese or Cyrillic etc.
+	 *
+	 * @see https://www.w3.org/TR/xml11/
+	 * @see https://www.opentag.com/xfaq_charrep.htm
+	 */
 	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
 	{
-		$character_list = implode('<br />', $matches[0]);
+		foreach ($matches as $key => $emoji)
+		{
+			$post_data['post_subject'] = str_replace($emoji, utf8_encode_ncr($emoji), $post_data['post_subject']);
+		}
+	}
+
+	/**
+	 * This should never happen again.
+	 * Leaving the fallback here just in case there will be the need of it.
+	 *
+	 * Check for out-of-bounds characters that are currently
+	 * not supported by utf8_bin in MySQL
+	 */
+	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+	{
+		$character_list = implode('<br>', $matches[0]);
+
 		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
 	}
 
