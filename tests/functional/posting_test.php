@@ -46,9 +46,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		self::create_post(2,
 			1,
 			"Unsupported: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
-			'This is a test with emoji characters in the topic title.',
-			array(),
-			'Your subject contains the following unsupported characters'
+			'This is a test with emoji characters in the topic title.'
 		);
 	}
 
