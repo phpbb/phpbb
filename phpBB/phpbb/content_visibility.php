@@ -222,15 +222,16 @@ class content_visibility
 		}
 		else
 		{
-			$field_name = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
 			$visibility_query = $table_alias . $mode . '_visibility = ';
 
 			$where_sql .= '(' . $visibility_query . ITEM_APPROVED . ')';
-			$where_sql .= ' OR (';
-			$where_sql .= '(' . $visibility_query . ITEM_UNAPPROVED . ' OR ' . $visibility_query . ITEM_REAPPROVE . ')';
-			$where_sql .= ' AND ' . $table_alias . $field_name . ' = ' . ((int) $this->user->data['user_id']) . ')';
+            if ($this->config['display_unapproved_posts'] && ($this->user->data['user_id'] <> ANONYMOUS))
+			{
+				$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
+				$where_sql .= ' OR (' . $visibility_query . ITEM_UNAPPROVED;
+				$where_sql .= ' AND ' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']) . ')';
+			}
 		}
-
 		return '(' . $where_sql . ')';
 	}
 
