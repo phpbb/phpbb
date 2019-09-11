@@ -902,7 +902,7 @@ if (count($topic_list))
         //correct for case of unapproved topic visible to poster - a bit dirty but efficient
         if ($replies < 0)
 		{
-			$replies++;
+			$replies = 0;
 		}
 
 		if ($row['topic_status'] == ITEM_MOVED)
