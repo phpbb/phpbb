@@ -34,6 +34,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 1),
 					array('post_id' => 2),
 					array('post_id' => 3),
+					array('post_id' => 4),
 				),
 			),
 			// data set 1: allow_drafts=0, normal user, cannot see any draft posts
@@ -61,6 +62,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('topic_id' => 1),
 					array('topic_id' => 2),
 					array('topic_id' => 3),
+					array('topic_id' => 4),
 				),
 			),
 			// data set 3: allow_drafts=0, normal user, cannot see draft posts topic

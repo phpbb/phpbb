@@ -25,14 +25,23 @@
 			<value>1</value>
 			<value>0</value>
 			<value>2</value>
+			<value>0</value>
 			<value>Softdeleted</value>
 		</row>
 		<row>
+<<<<<<< HEAD
 			<value>5</value>
 			<value>1</value>
 			<value>0</value>
 			<value>4</value>
 			<value>Draft</value>
+=======
+			<value>4</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>Unapproved</value>
+>>>>>>> 9236244... [ticket/9837] Make unapproved posts visible to posters
 		</row>
 	</table>
 	<table name="phpbb_posts">
