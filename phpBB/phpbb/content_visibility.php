@@ -146,11 +146,11 @@ class content_visibility
 	{
 		$visibility = $data[$mode . '_visibility'];
 		$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
-		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || 
-			($visibility == ITEM_APPROVED) || 
-			($this->config['display_unapproved_posts'] && 
-				($this->user->data['user_id'] <> ANONYMOUS) && 
-				($visibility == ITEM_UNAPPROVED || $visibility == ITEM_REAPPROVE) && 
+		$is_visible = $this->auth->acl_get('m_approve', $forum_id) ||
+			($visibility == ITEM_APPROVED) ||
+			($this->config['display_unapproved_posts'] &&
+				($this->user->data['user_id'] <> ANONYMOUS) &&
+				($visibility == ITEM_UNAPPROVED || $visibility == ITEM_REAPPROVE) &&
 				($this->user->data['user_id'] === $data[$poster_key])
 		);
 
