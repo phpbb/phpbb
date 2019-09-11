@@ -76,7 +76,7 @@ class content_visibility
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table,	$users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -200,8 +200,8 @@ class content_visibility
 		* @var	array		forum_id						The forum id in which the search is made.
 		* @var	string		table_alias						Table alias to prefix in SQL queries
 		* @var	mixed		get_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
-		*   												If false, get_visibility_sql continues normally
-		*   												It must be either boolean or string
+		* 													If false, get_visibility_sql continues normally
+		* 													It must be either boolean or string
 		* @since 3.1.4-RC1
 		*/
 		$vars = array(
@@ -270,8 +270,8 @@ class content_visibility
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
 		* @var	mixed		get_forums_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
-		*   													If false, get_forums_visibility_sql continues normally
-		*   													It must be either boolean or string
+		* 														If false, get_forums_visibility_sql continues normally
+		* 														It must be either boolean or string
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
