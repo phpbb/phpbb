@@ -1314,12 +1314,19 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 
 		// Add to admin log, moderator log and user notes
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array($ban_reason, $ban_list_log));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
+			$ban_reason,
+			$ban_list_log,
+			$ban_len,
+			$ban_len_other
+		));
 		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
 			'forum_id' => 0,
 			'topic_id' => 0,
 			$ban_reason,
-			$ban_list_log
+			$ban_list_log,
+			$ban_len,
+			$ban_len_other
 		));
 		if ($mode == 'user')
 		{
@@ -1328,7 +1335,9 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
 					'reportee_id' => $user_id,
 					$ban_reason,
-					$ban_list_log
+					$ban_list_log,
+					$ban_len,
+					$ban_len_other
 				));
 			}
 		}
