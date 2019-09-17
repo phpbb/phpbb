@@ -33,9 +33,20 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Needed for handle_message_list_actions()
 	global $refresh, $submit, $preview;
 
-	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+	if (!function_exists('generate_smilies'))
+	{
+		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+	}
+
+	if (!function_exists('display_custom_bbcodes'))
+	{
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	}
+
+	if (!class_exists('parse_message'))
+	{
+		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+	}
 
 	if (!$action)
 	{
@@ -48,7 +59,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$to_group_id	= $request->variable('g', 0);
 	$msg_id			= $request->variable('p', 0);
 	$draft_id		= $request->variable('d', 0);
-	$lastclick		= $request->variable('lastclick', 0);
 
 	// Reply to all triggered (quote/reply)
 	$reply_to_all	= $request->variable('reply_to_all', 0);
@@ -80,7 +90,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$group_helper = $phpbb_container->get('group_helper');
 
 	// Was cancel pressed? If so then redirect to the appropriate page
-	if ($cancel || ($current_time - $lastclick < 2 && $submit))
+	if ($cancel)
 	{
 		if ($msg_id)
 		{
@@ -125,7 +135,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Add groups to PM box
 		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 				FROM ' . GROUPS_TABLE . ' g';
 
 			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -148,7 +158,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}
@@ -406,7 +416,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$quote_username = (isset($post['quote_username'])) ? $post['quote_username'] : '';
 			$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
 
-			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !count($address_list) && !$refresh && !$submit && !$preview)
 			{
 				// Add the original author as the recipient if quoting a post or only replying and not having checked "reply to all"
 				if ($action == 'quotepost' || !$reply_to_all)
@@ -428,7 +438,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 					}
 				}
 			}
-			else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			else if ($action == 'edit' && !count($address_list) && !$refresh && !$submit && !$preview)
 			{
 				// Rebuild TO and BCC Header
 				$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
@@ -561,7 +571,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			unset($list[$user->data['user_id']]);
 		}
 
-		$max_recipients = ($max_recipients < sizeof($list)) ? sizeof($list) : $max_recipients;
+		$max_recipients = ($max_recipients < count($list)) ? count($list) : $max_recipients;
 
 		unset($list);
 	}
@@ -584,7 +594,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Check for too many recipients
-	if (!empty($address_list['u']) && $max_recipients && sizeof($address_list['u']) > $max_recipients)
+	if (!empty($address_list['u']) && $max_recipients && count($address_list['u']) > $max_recipients)
 	{
 		$address_list = get_recipients($address_list, $max_recipients);
 		$error[] = $user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
@@ -659,13 +669,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (confirm_box(true))
 			{
+				$message_parser->message = $message;
+				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
+
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'user_id'		=> $user->data['user_id'],
 					'topic_id'		=> 0,
 					'forum_id'		=> 0,
 					'save_time'		=> $current_time,
 					'draft_subject'	=> $subject,
-					'draft_message'	=> $message
+					'draft_message'	=> $message_parser->message,
 					)
 				);
 				$db->sql_query($sql);
@@ -788,7 +801,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
-		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
+		if (count($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
 			$message_parser->warn_msg = array();
@@ -798,7 +811,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && !$refresh)
+		if (count($message_parser->warn_msg) && !$refresh)
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
@@ -825,14 +838,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
-			if (!sizeof($address_list))
+			if (!count($address_list))
 			{
 				$error[] = $user->lang['NO_RECIPIENT'];
 			}
 		}
 
 		// Store message, sync counters
-		if (!sizeof($error) && $submit)
+		if (!count($error) && $submit)
 		{
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
@@ -889,7 +902,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Preview
-	if (!sizeof($error) && $preview)
+	if (!count($error) && $preview)
 	{
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
@@ -909,7 +922,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		// Attachment Preview
-		if (sizeof($message_parser->attachment_data))
+		if (count($message_parser->attachment_data))
 		{
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
 
@@ -929,7 +942,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		$preview_subject = censor_text($subject);
 
-		if (!sizeof($error))
+		if (!count($error))
 		{
 			$template->assign_vars(array(
 				'PREVIEW_SUBJECT'		=> $preview_subject,
@@ -943,7 +956,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Decode text for message display
-	$bbcode_uid = (($action == 'quote' || $action == 'forward') && !$preview && !$refresh && (!sizeof($error) || (sizeof($error) && !$submit))) ? $bbcode_uid : $message_parser->bbcode_uid;
+	$bbcode_uid = (($action == 'quote' || $action == 'forward') && !$preview && !$refresh && (!count($error) || (count($error) && !$submit))) ? $bbcode_uid : $message_parser->bbcode_uid;
 
 	$message_parser->decode_message($bbcode_uid);
 
@@ -954,7 +967,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = $request->variable('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
+				$message_link = generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}";
+				$message_link_subject = "{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}";
+				if ($bbcode_status)
+				{
+					$message_link = "[url=" . $message_link . "]" . $message_link_subject . "[/url]\n\n";
+				}
+				else
+				{
+					$message_link = $message_link . " - " . $message_link_subject . "\n\n";
+				}
 			}
 			else
 			{
@@ -974,16 +996,27 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text($message_parser->message),
-			$quote_attributes
-		);
-		$message_parser->message = $message_link . $quote_text . "\n\n";
+
+		/** @var \phpbb\language\language $language */
+		$language = $phpbb_container->get('language');
+		/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */
+		$text_formatter_utils = $phpbb_container->get('text_formatter.utils');
+		phpbb_format_quote($language, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
 		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
+
+		/**
+		* This event allows you to modify the PM subject of the PM being quoted
+		*
+		* @event core.pm_modify_message_subject
+		* @var	string		message_subject		String with the PM subject already censored.
+		* @since 3.2.8-RC1
+		*/
+		$vars = array('message_subject');
+		extract($phpbb_dispatcher->trigger_event('core.pm_modify_message_subject', compact($vars)));
 	}
 
 	if ($action == 'forward' && !$preview && !$refresh && !$submit)
@@ -1035,7 +1068,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	// Build address list for display
 	// array('u' => array($author_id => 'to'));
-	if (sizeof($address_list))
+	if (count($address_list))
 	{
 		// Get Usernames and Group Names
 		$result = array();
@@ -1174,8 +1207,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		break;
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
-	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
+	$s_hidden_fields = (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
@@ -1184,7 +1216,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// Start assigning vars for main posting page ...
-	$template->assign_vars(array(
+	$template_ary = array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
 		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
@@ -1198,7 +1230,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
-		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
+		'ERROR'					=> (count($error)) ? implode('<br />', $error) : '',
 		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
 		'S_COMPOSE_PM'			=> true,
@@ -1229,7 +1261,19 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
 		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
-	));
+	);
+
+	/**
+	* Modify the default template vars
+	*
+	* @event core.ucp_pm_compose_template
+	* @var	array	template_ary	Template variables
+	* @since 3.2.6-RC1
+	*/
+	$vars = array('template_ary');
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
+
+	$template->assign_vars($template_ary);
 
 	// Build custom bbcodes array
 	display_custom_bbcodes();
@@ -1262,7 +1306,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
-	global $request;
+	global $request, $phpbb_dispatcher;
 
 	// Delete User [TO/BCC]
 	if ($remove_u && $request->variable('remove_u', array(0 => '')))
@@ -1300,7 +1344,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	}
 
 	// If add to or add bcc not pressed, users could still have usernames listed they want to add...
-	if (!$add_to && !$add_bcc && (sizeof($group_list) || sizeof($usernames)))
+	if (!$add_to && !$add_bcc && (count($group_list) || count($usernames)))
 	{
 		$add_to = true;
 
@@ -1321,7 +1365,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	{
 		$type = ($add_to) ? 'to' : 'bcc';
 
-		if (sizeof($group_list))
+		if (count($group_list))
 		{
 			foreach ($group_list as $group_id)
 			{
@@ -1333,13 +1377,13 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		$user_id_ary = array();
 
 		// Reveal the correct user_ids
-		if (sizeof($usernames))
+		if (count($usernames))
 		{
 			$user_id_ary = array();
 			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
 
 			// If there are users not existing, we will at least print a notice...
-			if (!sizeof($user_id_ary))
+			if (!count($user_id_ary))
 			{
 				$error[] = $user->lang['PM_NO_USERS'];
 			}
@@ -1408,7 +1452,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 
-		if (!sizeof(array_keys($address_list['u'])))
+		if (!count(array_keys($address_list['u'])))
 		{
 			return;
 		}
@@ -1439,6 +1483,21 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
+
+	/**
+	* Event for additional message list actions
+	*
+	* @event core.message_list_actions
+	* @var	array	address_list		The assoc array with the recipient user/group ids
+	* @var	array	error				The array containing error data
+	* @var	bool	remove_u			The variable for removing a user
+	* @var	bool	remove_g			The variable for removing a group
+	* @var	bool	add_to				The variable for adding a user to the [TO] field
+	* @var	bool	add_bcc				The variable for adding a user to the [BCC] field
+	* @since 3.2.4-RC1
+	*/
+	$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
+	extract($phpbb_dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 }
 
 /**
@@ -1466,7 +1525,7 @@ function num_recipients($address_list)
 
 	foreach ($address_list as $field => $adr_ary)
 	{
-		$num_recipients += sizeof($adr_ary);
+		$num_recipients += count($adr_ary);
 	}
 
 	return $num_recipients;

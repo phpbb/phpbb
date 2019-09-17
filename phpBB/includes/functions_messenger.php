@@ -24,8 +24,9 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $msg, $extra_headers, $replyto, $from, $subject;
+	var $msg, $replyto, $from, $subject;
 	var $addresses = array();
+	var $extra_headers = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
@@ -36,7 +37,7 @@ class messenger
 	/**
 	* Constructor
 	*/
-	function messenger($use_queue = true)
+	function __construct($use_queue = true)
 	{
 		global $config;
 
@@ -84,7 +85,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
+		$pos = isset($this->addresses['to']) ? count($this->addresses['to']) : 0;
 
 		$this->addresses['to'][$pos]['email'] = trim($address);
 
@@ -109,7 +110,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
+		$pos = isset($this->addresses['cc']) ? count($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
 		$this->addresses['cc'][$pos]['name'] = trim($realname);
 	}
@@ -124,7 +125,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
+		$pos = isset($this->addresses['bcc']) ? count($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
 	}
@@ -140,7 +141,7 @@ class messenger
 			return;
 		}
 
-		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
+		$pos = isset($this->addresses['im']) ? count($this->addresses['im']) : 0;
 		$this->addresses['im'][$pos]['uid'] = trim($address);
 		$this->addresses['im'][$pos]['name'] = trim($realname);
 	}
@@ -180,10 +181,9 @@ class messenger
 	/**
 	* Adds X-AntiAbuse headers
 	*
-	* @param array $config		Configuration array
-	* @param user $user			A user object
-	*
-	* @return null
+	* @param \phpbb\config\config	$config		Config object
+	* @param \phpbb\user			$user		User object
+	* @return void
 	*/
 	function anti_abuse_headers($config, $user)
 	{
@@ -325,9 +325,26 @@ class messenger
 		));
 
 		$subject = $this->subject;
-		$message = $this->msg;
+		$template = $this->template;
 		/**
-		* Event to modify notification message text before parsing
+		* Event to modify the template before parsing
+		*
+		* @event core.modify_notification_template
+		* @var	int						method		User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
+		* @var	bool					break		Flag indicating if the function only formats the subject
+		*											and the message without sending it
+		* @var	string					subject		The message subject
+		* @var \phpbb\template\template template	The (readonly) template object
+		* @since 3.2.4-RC1
+		*/
+		$vars = array('method', 'break', 'subject', 'template');
+		extract($phpbb_dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
+
+		// Parse message through template
+		$message = trim($this->template->assign_display('body'));
+
+		/**
+		* Event to modify notification message text after parsing
 		*
 		* @event core.modify_notification_message
 		* @var	int		method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
@@ -337,19 +354,12 @@ class messenger
 		* @var	string	message	The message text
 		* @since 3.1.11-RC1
 		*/
-		$vars = array(
-			'method',
-			'break',
-			'subject',
-			'message',
-		);
+		$vars = array('method', 'break', 'subject', 'message');
 		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
+
 		$this->subject = $subject;
 		$this->msg = $message;
-		unset($subject, $message);
-
-		// Parse message through template
-		$this->msg = trim($this->template->assign_display('body'));
+		unset($subject, $message, $template);
 
 		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
 		$this->msg = str_replace("\r\n", "\n", $this->msg);
@@ -366,6 +376,12 @@ class messenger
 		else
 		{
 			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
+		}
+
+		if (preg_match('#^(List-Unsubscribe:(.*?))$#m', $this->msg, $match))
+		{
+			$this->extra_headers[] = $match[1];
+			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 
 		if ($drop_header)
@@ -416,7 +432,7 @@ class messenger
 		switch ($type)
 		{
 			case 'EMAIL':
-				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/' . $config['email_function_name'] . '()') . '</strong>';
+				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/mail()') . '</strong>';
 			break;
 
 			default:
@@ -503,7 +519,7 @@ class messenger
 		$vars = array('headers');
 		extract($phpbb_dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
-		if (sizeof($this->extra_headers))
+		if (count($this->extra_headers))
 		{
 			$headers = array_merge($headers, $this->extra_headers);
 		}
@@ -516,7 +532,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config;
+		global $config, $phpbb_dispatcher;
 
 		if (empty($config['email_enable']))
 		{
@@ -543,6 +559,33 @@ class messenger
 
 		$contact_name = htmlspecialchars_decode($config['board_contact_name']);
 		$board_contact = (($contact_name !== '') ? '"' . mail_encode($contact_name) . '" ' : '') . '<' . $config['board_contact'] . '>';
+
+		$break = false;
+		$addresses = $this->addresses;
+		$subject = $this->subject;
+		$msg = $this->msg;
+		/**
+		* Event to send message via external transport
+		*
+		* @event core.notification_message_email
+		* @var	bool	break		Flag indicating if the function return after hook
+		* @var	array	addresses 	The message recipients
+		* @var	string	subject		The message subject
+		* @var	string	msg			The message text
+		* @since 3.2.4-RC1
+		*/
+		$vars = array(
+			'break',
+			'addresses',
+			'subject',
+			'msg',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.notification_message_email', compact($vars)));
+
+		if ($break)
+		{
+			return true;
+		}
 
 		if (empty($this->replyto))
 		{
@@ -749,7 +792,7 @@ class queue
 	/**
 	* constructor
 	*/
-	function queue()
+	function __construct()
 	{
 		global $phpEx, $phpbb_root_path, $phpbb_filesystem, $phpbb_container;
 
@@ -782,7 +825,7 @@ class queue
 	*/
 	function process()
 	{
-		global $config, $phpEx, $phpbb_root_path, $user;
+		global $config, $phpEx, $phpbb_root_path, $user, $phpbb_dispatcher;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -814,7 +857,7 @@ class queue
 			}
 
 			$package_size = $data_ary['package_size'];
-			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
+			$num_items = (!$package_size || count($data_ary['data']) < $package_size) ? count($data_ary['data']) : $package_size;
 
 			/*
 			* This code is commented out because it causes problems on some web hosts.
@@ -823,9 +866,9 @@ class queue
 			* web host and the package size setting is wrong.
 
 			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
-			if (sizeof($data_ary['data']) > $package_size * 2.5)
+			if (count($data_ary['data']) > $package_size * 2.5)
 			{
-				$num_items = sizeof($data_ary['data']);
+				$num_items = count($data_ary['data']);
 			}
 			*/
 
@@ -879,23 +922,45 @@ class queue
 				switch ($object)
 				{
 					case 'email':
-						$err_msg = '';
-						$to = (!$to) ? 'undisclosed-recipients:;' : $to;
+						$break = false;
+						/**
+						* Event to send message via external transport
+						*
+						* @event core.notification_message_process
+						* @var	bool	break		Flag indicating if the function return after hook
+						* @var	array	addresses 	The message recipients
+						* @var	string	subject		The message subject
+						* @var	string	msg			The message text
+						* @since 3.2.4-RC1
+						*/
+						$vars = array(
+							'break',
+							'addresses',
+							'subject',
+							'msg',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.notification_message_process', compact($vars)));
 
-						if ($config['smtp_delivery'])
+						if (!$break)
 						{
-							$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
-						}
-						else
-						{
-							$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
-						}
+							$err_msg = '';
+							$to = (!$to) ? 'undisclosed-recipients:;' : $to;
 
-						if (!$result)
-						{
-							$messenger = new messenger();
-							$messenger->error('EMAIL', $err_msg);
-							continue 2;
+							if ($config['smtp_delivery'])
+							{
+								$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
+							}
+							else
+							{
+								$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
+							}
+
+							if (!$result)
+							{
+								$messenger = new messenger();
+								$messenger->error('EMAIL', $err_msg);
+								continue 2;
+							}
 						}
 					break;
 
@@ -914,7 +979,7 @@ class queue
 			}
 
 			// No more data for this object? Unset it
-			if (!sizeof($this->queue_data[$object]['data']))
+			if (!count($this->queue_data[$object]['data']))
 			{
 				unset($this->queue_data[$object]);
 			}
@@ -930,7 +995,7 @@ class queue
 			}
 		}
 
-		if (!sizeof($this->queue_data))
+		if (!count($this->queue_data))
 		{
 			@unlink($this->cache_file);
 		}
@@ -965,7 +1030,7 @@ class queue
 	*/
 	function save()
 	{
-		if (!sizeof($this->data))
+		if (!count($this->data))
 		{
 			return;
 		}
@@ -979,7 +1044,7 @@ class queue
 
 			foreach ($this->queue_data as $object => $data_ary)
 			{
-				if (isset($this->data[$object]) && sizeof($this->data[$object]))
+				if (isset($this->data[$object]) && count($this->data[$object]))
 				{
 					$this->data[$object]['data'] = array_merge($data_ary['data'], $this->data[$object]['data']);
 				}
@@ -1067,7 +1132,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	$mail_rcpt = $mail_to = $mail_cc = array();
 
 	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
-	if (isset($addresses['to']) && sizeof($addresses['to']))
+	if (isset($addresses['to']) && count($addresses['to']))
 	{
 		foreach ($addresses['to'] as $which_ary)
 		{
@@ -1076,7 +1141,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 		}
 	}
 
-	if (isset($addresses['bcc']) && sizeof($addresses['bcc']))
+	if (isset($addresses['bcc']) && count($addresses['bcc']))
 	{
 		foreach ($addresses['bcc'] as $which_ary)
 		{
@@ -1084,7 +1149,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 		}
 	}
 
-	if (isset($addresses['cc']) && sizeof($addresses['cc']))
+	if (isset($addresses['cc']) && count($addresses['cc']))
 	{
 		foreach ($addresses['cc'] as $which_ary)
 		{
@@ -1263,7 +1328,7 @@ class smtp_class
 	var $backtrace = false;
 	var $backtrace_log = array();
 
-	function smtp_class()
+	function __construct()
 	{
 		// Always create a backtrace for admins to identify SMTP problems
 		$this->backtrace = true;
@@ -1516,6 +1581,14 @@ class smtp_class
 	*/
 	protected function starttls()
 	{
+		global $config;
+
+		// allow SMTPS (what was used by phpBB 3.0) if hostname is prefixed with tls:// or ssl://
+		if (strpos($config['smtp_host'], 'tls://') === 0 || strpos($config['smtp_host'], 'ssl://') === 0)
+		{
+			return true;
+		}
+
 		if (!function_exists('stream_socket_enable_crypto'))
 		{
 			return false;
@@ -1538,7 +1611,9 @@ class smtp_class
 
 		if (socket_set_blocking($this->socket, 1))
 		{
-			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			// https://secure.php.net/manual/en/function.stream-socket-enable-crypto.php#119122
+			$crypto = (phpbb_version_compare(PHP_VERSION, '5.6.7', '<')) ? STREAM_CRYPTO_METHOD_TLS_CLIENT : STREAM_CRYPTO_METHOD_SSLv23_CLIENT;
+			$result = stream_socket_enable_crypto($this->socket, true, $crypto);
 			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
 		}
 
@@ -1802,11 +1877,11 @@ function mail_encode($str, $eol = "\r\n")
 	$array = utf8_str_split($str);
 	$str = '';
 
-	while (sizeof($array))
+	while (count($array))
 	{
 		$text = '';
 
-		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
+		while (count($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
 		{
 			$text .= array_shift($array);
 		}
@@ -1839,7 +1914,8 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
 	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
 	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
-	$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
+	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	$collector->uninstall();
 	$err_msg = $collector->format_errors();

@@ -24,9 +24,9 @@ class acp_users
 	var $u_action;
 	var $p_master;
 
-	function acp_users(&$p_master)
+	function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	function main($id, $mode)
@@ -690,7 +690,7 @@ class acp_users
 							}
 							$db->sql_freeresult($result);
 
-							if (sizeof($topic_id_ary))
+							if (count($topic_id_ary))
 							{
 								$sql = 'SELECT topic_id, forum_id, topic_title, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_attachment
 									FROM ' . TOPICS_TABLE . '
@@ -718,12 +718,12 @@ class acp_users
 							}
 
 							// Entire topic comprises posts by this user, move these topics
-							if (sizeof($move_topic_ary))
+							if (count($move_topic_ary))
 							{
 								move_topics($move_topic_ary, $new_forum_id, false);
 							}
 
-							if (sizeof($move_post_ary))
+							if (count($move_post_ary))
 							{
 								// Create new topic
 								// Update post_ids, report_ids, attachment_ids
@@ -769,13 +769,13 @@ class acp_users
 							$forum_id_ary = array_unique($forum_id_ary);
 							$topic_id_ary = array_unique(array_merge(array_keys($topic_id_ary), $new_topic_id_ary));
 
-							if (sizeof($topic_id_ary))
+							if (count($topic_id_ary))
 							{
 								sync('topic_reported', 'topic_id', $topic_id_ary);
 								sync('topic', 'topic_id', $topic_id_ary);
 							}
 
-							if (sizeof($forum_id_ary))
+							if (count($forum_id_ary))
 							{
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
@@ -855,7 +855,7 @@ class acp_users
 						$check_ary += array(
 							'username'			=> array(
 								array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-								array('username', $user_row['username'])
+								array('username', $user_row['username'], true)
 							),
 						);
 					}
@@ -892,7 +892,7 @@ class acp_users
 					$update_password = $data['new_password'] && !$passwords_manager->check($data['new_password'], $user_row['user_password']);
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$sql_ary = array();
 
@@ -994,7 +994,7 @@ class acp_users
 							));
 						}
 
-						if (sizeof($sql_ary))
+						if (count($sql_ary))
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -1347,7 +1347,7 @@ class acp_users
 						{
 							$s_hidden_fields['delall'] = 1;
 						}
-						if (isset($_POST['delall']) || (isset($_POST['delmarked']) && sizeof($marked)))
+						if (isset($_POST['delall']) || (isset($_POST['delmarked']) && count($marked)))
 						{
 							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
@@ -1383,9 +1383,9 @@ class acp_users
 							{
 								// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
 								// It doesn't matter if we add more arguments than placeholders
-								if ((substr_count($row['action'], '%') - sizeof($log_data_ary)) > 0)
+								if ((substr_count($row['action'], '%') - count($log_data_ary)) > 0)
 								{
-									$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($row['action'], '%') - sizeof($log_data_ary), ''));
+									$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($row['action'], '%') - count($log_data_ary), ''));
 								}
 								$row['action'] = vsprintf($row['action'], $log_data_ary);
 								$row['action'] = bbcode_nl2br(censor_text($row['action']));
@@ -1478,7 +1478,7 @@ class acp_users
 					// validate custom profile fields
 					$cp->submit_cp_field('profile', $user_row['iso_lang_id'], $cp_data, $cp_error);
 
-					if (sizeof($cp_error))
+					if (count($cp_error))
 					{
 						$error = array_merge($error, $cp_error);
 					}
@@ -1501,7 +1501,7 @@ class acp_users
 					$vars = array('data', 'user_id', 'user_row', 'error');
 					extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$sql_ary = array(
 							'user_jabber'	=> $data['jabber'],
@@ -1645,7 +1645,7 @@ class acp_users
 						$error[] = 'FORM_INVALID';
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
@@ -1696,7 +1696,7 @@ class acp_users
 						$vars = array('data', 'user_row', 'sql_ary', 'error');
 						extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_sql', compact($vars)));
 
-						if (!sizeof($error))
+						if (!count($error))
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -1883,6 +1883,17 @@ class acp_users
 										'user_avatar_height' => $result['avatar_height'],
 									);
 
+									/**
+									* Modify users preferences data before assigning it to the template
+									*
+									* @event core.acp_users_avatar_sql
+									* @var	array	user_row	Array with user data
+									* @var	array	result		Array with user avatar data to be updated in the DB
+									* @since 3.2.4-RC1
+									*/
+									$vars = array('user_row', 'result');
+									extract($phpbb_dispatcher->trigger_event('core.acp_users_avatar_sql', compact($vars)));
+
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . (int) $user_id;
@@ -2060,7 +2071,7 @@ class acp_users
 					'sig'
 				);
 
-				if (sizeof($warn_msg))
+				if (count($warn_msg))
 				{
 					$error += $warn_msg;
 				}
@@ -2072,7 +2083,7 @@ class acp_users
 				}
 				else
 				{
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$this->optionset($user_row, 'sig_bbcode', $enable_bbcode);
 						$this->optionset($user_row, 'sig_smilies', $enable_smilies);
@@ -2084,6 +2095,17 @@ class acp_users
 							'user_sig_bbcode_uid'		=> $bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> $bbcode_bitfield,
 						);
+
+						/**
+						* Modify user signature before it is stored in the DB
+						*
+						* @event core.acp_users_modify_signature_sql_ary
+						* @var	array	user_row	Array with user data
+						* @var	array	sql_ary		Array with user signature data to be updated in the DB
+						* @since 3.2.4-RC1
+						*/
+						$vars = array('user_row', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_signature_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -2099,7 +2121,7 @@ class acp_users
 
 				if ($request->is_set_post('preview'))
 				{
-					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
+					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
 
 				/** @var \phpbb\controller\helper $controller_helper */
@@ -2147,7 +2169,7 @@ class acp_users
 				$sort_key	= $request->variable('sk', 'a');
 				$sort_dir	= $request->variable('sd', 'd');
 
-				if ($deletemark && sizeof($marked))
+				if ($deletemark && count($marked))
 				{
 					$sql = 'SELECT attach_id
 						FROM ' . ATTACHMENTS_TABLE . '
@@ -2164,7 +2186,7 @@ class acp_users
 					$db->sql_freeresult($result);
 				}
 
-				if ($deletemark && sizeof($marked))
+				if ($deletemark && count($marked))
 				{
 					if (confirm_box(true))
 					{
@@ -2185,7 +2207,7 @@ class acp_users
 						$attachment_manager->delete('attach', $marked);
 						unset($attachment_manager);
 
-						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
+						$message = (count($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode($user->lang['COMMA_SEPARATOR'], $log_attachments)));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
@@ -2455,7 +2477,7 @@ class acp_users
 				// Select box for other groups
 				$sql = 'SELECT group_id, group_name, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
-					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
+					' . ((count($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
 				$result = $db->sql_query($sql);
 
@@ -2497,7 +2519,7 @@ class acp_users
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_APPROVE'			=> ($group_type == 'pending') ? $this->u_action . "&amp;action=approve&amp;u=$user_id&amp;g=" . $data['group_id'] : '',
 
-							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
+							'GROUP_NAME'		=> $group_helper->get_name($data['group_name']),
 							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],
 
 							'S_IS_MEMBER'		=> ($group_type != 'pending') ? true : false,
@@ -2604,8 +2626,8 @@ class acp_users
 
 		// Assign general variables
 		$template->assign_vars(array(
-			'S_ERROR'			=> (sizeof($error)) ? true : false,
-			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '')
+			'S_ERROR'			=> (count($error)) ? true : false,
+			'ERROR_MSG'			=> (count($error)) ? implode('<br />', $error) : '')
 		);
 	}
 

@@ -39,7 +39,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		// Grab icons
 		$icons = $cache->obtain_icons();
 
-		$color_rows = array('marked', 'replied');
+		$color_rows = array('message_reported', 'marked', 'replied');
 
 		$_module = new p_master();
 		$_module->list_modules('ucp');
@@ -114,7 +114,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		);
 
 		// Okay, lets dump out the page ...
-		if (sizeof($folder_info['pm_list']))
+		if (count($folder_info['pm_list']))
 		{
 			$address_list = array();
 
@@ -138,9 +138,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$row_indicator = '';
 				foreach ($color_rows as $var)
 				{
-					if (($var != 'friend' && $var != 'foe' && $row['pm_' . $var])
+					if (($var !== 'friend' && $var !== 'foe' && $row[($var === 'message_reported') ? $var : "pm_{$var}"])
 						||
-						(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
+						(($var === 'friend' || $var === 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
 					{
 						$row_indicator = $var;
 						break;
@@ -236,7 +236,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$_types = array('u', 'g');
 				foreach ($_types as $ug_type)
 				{
-					if (isset($address_temp[$message_id][$ug_type]) && sizeof($address_temp[$message_id][$ug_type]))
+					if (isset($address_temp[$message_id][$ug_type]) && count($address_temp[$message_id][$ug_type]))
 					{
 						if (!isset($address[$message_id][$ug_type]))
 						{
@@ -269,8 +269,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 				// There is the chance that all recipients of the message got deleted. To avoid creating
 				// exports without recipients, we add a bogus "undisclosed recipient".
-				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) &&
-					!(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
+				if (!(isset($address[$message_id]['g']) && count($address[$message_id]['g'])) &&
+					!(isset($address[$message_id]['u']) && count($address[$message_id]['u'])))
 				{
 					$address[$message_id]['u'] = array();
 					$address[$message_id]['u']['to'] = array();

@@ -23,6 +23,7 @@ class v321 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
+			'\phpbb\db\migration\data\v31x\v3111',
 			'\phpbb\db\migration\data\v32x\v321rc1',
 		);
 

@@ -20,7 +20,7 @@ To be able to run an installation from the repo (and not from a pre-built packag
 
 1. [Create an account on phpBB.com](http://www.phpbb.com/community/ucp.php?mode=register)
 2. [Create a ticket (unless there already is one)](http://tracker.phpbb.com/secure/CreateIssue!default.jspa)
-3. Read our [Coding guidelines](https://wiki.phpbb.com/Coding_guidelines) and [Git Contribution Guidelines](http://wiki.phpbb.com/Git)
+3. Read our [Coding guidelines](https://area51.phpbb.com/docs/dev/development/coding_guidelines.html) and [Git Contribution Guidelines](https://area51.phpbb.com/docs/dev/development/git.html)
 4. Send us a pull request
 
 ## VAGRANT
@@ -29,11 +29,11 @@ Read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use V
 
 ## AUTOMATED TESTING
 
-We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](http://bamboo.phpbb.com) or check our travis builds below:
+We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](https://bamboo.phpbb.com) or check our travis builds below:
 
-* [![Build Status](https://secure.travis-ci.org/phpbb/phpbb.png?branch=master)](http://travis-ci.org/phpbb/phpbb) **master** - Latest development version
-* [![Build Status](https://secure.travis-ci.org/phpbb/phpbb.png?branch=3.2.x)](http://travis-ci.org/phpbb/phpbb) **3.2.x** - Development of version 3.2.x
-* [![Build Status](https://secure.travis-ci.org/phpbb/phpbb.png?branch=3.1.x)](http://travis-ci.org/phpbb/phpbb) **3.1.x** - Development of version 3.1.x
+* [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=master)](http://travis-ci.org/phpbb/phpbb)[![Build status](https://ci.appveyor.com/api/projects/status/8g98ybngd2f3axy1/branch/master?svg=true)](https://ci.appveyor.com/project/phpBB/phpbb/branch/master) **master** - Latest development version
+* [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=3.2.x)](http://travis-ci.org/phpbb/phpbb)[![Build status](https://ci.appveyor.com/api/projects/status/8g98ybngd2f3axy1/branch/3.2.x?svg=true)](https://ci.appveyor.com/project/phpBB/phpbb/branch/3.2.x) **3.2.x** - Development of version 3.2.x
+* [![Build Status](https://travis-ci.org/phpbb/phpbb.svg?branch=3.1.x)](http://travis-ci.org/phpbb/phpbb) **3.1.x** - Development of version 3.1.x
 
 ## LICENSE
 

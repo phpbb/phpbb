@@ -76,7 +76,7 @@ class database
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
-			'DELIM'			=> '/',
+			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -338,7 +338,7 @@ class database
 
 		// Check if SQLite database is writable
 		if ($dbms_info['SCHEMA'] === 'sqlite'
-			&& (!$this->filesystem->is_writable($dbhost) || !$this->filesystem->is_writable(pathinfo($dbhost, PATHINFO_DIRNAME))))
+			&& (($this->filesystem->exists($dbhost) && !$this->filesystem->is_writable($dbhost)) || !$this->filesystem->is_writable(pathinfo($dbhost, PATHINFO_DIRNAME))))
 		{
 			$errors[] = array(
 				'title' =>'INST_ERR_DB_NO_WRITABLE',
@@ -372,7 +372,7 @@ class database
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 
-			if (sizeof($table_intersect))
+			if (count($table_intersect))
 			{
 				$errors[] = array(
 					'title' => 'INST_ERR_PREFIX',

@@ -85,7 +85,9 @@ class notifications extends \phpbb\db\migration\migration
 				'UCP_MAIN',
 				array(
 					'module_basename'	=> 'ucp_notifications',
-					'modes'				=> array('notification_list'),
+					'module_langname'	=> 'UCP_NOTIFICATION_LIST',
+					'module_mode'		=> 'notification_list',
+					'module_auth'		=> 'cfg_allow_board_notifications',
 				),
 			)),
 			array('module.add', array(
@@ -93,7 +95,8 @@ class notifications extends \phpbb\db\migration\migration
 				'UCP_PREFS',
 				array(
 					'module_basename'	=> 'ucp_notifications',
-					'modes'				=> array('notification_options'),
+					'module_langname'	=> 'UCP_NOTIFICATION_OPTIONS',
+					'module_mode'		=> 'notification_options',
 				),
 			)),
 			array('config.add', array('load_notifications', 1)),

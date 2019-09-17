@@ -157,7 +157,7 @@ class install_extensions extends \phpbb\install\task_base
 
 		$this->install_config->set('install_extensions_index', $i);
 
-		if ($i < sizeof($all_available_extensions))
+		if ($i < count($all_available_extensions))
 		{
 			throw new resource_limit_reached_exception();
 		}

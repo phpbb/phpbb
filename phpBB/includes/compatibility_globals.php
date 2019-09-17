@@ -29,7 +29,7 @@ function register_compatibility_globals()
 {
 	global $phpbb_container;
 
-	global $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log;
+	global $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $language, $phpbb_log;
 	global $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
 
 	// set up caching
@@ -47,6 +47,9 @@ function register_compatibility_globals()
 
 	/* @var $user \phpbb\user */
 	$user = $phpbb_container->get('user');
+
+	/* @var \phpbb\language\language $language */
+	$language = $phpbb_container->get('language');
 
 	/* @var $auth \phpbb\auth\auth */
 	$auth = $phpbb_container->get('auth');

@@ -203,8 +203,15 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_list_columns()
 	{
+		$config = $this->get_database_config();
+		$table_columns = $this->table_data['COLUMNS'];
+
+		if (strpos($config['dbms'], 'mssql') !== false)
+		{
+			ksort($table_columns);
+		}
 		$this->assertEquals(
-			array_keys($this->table_data['COLUMNS']),
+			array_keys($table_columns),
 			array_values($this->tools->sql_list_columns('prefix_table_name'))
 		);
 	}
@@ -432,28 +439,37 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			$this->markTestIncomplete('The table prefix length is too long for proper testing of index shortening function.');
 		}
 
+		$max_index_length = 30;
+
+		if ($this->tools instanceof \phpbb\db\tools\mssql)
+		{
+			$max_length_method = new ReflectionMethod('\phpbb\db\tools\mssql', 'get_max_index_name_length');
+			$max_length_method->setAccessible(true);
+			$max_index_length = $max_length_method->invoke($this->tools);
+		}
+
 		$table_suffix = str_repeat('a', 25 - strlen($table_prefix));
 		$table_name = $table_prefix . $table_suffix;
 
 		$this->tools->sql_create_table($table_name, $this->table_data);
 
-		// Index name and table suffix and table prefix have > 30 chars in total.
-		// Index name and table suffix have <= 30 chars in total.
-		$long_index_name = str_repeat('i', 30 - strlen($table_suffix));
+		// Index name and table suffix and table prefix have > maximum index length chars in total.
+		// Index name and table suffix have <= maximum index length chars in total.
+		$long_index_name = str_repeat('i', $max_index_length - strlen($table_suffix));
 		$this->assertFalse($this->tools->sql_index_exists($table_name, $long_index_name));
 		$this->assertTrue($this->tools->sql_create_index($table_name, $long_index_name, array('c_timestamp')));
 		$this->assertTrue($this->tools->sql_index_exists($table_name, $long_index_name));
 
-		// Index name and table suffix have > 30 chars in total.
-		$very_long_index_name = str_repeat('i', 30);
+		// Index name and table suffix have > maximum index length chars in total.
+		$very_long_index_name = str_repeat('i', $max_index_length);
 		$this->assertFalse($this->tools->sql_index_exists($table_name, $very_long_index_name));
 		$this->assertTrue($this->tools->sql_create_index($table_name, $very_long_index_name, array('c_timestamp')));
 		$this->assertTrue($this->tools->sql_index_exists($table_name, $very_long_index_name));
 
 		$this->tools->sql_table_drop($table_name);
 
-		// Index name has > 30 chars - that should not be possible.
-		$too_long_index_name = str_repeat('i', 31);
+		// Index name has > maximum index length chars - that should not be possible.
+		$too_long_index_name = str_repeat('i', $max_index_length + 1);
 		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $too_long_index_name));
 		$this->setExpectedTriggerError(E_USER_ERROR);
 		$this->tools->sql_create_index('prefix_table_name', $too_long_index_name, array('c_timestamp'));

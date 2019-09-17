@@ -29,6 +29,9 @@ class acp_groups
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
+		/** @var \phpbb\language\language $language Language object */
+		$language = $phpbb_container->get('language');
+
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
@@ -187,7 +190,7 @@ class acp_groups
 
 							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
-							$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+							$start = (count($mark_ary) < 200) ? 0 : $start + 200;
 						}
 						else
 						{
@@ -293,7 +296,19 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					$display_message = $language->lang($error);
+
+					if ($error == 'GROUP_USERS_INVALID')
+					{
+						// Find which users don't exist
+						$actual_name_ary = $name_ary;
+						$actual_user_id_ary = [];
+						user_get_id_name($actual_user_id_ary, $actual_name_ary, false, true);
+
+						$display_message = $language->lang('GROUP_USERS_INVALID', implode($language->lang('COMMA_SEPARATOR'), array_udiff($name_ary, $actual_name_ary, 'strcasecmp')));
+					}
+
+					trigger_error($display_message . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
@@ -486,7 +501,7 @@ class acp_groups
 						$error = array_merge($error, $validation_error);
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
 						// group. This prevents existing group members being updated if no changes
@@ -614,7 +629,7 @@ class acp_groups
 						}
 					}
 
-					if (sizeof($error))
+					if (count($error))
 					{
 						$error = array_map(array(&$user, 'lang'), $error);
 						$group_rank = $submit_ary['rank'];
@@ -732,12 +747,12 @@ class acp_groups
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
-					'S_ERROR'			=> (sizeof($error)) ? true : false,
+					'S_ERROR'			=> (count($error)) ? true : false,
 					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 					'S_USER_FOUNDER'	=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 
-					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'				=> (count($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> $group_helper->get_name($group_name),
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
@@ -926,7 +941,7 @@ class acp_groups
 		);
 
 		// Get us all the groups
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 			FROM ' . GROUPS_TABLE . ' g
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
@@ -985,6 +1000,7 @@ class acp_groups
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 
 					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOR'	=> $row['group_colour'],
 					'TOTAL_MEMBERS'	=> $row['total_members'],
 					'PENDING_MEMBERS' => $row['pending_members']
 				));

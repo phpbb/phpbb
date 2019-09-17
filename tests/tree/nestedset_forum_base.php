@@ -69,7 +69,7 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		static $forums;
 
 		if (empty($forums))
-		{ 
+		{
 			$this->create_forum('Parent with two flat children');
 			$this->create_forum('Flat child #1', 1);
 			$this->create_forum('Flat child #2', 1);
@@ -86,7 +86,7 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 
 			// Updating forum_parents column here so it's not empty
 			// This is required, so we can see whether the methods
-			// correctly clear the values. 
+			// correctly clear the values.
 			$sql = "UPDATE phpbb_forums
 				SET forum_parents = 'a:0:{}'";
 			$this->db->sql_query($sql);
@@ -100,6 +100,13 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		}
 		else
 		{
+			// Turn on identity insert on mssql to be able to insert into
+			// identity columns (e.g. forum_id)
+			if (strpos($this->db->sql_layer, 'mssql') !== false)
+			{
+				$sql = 'SET IDENTITY_INSERT phpbb_forums ON';
+				$this->db->sql_query($sql);
+			}
 			$buffer = new \phpbb\db\sql_insert_buffer($this->db, 'phpbb_forums');
 			$buffer->insert_all($forums);
 			$buffer->flush();
@@ -107,7 +114,14 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 			$this->database_synchronisation(array(
 				'phpbb_forums'	=> array('forum_id'),
 			));
-		} 
+
+			// Disable identity insert on mssql again
+			if (strpos($this->db->sql_layer, 'mssql') !== false)
+			{
+				$sql = 'SET IDENTITY_INSERT phpbb_forums OFF';
+				$this->db->sql_query($sql);
+			}
+		}
 	}
 
 	protected function create_forum($name, $parent_id = 0)

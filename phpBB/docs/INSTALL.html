@@ -44,7 +44,7 @@
 	<p>
 		A basic overview of running phpBB can be found in the accompanying <a href="README.html">README</a> file.
 		Please ensure you read that document in addition to this! For more detailed information on using, installing,
-		updating and converting phpBB you should read <a href="https://www.phpbb.com/support/docs/en/3.1/ug/">the documentation</a>
+		updating and converting phpBB you should read <a href="https://www.phpbb.com/support/docs/en/3.2/ug/">the documentation</a>
 		available online.
 	</p>
 </div>
@@ -147,7 +147,7 @@
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP 5.4.0+</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 5.4.7+</strong> but less than <strong>PHP 7.3</strong> with support for the database you intend to use.</li>
 		<li>The following PHP modules are required:
 		<ul>
 			<li>json</li>
@@ -159,7 +159,6 @@
 			<li>zlib Compression support</li>
 			<li>Remote FTP support</li>
 			<li>XML support</li>
-			<li>ImageMagick support</li>
 			<li>GD Support</li>
 		</ul>
 		</li>
@@ -269,11 +268,11 @@
 
 <a name="update_full"></a><h3>4.i. Full package</h3>
 
-	<p>The full package is normally meant for new installations only, but if you want to replace all source files, this package comes in handy.</p>
+	<p>Updating using the full package is the recommended update method for boards without modifications to core phpBB files.</p>
 
-	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB files, you may want to leave your <code>files/</code>, <code>images/</code> and <code>ext/</code> directories in place, otherwise you will lose your file attachments, uploaded images and get error due to missing extension files. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
+	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB files, you should leave your <code>files/</code>, <code>images/</code> and <code>ext/</code> directories in place, otherwise you will lose your file attachments, uploaded images and get errors due to missing extension files. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
 
-	<p>You should now got to <code>/install/app.php/update</code> which will display a warning: <strong>No valid update directory was found, please make sure you uploaded the relevant files</strong>. Beneath that warning you will see a radion button <em>Update database only</em>, just click <strong>Submit</strong>. Depending on your previous version this will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker). If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>You should now got to <code>/install/app.php/update</code> which will display a warning: <strong>No valid update directory was found, please make sure you uploaded the relevant files</strong>. Beneath that warning you will see a radio button <em>Update database only</em>, just click <strong>Submit</strong>. Depending on your previous version this will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker). If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 	<p>Once <code>/install/app.php/update</code> has completed, it displays the success message: <strong>The database update was successful</strong>. You may proceed to the Administration Control Panel and then remove the install directory as advised.</p>
 
@@ -301,7 +300,7 @@
 
 <a name="update_auto"></a><h3>4.iv. Automatic update package</h3>
 
-	<p>This update method is the recommended method for updating. This package detects changed files automatically and merges in changes if needed.</p>
+	<p>This update method is only recommended for installations with modifications to core phpBB files. This package detects changed files automatically and merges in changes if needed.</p>
 
 	<p>The automatic update package will update the board from a given version to the latest version. A number of automatic update files are available, and you should choose the one that corresponds to the version of the board that you are currently running. For example, if your current version is <strong>3.2.0</strong>, you need the <code>phpBB-3.2.0_to_3.2.1.zip/tar.bz2</code> file.</p>
 

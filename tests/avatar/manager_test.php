@@ -99,7 +99,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$this->config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
 
 		// Set up avatar manager
-		$this->manager = new \phpbb\avatar\manager($this->config, $avatar_drivers, $phpbb_container);
+		$this->manager = new \phpbb\avatar\manager($this->config, $dispatcher, $avatar_drivers);
 		$this->db = $this->new_dbal();
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
@@ -185,7 +185,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$avatar_settings = $this->manager->get_avatar_settings($this->avatar_foobar);
 
 		$expected_settings = array(
-			'allow_avatar_' . get_class($this->avatar_foobar)	=> array('lang' => 'ALLOW_' . strtoupper(get_class($this->avatar_foobar)), 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false),
+			'allow_avatar_' . get_class($this->avatar_foobar)	=> array('lang' => 'ALLOW_' . strtoupper(get_class($this->avatar_foobar)), 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 		);
 
 		$this->assertEquals($expected_settings, $avatar_settings);

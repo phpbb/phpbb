@@ -66,7 +66,7 @@ class recaptcha extends captcha_abstract
 		throw new \Exception('No generator class given.');
 	}
 
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $config, $template, $user, $phpbb_log, $request;
 

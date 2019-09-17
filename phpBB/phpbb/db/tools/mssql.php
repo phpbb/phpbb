@@ -49,18 +49,18 @@ class mssql extends tools
 				'STEXT'		=> '[varchar] (3000)',
 				'TEXT'		=> '[varchar] (8000)',
 				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
+				'XSTEXT_UNI'=> '[nvarchar] (100)',
+				'STEXT_UNI'	=> '[nvarchar] (255)',
+				'TEXT_UNI'	=> '[nvarchar] (4000)',
+				'MTEXT_UNI'	=> '[ntext]',
 				'TIMESTAMP'	=> '[int]',
 				'DECIMAL'	=> '[float]',
 				'DECIMAL:'	=> '[float]',
 				'PDECIMAL'	=> '[float]',
 				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
+				'VCHAR_UNI'	=> '[nvarchar] (255)',
+				'VCHAR_UNI:'=> '[nvarchar] (%d)',
+				'VCHAR_CI'	=> '[nvarchar] (255)',
 				'VARBINARY'	=> '[varchar] (255)',
 			),
 
@@ -80,18 +80,18 @@ class mssql extends tools
 				'STEXT'		=> '[varchar] (3000)',
 				'TEXT'		=> '[varchar] (8000)',
 				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
+				'XSTEXT_UNI'=> '[nvarchar] (100)',
+				'STEXT_UNI'	=> '[nvarchar] (255)',
+				'TEXT_UNI'	=> '[nvarchar] (4000)',
+				'MTEXT_UNI'	=> '[ntext]',
 				'TIMESTAMP'	=> '[int]',
 				'DECIMAL'	=> '[float]',
 				'DECIMAL:'	=> '[float]',
 				'PDECIMAL'	=> '[float]',
 				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
+				'VCHAR_UNI'	=> '[nvarchar] (255)',
+				'VCHAR_UNI:'=> '[nvarchar] (%d)',
+				'VCHAR_CI'	=> '[nvarchar] (255)',
 				'VARBINARY'	=> '[varchar] (255)',
 			),
 		);
@@ -440,13 +440,17 @@ class mssql extends tools
 			{
 				$result = $this->sql_index_drop($table_name, $index_name);
 				$statements = array_merge($statements, $result);
-				if (sizeof($index_data) > 1)
+				if (count($index_data) > 1)
 				{
 					// Remove this column from the index and recreate it
 					$recreate_indexes[$index_name] = array_diff($index_data, array($column_name));
 				}
 			}
 		}
+
+		// Drop primary keys depending on this column
+		$result = $this->mssql_get_drop_default_primary_key_queries($table_name, $column_name);
+		$statements = array_merge($statements, $result);
 
 		// Drop default value constraint
 		$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
@@ -541,10 +545,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		if ($this->mssql_is_sql_server_2000())
-		{
-			$this->check_index_name_length($table_name, $index_name);
-		}
+		$this->check_index_name_length($table_name, $index_name);
 
 		// remove index length
 		$column = preg_replace('#:.*$#', '', $column);
@@ -552,6 +553,21 @@ class mssql extends tools
 		$statements[] = 'CREATE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_max_index_name_length()
+	{
+		if ($this->mssql_is_sql_server_2000())
+		{
+			return parent::get_max_index_name_length();
+		}
+		else
+		{
+			return 128;
+		}
 	}
 
 	/**
@@ -678,6 +694,38 @@ class mssql extends tools
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+		}
+		$this->db->sql_freeresult($result);
+
+		return $statements;
+	}
+
+	/**
+	 * Get queries to drop the primary keys depending on the specified column
+	 *
+	 * We need to drop primary keys depending on this column before being able
+	 * to delete them.
+	 *
+	 * @param string $table_name
+	 * @param string $column_name
+	 * @return array		Array with SQL statements
+	 */
+	protected function mssql_get_drop_default_primary_key_queries($table_name, $column_name)
+	{
+		$statements = array();
+
+		$sql = "SELECT ccu.CONSTRAINT_NAME, ccu.COLUMN_NAME
+			FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+				JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu ON tc.CONSTRAINT_NAME = ccu.Constraint_name
+			WHERE tc.TABLE_NAME = '{$table_name}'
+				AND tc.CONSTRAINT_TYPE = 'Primary Key'
+				AND ccu.COLUMN_NAME = '{$column_name}'";
+
+		$result = $this->db->sql_query($sql);
+
+		while ($primary_key = $this->db->sql_fetchrow($result))
+		{
+			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $primary_key['CONSTRAINT_NAME'] . ']';
 		}
 		$this->db->sql_freeresult($result);
 

@@ -239,7 +239,7 @@ class add_bots extends \phpbb\install\task_base
 
 		$this->install_config->set('add_bot_index', $i);
 
-		if ($i < sizeof($this->bot_list))
+		if ($i < count($this->bot_list))
 		{
 			throw new resource_limit_reached_exception();
 		}

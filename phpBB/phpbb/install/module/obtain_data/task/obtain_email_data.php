@@ -50,11 +50,11 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 		// E-mail data
 		$email_enable	= $this->io_handler->get_input('email_enable', true);
 		$smtp_delivery	= $this->io_handler->get_input('smtp_delivery', '');
-		$smtp_host		= $this->io_handler->get_input('smtp_host', '');
+		$smtp_host		= $this->io_handler->get_input('smtp_host', '', true);
 		$smtp_port		= $this->io_handler->get_input('smtp_port', '');
 		$smtp_auth		= $this->io_handler->get_input('smtp_auth', '');
-		$smtp_user		= $this->io_handler->get_input('smtp_user', '');
-		$smtp_passwd	= $this->io_handler->get_input('smtp_pass', '');
+		$smtp_user		= $this->io_handler->get_input('smtp_user', '', true);
+		$smtp_passwd	= $this->io_handler->get_input('smtp_pass', '', true);
 
 		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
 

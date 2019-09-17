@@ -40,7 +40,7 @@ class phpbb_questionnaire_data_collector
 	*
 	* @param	string
 	*/
-	function phpbb_questionnaire_data_collector($install_id)
+	function __construct($install_id)
 	{
 		$this->install_id = $install_id;
 		$this->providers = array();
@@ -223,7 +223,7 @@ class phpbb_questionnaire_phpbb_data_provider
 	*
 	* @param	array	$config
 	*/
-	function phpbb_questionnaire_phpbb_data_provider($config)
+	function __construct($config)
 	{
 		// generate a unique id if necessary
 		if (empty($config['questionnaire_unique_id']))
@@ -337,7 +337,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'edit_time' => true,
 			'email_check_mx' => true,
 			'email_enable' => true,
-			'email_function_name' => true,
+			'email_force_sender' => true,
 			'email_package_size' => true,
 			'enable_confirm' => true,
 			'enable_pm_icons' => true,
@@ -369,7 +369,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'hot_threshold' => true,
 			'img_create_thumbnail' => true,
 			'img_display_inlined' => true,
-			'img_imagick' => true,
 			'img_link_height' => true,
 			'img_link_width' => true,
 			'img_max_height' => true,

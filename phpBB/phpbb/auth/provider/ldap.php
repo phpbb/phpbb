@@ -99,7 +99,7 @@ class ldap extends \phpbb\auth\provider\base
 
 		@ldap_close($ldap);
 
-		if (!is_array($result) || sizeof($result) < 2)
+		if (!is_array($result) || count($result) < 2)
 		{
 			return sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']);
 		}
@@ -192,7 +192,7 @@ class ldap extends \phpbb\auth\provider\base
 
 		$ldap_result = @ldap_get_entries($ldap, $search);
 
-		if (is_array($ldap_result) && sizeof($ldap_result) > 1)
+		if (is_array($ldap_result) && count($ldap_result) > 1)
 		{
 			if (@ldap_bind($ldap, $ldap_result[0]['dn'], htmlspecialchars_decode($password)))
 			{

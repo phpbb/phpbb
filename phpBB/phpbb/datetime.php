@@ -60,6 +60,12 @@ class datetime extends \DateTime
 	public function format($format = '', $force_absolute = false)
 	{
 		$format		= $format ? $format : $this->user->date_format;
+
+		if (substr($this->user->lang_name, 0,2) != 'en')
+		{
+			$format = preg_replace('/([^\\\])S/','$1', $format);
+		}
+
 		$format		= self::format_cache($format, $this->user);
 		$relative	= ($format['is_short'] && !$force_absolute);
 		$now		= new self($this->user, 'now', $this->user->timezone);

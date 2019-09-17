@@ -108,7 +108,7 @@ class session
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);
 		$page_dirs = array_diff_assoc($page_dirs, $intersection);
 
-		$page_dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+		$page_dir = str_repeat('../', count($root_dirs)) . implode('/', $page_dirs);
 
 		if ($page_dir && substr($page_dir, -1, 1) == '/')
 		{
@@ -127,8 +127,8 @@ class session
 
 		// The script path from the webroot to the phpBB root (for example: /phpBB3/)
 		$script_dirs = explode('/', $script_path);
-		array_splice($script_dirs, -sizeof($page_dirs));
-		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ? '/' . implode('/', $root_dirs) : '');
+		array_splice($script_dirs, -count($page_dirs));
+		$root_script_path = implode('/', $script_dirs) . (count($root_dirs) ? '/' . implode('/', $root_dirs) : '');
 
 		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
 		if (!$root_script_path)
@@ -584,12 +584,12 @@ class session
 		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
 
-		if ($user_id !== false && sizeof($this->data) && $this->data['user_id'] != $user_id)
+		if ($user_id !== false && isset($this->data['user_id']) && $this->data['user_id'] != $user_id)
 		{
 			$this->data = array();
 		}
 
-		if (sizeof($this->data))
+		if (isset($this->data['user_id']))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $this->data['user_id'];
@@ -597,7 +597,7 @@ class session
 
 		// If we're presented with an autologin key we'll join against it.
 		// Else if we've been passed a user_id we'll grab data based on that
-		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && empty($this->data))
 		{
 			$sql = 'SELECT u.*
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
@@ -617,7 +617,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		if ($user_id !== false && !sizeof($this->data))
+		if ($user_id !== false && empty($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
@@ -645,7 +645,7 @@ class session
 		// User does not exist
 		// User is inactive
 		// User is bot
-		if (!sizeof($this->data) || !is_array($this->data))
+		if (!is_array($this->data) || !count($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
@@ -1022,7 +1022,7 @@ class session
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($del_user_id))
+		if (count($del_user_id))
 		{
 			// Delete expired sessions
 			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
@@ -1156,7 +1156,7 @@ class session
 			$where_sql[] = $_sql;
 		}
 
-		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
+		$sql .= (count($where_sql)) ? implode(' AND ', $where_sql) : '';
 		$result = $db->sql_query($sql, $cache_ttl);
 
 		$ban_triggered_by = 'user';
@@ -1299,7 +1299,12 @@ class session
 			trigger_error($message);
 		}
 
-		return ($banned && $ban_row['ban_give_reason']) ? $ban_row['ban_give_reason'] : $banned;
+		if (!empty($ban_row))
+		{
+			$ban_row['ban_triggered_by'] = $ban_triggered_by;
+		}
+
+		return ($banned && $ban_row) ? $ban_row : $banned;
 	}
 
 	/**
@@ -1614,13 +1619,15 @@ class session
 			return;
 		}
 
+		// Do not update the session page for ajax requests, so the view online still works as intended
+		$page_changed = $this->update_session_page && $this->data['session_page'] != $this->page['page'] && !$request->is_ajax();
+
 		// Only update session DB a minute or so after last update or if page changes
-		if ($this->time_now - ((isset($this->data['session_time'])) ? $this->data['session_time'] : 0) > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+		if ($this->time_now - (isset($this->data['session_time']) ? $this->data['session_time'] : 0) > 60 || $page_changed)
 		{
 			$sql_ary = array('session_time' => $this->time_now);
 
-			// Do not update the session page for ajax requests, so the view online still works as intended
-			if ($this->update_session_page && !$request->is_ajax())
+			if ($page_changed)
 			{
 				$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
 				$sql_ary['session_forum_id'] = $this->page['forum'];

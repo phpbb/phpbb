@@ -24,9 +24,9 @@ class acp_inactive
 	var $u_action;
 	var $p_master;
 
-	function acp_inactive(&$p_master)
+	function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	function main($id, $mode)
@@ -70,7 +70,7 @@ class acp_inactive
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
-		if ($submit && sizeof($mark))
+		if ($submit && count($mark))
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
 			{

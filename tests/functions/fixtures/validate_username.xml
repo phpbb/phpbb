@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
 	<table name="phpbb_groups">
+		<column>group_id</column>
 		<column>group_name</column>
 		<column>group_desc</column>
 		<row>
+			<value>10</value>
 			<value>foobar_group</value>
 			<value>test123</value>
 		</row>

@@ -196,7 +196,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Now the tricky part... let's dance
-	header('Cache-Control: public');
+	header('Cache-Control: private');
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
@@ -451,7 +451,7 @@ function set_modified_headers($stamp, $browser)
 		{
 			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
-			header('Cache-Control: public');
+			header('Cache-Control: private');
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 			return true;
 		}
@@ -568,7 +568,7 @@ function phpbb_parse_range_request($request_array, $filesize)
 		$range = explode('-', trim($range_string));
 
 		// "-" is invalid, "0-0" however is valid and means the very first byte.
-		if (sizeof($range) != 2 || $range[0] === '' && $range[1] === '')
+		if (count($range) != 2 || $range[0] === '' && $range[1] === '')
 		{
 			continue;
 		}
@@ -662,6 +662,8 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
+	global $phpbb_container;
+
 	$sql_array = array(
 		'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
 		'FROM'		=> array(
@@ -677,7 +679,9 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($row && $row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
+	if ($row && !$phpbb_content_visibility->is_visible('topic', $row['forum_id'], $row))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');

@@ -23,14 +23,16 @@ class link_helper
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag    LINK_TEXT tag
 	* @param  \s9e\TextFormatter\Parser     $parser Parser
-	* @return bool                                  Whether the tag is valid
+	* @return void
 	*/
 	public function cleanup_tag(\s9e\TextFormatter\Parser\Tag $tag, \s9e\TextFormatter\Parser $parser)
 	{
 		// Invalidate if the content of the tag matches the text attribute
 		$text = substr($parser->getText(), $tag->getPos(), $tag->getLen());
-
-		return ($text !== $tag->getAttribute('text'));
+		if ($text === $tag->getAttribute('text'))
+		{
+			$tag->invalidate();
+		}
 	}
 
 	/**
@@ -40,7 +42,7 @@ class link_helper
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag    URL tag (start tag)
 	* @param  \s9e\TextFormatter\Parser     $parser Parser
-	* @return bool                                  Always true to indicate that the tag is valid
+	* @return void
 	*/
 	public function generate_link_text_tag(\s9e\TextFormatter\Parser\Tag $tag, \s9e\TextFormatter\Parser $parser)
 	{
@@ -49,7 +51,7 @@ class link_helper
 		// the [url] BBCode when its content is used for the URL
 		if (!$tag->getEndTag() || !$this->should_shorten($tag, $parser->getText()))
 		{
-			return true;
+			return;
 		}
 
 		// Capture the text between the start tag and its end tag
@@ -58,10 +60,10 @@ class link_helper
 		$length = $end - $start;
 		$text   = substr($parser->getText(), $start, $length);
 
-		// Create a tag that consumes the link's text
-		$parser->addSelfClosingTag('LINK_TEXT', $start, $length)->setAttribute('text', $text);
-
-		return true;
+		// Create a tag that consumes the link's text and make it depends on this tag
+		$link_text_tag = $parser->addSelfClosingTag('LINK_TEXT', $start, $length);
+		$link_text_tag->setAttribute('text', $text);
+		$tag->cascadeInvalidationTo($link_text_tag);
 	}
 
 	/**
@@ -84,7 +86,7 @@ class link_helper
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag       LINK_TEXT tag
 	* @param  string                        $board_url Forum's root URL (with trailing slash)
-	* @return bool                                     Always true to indicate that the tag is valid
+	* @return void
 	*/
 	public function truncate_local_url(\s9e\TextFormatter\Parser\Tag $tag, $board_url)
 	{
@@ -93,15 +95,13 @@ class link_helper
 		{
 			$tag->setAttribute('text', substr($text, strlen($board_url)));
 		}
-
-		return true;
 	}
 
 	/**
 	* Truncate the replacement text set in a LINK_TEXT tag
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag LINK_TEXT tag
-	* @return bool                               Always true to indicate that the tag is valid
+	* @return void
 	*/
 	public function truncate_text(\s9e\TextFormatter\Parser\Tag $tag)
 	{
@@ -109,10 +109,7 @@ class link_helper
 		if (utf8_strlen($text) > 55)
 		{
 			$text = utf8_substr($text, 0, 39) . ' ... ' . utf8_substr($text, -10);
+			$tag->setAttribute('text', $text);
 		}
-
-		$tag->setAttribute('text', $text);
-
-		return true;
 	}
 }

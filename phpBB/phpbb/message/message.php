@@ -209,7 +209,7 @@ class message
 	*/
 	public function cc_sender()
 	{
-		if (!sizeof($this->recipients))
+		if (!count($this->recipients))
 		{
 			trigger_error('No email recipients specified');
 		}
@@ -238,7 +238,7 @@ class message
 	*/
 	public function send(\messenger $messenger, $contact)
 	{
-		if (!sizeof($this->recipients))
+		if (!count($this->recipients))
 		{
 			return;
 		}
@@ -271,7 +271,7 @@ class message
 				'MESSAGE'		=> htmlspecialchars_decode($this->body))
 			);
 
-			if (sizeof($this->template_vars))
+			if (count($this->template_vars))
 			{
 				$messenger->assign_vars($this->template_vars);
 			}

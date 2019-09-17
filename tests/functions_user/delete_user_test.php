@@ -46,6 +46,11 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'auth.provider_collection',
 			$provider_collection
 		);
+		$phpbb_container->setParameter('tables.auth_provider_oauth_token_storage', 'phpbb_oauth_tokens');
+		$phpbb_container->setParameter('tables.auth_provider_oauth_states', 'phpbb_oauth_states');
+		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');
+
+		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 	}
 
 	 public function first_last_post_data()

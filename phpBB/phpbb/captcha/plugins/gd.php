@@ -51,7 +51,7 @@ class gd extends captcha_abstract
 		return 'CAPTCHA_GD';
 	}
 
-	function acp_page($id, &$module)
+	function acp_page($id, $module)
 	{
 		global $user, $template, $phpbb_log, $request;
 		global $config;

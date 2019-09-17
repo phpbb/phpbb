@@ -50,27 +50,27 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 		return array(
 			array(
 				'[b]bold[/b]',
-				'<span style="font-weight: bold">bold</span>'
+				'<span style="font-weight:bold">bold</span>'
 			),
 			array(
 				'[u]underlined[/u]',
-				'<span style="text-decoration: underline">underlined</span>'
+				'<span style="text-decoration:underline">underlined</span>'
 			),
 			array(
 				'[i]italic[/i]',
-				'<span style="font-style: italic">italic</span>'
+				'<span style="font-style:italic">italic</span>'
 			),
 			array(
 				'[color=#FF0000]colored[/color]',
-				'<span style="color: #FF0000">colored</span>'
+				'<span style="color:#FF0000">colored</span>'
 			),
 			array(
 				'[color=red]colored[/color]',
-				'<span style="color: red">colored</span>'
+				'<span style="color:red">colored</span>'
 			),
 			array(
 				'[size=75]smaller[/size]',
-				'<span style="font-size: 75%; line-height: normal">smaller</span>'
+				'<span style="font-size:75%;line-height:normal">smaller</span>'
 			),
 			array(
 				'[quote]quoted[/quote]',
@@ -102,31 +102,31 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[list=1][*]item[/list]',
-				'<ol style="list-style-type: decimal"><li>item</li></ol>'
+				'<ol style="list-style-type:decimal"><li>item</li></ol>'
 			),
 			array(
 				'[list=a][*]item[/list]',
-				'<ol style="list-style-type: lower-alpha"><li>item</li></ol>'
+				'<ol style="list-style-type:lower-alpha"><li>item</li></ol>'
 			),
 			array(
 				'[list=i][*]item[/list]',
-				'<ol style="list-style-type: lower-roman"><li>item</li></ol>'
+				'<ol style="list-style-type:lower-roman"><li>item</li></ol>'
 			),
 			array(
 				'[list=I][*]item[/list]',
-				'<ol style="list-style-type: upper-roman"><li>item</li></ol>'
+				'<ol style="list-style-type:upper-roman"><li>item</li></ol>'
 			),
 			array(
 				'[list=disc][*]item[/list]',
-				'<ul style="list-style-type: disc"><li>item</li></ul>'
+				'<ul style="list-style-type:disc"><li>item</li></ul>'
 			),
 			array(
 				'[list=circle][*]item[/list]',
-				'<ul style="list-style-type: circle"><li>item</li></ul>'
+				'<ul style="list-style-type:circle"><li>item</li></ul>'
 			),
 			array(
 				'[list=square][*]item[/list]',
-				'<ul style="list-style-type: square"><li>item</li></ul>'
+				'<ul style="list-style-type:square"><li>item</li></ul>'
 			),
 			array(
 				'[img]https://area51.phpbb.com/images/area51.png[/img]',
@@ -180,17 +180,17 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Allow textual bbcodes in textual bbcodes
 				'[b]bold [i]bold + italic[/i][/b]',
-				'<span style="font-weight: bold">bold <span style="font-style: italic">bold + italic</span></span>'
+				'<span style="font-weight:bold">bold <span style="font-style:italic">bold + italic</span></span>'
 			),
 			array(
 				// Allow textual bbcodes in url with description
 				'[url=https://area51.phpbb.com/]Area51 [i]italic[/i][/url]',
-				'<a href="https://area51.phpbb.com/" class="postlink">Area51 <span style="font-style: italic">italic</span></a>'
+				'<a href="https://area51.phpbb.com/" class="postlink">Area51 <span style="font-style:italic">italic</span></a>'
 			),
 			array(
 				// Allow url with description in textual bbcodes
 				'[i]italic [url=https://area51.phpbb.com/]Area51[/url][/i]',
-				'<span style="font-style: italic">italic <a href="https://area51.phpbb.com/" class="postlink">Area51</a></span>'
+				'<span style="font-style:italic">italic <a href="https://area51.phpbb.com/" class="postlink">Area51</a></span>'
 			),
 			array(
 				// Do not parse textual bbcodes in code
@@ -205,7 +205,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Textual bbcode nesting into textual bbcode
 				'[b]bold [i]bold + italic[/b] italic[/i]',
-				'<span style="font-weight: bold">bold <span style="font-style: italic">bold + italic</span></span><span style="font-style: italic"> italic</span>'
+				'<span style="font-weight:bold">bold <span style="font-style:italic">bold + italic</span></span><span style="font-style:italic"> italic</span>'
 			),
 			array(
 				"[code]\tline1\n  line2[/code]",
@@ -254,6 +254,10 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<a href="http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</a>'
 			),
 			array(
+				'[url=http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[/url]',
+				'<a href="http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</a>'
+			),
+			array(
 				'[quote="[url=http://example.org]xxx[/url]"]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">xxx</a> wrote:</cite>...</div></blockquote>'
 			),
@@ -298,7 +302,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				"Emoji: \xF0\x9F\x98\x80",
-				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/emojione/assets/svg/1f600.svg">'
+				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="emoji smilies" draggable="false" src="//twemoji.maxcdn.com/2/svg/1f600.svg">'
 			),
 			array(
 				"Emoji: \xF0\x9F\x98\x80",

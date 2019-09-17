@@ -525,7 +525,6 @@ li {
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
 	position: relative;
-	z-index: 1;
 }
 
 .rtl #menu {
@@ -841,6 +840,7 @@ table.zebra-table tbody tr:nth-child(odd) {
 }
 
 .row2 {
+	word-break: break-all;
 	background-color: #DCEBFE;
 }
 
@@ -1891,7 +1891,6 @@ li.pagination ul {
 	color: #000;
 	text-align: center;
 	border: 1px solid #AAA;
-	opacity: .95;
 }
 
 .tooltip span.top {
@@ -2461,6 +2460,9 @@ fieldset.permissions .padding {
 	text-align: left;
 }
 
+.rtl .dropdown li {
+	text-align: right;
+}
 .wrap .dropdown li, .dropdown.wrap li {
 	white-space: normal;
 }
@@ -2473,6 +2475,10 @@ fieldset.permissions .padding {
 	left: auto;
 	top: 3.2em;
 	width: 250px;
+}
+
+.rtl .roles-options > .dropdown {
+	right: auto;
 }
 
 .roles-options {
@@ -2491,6 +2497,10 @@ fieldset.permissions .padding {
 	width: 250px;
 	display: none;
 	background: url('../images/arrow_down.gif') no-repeat 245px .7em;
+}
+
+.rtl .roles-options > span {
+	background: url('../images/arrow_down.gif') no-repeat 7px .7em;
 }
 
 .roles-options li {

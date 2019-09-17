@@ -19,10 +19,11 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $user;
+		global $language, $user;
 
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
+		$language = $user->lang;
 	}
 
 	/**
@@ -44,6 +45,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 					'test_int_32'			=> array('lang' => 'TEST_INT',			'validate' => 'int:32'),
 					'test_int_32_64'		=> array('lang' => 'TEST_INT',			'validate' => 'int:32:64'),
 					'test_lang'				=> array('lang' => 'TEST_LANG',			'validate' => 'lang'),
+					'test_url'				=> array('lang' => 'TEST_URL',			'validate' => 'url'),
 					/*
 					'test_sp'				=> array('lang' => 'TEST_SP',			'validate' => 'script_path'),
 					'test_rpath'			=> array('lang' => 'TEST_RPATH',		'validate' => 'rpath'),
@@ -64,6 +66,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 					'test_int_32'		=> 32,
 					'test_int_32_64'	=> 48,
 					'test_lang'			=> 'en',
+					'test_url'			=> 'http://foobar.com',
 				),
 			),
 		);
@@ -148,6 +151,11 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 				array('test_lang'		=> 'this_is_no_language'),
 				array('WRONG_DATA_LANG'),
 			),
+			array(
+				array('test_url'		=> array('lang' => 'TEST_URL',			'validate' => 'url')),
+				array('test_url'		=> 'javascript://foobar.com'),
+				array('URL_INVALID TEST_URL'),
+			),
 		);
 	}
 
@@ -160,101 +168,5 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 		validate_config_vars($test_data, $cfg_array, $phpbb_error);
 
 		$this->assertEquals($expected, $phpbb_error);
-	}
-
-	public function data_validate_path_linux()
-	{
-		return array(
-			array('/usr/bin', 'absolute_path', true),
-			array('/usr/bin/', 'absolute_path:50:200', true),
-			array('/usr/bin/which', 'absolute_path', 'DIRECTORY_NOT_DIR'),
-			array('/foo/bar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			array('C:\Windows', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			array('.', 'absolute_path', true),
-			array('', 'absolute_path', true),
-			array('mkdir /foo/bar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			// Make sure above command didn't do anything
-			array('/foo/bar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-		);
-	}
-
-	/**
-	 * @dataProvider data_validate_path_linux
-	 */
-	public function test_validate_path_linux($path, $validation_type, $expected)
-	{
-		if (strtolower(substr(PHP_OS, 0, 5)) !== 'linux')
-		{
-			$this->markTestSkipped('Unable to test linux specific paths on other OS.');
-		}
-
-		$error = array();
-		$config_ary = array(
-			'path' => $path,
-		);
-
-		validate_config_vars(array(
-				'path'	=> array('lang' => 'FOOBAR', 'validate' => $validation_type),
-			),
-			$config_ary,
-			$error
-		);
-
-		if ($expected === true)
-		{
-			$this->assertEmpty($error);
-		}
-		else
-		{
-			$this->assertEquals(array($expected), $error);
-		}
-	}
-
-	public function data_validate_path_windows()
-	{
-		return array(
-			array('C:\Windows', 'absolute_path', true),
-			array('C:\Windows\\', 'absolute_path:50:200', true),
-			array('C:\Windows\explorer.exe', 'absolute_path', 'DIRECTORY_NOT_DIR'),
-			array('C:\foobar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			array('/usr/bin', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			array('.', 'absolute_path', true),
-			array('', 'absolute_path', true),
-			array('mkdir C:\Windows\foobar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-			// Make sure above command didn't do anything
-			array('C:\Windows\foobar', 'absolute_path', 'DIRECTORY_DOES_NOT_EXIST'),
-		);
-	}
-
-	/**
-	 * @dataProvider data_validate_path_windows
-	 */
-	public function test_validate_path_windows($path, $validation_type, $expected)
-	{
-		if (strtolower(substr(PHP_OS, 0, 3)) !== 'win')
-		{
-			$this->markTestSkipped('Unable to test windows specific paths on other OS.');
-		}
-
-		$error = array();
-		$config_ary = array(
-			'path' => $path,
-		);
-
-		validate_config_vars(array(
-			'path'	=> array('lang' => 'FOOBAR', 'validate' => $validation_type),
-		),
-			$config_ary,
-			$error
-		);
-
-		if ($expected === true)
-		{
-			$this->assertEmpty($error);
-		}
-		else
-		{
-			$this->assertEquals(array($expected), $error);
-		}
 	}
 }

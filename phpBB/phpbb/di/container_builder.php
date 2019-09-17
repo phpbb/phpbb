@@ -143,6 +143,13 @@ class container_builder
 			{
 				if ($this->use_extensions)
 				{
+					$autoload_cache = new ConfigCache($this->get_autoload_filename(), defined('DEBUG'));
+					if (!$autoload_cache->isFresh())
+					{
+						// autoload cache should be refreshed
+						$this->load_extensions();
+					}
+
 					require($this->get_autoload_filename());
 				}
 

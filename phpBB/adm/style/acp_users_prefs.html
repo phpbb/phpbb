@@ -33,7 +33,7 @@
 		<dt><label for="notifymethod">{L_NOTIFY_METHOD}{L_COLON}</label><br /><span>{L_NOTIFY_METHOD_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" name="notifymethod" value="0"<!-- IF NOTIFY_EMAIL --> id="notifymethod" checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label>
 			<label><input type="radio" class="radio" name="notifymethod" value="1"<!-- IF NOTIFY_IM --> id="notifymethod" checked="checked"<!-- ENDIF --><!-- IF S_JABBER_DISABLED --> disabled="disabled"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label>
-			<label><input type="radio" class="radio" name="notifymethod" value="2"<!-- IF NOTIFY_BOTH --> id="notifymethod" checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_BOTH}</label></dd>
+			<label><input type="radio" class="radio" name="notifymethod" value="2"<!-- IF NOTIFY_BOTH --> id="notifymethod" checked="checked"<!-- ENDIF --><!-- IF S_JABBER_DISABLED --> disabled="disabled"<!-- ENDIF --> /> {L_NOTIFY_METHOD_BOTH}</label></dd>
 	</dl>
 	<dl> 
 		<dt><label for="notifypm">{L_NOTIFY_ON_PM}{L_COLON}</label></dt>

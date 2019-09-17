@@ -253,7 +253,7 @@ class acp_bbcodes
 
 						if ($row)
 						{
-							$bbcode_id = $row['max_bbcode_id'] + 1;
+							$bbcode_id = (int) $row['max_bbcode_id'] + 1;
 
 							// Make sure it is greater than the core bbcode ids...
 							if ($bbcode_id <= NUM_CORE_BBCODES)
@@ -295,6 +295,22 @@ class acp_bbcodes
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($data['bbcode_tag']));
 
+					/**
+					* Event after a BBCode has been added or updated
+					*
+					* @event core.acp_bbcodes_modify_create_after
+					* @var	string	action		Type of the action: modify|create
+					* @var	int		bbcode_id	The id of the added or updated bbcode
+					* @var	array	sql_ary		Array with bbcode data (read only)
+					* @since 3.2.4-RC1
+					*/
+					$vars = array(
+						'action',
+						'bbcode_id',
+						'sql_ary',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create_after', compact($vars)));
+
 					trigger_error($user->lang[$lang] . adm_back_link($this->u_action));
 				}
 				else
@@ -325,10 +341,28 @@ class acp_bbcodes
 				{
 					if (confirm_box(true))
 					{
+						$bbcode_tag = $row['bbcode_tag'];
+
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						$phpbb_container->get('text_formatter.cache')->invalidate();
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($row['bbcode_tag']));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($bbcode_tag));
+
+						/**
+						* Event after a BBCode has been deleted
+						*
+						* @event core.acp_bbcodes_delete_after
+						* @var	string	action		Type of the action: delete
+						* @var	int		bbcode_id	The id of the deleted bbcode
+						* @var	string	bbcode_tag	The tag of the deleted bbcode
+						* @since 3.2.4-RC1
+						*/
+						$vars = array(
+							'action',
+							'bbcode_id',
+							'bbcode_tag',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_delete_after', compact($vars)));
 
 						if ($request->is_ajax())
 						{
@@ -494,7 +528,7 @@ class acp_bbcodes
 				// Pad backreference numbers from tokens
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
-					$repad = $pad + sizeof(array_unique($repad[0]));
+					$repad = $pad + count(array_unique($repad[0]));
 					$replace = preg_replace_callback('/(?<!\\\\)\$([0-9]+)/', function ($match) use ($pad) {
 						return '${' . ($match[1] + $pad) . '}';
 					}, $replace);
@@ -553,10 +587,10 @@ class acp_bbcodes
 		}
 
 		// Lowercase tags
-		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+=?).*/i', '$1', $bbcode_match);
-		$bbcode_search = preg_replace('/.*?\[([a-z0-9_-]+)=?.*/i', '$1', $bbcode_match);
+		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+).*/i', '$1', $bbcode_match);
+		$bbcode_search = preg_replace('/.*?\[([a-z0-9_-]+).*/i', '$1', $bbcode_match);
 
-		if (!preg_match('/^[a-zA-Z0-9_-]+=?$/', $bbcode_tag))
+		if (!preg_match('/^[a-zA-Z0-9_-]+$/', $bbcode_tag))
 		{
 			global $user;
 			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);

@@ -131,6 +131,42 @@ class content_visibility
 		return (int) $data[$mode . '_approved'] + (int) $data[$mode . '_unapproved'] + (int) $data[$mode . '_softdeleted'];
 	}
 
+
+	/**
+	* Check topic/post visibility for a given forum ID
+	*
+	* Note: Read permissions are not checked.
+	*
+	* @param $mode		string	Either "topic" or "post"
+	* @param $forum_id	int		The forum id is used for permission checks
+	* @param $data		array	Array with item information to check visibility
+	* @return bool		True if the item is visible, false if not
+	*/
+	public function is_visible($mode, $forum_id, $data)
+	{
+		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || $data[$mode . '_visibility'] == ITEM_APPROVED;
+
+		/**
+		* Allow changing the result of calling is_visible
+		*
+		* @event core.phpbb_content_visibility_is_visible
+		* @var	bool		is_visible			Default visibility condition, to be modified by extensions if needed.
+		* @var	string		mode				Either "topic" or "post"
+		* @var	int			forum_id			Forum id of the current item
+		* @var	array		data				Array of item information
+		* @since 3.2.2-RC1
+		*/
+		$vars = array(
+			'is_visible',
+			'mode',
+			'forum_id',
+			'data',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_is_visible', compact($vars)));
+
+		return $is_visible;
+	}
+
 	/**
 	* Create topic/post visibility SQL for a given forum ID
 	*
@@ -176,10 +212,14 @@ class content_visibility
 
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
-			return $where_sql . '1 = 1';
+			$where_sql .= '1 = 1';
+		}
+		else
+		{
+			$where_sql .= $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 		}
 
-		return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+		return '(' . $where_sql . ')';
 	}
 
 	/**
@@ -195,16 +235,21 @@ class content_visibility
 	*/
 	public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
-		$where_sql = '(';
+		$where_sql = '';
 
-		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
+		$approve_forums = array_keys($this->auth->acl_getf('m_approve', true));
+		if (!empty($forum_ids) && !empty($approve_forums))
+		{
+			$approve_forums = array_intersect($forum_ids, $approve_forums);
+			$forum_ids = array_diff($forum_ids, $approve_forums);
+		}
 
 		$get_forums_visibility_sql_overwrite = false;
 		/**
 		* Allow changing the result of calling get_forums_visibility_sql
 		*
 		* @event core.phpbb_content_visibility_get_forums_visibility_before
-		* @var	string		where_sql							The action the user tried to execute
+		* @var	string		where_sql							Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
 		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
 		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
@@ -229,33 +274,13 @@ class content_visibility
 			return $get_forums_visibility_sql_overwrite;
 		}
 
-		if (sizeof($approve_forums))
-		{
-			// Remove moderator forums from the rest
-			$forum_ids = array_diff($forum_ids, $approve_forums);
-
-			if (!sizeof($forum_ids))
-			{
-				// The user can see all posts/topics in all specified forums
-				return $where_sql . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
-			}
-			else
-			{
-				// Moderator can view all posts/topics in some forums
-				$where_sql .= $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ' OR ';
-			}
-		}
-		else
-		{
-			// The user is just a normal user
-			return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . ')';
-		}
-
+		// Moderator can view all posts/topics in the moderated forums
+		$where_sql .= '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums, false, true) . ' OR ';
+		// Normal user can view approved items only
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
+			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . '))';
 
-		return $where_sql;
+		return '(' . $where_sql . ')';
 	}
 
 	/**
@@ -281,12 +306,12 @@ class content_visibility
 		* Allow changing the result of calling get_global_visibility_sql
 		*
 		* @event core.phpbb_content_visibility_get_global_visibility_before
-		* @var	array		where_sqls							The action the user tried to execute
+		* @var	array		where_sqls							Array of extra visibility conditions. Will be joined by imploding with "OR".
 		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
 		* @var	array		exclude_forum_ids					Array of forum ids the current user doesn't have access to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
-		* @var	string		visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
+		* @var	string		visibility_sql_overwrite			If not empty, forces the function to return visibility_sql_overwrite after executing the event
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -304,24 +329,17 @@ class content_visibility
 			return $visibility_sql_overwrite;
 		}
 
-		if (sizeof($exclude_forum_ids))
-		{
-			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
-				AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
-		}
-		else
-		{
-			$where_sqls[] = $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
-		}
+		// Include approved items in all forums but the excluded
+		$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true, true) . '
+			AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
 
-		if (sizeof($approve_forums))
+		// If user has moderator permissions, add everything in the moderated forums
+		if (count($approve_forums))
 		{
 			$where_sqls[] = $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
-			return '(' . implode(' OR ', $where_sqls) . ')';
 		}
 
-		// There is only one element, so we just return that one
-		return $where_sqls[0];
+		return '(' . implode(' OR ', $where_sqls) . ')';
 	}
 
 	/**
@@ -437,12 +455,13 @@ class content_visibility
 		 * @var			int			topic_id		Topic of the post IDs to be modified.
 		 * @var			int			forum_id		Forum ID that the topic_id resides in.
 		 * @var			int			user_id			User ID doing this action.
-		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			int			time			Timestamp of this action.
 		 * @var			string		reason			Reason specified by the user for this change.
 		 * @var			bool		is_starter		Are we changing the topic's starter?
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
 		 * @var			array		data			The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
@@ -450,7 +469,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'is_starter',
 			'is_latest',
@@ -565,7 +584,7 @@ class content_visibility
 				$sql_ary[$recipient_field] = " + $count_increase";
 			}
 
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$forum_sql = array();
 
@@ -622,12 +641,13 @@ class content_visibility
 		 * @var			int			topic_id		Topic of the post IDs to be modified.
 		 * @var			int			forum_id		Forum ID that the topic_id resides in.
 		 * @var			int			user_id			User ID doing this action.
-		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			int			time			Timestamp of this action.
 		 * @var			string		reason			Reason specified by the user for this change.
 		 * @var			bool		is_starter		Are we changing the topic's starter?
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
 		 * @var			array		data			The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
@@ -635,7 +655,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'is_starter',
 			'is_latest',
@@ -709,18 +729,19 @@ class content_visibility
 		 * @var			int			topic_id			Topic of the post IDs to be modified.
 		 * @var			int			forum_id			Forum ID that the topic_id resides in.
 		 * @var			int			user_id				User ID doing this action.
-		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			int			time				Timestamp of this action.
 		 * @var			string		reason				Reason specified by the user for this change.
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'force_update_all',
 			'data',
@@ -758,18 +779,19 @@ class content_visibility
 		 * @var			int			topic_id			Topic of the post IDs to be modified.
 		 * @var			int			forum_id			Forum ID that the topic_id resides in.
 		 * @var			int			user_id				User ID doing this action.
-		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			int			time				Timestamp of this action.
 		 * @var			string		reason				Reason specified by the user for this change.
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'force_update_all',
 			'data',

@@ -21,7 +21,9 @@ phpbb.plupload.initialize = function() {
 	// Only execute if Plupload initialized successfully.
 	phpbb.plupload.uploader.bind('Init', function() {
 		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0];
-		phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
+		let $attachRowTemplate = $('#attach-row-tpl');
+		$attachRowTemplate.removeClass('attach-row-tpl');
+		phpbb.plupload.rowTpl = $attachRowTemplate[0].outerHTML;
 
 		// Hide the basic upload panel and remove the attach row template.
 		$('#attach-row-tpl, #attach-panel-basic').remove();
@@ -211,7 +213,7 @@ phpbb.plupload.updateHiddenData = function(row, attach, index) {
 			.attr('type', 'hidden')
 			.attr('name', 'attachment_data[' + index + '][' + key + ']')
 			.attr('value', attach[key]);
-		$('textarea', row).after(input);
+		$(row).append(input);
 	}
 };
 

@@ -33,13 +33,6 @@ services:
         tags:
             - { name: install_obtain_data, order: 40 }
 
-    installer.obtain_data.obtain_imagick_path:
-        class: phpbb\install\module\obtain_data\task\obtain_imagick_path
-        arguments:
-            - '@installer.helper.config'
-        tags:
-            - { name: install_obtain_data, order: 60 }
-
     installer.obtain_data.obtain_server_data:
         class: phpbb\install\module\obtain_data\task\obtain_server_data
         arguments:

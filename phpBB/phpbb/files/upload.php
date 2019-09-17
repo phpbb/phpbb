@@ -261,7 +261,7 @@ class upload
 	 *
 	 * @param filespec $file Instance of filespec class
 	 */
-	public function common_checks(&$file)
+	public function common_checks($file)
 	{
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
@@ -297,7 +297,7 @@ class upload
 	 *
 	 * @return bool True if extension is allowed, false if not
 	 */
-	public function valid_extension(&$file)
+	public function valid_extension($file)
 	{
 		return (in_array($file->get('extension'), $this->allowed_extensions)) ? true : false;
 	}
@@ -310,7 +310,7 @@ class upload
 	 * @return bool True if dimensions are valid or no constraints set, false
 	 *			if not
 	 */
-	public function valid_dimensions(&$file)
+	public function valid_dimensions($file)
 	{
 		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height)
 		{
@@ -350,7 +350,7 @@ class upload
 	 *
 	 * @return bool True if content is valid, false if not
 	 */
-	public function valid_content(&$file)
+	public function valid_content($file)
 	{
 		return ($file->check_content($this->disallowed_content));
 	}

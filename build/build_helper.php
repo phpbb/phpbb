@@ -33,14 +33,14 @@ class build_package
 	var $status_begun = false;
 	var $num_dots = 0;
 
-	function build_package($versions, $verbose = false)
+	function __construct($versions, $verbose = false)
 	{
 		$this->versions = $versions;
 		$this->verbose = $verbose;
 
 		// Get last two entries
-		$_latest = $this->versions[sizeof($this->versions) - 1];
-		$_before = $this->versions[sizeof($this->versions) - 2];
+		$_latest = $this->versions[count($this->versions) - 1];
+		$_before = $this->versions[count($this->versions) - 2];
 
 		$this->locations = array(
 			'new_version'	=> dirname(dirname(__FILE__)) . '/phpBB/',

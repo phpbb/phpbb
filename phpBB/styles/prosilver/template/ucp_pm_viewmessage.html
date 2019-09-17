@@ -91,28 +91,28 @@
 			<!-- IF U_EDIT -->
 				<li>
 					<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
-						<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_EDIT_PM}</span>
+						<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_DELETE -->
 				<li>
 					<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
-						<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_DELETE_MESSAGE}</span>
+						<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_REPORT -->
 				<li>
 					<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
-						<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_REPORT_PM}</span>
+						<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_REPORT}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_QUOTE -->
 				<li>
 					<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
-						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_QUOTE_PM}</span>
+						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_QUOTE}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
@@ -124,8 +124,8 @@
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {SENT_DATE}
 			<br /><strong>{L_PM_FROM}{L_COLON}</strong> {MESSAGE_AUTHOR_FULL}
-			<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}{L_COLON}</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}" style="color:<!-- IF to_recipient.COLOUR -->{to_recipient.COLOUR}<!-- ELSEIF to_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{to_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
-			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}" style="color:<!-- IF bcc_recipient.COLOUR -->{bcc_recipient.COLOUR}<!-- ELSEIF bcc_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{bcc_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
+			<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}{L_COLON}</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:{to_recipient.COLOUR};"<!-- ENDIF -->><strong>{to_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
+			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:{bcc_recipient.COLOUR};"<!-- ENDIF -->><strong>{bcc_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
 		</p>
 
 

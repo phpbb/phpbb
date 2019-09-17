@@ -32,16 +32,15 @@ class add_help_phpbb extends \phpbb\db\migration\migration
 		return array(
 			array('config.add', array('help_send_statistics', true)),
 			array('config.add', array('help_send_statistics_time', 0)),
-			array('if', array(
-				array('module.exists', array('acp', false, 'ACP_SEND_STATISTICS')),
-				array('module.remove', array('acp', false, 'ACP_SEND_STATISTICS')),
-			)),
+			array('module.remove', array('acp', false, 'ACP_SEND_STATISTICS')),
 			array('module.add', array(
 				'acp',
 				'ACP_SERVER_CONFIGURATION',
 				array(
 					'module_basename'	=> 'acp_help_phpbb',
-					'modes'				=> array('help_phpbb'),
+					'module_langname'	=> 'ACP_HELP_PHPBB',
+					'module_mode'		=> 'help_phpbb',
+					'module_auth'		=> 'acl_a_server',
 				),
 			)),
 		);

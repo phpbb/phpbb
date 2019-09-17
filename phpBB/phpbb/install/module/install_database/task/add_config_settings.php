@@ -151,10 +151,6 @@ class add_config_settings extends \phpbb\install\task_base
 				VALUES ('default_lang', '" . $this->db->sql_escape($this->install_config->get('default_lang')) . "')",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('img_imagick')) . "'
-				WHERE config_name = 'img_imagick'",
-
-			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('server_name')) . "'
 				WHERE config_name = 'server_name'",
 
@@ -327,7 +323,7 @@ class add_config_settings extends \phpbb\install\task_base
 		}
 
 		$i = $this->install_config->get('add_config_settings_index', 0);
-		$total = sizeof($sql_ary);
+		$total = count($sql_ary);
 		$sql_ary = array_slice($sql_ary, $i);
 
 		foreach ($sql_ary as $sql)

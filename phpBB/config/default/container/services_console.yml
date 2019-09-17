@@ -3,7 +3,6 @@ services:
         class: phpbb\console\exception_subscriber
         arguments:
             - '@language'
-            - '%debug.exceptions%'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -209,6 +208,7 @@ services:
     console.command.thumbnail.delete:
         class: phpbb\console\command\thumbnail\delete
         arguments:
+            - '@config'
             - '@user'
             - '@dbal.conn'
             - '%core.root_path%'
@@ -218,6 +218,7 @@ services:
     console.command.thumbnail.generate:
         class: phpbb\console\command\thumbnail\generate
         arguments:
+            - '@config'
             - '@user'
             - '@dbal.conn'
             - '@cache'

@@ -20,15 +20,16 @@
 
 phpBB Project Manager:   Marshalrusty (Yuriy Rusko)
 
-phpBB Product Manager:   naderman (Nils Adermann)
-
 phpBB Lead Developer:    Marc (Marc Alexander)
 
 phpBB Developers:        bantu (Andreas Fischer)
                          CHItA (Máté Bartus)
+                         Derky (Derk Ruitenbeek)
                          Elsensee (Oliver Schramm)
+                         Hanakin (Michael Miday)
+                         MichaelC (Michael Cullum)
                          Nicofuma (Tristan Darricau)
-                         prototech (Cesar Gallegos)
+                         rubencm (Rubén Calvo)
 
 For a list of phpBB Team members, please see:
 http://www.phpbb.com/about/team/
@@ -41,7 +42,10 @@ https://github.com/phpbb/phpbb/graphs/contributors
 phpBB Project Manager:   theFinn (James Atkinson)      [Founder - 04/2007]
                          SHS` (Jonathan Stanley)
 
-phpBB Lead Developer:    Acyd Burn (Meik Sievertsen)   [09/2005 - 01/2010]
+phpBB Product Manager:   naderman (Nils Adermann)      [02/2016 - 02/2017]
+
+phpBB Lead Developer:    naderman (Nils Adermann)      [01/2010 - 02/2016]
+                         Acyd Burn (Meik Sievertsen)   [09/2005 - 01/2010]
                          psoTFX (Paul S. Owen)         [2001 - 09/2005]
 
 phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
@@ -61,6 +65,7 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          kellanved (Henry Sudhof)      [04/2007 - 03/2011]
                          nickvergessen (Joas Schilling)[04/2010 - 12/2015]
                          Oleg (Oleg Pudeyev)           [01/2011 - 05/2013]
+                         prototech (Cesar Gallegos)    [01/2014 - 12/2016]
                          rxu (Ruslan Uzdenov)          [04/2010 - 12/2012]
                          TerraFrost (Jim Wigginton)    [04/2009 - 01/2011]
                          ToonArmy (Chris Smith)        [06/2008 - 11/2011]
@@ -99,3 +104,6 @@ Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 MIT licenced:
 Symfony2 (c) 2004-2011 Fabien Potencier, https://symfony.com/
 Cookie Consent (c) 2015 Silktide Ltd, https://cookieconsent.insites.com
+
+Emoji by:
+Twemoji (c) 2018 Twitter, Inc, https://twemoji.twitter.com/

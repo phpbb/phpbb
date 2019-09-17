@@ -28,9 +28,9 @@ class mcp_reports
 	var $p_master;
 	var $u_action;
 
-	function mcp_reports(&$p_master)
+	function __construct($p_master)
 	{
-		$this->p_master = &$p_master;
+		$this->p_master = $p_master;
 	}
 
 	function main($id, $mode)
@@ -53,7 +53,7 @@ class mcp_reports
 
 				$report_id_list = $request->variable('report_id_list', array(0));
 
-				if (!sizeof($report_id_list))
+				if (!count($report_id_list))
 				{
 					trigger_error('NO_REPORT_SELECTED');
 				}
@@ -158,7 +158,7 @@ class mcp_reports
 
 				$post_info = phpbb_get_post_data(array($post_id), 'm_report', true);
 
-				if (!sizeof($post_info))
+				if (!count($post_info))
 				{
 					trigger_error('NO_REPORT_SELECTED');
 				}
@@ -222,7 +222,7 @@ class mcp_reports
 					}
 					$db->sql_freeresult($result);
 
-					if (sizeof($attachments))
+					if (count($attachments))
 					{
 						$update_count = array();
 						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
@@ -242,7 +242,14 @@ class mcp_reports
 					}
 				}
 
-				$template->assign_vars(array(
+				// parse signature
+				$parse_flags = ($post_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+				$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
+
+				$topic_id = (int) $post_info['topic_id'];
+
+				// So it can be sent through the event below.
+				$report_template = array(
 					'S_MCP_REPORT'			=> true,
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
@@ -291,9 +298,36 @@ class mcp_reports
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
+					'SIGNATURE'				=> $post_info['user_sig'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
-				));
+				);
+
+				/**
+				 * Event to add/modify MCP report details template data.
+				 *
+				 * @event core.mcp_report_template_data
+				 * @var int		forum_id					The forum_id, the number in the f GET parameter
+				 * @var int		topic_id					The topic_id of the report being viewed
+				 * @var int		post_id						The post_id of the report being viewed (if 0, it is meaningless)
+				 * @var int		report_id					The report_id of the report being viewed
+				 * @var array	report						Array with the report data
+				 * @var	array	report_template				Array with the report template data
+				 * @var array	post_info					Array with the reported post data
+				 * @since 3.2.5-RC1
+				 */
+				$vars = array(
+					'forum_id',
+					'topic_id',
+					'post_id',
+					'report_id',
+					'report',
+					'report_template',
+					'post_info',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_report_template_data', compact($vars)));
+
+				$template->assign_vars($report_template);
 
 				$this->tpl_name = 'mcp_post';
 
@@ -321,7 +355,7 @@ class mcp_reports
 				{
 					$topic_info = phpbb_get_topic_data(array($topic_id));
 
-					if (!sizeof($topic_info))
+					if (!count($topic_info))
 					{
 						trigger_error('TOPIC_NOT_EXIST');
 					}
@@ -346,7 +380,7 @@ class mcp_reports
 						$forum_list[] = $row['forum_id'];
 					}
 
-					if (!sizeof($forum_list))
+					if (!count($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -362,7 +396,7 @@ class mcp_reports
 				{
 					$forum_info = phpbb_get_forum_data(array($forum_id), 'm_report');
 
-					if (!sizeof($forum_info))
+					if (!count($forum_info))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -443,7 +477,7 @@ class mcp_reports
 				}
 				$db->sql_freeresult($result);
 
-				if (sizeof($report_ids))
+				if (count($report_ids))
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
@@ -617,12 +651,12 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($reports))
+		if (count($reports))
 		{
 			$close_report_posts = array_unique($close_report_posts);
 			$close_report_topics = array_unique($close_report_topics);
 
-			if (!$pm && sizeof($close_report_posts))
+			if (!$pm && count($close_report_posts))
 			{
 				// Get a list of topics that still contain reported posts
 				$sql = 'SELECT DISTINCT topic_id
@@ -658,7 +692,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 			}
 			$db->sql_query($sql);
 
-			if (sizeof($close_report_posts))
+			if (count($close_report_posts))
 			{
 				if ($pm)
 				{
@@ -679,7 +713,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 					$db->sql_query($sql);
 
-					if (sizeof($close_report_topics))
+					if (count($close_report_topics))
 					{
 						$sql = 'UPDATE ' . TOPICS_TABLE . '
 							SET topic_reported = 0
@@ -721,7 +755,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 
 		// Notify reporters
-		if (sizeof($notify_reporters))
+		if (count($notify_reporters))
 		{
 			foreach ($notify_reporters as $report_id => $reporter)
 			{
@@ -761,11 +795,11 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 		unset($notify_reporters, $post_info, $reports);
 
-		$success_msg = (sizeof($report_id_list) == 1) ? "{$pm_prefix}REPORT_" . strtoupper($action) . 'D_SUCCESS' : "{$pm_prefix}REPORTS_" . strtoupper($action) . 'D_SUCCESS';
+		$success_msg = (count($report_id_list) == 1) ? "{$pm_prefix}REPORT_" . strtoupper($action) . 'D_SUCCESS' : "{$pm_prefix}REPORTS_" . strtoupper($action) . 'D_SUCCESS';
 	}
 	else
 	{
-		confirm_box(false, $user->lang[strtoupper($action) . "_{$pm_prefix}REPORT" . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
+		confirm_box(false, $user->lang[strtoupper($action) . "_{$pm_prefix}REPORT" . ((count($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
 	}
 
 	$redirect = $request->variable('redirect', "index.$phpEx");
@@ -784,12 +818,12 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 		if (!$pm)
 		{
-			if (sizeof($forum_ids) === 1)
+			if (count($forum_ids) === 1)
 			{
 				$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 
-			if (sizeof($topic_ids) === 1)
+			if (count($topic_ids) === 1)
 			{
 				$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}

@@ -1,8 +1,6 @@
 <!-- INCLUDE mcp_header.html -->
 
-<script type="text/javascript">
-// <![CDATA[
-
+<script>
 	var ban_length = new Array();
 		ban_length[-1] = '';
 	var ban_reason = new Array();
@@ -11,12 +9,12 @@
 		ban_give_reason[-1] = '';
 
 	<!-- BEGIN bans -->
-		ban_length['{bans.BAN_ID}'] = '{bans.A_LENGTH}';
+		ban_length['{bans.BAN_ID}'] = '{{ bans.A_LENGTH }}';
 		<!-- IF bans.A_REASON -->
-			ban_reason['{bans.BAN_ID}'] = '{bans.A_REASON}';
+			ban_reason['{bans.BAN_ID}'] = '{{ bans.REASON | e('js') }}';
 		<!-- ENDIF -->
 		<!-- IF bans.A_GIVE_REASON -->
-			ban_give_reason['{bans.BAN_ID}'] = '{bans.A_GIVE_REASON}';
+			ban_give_reason['{bans.BAN_ID}'] = '{{ bans.GIVE_REASON | e('js') }}';
 		<!-- ENDIF -->
 	<!-- END bans -->
 
@@ -34,8 +32,6 @@
 			document.getElementById('unbangivereason').innerHTML = '';
 		}
 	}
-
-// ]]>
 </script>
 
 <form id="mcp_ban" method="post" action="{U_ACTION}">

@@ -32,7 +32,7 @@ class acp_language
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $template, $phpbb_log, $phpbb_container;
-		global $phpbb_root_path, $phpEx, $request;
+		global $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
 		if (!function_exists('validate_language_iso_name'))
 		{
@@ -229,7 +229,20 @@ class acp_language
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, array($row['lang_english_name']));
 
-					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
+					$delete_message = sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']);
+					$lang_iso = $row['lang_iso'];
+					/**
+					 * Run code after language deleted
+					 *
+					 * @event core.acp_language_after_delete
+					 * @var	string 	lang_iso     	Language ISO code
+					 * @var	string  delete_message  Delete message appear to user
+					 * @since 3.2.2-RC1
+					 */
+					$vars = array('lang_iso', 'delete_message');
+					extract($phpbb_dispatcher->trigger_event('core.acp_language_after_delete', compact($vars)));
+
+					trigger_error($delete_message . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -402,7 +415,7 @@ class acp_language
 
 		unset($installed);
 
-		if (sizeof($new_ary))
+		if (count($new_ary))
 		{
 			foreach ($new_ary as $iso => $lang_ary)
 			{

@@ -46,12 +46,25 @@ php_ini_file=$(find_php_ini)
 if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.5.0-dev', '<');"` == "1" ]
 then
 	echo 'Enabling APC PHP extension'
-	register_php_extension 'apc' "$php_ini_file"
+	printf "\n" | pecl install apc
 	echo 'apc.enable_cli=1' >> "$php_ini_file"
 else
 	echo 'Disabling Opcache'
 	echo 'opcache.enable=0' >> "$php_ini_file"
 fi
+
+# APCu
+if [ `php -r "echo (int) (version_compare(PHP_VERSION, '7.0.0-dev', '>=') && version_compare(PHP_VERSION, '7.3.0-dev', '<'));"` == "1" ]
+then
+	if ! [ "$(pecl info pecl/apcu)" ]
+	then
+		echo 'Enabling APCu PHP extension'
+		printf "\n" | pecl install apcu
+		echo 'apc.enabled=1' >> "$php_ini_file"
+		echo 'apc.enable_cli=1' >> "$php_ini_file"
+	fi
+fi
+
 
 # redis
 # Disabled redis for now as it causes travis to fail
