@@ -21,14 +21,13 @@ define('IN_PHPBB', true);
 include_once('../phpBB/includes/functions.php');
 
 $json_data = new \stdClass();
-$json_data->metadata = new class
-{
-	public $current_version_date;
-	public $current_version;
-	public $download_path;
-	public $show_update_package = true;
-	public $historic = false;
-};
+$json_data->metadata = new stdClass();
+
+$json_data->metadata->current_version_date = '';
+$json_data->metadata->current_version = '';
+$json_data->metadata->download_path = '';
+$json_data->metadata->show_update_package = true;
+$json_data->metadata->historic = false;
 
 $json_data->package = [];
 
@@ -92,7 +91,7 @@ foreach ($older_verions as $version)
 
 echo(json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
 
-function phpbb_add_package_file(array &$package_list, string $name, string $file_name, string $type, string $subtype, string $from = '')
+function phpbb_add_package_file(array &$package_list, $name, $file_name, $type, $subtype, $from = '')
 {
 	if (!file_exists(__DIR__ . '/new_version/release_files/' . $file_name . '.zip'))
 	{
