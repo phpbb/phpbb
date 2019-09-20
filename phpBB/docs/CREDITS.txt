@@ -1,7 +1,7 @@
 /**
 *
-* phpBB © Copyright phpBB Limited 2003-2016
-* http://www.phpbb.com
+* phpBB © Copyright phpBB Limited 2003-2019
+* https://www.phpbb.com
 *
 * phpBB is free software. You can redistribute it and/or modify it
 * under the terms of the GNU General Public License, version 2 (GPL-2.0)
@@ -27,7 +27,6 @@ phpBB Developers:        bantu (Andreas Fischer)
                          Derky (Derk Ruitenbeek)
                          Elsensee (Oliver Schramm)
                          Hanakin (Michael Miday)
-                         MichaelC (Michael Cullum)
                          Nicofuma (Tristan Darricau)
                          rubencm (Rubén Calvo)
 
@@ -63,6 +62,7 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          igorw (Igor Wiedler)          [08/2010 - 02/2013]
                          imkingdavid (David King)      [11/2012 - 06/2014]
                          kellanved (Henry Sudhof)      [04/2007 - 03/2011]
+                         MichaelC (Michael Cullum)     [11/2017 - 09/2019]
                          nickvergessen (Joas Schilling)[04/2010 - 12/2015]
                          Oleg (Oleg Pudeyev)           [01/2011 - 05/2013]
                          prototech (Cesar Gallegos)    [01/2014 - 12/2016]

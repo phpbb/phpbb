@@ -1525,6 +1525,35 @@ class parse_message extends bbcode_firstpass
 	}
 
 	/**
+	 * Check attachment form token depending on submit type
+	 *
+	 * @param \phpbb\language\language $language Language
+	 * @param \phpbb\request\request_interface $request Request
+	 * @param string $form_name Form name for checking form key
+	 *
+	 * @return bool True if form token is not needed or valid, false if needed and invalid
+	 */
+	function check_attachment_form_token(\phpbb\language\language $language, \phpbb\request\request_interface $request, $form_name)
+	{
+		$add_file = $request->is_set_post('add_file');
+		$delete_file = $request->is_set_post('delete_file');
+
+		if (($add_file || $delete_file) && !check_form_key($form_name))
+		{
+			$this->warn_msg[] = $language->lang('FORM_INVALID');
+
+			if ($request->is_ajax() && $this->plupload)
+			{
+				$this->plupload->emit_error(-400, 'FORM_INVALID');
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	* Parse Attachments
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)

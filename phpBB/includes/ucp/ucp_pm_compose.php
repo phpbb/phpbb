@@ -26,7 +26,7 @@ if (!defined('IN_PHPBB'))
 function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $phpbb_root_path, $phpEx, $config, $language;
 	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	// Damn php and globals - i know, this is horrible
@@ -799,7 +799,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
 
 		// Parse Attachments - before checksum is calculated
-		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
+		if ($message_parser->check_attachment_form_token($language, $request, 'ucp_pm_compose'))
+		{
+			$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
+		}
 
 		if (count($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
