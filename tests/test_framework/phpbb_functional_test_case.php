@@ -1166,24 +1166,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 					'error'		=> UPLOAD_ERR_OK,
 				);
 
-				$crawler = self::$client->request('POST', $posting_url, array('add_file' => $this->lang('ADD_FILE')), array('fileupload' => $file));
+				$file_form_data = array_merge(['add_file' => $this->lang('ADD_FILE')], $this->get_hidden_fields($crawler, $posting_url));
+
+				$crawler = self::$client->request('POST', $posting_url, $file_form_data, array('fileupload' => $file));
 			}
 			unset($form_data['upload_files']);
 		}
 
-		$hidden_fields = array(
-			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
-			}),
-		);
-
-		foreach ($hidden_fields as $fields)
-		{
-			foreach($fields as $field)
-			{
-				$form_data[$field['name']] = $field['value'];
-			}
-		}
+		$form_data = array_merge($form_data, $this->get_hidden_fields($crawler, $posting_url));
 
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
@@ -1313,5 +1303,38 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
 		return self::request('GET', substr($link, strpos($link, 'mcp.')));
+	}
+
+	/**
+	 * Get hidden fields for URL
+	 *
+	 * @param Symfony\Component\DomCrawler\Crawler|null $crawler Crawler instance or null
+	 * @param string $url Request URL
+	 *
+	 * @return array Hidden form fields array
+	 */
+	protected function get_hidden_fields($crawler, $url)
+	{
+		if (!$crawler)
+		{
+			$crawler = self::$client->request('GET', $url);
+		}
+		$hidden_fields = [
+			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
+				return ['name' => $node->attr('name'), 'value' => $node->attr('value')];
+			}),
+		];
+
+		$file_form_data = [];
+
+		foreach ($hidden_fields as $fields)
+		{
+			foreach($fields as $field)
+			{
+				$file_form_data[$field['name']] = $field['value'];
+			}
+		}
+
+		return $file_form_data;
 	}
 }

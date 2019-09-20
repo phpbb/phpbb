@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v328rc1">Changes since 3.2.8-RC1</a></li>
 		<li><a href="#v327">Changes since 3.2.7</a></li>
 		<li><a href="#v326">Changes since 3.2.6</a></li>
 		<li><a href="#v326rc1">Changes since 3.2.6-RC1</a></li>
@@ -139,6 +140,28 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v328rc1"></a><h3>Changes since 3.2.8-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15467">PHPBB3-15467</a>] - Permission settings do not take affect when set using All YES/NO/NEVER</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16123">PHPBB3-16123</a>] - PHP error (Array to string conversion) on new user registration if email address is banned and &quot; Reason shown to the banned&quot; is empty</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16136">PHPBB3-16136</a>] - Missing word in 'AUTH_PROVIDER_OAUTH_ERROR_ALREADY_LINKED' </li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16134">PHPBB3-16134</a>] - Exclude group leaders on group member purge</li>
+			</ul>
+			<h4>Security Issue</h4>
+			<ul>
+				<li>[SECURITY-243] - CSS injection via BBCode tag</li>
+				<li>[SECURITY-244] - Missing form token check when handling attachments</li>
+				<li>[SECURITY-246] - Missing form token check when managing BBCodes</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[SECURITY-247] - Disable MySQLi local infile to prevent local file inclusion</li>
+			</ul>
+
 			<a name="v327"></a><h3>Changes since 3.2.7</h3>
 			<h4>Bug</h4>
 			<ul>
@@ -193,7 +216,6 @@
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16078">PHPBB3-16078</a>] - Use chrome webdriver for UI tests</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16089">PHPBB3-16089</a>] - Add core.confirm_box_ajax_before</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16097">PHPBB3-16097</a>] - Add core.viewtopic_gen_sort_selects_before</li>
-				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16101">PHPBB3-16101</a>] - Add Referrer-Policy header</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16102">PHPBB3-16102</a>] - Add core.posting_modify_post_subject</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16103">PHPBB3-16103</a>] - Add core.pm_modify_message_subject</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16106">PHPBB3-16106</a>] - Add core.mcp_main_before</li>
@@ -211,6 +233,10 @@
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16067">PHPBB3-16067</a>] - Define trusty build environment for travis builds</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16112">PHPBB3-16112</a>] - Update composer dependencies to latest</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16119">PHPBB3-16119</a>] - The text input for poll question has a too high maxlength attribute</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16101">PHPBB3-16101</a>] - Add Referrer-Policy header</li>
 			</ul>
 
 			<a name="v326"></a><h3>Changes since 3.2.6</h3>
