@@ -70,7 +70,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[size=75]smaller[/size]',
-				'<span style="font-size:75%;line-height:normal">smaller</span>'
+				'<span style="font-size: 75%; line-height: normal">smaller</span>'
 			),
 			array(
 				'[quote]quoted[/quote]',

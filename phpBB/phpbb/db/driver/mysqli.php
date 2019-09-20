@@ -68,6 +68,9 @@ class mysqli extends \phpbb\db\driver\mysql_base
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
+			// Disable loading local files on client side
+			@mysqli_options($this->db_connect_id, MYSQLI_OPT_LOCAL_INFILE, false);
+
 			@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
 
 			// enforce strict mode on databases that support it

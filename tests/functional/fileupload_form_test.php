@@ -46,6 +46,13 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	private function upload_file($filename, $mimetype)
 	{
+		$crawler = self::$client->request(
+			'GET',
+			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid
+		);
+
+		$file_form_data = array_merge(['add_file' => $this->lang('ADD_FILE')], $this->get_hidden_fields($crawler, 'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid));
+
 		$file = array(
 			'tmp_name' => $this->path . $filename,
 			'name' => $filename,
@@ -57,7 +64,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$crawler = self::$client->request(
 			'POST',
 			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
-			array('add_file' => $this->lang('ADD_FILE')),
+			$file_form_data,
 			array('fileupload' => $file)
 		);
 

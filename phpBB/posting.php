@@ -974,7 +974,10 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse Attachments - before checksum is calculated
-	$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
+	if ($message_parser->check_attachment_form_token($language, $request, 'posting'))
+	{
+		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
+	}
 
 	/**
 	* This event allows you to modify message text before parsing
