@@ -2044,6 +2044,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'CONTACT_USER'		=> $user_cache[$poster_id]['contact_user'],
 
 		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
+		'POST_DATE_RFC3339'	=> gmdate(DATE_RFC3339, $row['post_time']),
 		'POST_SUBJECT'		=> $row['post_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
