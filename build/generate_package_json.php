@@ -51,7 +51,7 @@ usort($older_verions, function($version_a, $version_b)
 // Set metadata
 $json_data->metadata->current_version = $current_version;
 $json_data->metadata->current_version_date = date('Y-m-d');
-$json_data->metadata->download_path = 'https://download.phpbb.com/pub/release/' . preg_replace('#([0-9]+\.[0-9]+)(\..+)#', '$1', $current_version) . '/' . $current_version;
+$json_data->metadata->download_path = 'https://download.phpbb.com/pub/release/' . preg_replace('#([0-9]+\.[0-9]+)(\..+)#', '$1', $current_version) . '/' . $current_version . '/';
 
 // Add package, patch files, and changed files
 phpbb_add_package_file(
