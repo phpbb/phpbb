@@ -281,13 +281,10 @@ class user extends \phpbb\session
 			$db->sql_freeresult($result);
 		}
 
-		/**
-		 * Something went very bad this time.
-		 * Fallback to board's default style upon its strict verification.
-		 */
+		// Fallback to board's default style
 		if (!$this->style)
 		{
-			/** Verify default style exists in the database */
+			// Verify default style exists in the database
 			$sql = 'SELECT style_id
 				FROM ' . STYLES_TABLE . '
 				WHERE style_id = ' . (int) $config['default_style'];
@@ -295,13 +292,11 @@ class user extends \phpbb\session
 			$style_id = (int) $db->sql_fetchfield('style_id');
 			$db->sql_freeresult($result);
 
-			$style_id = $style_id ?: false;
-
 			if ($style_id > 0)
 			{
 				$db->sql_transaction('begin');
 
-				/** Update $user row */
+				// Update $user row
 				$sql = 'SELECT *
 					FROM ' . STYLES_TABLE . '
 					WHERE style_id = ' . (int) $config['default_style'];
@@ -309,7 +304,7 @@ class user extends \phpbb\session
 				$this->style = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				/** Update user style preference */
+				// Update user style preference
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_style = ' . (int) $style_id . '
 					WHERE user_id = ' . (int) $this->data['user_id'];
@@ -319,7 +314,7 @@ class user extends \phpbb\session
 			}
 		}
 
-		/** This should never happens */
+		// This should never happens
 		if (!$this->style)
 		{
 			trigger_error($this->language->lang('NO_STYLE_DATA', $this->data['user_style'], $this->data['user_id']), E_USER_ERROR);
