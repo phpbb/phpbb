@@ -449,13 +449,13 @@ phpbb.plupload.initialize();
 /**
  * Add a file filter to check for max file sizes per mime type.
  */
-plupload.addFileFilter('mime_types_max_file_size', function(types, file, cb) {
+plupload.addFileFilter('mime_types_max_file_size', function(types, file, callback) {
 	if (file.size !== 'undefined') {
 		$(types).each(function(i, type) {
 			let extensions = [],
-				exts_array = type.extensions.split(',');
+				extsArray = type.extensions.split(',');
 
-			$(exts_array).each(function(i, extension) {
+			$(extsArray).each(function(i, extension) {
 				/^\s*\*\s*$/.test(extension) ? extensions.push("\\.*") : extensions.push("\\." + extension.replace(new RegExp("[" + "/^$.*+?|()[]{}\\".replace(/./g, "\\$&") + "]", "g"), "\\$&"));
 			});
 
@@ -470,12 +470,12 @@ plupload.addFileFilter('mime_types_max_file_size', function(types, file, cb) {
 							file: file
 						});
 
-						cb(false);
+						callback(false);
 					} else {
-						cb(true);
+						callback(true);
 					}
 				} else {
-					cb(true);
+					callback(true);
 				}
 
 				return false;
