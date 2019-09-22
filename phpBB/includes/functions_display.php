@@ -1119,7 +1119,6 @@ function display_custom_bbcodes()
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
-			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
 		);
 
 		/**
