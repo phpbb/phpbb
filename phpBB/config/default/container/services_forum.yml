@@ -1,0 +1,8 @@
+services:
+    forum.data.repository:
+        class: \phpbb\forum\data_provider\forum_repository
+        arguments:
+            - '@dbal.conn'
+            - '%tables.forums%'
+            - '%tables.forums_track%'
+            - '%tables.forums_watch%'

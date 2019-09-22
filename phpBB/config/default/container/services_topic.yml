@@ -1,0 +1,3 @@
+services:
+    topic.view.topic_list_renderer:
+        class: \phpbb\topic\view\topic_list_renderer
