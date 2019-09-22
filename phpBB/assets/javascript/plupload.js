@@ -463,6 +463,44 @@ phpbb.plupload.fileError = function(file, error) {
 phpbb.plupload.uploader = new plupload.Uploader(phpbb.plupload.config);
 phpbb.plupload.initialize();
 
+/**
+ * Add a file filter to check for max file sizes per mime type.
+ */
+plupload.addFileFilter('mime_types_max_file_size', function(types, file, callback) {
+	if (file.size !== 'undefined') {
+		$(types).each(function(i, type) {
+			let extensions = [],
+				extsArray = type.extensions.split(',');
+
+			$(extsArray).each(function(i, extension) {
+				/^\s*\*\s*$/.test(extension) ? extensions.push("\\.*") : extensions.push("\\." + extension.replace(new RegExp("[" + "/^$.*+?|()[]{}\\".replace(/./g, "\\$&") + "]", "g"), "\\$&"));
+			});
+
+			let regex = new RegExp("(" + extensions.join("|") + ")$", "i");
+
+			if (regex.test(file.name)) {
+				if (type.max_file_size !== 'undefined' && type.max_file_size) {
+					if (file.size > type.max_file_size) {
+						phpbb.plupload.uploader.trigger('Error', {
+							code: plupload.FILE_SIZE_ERROR,
+							message: plupload.translate('File size error.'),
+							file: file
+						});
+
+						callback(false);
+					} else {
+						callback(true);
+					}
+				} else {
+					callback(true);
+				}
+
+				return false;
+			}
+		});
+	}
+});
+
 var $fileList = $('#file-list');
 
 /**
