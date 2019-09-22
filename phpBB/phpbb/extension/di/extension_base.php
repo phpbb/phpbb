@@ -155,7 +155,7 @@ class extension_base extends Extension
 	 */
 	public function getServicesFilenames($services_directory, $services_file_prefix = '')
 	{
-		$servises_files = array();
+		$services_files = array();
 		$finder = new \Symfony\Component\Finder\Finder();
 		$finder
 			->name("{$services_file_prefix}*.yml")
@@ -165,9 +165,9 @@ class extension_base extends Extension
 
 		foreach ($finder as $file)
 		{
-			$servises_files[] = $file->getBasename();
+			$services_files[] = $file->getBasename();
 		}
 
-		return $servises_files;
+		return $services_files;
 	}
 }
