@@ -314,7 +314,7 @@ class user extends \phpbb\session
 			}
 		}
 
-		// This should never happens
+		// This should never happen
 		if (!$this->style)
 		{
 			trigger_error($this->language->lang('NO_STYLE_DATA', $this->data['user_style'], $this->data['user_id']), E_USER_ERROR);
