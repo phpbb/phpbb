@@ -1646,6 +1646,50 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
+var recaptchaForm = $('.g-recaptcha').parents('form');
+var submitButton = null;
+var programaticallySubmitted = false;
+
+phpbb.recaptchaOnLoad = function () {
+	// Listen to submit buttons in order to know which one was pressed
+	$('input[type="submit"]').each(function () {
+		$(this).on('click', function () {
+			submitButton = this;
+		});
+	});
+
+	recaptchaForm.on('submit', function (e) {
+		if (!programaticallySubmitted) {
+			grecaptcha.execute();
+			e.preventDefault();
+		}
+	});
+}
+
+phpbb.recaptchaOnSubmit = function () {
+	programaticallySubmitted = true;
+	// If concrete button was clicked (e.g. preview instead of submit),
+	// let's trigger the same action
+	if (submitButton) {
+		submitButton.click();
+	} else {
+		// Rename input[name="submit"] so that we can submit the form
+		if (typeof recaptchaForm.submit !== 'function') {
+			recaptchaForm.submit.name = 'submit_btn';
+		}
+		recaptchaForm.submit();
+	}
+}
+
+// reCAPTCHA doesn't accept callback functions nested inside objects
+// so we need to make this helper functions here
+window.phpbbRecaptchaOnLoad = function() {
+	phpbb.recaptchaOnLoad();
+}
+window.phpbbRecaptchaOnSubmit = function() {
+	phpbb.recaptchaOnSubmit();
+}
+
 $(window).on('load', phpbb.lazyLoadAvatars);
 
 /**
