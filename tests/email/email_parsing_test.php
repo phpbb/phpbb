@@ -67,13 +67,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('ext.manager', $extension_manager);
 
 		$context = new \phpbb\template\context();
-		$twig_extension = new \phpbb\template\twig\extension($context, $lang);
-		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
-
-		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
-		$twig_extensions_collection->add('template.twig.extensions.phpbb');
-		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
-
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
