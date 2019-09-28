@@ -30,7 +30,6 @@ class extension extends \Twig_Extension
 	* @param \phpbb\template\context $context
 	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
-	* @return \phpbb\template\twig\extension
 	*/
 	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
