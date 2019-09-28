@@ -46,16 +46,18 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		);
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			$filesystem,
 			$request,
 			$phpbb_root_path,
 			$phpEx
 		);
+		$storage = $this->getMockBuilder('\phpbb\storage\storage')
+			->disableOriginalConstructor()
+			->getMock();
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$files = new phpbb\files\factory($phpbb_container);
-		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $phpbb_root_path, $phpEx, $filesystem, $phpbb_path_helper, $phpbb_dispatcher, $files);
+		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $phpbb_root_path, $phpEx, $storage, $phpbb_path_helper, $phpbb_dispatcher, $files, new \bantu\IniGetWrapper\IniGetWrapper());
 		$upload_avatar_driver->set_name('avatar.driver.upload');
 		$phpbb_container->set('avatar.manager', new \phpbb\avatar\manager($config, $phpbb_dispatcher, [
 			$upload_avatar_driver,
@@ -71,7 +73,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader($filesystem);
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
