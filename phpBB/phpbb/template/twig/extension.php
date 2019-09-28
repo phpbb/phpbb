@@ -30,7 +30,6 @@ class extension extends \Twig_Extension
 	* @param \phpbb\template\context $context
 	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
-	* @return \phpbb\template\twig\extension
 	*/
 	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
@@ -91,6 +90,7 @@ class extension extends \Twig_Extension
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
 			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
+			new \Twig_SimpleFunction('get_class', 'get_class'),
 		);
 	}
 
@@ -190,10 +190,10 @@ class extension extends \Twig_Extension
 	}
 
 	/**
-	* Check if a language variable exists
-	*
-	* @return bool
-	*/
+	 * Check if a language variable exists
+	 *
+	 * @return bool
+	 */
 	public function lang_defined($key)
 	{
 		return call_user_func_array([$this->language, 'is_set'], [$key]);

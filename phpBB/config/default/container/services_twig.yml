@@ -43,10 +43,27 @@ services:
         tags:
             - { name: twig.extension }
 
+    template.twig.extensions.avatar:
+        class: phpbb\template\twig\extension\avatar
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.config:
+        class: phpbb\template\twig\extension\config
+        arguments:
+            - '@config'
+        tags:
+            - { name: twig.extension }
+
     template.twig.extensions.routing:
         class: phpbb\template\twig\extension\routing
         arguments:
             - '@routing.helper'
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.username:
+        class: phpbb\template\twig\extension\username
         tags:
             - { name: twig.extension }
 
