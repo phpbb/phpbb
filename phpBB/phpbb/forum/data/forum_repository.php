@@ -11,7 +11,10 @@
  *
  */
 
-namespace phpbb\forum\data_provider;
+namespace phpbb\forum\data;
+
+use phpbb\forum\enumeration\forum_types;
+use phpbb\db\driver\driver_interface as db_driver_interface;
 
 /**
  * Forum repository class.
@@ -19,7 +22,7 @@ namespace phpbb\forum\data_provider;
 class forum_repository
 {
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var db_driver_interface
 	 */
 	private $db;
 
@@ -39,10 +42,10 @@ class forum_repository
 	private $forums_watch_table;
 
 	public function __construct(
-		\phpbb\db\driver\driver_interface $db,
-		$forums_table,
-		$forums_track_table,
-		$forums_watch_table)
+		db_driver_interface $db,
+		string $forums_table,
+		string $forums_track_table,
+		string $forums_watch_table)
 	{
 		$this->db = $db;
 
@@ -61,14 +64,14 @@ class forum_repository
 	 *
 	 * @return array Forum data.
 	 */
-	public function get_forum_by_id($forum_id, $read_tracking = false, $watch_tracking = false, $user_id = 0)
+	public function get_forum_by_id(int $forum_id, bool $read_tracking = false, bool $watch_tracking = false, int $user_id = 0)
 	{
 		$sql_array = [
 			'SELECT'	=> 'f.*',
 			'FROM'		=> [
 				$this->forums_table	=> 'f',
 			],
-			'WHERE'	=> 'f.forum_id = ' . (int) $forum_id,
+			'WHERE'	=> 'f.forum_id = ' . $forum_id,
 		];
 
 		if ($read_tracking)
@@ -90,6 +93,20 @@ class forum_repository
 	}
 
 	/**
+	 * Increment the click through count on a forum link.
+	 *
+	 * @param int $forum_id The ID of the forum.
+	 */
+	public function increment_forum_link_click_count(int $forum_id)
+	{
+		$sql = 'UPDATE ' . $this->forums_table . '
+			SET forum_posts_approved = forum_posts_approved + 1
+			WHERE forum_id = ' . $forum_id . ' 
+			AND forum_type = ' . forum_types::FORUM_LINK;
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	 * Add forum tracking information to the query.
 	 *
 	 * @param array	$sql_array	The query array.
@@ -97,12 +114,12 @@ class forum_repository
 	 *
 	 * @return array SQL query array.
 	 */
-	private function join_forum_tracking($sql_array, $user_id)
+	private function join_forum_tracking(array $sql_array, int $user_id)
 	{
 		$sql_array['SELECT'] .= ', ft.mark_time';
 		$sql_array['LEFT_JOIN'][] = [
 			'FROM'	=> [$this->forums_track_table => 'ft'],
-			'ON'	=> 'ft.user_id = ' . (int) $user_id . ' AND ft.forum_id = f.forum_id',
+			'ON'	=> 'ft.user_id = ' . $user_id . ' AND ft.forum_id = f.forum_id',
 		];
 
 		return $sql_array;
@@ -116,12 +133,12 @@ class forum_repository
 	 *
 	 * @return array SQL query array.
 	 */
-	private function join_forum_watching($sql_array, $user_id)
+	private function join_forum_watching(array $sql_array, int $user_id)
 	{
 		$sql_array['SELECT'] .= ', fw.notify_status';
 		$sql_array['LEFT_JOIN'][] = [
 			'FROM'	=> [$this->forums_watch_table => 'fw'],
-			'ON'	=> 'fw.forum_id = f.forum_id AND fw.user_id = ' . (int) $user_id,
+			'ON'	=> 'fw.forum_id = f.forum_id AND fw.user_id = ' . $user_id,
 		];
 
 		return $sql_array;

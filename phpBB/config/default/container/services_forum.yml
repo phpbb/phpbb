@@ -1,8 +1,19 @@
 services:
     forum.data.repository:
-        class: \phpbb\forum\data_provider\forum_repository
+        class: \phpbb\forum\data\forum_repository
         arguments:
             - '@dbal.conn'
             - '%tables.forums%'
             - '%tables.forums_track%'
             - '%tables.forums_watch%'
+
+    forum.view.renderer:
+        class: \phpbb\forum\view\viewforum_renderer
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'

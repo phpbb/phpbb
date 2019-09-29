@@ -21,6 +21,9 @@ include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_viewforum.' . $phpEx);
 
+/** @var \phpbb\auth\auth $auth */
+/** @var \phpbb\request\request_interface $request */
+
 // Start session
 $user->session_begin();
 $auth->acl($user->data);
@@ -41,6 +44,18 @@ $sort_dir	= $request->variable('sd', $default_sort_dir);
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
+/** @var \phpbb\forum\data\forum_repository $forum_repository */
+$forum_repository = $phpbb_container->get('forum.data.repository');
+
+/** @var \phpbb\forum\view\viewforum_renderer $viewforum_renderer */
+$viewforum_renderer = $phpbb_container->get('forum.view.renderer');
+
+/** @var \phpbb\topic\view\topic_list_renderer $topic_list_renderer */
+$topic_list_renderer = $phpbb_container->get('topic.view.topic_list_renderer');
+
+/** @var \phpbb\topic\data\topic_repository $topic_repository */
+$topic_repository = $phpbb_container->get('topic.data.repository');
+
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 if (!$forum_id)
@@ -48,8 +63,6 @@ if (!$forum_id)
 	trigger_error('NO_FORUM');
 }
 
-/** @var \phpbb\forum\data_provider\forum_repository $forum_repository */
-$forum_repository = $phpbb_container->get('forum.data.repository');
 $forum_data = $forum_repository->get_forum_by_id(
 	$forum_id,
 	$config['load_db_lastread'] && $user->data['is_registered'],
@@ -96,7 +109,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	// Does it have click tracking enabled?
 	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
-		increment_forum_link_count($forum_id, $db);
+		$forum_repository->increment_forum_link_click_count($forum_id);
 	}
 
 	// We redirect to the url. The third parameter indicates that external redirects are allowed.
@@ -122,7 +135,7 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 }
 else
 {
-	$template->assign_var('S_HAS_SUBFORUM', false);
+	$viewforum_renderer->set_has_no_subforums();
 	if ($config['load_moderators'])
 	{
 		get_moderators($moderators, $forum_id);
@@ -164,10 +177,7 @@ $template->set_filenames(array(
 );
 
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
-
-$template->assign_vars(array(
-	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . (($start == 0) ? '' : "&amp;start=$start")),
-));
+$viewforum_renderer->set_viewforum_url($forum_id, $start);
 
 // Not postable forum or showing active topics?
 if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
@@ -179,10 +189,7 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 // We also make this circumstance available to the template in case we want to display a notice. ;)
 if (!$auth->acl_gets('f_read', 'f_list_topics', $forum_id))
 {
-	$template->assign_vars(array(
-		'S_NO_READ_ACCESS'		=> true,
-	));
-
+	$viewforum_renderer->set_has_no_read_access();
 	page_footer();
 }
 
@@ -200,7 +207,7 @@ $s_forum_rules = '';
 gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 
 // Topic ordering options
-list($sort_by_sql, $vars, $u_sort_param, $s_sort_dir, $s_sort_key, $s_limit_days, $limit_days, $sort_days, $sort_key, $sort_dir) = viewforum_figure_out_sorting($user, $auth, $forum_id, $phpbb_dispatcher, $sort_days, $sort_key, $sort_dir, $default_sort_days, $default_sort_key, $default_sort_dir);
+list($sort_by_sql, $u_sort_param, $s_sort_dir, $s_sort_key, $s_limit_days, $limit_days, $sort_days, $sort_key, $sort_dir) = viewforum_figure_out_sorting($user, $auth, $forum_id, $phpbb_dispatcher, $sort_days, $sort_key, $sort_dir, $default_sort_days, $default_sort_key, $default_sort_dir);
 
 // Limit topics to certain time frame, obtain correct topic count
 if ($sort_days)
@@ -233,7 +240,7 @@ if (!empty($_EXTRA_URL))
 	}
 }
 
-render_general($template, $moderators, $forum_id, $user, $forum_data, $post_alt, $auth, $s_display_active, $s_sort_dir, $s_sort_key, $s_limit_days, $active_forum_ary, $s_watching_forum, $phpbb_root_path, $phpEx, $start, $config, $s_search_hidden_fields, $u_sort_param);
+$viewforum_renderer->render_general_information($forum_data, $moderators, $active_forum_ary, $s_watching_forum, $s_search_hidden_fields, $s_sort_dir, $s_sort_key, $s_limit_days, $start, $u_sort_param);
 
 // Grab icons
 $icons = $cache->obtain_icons();
@@ -241,11 +248,12 @@ $icons = $cache->obtain_icons();
 // Grab all topic data
 $rowset = $announcement_list = $topic_list = $global_announce_forums = array();
 
-list($sql_array, $vars, $sql_approved) = get_topic_query($phpbb_dispatcher, $phpbb_content_visibility, $forum_id, $user, $config, $s_display_active, $active_forum_ary);
+list($sql_array, $sql_approved) = $topic_repository->build_base_query($forum_id, $s_display_active, $active_forum_ary);
 
 if ($forum_data['forum_type'] == FORUM_POST)
 {
-	list($vars, $sql, $result, $row, $rowset, $announcement_list, $topics_count, $global_announce_forums) = get_announcements($auth, $sql_array, $forum_id, $db, $phpbb_dispatcher, $phpbb_content_visibility, $rowset, $announcement_list, $topics_count, $global_announce_forums);
+	list($rowset, $announcement_list, $global_announce_forums) = $topic_repository->get_announcement_topics($forum_id, $sql_array);
+	$topics_count += count($global_announce_forums);
 }
 
 $forum_tracking_info = array();
@@ -288,9 +296,9 @@ $total_topic_count = $topics_count - count($announcement_list);
 $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_topic_count, $config['topics_per_page'], $start);
 
-$template->assign_vars(array(
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
-));
+$viewforum_renderer->set_topic_count(
+	($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count)
+);
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
@@ -310,9 +318,6 @@ $vars = array('topic_list', 'rowset', 'total_topic_count', 'forum_id');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topics_data', compact($vars)));
 
 // Okay, lets dump out the page ...
-/** @var \phpbb\topic\view\topic_list_renderer $topic_list_renderer */
-$topic_list_renderer = $phpbb_container->get('topic.view.topic_list_renderer');
-
 if (count($topic_list))
 {
 	list($mark_forum_read, $mark_time_forum, $forum_data) = $topic_list_renderer->render_topic_list($rowset, $forum_tracking_info, $config, $user, $topic_tracking_info, $s_display_active, $forum_data, $tracking_topics, $forum_id, $topic_list, $phpbb_content_visibility, $auth, $phpbb_root_path, $phpEx, $icons, $phpbb_dispatcher, $template, $pagination);
