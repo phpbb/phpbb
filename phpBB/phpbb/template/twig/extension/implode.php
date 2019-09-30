@@ -18,7 +18,7 @@ class implode extends \Twig\Extension\AbstractExtension
 	/**
 	 * Returns the name of this extension.
 	 *
-	 * @return string The extension name
+	 * @return string						The extension name
 	 */
 	public function getName()
 	{
@@ -28,7 +28,7 @@ class implode extends \Twig\Extension\AbstractExtension
 	/**
 	 * Returns a list of functions to add to the existing list.
 	 *
-	 * @return \Twig\TwigFunction[]
+	 * @return \Twig\TwigFunction[]			Array of twig functions
 	 */
 	public function getFunctions()
 	{
@@ -47,8 +47,8 @@ class implode extends \Twig\Extension\AbstractExtension
 	 * Implode_attributes('checked', {'data-ajax': 'true'})
 	 * Implode_attributes(['checked', {'data-ajax': 'true'}])
 	 *
-	 * @param mixed		$arguments
-	 * @return string
+	 * @param mixed		$arguments			Attributes to implode
+	 * @return string						The attributes string
 	 */
 	public function implode_attributes(...$arguments)
 	{
@@ -132,8 +132,8 @@ class implode extends \Twig\Extension\AbstractExtension
 	 * 		'hidden-class': S_POST_HIDDEN,
 	 * }])
 	 *
-	 * @param mixed		$arguments
-	 * @return string					The classes string prepended with a space
+	 * @param mixed		$arguments			The classes to implode
+	 * @return string						The classes string prepended with a space
 	 */
 	public function implode_classes(...$arguments)
 	{

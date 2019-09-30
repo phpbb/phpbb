@@ -23,7 +23,7 @@ class macro extends \Twig\Extension\AbstractExtension implements \Twig\Extension
 	/**
 	 * Constructor.
 	 *
-	 * @param environment	$twig		Twig environment object
+	 * @param environment	$twig			Twig environment object
 	 */
 	public function __construct(environment $twig)
 	{
@@ -33,7 +33,7 @@ class macro extends \Twig\Extension\AbstractExtension implements \Twig\Extension
 	/**
 	 * Returns the name of this extension.
 	 *
-	 * @return string The extension name
+	 * @return string						The extension name
 	 */
 	public function getName()
 	{
@@ -43,22 +43,13 @@ class macro extends \Twig\Extension\AbstractExtension implements \Twig\Extension
 	/**
 	 * Returns a list of global variables to add to the existing list.
 	 *
-	 * @return array An array of global variables
+	 * @throws \Twig\Error\Error
+	 * @return array						An array of global variables
 	 */
 	public function getGlobals()
 	{
-		$macros = null;
-
-		try
-		{
-			$macros = $this->twig->loadTemplate('macros.html');
-		}
-		catch (\Twig\Error\Error $e)
-		{
-		}
-
 		return [
-			'macros' => $macros,
+			'macros' => $this->twig->loadTemplate('macros/macros.twig'),
 		];
 	}
 }

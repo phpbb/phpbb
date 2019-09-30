@@ -23,7 +23,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\user	$user		User object
+	 * @param \phpbb\user	$user			User object
 	 */
 	public function __construct(\phpbb\user $user)
 	{
@@ -33,7 +33,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	/**
 	 * Returns the name of this extension.
 	 *
-	 * @return string The extension name
+	 * @return string						The extension name
 	 */
 	public function getName()
 	{
@@ -43,7 +43,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	/**
 	 * Returns a list of filters to add to the existing list.
 	 *
-	 * @return \Twig\TwigFilter[]
+	 * @return \Twig\TwigFilter[]			Array of twig filters
 	 */
 	public function getFilters()
 	{
@@ -55,7 +55,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	/**
 	 * Returns a list of functions to add to the existing list.
 	 *
-	 * @return \Twig\TwigFunction[]
+	 * @return \Twig\TwigFunction[]			Array of twig functions
 	 */
 	public function getFunctions()
 	{
@@ -77,7 +77,7 @@ class icon extends \Twig\Extension\AbstractExtension
 		$web_path	= $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
 		$style_path	= $this->user->style['style_path'];
 
-		return "{$web_path}styles/{$style_path}/template/icons/png/{$icon}.png";
+		return "{$web_path}styles/{$style_path}/theme/icons/png/{$icon}.png";
 	}
 
 	/**
