@@ -57,6 +57,7 @@ services:
     template.twig.extensions.icon:
         class: phpbb\template\twig\extension\icon
         arguments:
+            - '@template.twig.environment'
             - '@user'
         tags:
             - { name: twig.extension }
