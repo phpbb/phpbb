@@ -173,7 +173,7 @@ class acp_extensions
 
 				$extension = $this->ext_manager->get_extension($ext_name);
 
-				$this->check_is_enableable($extension->is_enableable());
+				$this->check_is_enableable($extension);
 
 				if ($this->ext_manager->is_enabled($ext_name))
 				{
@@ -208,7 +208,7 @@ class acp_extensions
 
 				$extension = $this->ext_manager->get_extension($ext_name);
 
-				$this->check_is_enableable($extension->is_enableable());
+				$this->check_is_enableable($extension);
 
 				try
 				{
@@ -728,15 +728,22 @@ class acp_extensions
 	* Checks whether the extension can be enabled. Triggers error if not.
 	* Error message can be set by the extension.
 	*
-	* @param bool|array $enableable True if extension is enableable, array of reasons
-	*								if not, false for generic reason.
+	* @param \phpbb\extension\extension_interface $extension Extension to check
 	*/
-	protected function check_is_enableable($enableable)
+	protected function check_is_enableable(\phpbb\extension\extension_interface $extension)
 	{
-		if ($enableable !== true)
+		$message = $extension->is_enableable();
+		if ($message !== true)
 		{
-			$message = !empty($enableable) ? $enableable : $this->user->lang('EXTENSION_NOT_ENABLEABLE');
-			$message = is_array($message) ? implode('<br />', $message) : $message;
+			if (empty($message))
+			{
+				$message = $this->user->lang('EXTENSION_NOT_ENABLEABLE');
+			}
+			else if (is_array($message))
+			{
+				$message = implode('<br>', $message);
+			}
+
 			trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
