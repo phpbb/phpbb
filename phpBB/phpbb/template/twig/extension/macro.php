@@ -15,7 +15,7 @@ namespace phpbb\template\twig\extension;
 
 use phpbb\template\twig\environment;
 
-abstract class macro extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
+class macro extends \Twig\Extension\AbstractExtension implements \Twig\Extension\GlobalsInterface
 {
 	/** @var environment */
 	protected $twig;
@@ -37,7 +37,7 @@ abstract class macro extends \Twig\Extension\AbstractExtension implements \Twig\
 	 */
 	public function getName()
 	{
-		return 'macro';
+		return 'macros';
 	}
 
 	/**

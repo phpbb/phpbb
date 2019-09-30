@@ -15,7 +15,7 @@ namespace phpbb\template\twig\extension;
 
 use phpbb\template\twig\environment;
 
-abstract class icon extends \Twig\Extension\AbstractExtension
+class icon extends \Twig\Extension\AbstractExtension
 {
 	/** @var \phpbb\user */
 	protected $user;
@@ -48,7 +48,7 @@ abstract class icon extends \Twig\Extension\AbstractExtension
 	public function getFilters()
 	{
 		return [
-			new \Twig\TwigFilter('Png_path', [$this, 'png_path'], ['needs_environment' => true]),
+			new \Twig\TwigFilter('png_path', [$this, 'png_path'], ['needs_environment' => true]),
 		];
 	}
 
@@ -71,7 +71,7 @@ abstract class icon extends \Twig\Extension\AbstractExtension
 	 * @param string		$icon			The icon name
 	 * @return string
 	 */
-	protected function png_path(environment $environment, $icon)
+	public function png_path(environment $environment, $icon)
 	{
 		$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
 		$web_path	= $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
@@ -87,7 +87,7 @@ abstract class icon extends \Twig\Extension\AbstractExtension
 	 * @param string		$icon			The icon name
 	 * @return string
 	 */
-	protected function svg_clean(environment $environment, $icon)
+	public function svg_clean(environment $environment, $icon)
 	{
 		try
 		{
@@ -110,8 +110,10 @@ abstract class icon extends \Twig\Extension\AbstractExtension
 			return '';
 		}
 
-		foreach ($doc->childNodes as $child) {
-			if ($child->nodeType === XML_DOCUMENT_TYPE_NODE) {
+		foreach ($doc->childNodes as $child)
+		{
+			if ($child->nodeType === XML_DOCUMENT_TYPE_NODE)
+			{
 				$child->parentNode->removeChild($child);
 			}
 		}

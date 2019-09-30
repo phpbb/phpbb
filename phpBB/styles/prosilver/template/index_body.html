@@ -11,6 +11,8 @@
 <!-- ENDIF -->
 <!-- EVENT index_body_markforums_after -->
 
+Test: {{ macros.Icon('fa', 'phone') }}
+
 <!-- INCLUDE forumlist_body.html -->
 
 <!-- EVENT index_body_forumlist_body_after -->
@@ -41,7 +43,7 @@
 		<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->
 		<p>
 			<!-- EVENT index_body_block_online_prepend -->
-			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /> 
+			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br />
 			<!-- IF U_VIEWONLINE -->
 				<br />{LOGGED_IN_USER_LIST}
 				<!-- IF LEGEND --><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->

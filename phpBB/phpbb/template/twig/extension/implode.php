@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\extension;
 
-abstract class implode extends \Twig\Extension\AbstractExtension
+class implode extends \Twig\Extension\AbstractExtension
 {
 	/**
 	 * Returns the name of this extension.
@@ -50,7 +50,7 @@ abstract class implode extends \Twig\Extension\AbstractExtension
 	 * @param mixed		$arguments
 	 * @return string
 	 */
-	protected function implode_attributes(...$arguments)
+	public function implode_attributes(...$arguments)
 	{
 		$string = '';
 		$attributes = [];
@@ -71,13 +71,17 @@ abstract class implode extends \Twig\Extension\AbstractExtension
 					}
 					else if (is_array($value))
 					{
-						if (is_integer($key) && is_string($value))
+						foreach ($value as $k => $v)
 						{
-							$attributes[] = $value;
-						}
-						else
-						{
-							$attributes[$key] = $value;
+							if (is_integer($k) && is_string($v))
+							{
+								$attributes[] = $v;
+							}
+							else
+							{
+
+								$attributes[$k] = $v;
+							}
 						}
 					}
 					else
@@ -92,11 +96,13 @@ abstract class implode extends \Twig\Extension\AbstractExtension
 		{
 			if (is_string($attribute))
 			{
+				$value = is_bool($value) ? ($value ? 'true' : 'false') : $value;
+
 				$string .= ' ' . $attribute . '="' . $value . '"';
 			}
 			else
 			{
-				$string .= ' ' . $attribute;
+				$string .= ' ' . $value;
 			}
 		}
 
@@ -129,7 +135,7 @@ abstract class implode extends \Twig\Extension\AbstractExtension
 	 * @param mixed		$arguments
 	 * @return string					The classes string prepended with a space
 	 */
-	protected function implode_classes(...$arguments)
+	public function implode_classes(...$arguments)
 	{
 		$classes = [];
 
