@@ -5,16 +5,10 @@
 /* Global module setup
 ---------------------------------------- */
 
-/* Global svg colours fix */
-svg {
-	fill: currentColor;
-}
-
 /* Renamed version of .fa class for agnostic usage of icon fonts.
  * Just change the name of the font after the 14/1 to the name of
  * the font you wish to use.
  */
-.o-icon,
 .icon,
 .button .icon,
 blockquote cite:before,
@@ -33,50 +27,30 @@ blockquote cite:before,
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
-.o-icon.png,
-.o-icon.svg {
-	vertical-align: middle;
-	width: 14px;
-	height: 14px;
-}
-
-.o-icon:before,
 .icon:before {
 	padding-right: 2px;
 }
 
-.button .o-icon:before,
 .button .icon:before {
 	padding-right: 0;
 }
 
 /* Icon size classes - Default size is 14px, use these for small variations */
-.o-icon.icon-xl,
+
 .icon.icon-xl {
 	font-size: 20px;
-	width: 20px;
-	height: 20px;
 }
 
-.o-icon.icon-lg,
 .icon.icon-lg {
 	font-size: 16px;
-	width: 16px;
-	height: 16px;
 }
 
-.o-icon.icon-md,
 .icon.icon-md {
 	font-size: 10px;
-	width: 10px;
-	height: 10px;
 }
 
-.o-icon.icon-sm,
 .icon.icon-sm {
 	font-size: 8px;
-	width: 8px;
-	height: 8px;
 }
 
 /* icon modifiers */

@@ -34,36 +34,6 @@
 	</form>
 <!-- ENDIF -->
 
-<div class="panel">
-	<h3>Font</h3>
-	<div>
-		{{ Icon('font', 'bars', 'fa-fw icon-blue') }}
-		{{ Icon('font', 'envelope-o') }}
-		{{ Icon('font', 'pencil', '', '', true, {'data-ajax': 'true', 'data-refresh': 'true'}) }}
-		{{ Icon('font', 'phone') }}
-		<a>{{ Icon('font', 'pencil', 'fa-fw', 'POST_REPLY') }}</a>
-		<a class="button">{{ Icon('font', 'pencil', 'fa-fw', 'POST_REPLY') }}</a>
-	</div>
-	<h3>PNG</h3>
-	<div>
-		{{ Icon('png', 'bars') }}
-		{{ Icon('png', 'envelope') }}
-		{{ Icon('png', 'pencil') }}
-		{{ Icon('png', 'phone') }}
-		<a>{{ Icon('png', 'pencil', 'fa-fw', 'POST_REPLY') }}</a>
-		<a class="button">{{ Icon('png', 'pencil', 'fa-fw', 'POST_REPLY') }}</a>
-	</div>
-	<h3>SVG</h3>
-	<div>
-		{{ Icon('svg', 'bars', 'fa-fw icon-blue') }}
-		{{ Icon('svg', 'envelope', '', 'USERNAME', false) }}
-		{{ Icon('svg', 'pencil') }}
-		{{ Icon('svg', 'phone') }}
-		<a>{{ Icon('svg', 'pencil') }}</a>
-		<a class="button">{{ Icon('svg', 'pencil', 'fa-fw', 'POST_REPLY') }}</a>
-	</div>
-</div>
-
 <!-- EVENT index_body_stat_blocks_before -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
@@ -71,7 +41,7 @@
 		<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->
 		<p>
 			<!-- EVENT index_body_block_online_prepend -->
-			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br />
+			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /> 
 			<!-- IF U_VIEWONLINE -->
 				<br />{LOGGED_IN_USER_LIST}
 				<!-- IF LEGEND --><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->
