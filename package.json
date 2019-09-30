@@ -47,7 +47,7 @@
 	"homepage": "https://www.phpbb.com",
 	"devDependencies": {
 		"cssnano": "^4.1.10",
-		"del": "^5.0.0",
+		"del": "^5.1.0",
 		"gulp": "^4.0.2",
 		"gulp-autoprefixer": "^7.0.0",
 		"gulp-postcss": "^8.0.0",
@@ -57,9 +57,9 @@
 		"postcss-import": "^12.0.1",
 		"postcss-pxtorem": "^4.0.1",
 		"postcss-sorting": "^5.0.1",
-		"stylelint": "^10.1.0",
-		"stylelint-order": "^3.0.1",
-		"xo": "^0.24.0"
+		"stylelint": "^11.0.0",
+		"stylelint-order": "^3.1.1",
+		"xo": "^0.25.3"
 	},
 	"dependencies": {}
 }
