@@ -10,7 +10,7 @@
 
 {# FA icons #}
 {% macro Fa(icon, classes = '', title = '', hidden = false, attributes = {}) %}
-	<i class="o-icon font fa-{{ icon ~ Implode_classes(classes) }}"{% if hidden %}{% if title %} title="{{ lang(title) }}"{% endif %} aria-hidden="true"{% endif %}{{ _self.attributes(attributes) }}></i>
+	<i class="o-icon font fa-{{ icon ~ Implode_classes(classes) }}"{% if hidden %}{% if title %} title="{{ lang(title) }}"{% endif %} aria-hidden="true"{% endif %}{{ Implode_attributes(attributes) }}></i>
 	{% if title %}<span{% if hidden %} class="sr-only"{% endif %}>{{ lang(title) }}</span>{% endif %}
 {% endmacro Fa %}
 
@@ -23,7 +23,7 @@
 {% macro Svg(icon, classes = '', title = '', hidden = false, attributes = {}) %}
 	{% set title_id = title ? title|lower|replace({' ': '_'}) ~ '-' ~ random() %}
 
-	<svg class="o-icon svg svg-{{ icon ~ Implode_classes(classes) }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"{% if title %}{% if hidden %} aria-hidden="true"{% endif %} aria-labelledby="{{ title_id }}"{% endif %} role="img"{{ _self.attributes(attributes) }}>
+	<svg class="o-icon svg svg-{{ icon ~ Implode_classes(classes) }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"{% if title %}{% if hidden %} aria-hidden="true"{% endif %} aria-labelledby="{{ title_id }}"{% endif %} role="img"{{ Implode_attributes(attributes) }}>
 	{% if title %}
 		<title id="{{ title_id }}">{{ lang(title) }}</title>
 	{% endif %}

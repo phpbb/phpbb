@@ -57,10 +57,17 @@ services:
     template.twig.extensions.icon:
         class: phpbb\template\twig\extension\icon
         arguments:
-            - '@template.twig.environment'
             - '@user'
         tags:
             - { name: twig.extension }
+
+    template.twig.extensions.implode:
+        class: phpbb\template\twig\extension\implode
+
+    template.twig.extensions.macro:
+        class: phpbb\template\twig\extension\macro
+        arguments:
+            - '@template.twig.environment'
 
     template.twig.extensions.routing:
         class: phpbb\template\twig\extension\routing
