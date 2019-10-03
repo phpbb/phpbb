@@ -239,7 +239,7 @@ class add extends command
 				array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
 				array('username', '')),
 			'new_password' => array(
-				array('string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']),
+				array('string', false, $this->config['min_pass_chars'], 0),
 				array('password')),
 			'email'        => array(
 				array('string', false, 6, 60),
