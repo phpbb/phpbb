@@ -26,3 +26,7 @@ phpbb_help_routing:
 
 phpbb_report_routing:
     resource: report.yml
+
+phpbb_ucp_routing:
+    resource: ucp.yml
+    prefix: /user
