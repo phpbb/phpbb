@@ -25,36 +25,53 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$this->assertContains('app.php/user/forgot_password', $crawler->getUri());
 		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
 		// test with non-existent email
-		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'	=> 'non-existent@email.com',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// test with correct email
-		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> 'reset-password-test-user@test.com',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// Check if columns in database were updated for password reset
 		$this->get_user_data('reset-password-test-user');
-		$this->assertNotNull($this->user_data['user_actkey']);
-		$this->assertNotNull($this->user_data['user_newpasswd']);
+		$this->assertNotEmpty($this->user_data['reset_token']);
+		$this->assertNotEmpty($this->user_data['reset_token_expiration']);
+		$reset_token = $this->user_data['reset_token'];
+		$reset_token_expiration = $this->user_data['reset_token_expiration'];
+
+		// Check that reset token is only created once per day
+		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$form = $crawler->selectButton('submit')->form(array(
+			'email'		=> 'reset-password-test-user@test.com',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
+
+		$this->get_user_data('reset-password-test-user');
+		$this->assertNotEmpty($this->user_data['reset_token']);
+		$this->assertNotEmpty($this->user_data['reset_token_expiration']);
+		$this->assertEquals($reset_token, $this->user_data['reset_token']);
+		$this->assertEquals($reset_token_expiration, $this->user_data['reset_token_expiration']);
 
 		// Create another user with the same email
 		$this->create_user('reset-password-test-user1', 'reset-password-test-user@test.com');
 
 		// Test that username is now also required
-		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
+		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> 'reset-password-test-user@test.com',
 		));
@@ -67,20 +84,13 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'	=> 'reset-password-test-user1',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED_IF_EXISTED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// Check if columns in database were updated for password reset
 		$this->get_user_data('reset-password-test-user1');
-		$this->assertNotNull($this->user_data['user_actkey']);
-		$this->assertNotNull($this->user_data['user_newpasswd']);
-
-		// Make sure we know the password
-		$db = $this->get_db();
-		$this->passwords_manager = $this->get_passwords_manager();
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_newpasswd = '" . $db->sql_escape($this->passwords_manager->hash('reset-password-test-user')) . "'
-			WHERE user_id = " . $user_id;
-		$db->sql_query($sql);
+		$this->assertNotEmpty($this->user_data['reset_token']);
+		$this->assertNotEmpty($this->user_data['reset_token_expiration']);
+		$this->assertGreaterThan(time(), $this->user_data['reset_token_expiration']);
 	}
 
 	public function test_login_after_reset()
@@ -88,28 +98,45 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->login('reset-password-test-user');
 	}
 
-	public function data_activate_new_password()
+	public function data_reset_user_password()
 	{
-		return array(
-			array('WRONG_ACTIVATION', false, 'FOOBAR'),
-			array('ALREADY_ACTIVATED', 2, 'FOOBAR'),
-			array('PASSWORD_ACTIVATED', false, false),
-			array('ALREADY_ACTIVATED', false, false),
-		);
+		return [
+			['RESET_TOKEN_EXPIRED_OR_INVALID', 0, 'abcdef'],
+			['NO_USER', ' ', 'abcdef'],
+			['NO_RESET_TOKEN', 0, ' '],
+			['RESET_TOKEN_EXPIRED_OR_INVALID', 2, ''],
+			['RESET_TOKEN_EXPIRED_OR_INVALID', 1e7, ''],
+			['', 0, ''],
+			['NO_RESET_TOKEN', 0, ''], // already reset
+		];
 	}
 
 	/**
-	* @dataProvider data_activate_new_password
-	*/
-	public function test_activate_new_password($expected, $user_id, $act_key)
+	 * @dataProvider data_reset_user_password
+	 */
+	public function test_reset_user_password($expected, $user_id, $token)
 	{
 		$this->add_lang('ucp');
 		$this->get_user_data('reset-password-test-user');
-		$user_id = (!$user_id) ? $this->user_data['user_id'] : $user_id;
-		$act_key = (!$act_key) ? $this->user_data['user_actkey'] : $act_key;
+		$user_id = !$user_id ? $this->user_data['user_id'] : $user_id;
+		$token = !$token ? $this->user_data['reset_token'] : $token;
 
-		$crawler = self::request('GET', "ucp.php?mode=activate&u=$user_id&k=$act_key&sid={$this->sid}");
-		$this->assertContainsLang($expected, $crawler->text());
+		$crawler = self::request('GET', "app.php/user/reset_password?u=$user_id&token=$token");
+
+		if ($expected)
+		{
+			$this->assertContainsLang($expected, $crawler->text());
+		}
+		else
+		{
+			$form = $crawler->filter('input[type=submit]')->form();
+			$values = array_merge($form->getValues(), [
+				'new_password'			=> 'reset-password-test-user',
+				'new_password_confirm'	=> 'reset-password-test-user',
+			]);
+			$crawler = self::submit($form, $values);
+			$this->assertContainsLang('PASSWORD_RESET', $crawler->text());
+		}
 	}
 
 	public function test_login()
@@ -190,7 +217,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	protected function get_user_data($username)
 	{
 		$db = $this->get_db();
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason, reset_token, reset_token_expiration
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);
