@@ -30,7 +30,6 @@ Some of the functionality in phpBB and/or the test suite uses additional
 PHP extensions. If these extensions are not loaded, respective tests
 will be skipped:
 
-- apc (APC cache driver, php5 only)
 - apcu (APCu cache driver - native API, php7+)
 - apcu_bc, apcu (APCu cache driver - APC API, php7+)
 - bz2 (compress tests)
