@@ -12,6 +12,6 @@ services:
             - '@request'
             - '@template'
             - '@user'
-            - '%tables%'
+            - '%tables.users%'
             - '%core.root_path%'
             - '%core.php_ext%'

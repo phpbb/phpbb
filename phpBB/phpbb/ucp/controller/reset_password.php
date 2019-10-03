@@ -63,7 +63,7 @@ class reset_password
 	protected $user;
 
 	/** @var array phpBB DB table names */
-	protected $tables;
+	protected $users_table;
 
 	/** @var string phpBB root path */
 	protected $root_path;
@@ -84,13 +84,14 @@ class reset_password
 	 * @param request_interface $request
 	 * @param template $template
 	 * @param user $user
-	 * @param array $tables
-	 * @param $root_path
-	 * @param $php_ext
+	 * @param string $users_table
+	 * @param string $root_path
+	 * @param string $php_ext
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
 								language $language, log_interface $log, manager $passwords_manager,
-								request_interface $request, template $template, user $user, $tables, $root_path, $php_ext)
+								request_interface $request, template $template, user $user, string $users_table,
+								string $root_path, string $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -102,7 +103,7 @@ class reset_password
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->tables = $tables;
+		$this->users_table = $users_table;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -135,7 +136,7 @@ class reset_password
 			'reset_token_expiration'	=> 0,
 		];
 
-		$sql = 'UPDATE ' . $this->tables['users'] . '
+		$sql = 'UPDATE ' . $this->users_table . '
 					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE user_id = ' . $user_id;
 		$this->db->sql_query($sql);
@@ -171,7 +172,7 @@ class reset_password
 			$sql_array = [
 				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
 								. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
-				'FROM'		=> [$this->tables['users'] => 'u'],
+				'FROM'		=> [$this->users_table => 'u'],
 				'WHERE'		=> "user_email_hash = '" . $this->db->sql_escape(phpbb_email_hash($email)) . "'" .
 					(!empty($username) ? " AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'" : ''),
 			];
@@ -228,10 +229,10 @@ class reset_password
 				}
 
 				// Check users permissions
-				$auth2 = new auth();
-				$auth2->acl($user_row);
+				$auth = new auth();
+				$auth->acl($user_row);
 
-				if (!$auth2->acl_get('u_chgpasswd'))
+				if (!$auth->acl_get('u_chgpasswd'))
 				{
 					return $this->helper->message($message);
 				}
@@ -244,7 +245,7 @@ class reset_password
 					'reset_token_expiration'	=> strtotime('+1 day'),
 				];
 
-				$sql = 'UPDATE ' . $this->tables['users'] . '
+				$sql = 'UPDATE ' . $this->users_table . '
 					SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE user_id = ' . $user_row['user_id'];
 				$this->db->sql_query($sql);
@@ -314,7 +315,7 @@ class reset_password
 		$sql_array = [
 			'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
 				. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
-			'FROM'		=> [$this->tables['users'] => 'u'],
+			'FROM'		=> [$this->users_table => 'u'],
 			'WHERE'		=> 'user_id = ' . $user_id,
 		];
 
@@ -373,10 +374,10 @@ class reset_password
 			}
 
 			// Check users permissions
-			$auth2 = new auth();
-			$auth2->acl($user_row);
+			$auth = new auth();
+			$auth->acl($user_row);
 
-			if (!$auth2->acl_get('u_chgpasswd'))
+			if (!$auth->acl_get('u_chgpasswd'))
 			{
 				return $this->helper->message($message);
 			}
@@ -410,7 +411,7 @@ class reset_password
 					'reset_token'				=> '',
 					'reset_token_expiration'	=> 0,
 				];
-				$sql = 'UPDATE ' . $this->tables['users'] . '
+				$sql = 'UPDATE ' . $this->users_table . '
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . (int) $user_row['user_id'];
 				$this->db->sql_query($sql);
