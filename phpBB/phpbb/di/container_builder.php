@@ -126,6 +126,13 @@ class container_builder
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+
+		$env_parameters = $this->get_env_parameters();
+
+		if (isset($env_parameters['core.cache_dir']))
+		{
+			$this->with_cache_dir($env_parameters['core.cache_dir']);
+		}
 	}
 
 	/**
