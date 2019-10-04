@@ -61,18 +61,6 @@ services:
         tags:
             - { name: twig.extension }
 
-    template.twig.extensions.implode:
-        class: phpbb\template\twig\extension\implode
-        tags:
-            - { name: twig.extension }
-
-    template.twig.extensions.macro:
-        class: phpbb\template\twig\extension\macro
-        arguments:
-            - '@template.twig.environment'
-        tags:
-            - { name: twig.extension }
-
     template.twig.extensions.routing:
         class: phpbb\template\twig\extension\routing
         arguments:
