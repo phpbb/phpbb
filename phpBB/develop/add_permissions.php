@@ -210,7 +210,7 @@ foreach ($prefixes as $prefix)
 			);
 
 			$db->sql_query('INSERT INTO ' . ACL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-		
+
 			echo "<p><b>Adding $auth_option...</b></p>\n";
 
 			mass_auth('group', 0, 'guests', $auth_option, ACL_NEVER);
@@ -231,7 +231,7 @@ $db->sql_query($sql);
 $cache->destroy('_acl_options');
 
 echo "<p><b>Done</b></p>\n";
- 
+
 /*
 	$ug_type = user|group
 	$forum_id = forum ids (array|int|0) -> 0 == all forums
@@ -374,11 +374,6 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 			case 'insert':
 				switch ($db->get_sql_layer())
 				{
-					case 'mysql':
-					case 'mysql4':
-						$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
-						break;
-
 					case 'sqlite3':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 						break;

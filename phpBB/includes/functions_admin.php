@@ -1384,7 +1384,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_transaction('begin');
 			switch ($db->get_sql_layer())
 			{
-				case 'mysql4':
 				case 'mysqli':
 					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 						USING ' . TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
@@ -2683,8 +2682,7 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 		switch ($db->get_sql_layer())
 		{
 			case 'mysqli':
-			case 'mysql4':
-				$sql = 'DELETE ' . (($db->get_sql_layer() === 'mysqli' || version_compare($db->sql_server_info(true), '4.1', '>=')) ? 'z.*' : ZEBRA_TABLE) . '
+				$sql = 'DELETE z.*
 					FROM ' . ZEBRA_TABLE . ' z, ' . USER_GROUP_TABLE . ' ug
 					WHERE z.zebra_id = ug.user_id
 						AND z.foe = 1
@@ -2840,8 +2838,6 @@ function get_database_size()
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
 	switch ($db->get_sql_layer())
 	{
-		case 'mysql':
-		case 'mysql4':
 		case 'mysqli':
 			$sql = 'SELECT VERSION() AS mysql_version';
 			$result = $db->sql_query($sql);

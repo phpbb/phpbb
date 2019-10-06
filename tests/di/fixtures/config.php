@@ -1,7 +1,7 @@
 <?php
 // phpBB 3.1.x auto-generated configuration file
 // Do not change anything in this file!
-$dbms = 'mysql';
+$dbms = 'mysqli';
 $dbhost = '127.0.0.1';
 $dbport = '';
 $dbname = 'phpbb';

@@ -34,7 +34,6 @@ will be skipped:
 - apcu (APCu cache driver - native API, php7+)
 - apcu_bc, apcu (APCu cache driver - APC API, php7+)
 - bz2 (compress tests)
-- mysql, pdo_mysql (MySQL database driver)
 - mysqli, pdo_mysql (MySQLi database driver)
 - pcntl (flock class)
 - pdo (any database tests)

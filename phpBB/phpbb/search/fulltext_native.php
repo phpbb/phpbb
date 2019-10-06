@@ -889,7 +889,6 @@ class fulltext_native extends \phpbb\search\base
 
 			switch ($this->db->get_sql_layer())
 			{
-				case 'mysql4':
 				case 'mysqli':
 
 					// 3.x does not support SQL_CALC_FOUND_ROWS
@@ -1184,7 +1183,6 @@ class fulltext_native extends \phpbb\search\base
 		{
 			switch ($this->db->get_sql_layer())
 			{
-				case 'mysql4':
 				case 'mysqli':
 //					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;

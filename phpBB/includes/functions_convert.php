@@ -1647,11 +1647,6 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 			case 'insert':
 				switch ($db->get_sql_layer())
 				{
-					case 'mysql':
-					case 'mysql4':
-						$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
-					break;
-
 					case 'sqlite3':
 					case 'mssqlnative':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));

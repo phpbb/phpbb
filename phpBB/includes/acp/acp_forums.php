@@ -1878,7 +1878,6 @@ class acp_forums
 
 		switch ($db->get_sql_layer())
 		{
-			case 'mysql4':
 			case 'mysqli':
 
 				// Delete everything else and thank MySQL for offering multi-table deletion

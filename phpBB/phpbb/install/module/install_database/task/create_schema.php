@@ -129,14 +129,7 @@ class create_schema extends \phpbb\install\task_base
 
 		if ($dbms === 'mysql')
 		{
-			if (version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
-			{
-				$schema_name .= '_41';
-			}
-			else
-			{
-				$schema_name .= '_40';
-			}
+			$schema_name .= '_41';
 		}
 
 		$db_schema_path = $this->phpbb_root_path . 'install/schemas/' . $schema_name . '_schema.sql';
