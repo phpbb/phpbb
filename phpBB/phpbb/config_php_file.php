@@ -155,6 +155,12 @@ class config_php_file
 			return $dbms;
 		}
 
+		// Force use of mysqli when specifying mysql
+		if (preg_match('/(phpbb\\\db\\\driver\\\)?mysql$/i', $dbms))
+		{
+			return 'phpbb\db\driver\mysqli';
+		}
+
 		throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
 	}
 }
