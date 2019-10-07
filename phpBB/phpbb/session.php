@@ -1090,10 +1090,20 @@ class session
 		* Event to disable setting cookie
 		*
 		* @event core.set_cookie
-		* @var	bool		disable_cookie		Set to true to disable setting this cookie
+		* @var	bool		disable_cookie	Set to true to disable setting this cookie
+		* @var	string		name			Name of the cookie
+		* @var	string		cookiedata		The data to hold within the cookie
+		* @var	int			cookietime		The expiration time as UNIX timestamp
+		* @var	bool		httponly		Use HttpOnly?
 		* @since 3.2.9-RC1
 		*/
-		$vars = array('disable_cookie');
+		$vars = array(
+			'disable_cookie',
+			'name',
+			'cookiedata',
+			'cookietime',
+			'httponly',
+		);
 		extract($phpbb_dispatcher->trigger_event('core.set_cookie', compact($vars)));
 
 		if ($disable_cookie)
