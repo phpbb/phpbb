@@ -281,9 +281,43 @@ class user extends \phpbb\session
 			$db->sql_freeresult($result);
 		}
 
+		// Fallback to board's default style
 		if (!$this->style)
 		{
-			trigger_error('NO_STYLE_DATA', E_USER_ERROR);
+			// Verify default style exists in the database
+			$sql = 'SELECT style_id
+				FROM ' . STYLES_TABLE . '
+				WHERE style_id = ' . (int) $config['default_style'];
+			$result = $db->sql_query($sql);
+			$style_id = (int) $db->sql_fetchfield('style_id');
+			$db->sql_freeresult($result);
+
+			if ($style_id > 0)
+			{
+				$db->sql_transaction('begin');
+
+				// Update $user row
+				$sql = 'SELECT *
+					FROM ' . STYLES_TABLE . '
+					WHERE style_id = ' . (int) $config['default_style'];
+				$result = $db->sql_query($sql);
+				$this->style = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				// Update user style preference
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . (int) $style_id . '
+					WHERE user_id = ' . (int) $this->data['user_id'];
+				$db->sql_query($sql);
+
+				$db->sql_transaction('commit');
+			}
+		}
+
+		// This should never happen
+		if (!$this->style)
+		{
+			trigger_error($this->language->lang('NO_STYLE_DATA', $this->data['user_style'], $this->data['user_id']), E_USER_ERROR);
 		}
 
 		// Now parse the cfg file and cache it
