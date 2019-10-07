@@ -51,7 +51,6 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 			'min_name_chars'	=> 3,
 			'max_name_chars'	=> 10,
 			'min_pass_chars'	=> 3,
-			'max_pass_chars'	=> 10,
 			'pass_complex'		=> 'PASS_TYPE_ANY',
 		));
 

@@ -393,10 +393,10 @@ class reset_password
 			];
 			$check_data = [
 				'new_password'		=> [
-					['string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']],
+					['string', false, $this->config['min_pass_chars'], 0],
 					['password'],
 				],
-				'password_confirm'	=> ['string', true, $this->config['min_pass_chars'], $this->config['max_pass_chars']],
+				'password_confirm'	=> ['string', true, $this->config['min_pass_chars'], 0],
 			];
 			$errors = array_merge($errors, validate_data($data, $check_data));
 			if (strcmp($data['new_password'], $data['password_confirm']) !== 0)
