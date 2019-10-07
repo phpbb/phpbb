@@ -2646,7 +2646,7 @@ ucp_profile_profile_info_before
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before jabber field.
 
-ucp_profile_profile_info_birthday_label_after
+ucp_profile_profile_info_birthday_label_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_profile_info.html
