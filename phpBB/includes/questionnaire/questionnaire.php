@@ -402,7 +402,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'max_login_attempts' => true,
 			'max_name_chars' => true,
 			'max_num_search_keywords' => true,
-			'max_pass_chars' => true,
 			'max_poll_options' => true,
 			'max_post_chars' => true,
 			'max_post_font_size' => true,

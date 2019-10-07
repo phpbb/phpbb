@@ -275,9 +275,9 @@ class ucp_register
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username', '')),
 				'new_password'		=> array(
-					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+					array('string', false, $config['min_pass_chars'], 0),
 					array('password')),
-				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'password_confirm'	=> array('string', false, $config['min_pass_chars'], 0),
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('user_email')),
@@ -638,7 +638,7 @@ class ucp_register
 
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
-			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
+			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars'])),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_PRESELECT'	=> !$submit,
