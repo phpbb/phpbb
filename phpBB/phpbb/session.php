@@ -1087,7 +1087,7 @@ class session
 
 		$disable_cookie = false;
 		/**
-		* Event to disable setting cookie
+		* Event to modify or disable setting cookies
 		*
 		* @event core.set_cookie
 		* @var	bool		disable_cookie	Set to true to disable setting this cookie
