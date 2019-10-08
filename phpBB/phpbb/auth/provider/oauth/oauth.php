@@ -215,7 +215,12 @@ class oauth extends \phpbb\auth\provider\base
 				];
 			}
 
-			// Check to see if this provider is already associated with an account
+			/**
+			 * Check to see if this provider is already associated with an account.
+			 *
+			 * Enforcing a data type to make sure it are strings and not integers,
+			 * so values are quoted in the SQL WHERE statement.
+			 */
 			$data = [
 				'provider'			=> (string) utf8_strtolower($provider),
 				'oauth_provider_id'	=> (string) $unique_id
