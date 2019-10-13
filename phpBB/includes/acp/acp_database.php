@@ -248,8 +248,6 @@ class acp_database
 
 							switch ($db->get_sql_layer())
 							{
-								case 'mysql':
-								case 'mysql4':
 								case 'mysqli':
 								case 'sqlite3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)

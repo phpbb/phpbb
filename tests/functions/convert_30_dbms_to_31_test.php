@@ -18,7 +18,6 @@ class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 		return array(
 			array('mssql_odbc'),
 			array('mssqlnative'),
-			array('mysql'),
 			array('mysqli'),
 			array('oracle'),
 			array('postgres'),

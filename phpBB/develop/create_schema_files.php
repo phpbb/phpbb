@@ -21,7 +21,6 @@
 $schema_path = dirname(__FILE__) . '/../install/schemas/';
 $supported_dbms = array(
 	'mssql',
-	'mysql_40',
 	'mysql_41',
 	'oracle',
 	'postgres',

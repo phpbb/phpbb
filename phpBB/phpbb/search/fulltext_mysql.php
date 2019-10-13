@@ -154,7 +154,7 @@ class fulltext_mysql extends \phpbb\search\base
 	*/
 	public function init()
 	{
-		if ($this->db->get_sql_layer() != 'mysql4' && $this->db->get_sql_layer() != 'mysqli')
+		if ($this->db->get_sql_layer() != 'mysqli')
 		{
 			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}
@@ -1005,14 +1005,7 @@ class fulltext_mysql extends \phpbb\search\base
 		if (!isset($this->stats['post_subject']))
 		{
 			$alter_entry = array();
-			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
-			{
-				$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
-			}
-			else
-			{
-				$alter_entry[] = 'MODIFY post_subject text NOT NULL';
-			}
+			$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			$alter_entry[] = 'ADD FULLTEXT (post_subject)';
 			$alter_list[] = $alter_entry;
 		}
@@ -1020,15 +1013,7 @@ class fulltext_mysql extends \phpbb\search\base
 		if (!isset($this->stats['post_content']))
 		{
 			$alter_entry = array();
-			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
-			{
-				$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
-			}
-			else
-			{
-				$alter_entry[] = 'MODIFY post_text mediumtext NOT NULL';
-			}
-
+			$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			$alter_entry[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
 			$alter_list[] = $alter_entry;
 		}
