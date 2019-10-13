@@ -222,8 +222,6 @@ class acp_reasons
 					{
 						// The ugly one!
 						case 'mysqli':
-						case 'mysql4':
-						case 'mysql':
 							// Change the reports using this reason to 'other'
 							$sql = 'UPDATE ' . REPORTS_TABLE . '
 								SET reason_id = ' . $other_reason_id . ", report_text = CONCAT('" . $db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)

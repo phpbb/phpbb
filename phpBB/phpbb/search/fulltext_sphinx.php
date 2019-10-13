@@ -214,7 +214,7 @@ class fulltext_sphinx
 	*/
 	public function init()
 	{
-		if ($this->db->get_sql_layer() != 'mysql' && $this->db->get_sql_layer() != 'mysql4' && $this->db->get_sql_layer() != 'mysqli' && $this->db->get_sql_layer() != 'postgres')
+		if ($this->db->get_sql_layer() != 'mysqli' && $this->db->get_sql_layer() != 'postgres')
 		{
 			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
 		}
@@ -233,7 +233,7 @@ class fulltext_sphinx
 	protected function config_generate()
 	{
 		// Check if Database is supported by Sphinx
-		if ($this->db->get_sql_layer() =='mysql' || $this->db->get_sql_layer() == 'mysql4' || $this->db->get_sql_layer() == 'mysqli')
+		if ($this->db->get_sql_layer() == 'mysqli')
 		{
 			$this->dbtype = 'mysql';
 		}

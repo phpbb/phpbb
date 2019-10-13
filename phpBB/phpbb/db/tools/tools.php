@@ -74,37 +74,6 @@ class tools implements tools_interface
 				'VARBINARY'	=> 'varbinary(255)',
 			),
 
-			'mysql_40'	=> array(
-				'INT:'		=> 'int(%d)',
-				'BINT'		=> 'bigint(20)',
-				'ULINT'		=> 'INT(10) UNSIGNED',
-				'UINT'		=> 'mediumint(8) UNSIGNED',
-				'UINT:'		=> 'int(%d) UNSIGNED',
-				'TINT:'		=> 'tinyint(%d)',
-				'USINT'		=> 'smallint(4) UNSIGNED',
-				'BOOL'		=> 'tinyint(1) UNSIGNED',
-				'VCHAR'		=> 'varbinary(255)',
-				'VCHAR:'	=> 'varbinary(%d)',
-				'CHAR:'		=> 'binary(%d)',
-				'XSTEXT'	=> 'blob',
-				'XSTEXT_UNI'=> 'blob',
-				'STEXT'		=> 'blob',
-				'STEXT_UNI'	=> 'blob',
-				'TEXT'		=> 'blob',
-				'TEXT_UNI'	=> 'blob',
-				'MTEXT'		=> 'mediumblob',
-				'MTEXT_UNI'	=> 'mediumblob',
-				'TIMESTAMP'	=> 'int(11) UNSIGNED',
-				'DECIMAL'	=> 'decimal(5,2)',
-				'DECIMAL:'	=> 'decimal(%d,2)',
-				'PDECIMAL'	=> 'decimal(6,3)',
-				'PDECIMAL:'	=> 'decimal(%d,3)',
-				'VCHAR_UNI'	=> 'blob',
-				'VCHAR_UNI:'=> array('varbinary(%d)', 'limit' => array('mult', 3, 255, 'blob')),
-				'VCHAR_CI'	=> 'blob',
-				'VARBINARY'	=> 'varbinary(255)',
-			),
-
 			'oracle'	=> array(
 				'INT:'		=> 'number(%d)',
 				'BINT'		=> 'number(20)',
@@ -197,21 +166,6 @@ class tools implements tools_interface
 		// Determine mapping database type
 		switch ($this->db->get_sql_layer())
 		{
-			case 'mysql':
-				$this->sql_layer = 'mysql_40';
-			break;
-
-			case 'mysql4':
-				if (version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
-				{
-					$this->sql_layer = 'mysql_41';
-				}
-				else
-				{
-					$this->sql_layer = 'mysql_40';
-				}
-			break;
-
 			case 'mysqli':
 				$this->sql_layer = 'mysql_41';
 			break;
@@ -240,8 +194,6 @@ class tools implements tools_interface
 	{
 		switch ($this->db->get_sql_layer())
 		{
-			case 'mysql':
-			case 'mysql4':
 			case 'mysqli':
 				$sql = 'SHOW TABLES';
 			break;
@@ -359,7 +311,6 @@ class tools implements tools_interface
 
 				switch ($this->sql_layer)
 				{
-					case 'mysql_40':
 					case 'mysql_41':
 					case 'sqlite3':
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
@@ -381,7 +332,6 @@ class tools implements tools_interface
 				$statements[] = $table_sql;
 			break;
 
-			case 'mysql_40':
 			case 'sqlite3':
 				$table_sql .= "\n);";
 				$statements[] = $table_sql;
@@ -834,7 +784,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$sql = "SHOW COLUMNS FROM $table_name";
 			break;
@@ -911,7 +860,6 @@ class tools implements tools_interface
 	{
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
 					FROM ' . $table_name;
@@ -936,7 +884,7 @@ class tools implements tools_interface
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+			if ($this->sql_layer == 'mysql_41' && !$row['Non_unique'])
 			{
 				continue;
 			}
@@ -971,7 +919,6 @@ class tools implements tools_interface
 	{
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
 					FROM ' . $table_name;
@@ -996,7 +943,7 @@ class tools implements tools_interface
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && ($row['Non_unique'] || $row[$col] == 'PRIMARY'))
+			if ($this->sql_layer == 'mysql_41' && ($row['Non_unique'] || $row[$col] == 'PRIMARY'))
 			{
 				continue;
 			}
@@ -1094,7 +1041,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$sql .= " {$column_type} ";
 
@@ -1248,7 +1194,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
 				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
@@ -1281,7 +1226,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` DROP COLUMN `' . $column_name . '`';
 			break;
@@ -1360,7 +1304,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$index_name = $this->check_index_name_length($table_name, $index_name, false);
 				$statements[] = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
@@ -1422,7 +1365,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
@@ -1500,7 +1442,6 @@ class tools implements tools_interface
 				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
-			case 'mysql_40':
 			case 'mysql_41':
 				$index_name = $this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
@@ -1517,11 +1458,7 @@ class tools implements tools_interface
 	{
 		$statements = array();
 
-		// remove index length unless MySQL4
-		if ('mysql_40' != $this->sql_layer)
-		{
-			$column = preg_replace('#:.*$#', '', $column);
-		}
+		$column = preg_replace('#:.*$#', '', $column);
 
 		switch ($this->sql_layer)
 		{
@@ -1531,17 +1468,6 @@ class tools implements tools_interface
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
-			case 'mysql_40':
-				// add index size to definition as required by MySQL4
-				foreach ($column as $i => $col)
-				{
-					if (false !== strpos($col, ':'))
-					{
-						list($col, $index_size) = explode(':', $col);
-						$column[$i] = "$col($index_size)";
-					}
-				}
-			// no break
 			case 'mysql_41':
 				$index_name = $this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
@@ -1609,7 +1535,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
 					FROM ' . $table_name;
@@ -1634,7 +1559,7 @@ class tools implements tools_interface
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+			if ($this->sql_layer == 'mysql_41' && !$row['Non_unique'])
 			{
 				continue;
 			}
@@ -1677,7 +1602,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` CHANGE `' . $column_name . '` `' . $column_name . '` ' . $column_data['column_type_sql'];
 			break;
@@ -1826,7 +1750,6 @@ class tools implements tools_interface
 	{
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
 			case 'mysql_41':
 			case 'sqlite3':
 				// Not supported

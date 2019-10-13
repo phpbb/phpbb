@@ -150,7 +150,6 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb\db\driver\mysql':
 			case 'phpbb\db\driver\mysqli':
 				$this->pdo->exec('SET NAMES utf8');
 
@@ -270,7 +269,6 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb\db\driver\mysql':
 			case 'phpbb\db\driver\mysqli':
 				$sql = 'SHOW TABLES';
 			break;
@@ -336,14 +334,7 @@ class phpbb_database_test_connection_manager
 			$sth = $this->pdo->query('SELECT VERSION() AS version');
 			$row = $sth->fetch(PDO::FETCH_ASSOC);
 
-			if (version_compare($row['version'], '4.1.3', '>='))
-			{
-				$schema .= '_41';
-			}
-			else
-			{
-				$schema .= '_40';
-			}
+			$schema .= '_41';
 		}
 
 		$filename = $directory . $schema . '_schema.sql';
@@ -421,11 +412,6 @@ class phpbb_database_test_connection_manager
 		$available_dbms = array(
 			'phpbb\db\driver\mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
-				'DELIM'			=> ';',
-				'PDO'			=> 'mysql',
-			),
-			'phpbb\db\driver\mysql'		=> array(
-				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
