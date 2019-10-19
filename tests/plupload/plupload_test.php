@@ -88,6 +88,11 @@ class phpbb_plupload_test extends phpbb_test_case
 				'upload_max_filesize' => 1000,
 				'post_max_size' => 600,
 			], 300],
+			[[
+				'memory_limit' => 1000,
+				'upload_max_filesize' => 2000,
+				'post_max_size' => 3000,
+			], 500],
 		];
 	}
 
