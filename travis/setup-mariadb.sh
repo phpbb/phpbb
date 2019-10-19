@@ -12,13 +12,14 @@ set -e
 set -x
 
 # MariaDB Series
-VERSION='10.0'
+VERSION='10.1'
 
 # Operating system codename, e.g. "precise"
 OS_CODENAME=$(lsb_release --codename --short)
 
 # Manually purge MySQL to remove conflicting files (e.g. /etc/mysql/my.cnf)
 sudo apt-get purge -y mysql-common
+sudo rm -rf /etc/mysql && sudo rm -rf /var/log/mysql && sudo rm -rf /var/lib/mysql && sudo rm -rf /var/lib/mysql-files && sudo rm -rf /var/lib/mysql-keyring
 
 if ! which add-apt-repository > /dev/null
 then
@@ -27,7 +28,7 @@ then
 fi
 
 MIRROR_DOMAIN='ftp.osuosl.org'
-sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
 sudo add-apt-repository "deb http://$MIRROR_DOMAIN/pub/mariadb/repo/$VERSION/ubuntu $OS_CODENAME main"
 sudo apt-get update
 

@@ -1,5 +1,5 @@
 language: php
-dist: trusty
+dist: xenial
 
 matrix:
   include:
@@ -34,6 +34,8 @@ addons:
 
 services:
   - redis-server
+  - postgresql
+  - mysql
 
 install:
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
