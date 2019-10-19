@@ -29,6 +29,8 @@ matrix:
 
 services:
   - redis-server
+  - postgresql
+  - mysql
 
 install:
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
