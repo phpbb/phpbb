@@ -158,7 +158,26 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 	public function visit($path)
 	{
-		$this->getDriver()->get(self::$root_url . $path);
+		// Retry three times on curl issues, e.g. timeout
+		$attempts = 0;
+		$retries = 3;
+
+		while (true)
+		{
+			$attempts++;
+			try
+			{
+				$this->getDriver()->get(self::$root_url . $path);
+				break;
+			}
+			catch (Facebook\WebDriver\Exception\WebDriverCurlException $exception)
+			{
+				if ($attempts >= $retries)
+				{
+					throw $exception;
+				}
+			}
+		}
 	}
 
 	static protected function recreate_database($config)
