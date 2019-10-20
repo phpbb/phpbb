@@ -219,7 +219,7 @@ class oauth extends \phpbb\auth\provider\base
 			/**
 			 * Check to see if this provider is already associated with an account.
 			 *
-			 * Enforcing a data type to make sure it are strings and not integers,
+			 * Enforcing a data type to make data contains strings and not integers,
 			 * so values are quoted in the SQL WHERE statement.
 			 */
 			$data = array(
