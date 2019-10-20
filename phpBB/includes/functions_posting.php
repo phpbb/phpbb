@@ -114,6 +114,22 @@ function generate_smilies($mode, $forum_id)
 	}
 	$db->sql_freeresult($result);
 
+	/**
+	* Modify smilies before they are assigned to the template
+	*
+	* @event core.generate_smilies_modify_rowset
+	* @var string	mode		Smiley mode, either window or inline
+	* @var int		forum_id	Forum where smilies are generated
+	* @var array	smilies		Smiley rows fetched from the database
+	* @since 3.2.9-RC1
+	*/
+	$vars = [
+		'mode',
+		'forum_id',
+		'smilies',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_modify_rowset', compact($vars)));
+
 	if (count($smilies))
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
