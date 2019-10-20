@@ -74,6 +74,7 @@ function generate_smilies($mode, $forum_id)
 		];
 		extract($phpbb_dispatcher->trigger_event('core.generate_smilies_count_sql_before', compact($vars)));
 
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql, 3600);
 
 		$smiley_count = 0;
