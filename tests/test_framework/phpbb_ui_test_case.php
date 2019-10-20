@@ -159,20 +159,23 @@ class phpbb_ui_test_case extends phpbb_test_case
 	public function visit($path)
 	{
 		// Retry three times on curl issues, e.g. timeout
-		try
+		$attempts = 0;
+		$retries = 3;
+
+		while (true)
 		{
-			$this->getDriver()->get(self::$root_url . $path);
-		}
-		catch (Facebook\WebDriver\Exception\WebDriverCurlException $exception)
-		{
+			$attempts++;
 			try
 			{
 				$this->getDriver()->get(self::$root_url . $path);
+				break;
 			}
 			catch (Facebook\WebDriver\Exception\WebDriverCurlException $exception)
 			{
-				// Last try, throw exception after this one fails
-				$this->getDriver()->get(self::$root_url . $path);
+				if ($attempts >= $retries)
+				{
+					throw $exception;
+				}
 			}
 		}
 	}
