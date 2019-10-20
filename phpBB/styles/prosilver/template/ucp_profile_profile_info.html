@@ -13,7 +13,7 @@
 	<!-- EVENT ucp_profile_profile_info_before -->
 	<!-- IF S_BIRTHDAYS_ENABLED -->
 		<dl>
-			<dt><label for="bday_day">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
+			<dt><label for="bday_day">{L_BIRTHDAY}{L_COLON}{% EVENT ucp_profile_profile_info_birthday_label_append %}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
 			<dd>
 				<label for="bday_day">{L_DAY}{L_COLON} <select name="bday_day" id="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select></label>
 				<label for="bday_month">{L_MONTH}{L_COLON} <select name="bday_month" id="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select></label>
