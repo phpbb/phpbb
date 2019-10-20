@@ -28,8 +28,13 @@
 		<p>
 			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
 			{% EVENT memberlist_body_group_rank_before %}
-			<!-- IF RANK_IMG -->{RANK_IMG}<!-- ENDIF -->
-			<!-- IF GROUP_RANK -->{GROUP_RANK}<!-- ENDIF -->
+			{% if RANK_IMG %}{{ RANK_IMG }}{% endif %}
+			{% if GROUP_RANK %}
+				{% if not RANK_IMG %}
+					{{ lang('GROUP_RANK') ~ lang('COLON') }}
+				{% endif %}
+				{{ GROUP_RANK }}
+			{% endif %}
 			{% EVENT memberlist_body_group_rank_after %}
 		</p>
 	<!-- ELSE -->
