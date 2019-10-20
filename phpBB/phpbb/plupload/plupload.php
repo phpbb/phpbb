@@ -274,22 +274,37 @@ class plupload
 	}
 
 	/**
-	* Checks various php.ini values and the maximum file size to determine
-	* the maximum size chunks a file can be split up into for upload
-	*
-	* @return int
-	*/
+	 * Checks various php.ini values to determine the maximum chunk
+	 * size a file should be split into for upload.
+	 *
+	 * The intention is to calculate a value which reflects whatever
+	 * the most restrictive limit is set to.  And to then set the chunk
+	 * size to half that value, to ensure any required transfer overhead
+	 * and POST data remains well within the limit.  Or, if all of the
+	 * limits are set to unlimited, the chunk size will also be unlimited.
+	 *
+	 * @return int
+	 *
+	 * @access public
+	 */
 	public function get_chunk_size()
 	{
-		$max = min(
+		$max = 0;
+
+		$limits = [
+			$this->php_ini->getBytes('memory_limit'),
 			$this->php_ini->getBytes('upload_max_filesize'),
 			$this->php_ini->getBytes('post_max_size'),
-			max(1, $this->php_ini->getBytes('memory_limit')),
-			$this->config['max_filesize']
-		);
+		];
 
-		// Use half of the maximum possible to leave plenty of room for other
-		// POST data.
+		foreach ($limits as $limit_type)
+		{
+			if ($limit_type > 0)
+			{
+				$max = ($max !== 0) ? min($limit_type, $max) : $limit_type;
+			}
+		}
+
 		return floor($max / 2);
 	}
 
