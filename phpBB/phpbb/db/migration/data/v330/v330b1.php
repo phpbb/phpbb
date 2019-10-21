@@ -23,6 +23,7 @@ class v330b1 extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
+			'\phpbb\db\migration\data\v330\jquery_update',
 			'\phpbb\db\migration\data\v330\reset_password',
 			'\phpbb\db\migration\data\v330\remove_attachment_flash',
 			'\phpbb\db\migration\data\v330\remove_max_pass_chars',
