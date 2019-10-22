@@ -563,7 +563,6 @@ phpbb.search.setValue = function($input, value, multiline) {
 phpbb.search.setValueOnClick = function($input, value, $row, $container) {
 	$row.click(function() {
 		phpbb.search.setValue($input, value.result, $input.attr('data-multiline'));
-
 		phpbb.search.closeResults($input, $container);
 	});
 };
@@ -578,7 +577,7 @@ phpbb.search.setValueOnClick = function($input, value, $row, $container) {
  * @param {object} event			Onkeyup event object.
  * @param {function} sendRequest	Function to execute AJAX request.
  *
- * @returns {bool} Returns false.
+ * @returns {boolean} Returns false.
  */
 phpbb.search.filter = function(data, event, sendRequest) {
 	var $this = $(this),
@@ -714,7 +713,7 @@ phpbb.search.showResults = function(results, $input, $container, callback) {
 /**
  * Clear search results.
  *
- * @param {jQuery} $container Search results container.
+ * @param {jQuery} $container		Search results container.
  */
 phpbb.search.clearResults = function($container) {
 	$container.children(':not(.search-result-tpl)').remove();
@@ -723,33 +722,33 @@ phpbb.search.clearResults = function($container) {
 /**
  * Close search results.
  *
- * @param {jQuery} $input Search input|textarea.
- * @param {jQuery} $container Search results container.
+ * @param {jQuery} $input			Search input|textarea.
+ * @param {jQuery} $container		Search results container.
  */
 phpbb.search.closeResults = function($input, $container) {
-	$input.off('.searchNavigation');
+	$input.off('.phpbb.search');
 	$container.hide();
 };
 
 /**
  * Navigate search results.
  *
- * @param {jQuery} $input Search input|textarea.
- * @param {jQuery} $container Search results container.
+ * @param {jQuery} $input			Search input|textarea.
+ * @param {jQuery} $container		Search results container.
  * @param {jQuery} $resultContainer	Search results list container.
  */
 phpbb.search.navigateResults = function($input, $container, $resultContainer) {
-	// Add a namespace to the event (.searchNavigation),
+	// Add a namespace to the event (.phpbb.search),
 	// so it can be unbound specifically later on.
-	$input.on('keydown.searchNavigation', function(event) {
-		let key = event.keyCode || event.which,
+	$input.on('keydown.phpbb.search', function(event) {
+		var key = event.keyCode || event.which,
 			$active = $resultContainer.children('.active');
 
 		switch (key) {
 			// Set the value for the selected result
 			case keymap.ENTER:
 				if ($active.length) {
-					let value = $active.find('.search-result > span').text();
+					var value = $active.find('.search-result > span').text();
 
 					phpbb.search.setValue($input, value, $input.attr('data-multiline'));
 				}
@@ -768,24 +767,25 @@ phpbb.search.navigateResults = function($input, $container, $resultContainer) {
 			// Navigate the results
 			case keymap.ARROW_DOWN:
 			case keymap.ARROW_UP:
-				let up = key === keymap.ARROW_UP;
+				var up = key === keymap.ARROW_UP,
+					$children = $resultContainer.children();
 
 				if (!$active.length) {
 					if (up) {
-						$resultContainer.children().last().addClass('active');
+						$children.last().addClass('active');
 					} else {
-						$resultContainer.children().first().addClass('active');
+						$children.first().addClass('active');
 					}
-				} else {
+				} else if ($children.length > 1) {
 					if (up) {
 						if ($active.is(':first-child')) {
-							$resultContainer.children().last().addClass('active');
+							$children.last().addClass('active');
 						} else {
 							$active.prev().addClass('active');
 						}
 					} else {
 						if ($active.is(':last-child')) {
-							$resultContainer.children().first().addClass('active');
+							$children.first().addClass('active');
 						} else {
 							$active.next().addClass('active');
 						}
