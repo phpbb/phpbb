@@ -745,6 +745,11 @@ phpbb.search.navigateResults = function($input, $container, $resultContainer) {
 			$active = $resultContainer.children('.active');
 
 		switch (key) {
+			// Close the results
+			case keymap.ESC:
+				phpbb.search.closeResults($input, $container);
+			break;
+
 			// Set the value for the selected result
 			case keymap.ENTER:
 				if ($active.length) {
@@ -757,11 +762,6 @@ phpbb.search.navigateResults = function($input, $container, $resultContainer) {
 
 				// Do not submit the form
 				event.preventDefault();
-			break;
-
-			// Close the results
-			case keymap.ESC:
-				phpbb.search.closeResults($input, $container);
 			break;
 
 			// Navigate the results
