@@ -250,8 +250,7 @@ class session
 			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
-				// check IPv4 first, the IPv6 is hopefully only going to be used very seldom
-				if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+				if (!filter_var($ip, FILTER_VALIDATE_IP))
 				{
 					// contains invalid data, don't use the forwarded for header
 					$this->forwarded_for = '';
