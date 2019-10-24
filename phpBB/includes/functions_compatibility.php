@@ -623,3 +623,151 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 {
 	return checkdnsrr($host, $type);
 }
+
+/*
+ * Wrapper for inet_ntop()
+ *
+ * Converts a packed internet address to a human readable representation
+ * inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
+ *
+ * @return mixed		false on failure,
+ *					string otherwise
+  *
+ * @deprecated 3.2.9 (To be removed: 4.0.0)
+ */
+function phpbb_inet_ntop($in_addr)
+{
+	$in_addr = bin2hex($in_addr);
+
+	switch (strlen($in_addr))
+	{
+		case 8:
+			return implode('.', array_map('hexdec', str_split($in_addr, 2)));
+
+		case 32:
+			if (substr($in_addr, 0, 24) === '00000000000000000000ffff')
+			{
+				return phpbb_inet_ntop(pack('H*', substr($in_addr, 24)));
+			}
+
+			$parts = str_split($in_addr, 4);
+			$parts = preg_replace('/^0+(?!$)/', '', $parts);
+			$ret = implode(':', $parts);
+
+			$matches = array();
+			preg_match_all('/(?<=:|^)(?::?0){2,}/', $ret, $matches, PREG_OFFSET_CAPTURE);
+			$matches = $matches[0];
+
+			if (empty($matches))
+			{
+				return $ret;
+			}
+
+			$longest_match = '';
+			$longest_match_offset = 0;
+			foreach ($matches as $match)
+			{
+				if (strlen($match[0]) > strlen($longest_match))
+				{
+					$longest_match = $match[0];
+					$longest_match_offset = $match[1];
+				}
+			}
+
+			$ret = substr_replace($ret, '', $longest_match_offset, strlen($longest_match));
+
+			if ($longest_match_offset == strlen($ret))
+			{
+				$ret .= ':';
+			}
+
+			if ($longest_match_offset == 0)
+			{
+				$ret = ':' . $ret;
+			}
+
+			return $ret;
+
+		default:
+			return false;
+	}
+}
+
+/**
+ * Wrapper for inet_pton()
+ *
+ * Converts a human readable IP address to its packed in_addr representation
+ * inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $address	A human readable IPv4 or IPv6 address.
+ *
+ * @return mixed		false if address is invalid,
+ *					in_addr representation of the given address otherwise (string)
+ *
+ * @deprecated 3.2.9 (To be removed: 4.0.0)
+ */
+function phpbb_inet_pton($address)
+{
+	$ret = '';
+	if (preg_match(get_preg_expression('ipv4'), $address))
+	{
+		foreach (explode('.', $address) as $part)
+		{
+			$ret .= ($part <= 0xF ? '0' : '') . dechex($part);
+		}
+
+		return pack('H*', $ret);
+	}
+
+	if (preg_match(get_preg_expression('ipv6'), $address))
+	{
+		$parts = explode(':', $address);
+		$missing_parts = 8 - count($parts) + 1;
+
+		if (substr($address, 0, 2) === '::')
+		{
+			++$missing_parts;
+		}
+
+		if (substr($address, -2) === '::')
+		{
+			++$missing_parts;
+		}
+
+		$embedded_ipv4 = false;
+		$last_part = end($parts);
+
+		if (preg_match(get_preg_expression('ipv4'), $last_part))
+		{
+			$parts[count($parts) - 1] = '';
+			$last_part = phpbb_inet_pton($last_part);
+			$embedded_ipv4 = true;
+			--$missing_parts;
+		}
+
+		foreach ($parts as $i => $part)
+		{
+			if (strlen($part))
+			{
+				$ret .= str_pad($part, 4, '0', STR_PAD_LEFT);
+			}
+			else if ($i && $i < count($parts) - 1)
+			{
+				$ret .= str_repeat('0000', $missing_parts);
+			}
+		}
+
+		$ret = pack('H*', $ret);
+
+		if ($embedded_ipv4)
+		{
+			$ret .= $last_part;
+		}
+
+		return $ret;
+	}
+
+	return false;
+}
