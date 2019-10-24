@@ -635,7 +635,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
  * @return mixed		false on failure,
  *					string otherwise
   *
- * @deprecated 3.2.9 (To be removed: 4.0.0)
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
  */
 function phpbb_inet_ntop($in_addr)
 {
@@ -706,7 +706,7 @@ function phpbb_inet_ntop($in_addr)
  * @return mixed		false if address is invalid,
  *					in_addr representation of the given address otherwise (string)
  *
- * @deprecated 3.2.9 (To be removed: 4.0.0)
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
  */
 function phpbb_inet_pton($address)
 {
