@@ -311,49 +311,17 @@ class session
 
 		foreach ($ips as $ip)
 		{
-			if (function_exists('phpbb_ip_normalise'))
+			// Normalise IP address
+			$ip = phpbb_ip_normalise($ip);
+
+			if ($ip === false)
 			{
-				// Normalise IP address
-				$ip = phpbb_ip_normalise($ip);
-
-				if (empty($ip))
-				{
-					// IP address is invalid.
-					break;
-				}
-
-				// IP address is valid.
-				$this->ip = $ip;
-
-				// Skip legacy code.
-				continue;
-			}
-
-			if (preg_match(get_preg_expression('ipv4'), $ip))
-			{
-				$this->ip = $ip;
-			}
-			else if (preg_match(get_preg_expression('ipv6'), $ip))
-			{
-				// Quick check for IPv4-mapped address in IPv6
-				if (stripos($ip, '::ffff:') === 0)
-				{
-					$ipv4 = substr($ip, 7);
-
-					if (preg_match(get_preg_expression('ipv4'), $ipv4))
-					{
-						$ip = $ipv4;
-					}
-				}
-
-				$this->ip = $ip;
-			}
-			else
-			{
-				// We want to use the last valid address in the chain
-				// Leave foreach loop when address is invalid
+				// IP address is invalid.
 				break;
 			}
+
+			// IP address is valid.
+			$this->ip = $ip;
 		}
 
 		$this->load = false;
