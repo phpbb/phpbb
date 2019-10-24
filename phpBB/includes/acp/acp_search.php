@@ -300,55 +300,12 @@ class acp_search
 			switch ($action)
 			{
 				case 'delete':
-					if (method_exists($this->search, 'delete_index'))
+					// pass a reference to myself so the $search object can make use of save_state() and attributes
+					if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false)))
 					{
-						// pass a reference to myself so the $search object can make use of save_state() and attributes
-						if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false)))
-						{
-							$this->state = array('');
-							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-						}
-					}
-					else
-					{
-						$starttime = microtime(true);
-						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
-						{
-							$sql = 'SELECT post_id, poster_id, forum_id
-								FROM ' . POSTS_TABLE . '
-								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
-
-							$ids = $posters = $forum_ids = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$ids[] = $row['post_id'];
-								$posters[] = $row['poster_id'];
-								$forum_ids[] = $row['forum_id'];
-							}
-							$db->sql_freeresult($result);
-							$row_count += count($ids);
-
-							if (count($ids))
-							{
-								$this->search->index_remove($ids, $posters, $forum_ids);
-							}
-
-							$post_counter += $this->batch_size;
-						}
-						// save the current state
+						$this->state = array('');
 						$this->save_state();
-
-						if ($post_counter <= $this->max_post_id)
-						{
-							$totaltime = microtime(true) - $starttime;
-							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
-						}
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 
 					$this->search->tidy();
@@ -361,82 +318,12 @@ class acp_search
 				break;
 
 				case 'create':
-					if (method_exists($this->search, 'create_index'))
+					// pass a reference to acp_search so the $search object can make use of save_state() and attributes
+					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
 					{
-						// pass a reference to acp_search so the $search object can make use of save_state() and attributes
-						if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
-						{
-							$this->state = array('');
-							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-						}
-					}
-					else
-					{
-						$sql = 'SELECT forum_id, enable_indexing
-							FROM ' . FORUMS_TABLE;
-						$result = $db->sql_query($sql, 3600);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
-						}
-						$db->sql_freeresult($result);
-
-						$starttime = microtime(true);
-						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
-						{
-							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-								FROM ' . POSTS_TABLE . '
-								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
-
-							$buffer = $db->sql_buffer_nested_transactions();
-
-							if ($buffer)
-							{
-								$rows = $db->sql_fetchrowset($result);
-								$rows[] = false; // indicate end of array for while loop below
-
-								$db->sql_freeresult($result);
-							}
-
-							$i = 0;
-							while ($row = ($buffer ? $rows[$i++] : $db->sql_fetchrow($result)))
-							{
-								// Indexing enabled for this forum
-								if (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']])
-								{
-									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
-								}
-								$row_count++;
-							}
-							if (!$buffer)
-							{
-								$db->sql_freeresult($result);
-							}
-
-							$post_counter += $this->batch_size;
-						}
-						// save the current state
+						$this->state = array('');
 						$this->save_state();
-
-						// pretend the number of posts was as big as the number of ids we indexed so far
-						// just an estimation as it includes deleted posts
-						$num_posts = $config['num_posts'];
-						$config['num_posts'] = min($config['num_posts'], $post_counter);
-						$this->search->tidy();
-						$config['num_posts'] = $num_posts;
-
-						if ($post_counter <= $this->max_post_id)
-						{
-							$totaltime = microtime(true) - $starttime;
-							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
-						}
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 
 					$this->search->tidy();

@@ -1670,6 +1670,78 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function create_index($acp_module, $u_action)
+	{
+		$sql = 'SELECT forum_id, enable_indexing
+			FROM ' . FORUMS_TABLE;
+		$result = $this->db->sql_query($sql, 3600);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
+		}
+		$this->db->sql_freeresult($result);
+
+		$starttime = microtime(true);
+		$row_count = 0;
+		$post_counter = $acp_module->state[2];
+		while (still_on_time() && $post_counter <= $acp_module->max_post_id)
+		{
+			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
+				FROM ' . POSTS_TABLE . '
+				WHERE post_id >= ' . (int) ($post_counter + 1) . '
+					AND post_id <= ' . (int) ($post_counter + $acp_module->batch_size);
+			$result = $this->db->sql_query($sql);
+
+			$buffer = $this->db->sql_buffer_nested_transactions();
+
+			if ($buffer)
+			{
+				$rows = $this->db->sql_fetchrowset($result);
+				$rows[] = false; // indicate end of array for while loop below
+
+				$this->db->sql_freeresult($result);
+			}
+
+			$i = 0;
+			while ($row = ($buffer ? $rows[$i++] : $this->db->sql_fetchrow($result)))
+			{
+				// Indexing enabled for this forum
+				if (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']])
+				{
+					$this->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+				}
+				$row_count++;
+			}
+			if (!$buffer)
+			{
+				$this->db->sql_freeresult($result);
+			}
+
+			$post_counter += $acp_module->batch_size;
+		}
+		// save the current state
+		$acp_module->save_state();
+
+		// pretend the number of posts was as big as the number of ids we indexed so far
+		// just an estimation as it includes deleted posts
+		$num_posts = $this->config['num_posts'];
+		$this->config['num_posts'] = min($this->config['num_posts'], $post_counter);
+		$this->tidy();
+		$this->config['num_posts'] = $num_posts;
+
+		if ($post_counter <= $acp_module->max_post_id)
+		{
+			$totaltime = microtime(true) - $starttime;
+			$rows_per_second = $row_count / $totaltime;
+			meta_refresh(1, $u_action);
+			trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function delete_index($acp_module, $u_action)
 	{
 		$sql_queries = [];
@@ -1738,7 +1810,7 @@ class fulltext_native extends base implements search_backend_interface
 			$this->user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
 			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
 	}
-	
+
 	/**
 	 * Computes the stats and store them in the $this->stats associative array
 	 */

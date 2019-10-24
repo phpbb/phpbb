@@ -125,8 +125,7 @@ interface search_backend_interface
 	*
 	* @return string|bool error string is returned incase of errors otherwise false
 	*/
-	// This method isn't present in fulltext_native, because it's implementation is hardcoded in acp_search
-	//public function create_index($acp_module, $u_action);
+	public function create_index($acp_module, $u_action);
 
 	/**
 	* Drop fulltext index
