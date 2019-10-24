@@ -2987,16 +2987,17 @@ function phpbb_ip_normalise(string $address)
 {
 	$ip_normalised = false;
 
-	if(filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+	if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
 	{
 		$ip_normalised = $address;
 	}
-	else if	(filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+	else if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
 	{
 		$ip_normalised = inet_ntop(inet_pton($address));
 
 		// If is ipv4
-		if(stripos($ip_normalised, '::ffff:') === 0) {
+		if (stripos($ip_normalised, '::ffff:') === 0)
+		{
 			$ip_normalised = substr($ip_normalised, 7);
 		}
 	}
