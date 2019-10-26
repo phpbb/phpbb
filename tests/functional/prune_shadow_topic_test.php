@@ -77,7 +77,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Prune Shadow'], $this->post['topic_id'], 'Re: Prune Shadow #1-#2', 'This is a test post posted by the testing framework.');
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Prune Shadow #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Prune Shadow #1-#2'] = (int) $post2['post_id'];
