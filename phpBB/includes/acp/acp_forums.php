@@ -1423,8 +1423,8 @@ class acp_forums
 		* This event may be triggered, when a forum is deleted
 		*
 		* @event core.acp_manage_forums_move_children
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
@@ -1529,8 +1529,8 @@ class acp_forums
 		* Event when we move content from one forum to another
 		*
 		* @event core.acp_manage_forums_move_content
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	bool	sync		Shall we sync the "to"-forum's data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key. If this array is not empty,
@@ -1580,8 +1580,8 @@ class acp_forums
 		 * Event when content has been moved from one forum to another
 		 *
 		 * @event core.acp_manage_forums_move_content_after
-		 * @var	int		from_id		If of the current parent forum
-		 * @var	int		to_id		If of the new parent forum
+		 * @var	int		from_id		Id of the current parent forum
+		 * @var	int		to_id		Id of the new parent forum
 		 * @var	bool	sync		Shall we sync the "to"-forum's data
 		 *
 		 * @since 3.2.9-RC1
