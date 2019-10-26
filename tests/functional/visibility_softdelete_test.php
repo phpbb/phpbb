@@ -97,7 +97,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Soft Delete #1'], $post['topic_id'], 'Re: Soft Delete Topic #1-#2', 'This is a test post posted by the testing framework.');
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Soft Delete Topic #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Soft Delete Topic #1-#2'] = (int) $post2['post_id'];
@@ -114,7 +114,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 		// Test creating another reply
 		$post3 = $this->create_post($this->data['forums']['Soft Delete #1'], $post['topic_id'], 'Re: Soft Delete Topic #1-#3', 'This is another test post posted by the testing framework.');
-		$crawler = self::request('GET', "viewtopic.php?t={$post3['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post3['post_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Soft Delete Topic #1-#3', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Soft Delete Topic #1-#3'] = (int) $post3['post_id'];

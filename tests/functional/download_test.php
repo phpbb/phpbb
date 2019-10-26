@@ -55,7 +55,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Download #1'], $post['topic_id'], 'Re: Download Topic #1-#2', 'This is a test post posted by the testing framework.', array('upload_files' => 1));
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Download Topic #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Download Topic #1-#2'] = (int) $post2['post_id'];
