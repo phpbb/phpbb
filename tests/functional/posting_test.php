@@ -29,7 +29,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// Test creating a reply with bbcode
 		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test [b]post[/b] posted by the testing framework.');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test quoting a message
@@ -161,7 +161,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		{
 			$this->set_quote_depth($quote_depth);
 
-			$post = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
+			$post = $this->create_post(2, $topic['topic_id'], "Re: Test Topic 1#$quote_depth", $text);
 			$url  = "viewtopic.php?p={$post['post_id']}&sid={$this->sid}";
 
 			$crawler = self::request('GET', $url);

@@ -118,7 +118,7 @@
 
 				<!-- EVENT mcp_topic_postrow_post_details_before -->
 				<p class="author">
-					<a href="#pr{postrow.POST_ID}" title="{postrow.MINI_POST}">
+					<a href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
 						<i class="icon fa-file fa-fw icon-lightgray icon-tiny" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
 					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} {% EVENT mcp_topic_post_author_full_prepend %}<strong>{postrow.POST_AUTHOR_FULL}</strong>{% EVENT mcp_topic_post_author_full_append %}<!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF -->
 				</p>
