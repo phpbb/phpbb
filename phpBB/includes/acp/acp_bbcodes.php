@@ -211,11 +211,6 @@ class acp_bbcodes
 						$test = $data['bbcode_tag'];
 					}
 
-					if (!preg_match('%\\[' . $test . '[^]]*].*?\\[/' . $test . ']%s', $bbcode_match))
-					{
-						trigger_error($user->lang['BBCODE_OPEN_ENDED_TAG'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					if (strlen($data['bbcode_tag']) > 16)
 					{
 						trigger_error($user->lang['BBCODE_TAG_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
