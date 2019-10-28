@@ -110,7 +110,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
 		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
 		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
-		'size'  => '<span style="font-size: {FONTSIZE}%; line-height: normal"><xsl:apply-templates/></span>',
+		'size'	=> '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
 		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
 		'email' => '<a>
 			<xsl:attribute name="href">

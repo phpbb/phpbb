@@ -537,6 +537,7 @@ class acp_prune
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ug.user_pending = 0
+					AND ug.group_leader = 0
 					AND u.user_id = ug.user_id
 					' . (!empty($user_ids) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '');
 			$result = $db->sql_query($sql);

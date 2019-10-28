@@ -1675,7 +1675,7 @@ switch ($mode)
 			}
 
 			// do we need to display contact fields as such
-			$use_contact_fields = false;
+			$use_contact_fields = true;
 
 			/**
 			 * Modify list of users before member row is created

@@ -28,10 +28,16 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 
 	protected function setUp()
 	{
+		global $cache, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+
 		parent::setUp();
 
+		$cache = new \phpbb\cache\driver\file();
+		$cache->purge();
 		$this->db = $this->new_dbal();
-		$this->user = new phpbb_mock_user;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$this->user = new phpbb\user($language, '\phpbb\datetime');
 		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
@@ -47,7 +53,6 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 		$config['email_check_mx'] = $check_mx;
 		$db = $this->db;
 		$user = $this->user;
-		$user->optionset('banned_users', array('banned@example.com'));
 	}
 
 	public static function validate_user_email_data()
@@ -58,7 +63,8 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 			array('valid_complex', array(), "'%$~test@example.com"),
 			array('invalid', array('EMAIL_INVALID'), 'fööbar@example.com'),
 			array('taken', array('EMAIL_TAKEN'), 'admin@example.com'),
-			array('banned', array('EMAIL_BANNED'), 'banned@example.com'),
+			array('banned', ['just because'], 'banned2@example.com'),
+			array('banned', ['EMAIL_BANNED'], 'banned@example.com')
 		);
 	}
 

@@ -52,9 +52,29 @@ function generate_smilies($mode, $forum_id)
 
 		page_header($user->lang['SMILIES']);
 
-		$sql = 'SELECT COUNT(smiley_id) AS item_count
-			FROM ' . SMILIES_TABLE . '
-			GROUP BY smiley_url';
+		$sql_ary = [
+			'SELECT'	=> 'COUNT(s.smiley_id) AS item_count',
+			'FROM'		=> [
+				SMILIES_TABLE => 's',
+			],
+			'GROUP_BY'	=> 's.smiley_url',
+		];
+
+		/**
+		* Modify SQL query that fetches the total number of smilies in window mode
+		*
+		* @event core.generate_smilies_count_sql_before
+		* @var int		forum_id	Forum where smilies are generated
+		* @var array	sql_ary		Array with the SQL query
+		* @since 3.2.9-RC1
+		*/
+		$vars = [
+			'forum_id',
+			'sql_ary',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.generate_smilies_count_sql_before', compact($vars)));
+
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql, 3600);
 
 		$smiley_count = 0;
@@ -113,6 +133,22 @@ function generate_smilies($mode, $forum_id)
 		}
 	}
 	$db->sql_freeresult($result);
+
+	/**
+	* Modify smilies before they are assigned to the template
+	*
+	* @event core.generate_smilies_modify_rowset
+	* @var string	mode		Smiley mode, either window or inline
+	* @var int		forum_id	Forum where smilies are generated
+	* @var array	smilies		Smiley rows fetched from the database
+	* @since 3.2.9-RC1
+	*/
+	$vars = [
+		'mode',
+		'forum_id',
+		'smilies',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_modify_rowset', compact($vars)));
 
 	if (count($smilies))
 	{

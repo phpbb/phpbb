@@ -28,8 +28,13 @@
 		<p>
 			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
 			{% EVENT memberlist_body_group_rank_before %}
-			<!-- IF RANK_IMG -->{RANK_IMG}<!-- ENDIF -->
-			<!-- IF GROUP_RANK -->{GROUP_RANK}<!-- ENDIF -->
+			{% if RANK_IMG %}{{ RANK_IMG }}{% endif %}
+			{% if GROUP_RANK %}
+				{% if not RANK_IMG %}
+					{{ lang('GROUP_RANK') ~ lang('COLON') }}
+				{% endif %}
+				{{ GROUP_RANK }}
+			{% endif %}
 			{% EVENT memberlist_body_group_rank_after %}
 		</p>
 	<!-- ELSE -->
@@ -120,7 +125,13 @@
 	<tr class="<!-- IF memberrow.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF memberrow.S_INACTIVE --> inactive<!-- ENDIF -->">
 		<td><span class="rank-img"><!-- EVENT memberlist_body_rank_prepend --><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --><!-- EVENT memberlist_body_rank_append --></span><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input type="checkbox" name="user" value="{memberrow.USERNAME}" /> <!-- ENDIF --><!-- EVENT memberlist_body_username_prepend -->{memberrow.USERNAME_FULL}<!-- IF memberrow.S_INACTIVE --> ({L_INACTIVE})<!-- ENDIF --><!-- EVENT memberlist_body_username_append --><!-- IF S_IN_SEARCH_POPUP --><br />[&nbsp;<a href="#" onclick="insert_single_user('#results', '{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="posts"><!-- IF memberrow.POSTS and S_DISPLAY_SEARCH --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
-		<td class="info"><!-- BEGIN custom_fields --><div>{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td>
+		<td class="info">
+			{%- for field in memberrow.custom_fields -%}
+				<div>{% if field.S_PROFILE_CONTACT %}<a href="{{ field.PROFILE_FIELD_CONTACT }}">{% endif %}{{ field.PROFILE_FIELD_VALUE }}{% if field.S_PROFILE_CONTACT %}</a>{% endif %}</div>
+			{%- else -%}
+				&nbsp;
+			{%- endfor -%}
+		</td>
 		<td>{memberrow.JOINED}</td>
 		<!-- IF S_VIEWONLINE --><td>{memberrow.LAST_ACTIVE}&nbsp;</td><!-- ENDIF -->
 		{% EVENT memberlist_body_memberrow_after %}

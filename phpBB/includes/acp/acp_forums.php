@@ -986,10 +986,20 @@ class acp_forums
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
-		// No Emojis
+		/**
+		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
+		 * Using their Numeric Character Reference's Hexadecimal notation.
+		 */
+		$forum_data_ary['forum_name'] = utf8_encode_ucr($forum_data_ary['forum_name']);
+
+		/**
+		 * This should never happen again.
+		 * Leaving the fallback here just in case there will be the need of it.
+		 */
 		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
 		{
 			$character_list = implode('<br>', $matches[0]);
+
 			$errors[] = $user->lang('FORUM_NAME_EMOJI', $character_list);
 		}
 
@@ -1423,8 +1433,8 @@ class acp_forums
 		* This event may be triggered, when a forum is deleted
 		*
 		* @event core.acp_manage_forums_move_children
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
@@ -1529,8 +1539,8 @@ class acp_forums
 		* Event when we move content from one forum to another
 		*
 		* @event core.acp_manage_forums_move_content
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	bool	sync		Shall we sync the "to"-forum's data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key. If this array is not empty,
@@ -1575,6 +1585,19 @@ class acp_forums
 				WHERE forum_id = $from_id";
 			$db->sql_query($sql);
 		}
+
+		/**
+		 * Event when content has been moved from one forum to another
+		 *
+		 * @event core.acp_manage_forums_move_content_after
+		 * @var	int		from_id		Id of the current parent forum
+		 * @var	int		to_id		Id of the new parent forum
+		 * @var	bool	sync		Shall we sync the "to"-forum's data
+		 *
+		 * @since 3.2.9-RC1
+		 */
+		$vars = array('from_id', 'to_id', 'sync');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content_after', compact($vars)));
 
 		if ($sync)
 		{

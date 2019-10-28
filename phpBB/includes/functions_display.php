@@ -70,7 +70,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$data = array(
 					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
 					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
-					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time()) : '',
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time(), false) : '',
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
 				);
@@ -355,7 +355,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$data = array(
 					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
 					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
-					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time()) : '',
+					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time(), false) : '',
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
 				);
@@ -548,11 +548,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$last_post_subject = $last_post_subject_truncated = '';
 			}
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
+			$last_post_time_rfc3339 = gmdate(DATE_RFC3339, $row['forum_last_post_time']);
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
 		else
 		{
-			$last_post_subject = $last_post_time = $last_post_url = $last_post_subject_truncated = '';
+			$last_post_subject = $last_post_time = $last_post_time_rfc3339 = $last_post_url = $last_post_subject_truncated = '';
 		}
 
 		// Output moderator listing ... if applicable
@@ -623,6 +624,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'LAST_POST_SUBJECT'		=> $last_post_subject,
 			'LAST_POST_SUBJECT_TRUNCATED'	=> $last_post_subject_truncated,
 			'LAST_POST_TIME'		=> $last_post_time,
+			'LAST_POST_TIME_RFC3339'=> $last_post_time_rfc3339,
 			'LAST_POSTER'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
@@ -1118,7 +1120,6 @@ function display_custom_bbcodes()
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
-			'A_BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('&', '"', "\'", '<', '>'), $row['bbcode_helpline']),
 		);
 
 		/**

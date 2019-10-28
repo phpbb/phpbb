@@ -2044,6 +2044,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'CONTACT_USER'		=> $user_cache[$poster_id]['contact_user'],
 
 		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
+		'POST_DATE_RFC3339'	=> gmdate(DATE_RFC3339, $row['post_time']),
 		'POST_SUBJECT'		=> $row['post_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
@@ -2359,12 +2360,25 @@ if ($s_can_vote || $s_quick_reply)
 		($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
 		($topic_data['topic_status'] == ITEM_LOCKED) ? $qr_hidden_fields['lock_topic'] = 1 : true;
 
-		$template->assign_vars(array(
+		$tpl_ary = [
 			'S_QUICK_REPLY'			=> true,
 			'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
 			'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
 			'SUBJECT'				=> 'Re: ' . censor_text($topic_data['topic_title']),
-		));
+		];
+
+		/**
+		* Event after the quick-reply has been setup
+		*
+		* @event core.viewtopic_modify_quick_reply_template_vars
+		* @var	array	tpl_ary			Array with template data
+		* @var	array	topic_data		Array with topic data
+		* @since 3.2.9-RC1
+		*/
+		$vars = ['tpl_ary', 'topic_data'];
+		extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_quick_reply_template_vars', compact($vars)));
+
+		$template->assign_vars($tpl_ary);
 	}
 }
 // now I have the urge to wash my hands :(

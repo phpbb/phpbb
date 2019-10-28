@@ -216,38 +216,36 @@ class plupload
 	}
 
 	/**
-	* Looks at the list of allowed extensions and generates a string
-	* appropriate for use in configuring plupload with
-	*
-	* @param \phpbb\cache\service $cache
-	* @param string $forum_id The ID of the forum
-	*
-	* @return string
-	*/
+	 * Looks at the list of allowed extensions and generates a string
+	 * appropriate for use in configuring plupload with
+	 *
+	 * @param \phpbb\cache\service	$cache		Cache service object
+	 * @param string				$forum_id	The forum identifier
+	 *
+	 * @return string
+	 */
 	public function generate_filter_string(\phpbb\cache\service $cache, $forum_id)
 	{
+		$groups = [];
+		$filters = [];
+
 		$attach_extensions = $cache->obtain_attach_extensions($forum_id);
 		unset($attach_extensions['_allowed_']);
-		$groups = array();
 
 		// Re-arrange the extension array to $groups[$group_name][]
 		foreach ($attach_extensions as $extension => $extension_info)
 		{
-			if (!isset($groups[$extension_info['group_name']]))
-			{
-				$groups[$extension_info['group_name']] = array();
-			}
-
-			$groups[$extension_info['group_name']][] = $extension;
+			$groups[$extension_info['group_name']]['extensions'][] = $extension;
+			$groups[$extension_info['group_name']]['max_file_size'] = (int) $extension_info['max_filesize'];
 		}
 
-		$filters = array();
-		foreach ($groups as $group => $extensions)
+		foreach ($groups as $group => $group_info)
 		{
 			$filters[] = sprintf(
-				"{title: '%s', extensions: '%s'}",
+				"{title: '%s', extensions: '%s', max_file_size: %s}",
 				addslashes(ucfirst(strtolower($group))),
-				addslashes(implode(',', $extensions))
+				addslashes(implode(',', $group_info['extensions'])),
+				$group_info['max_file_size']
 			);
 		}
 
@@ -276,22 +274,37 @@ class plupload
 	}
 
 	/**
-	* Checks various php.ini values and the maximum file size to determine
-	* the maximum size chunks a file can be split up into for upload
-	*
-	* @return int
-	*/
+	 * Checks various php.ini values to determine the maximum chunk
+	 * size a file should be split into for upload.
+	 *
+	 * The intention is to calculate a value which reflects whatever
+	 * the most restrictive limit is set to.  And to then set the chunk
+	 * size to half that value, to ensure any required transfer overhead
+	 * and POST data remains well within the limit.  Or, if all of the
+	 * limits are set to unlimited, the chunk size will also be unlimited.
+	 *
+	 * @return int
+	 *
+	 * @access public
+	 */
 	public function get_chunk_size()
 	{
-		$max = min(
+		$max = 0;
+
+		$limits = [
+			$this->php_ini->getBytes('memory_limit'),
 			$this->php_ini->getBytes('upload_max_filesize'),
 			$this->php_ini->getBytes('post_max_size'),
-			max(1, $this->php_ini->getBytes('memory_limit')),
-			$this->config['max_filesize']
-		);
+		];
 
-		// Use half of the maximum possible to leave plenty of room for other
-		// POST data.
+		foreach ($limits as $limit_type)
+		{
+			if ($limit_type > 0)
+			{
+				$max = ($max !== 0) ? min($limit_type, $max) : $limit_type;
+			}
+		}
+
 		return floor($max / 2);
 	}
 

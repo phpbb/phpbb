@@ -101,7 +101,7 @@
 										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{L_VIEW_LATEST_POST}</span>
 									</a>
 								<!-- ENDIF -->
-								<br />{forumrow.LAST_POST_TIME}
+								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>
 							<!-- ELSE -->
 							{% if forumrow.U_UNAPPROVED_TOPICS %}
 								{{ lang('TOPIC_UNAPPROVED_FORUM', forumrow.TOPICS) }}

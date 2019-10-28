@@ -835,7 +835,7 @@ class filesystem implements filesystem_interface
 				$current_path = $resolved_path . '/' . $path_part;
 
 				// Resolve symlinks
-				if (is_link($current_path))
+				if (@is_link($current_path))
 				{
 					if (!function_exists('readlink'))
 					{
@@ -872,12 +872,12 @@ class filesystem implements filesystem_interface
 
 					$resolved_path = false;
 				}
-				else if (is_dir($current_path . '/'))
+				else if (@is_dir($current_path . '/'))
 				{
 					$resolved[] = $path_part;
 					$resolved_path = $current_path;
 				}
-				else if (is_file($current_path))
+				else if (@is_file($current_path))
 				{
 					$resolved[] = $path_part;
 					$resolved_path = $current_path;
