@@ -987,24 +987,14 @@ class acp_forums
 		}
 
 		/**
-		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to NCR.
+		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
 		 * Using their Numeric Character Reference's Hexadecimal notation.
-		 * Doesn't interfere with Japanese or Cyrillic etc.
-		 *
-		 * @see https://www.w3.org/TR/xml11/
-		 * @see https://www.opentag.com/xfaq_charrep.htm
 		 */
-		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
-		{
-			foreach ($matches as $key => $emoji)
-			{
-				$forum_data_ary['forum_name'] = str_replace($emoji, utf8_encode_ncr($emoji), $forum_data_ary['forum_name']);
-			}
-		}
+		$forum_data_ary['forum_name'] = utf8_encode_ucr($forum_data_ary['forum_name']);
 
 		/**
 		 * This should never happen again.
-		 * Leaving the fallback hre just in case there will be the need of it.
+		 * Leaving the fallback here just in case there will be the need of it.
 		 */
 		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
 		{
