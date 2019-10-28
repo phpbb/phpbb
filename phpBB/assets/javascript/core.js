@@ -793,6 +793,9 @@ phpbb.search.navigateResults = function($input, $container, $resultContainer) {
 
 					$active.removeClass('active');
 				}
+
+				// Do not change cursor position in the input element
+				event.preventDefault();
 			break;
 		}
 	});
