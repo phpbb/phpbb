@@ -1033,20 +1033,10 @@ if ($submit || $preview || $refresh || $save)
 	}
 
 	/**
-	 * Replace Emojis and other 4bit UTF-8 chars, not allowed by utf8_bin MySql, to NCR.
+	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
 	 * Using their Numeric Character Reference's Hexadecimal notation.
-	 * Doesn't interfere with Japanese or Cyrillic etc.
-	 *
-	 * @see https://www.w3.org/TR/xml11/
-	 * @see https://www.opentag.com/xfaq_charrep.htm
 	 */
-	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
-	{
-		foreach ($matches as $key => $emoji)
-		{
-			$post_data['post_subject'] = str_replace($emoji, utf8_encode_ncr($emoji), $post_data['post_subject']);
-		}
-	}
+	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
 
 	/**
 	 * This should never happen again.
