@@ -1,0 +1,9 @@
+# Twig extensions not needed by the installer
+
+services:
+    template.twig.extensions.icon:
+        class: phpbb\template\twig\extension\icon
+        arguments:
+            - '@user'
+        tags:
+            - { name: twig.extension }

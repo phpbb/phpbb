@@ -67,7 +67,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	 */
 	public function icon(environment $environment, $type, $icon, $title = '', $hidden = false, $classes = '', array $attributes = [])
 	{
-		$type = utf8_strtolower($type);
+		$type = strtolower($type);
 
 		switch ($type)
 		{
@@ -141,16 +141,9 @@ class icon extends \Twig\Extension\AbstractExtension
 		{
 			if ($element->nodeName === 'svg')
 			{
-				$children = [];
-
-				foreach ($element->childNodes as $node)
+				while (isset($element->firstChild))
 				{
-					$children[] = $node;
-				}
-
-				foreach ($children as $child)
-				{
-					$element->parentNode->insertBefore($child, $element);
+					$element->parentNode->insertBefore($element->firstChild, $element);
 				}
 			}
 
