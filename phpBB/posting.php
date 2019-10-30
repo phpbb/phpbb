@@ -1182,7 +1182,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	/**
-	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
+	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
 	 * Using their Numeric Character Reference's Hexadecimal notation.
 	 */
 	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
