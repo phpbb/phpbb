@@ -24,7 +24,7 @@ class phpbb_functions_get_remote_file extends phpbb_test_case
 
 		$hostname = 'version.phpbb.com';
 
-		if (!phpbb_checkdnsrr($hostname, 'A'))
+		if (!checkdnsrr($hostname, 'A'))
 		{
 			$this->markTestSkipped(sprintf(
 				'Could not find a DNS record for hostname %s. ' .
