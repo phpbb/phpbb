@@ -28,7 +28,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$this->lang = $lang = new \phpbb\language\language($lang_loader);
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
-		$this->user->style['style_path'] = 'prosilver';
+		$this->user->style['style_path'] = 'chameleon';
 
 		global $auth, $request, $symfony_request, $user;
 		$user = new phpbb_mock_user();
@@ -106,7 +106,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			]
 		);
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
-		$this->template->set_style();
+
 		$this->template->set_custom_style('tests', [
 			$this->template_path,
 			$phpbb_root_path . 'styles/prosilver/template',
@@ -315,7 +315,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PHONE'	=> 'Phone icon',
 				],
-				'<img class="o-icon png png-phone" src="phpBB/styles/prosilver/theme/icons/png/phone.png" alt="Phone icon" />',
+				'<img class="o-icon png png-phone" src="phpBB/styles/chameleon/theme/icons/png/phone.png" alt="Phone icon" />',
 			],
 			/** PNG: all options */
 			[
@@ -332,7 +332,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<img class="o-icon png png-pencil my-class" src="phpBB/styles/prosilver/theme/icons/png/pencil.png" alt="Pencil icon" data-url="my-test-url/test-page.php?u=2" />',
+				'<img class="o-icon png png-pencil my-class" src="phpBB/styles/chameleon/theme/icons/png/pencil.png" alt="Pencil icon" data-url="my-test-url/test-page.php?u=2" />',
 			],
 			/** SVG: default */
 			[
