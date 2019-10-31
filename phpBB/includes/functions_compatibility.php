@@ -601,3 +601,25 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	return $file;
 }
+
+/**
+* Wrapper for php's checkdnsrr function.
+*
+* @param string $host	Fully-Qualified Domain Name
+* @param string $type	Resource record type to lookup
+*						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
+*						Other types may work or may not work
+*
+* @return mixed		true if entry found,
+*					false if entry not found,
+*					null if this function is not supported by this environment
+*
+* Since null can also be returned, you probably want to compare the result
+* with === true or === false,
+*
+* @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+*/
+function phpbb_checkdnsrr($host, $type = 'MX')
+{
+	return checkdnsrr($host, $type);
+}

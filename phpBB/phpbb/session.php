@@ -1400,7 +1400,7 @@ class session
 
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
-				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
 				{
 					$info = array($dnsbl, $lookup . $ip);
 				}
@@ -1444,7 +1444,7 @@ class session
 		{
 			// One problem here... the return parameter for the "windows" method is different from what
 			// we expect... this may render this check useless...
-			if (phpbb_checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
+			if (checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
 			{
 				return true;
 			}
