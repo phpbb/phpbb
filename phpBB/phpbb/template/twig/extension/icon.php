@@ -125,6 +125,9 @@ class icon extends \Twig\Extension\AbstractExtension
 	 */
 	protected function prepare_svg(\Twig\TemplateWrapper $file)
 	{
+		$code = $file->render();
+		$code = preg_replace( "/<\?xml.+?\?>/", '', $code);
+
 		$doc = new \DOMDocument();
 		$doc->preserveWhiteSpace = false;
 
@@ -132,7 +135,16 @@ class icon extends \Twig\Extension\AbstractExtension
 		 * Suppression is needed as DOMDocument does not like HTML5 and SVGs.
 		 * Options parameter prevents $dom->saveHTML() from adding an <html> element.
 		 */
-		@$doc->loadHTML($file->render(), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+		@$doc->loadHTML($code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+		// Remove any DOCTYPE
+		foreach ($doc->childNodes as $child)
+		{
+			if ($child->nodeType === XML_DOCUMENT_TYPE_NODE)
+			{
+				$child->parentNode->removeChild($child);
+			}
+		}
 
 		$xpath = new \DOMXPath($doc);
 
