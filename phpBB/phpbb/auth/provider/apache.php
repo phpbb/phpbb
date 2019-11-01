@@ -13,34 +13,55 @@
 
 namespace phpbb\auth\provider;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\request\request_interface;
+use phpbb\request\type_cast_helper;
+use phpbb\user;
+
 /**
 * Apache authentication provider for phpBB3
 */
-class apache extends \phpbb\auth\provider\base
+class apache extends base
 {
-	/**
-	* phpBB passwords manager
-	*
-	* @var \phpbb\passwords\manager
-	*/
-	protected $passwords_manager;
+	/** @var config phpBB config */
+	protected $config;
+
+	/** @var driver_interface Database object */
+	protected $db;
+
+	/** @var language Language object */
+	protected $language;
+
+	/** @var request_interface Request object */
+	protected $request;
+
+	/** @var user User object */
+	protected $user;
+
+	/** @var string Relative path to phpBB root */
+	protected $phpbb_root_path;
+
+	/** @var string PHP file extension */
+	protected $php_ext;
 
 	/**
 	 * Apache Authentication Constructor
 	 *
-	 * @param	\phpbb\db\driver\driver_interface 	$db		Database object
-	 * @param	\phpbb\config\config 		$config		Config object
-	 * @param	\phpbb\passwords\manager	$passwords_manager		Passwords Manager object
-	 * @param	\phpbb\request\request 		$request		Request object
-	 * @param	\phpbb\user 			$user		User object
+	 * @param	config 				$config		Config object
+	 * @param	driver_interface 	$db		Database object
+	 * @param	language			$language Language object
+	 * @param	request_interface 	$request		Request object
+	 * @param	user 				$user		User object
 	 * @param	string 				$phpbb_root_path		Relative path to phpBB root
 	 * @param	string 				$php_ext		PHP file extension
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(config $config, driver_interface $db, language $language, request_interface $request, user $user, $phpbb_root_path, $php_ext)
 	{
-		$this->db = $db;
 		$this->config = $config;
-		$this->passwords_manager = $passwords_manager;
+		$this->db = $db;
+		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -52,9 +73,9 @@ class apache extends \phpbb\auth\provider\base
 	 */
 	public function init()
 	{
-		if (!$this->request->is_set('PHP_AUTH_USER', \phpbb\request\request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
+		if (!$this->request->is_set('PHP_AUTH_USER', request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
 		{
-			return $this->user->lang['APACHE_SETUP_BEFORE_USE'];
+			return $this->language->lang('APACHE_SETUP_BEFORE_USE');
 		}
 		return false;
 	}
@@ -83,7 +104,7 @@ class apache extends \phpbb\auth\provider\base
 			);
 		}
 
-		if (!$this->request->is_set('PHP_AUTH_USER', \phpbb\request\request_interface::SERVER))
+		if (!$this->request->is_set('PHP_AUTH_USER', request_interface::SERVER))
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -137,7 +158,7 @@ class apache extends \phpbb\auth\provider\base
 			return array(
 				'status'		=> LOGIN_SUCCESS_CREATE_PROFILE,
 				'error_msg'		=> false,
-				'user_row'		=> $this->user_row($php_auth_user, $php_auth_pw),
+				'user_row'		=> $this->user_row($php_auth_user),
 			);
 		}
 
@@ -154,7 +175,7 @@ class apache extends \phpbb\auth\provider\base
 	 */
 	public function autologin()
 	{
-		if (!$this->request->is_set('PHP_AUTH_USER', \phpbb\request\request_interface::SERVER))
+		if (!$this->request->is_set('PHP_AUTH_USER', request_interface::SERVER))
 		{
 			return array();
 		}
@@ -164,8 +185,8 @@ class apache extends \phpbb\auth\provider\base
 
 		if (!empty($php_auth_user) && !empty($php_auth_pw))
 		{
-			set_var($php_auth_user, $php_auth_user, 'string', true);
-			set_var($php_auth_pw, $php_auth_pw, 'string', true);
+			$type_cast_helper = new type_cast_helper();
+			$type_cast_helper->set_var($php_auth_user, $php_auth_user, 'string', true);
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
@@ -185,7 +206,7 @@ class apache extends \phpbb\auth\provider\base
 			}
 
 			// create the user if he does not exist yet
-			user_add($this->user_row($php_auth_user, $php_auth_pw));
+			user_add($this->user_row($php_auth_user));
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
@@ -208,11 +229,11 @@ class apache extends \phpbb\auth\provider\base
 	 * function in order to create a user
 	 *
 	 * @param 	string	$username 	The username of the new user.
-	 * @param 	string	$password 	The password of the new user.
+	 *
 	 * @return 	array 				Contains data that can be passed directly to
 	 *								the user_add function.
 	 */
-	private function user_row($username, $password)
+	private function user_row($username)
 	{
 		// first retrieve default group id
 		$sql = 'SELECT group_id
@@ -231,7 +252,7 @@ class apache extends \phpbb\auth\provider\base
 		// generate user account data
 		return array(
 			'username'		=> $username,
-			'user_password'	=> $this->passwords_manager->hash($password),
+			'user_password'	=> '',
 			'user_email'	=> '',
 			'group_id'		=> (int) $row['group_id'],
 			'user_type'		=> USER_NORMAL,
@@ -246,7 +267,7 @@ class apache extends \phpbb\auth\provider\base
 	public function validate_session($user)
 	{
 		// Check if PHP_AUTH_USER is set and handle this case
-		if ($this->request->is_set('PHP_AUTH_USER', \phpbb\request\request_interface::SERVER))
+		if ($this->request->is_set('PHP_AUTH_USER', request_interface::SERVER))
 		{
 			$php_auth_user = $this->request->server('PHP_AUTH_USER');
 
