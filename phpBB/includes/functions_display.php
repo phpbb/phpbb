@@ -539,7 +539,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			if ($row['forum_password_last_post'] === '' && $auth->acl_gets('f_read', 'f_list_topics', $row['forum_id_last_post']))
 			{
-				$last_post_subject = censor_text($row['forum_last_post_subject']);
+				$last_post_subject = utf8_decode_ncr(censor_text($row['forum_last_post_subject']));
+
 				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang['ELLIPSIS']);
 			}
 			else
