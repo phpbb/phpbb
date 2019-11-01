@@ -15,14 +15,7 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		if ((version_compare(PHP_VERSION, '5.3.7', '<')))
-		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user_533.xml');
-		}
-		else
-		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
-		}
+		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
 	}
 
 	public function test_login()
@@ -66,14 +59,7 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		$captcha_factory = $phpbb_container->get('captcha.factory');
 
 		$provider = new \phpbb\auth\provider\db($captcha_factory, $config, $db, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			$password_hash = '$2a$10$e01Syh9PbJjUkio66eFuUu4FhCE2nRgG7QPc1JACalsPXcIuG2bbi';
-		}
-		else
-		{
-			$password_hash = '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i';
-		}
+		$password_hash = '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i';
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,
@@ -100,7 +86,6 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 
 		// Check if convert works
 		$login_return = $provider->login('foobar2', 'example');
-		$password_start = (version_compare(PHP_VERSION, '5.3.7', '<')) ? '$2a$10$' : '$2y$10$';
-		$this->assertStringStartsWith($password_start, $login_return['user_row']['user_password']);
+		$this->assertStringStartsWith('$2y$10$', $login_return['user_row']['user_password']);
 	}
 }
