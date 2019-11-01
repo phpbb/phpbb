@@ -29,9 +29,9 @@ services:
     auth.provider.apache:
         class: phpbb\auth\provider\apache
         arguments:
-            - '@dbal.conn'
             - '@config'
-            - '@passwords.manager'
+            - '@dbal.conn'
+            - '@language'
             - '@request'
             - '@user'
             - '%core.root_path%'
