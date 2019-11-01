@@ -623,3 +623,39 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 {
 	return checkdnsrr($host, $type);
 }
+
+/*
+ * Wrapper for inet_ntop()
+ *
+ * Converts a packed internet address to a human readable representation
+ * inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
+ *
+ * @return mixed		false on failure,
+ *					string otherwise
+  *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_inet_ntop($in_addr)
+{
+	return inet_ntop($in_addr);
+}
+
+/**
+ * Wrapper for inet_pton()
+ *
+ * Converts a human readable IP address to its packed in_addr representation
+ * inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $address	A human readable IPv4 or IPv6 address.
+ *
+ * @return mixed		false if address is invalid,
+ *					in_addr representation of the given address otherwise (string)
+ *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_inet_pton($address)
+{
+	return inet_pton($address);
+}
