@@ -1066,36 +1066,6 @@ table.fixed-width-table {
 	}
 }
 
-.lside {
-	display: flex;
-	flex-direction: column;
-}
-
-.lside .table1 {
-	display: table;
-	width: 100%;
-}
-
-.lside .table1:first-child {
-	margin-right: 20px;
-}
-
-@media (min-width: 1025px) {
-	.lside {
-		flex-direction: row;
-	}
-
-	.lside .table1 {
-		flex: 1;
-	}
-
-	.lside .table1:first-child {
-		margin-bottom: 0;
-		margin-right: 20px;
-	}
-}
-
-
 /* General form styles
 ----------------------------------------*/
 fieldset {
