@@ -15,7 +15,7 @@ SLOWTESTS=$1
 
 if [ "$SLOWTESTS" == '1' ]
 then
-	sudo apt-get -y install ldap-utils slapd
+	sudo apt-get -y install ldap-utils slapd php5-ldap
 	echo "extension = ldap.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 	mkdir /tmp/slapd
 	slapd -f travis/ldap/slapd.conf -h ldap://localhost:3389 &
