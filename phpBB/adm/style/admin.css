@@ -728,13 +728,6 @@ td {
 	border-collapse: separate;
 }
 
-@media only screen and (min-width: 1100px), only screen and (min-device-width: 1100px) {
-	.lside .table1 {
-		display: inline-table;
-		width: 49.7%;
-	}
-}
-
 .tabled {
 	width: 25%;
 }
