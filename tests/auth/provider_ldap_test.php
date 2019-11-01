@@ -31,7 +31,7 @@ class phpbb_auth_provider_ldap_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config([
 			'ldap_server'	=> 'localhost',
 			'ldap_port'		=> 3389,
-			'ldap_dn'		=> 'dc=example,dc=com',
+			'ldap_base_dn'	=> 'dc=example,dc=com',
 			'ldap_uid'		=> 'uid',
 			'ldap_email'	=> 'mail',
 		]);
