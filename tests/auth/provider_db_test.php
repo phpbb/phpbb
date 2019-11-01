@@ -52,8 +52,20 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
 
 		$phpbb_container = new phpbb_mock_container_builder();
+		$plugins = new \phpbb\di\service_collection($phpbb_container);
+		$plugins->add('core.captcha.plugins.nogd');
+		$phpbb_container->set(
+			'captcha.factory',
+			new \phpbb\captcha\factory($phpbb_container, $plugins)
+		);
+		$phpbb_container->set(
+			'core.captcha.plugins.nogd',
+			new \phpbb\captcha\plugins\nogd()
+		);
+		/** @var \phpbb\captcha\factory $captcha_factory */
+		$captcha_factory = $phpbb_container->get('captcha.factory');
 
-		$provider = new \phpbb\auth\provider\db($db, $config, $passwords_manager, $request, $user, $phpbb_container, $phpbb_root_path, $phpEx);
+		$provider = new \phpbb\auth\provider\db($captcha_factory, $config, $db, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{
 			$password_hash = '$2a$10$e01Syh9PbJjUkio66eFuUu4FhCE2nRgG7QPc1JACalsPXcIuG2bbi';
