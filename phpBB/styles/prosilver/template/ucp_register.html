@@ -12,16 +12,16 @@
 	}
 </script>
 
-<div class="panel">
-	<div class="inner">
+{% if PROVIDER_TEMPLATE_FILE %}
+	<div class="panel">
+		<div class="inner">
 
-		<h2>{{ SITENAME }} - {{ lang('OAUTH_REGISTRATION') }}</h2>
+			<h2>{{ SITENAME }} - {{ lang('OAUTH_REGISTRATION') }}</h2>
 
-		{% if PROVIDER_TEMPLATE_FILE %}
 			{% include PROVIDER_TEMPLATE_FILE %}
-		{% endif %}
+		</div>
 	</div>
-</div>
+{% endif %}
 
 <form id="register" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
