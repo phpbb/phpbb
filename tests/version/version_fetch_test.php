@@ -42,7 +42,7 @@ class phpbb_version_helper_fetch_test extends phpbb_test_case
 		global $phpbb_root_path, $phpEx;
 		include_once($phpbb_root_path . 'includes/functions.' . $phpEx);
 
-		if (!phpbb_checkdnsrr('version.phpbb.com', 'A'))
+		if (!checkdnsrr('version.phpbb.com', 'A'))
 		{
 			$this->markTestSkipped(sprintf(
 				'Could not find a DNS record for hostname %s. ' .
