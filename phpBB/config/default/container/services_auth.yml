@@ -15,12 +15,12 @@ services:
     auth.provider.db:
         class: phpbb\auth\provider\db
         arguments:
-            - '@dbal.conn'
+            - '@captcha.factory'
             - '@config'
+            - '@dbal.conn'
             - '@passwords.manager'
             - '@request'
             - '@user'
-            - '@service_container'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
