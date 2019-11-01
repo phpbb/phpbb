@@ -1910,7 +1910,7 @@ function phpbb_validate_email($email, $config = null)
 	{
 		list(, $domain) = explode('@', $email);
 
-		if (phpbb_checkdnsrr($domain, 'A') === false && phpbb_checkdnsrr($domain, 'MX') === false)
+		if (checkdnsrr($domain, 'A') === false && checkdnsrr($domain, 'MX') === false)
 		{
 			return 'DOMAIN_NO_MX_RECORD';
 		}
