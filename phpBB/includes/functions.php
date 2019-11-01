@@ -2851,10 +2851,13 @@ function get_preg_expression($mode)
 		// Whoa these look impressive!
 		// The code to generate the following two regular expressions which match valid IPv4/IPv6 addresses
 		// can be found in the develop directory
+
+		// @deprecated
 		case 'ipv4':
 			return '#^(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$#';
 		break;
 
+		// @deprecated
 		case 'ipv6':
 			return '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){0,5}(?:[\dA-F]{1,4}(?::[\dA-F]{1,4})?|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:)|(?:::))$#i';
 		break;
@@ -2980,165 +2983,26 @@ function short_ipv6($ip, $length)
 * @return mixed		false if specified address is not valid,
 *					string otherwise
 */
-function phpbb_ip_normalise($address)
+function phpbb_ip_normalise(string $address)
 {
-	$address = trim($address);
+	$ip_normalised = false;
 
-	if (empty($address) || !is_string($address))
+	if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
 	{
-		return false;
+		$ip_normalised = $address;
+	}
+	else if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+	{
+		$ip_normalised = inet_ntop(inet_pton($address));
+
+		// If is ipv4
+		if (stripos($ip_normalised, '::ffff:') === 0)
+		{
+			$ip_normalised = substr($ip_normalised, 7);
+		}
 	}
 
-	if (preg_match(get_preg_expression('ipv4'), $address))
-	{
-		return $address;
-	}
-
-	return phpbb_inet_ntop(phpbb_inet_pton($address));
-}
-
-/**
-* Wrapper for inet_ntop()
-*
-* Converts a packed internet address to a human readable representation
-* inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
-*
-* @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
-*
-* @return mixed		false on failure,
-*					string otherwise
-*/
-function phpbb_inet_ntop($in_addr)
-{
-	$in_addr = bin2hex($in_addr);
-
-	switch (strlen($in_addr))
-	{
-		case 8:
-			return implode('.', array_map('hexdec', str_split($in_addr, 2)));
-
-		case 32:
-			if (substr($in_addr, 0, 24) === '00000000000000000000ffff')
-			{
-				return phpbb_inet_ntop(pack('H*', substr($in_addr, 24)));
-			}
-
-			$parts = str_split($in_addr, 4);
-			$parts = preg_replace('/^0+(?!$)/', '', $parts);
-			$ret = implode(':', $parts);
-
-			$matches = array();
-			preg_match_all('/(?<=:|^)(?::?0){2,}/', $ret, $matches, PREG_OFFSET_CAPTURE);
-			$matches = $matches[0];
-
-			if (empty($matches))
-			{
-				return $ret;
-			}
-
-			$longest_match = '';
-			$longest_match_offset = 0;
-			foreach ($matches as $match)
-			{
-				if (strlen($match[0]) > strlen($longest_match))
-				{
-					$longest_match = $match[0];
-					$longest_match_offset = $match[1];
-				}
-			}
-
-			$ret = substr_replace($ret, '', $longest_match_offset, strlen($longest_match));
-
-			if ($longest_match_offset == strlen($ret))
-			{
-				$ret .= ':';
-			}
-
-			if ($longest_match_offset == 0)
-			{
-				$ret = ':' . $ret;
-			}
-
-			return $ret;
-
-		default:
-			return false;
-	}
-}
-
-/**
-* Wrapper for inet_pton()
-*
-* Converts a human readable IP address to its packed in_addr representation
-* inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
-*
-* @param string $address	A human readable IPv4 or IPv6 address.
-*
-* @return mixed		false if address is invalid,
-*					in_addr representation of the given address otherwise (string)
-*/
-function phpbb_inet_pton($address)
-{
-	$ret = '';
-	if (preg_match(get_preg_expression('ipv4'), $address))
-	{
-		foreach (explode('.', $address) as $part)
-		{
-			$ret .= ($part <= 0xF ? '0' : '') . dechex($part);
-		}
-
-		return pack('H*', $ret);
-	}
-
-	if (preg_match(get_preg_expression('ipv6'), $address))
-	{
-		$parts = explode(':', $address);
-		$missing_parts = 8 - count($parts) + 1;
-
-		if (substr($address, 0, 2) === '::')
-		{
-			++$missing_parts;
-		}
-
-		if (substr($address, -2) === '::')
-		{
-			++$missing_parts;
-		}
-
-		$embedded_ipv4 = false;
-		$last_part = end($parts);
-
-		if (preg_match(get_preg_expression('ipv4'), $last_part))
-		{
-			$parts[count($parts) - 1] = '';
-			$last_part = phpbb_inet_pton($last_part);
-			$embedded_ipv4 = true;
-			--$missing_parts;
-		}
-
-		foreach ($parts as $i => $part)
-		{
-			if (strlen($part))
-			{
-				$ret .= str_pad($part, 4, '0', STR_PAD_LEFT);
-			}
-			else if ($i && $i < count($parts) - 1)
-			{
-				$ret .= str_repeat('0000', $missing_parts);
-			}
-		}
-
-		$ret = pack('H*', $ret);
-
-		if ($embedded_ipv4)
-		{
-			$ret .= $last_part;
-		}
-
-		return $ret;
-	}
-
-	return false;
+	return $ip_normalised;
 }
 
 // Handler, header and footer
