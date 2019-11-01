@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db\migration\data\v31x;
+namespace phpbb\db\migration\data\v330;
 
 class forums_legend_limit extends \phpbb\db\migration\migration
 {
@@ -22,7 +22,7 @@ class forums_legend_limit extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v31x\v313');
+		return array('\phpbb\db\migration\data\v330\v330b1');
 	}
 
 	public function update_schema()
