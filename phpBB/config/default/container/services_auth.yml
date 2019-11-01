@@ -42,9 +42,9 @@ services:
     auth.provider.ldap:
         class: phpbb\auth\provider\ldap
         arguments:
-            - '@dbal.conn'
             - '@config'
-            - '@passwords.manager'
+            - '@dbal.conn'
+            - '@language'
             - '@user'
         tags:
             - { name: auth.provider }
