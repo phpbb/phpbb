@@ -32,7 +32,6 @@ $auth->acl($user->data);
 $post_id	= $request->variable('p', 0);
 $topic_id	= $request->variable('t', 0);
 $forum_id	= $request->variable('f', 0);
-$draft_id	= $request->variable('d', 0);
 
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
@@ -40,7 +39,7 @@ $load		= (isset($_POST['load'])) ? true : false;
 $confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load || $preview);
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file'])/* || $save*/ || $load || $preview);
 $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
@@ -48,6 +47,12 @@ $mode		= $request->variable('mode', '');
 if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
 {
 	$mode = 'soft_delete';
+}
+
+// handle deletion of draft post
+if (isset($_POST['delete']))
+{
+	$mode = 'delete';
 }
 
 $error = $post_data = array();
@@ -176,7 +181,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.', true);
 	break;
 
 	case 'smilies':
@@ -681,25 +686,7 @@ if ($mode == 'post')
 	$post_data['topic_status']		= ($request->is_set_post('lock_topic') && $auth->acl_gets('m_lock', 'f_user_lock', $forum_id)) ? ITEM_LOCKED : ITEM_UNLOCKED;
 }
 
-$post_data['enable_magic_url'] = $post_data['drafts'] = false;
-
-// User own some drafts?
-if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
-{
-	$sql = 'SELECT draft_id
-		FROM ' . DRAFTS_TABLE . '
-		WHERE user_id = ' . $user->data['user_id'] .
-			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') .
-			(($topic_id) ? ' AND topic_id = ' . (int) $topic_id : '') .
-			(($draft_id) ? " AND draft_id <> $draft_id" : '');
-	$result = $db->sql_query_limit($sql, 1);
-
-	if ($db->sql_fetchrow($result))
-	{
-		$post_data['drafts'] = true;
-	}
-	$db->sql_freeresult($result);
-}
+$post_data['enable_magic_url'] = false;
 
 $check_value = (($post_data['enable_bbcode']+1) << 8) + (($post_data['enable_smilies']+1) << 4) + (($post_data['enable_urls']+1) << 2) + (($post_data['enable_sig']+1) << 1);
 
@@ -729,146 +716,10 @@ $url_status		= ($config['allow_post_links']) ? true : false;
 $flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && $config['allow_post_flash']) ? true : false;
 $quote_status	= true;
 
-// Save Draft
-if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
-{
-	$subject = $request->variable('subject', '', true);
-	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
-	$message = $request->variable('message', '', true);
-
-	if ($subject && $message)
-	{
-		if (confirm_box(true))
-		{
-			$message_parser->message = $message;
-			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
-
-			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'		=> (int) $user->data['user_id'],
-				'topic_id'		=> (int) $topic_id,
-				'forum_id'		=> (int) $forum_id,
-				'save_time'		=> (int) $current_time,
-				'draft_subject'	=> (string) $subject,
-				'draft_message'	=> (string) $message_parser->message)
-			);
-			$db->sql_query($sql);
-
-			$meta_info = ($mode == 'post') ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-			meta_refresh(3, $meta_info);
-
-			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
-			$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
-			$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
-
-			trigger_error($message);
-		}
-		else
-		{
-			$s_hidden_fields = build_hidden_fields(array(
-				'mode'		=> $mode,
-				'save'		=> true,
-				'f'			=> $forum_id,
-				't'			=> $topic_id,
-				'subject'	=> $subject,
-				'message'	=> $message,
-				'attachment_data' => $message_parser->attachment_data,
-				)
-			);
-
-			$hidden_fields = array(
-				'icon_id'			=> 0,
-
-				'disable_bbcode'	=> false,
-				'disable_smilies'	=> false,
-				'disable_magic_url'	=> false,
-				'attach_sig'		=> true,
-				'lock_topic'		=> false,
-
-				'topic_type'		=> POST_NORMAL,
-				'topic_time_limit'	=> 0,
-
-				'poll_title'		=> '',
-				'poll_option_text'	=> '',
-				'poll_max_options'	=> 1,
-				'poll_length'		=> 0,
-				'poll_vote_change'	=> false,
-			);
-
-			foreach ($hidden_fields as $name => $default)
-			{
-				if (!isset($_POST[$name]))
-				{
-					// Don't include it, if its not available
-					unset($hidden_fields[$name]);
-					continue;
-				}
-
-				if (is_bool($default))
-				{
-					// Use the string representation
-					$hidden_fields[$name] = $request->variable($name, '');
-				}
-				else
-				{
-					$hidden_fields[$name] = $request->variable($name, $default);
-				}
-			}
-
-			$s_hidden_fields .= build_hidden_fields($hidden_fields);
-
-			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
-		}
-	}
-	else
-	{
-		if (utf8_clean_string($subject) === '')
-		{
-			$error[] = $user->lang['EMPTY_SUBJECT'];
-		}
-
-		if (utf8_clean_string($message) === '')
-		{
-			$error[] = $user->lang['TOO_FEW_CHARS'];
-		}
-	}
-	unset($subject, $message);
-}
-
-// Load requested Draft
-if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
-{
-	$sql = 'SELECT draft_subject, draft_message
-		FROM ' . DRAFTS_TABLE . "
-		WHERE draft_id = $draft_id
-			AND user_id = " . $user->data['user_id'];
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if ($row)
-	{
-		$post_data['post_subject'] = $row['draft_subject'];
-		$message_parser->message = $row['draft_message'];
-
-		$template->assign_var('S_DRAFT_LOADED', true);
-	}
-	else
-	{
-		$draft_id = 0;
-	}
-}
-
-// Load draft overview
-if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_data['drafts'])
-{
-	load_drafts($topic_id, $forum_id);
-}
-
 /** @var \phpbb\textformatter\utils_interface $bbcode_utils */
 $bbcode_utils = $phpbb_container->get('text_formatter.utils');
 
-if ($submit || $preview || $refresh)
+if ($submit || $preview || $refresh || $save)
 {
 	$post_data['topic_cur_post_id']	= $request->variable('topic_cur_post_id', 0);
 	$post_data['post_subject']		= $request->variable('subject', '', true);
@@ -1347,9 +1198,9 @@ if ($submit || $preview || $refresh)
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_submission_errors', compact($vars)));
 
 	// Store message, sync counters
-	if (!count($error) && $submit)
+	if (!count($error) && ($submit || $save))
 	{
-		if ($submit)
+		if ($submit || $save)
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $post_data['topic_status'];
@@ -1391,6 +1242,15 @@ if ($submit || $preview || $refresh)
 				$post_data['post_edit_locked'] = ITEM_LOCKED;
 			}
 
+			// a draft post is being submitted, so remove draft status and set the correct mode
+			if (!$save && $post_data['post_visibility'] == ITEM_DRAFT)
+			{
+                $post_data['post_visibility'] = false;
+			//	$data_ary['post_time']
+			//	$mode = 'post';
+			}
+
+
 			$data = array(
 				'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 				'topic_first_post_id'	=> (isset($post_data['topic_first_post_id'])) ? (int) $post_data['topic_first_post_id'] : 0,
@@ -1427,6 +1287,12 @@ if ($submit || $preview || $refresh)
 				'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
 				'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
 			);
+
+            // over-ride normal visibility rules for draft posts
+            if ($save)
+			{
+				$data['post_visibility'] = ITEM_DRAFT;
+			}
 
 			if ($mode == 'edit')
 			{
@@ -1476,7 +1342,8 @@ if ($submit || $preview || $refresh)
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_before', compact($vars)));
 
 			// The last parameter tells submit_post if search indexer has to be run
-			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
+            $update_index = !$save &&(($update_message || $update_subject) ? true : false);
+			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, $update_index);
 
 			/**
 			* This event allows you to define errors after the post action is performed
@@ -1527,9 +1394,16 @@ if ($submit || $preview || $refresh)
 				return;
 			}
 
+            if ($save)
+			{
+				meta_refresh(3, $redirect_url);
+				$message = $user->lang['POST_DRAFT_SAVED'];
+				$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+				trigger_error($message);
+			}
 			// Check the permissions for post approval.
 			// Moderators must go through post approval like ordinary users.
-			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
+			else if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
@@ -1805,7 +1679,6 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($c
 }
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
-$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . $request->variable('draft_loaded', $draft_id) . '" />' : '';
 
 if ($mode == 'edit')
 {
@@ -1884,8 +1757,8 @@ $page_data = array(
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
-	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $mode != 'edit') ? true : false,
-	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
+	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && ($mode != 'edit' || $post_data['post_visibility'] == ITEM_DRAFT)) ? true : false,
+	'S_DELETE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['post_visibility'] == ITEM_DRAFT) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 
 	'S_BBCODE_IMG'			=> $img_status,

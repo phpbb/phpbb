@@ -186,15 +186,19 @@
 			<dt class="author">{L_POST_BY_AUTHOR} <!-- EVENT search_results_post_author_username_prepend -->{searchresults.POST_AUTHOR_FULL}<!-- EVENT search_results_post_author_username_append --></dt>
 			<dd class="search-result-date">{searchresults.POST_DATE}</dd>
 			<dd>{L_FORUM}{L_COLON} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></dd>
+        <!-- IF searchresults.TOPIC_REPLIES >= 0 -->
 			<dd>{L_TOPIC}{L_COLON} <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
+	    <!-- ENDIF -->
 			<!-- EVENT search_results_topic_title_after -->
+        <!-- IF not searchresults.U_VIEW_DRAFT -->
 			<dd>{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
 			<dd>{L_VIEWS}{L_COLON} <strong>{searchresults.TOPIC_VIEWS}</strong></dd>
+	    <!-- ENDIF -->
 			<!-- EVENT search_results_postprofile_after -->
 		</dl>
 
 		<div class="postbody">
-			<h3><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></h3>
+			<h3><a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->>{searchresults.POST_SUBJECT}</a></h3>
 			<div class="content">{searchresults.MESSAGE}</div>
 			<!-- EVENT search_results_content_after -->
 		</div>
@@ -203,8 +207,8 @@
 	<!-- IF not searchresults.S_IGNORE_POST -->
 		<ul class="searchresults">
 			<li>
-				<a href="{searchresults.U_VIEW_POST}" class="arrow-{S_CONTENT_FLOW_END}">
-					<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_JUMP_TO_POST}</span>
+				<a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->class="arrow-{S_CONTENT_FLOW_END}">
+					<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span><!-- IF searchresults.U_VIEW_DRAFT -->{L_EDIT_DRAFT}<!-- ELSE -->{L_JUMP_TO_POST}<!-- ENDIF --></span>
 				</a>
 			</li>
 		</ul>

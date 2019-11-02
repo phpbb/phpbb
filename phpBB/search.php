@@ -50,12 +50,18 @@ $sort_dir		= $request->variable('sd', 'd');
 $return_chars	= $request->variable('ch', ($topic_id) ? -1 : 300);
 $search_forum	= $request->variable('fid', array(0));
 
+$original_search_id = $search_id;
+$target_visibility = ITEM_APPROVED;
+
 // We put login boxes for the case if search_id is newposts, egosearch or unreadposts
 // because a guest should be able to log in even if guests search is not permitted
 
 switch ($search_id)
 {
-	// Egosearch is an author search
+	// Egosearch and draftsearch are author searches
+	case 'draftsearch':
+        $target_visibility = ITEM_DRAFT;
+		// deliberate drop-through
 	case 'egosearch':
 		$author_id = $user->data['user_id'];
 		if ($user->data['user_id'] == ANONYMOUS)
@@ -107,7 +113,7 @@ if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($con
 // It is applicable if the configuration setting is non-zero, and the user cannot
 // ignore the flood setting, and the search is a keyword search.
 $interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
-if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch')) && !$auth->acl_get('u_ignoreflood'))
+if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch', 'draftsearch')) && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
@@ -284,9 +290,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	$db->sql_freeresult($result);
 
-	// find out in which forums the user is allowed to view posts
-	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.');
-	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.');
+	// generate sql for the desired forums and post visibility
+	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.', $target_visibility);
+	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.', $target_visibility);
 
 	if ($reset_search_forum)
 	{
@@ -334,6 +340,22 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		// if it is an author search we want to show topics by default
 		$show_results = ($topic_id) ? 'posts' : $request->variable('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+
+   /*     if ($topic_id)
+		{
+			$show_results = 'posts';
+		}
+        else if ($request->variable('sr', ($search_id == 'egosearch') )
+		{
+			$show_results = 'topics';
+		}
+        else
+		{
+			$show_results = 'posts';
+		}
+		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+*/
+
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
@@ -514,6 +536,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			case 'egosearch':
 				$l_search_title = $user->lang['SEARCH_SELF'];
+			break;
+
+			case 'draftsearch':
+				$l_search_title = $user->lang['SEARCH_DRAFTS'];
 			break;
 		}
 
@@ -1211,6 +1237,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
+                'U_VIEW_DRAFT'		=> ($original_search_id == 'draftsearch') ? append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;mode=edit') : '',
+
 			));
 
 			/**

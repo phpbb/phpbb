@@ -79,11 +79,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		// We do the folder moving options here too, for template authors to use...
 		$s_folder_move_options = '';
-		if ($folder_id != PRIVMSGS_NO_BOX && $folder_id != PRIVMSGS_OUTBOX)
+		if ($folder_id != PRIVMSGS_NO_BOX && $folder_id != PRIVMSGS_OUTBOX && $folder_id != PRIVMSGS_DRAFTBOX)
 		{
 			foreach ($folder as $f_id => $folder_ary)
 			{
-				if ($f_id == PRIVMSGS_OUTBOX || $f_id == PRIVMSGS_SENTBOX || $f_id == $folder_id)
+				if ($f_id == PRIVMSGS_OUTBOX || $f_id == PRIVMSGS_SENTBOX || $f_id == PRIVMSGS_DRAFTBOX || $f_id == $folder_id)
 				{
 					continue;
 				}
