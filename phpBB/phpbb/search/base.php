@@ -52,7 +52,8 @@ class base
 	{
 		global $cache;
 
-		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
+	//	if (1)
+			if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
 			return SEARCH_RESULT_NOT_IN_CACHE;

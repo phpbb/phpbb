@@ -1,6 +1,4 @@
 <fieldset class="fields1">
-	<!-- IF not S_SHOW_DRAFTS -->
-
 		<!-- IF S_GROUP_OPTIONS -->
 			<div class="column2">
 				<label for="group_list"><strong>{L_TO_ADD_GROUPS}{L_COLON}</strong></label><br />
@@ -9,9 +7,9 @@
 		<!-- ENDIF -->
 		<!-- IF S_ALLOW_MASS_PM -->
 		<div class="column1">
-			<!-- IF not S_EDIT_POST -->
+			<!-- IF S_SAVE_ALLOWED or not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><label><strong>{L_TO_ADD_MASS}{L_COLON}</strong><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
+				<dt><label><strong><!-- IF S_SAVE_ALLOWED -->{L_TO_ADD_MASS}<!-- ELSE -->{L_TO_MASS}<!-- ENDIF -->{L_COLON}</strong><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
 				<dd class="recipients">
 				<input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" />
 				<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" />
@@ -31,7 +29,7 @@
 					<ul class="recipients">
 						<!-- BEGIN to_recipient -->
 						<li>
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
+							<!-- IF S_SAVE_ALLOWED or not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
 							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}" style="color: {{ to_recipient.COLOUR }}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->
 						</li>
 						<!-- END to_recipient -->
@@ -48,7 +46,7 @@
 					<ul class="recipients">
 						<!-- BEGIN bcc_recipient -->
 						<li>
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
+							<!-- IF S_SAVE_ALLOWED or not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
 							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}" style="color: {{ bcc_recipient.COLOUR }}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->
 						</li>
 						<!-- END bcc_recipient -->
@@ -60,8 +58,8 @@
 		<!-- ELSE -->
 		<div class="column1">
 			<dl>
-				<dt><label for="username_list">{L_TO_ADD}{L_COLON}</label><!-- IF not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
-				<!-- IF not S_EDIT_POST -->
+				<dt><label for="username_list"><!-- IF S_SAVE_ALLOWED -->{L_TO_ADD}<!-- ELSE -->{L_TO}<!-- ENDIF -->{L_COLON}</label><!-- IF S_SAVE_ALLOWED or not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
+				<!-- IF S_SAVE_ALLOWED or not S_EDIT_POST -->
 				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 				<!-- ENDIF -->
 				<!-- IF .to_recipient -->
@@ -70,7 +68,7 @@
 						<!-- BEGIN to_recipient -->
 						<li>
 							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
+							<!-- IF S_SAVE_ALLOWED or not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
 						</li>
 						<!-- END to_recipient -->
 					</dd>
@@ -78,6 +76,4 @@
 			</dl>
 		</div>
 		<!-- ENDIF -->
-
-	<!-- ENDIF -->
 	</fieldset>

@@ -50,12 +50,18 @@ $sort_dir		= $request->variable('sd', 'd');
 $return_chars	= $request->variable('ch', ($topic_id) ? -1 : 300);
 $search_forum	= $request->variable('fid', array(0));
 
+$original_search_id = $search_id;
+$target_visibility = ITEM_APPROVED;
+
 // We put login boxes for the case if search_id is newposts, egosearch or unreadposts
 // because a guest should be able to log in even if guests search is not permitted
 
 switch ($search_id)
 {
-	// Egosearch is an author search
+	// Egosearch and draftsearch are author searches
+	case 'draftsearch':
+        $target_visibility = ITEM_DRAFT;
+		// deliberate drop-through
 	case 'egosearch':
 		$author_id = $user->data['user_id'];
 		if ($user->data['user_id'] == ANONYMOUS)
@@ -107,7 +113,7 @@ if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($con
 // It is applicable if the configuration setting is non-zero, and the user cannot
 // ignore the flood setting, and the search is a keyword search.
 $interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
-if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch')) && !$auth->acl_get('u_ignoreflood'))
+if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'active_topics', 'egosearch', 'draftsearch')) && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
@@ -284,9 +290,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	$db->sql_freeresult($result);
 
-	// find out in which forums the user is allowed to view posts
-	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.');
-	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.');
+	// generate sql for the desired forums and post visibility
+	$m_approve_posts_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('post', $ex_fid_ary, 'p.', $target_visibility);
+	$m_approve_topics_fid_sql = $phpbb_content_visibility->get_global_visibility_sql('topic', $ex_fid_ary, 't.', $target_visibility);
 
 	if ($reset_search_forum)
 	{
@@ -334,6 +340,22 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		// if it is an author search we want to show topics by default
 		$show_results = ($topic_id) ? 'posts' : $request->variable('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+
+   /*     if ($topic_id)
+		{
+			$show_results = 'posts';
+		}
+        else if ($request->variable('sr', ($search_id == 'egosearch') )
+		{
+			$show_results = 'topics';
+		}
+        else
+		{
+			$show_results = 'posts';
+		}
+		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+*/
+
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
@@ -514,6 +536,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			case 'egosearch':
 				$l_search_title = $user->lang['SEARCH_SELF'];
+			break;
+
+			case 'draftsearch':
+				$l_search_title = $user->lang['SEARCH_DRAFTS'];
 			break;
 		}
 
@@ -1186,11 +1212,42 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu', '<span class="posthilit">$1</span>', $row['post_subject']);
 				}
 
+				// logic for displaying edit and delete buttons for the post
+				$s_can_edit_own_post = (($user->data['user_id'] == $poster_id) && 
+										(($row['post_visibility'] == ITEM_DRAFT) || 
+										 ($auth->acl_get('f_edit', $forum_id) && 
+										  $config['edit_time'] && 
+										  ($row['post_time'] <= time() - ($config['edit_time'] * 60)) &&
+										  ($topic_data['topic_status'] != ITEM_LOCKED) &&
+										  !$row['post_edit_locked'])));
+
+				$edit_allowed = ($user->data['is_registered'] && 
+								 $auth->acl_get('m_edit', $forum_id) || 
+								 (($user->data['user_id'] == $poster_id) && 
+								  (($row['post_visibility'] == ITEM_DRAFT) ||
+                                   $s_can_edit_own_post)));
+
+
+				$s_can_delete_own_post = ($auth->acl_get('f_delete', $forum_id) ||
+                                          ($auth->acl_get('f_softdelete', $forum_id) && ($row['post_visibility'] != ITEM_DELETED))) &&
+                                           $config['delete_time'] && 
+										   ($row['post_time'] <= time() - ($config['delete_time'] * 60)) &&
+                                           ($topic_data['topic_status'] != ITEM_LOCKED) &&
+										   !$row['post_edit_locked'];
+
+				$delete_allowed = ($user->data['is_registered'] && 
+								   ($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) ||
+                                   (($user->data['user_id'] == $poster_id) && 
+									($row['post_visibility'] == ITEM_DRAFT) ||
+                                    $s_can_delete_own_post));
+
 				$tpl_ary = array(
 					'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+					'U_EDIT'				=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+					'U_DELETE'				=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
@@ -1210,7 +1267,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
+				'U_VIEW_POST'		=> (!empty($row['post_id']) && ($row['post_visibility'] != ITEM_DRAFT)) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
+                'U_VIEW_DRAFT'		=> ($original_search_id == 'draftsearch') ? append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;mode=edit') : '',
+
 			));
 
 			/**
