@@ -199,21 +199,38 @@
 
 		<div class="postbody">
 			<h3><a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->>{searchresults.POST_SUBJECT}</a></h3>
+    		<!-- DEFINE $SHOW_POST_BUTTONS = (searchresults.U_EDIT or searchresults.U_DELETE) -->
+    		<!-- IF not S_IS_BOT -->
+    			<!-- IF $SHOW_POST_BUTTONS -->
+    				<ul class="post-buttons">
+    					<!-- IF searchresults.U_VIEW_POST -->
+    						<li>
+    							<a href="{searchresults.U_VIEW_POST}" title="{L_VIEW_POST}" class="button button-icon-only">
+    								<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
+    							</a>
+    						</li>
+    					<!-- ENDIF -->
+    					<!-- IF searchresults.U_EDIT -->
+    						<li>
+    							<a href="{searchresults.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
+    								<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
+    							</a>
+    						</li>
+    					<!-- ENDIF -->
+    					<!-- IF searchresults.U_DELETE -->
+    						<li>
+    							<a href="{searchresults.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
+    								<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
+    							</a>
+    						</li>
+    					<!-- ENDIF -->
+    				</ul>
+    			<!-- ENDIF -->
+    		<!-- ENDIF -->
 			<div class="content">{searchresults.MESSAGE}</div>
 			<!-- EVENT search_results_content_after -->
 		</div>
 	<!-- ENDIF -->
-
-	<!-- IF not searchresults.S_IGNORE_POST -->
-		<ul class="searchresults">
-			<li>
-				<a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->class="arrow-{S_CONTENT_FLOW_END}">
-					<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span><!-- IF searchresults.U_VIEW_DRAFT -->{L_EDIT_DRAFT}<!-- ELSE -->{L_JUMP_TO_POST}<!-- ENDIF --></span>
-				</a>
-			</li>
-		</ul>
-	<!-- ENDIF -->
-
 			</div>
 		</div>
 		<!-- EVENT search_results_post_after -->

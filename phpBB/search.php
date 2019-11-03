@@ -1212,11 +1212,42 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu', '<span class="posthilit">$1</span>', $row['post_subject']);
 				}
 
+				// logic for displaying edit and delete buttons for the post
+				$s_can_edit_own_post = (($user->data['user_id'] == $poster_id) && 
+										(($row['post_visibility'] == ITEM_DRAFT) || 
+										 ($auth->acl_get('f_edit', $forum_id) && 
+										  $config['edit_time'] && 
+										  ($row['post_time'] <= time() - ($config['edit_time'] * 60)) &&
+										  ($topic_data['topic_status'] != ITEM_LOCKED) &&
+										  !$row['post_edit_locked'])));
+
+				$edit_allowed = ($user->data['is_registered'] && 
+								 $auth->acl_get('m_edit', $forum_id) || 
+								 (($user->data['user_id'] == $poster_id) && 
+								  (($row['post_visibility'] == ITEM_DRAFT) ||
+                                   $s_can_edit_own_post)));
+
+
+				$s_can_delete_own_post = ($auth->acl_get('f_delete', $forum_id) ||
+                                          ($auth->acl_get('f_softdelete', $forum_id) && ($row['post_visibility'] != ITEM_DELETED))) &&
+                                           $config['delete_time'] && 
+										   ($row['post_time'] <= time() - ($config['delete_time'] * 60)) &&
+                                           ($topic_data['topic_status'] != ITEM_LOCKED) &&
+										   !$row['post_edit_locked'];
+
+				$delete_allowed = ($user->data['is_registered'] && 
+								   ($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) ||
+                                   (($user->data['user_id'] == $poster_id) && 
+									($row['post_visibility'] == ITEM_DRAFT) ||
+                                    $s_can_delete_own_post));
+
 				$tpl_ary = array(
 					'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+					'U_EDIT'				=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+					'U_DELETE'				=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
@@ -1236,7 +1267,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
+				'U_VIEW_POST'		=> (!empty($row['post_id']) && ($row['post_visibility'] != ITEM_DRAFT)) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
                 'U_VIEW_DRAFT'		=> ($original_search_id == 'draftsearch') ? append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;mode=edit') : '',
 
 			));

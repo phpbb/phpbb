@@ -173,6 +173,7 @@ $lang = array_merge($lang, array(
 	'DELETE_MESSAGE'			=> 'Delete message',
 	'DELETE_MESSAGE_CONFIRM'	=> 'Are you sure you want to delete this private message?',
 	'DELETE_MESSAGES_IN_FOLDER'	=> 'Delete all messages within removed folder',
+	'DELETE_PM'					=> 'Delete message',
 	'DELETE_RULE'				=> 'Delete rule',
 	'DELETE_RULE_CONFIRM'		=> 'Are you sure you want to delete this rule?',
 	'DEMOTE_SELECTED'			=> 'Demote selected',
@@ -181,6 +182,7 @@ $lang = array_merge($lang, array(
 	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered email domain has no valid MX record.',
 	'DOWNLOADS'					=> 'Downloads',
 
+	'EDIT_PM'					=> 'Edit message',
 	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
 	'EMAIL_REMIND'				=> 'This must be the email address associated with your account. If you have not changed this via your user control panel then it is the email address you registered your account with.',
 	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use.',

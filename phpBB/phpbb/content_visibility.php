@@ -386,7 +386,8 @@ class content_visibility
 		// If user has moderator permissions, add everything in the moderated forums (but not for draftsearch)
 		if (($visibility == ITEM_APPROVED) && count($approve_forums))
 		{
-			$where_sqls[] = $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . '
+			AND ' . $table_alias . $mode . '_visibility <> ' . ITEM_DRAFT . ')';
 		}
 
 		return '(' . implode(' OR ', $where_sqls) . ')';
