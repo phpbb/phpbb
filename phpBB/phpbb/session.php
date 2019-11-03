@@ -954,8 +954,6 @@ class session
 	{
 		global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
-		$batch_size = 10;
-
 		if (!$this->time_now)
 		{
 			$this->time_now = time();
@@ -968,14 +966,21 @@ class session
 		$db->sql_query($sql);
 
 		// Get expired sessions, only most recent for each user
-		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
-			GROUP BY session_user_id, session_page';
-		$result = $db->sql_query_limit($sql, $batch_size);
+		// Inner SELECT gets most recent expired sessions for unique session_user_id
+		// Outer SELECT gets session_page for them
+		$sql = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
+			FROM ' . SESSIONS_TABLE . ' AS s1
+			INNER JOIN (
+				SELECT session_user_id, MAX(session_time) AS recent_time
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time < ' . ($this->time_now - (int) $config['session_length']) . '
+				GROUP BY session_user_id
+			) AS s2
+			ON s1.session_user_id = s2.session_user_id
+				AND s1.session_time = s2.recent_time';
+		$result = $db->sql_query($sql);
 
 		$del_user_id = array();
-		$del_sessions = 0;
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -985,7 +990,6 @@ class session
 			$db->sql_query($sql);
 
 			$del_user_id[] = (int) $row['session_user_id'];
-			$del_sessions++;
 		}
 		$db->sql_freeresult($result);
 
@@ -998,28 +1002,24 @@ class session
 			$db->sql_query($sql);
 		}
 
-		if ($del_sessions < $batch_size)
+		// Update gc timer
+		$config->set('session_last_gc', $this->time_now, false);
+
+		if ($config['max_autologin_time'])
 		{
-			// Less than 10 users, update gc timer ... else we want gc
-			// called again to delete other sessions
-			$config->set('session_last_gc', $this->time_now, false);
-
-			if ($config['max_autologin_time'])
-			{
-				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-				$db->sql_query($sql);
-			}
-
-			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			/* @var $captcha_factory \phpbb\captcha\factory */
-			$captcha_factory = $phpbb_container->get('captcha.factory');
-			$captcha_factory->garbage_collect($config['captcha_plugin']);
-
-			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
-				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
 			$db->sql_query($sql);
 		}
+
+		// only called from CRON; should be a safe workaround until the infrastructure gets going
+		/* @var $captcha_factory \phpbb\captcha\factory */
+		$captcha_factory = $phpbb_container->get('captcha.factory');
+		$captcha_factory->garbage_collect($config['captcha_plugin']);
+
+		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+			WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
+		$db->sql_query($sql);
 
 		/**
 		* Event to trigger extension on session_gc
