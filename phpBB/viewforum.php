@@ -900,7 +900,7 @@ if (count($topic_list))
 
 		// Replies
 		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $topic_forum_id) - 1;
-		//correct for case of unapproved topic visible to poster - a bit dirty but efficient
+		// Correction for case of unapproved topic visible to poster
 		if ($replies < 0)
 		{
 			$replies = 0;
