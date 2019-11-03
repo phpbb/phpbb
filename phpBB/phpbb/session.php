@@ -959,48 +959,47 @@ class session
 			$this->time_now = time();
 		}
 
-		// Firstly, delete guest sessions
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . ANONYMOUS . '
-				AND session_time < ' . (int) ($this->time_now - $config['session_length']);
-		$db->sql_query($sql);
-
-		// Get expired sessions, only most recent for each user
-		// Inner SELECT gets most recent expired sessions for unique session_user_id
-		// Outer SELECT gets session_page for them
-		$sql = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
+		// Get expired sessions, only most recent for each registered user
+		// Inner SELECT gets most recent expired sessions data for unique session_user_id
+		// Outer SELECT gets also session_page for them
+		$sql_select = '(
+			SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
 			FROM ' . SESSIONS_TABLE . ' AS s1
 			INNER JOIN (
 				SELECT session_user_id, MAX(session_time) AS recent_time
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time < ' . ($this->time_now - (int) $config['session_length']) . '
+					AND session_user_id <> ' . ANONYMOUS . '
 				GROUP BY session_user_id
 			) AS s2
 			ON s1.session_user_id = s2.session_user_id
-				AND s1.session_time = s2.recent_time';
-		$result = $db->sql_query($sql);
+				AND s1.session_time = s2.recent_time
+		) AS s3';
 
-		$del_user_id = array();
-
-		while ($row = $db->sql_fetchrow($result))
+		// Update user session data from above selected result
+		switch ($db->get_sql_layer())
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-				WHERE user_id = " . (int) $row['session_user_id'];
-			$db->sql_query($sql);
+			case 'sqlite3':
+			case 'mysqli':
+				$sql = 'UPDATE ' . USERS_TABLE . " AS u,
+					$sql_select
+					SET u.user_lastvisit = s3.recent_time, u.user_lastpage = s3.session_page
+					WHERE u.user_id = s3.session_user_id";
+			break;
 
-			$del_user_id[] = (int) $row['session_user_id'];
+			default:
+			$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_lastvisit = s3.recent_time, user_lastpage = s3.session_page
+					FROM $sql_select
+					WHERE user_id = s3.session_user_id";
+			break;
 		}
-		$db->sql_freeresult($result);
+		$db->sql_query($sql);
 
-		if (count($del_user_id))
-		{
-			// Delete expired sessions
-			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
-					AND session_time < ' . ($this->time_now - $config['session_length']);
-			$db->sql_query($sql);
-		}
+		// Delete all expired sessions
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($this->time_now - $config['session_length']);
+		$db->sql_query($sql);
 
 		// Update gc timer
 		$config->set('session_last_gc', $this->time_now, false);
