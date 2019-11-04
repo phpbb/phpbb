@@ -16,7 +16,7 @@
 */
 class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_case
 {
-	protected $data = array();
+	protected $data = [];
 
 	public function test_setup_forums()
 	{
@@ -24,13 +24,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->admin_login();
 
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
-		$form = $crawler->selectButton('addforum')->form(array(
+		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> 'Unapproved Posts Test #1',
-		));
+		]);
 		$crawler = self::submit($form);
-		$form = $crawler->selectButton('update')->form(array(
+		$form = $crawler->selectButton('update')->form([
 			'forum_perm_from'	=> 2,
-		));
+		]);
 		$crawler = self::submit($form);
 
 		// Set flood interval to 0
@@ -40,13 +40,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 	public function test_create_posts()
 	{
 		$this->login();
-		$this->load_ids(array(
-			'forums' => array(
+		$this->load_ids([
+			'forums' => [
 				'Unapproved Posts Test #1',
-			),
-		));
+			],
+		]);
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 0,
 			'forum_posts_unapproved'	=> 0,
 			'forum_posts_softdeleted'	=> 0,
@@ -54,7 +54,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> 0,
-		), 'initial comparison');
+		], 'initial comparison');
 
 		// Test creating topic #1
 		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #1', 'This is a test topic posted by the testing framework.');
@@ -64,7 +64,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->data['topics']['Unapproved Posts Test Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Unapproved Posts Test Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
 			'forum_posts_softdeleted'	=> 0,
@@ -72,20 +72,20 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Unapproved Posts Test Topic #1'],
-		), 'after creating topic #1');
+		], 'after creating topic #1');
 
 		$this->logout();
 		$this->create_user('unapproved_posts_test_user#1');
-		$this->add_user_group('NEWLY_REGISTERED', array('unapproved_posts_test_user#1'));
+		$this->add_user_group('NEWLY_REGISTERED', ['unapproved_posts_test_user#1']);
 		$this->login('unapproved_posts_test_user#1');
 
 		// Test creating a reply
-		$post2 = $this->create_post($this->data['forums']['Unapproved Posts Test #1'], $post['topic_id'], 'Re: Unapproved Posts Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$post2 = $this->create_post($this->data['forums']['Unapproved Posts Test #1'], $post['topic_id'], 'Re: Unapproved Posts Test Topic #1-#2', 'This is a test post posted by the testing framework.', [], 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
 		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 1,
 			'forum_posts_softdeleted'	=> 0,
@@ -93,15 +93,15 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Unapproved Posts Test Topic #1'],
-		), 'after replying');
+		], 'after replying');
 
 		// Test creating topic #2
-		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #2', 'This is a test topic posted by the testing framework.', [], 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 2,
 			'forum_posts_softdeleted'	=> 0,
@@ -109,31 +109,31 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 1,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Unapproved Posts Test Topic #1'],
-		), 'after creating topic #2');
+		], 'after creating topic #2');
 
 		$this->logout();
 	}
 
 	public function test_view_unapproved_post_disabled()
 	{
-        // user who created post
+		// user who created post
 		$this->login('unapproved_posts_test_user#1');
-		$this->load_ids(array(
-			'forums' => array(
+		$this->load_ids([
+			'forums' => [
 				'Unapproved Posts Test #1',
-			),
-			'topics' => array(
+			],
+			'topics' => [
 				'Unapproved Posts Test Topic #1',
 				'Unapproved Posts Test Topic #2',
-			),
-			'posts' => array(
+			],
+			'posts' => [
 				'Unapproved Posts Test Topic #1',
 				'Re: Unapproved Posts Test Topic #1-#2',
 				'Unapproved Posts Test Topic #2',
-			),
-		));
+			],
+		]);
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 2,
 			'forum_posts_softdeleted'	=> 0,
@@ -141,19 +141,19 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 1,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Unapproved Posts Test Topic #1'],
-		), 'before approving post');
+		], 'before approving post');
 
 		$this->add_lang('posting');
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 
-		//should be able to see topic 1 but not unapproved post
+		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
 		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
-		//should not be able to see topic 2
+		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
@@ -162,17 +162,15 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->create_user('unapproved_posts_test_user#2');
 		$this->login('unapproved_posts_test_user#2');
 
-		$this->add_lang('posting');
-		$this->add_lang('viewtopic');
-		$this->add_lang('mcp');
+		$this->add_lang('posting', 'viewtopic', 'mcp');
 
-		//should be able to see topic 1 but not unapproved post
+		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
 		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
-		//should not be able to see topic 2
+		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 	}
@@ -181,24 +179,24 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 	{
 		$this->config_display_unapproved_posts_state(true);
 
-        // user who created post
+		// user who created post
 		$this->login('unapproved_posts_test_user#1');
-		$this->load_ids(array(
-			'forums' => array(
+		$this->load_ids([
+			'forums' => [
 				'Unapproved Posts Test #1',
-			),
-			'topics' => array(
+			],
+			'topics' => [
 				'Unapproved Posts Test Topic #1',
 				'Unapproved Posts Test Topic #2',
-			),
-			'posts' => array(
+			],
+			'posts' => [
 				'Unapproved Posts Test Topic #1',
 				'Re: Unapproved Posts Test Topic #1-#2',
 				'Unapproved Posts Test Topic #2',
-			),
-		));
+			],
+		]);
 
-		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], array(
+		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 2,
 			'forum_posts_softdeleted'	=> 0,
@@ -206,22 +204,23 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 1,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Unapproved Posts Test Topic #1'],
-		), 'before approving post');
+		], 'before approving post');
 
 		$this->add_lang('posting');
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 
-		//should be able to see topic 1 and unapproved post
+		// should be able to see topic 1 and unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
 		$this->assertContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 		$this->assertContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
-		//should be able to see topic 2
+		// should be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
-		//should be able to see post in topic 2
+
+		// should be able to see post in topic 2
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #2']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #2', $crawler->filter('#page-body')->text());
 		$this->assertContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
@@ -234,13 +233,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 
-		//should be able to see topic 1 but not unapproved post
+		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
 		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
-		//should not be able to see topic 2
+		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
@@ -274,12 +273,12 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 	protected function set_flood_interval($flood_interval)
 	{
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=post");
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
-		$values["config[flood_interval]"] = $flood_interval;
+		$values['config[flood_interval]'] = $flood_interval;
 		$form->setValues($values);
 		$crawler = self::submit($form);
 		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
@@ -291,7 +290,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 		if (!empty($data['forums']))
 		{
-			$sql = 'SELECT *
+			$sql = 'SELECT forum_id, forum_name
 				FROM phpbb_forums
 				WHERE ' . $this->db->sql_in_set('forum_name', $data['forums']);
 			$result = $this->db->sql_query($sql);
