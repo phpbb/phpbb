@@ -17,8 +17,8 @@ class add_display_unapproved_posts_config extends \phpbb\db\migration\migration
 {
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('display_unapproved_posts', 1)),
-		);
+		return [
+			['config.add', ['display_unapproved_posts', 1]],
+			];
 	}
 }
