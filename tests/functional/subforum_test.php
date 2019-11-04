@@ -23,38 +23,38 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 
 		$forum_name = 'Subforum Test #1';
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
-		$form = $crawler->selectButton('addforum')->form(array(
+		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> $forum_name,
-		));
+		]);
 		$crawler = self::submit($form);
-		$form = $crawler->selectButton('update')->form(array(
+		$form = $crawler->selectButton('update')->form([
 			'forum_perm_from'	=> 2,
-		));
+		]);
 		self::submit($form);
 		$forum_id = self::get_forum_id($forum_name);
 
 		// 'Feeds #1.1' is a sub-forum of 'Feeds #1'
 		$forum_name = 'Subforum Test #1.1';
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=6&mode=manage&parent_id={$forum_id}");
-		$form = $crawler->selectButton('addforum')->form(array(
+		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> $forum_name,
-		));
+		]);
 		$crawler = self::submit($form);
-		$form = $crawler->selectButton('update')->form(array(
+		$form = $crawler->selectButton('update')->form([
 			'forum_perm_from'	=> 2,
-		));
+		]);
 		self::submit($form);
 		$forum_id = self::get_forum_id('Subforum Test #1.1');
 
 		// 'Feeds #news' will be used for feed.php?mode=news
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=6&mode=manage&parent_id={$forum_id}");
-		$form = $crawler->selectButton('addforum')->form(array(
+		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> 'Subforum Test #1.1.1',
-		));
+		]);
 		$crawler = self::submit($form);
-		$form = $crawler->selectButton('update')->form(array(
+		$form = $crawler->selectButton('update')->form([
 			'forum_perm_from'	=> 2,
-		));
+		]);
 		self::submit($form);
 	}
 

@@ -22,28 +22,28 @@ class forums_legend_limit extends \phpbb\db\migration\migration
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v330\v330b1');
+		return ['\phpbb\db\migration\data\v330\v330b1'];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'add_columns'		=> array(
-				$this->table_prefix . 'forums'	=> array(
-					'display_subforum_limit'	=> array('BOOL', 0, 'after' => 'display_subforum_list'),
-				),
-			),
-		);
+		return [
+			'add_columns'		=> [
+				$this->table_prefix . 'forums'	=> [
+					'display_subforum_limit'	=> ['BOOL', 0, 'after' => 'display_subforum_list'],
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
-			'drop_columns'		=> array(
-				$this->table_prefix . 'forums'		=> array(
+		return [
+			'drop_columns'		=> [
+				$this->table_prefix . 'forums'		=> [
 					'display_subforum_limit',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 }
