@@ -959,11 +959,12 @@ class session
 			$this->time_now = time();
 		}
 
-		// Get expired sessions, only most recent for each registered user
-		// Inner SELECT gets most recent expired sessions data for unique session_user_id
-		// Outer SELECT gets also session_page for them
-		$sql_select = '(
-			SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
+		/**
+		* Get expired sessions for registered users, only most recent for each user
+		* Inner SELECT gets most recent expired sessions for unique session_user_id
+		* Outer SELECT gets data for them
+		*/
+		$sql = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
 			FROM ' . SESSIONS_TABLE . ' AS s1
 			INNER JOIN (
 				SELECT session_user_id, MAX(session_time) AS recent_time
@@ -973,32 +974,21 @@ class session
 				GROUP BY session_user_id
 			) AS s2
 			ON s1.session_user_id = s2.session_user_id
-				AND s1.session_time = s2.recent_time
-		) AS s3';
+				AND s1.session_time = s2.recent_time';
+		$result = $db->sql_query($sql);
 
-		// Update user session data from above selected result
-		switch ($db->get_sql_layer())
+		while ($row = $db->sql_fetchrow($result))
 		{
-			case 'sqlite3':
-			case 'mysqli':
-				$sql = 'UPDATE ' . USERS_TABLE . " AS u,
-					$sql_select
-					SET u.user_lastvisit = s3.recent_time, u.user_lastpage = s3.session_page
-					WHERE u.user_id = s3.session_user_id";
-			break;
-
-			default:
-			$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lastvisit = s3.recent_time, user_lastpage = s3.session_page
-					FROM $sql_select
-					WHERE user_id = s3.session_user_id";
-			break;
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				WHERE user_id = " . (int) $row['session_user_id'];
+			$db->sql_query($sql);
 		}
-		$db->sql_query($sql);
+		$db->sql_freeresult($result);
 
 		// Delete all expired sessions
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE session_time < ' . ($this->time_now - $config['session_length']);
+			WHERE session_time < ' . ($this->time_now - (int) $config['session_length']);
 		$db->sql_query($sql);
 
 		// Update gc timer
