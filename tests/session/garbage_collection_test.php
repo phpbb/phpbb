@@ -41,6 +41,66 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		);
 	}
 
+	public function test_session_gc()
+	{
+		global $config;
+		$config['session_length'] = 3600;
+
+		$this->check_expired_sessions_recent(
+			array(
+				array(
+					'session_user_id' => 4,
+					'recent_time' => 1500000000,
+				),
+				array(
+					'session_user_id' => 5,
+					'recent_time' => 1500000000,
+				),
+			),
+			'Before test, should get recent expired sessions only.'
+		);
+
+		$this->check_user_session_data(
+			array(
+				array(
+					'username_clean' => 'bar',
+					'user_lastvisit' => 1400000000,
+					'user_lastpage' => 'oldpage_user_bar.php',
+				),
+				array(
+					'username_clean' => 'foo',
+					'user_lastvisit' => 1400000000,
+					'user_lastpage' => 'oldpage_user_foo.php',
+				),
+			),
+			'Before test, users session data is not updated yet.'
+		);
+
+		// There is an error unless the captcha plugin is set
+		$config['captcha_plugin'] = 'core.captcha.plugins.nogd';
+		$this->session->session_gc();
+		$this->check_expired_sessions_recent(
+			array(),
+			'After garbage collection, all expired sessions should be removed.'
+		);
+
+		$this->check_user_session_data(
+			array(
+				array(
+					'username_clean' => 'bar',
+					'user_lastvisit' => '1500000000',
+					'user_lastpage' => 'newpage_user_bar.php',
+				),
+				array(
+					'username_clean' => 'foo',
+					'user_lastvisit' => '1500000000',
+					'user_lastpage' => 'newpage_user_foo.php',
+				),
+			),
+			'After garbage collection, users session data should be updated to the recent expired sessions data.'
+		);
+	}
+
 	public function test_cleanup_all()
 	{
 		$this->check_sessions_equals(
@@ -52,6 +112,18 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 				array(
 					'session_id' => 'bar_session000000000000000000000',
 					'session_user_id' => 4,
+				),
+				array(
+					'session_id' => 'bar_session000000000000000000002',
+					'session_user_id' => 4,
+				),
+				array(
+					'session_id' => 'foo_session000000000000000000000',
+					'session_user_id' => 5,
+				),
+				array(
+					'session_id' => 'foo_session000000000000000000002',
+					'session_user_id' => 5,
 				),
 			),
 			'Before test, should have some sessions.'
