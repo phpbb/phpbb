@@ -960,10 +960,10 @@ class session
 		}
 
 		/**
-		* Get expired sessions for registered users, only most recent for each user
-		* Inner SELECT gets most recent expired sessions for unique session_user_id
-		* Outer SELECT gets data for them
-		*/
+		 * Get expired sessions for registered users, only most recent for each user
+		 * Inner SELECT gets most recent expired sessions for unique session_user_id
+		 * Outer SELECT gets data for them
+		 */
 		$sql_select = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
 			FROM ' . SESSIONS_TABLE . ' AS s1
 			INNER JOIN (
@@ -979,8 +979,7 @@ class session
 		switch ($db->get_sql_layer())
 		{
 			case 'sqlite3':
-			case 'oracle':
-				if ($db->get_sql_layer() === 'sqlite3' && phpbb_version_compare($db->sql_server_info(true), '3.8.3', '>='))
+				if (phpbb_version_compare($db->sql_server_info(true), '3.8.3', '>='))
 				{
 					// For SQLite versions 3.8.3+ which support Common Table Expressions (CTE)
 					$sql = "WITH s3 (session_page, session_user_id, session_time) AS ($sql_select)
@@ -988,20 +987,21 @@ class session
 						SET (user_lastpage, user_lastvisit) = (SELECT session_page, session_time FROM s3 WHERE session_user_id = user_id)
 						WHERE EXISTS (SELECT session_user_id FROM s3 WHERE session_user_id = user_id)';
 					$db->sql_query($sql);
+
+					break;
 				}
-				else
+
+			// No break, for SQLite versions prior to 3.8.3 and Oracle
+			case 'oracle':
+				$result = $db->sql_query($sql_select);
+				while ($row = $db->sql_fetchrow($result))
 				{
-					// For SQLite versions prior to 3.8.3 and Oracle
-					$result = $db->sql_query($sql_select);
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-							WHERE user_id = " . (int) $row['session_user_id'];
-						$db->sql_query($sql);
-					}
-					$db->sql_freeresult($result);
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+						WHERE user_id = " . (int) $row['session_user_id'];
+					$db->sql_query($sql);
 				}
+				$db->sql_freeresult($result);
 			break;
 
 			case 'mysqli':
@@ -1037,7 +1037,7 @@ class session
 		}
 
 		// only called from CRON; should be a safe workaround until the infrastructure gets going
-		/* @var $captcha_factory \phpbb\captcha\factory */
+		/* @var \phpbb\captcha\factory $captcha_factory */
 		$captcha_factory = $phpbb_container->get('captcha.factory');
 		$captcha_factory->garbage_collect($config['captcha_plugin']);
 

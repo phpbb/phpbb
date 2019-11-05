@@ -61,7 +61,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	{
 		global $config;
 		$time_now = time();
-		$sql= 'SELECT session_user_id, MAX(session_time) AS recent_time
+		$sql = 'SELECT session_user_id, MAX(session_time) AS recent_time
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($time_now - (int) $config['session_length']) . '
 				AND session_user_id <> ' . ANONYMOUS . '
