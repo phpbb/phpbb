@@ -302,6 +302,37 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'<i class="o-icon font fa-pencil a-class another-class" title="Pencil icon" aria-hidden="true" data-attr-1="true" data-attr-2="two"></i>
 				<span class="sr-only">Pencil icon</span>'
 			],
+			/** Iconify: default */
+			[
+				[
+					'type'			=> 'iconify',
+					'icon'			=> 'phone',
+					'title'			=> '',
+					'hidden'		=> false,
+					'classes'		=> '',
+					'attributes'	=> [],
+				],
+				[],
+				'<i class="iconify o-icon phone"></i>',
+			],
+			/** Iconify: all options */
+			[
+				[
+					'type'			=> 'iconify',
+					'icon'			=> 'pencil',
+					'title'			=> 'ICON_PENCIL',
+					'hidden'		=> true,
+					'classes'		=> 'icon-lg',
+					'attributes'	=> [
+						'data-swap'		=> 'Swap text',
+					],
+				],
+				[
+					'ICON_PENCIL'	=> 'Pencil icon',
+				],
+				'<i class="iconify o-icon pencil icon-lg" title="Pencil icon" aria-hidden="true" data-swap="Swap text"></i>
+				<span class="sr-only">Pencil icon</span>',
+			],
 			/** PNG: default */
 			[
 				[

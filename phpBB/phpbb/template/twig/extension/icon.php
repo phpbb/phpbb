@@ -56,7 +56,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	 * Generate icon HTML for use in the template, depending on the mode.
 	 *
 	 * @param environment	$environment	Twig environment object
-	 * @param string		$type			Icon type (font|png|svg)
+	 * @param string		$type			Icon type (font|iconify|png|svg)
 	 * @param string		$icon			Icon name (eg. "bold")
 	 * @param string		$title			Icon title
 	 * @param bool			$hidden			Hide the icon title from view
@@ -72,6 +72,7 @@ class icon extends \Twig\Extension\AbstractExtension
 		switch ($type)
 		{
 			case 'font':
+			case 'iconify':
 				$source = '';
 			break;
 
