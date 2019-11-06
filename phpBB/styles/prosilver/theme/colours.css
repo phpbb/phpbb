@@ -703,6 +703,11 @@ dd.profile-warnings {
 	box-shadow: 0 0 10px #0077b3;
 }
 
+.search-results li:hover,
+.search-results li.active {
+	background-color: #cfe1f6;
+}
+
 /*  icon images */
 .site_logo { background-image: url("./images/site_logo.gif"); }
 .contact-icon { background-image: url("./images/icons_contact.png"); }
