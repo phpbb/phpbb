@@ -256,12 +256,6 @@ if ($mode == 'popup')
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
-{
-	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
-}
-
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
 $topic_id	= (!empty($post_data['topic_id'])) ? (int) $post_data['topic_id'] : (int) $topic_id;
@@ -425,6 +419,12 @@ if (!$is_authed || !empty($error))
 	}
 
 	login_box('', $message);
+}
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
 }
 
 // Is the user able to post within this forum?
