@@ -313,7 +313,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'attributes'	=> [],
 				],
 				[],
-				'<i class="iconify o-icon phone"></i>',
+				'<i class="iconify o-icon" data-icon="fa:phone" data-inline="true"></i>',
 			],
 			/** Iconify: all options */
 			[
@@ -330,7 +330,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<i class="iconify o-icon pencil icon-lg" title="Pencil icon" aria-hidden="true" data-swap="Swap text"></i>
+				'<i class="iconify o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="fa:phone" data-inline="true" data-swap="Swap text"></i>
 				<span class="sr-only">Pencil icon</span>',
 			],
 			/** PNG: default */
