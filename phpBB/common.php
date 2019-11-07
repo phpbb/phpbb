@@ -143,10 +143,6 @@ if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload
 	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 }
 
-// Add own hook handler
-require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
 /* @var $phpbb_hook_finder \phpbb\hook\finder */
 $phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
