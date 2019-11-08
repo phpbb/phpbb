@@ -30,6 +30,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
+	$parent_subforum_limit = false;
 
 	// Mark forums read?
 	$mark_read = $request->variable('mark', '');
@@ -266,6 +267,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			// Direct child of current branch
 			$parent_id = $forum_id;
+			$parent_subforum_limit = $row['display_subforum_limit'];
 			$forum_rows[$forum_id] = $row;
 
 			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
@@ -278,7 +280,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
-			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index']) ? true : false;
+			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index'] && (!$parent_subforum_limit || $parent_id == $row['parent_id']));
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 			$subforums[$parent_id][$forum_id]['children'] = array();
