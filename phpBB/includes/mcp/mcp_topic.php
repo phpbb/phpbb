@@ -55,9 +55,16 @@ function mcp_topic_view($id, $mode, $action)
 	$submitted_id_list	= $request->variable('post_ids', array(0));
 	$checked_ids = $post_id_list = $request->variable('post_id_list', array(0));
 
+	add_form_key('mcp_topic');
+
 	// Resync Topic?
 	if ($action == 'resync')
 	{
+		if (!check_form_key('mcp_topic'))
+		{
+			trigger_error('FORM_INVALID');
+		}
+
 		if (!function_exists('mcp_resync_topics'))
 		{
 			include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
@@ -90,7 +97,7 @@ function mcp_topic_view($id, $mode, $action)
 		$subject = $topic_info['topic_title'];
 	}
 
-	// Restore or pprove posts?
+	// Restore or approve posts?
 	if (($action == 'restore' || $action == 'approve') && $auth->acl_get('m_approve', $topic_info['forum_id']))
 	{
 		if (!class_exists('mcp_queue'))
