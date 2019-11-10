@@ -306,7 +306,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			[
 				[
 					'type'			=> 'iconify',
-					'icon'			=> 'phone',
+					'icon'			=> 'fa:phone',
 					'title'			=> '',
 					'hidden'		=> false,
 					'classes'		=> '',
@@ -319,7 +319,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			[
 				[
 					'type'			=> 'iconify',
-					'icon'			=> 'pencil',
+					'icon'			=> 'mdi:pencil',
 					'title'			=> 'ICON_PENCIL',
 					'hidden'		=> true,
 					'classes'		=> 'icon-lg',
@@ -330,7 +330,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<i class="iconify o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="fa:phone" data-inline="true" data-swap="Swap text"></i>
+				'<i class="iconify o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="mdi:pencil" data-inline="true" data-swap="Swap text"></i>
 				<span class="sr-only">Pencil icon</span>',
 			],
 			/** PNG: default */
