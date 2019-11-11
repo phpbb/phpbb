@@ -20,7 +20,7 @@ use OAuth\Common\Storage\Exception\TokenNotFoundException;
 use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
 
 /**
- * OAuth storage wrapper for phpBB3's cache
+ * OAuth storage wrapper for phpBB's cache
  */
 class token_storage implements TokenStorageInterface
 {
@@ -148,7 +148,7 @@ class token_storage implements TokenStorageInterface
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		return $this->_has_access_token($data);
+		return $this->has_access_token($data);
 	}
 
 	/**
@@ -354,7 +354,7 @@ class token_storage implements TokenStorageInterface
 			'provider'		=> $service,
 		];
 
-		return $this->_has_access_token($data);
+		return $this->has_access_token($data);
 	}
 
 	/**
@@ -388,7 +388,7 @@ class token_storage implements TokenStorageInterface
 	 * @return bool					true if the user's access token exists,
 	 * 								false if the user's access token does not exist
 	 */
-	protected function _has_access_token($data)
+	protected function has_access_token($data)
 	{
 		return (bool) $this->get_access_token_row($data);
 	}
