@@ -179,6 +179,7 @@ class content_visibility
 	* @param $mode			string	Either "topic" or "post"
 	* @param $forum_id		int		The forum id is used for permission checks
 	* @param $table_alias	string	Table alias to prefix in SQL queries
+	* @param $allow_drafts	boolean Allow users to see their own draft posts
 	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '', $allow_drafts=false)
@@ -216,14 +217,14 @@ class content_visibility
 
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
-			$visibility_query = $table_alias . $mode . '_visibility = ';
+			$visibility_query = $table_alias . $mode . '_visibility';
 
 			$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id' ;
-			$where_sql .= '(' . $visibility_query . ITEM_APPROVED . ' OR ' . $visibility_query . ITEM_REAPPROVE;
+
+			$where_sql = '(' . $visibility_query . ' <> ' . ITEM_DRAFT;
 			if ($allow_drafts)
 			{
-				$where_sql .= ' OR (' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']) .' AND (';
-				$where_sql .= $visibility_query . ITEM_DRAFT . '))';
+				$where_sql .= ' OR (' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']) .')';
 			}
 			$where_sql .= ')';
 		}
@@ -232,15 +233,12 @@ class content_visibility
 			$visibility_query = $table_alias . $mode . '_visibility = ';
 
 			$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id' ;
-			$where_sql .= '(' . $visibility_query . ITEM_APPROVED . ')';
+			$where_sql = '(' . $visibility_query . ITEM_APPROVED . ')';
             if ($allow_drafts && $this->user->data['user_id'] != ANONYMOUS)
 			{
-				if ($this->config['display_unapproved_posts'])
-				{
-					$where_sql .= 'OR ';
-				}
+				$where_sql .= 'OR (';
 				$where_sql .= $visibility_query . ITEM_DRAFT;
-				$where_sql .= '))';
+				$where_sql .= ')';
 			}
 		}
 		return '(' . $where_sql . ')';
@@ -324,7 +322,8 @@ class content_visibility
 		}
 
 		// Moderator can view all posts/topics in the moderated forums
-		$where_sql .= '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums, false, true) . ' OR ';
+		$where_sql .= '((' . $table_alias . $mode . '_visibility != ' . ITEM_DRAFT . '
+            AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums, false, true) . ') OR ';
 		// Normal user can view approved items only
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
 			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . '))';
@@ -380,14 +379,25 @@ class content_visibility
 		}
 
 		// Include approved items in all forums but the excluded
-		$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true, true) . '
-			AND ' . $table_alias . $mode . '_visibility = ' . $visibility . ')';
+		$sql = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true, true) . '
+			AND (' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+        if ($visibility == ITEM_DRAFT)
+		{
+			$sql .= ' OR ' . $table_alias . $mode . '_visibility = ' . ITEM_DRAFT;
+		}
+		$sql .= '))';
+		$where_sqls[] = $sql;
 
 		// If user has moderator permissions, add everything in the moderated forums (but not for draftsearch)
-		if (($visibility == ITEM_APPROVED) && count($approve_forums))
+		if (count($approve_forums))
 		{
-			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . '
-			AND ' . $table_alias . $mode . '_visibility <> ' . ITEM_DRAFT . ')';
+			$sql = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+            if ($visibility != ITEM_DRAFT)
+			{
+				$sql.= ' AND ' . $table_alias . $mode . '_visibility <> ' . ITEM_DRAFT;
+			}
+			$sql .= ')';
+			$where_sqls[] = $sql;
 		}
 
 		return '(' . implode(' OR ', $where_sqls) . ')';

@@ -21,9 +21,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 	public function get_global_visibility_sql_data()
 	{
 		return array(
+			// data set 0: moderator, can see all topics
 			array(
 				'phpbb_topics',
-				'topic', array(), '',
+				'topic', 1, array(), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 				),
@@ -39,9 +40,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 9),
 				),
 			),
+			// data set 1: moderator, can see ??? topics, 
 			array(
 				'phpbb_topics',
-				'topic', array(3), '',
+				'topic', 1, array(3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 				),
@@ -54,9 +56,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 6),
 				),
 			),
+			// data set 2: moderator, can see ??? topics
 			array(
 				'phpbb_topics',
-				'topic', array(), '',
+				'topic', 1, array(), '',
 				array(
 					array('m_approve', true, array(2 => true)),
 				),
@@ -68,9 +71,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 8),
 				),
 			),
+			// data set 3: moderator, can see all posts
 			array(
 				'phpbb_posts',
-				'post', array(), '',
+				'post', 1, array(), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 				),
@@ -86,9 +90,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 9),
 				),
 			),
+			// data set 4: moderator, can see ??? posts
 			array(
 				'phpbb_posts',
-				'post', array(3), '',
+				'post', 1, array(3), '',
 				array(
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 				),
@@ -101,9 +106,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 6),
 				),
 			),
+			// data set 3: moderator, can see ??? posts
 			array(
 				'phpbb_posts',
-				'post', array(), '',
+				'post', 1, array(), '',
 				array(
 					array('m_approve', true, array(2 => true)),
 				),
@@ -115,13 +121,50 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 8),
 				),
 			),
+			// data set 3: moderator, can see ??? posts and drafts
+			array(
+				'phpbb_posts',
+				'post', 4, array(), '',
+				array(
+					array('m_approve', true, array(2 => true)),
+				),
+				array(
+					array('post_id' => 2),
+					array('post_id' => 4),
+					array('post_id' => 5),
+					array('post_id' => 6),
+					array('post_id' => 8),
+					array('post_id' => 10),
+					array('post_id' => 11),
+				),
+			),
+			// data set 0: moderator, can see all topics and own drafts
+			array(
+				'phpbb_topics',
+				'topic', 4, array(), '',
+				array(
+					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
+				),
+				array(
+					array('topic_id' => 1),
+					array('topic_id' => 2),
+					array('topic_id' => 3),
+					array('topic_id' => 4),
+					array('topic_id' => 5),
+					array('topic_id' => 6),
+					array('topic_id' => 7),
+					array('topic_id' => 8),
+					array('topic_id' => 9),
+					array('topic_id' => 10),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider get_global_visibility_sql_data
 	*/
-	public function test_get_global_visibility_sql($table, $mode, $forum_ids, $table_alias, $permissions, $expected)
+	public function test_get_global_visibility_sql($table, $mode, $target_visibility, $forum_ids, $table_alias, $permissions, $expected)
 	{
 		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
 
@@ -143,7 +186,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
 			FROM ' . $table . '
-			WHERE ' . $content_visibility->get_global_visibility_sql($mode, $forum_ids, $table_alias) . '
+			WHERE ' . $content_visibility->get_global_visibility_sql($mode, $forum_ids, $table_alias, $target_visibility) . '
 			ORDER BY ' . $mode . '_id ASC');
 
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));

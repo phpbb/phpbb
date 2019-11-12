@@ -534,7 +534,7 @@ class ucp_main
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' ? true : false,
+			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched') ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 

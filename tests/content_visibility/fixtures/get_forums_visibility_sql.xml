@@ -3,23 +3,27 @@
 	<table name="phpbb_topics">
 		<column>topic_id</column>
 		<column>forum_id</column>
+		<column>topic_poster</column>
 		<column>topic_visibility</column>
 		<column>topic_title</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>1</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>1</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
 		</row>
@@ -27,17 +31,20 @@
 			<value>4</value>
 			<value>2</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>5</value>
 			<value>2</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
 		<row>
 			<value>6</value>
 			<value>2</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
 		</row>
@@ -45,25 +52,36 @@
 			<value>7</value>
 			<value>3</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>8</value>
 			<value>3</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
 		<row>
 			<value>9</value>
 			<value>3</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft topic</value>
 		</row>
 	</table>
 	<table name="phpbb_posts">
 		<column>post_id</column>
 		<column>topic_id</column>
 		<column>forum_id</column>
+		<column>poster_id</column>
 		<column>post_visibility</column>
 		<column>post_text</column>
 		<row>
@@ -71,12 +89,14 @@
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>2</value>
 			<value>1</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
@@ -84,6 +104,7 @@
 			<value>3</value>
 			<value>3</value>
 			<value>1</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
 		</row>
@@ -92,12 +113,14 @@
 			<value>4</value>
 			<value>2</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>5</value>
 			<value>5</value>
 			<value>2</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
@@ -105,6 +128,7 @@
 			<value>6</value>
 			<value>6</value>
 			<value>2</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
 		</row>
@@ -113,12 +137,14 @@
 			<value>7</value>
 			<value>3</value>
 			<value>0</value>
+			<value>0</value>
 			<value>Unapproved</value>
 		</row>
 		<row>
 			<value>8</value>
 			<value>8</value>
 			<value>3</value>
+			<value>0</value>
 			<value>1</value>
 			<value>Approved</value>
 		</row>
@@ -126,8 +152,25 @@
 			<value>9</value>
 			<value>9</value>
 			<value>3</value>
+			<value>0</value>
 			<value>2</value>
 			<value>Softdeleted</value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post in draft topic</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post in approved topic</value>
 		</row>
 	</table>
 </dataset>
