@@ -15,24 +15,140 @@ namespace phpbb\acp\controller;
 
 class forums
 {
-	var $u_action;
-	var $parent_id = 0;
+	/** @var \phpbb\attachment\manager */
+	protected $attachment_manager;
 
-	public function main($id, $mode)
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\passwords\manager */
+	protected $password_manager;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string phpBB web path */
+	protected $web_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\attachment\manager				$attachment_manager		Attachment manager object
+	 * @param \phpbb\auth\auth						$auth					Auth object
+	 * @param \phpbb\cache\driver\driver_interface	$cache					Cache object
+	 * @param \phpbb\config\config					$config					Config object
+	 * @param \phpbb\db\driver\driver_interface		$db						Database object
+	 * @param \phpbb\event\dispatcher				$dispatcher				Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper					ACP Controller helper object
+	 * @param \phpbb\language\language				$language				Language object
+	 * @param \phpbb\log\log						$log					Log object
+	 * @param \phpbb\passwords\manager				$password_manager		Password manager object
+	 * @param \phpbb\path_helper					$path_helper			Path helper object
+	 * @param \phpbb\request\request				$request				Request object
+	 * @param \phpbb\template\template				$template				Template object
+	 * @param \phpbb\user							$user					User object
+	 * @param string								$admin_path				phpBB admin path
+	 * @param string								$root_path				phpBB root path
+	 * @param string								$php_ext				php File extension
+	 * @param array									$tables					phpBB tables
+	 */
+	public function __construct(
+		\phpbb\attachment\manager $attachment_manager,
+		\phpbb\auth\auth $auth,
+		\phpbb\cache\driver\driver_interface $cache,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\passwords\manager $password_manager,
+		\phpbb\path_helper $path_helper,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->attachment_manager	= $attachment_manager;
+		$this->auth					= $auth;
+		$this->cache				= $cache;
+		$this->config				= $config;
+		$this->db					= $db;
+		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
+		$this->language				= $language;
+		$this->log					= $log;
+		$this->password_manager		= $password_manager;
+		$this->request				= $request;
+		$this->template				= $template;
+		$this->user					= $user;
+
+		$this->admin_path			= $admin_path;
+		$this->root_path			= $root_path;
+		$this->web_path				= $path_helper->update_web_root_path($root_path);
+		$this->php_ext				= $php_ext;
+		$this->tables				= $tables;
+	}
+
+	public function main($p = 0, $action = '', $f = 0)
 	{
 		$this->language->add_lang('acp/forums');
-		$this->tpl_name = 'acp_forums';
-		$this->page_title = 'ACP_MANAGE_FORUMS';
+
+		$action = $action ? $action : $this->request->variable('action', '');
+		$update = $this->request->is_set_post('update');
+
+		$forum_id = (int) $f;
+		$parent_id = (int) $p;
+
+		$errors = [];
+		$forum_data = [];
 
 		$form_key = 'acp_forums';
 		add_form_key($form_key);
 
-		$action		= $this->request->variable('action', '');
-		$update		= ($this->request->is_set_post('update')) ? true : false;
-		$forum_id	= $this->request->variable('f', 0);
-
-		$this->parent_id	= $this->request->variable('parent_id', 0);
-		$forum_data = $errors = [];
 		if ($update && !check_form_key($form_key))
 		{
 			$update = false;
@@ -46,25 +162,21 @@ class forums
 				$start = $this->request->variable('start', 0);
 				$total = $this->request->variable('total', 0);
 
-				$this->display_progress_bar($start, $total);
+				return $this->display_progress_bar($start, $total);
 			break;
 
 			case 'delete':
-
 				if (!$this->auth->acl_get('a_forumdel'))
 				{
-					trigger_error($this->language->lang('NO_PERMISSION_FORUM_DELETE') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_PERMISSION_FORUM_DELETE') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
-
 			break;
 
 			case 'add':
-
 				if (!$this->auth->acl_get('a_forumadd'))
 				{
-					trigger_error($this->language->lang('NO_PERMISSION_FORUM_ADD') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_PERMISSION_FORUM_ADD') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
-
 			break;
 		}
 
@@ -81,29 +193,26 @@ class forums
 
 					$errors = $this->delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
-					if (count($errors))
+					if (!empty($errors))
 					{
 						break;
 					}
 
 					$this->auth->acl_clear_prefetch();
-					$this->cache->destroy('sql', FORUMS_TABLE);
+					$this->cache->destroy('sql', $this->tables['forums']);
 
-					trigger_error($this->language->lang('FORUM_DELETED') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-
+					return $this->helper->message_back('FORUM_DELETED', 'acp_forums_manage', ['p' => $parent_id]);
 				break;
 
 				case 'edit':
 					$forum_data = [
 						'forum_id'		=>	$forum_id,
 					];
-
 				// No break here
 
 				case 'add':
-
 					$forum_data += [
-						'parent_id'				=> $this->request->variable('forum_parent_id', $this->parent_id),
+						'parent_id'				=> $this->request->variable('forum_parent_id', $parent_id),
 						'forum_type'			=> $this->request->variable('forum_type', FORUM_POST),
 						'type_action'			=> $this->request->variable('type_action', ''),
 						'forum_status'			=> $this->request->variable('forum_status', ITEM_UNLOCKED),
@@ -157,7 +266,7 @@ class forums
 					extract($this->dispatcher->trigger_event('core.acp_manage_forums_request_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
-					if ($action == 'add')
+					if ($action === 'add')
 					{
 						$forum_data['forum_options'] = 0;
 					}
@@ -179,55 +288,66 @@ class forums
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
 					{
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], $this->request->variable('rules_parse_bbcode', false), $this->request->variable('rules_parse_urls', false), $this->request->variable('rules_parse_smilies', false));
+						generate_text_for_storage(
+							$forum_data['forum_rules'],
+							$forum_data['forum_rules_uid'],
+							$forum_data['forum_rules_bitfield'],
+							$forum_data['forum_rules_options'],
+							$this->request->variable('rules_parse_bbcode', false),
+							$this->request->variable('rules_parse_urls', false),
+							$this->request->variable('rules_parse_smilies', false)
+						);
 					}
 
 					// Get data for forum description if specified
 					if ($forum_data['forum_desc'])
 					{
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], $this->request->variable('desc_parse_bbcode', false), $this->request->variable('desc_parse_urls', false), $this->request->variable('desc_parse_smilies', false));
+						generate_text_for_storage(
+							$forum_data['forum_desc'],
+							$forum_data['forum_desc_uid'],
+							$forum_data['forum_desc_bitfield'],
+							$forum_data['forum_desc_options'],
+							$this->request->variable('desc_parse_bbcode', false),
+							$this->request->variable('desc_parse_urls', false),
+							$this->request->variable('desc_parse_smilies', false)
+						);
 					}
 
-					$errors = $this->update_forum_data($forum_data);
+					$errors = $this->update_forum_data($forum_data, $parent_id);
 
-					if (!count($errors))
+					if (empty($errors))
 					{
 						$forum_perm_from = $this->request->variable('forum_perm_from', 0);
-						$this->cache->destroy('sql', FORUMS_TABLE);
+						$this->cache->destroy('sql', $this->tables['forums']);
 
 						$copied_permissions = false;
+
 						// Copy permissions?
 						if ($forum_perm_from && $forum_perm_from != $forum_data['forum_id'] &&
-							($action != 'edit' || empty($forum_id) || ($this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))))
+							($action !== 'edit' || empty($forum_id) || ($this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))))
 						{
-							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
-							phpbb_cache_moderators($db, $cache, $auth);
+							copy_forum_permissions($forum_perm_from, [$forum_data['forum_id']], $action === 'edit');
+							phpbb_cache_moderators($this->db, $this->cache, $this->auth);
+
 							$copied_permissions = true;
 						}
-/* Commented out because of questionable UI workflow - re-visit for 3.0.7
-						else if (!$this->parent_id && $action != 'edit' && $this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))
-						{
-							$this->copy_permission_page($forum_data);
-							return;
-						}
- */
+
 						$this->auth->acl_clear_prefetch();
 
-						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
-
-						$message = ($action == 'add') ? $this->language->lang('FORUM_CREATED') : $this->language->lang('FORUM_UPDATED');
+						$message = $action === 'add' ? $this->language->lang('FORUM_CREATED') : $this->language->lang('FORUM_UPDATED');
 
 						// redirect directly to permission settings screen if authed
-						if ($action == 'add' && !$copied_permissions && $this->auth->acl_get('a_fauth'))
+						if ($action === 'add' && !$copied_permissions && $this->auth->acl_get('a_fauth'))
 						{
-							$message .= '<br /><br />' . sprintf($this->language->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url) . '">', '</a>');
+							$acl_url = $this->helper->route('acp_permissions_forum', ['forum_id[]' => $forum_data['forum_id']]);
 
-							meta_refresh(4, append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url));
+							$message .= '<br /><br />' . $this->language->lang('REDIRECT_ACL', '<a href="' . $acl_url . '">', '</a>');
+
+							meta_refresh(4, $acl_url);
 						}
 
-						trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+						return $this->helper->message_back($message, 'acp_forums_manage', ['p' => $parent_id]);
 					}
-
 				break;
 			}
 		}
@@ -236,22 +356,21 @@ class forums
 		{
 			case 'move_up':
 			case 'move_down':
-
 				if (!$forum_id)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				$move_forum_name = $this->move_forum_by($row, $action, 1);
@@ -259,7 +378,7 @@ class forums
 				if ($move_forum_name !== false)
 				{
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FORUM_' . strtoupper($action), false, [$row['forum_name'], $move_forum_name]);
-					$this->cache->destroy('sql', FORUMS_TABLE);
+					$this->cache->destroy('sql', $this->tables['forums']);
 				}
 
 				if ($this->request->is_ajax())
@@ -267,33 +386,32 @@ class forums
 					$json_response = new \phpbb\json_response;
 					$json_response->send(['success' => ($move_forum_name !== false)]);
 				}
-
 			break;
 
 			case 'sync':
 				if (!$forum_id)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				@set_time_limit(0);
 
 				$sql = 'SELECT forum_name, (forum_topics_approved + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
-					FROM ' . FORUMS_TABLE . "
+					FROM ' . $this->tables['forums'] . "
 					WHERE forum_id = $forum_id";
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				if ($row['total_topics'])
 				{
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
-						FROM ' . TOPICS_TABLE . '
+						FROM ' . $this->tables['topics'] . '
 						WHERE forum_id = ' . $forum_id;
 					$result = $this->db->sql_query($sql);
 					$row2 = $this->db->sql_fetchrow($result);
@@ -315,7 +433,7 @@ class forums
 					{
 						// We really need to find a way of showing statistics... no progress here
 						$sql = 'SELECT COUNT(topic_id) as num_topics
-							FROM ' . TOPICS_TABLE . '
+							FROM ' . $this->tables['topics'] . '
 							WHERE forum_id = ' . $forum_id . '
 								AND topic_id BETWEEN ' . $start . ' AND ' . $end;
 						$result = $this->db->sql_query($sql);
@@ -324,62 +442,63 @@ class forums
 
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['total_topics']}";
+						$url = $this->helper->route('acp_forums_manage', [
+							'p'				=> $parent_id,
+							'f'				=> $forum_id,
+							'action'		=> 'sync',
+							'start'			=> $start,
+							'total'			=> $row['total_topics'],
+							'topics_done'	=> $topics_done,
+						]);
 
 						meta_refresh(0, $url);
 
 						$this->template->assign_vars([
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
-							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($this->language->lang('SYNC_IN_PROGRESS_EXPLAIN'), $topics_done, $row['total_topics'])]
-						);
-
-						return;
+							'L_PROGRESS_EXPLAIN'	=> $this->language->lang('SYNC_IN_PROGRESS_EXPLAIN', $topics_done, $row['total_topics']),
+							'U_PROGRESS_BAR'		=> $this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar', 'start' => $topics_done, 'total' => $row['total_topics']]),
+							'UA_PROGRESS_BAR'		=> addslashes($this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar', 'start' => $topics_done, 'total' => $row['total_topics']])),
+						]);
 					}
 				}
 
-				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_forum";
+				$url = $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $forum_id, 'action' => 'sync_forum']);
 				meta_refresh(0, $url);
 
 				$this->template->assign_vars([
-					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
-					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($this->language->lang('SYNC_IN_PROGRESS_EXPLAIN'), 0, $row['total_topics'])]
-				);
+					'L_PROGRESS_EXPLAIN'	=> $this->language->lang('SYNC_IN_PROGRESS_EXPLAIN', 0 , $row['total_topics']),
+					'U_PROGRESS_BAR'		=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'action' => 'progress_bar']),
+					'UA_PROGRESS_BAR'		=> addslashes($this->helper->route('acp_forums_manage', ['p' => $parent_id, 'action' => 'progress_bar'])),
+				]);
 
-				return;
-
+				return $this->helper->render('acp_forums.html', $this->language->lang('ACP_FORUMS_MANAGE'));
 			break;
 
 			case 'sync_forum':
-
 				$sql = 'SELECT forum_name, forum_type
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				sync('forum', 'forum_id', $forum_id, false, true);
 
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FORUM_SYNC', false, [$row['forum_name']]);
 
-				$this->cache->destroy('sql', FORUMS_TABLE);
+				$this->cache->destroy('sql', $this->tables['forums']);
 
 				$this->template->assign_var('L_FORUM_RESYNCED', sprintf($this->language->lang('FORUM_RESYNCED'), $row['forum_name']));
-
 			break;
 
 			case 'add':
 			case 'edit':
-
 				if ($update)
 				{
 					$forum_data['forum_flags'] = 0;
@@ -392,14 +511,11 @@ class forums
 					$forum_data['forum_flags'] += ($this->request->variable('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
 
-				// Initialise $row, so we always have it in the event
-				$row = [];
-
 				// Show form to create/modify a forum
-				if ($action == 'edit')
+				if ($action === 'edit')
 				{
-					$this->page_title = 'EDIT_FORUM';
 					$row = $this->get_forum_info($forum_id);
+
 					$old_forum_type = $row['forum_type'];
 
 					if (!$update)
@@ -425,16 +541,17 @@ class forums
 				}
 				else
 				{
-					$this->page_title = 'CREATE_FORUM';
+					// Initialise $row, so we always have it in the event
+					$row = [];
 
-					$forum_id = $this->parent_id;
-					$parents_list = make_forum_select($this->parent_id, false, false, false, false);
+					$forum_id = $parent_id;
+					$parents_list = make_forum_select($parent_id, false, false, false, false);
 
 					// Fill forum data with default values
 					if (!$update)
 					{
 						$forum_data = [
-							'parent_id'				=> $this->parent_id,
+							'parent_id'				=> $parent_id,
 							'forum_type'			=> FORUM_POST,
 							'forum_status'			=> ITEM_UNLOCKED,
 							'forum_name'			=> $this->request->variable('forum_name', '', true),
@@ -446,7 +563,7 @@ class forums
 							'forum_image'			=> '',
 							'forum_style'			=> 0,
 							'display_subforum_list'	=> true,
-							'display_subforum_limit'	=> false,
+							'display_subforum_limit' => false,
 							'display_on_index'		=> true,
 							'forum_topics_per_page'	=> 0,
 							'enable_indexing'		=> true,
@@ -455,13 +572,13 @@ class forums
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
-							'enable_shadow_prune'		=> false,
+							'enable_shadow_prune'	=> false,
 							'prune_shadow_days'		=> 7,
 							'prune_shadow_freq'		=> 1,
 							'forum_flags'			=> FORUM_FLAG_POST_REVIEW + FORUM_FLAG_ACTIVE_TOPICS,
 							'forum_options'			=> 0,
 							'forum_password'		=> '',
-							'forum_password_confirm'=> '',
+							'forum_password_confirm' => '',
 						];
 					}
 				}
@@ -510,7 +627,15 @@ class forums
 						$forum_data['forum_rules_bitfield'] = '';
 						$forum_data['forum_rules_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], $this->request->variable('rules_allow_bbcode', false), $this->request->variable('rules_allow_urls', false), $this->request->variable('rules_allow_smilies', false));
+						generate_text_for_storage(
+							$forum_data['forum_rules'],
+							$forum_data['forum_rules_uid'],
+							$forum_data['forum_rules_bitfield'],
+							$forum_data['forum_rules_options'],
+							$this->request->variable('rules_allow_bbcode', false),
+							$this->request->variable('rules_allow_urls', false),
+							$this->request->variable('rules_allow_smilies', false)
+						);
 					}
 
 					// Generate preview content
@@ -520,7 +645,7 @@ class forums
 					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_options']);
 				}
 
-				// Parse desciption if specified
+				// Parse description if specified
 				if ($forum_data['forum_desc'])
 				{
 					if (!isset($forum_data['forum_desc_uid']))
@@ -530,7 +655,15 @@ class forums
 						$forum_data['forum_desc_bitfield'] = '';
 						$forum_data['forum_desc_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], $this->request->variable('desc_allow_bbcode', false), $this->request->variable('desc_allow_urls', false), $this->request->variable('desc_allow_smilies', false));
+						generate_text_for_storage(
+							$forum_data['forum_desc'],
+							$forum_data['forum_desc_uid'],
+							$forum_data['forum_desc_bitfield'],
+							$forum_data['forum_desc_options'],
+							$this->request->variable('desc_allow_bbcode', false),
+							$this->request->variable('desc_allow_urls', false),
+							$this->request->variable('desc_allow_smilies', false)
+						);
 					}
 
 					// decode...
@@ -542,20 +675,20 @@ class forums
 
 				foreach ($forum_type_ary as $value => $lang)
 				{
-					$forum_type_options .= '<option value="' . $value . '"' . (($value == $forum_data['forum_type']) ? ' selected="selected"' : '') . '>' . $this->language->lang('TYPE_' . $lang) . '</option>';
+					$forum_type_options .= '<option value="' . $value . '"' . ($value == $forum_data['forum_type'] ? ' selected="selected"' : '') . '>' . $this->language->lang('TYPE_' . $lang) . '</option>';
 				}
 
 				$styles_list = style_select($forum_data['forum_style'], true);
-
-				$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . (($forum_data['forum_status'] == ITEM_UNLOCKED) ? ' selected="selected"' : '') . '>' . $this->language->lang('UNLOCKED') . '</option><option value="' . ITEM_LOCKED . '"' . (($forum_data['forum_status'] == ITEM_LOCKED) ? ' selected="selected"' : '') . '>' . $this->language->lang('LOCKED') . '</option>';
-
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_type = ' . FORUM_POST . "
-						AND forum_id <> $forum_id";
-				$result = $this->db->sql_query_limit($sql, 1);
+				$status_list = '<option value="' . ITEM_UNLOCKED . '"' . ($forum_data['forum_status'] == ITEM_UNLOCKED ? ' selected="selected"' : '') . '>' . $this->language->lang('UNLOCKED') . '</option>' .
+								'<option value="' . ITEM_LOCKED . '"' . ($forum_data['forum_status'] == ITEM_LOCKED ? ' selected="selected"' : '') . '>' . $this->language->lang('LOCKED') . '</option>';
 
 				$postable_forum_exists = false;
+
+				$sql = 'SELECT forum_id
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_type = ' . FORUM_POST . '
+						AND forum_id <> ' . (int) $forum_id;
+				$result = $this->db->sql_query_limit($sql, 1);
 				if ($this->db->sql_fetchrow($result))
 				{
 					$postable_forum_exists = true;
@@ -563,14 +696,14 @@ class forums
 				$this->db->sql_freeresult($result);
 
 				// Subforum move options
-				if ($action == 'edit' && $forum_data['forum_type'] == FORUM_CAT)
+				if ($action === 'edit' && $forum_data['forum_type'] == FORUM_CAT)
 				{
 					$subforums_id = [];
 					$subforums = get_forum_branch($forum_id, 'children');
 
 					foreach ($subforums as $row)
 					{
-						$subforums_id[] = $row['forum_id'];
+						$subforums_id[] = (int) $row['forum_id'];
 					}
 
 					$forums_list = make_forum_select($forum_data['parent_id'], $subforums_id);
@@ -578,20 +711,20 @@ class forums
 					if ($postable_forum_exists)
 					{
 						$this->template->assign_vars([
-							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)] // , false, true, false???
-						);
+							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id),  // , false, true, false???
+						]);
 					}
 
 					$this->template->assign_vars([
 						'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
-						'S_FORUMS_LIST'			=> $forums_list]
-					);
+						'S_FORUMS_LIST'			=> $forums_list,
+					]);
 				}
 				else if ($postable_forum_exists)
 				{
 					$this->template->assign_vars([
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false)]
-					);
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false),
+					]);
 				}
 
 				$s_show_display_on_index = false;
@@ -608,24 +741,28 @@ class forums
 					}
 				}
 
-				if (strlen($forum_data['forum_password']) == 32)
+				if (strlen($forum_data['forum_password']) === 32)
 				{
 					$errors[] = $this->language->lang('FORUM_PASSWORD_OLD');
 				}
 
-				$template_data = [
-					'S_EDIT_FORUM'		=> true,
-					'S_ERROR'			=> (count($errors)) ? true : false,
-					'S_PARENT_ID'		=> $this->parent_id,
-					'S_FORUM_PARENT_ID'	=> $forum_data['parent_id'],
-					'S_ADD_ACTION'		=> ($action == 'add') ? true : false,
+				$s_add = $action === 'add';
+				$s_errors = !empty($errors);
 
-					'U_BACK'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
-					'U_EDIT_ACTION'	=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=$action&amp;f=$forum_id",
+				$template_data = [
+					'S_ERROR'			=> $s_errors,
+					'ERROR_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
+
+					'S_ADD_ACTION'		=> $s_add,
+					'S_EDIT_FORUM'		=> true,
+					'S_PARENT_ID'		=> $parent_id,
+					'S_FORUM_PARENT_ID'	=> $forum_data['parent_id'],
+
+					'U_BACK'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id]),
+					'U_EDIT_ACTION'		=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $forum_id, 'action' => $action]),
 
 					'L_COPY_PERMISSIONS_EXPLAIN'	=> $this->language->lang('COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'),
-					'L_TITLE'						=> $this->language->lang[$this->page_title],
-					'ERROR_MSG'						=> (count($errors)) ? implode('<br />', $errors) : '',
+					'L_TITLE'						=> $this->language->lang($s_add ? 'CREATE_FORUM' : 'EDIT_FORUM'),
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
@@ -644,62 +781,61 @@ class forums
 					'FORUM_RULES'				=> $forum_data['forum_rules'],
 					'FORUM_RULES_PREVIEW'		=> $forum_rules_preview,
 					'FORUM_RULES_PLAIN'			=> $forum_rules_data['text'],
-					'S_BBCODE_CHECKED'			=> ($forum_rules_data['allow_bbcode']) ? true : false,
-					'S_SMILIES_CHECKED'			=> ($forum_rules_data['allow_smilies']) ? true : false,
-					'S_URLS_CHECKED'			=> ($forum_rules_data['allow_urls']) ? true : false,
-					'S_FORUM_PASSWORD_SET'		=> (empty($forum_data['forum_password'])) ? false : true,
+					'S_BBCODE_CHECKED'			=> (bool) $forum_rules_data['allow_bbcode'],
+					'S_SMILIES_CHECKED'			=> (bool) $forum_rules_data['allow_smilies'],
+					'S_URLS_CHECKED'			=> (bool) $forum_rules_data['allow_urls'],
+					'S_FORUM_PASSWORD_SET'		=> !empty($forum_data['forum_password']),
 
 					'FORUM_DESC'				=> $forum_desc_data['text'],
-					'S_DESC_BBCODE_CHECKED'		=> ($forum_desc_data['allow_bbcode']) ? true : false,
-					'S_DESC_SMILIES_CHECKED'	=> ($forum_desc_data['allow_smilies']) ? true : false,
-					'S_DESC_URLS_CHECKED'		=> ($forum_desc_data['allow_urls']) ? true : false,
+					'S_DESC_BBCODE_CHECKED'		=> (bool) $forum_desc_data['allow_bbcode'],
+					'S_DESC_SMILIES_CHECKED'	=> (bool) $forum_desc_data['allow_smilies'],
+					'S_DESC_URLS_CHECKED'		=> (bool) $forum_desc_data['allow_urls'],
 
 					'S_FORUM_TYPE_OPTIONS'		=> $forum_type_options,
-					'S_STATUS_OPTIONS'			=> $statuslist,
+					'S_STATUS_OPTIONS'			=> $status_list,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
-					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, ($action == 'edit') ? $forum_data['forum_id'] : false, false, false, false),
+					'S_FORUM_OPTIONS'			=> make_forum_select($s_add ? $forum_data['parent_id'] : false, $action === 'edit' ? $forum_data['forum_id'] : false, false, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
-					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+					'S_FORUM_POST'				=> $forum_data['forum_type'] == FORUM_POST,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_CAT'			=> (isset($old_forum_type) && $old_forum_type == FORUM_CAT) ? true : false,
 					'S_FORUM_ORIG_LINK'			=> (isset($old_forum_type) && $old_forum_type == FORUM_LINK) ? true : false,
-					'S_FORUM_LINK'				=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
-					'S_FORUM_CAT'				=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
-					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
-					'S_DISPLAY_SUBFORUM_LIST'	=> ($forum_data['display_subforum_list']) ? true : false,
-					'S_DISPLAY_SUBFORUM_LIMIT'	=> ($forum_data['display_subforum_limit']) ? true : false,
-					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
-					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
-					'S_PRUNE_SHADOW_ENABLE'			=> ($forum_data['enable_shadow_prune']) ? true : false,
-					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? true : false,
-					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL) ? true : false,
-					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE) ? true : false,
-					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
+					'S_FORUM_LINK'				=> $forum_data['forum_type'] == FORUM_LINK,
+					'S_FORUM_CAT'				=> $forum_data['forum_type'] == FORUM_CAT,
+					'S_ENABLE_INDEXING'			=> (bool) $forum_data['enable_indexing'],
+					'S_TOPIC_ICONS'				=> (bool) $forum_data['enable_icons'],
+					'S_DISPLAY_SUBFORUM_LIST'	=> (bool) $forum_data['display_subforum_list'],
+					'S_DISPLAY_SUBFORUM_LIMIT'	=> (bool) $forum_data['display_subforum_limit'],
+					'S_DISPLAY_ON_INDEX'		=> (bool) $forum_data['display_on_index'],
+					'S_PRUNE_ENABLE'			=> (bool) $forum_data['enable_prune'],
+					'S_PRUNE_SHADOW_ENABLE'		=> (bool) $forum_data['enable_shadow_prune'],
+					'S_FORUM_LINK_TRACK'		=> $forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK ? true : false,
+					'S_PRUNE_OLD_POLLS'			=> $forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL ? true : false,
+					'S_PRUNE_ANNOUNCE'			=> $forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE ? true : false,
+					'S_PRUNE_STICKY'			=> $forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_POST) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : true,
 					'S_ENABLE_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_CAT) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : false,
-					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
-					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
-					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))) ? true : false,
+					'S_ENABLE_POST_REVIEW'		=> $forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW ? true : false,
+					'S_ENABLE_QUICK_REPLY'		=> $forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY ? true : false,
+					'S_CAN_COPY_PERMISSIONS'	=> ($action !== 'edit' || empty($forum_id) || ($this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))) ? true : false,
 				];
 
 				/**
 				 * Modify forum template data before we display the form
 				 *
 				 * @event core.acp_manage_forums_display_form
-				 * @var	string	action		Type of the action: add|edit
-				 * @var	bool	update		Do we display the form only
-				 *							or did the user press submit
-				 * @var	int		forum_id	When editing: the forum id,
-				 *							when creating: the parent forum id
-				 * @var	array	row			Array with current forum data
-				 *							empty when creating new forum
-				 * @var	array	forum_data	Array with new forum data
+				 * @var	string	action			Type of the action: add|edit
+				 * @var	bool	update			Do we display the form only or did the user press submit
+				 * @var	int		forum_id		When editing: the forum id,
+				 *								when creating: the parent forum id
+				 * @var	array	row				array with current forum data
+				 *								empty when creating new forum
+				 * @var	array	forum_data		Array with new forum data
 				 * @var	string	parents_list	List of parent options
-				 * @var	array	errors		Array of errors, if you add errors
-				 *					ensure to update the template variables
-				 *					S_ERROR and ERROR_MSG to display it
+				 * @var	array	errors			Array of errors, if you add errors
+				 *								ensure to update the template variables
+				 *								S_ERROR and ERROR_MSG to display it
 				 * @var	array	template_data	Array with new forum data
 				 * @since 3.1.0-a1
 				 */
@@ -715,17 +851,17 @@ class forums
 				];
 				extract($this->dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
 
+				unset($row);
+
 				$this->template->assign_vars($template_data);
 
-				return;
-
+				return $this->helper->render('acp_forums.html', $this->language->lang($s_add ? 'CREATE_FORUM' : 'EDIT_FORUM'));
 			break;
 
 			case 'delete':
-
 				if (!$forum_id)
 				{
-					trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				$forum_data = $this->get_forum_info($forum_id);
@@ -741,36 +877,37 @@ class forums
 				$forums_list = make_forum_select($forum_data['parent_id'], $subforums_id);
 
 				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_type = ' . FORUM_POST . "
-						AND forum_id <> $forum_id";
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_type = ' . FORUM_POST . '
+						AND forum_id <> ' . (int) $forum_id;
 				$result = $this->db->sql_query_limit($sql, 1);
-
 				if ($this->db->sql_fetchrow($result))
 				{
 					$this->template->assign_vars([
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id, false, true)] // , false, true, false???
-					);
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id, false, true), // , false, true, false???
+					]);
 				}
 				$this->db->sql_freeresult($result);
 
-				$parent_id = ($this->parent_id == $forum_id) ? 0 : $this->parent_id;
+				$s_errors = !empty($errors);
 
 				$this->template->assign_vars([
-					'S_DELETE_FORUM'		=> true,
-					'U_ACTION'				=> $this->u_action . "&amp;parent_id={$parent_id}&amp;action=delete&amp;f=$forum_id",
-					'U_BACK'				=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+					'S_ERROR'				=> $s_errors,
+					'ERROR_MSG'				=> $s_errors ? implode('<br />', $errors) : '',
 
 					'FORUM_NAME'			=> $forum_data['forum_name'],
-					'S_FORUM_POST'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
-					'S_FORUM_LINK'			=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
-					'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
-					'S_FORUMS_LIST'			=> $forums_list,
-					'S_ERROR'				=> (count($errors)) ? true : false,
-					'ERROR_MSG'				=> (count($errors)) ? implode('<br />', $errors) : '']
-				);
 
-				return;
+					'S_FORUM_POST'			=> $forum_data['forum_type'] == FORUM_POST,
+					'S_FORUM_LINK'			=> $forum_data['forum_type'] == FORUM_LINK,
+					'S_FORUMS_LIST'			=> $forums_list,
+					'S_HAS_SUBFORUMS'		=> $forum_data['right_id'] - $forum_data['left_id'] > 1,
+					'S_DELETE_FORUM'		=> true,
+
+					'U_ACTION'				=> $this->helper->route('acp_forums_manage', ['p' => ($parent_id == $forum_id ? 0 : $parent_id), 'f' => $forum_id, 'action' => 'delete']),
+					'U_BACK'				=> $this->helper->route('acp_forums_manage', ['p' => $parent_id]),
+				]);
+
+				return $this->helper->render('acp_forums.html', $this->language->lang('ACP_FORUMS_MANAGE'));
 			break;
 
 			case 'copy_perm':
@@ -779,65 +916,64 @@ class forums
 				// Copy permissions?
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
 				{
-					copy_forum_permissions($forum_perm_from, $forum_id, true);
-					phpbb_cache_moderators($db, $cache, $auth);
-					$this->auth->acl_clear_prefetch();
-					$this->cache->destroy('sql', FORUMS_TABLE);
+					copy_forum_permissions($forum_perm_from, [$forum_id], true);
+					phpbb_cache_moderators($this->db, $this->cache, $this->auth);
 
-					$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_id;
+					$this->auth->acl_clear_prefetch();
+					$this->cache->destroy('sql', $this->tables['forums']);
 
 					$message = $this->language->lang('FORUM_UPDATED');
 
 					// Redirect to permissions
 					if ($this->auth->acl_get('a_fauth'))
 					{
-						$message .= '<br /><br />' . sprintf($this->language->lang('REDIRECT_ACL'), '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url) . '">', '</a>');
+						$acl_url = $this->helper->route('acp_permissions_forum', ['forum_id[]' => $forum_id]);
+						$message .= '<br /><br />' . $this->language->lang('REDIRECT_ACL', '<a href="' . $acl_url . '">', '</a>');
 					}
 
-					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					return $this->helper->message_back($message, 'acp_forums_manage', ['p' => $parent_id]);
 				}
-
 			break;
 		}
 
 		// Default management page
-		if (!$this->parent_id)
+		if (!$parent_id)
 		{
 			$navigation = $this->language->lang('FORUM_INDEX');
 		}
 		else
 		{
-			$navigation = '<a href="' . $this->u_action . '">' . $this->language->lang('FORUM_INDEX') . '</a>';
+			$navigation = '<a href="' . $this->helper->route('acp_forums_manage') . '">' . $this->language->lang('FORUM_INDEX') . '</a>';
 
-			$forums_nav = get_forum_branch($this->parent_id, 'parents', 'descending');
+			$forums_nav = get_forum_branch($parent_id, 'parents', 'descending');
 			foreach ($forums_nav as $row)
 			{
-				if ($row['forum_id'] == $this->parent_id)
+				if ($row['forum_id'] == $parent_id)
 				{
 					$navigation .= ' -&gt; ' . $row['forum_name'];
 				}
 				else
 				{
-					$navigation .= ' -&gt; <a href="' . $this->u_action . '&amp;parent_id=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
+					$navigation .= ' -&gt; <a href="' . $this->helper->route('acp_forums_manage', ['p' => $row['forum_id']]) . '">' . $row['forum_name'] . '</a>';
 				}
 			}
 		}
 
 		// Jumpbox
-		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
+		$forum_box = make_forum_select($parent_id, false, false, false, false); //make_forum_select($parent_id);
 
-		if ($action == 'sync' || $action == 'sync_forum')
+		if ($action === 'sync' || $action === 'sync_forum')
 		{
 			$this->template->assign_var('S_RESYNCED', true);
 		}
 
-		$sql = 'SELECT *
-			FROM ' . FORUMS_TABLE . "
-			WHERE parent_id = $this->parent_id
-			ORDER BY left_id";
-		$result = $this->db->sql_query($sql);
-
 		$rowset = [];
+
+		$sql = 'SELECT *
+			FROM ' . $this->tables['forums'] . '
+			WHERE parent_id = ' . (int) $parent_id . '
+			ORDER BY left_id';
+		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$rowset[(int) $row['forum_id']] = $row;
@@ -856,103 +992,113 @@ class forums
 
 		if (!empty($rowset))
 		{
+			$img_url = $this->web_path . $this->admin_path . 'images/';
+
 			foreach ($rowset as $row)
 			{
 				$forum_type = $row['forum_type'];
 
 				if ($row['forum_status'] == ITEM_LOCKED)
 				{
-					$folder_image = '<img src="images/icon_folder_lock.gif" alt="' . $this->language->lang('LOCKED') . '" />';
+					$folder_image = '<img src="' . $img_url . 'icon_folder_lock.gif" alt="' . $this->language->lang('LOCKED') . '" />';
 				}
 				else
 				{
 					switch ($forum_type)
 					{
 						case FORUM_LINK:
-							$folder_image = '<img src="images/icon_folder_link.gif" alt="' . $this->language->lang('LINK') . '" />';
+							$folder_image = '<img src="' . $img_url . 'icon_folder_link.gif" alt="' . $this->language->lang('LINK') . '" />';
 						break;
 
 						default:
-							$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $this->language->lang('SUBFORUM') . '" />' : '<img src="images/icon_folder.gif" alt="' . $this->language->lang('FOLDER') . '" />';
+							$folder_image = ($row['left_id'] + 1 != $row['right_id'])
+								? '<img src="' . $img_url . 'icon_subfolder.gif" alt="' . $this->language->lang('SUBFORUM') . '" />'
+								: '<img src="' . $img_url . 'icon_folder.gif" alt="' . $this->language->lang('FOLDER') . '" />';
 						break;
 					}
 				}
 
-				$url = $this->u_action . "&amp;parent_id=$this->parent_id&amp;f={$row['forum_id']}";
-
 				$this->template->assign_block_vars('forums', [
 					'FOLDER_IMAGE'		=> $folder_image,
-					'FORUM_IMAGE'		=> ($row['forum_image']) ? '<img src="' . $this->root_path . $row['forum_image'] . '" alt="" />' : '',
-					'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $this->root_path . $row['forum_image'] : '',
+					'FORUM_IMAGE'		=> $row['forum_image'] ? '<img src="' . $this->web_path . $row['forum_image'] . '" alt="" />' : '',
+					'FORUM_IMAGE_SRC'	=> $row['forum_image'] ? $this->web_path . $row['forum_image'] : '',
 					'FORUM_NAME'		=> $row['forum_name'],
 					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 					'FORUM_TOPICS'		=> $row['forum_topics_approved'],
 					'FORUM_POSTS'		=> $row['forum_posts_approved'],
 
-					'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
-					'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
+					'S_FORUM_LINK'		=> $forum_type == FORUM_LINK,
+					'S_FORUM_POST'		=> $forum_type == FORUM_POST,
 
-					'U_FORUM'			=> $this->u_action . '&amp;parent_id=' . $row['forum_id'],
-					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
-					'U_MOVE_DOWN'		=> $url . '&amp;action=move_down',
-					'U_EDIT'			=> $url . '&amp;action=edit',
-					'U_DELETE'			=> $url . '&amp;action=delete',
-					'U_SYNC'			=> $url . '&amp;action=sync']
-				);
+					// @todo generate_link_hash() for moving ?
+					'U_FORUM'			=> $this->helper->route('acp_forums_manage', ['p' => $row['forum_id']]),
+					'U_DELETE'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'delete']),
+					'U_EDIT'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'edit']),
+					'U_MOVE_UP'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'move_up']),
+					'U_MOVE_DOWN'		=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'move_down']),
+					'U_SYNC'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'sync']),
+				]);
 			}
 		}
-		else if ($this->parent_id)
+		else if ($parent_id)
 		{
-			$row = $this->get_forum_info($this->parent_id);
-
-			$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;f=' . $row['forum_id'];
+			$row = $this->get_forum_info($parent_id);
 
 			$this->template->assign_vars([
 				'S_NO_FORUMS'		=> true,
 
-				'U_EDIT'			=> $url . '&amp;action=edit',
-				'U_DELETE'			=> $url . '&amp;action=delete',
-				'U_SYNC'			=> $url . '&amp;action=sync']
-			);
+				'U_DELETE'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'DELETE']),
+				'U_EDIT'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'edit']),
+				'U_SYNC'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id, 'f' => $row['forum_id'], 'action' => 'sync']),
+			]);
 		}
 		unset($rowset);
 
 		$this->template->assign_vars([
-			'ERROR_MSG'		=> (count($errors)) ? implode('<br />', $errors) : '',
-			'NAVIGATION'	=> $navigation,
+			'ERROR_MSG'		=> !empty($errors) ? implode('<br />', $errors) : '',
 			'FORUM_BOX'		=> $forum_box,
-			'U_SEL_ACTION'	=> $this->u_action,
-			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+			'NAVIGATION'	=> $navigation,
 
-			'U_PROGRESS_BAR'	=> $this->u_action . '&amp;action=progress_bar',
-			'UA_PROGRESS_BAR'	=> addslashes($this->u_action . '&amp;action=progress_bar'),
+			'U_SEL_ACTION'		=> $this->helper->route('acp_forums_manage'),
+			'U_ACTION'			=> $this->helper->route('acp_forums_manage', ['p' => $parent_id]),
+			'U_PROGRESS_BAR'	=> $this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar']),
+			'UA_PROGRESS_BAR'	=> addslashes($this->helper->route('acp_forums_manage', ['p' => 0, 'action' => 'progress_bar'])),
 		]);
+
+		return $this->helper->render('acp_forums.html', $this->language->lang('ACP_FORUMS_MANAGE'));
 	}
 
 	/**
-	 * Get forum details
+	 * Get forum data.
+	 *
+	 * @param int		$forum_id		The forum identifier
+	 * @return array					The forum data
 	 */
-	function get_forum_info($forum_id)
+	protected function get_forum_info($forum_id)
 	{
 		$sql = 'SELECT *
-			FROM ' . FORUMS_TABLE . "
-			WHERE forum_id = $forum_id";
+			FROM ' . $this->tables['forums'] . '
+			WHERE forum_id = ' . (int) $forum_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if (!$row)
+		if ($row === false)
 		{
-			trigger_error("Forum #$forum_id does not exist", E_USER_ERROR);
+			trigger_error('FORUM_NOT_EXIST', E_USER_ERROR);
 		}
 
 		return $row;
 	}
 
 	/**
-	 * Update forum data
+	 * Update forum data.
+	 *
+	 * @param array		$forum_data_ary		The forum data
+	 * @param int		$parent_id			The forum's parent identifier
+	 * @return array						Array possibly filled with errors
 	 */
-	function update_forum_data(&$forum_data_ary)
+	protected function update_forum_data(array &$forum_data_ary, $parent_id)
 	{
 		$errors = [];
 
@@ -968,6 +1114,7 @@ class forums
 		 */
 		$vars = ['forum_data', 'errors'];
 		extract($this->dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
+
 		$forum_data_ary = $forum_data;
 		unset($forum_data);
 
@@ -977,14 +1124,14 @@ class forums
 		}
 
 		/**
-		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
+		 * Replace emoji and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
 		 * Using their Numeric Character Reference's Hexadecimal notation.
 		 */
 		$forum_data_ary['forum_name'] = utf8_encode_ucr($forum_data_ary['forum_name']);
 
 		/**
 		 * This should never happen again.
-		 * Leaving the fallback here just in case there will be the need of it.
+		 * Leaving the fallback here just in case there will be the need for it.
 		 */
 		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
 		{
@@ -1029,13 +1176,16 @@ class forums
 
 		validate_range($range_test_ary, $errors);
 
-		// Set forum flags
-		// 1 = link tracking
-		// 2 = prune old polls
-		// 4 = prune announcements
-		// 8 = prune stickies
-		// 16 = show active topics
-		// 32 = enable post review
+		/**
+		 * Set forum flags
+		 *
+		 * 1 =	link tracking
+		 * 2 =	prune old polls
+		 * 4 =	prune announcements
+		 * 8 =	prune stickies
+		 * 16 =	show active topics
+		 * 32 =	enable post review
+		 */
 		$forum_data_ary['forum_flags'] = 0;
 		$forum_data_ary['forum_flags'] += ($forum_data_ary['forum_link_track']) ? FORUM_FLAG_LINK_TRACK : 0;
 		$forum_data_ary['forum_flags'] += ($forum_data_ary['prune_old_polls']) ? FORUM_FLAG_PRUNE_POLL : 0;
@@ -1057,10 +1207,12 @@ class forums
 		unset($forum_data_sql['enable_quick_reply']);
 		unset($forum_data_sql['forum_password_confirm']);
 
-		// What are we going to do tonight Brain? The same thing we do everynight,
-		// try to take over the world ... or decide whether to continue update
-		// and if so, whether it's a new forum/cat/link or an existing one
-		if (count($errors))
+		/**
+		 * What are we going to do tonight Brain? The same thing we do every night,
+		 * try to take over the world ... or decide whether to continue update
+		 * and if so, whether it's a new forum/cat/link or an existing one.
+		 */
+		if (!empty($errors))
 		{
 			return $errors;
 		}
@@ -1076,11 +1228,7 @@ class forums
 		}
 		else
 		{
-			// Instantiate passwords manager
-			/* @var $passwords_manager \phpbb\passwords\manager */
-			$passwords_manager = $phpbb_container->get('passwords.manager');
-
-			$forum_data_sql['forum_password'] = $this->passwords_manager->hash($forum_data_sql['forum_password']);
+			$forum_data_sql['forum_password'] = $this->password_manager->hash($forum_data_sql['forum_password']);
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
@@ -1091,12 +1239,13 @@ class forums
 		 * @event core.acp_manage_forums_update_data_before
 		 * @var	array	forum_data		Array with forum data
 		 * @var	array	forum_data_sql	Array with data we are going to update
-		 *						If forum_data_sql[forum_id] is set, we update
-		 *						that forum, otherwise a new one is created.
+		 * 								If forum_data_sql[forum_id] is set, we update that forum,
+		 * 								otherwise a new one is created.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['forum_data', 'forum_data_sql'];
 		extract($this->dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
+
 		$forum_data_ary = $forum_data;
 		unset($forum_data);
 
@@ -1110,29 +1259,28 @@ class forums
 			if ($forum_data_sql['parent_id'])
 			{
 				$sql = 'SELECT left_id, right_id, forum_type
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $forum_data_sql['parent_id'];
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $forum_data_sql['parent_id'];
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error($this->language->lang('PARENT_NOT_EXIST') . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error($this->language->lang('PARENT_NOT_EXIST') . $this->helper->adm_back_route('acp_forums_manage', ['p' => $parent_id]), E_USER_WARNING);
 				}
 
 				if ($row['forum_type'] == FORUM_LINK)
 				{
-					$errors[] = $this->language->lang('PARENT_IS_LINK_FORUM');
-					return $errors;
+					return [$this->language->lang('PARENT_IS_LINK_FORUM')];
 				}
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
+				$sql = 'UPDATE ' . $this->tables['forums'] . '
 					SET left_id = left_id + 2, right_id = right_id + 2
 					WHERE left_id > ' . $row['right_id'];
 				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
+				$sql = 'UPDATE ' . $this->tables['forums'] . '
 					SET right_id = right_id + 2
 					WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
 				$this->db->sql_query($sql);
@@ -1143,7 +1291,7 @@ class forums
 			else
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
-					FROM ' . FORUMS_TABLE;
+					FROM ' . $this->tables['forums'];
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -1152,10 +1300,10 @@ class forums
 				$forum_data_sql['right_id'] = $row['right_id'] + 2;
 			}
 
-			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $forum_data_sql);
+			$sql = 'INSERT INTO ' . $this->tables['forums'] . ' ' . $this->db->sql_build_array('INSERT', $forum_data_sql);
 			$this->db->sql_query($sql);
 
-			$forum_data_ary['forum_id'] = $this->db->sql_nextid();
+			$forum_data_ary['forum_id'] = (int) $this->db->sql_nextid();
 
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FORUM_ADD', false, [$forum_data_ary['forum_name']]);
 		}
@@ -1168,8 +1316,7 @@ class forums
 				// Has subforums and want to change into a link?
 				if ($row['right_id'] - $row['left_id'] > 1 && $forum_data_sql['forum_type'] == FORUM_LINK)
 				{
-					$errors[] = $this->language->lang('FORUM_WITH_SUBFORUMS_NOT_TO_LINK');
-					return $errors;
+					return [$this->language->lang('FORUM_WITH_SUBFORUMS_NOT_TO_LINK')];
 				}
 
 				// we're turning a postable forum into a non-postable forum
@@ -1195,7 +1342,8 @@ class forums
 					return [$this->language->lang('NO_FORUM_ACTION')];
 				}
 
-				$forum_data_sql['forum_posts_approved'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = $forum_data_sql['forum_topics_approved'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
+				$forum_data_sql['forum_topics_approved'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
+				$forum_data_sql['forum_posts_approved'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = 0;
 				$forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
@@ -1208,7 +1356,7 @@ class forums
 					$action_subforums = $this->request->variable('action_subforums', '');
 					$subforums_to_id = $this->request->variable('subforums_to_id', 0);
 
-					if ($action_subforums == 'delete')
+					if ($action_subforums === 'delete')
 					{
 						$rows = get_forum_branch($row['forum_id'], 'children', 'descending', false);
 
@@ -1224,30 +1372,29 @@ class forums
 							$errors = array_merge($errors, $this->delete_forum_content($_row['forum_id']));
 						}
 
-						if (count($errors))
+						if (!empty($errors))
 						{
 							return $errors;
 						}
 
-						if (count($forum_ids))
+						if (!empty($forum_ids))
 						{
-							$sql = 'DELETE FROM ' . FORUMS_TABLE . '
+							$sql = 'DELETE FROM ' . $this->tables['forums'] . '
 								WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 							$this->db->sql_query($sql);
 
-							$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+							$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
 								WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 							$this->db->sql_query($sql);
 
-							$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+							$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
 								WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 							$this->db->sql_query($sql);
 
 							// Delete forum ids from extension groups table
 							$sql = 'SELECT group_id, allowed_forums
-								FROM ' . EXTENSION_GROUPS_TABLE;
+								FROM ' . $this->tables['extension_groups'];
 							$result = $this->db->sql_query($sql);
-
 							while ($_row = $this->db->sql_fetchrow($result))
 							{
 								if (!$_row['allowed_forums'])
@@ -1258,9 +1405,9 @@ class forums
 								$allowed_forums = unserialize(trim($_row['allowed_forums']));
 								$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
-								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-									SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
-									WHERE group_id = {$_row['group_id']}";
+								$sql = 'UPDATE ' . $this->tables['extension_groups'] . "
+									SET allowed_forums = '" . (!empty($allowed_forums) ? serialize($allowed_forums) : '') . "'
+									WHERE group_id = " . (int) $_row['group_id'];
 								$this->db->sql_query($sql);
 							}
 							$this->db->sql_freeresult($result);
@@ -1268,7 +1415,7 @@ class forums
 							$this->cache->destroy('_extensions');
 						}
 					}
-					else if ($action_subforums == 'move')
+					else if ($action_subforums === 'move')
 					{
 						if (!$subforums_to_id)
 						{
@@ -1276,36 +1423,35 @@ class forums
 						}
 
 						$sql = 'SELECT forum_name
-							FROM ' . FORUMS_TABLE . '
-							WHERE forum_id = ' . $subforums_to_id;
+							FROM ' . $this->tables['forums'] . '
+							WHERE forum_id = ' . (int) $subforums_to_id;
 						$result = $this->db->sql_query($sql);
 						$_row = $this->db->sql_fetchrow($result);
 						$this->db->sql_freeresult($result);
 
-						if (!$_row)
+						if ($_row === false)
 						{
 							return [$this->language->lang('NO_FORUM')];
 						}
 
 						$sql = 'SELECT forum_id
-							FROM ' . FORUMS_TABLE . "
-							WHERE parent_id = {$row['forum_id']}";
+							FROM ' . $this->tables['forums'] . '
+							WHERE parent_id = ' . (int) $row['forum_id'];
 						$result = $this->db->sql_query($sql);
-
 						while ($_row = $this->db->sql_fetchrow($result))
 						{
 							$this->move_forum($_row['forum_id'], $subforums_to_id);
 						}
 						$this->db->sql_freeresult($result);
 
-						$sql = 'UPDATE ' . FORUMS_TABLE . "
-							SET parent_id = $subforums_to_id
-							WHERE parent_id = {$row['forum_id']}";
+						$sql = 'UPDATE ' . $this->tables['forums'] . '
+							SET parent_id = ' . (int) $subforums_to_id . '
+							WHERE parent_id = ' . (int) $row['forum_id'];
 						$this->db->sql_query($sql);
 					}
 
 					// Adjust the left/right id
-					$sql = 'UPDATE ' . FORUMS_TABLE . '
+					$sql = 'UPDATE ' . $this->tables['forums'] . '
 						SET right_id = left_id + 1
 						WHERE forum_id = ' . $row['forum_id'];
 					$this->db->sql_query($sql);
@@ -1328,7 +1474,7 @@ class forums
 				$forum_data_sql['forum_last_poster_colour'] = '';
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1345,7 +1491,7 @@ class forums
 				}
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1355,7 +1501,7 @@ class forums
 			if ($row['forum_name'] != $forum_data_sql['forum_name'])
 			{
 				// the forum name has changed, clear the parents list of all forums (for safety)
-				$sql = 'UPDATE ' . FORUMS_TABLE . "
+				$sql = 'UPDATE ' . $this->tables['forums'] . "
 					SET forum_parents = ''";
 				$this->db->sql_query($sql);
 			}
@@ -1364,9 +1510,9 @@ class forums
 			$forum_id = $forum_data_sql['forum_id'];
 			unset($forum_data_sql['forum_id']);
 
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
+			$sql = 'UPDATE ' . $this->tables['forums'] . '
 				SET ' . $this->db->sql_build_array('UPDATE', $forum_data_sql) . '
-				WHERE forum_id = ' . $forum_id;
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 
 			// Add it back
@@ -1384,13 +1530,13 @@ class forums
 		 * @var	array	forum_data_sql	Array with data we updated
 		 * @var	bool	is_new_forum	Did we create a forum or update one
 		 *								If you want to overwrite this value,
-		 *								ensure to set forum_data_sql[forum_id]
-		 * @var	array	errors		Array of errors, should be strings and not
-		 *							language key.
+		 *								ensure to set forum_data_sql['forum_id']
+		 * @var	array	errors			Array of errors, should be strings and not language key.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['forum_data', 'forum_data_sql', 'is_new_forum', 'errors'];
 		extract($this->dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
+
 		$forum_data_ary = $forum_data;
 		unset($forum_data);
 
@@ -1398,9 +1544,13 @@ class forums
 	}
 
 	/**
-	 * Move forum
+	 * Move forum.
+	 *
+	 * @param int		$from_id		The "from" forum identifier
+	 * @param int		$to_id			The "to" forum identifier
+	 * @return array					An array possibly filled with errors
 	 */
-	function move_forum($from_id, $to_id)
+	protected function move_forum($from_id, $to_id)
 	{
 		$errors = [];
 
@@ -1423,8 +1573,7 @@ class forums
 		 * @event core.acp_manage_forums_move_children
 		 * @var	int		from_id		Id of the current parent forum
 		 * @var	int		to_id		Id of the new parent forum
-		 * @var	array	errors		Array of errors, should be strings and not
-		 *							language key.
+		 * @var	array	errors		Array of errors, should be strings and not language key.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['from_id', 'to_id', 'errors'];
@@ -1449,14 +1598,14 @@ class forums
 		}
 
 		// Resync parents
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id < " . $from_data['right_id'] . "
 				AND right_id > " . $from_data['right_id'];
 		$this->db->sql_query($sql);
 
-		// Resync righthand side of tree
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		// Resync right-hand side of tree
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id > " . $from_data['right_id'];
 		$this->db->sql_query($sql);
@@ -1467,14 +1616,14 @@ class forums
 			$to_data = $this->get_forum_info($to_id);
 
 			// Resync new parents
-			$sql = 'UPDATE ' . FORUMS_TABLE . "
+			$sql = 'UPDATE ' . $this->tables['forums'] . "
 				SET right_id = right_id + $diff, forum_parents = ''
 				WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
 					AND ' . $this->db->sql_in_set('forum_id', $moved_ids, true);
 			$this->db->sql_query($sql);
 
-			// Resync the righthand side of the tree
-			$sql = 'UPDATE ' . FORUMS_TABLE . "
+			// Resync the right-hand side of the tree
+			$sql = 'UPDATE ' . $this->tables['forums'] . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
 					AND ' . $this->db->sql_in_set('forum_id', $moved_ids, true);
@@ -1495,7 +1644,7 @@ class forums
 		else
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
-				FROM ' . FORUMS_TABLE . '
+				FROM ' . $this->tables['forums'] . '
 				WHERE ' . $this->db->sql_in_set('forum_id', $moved_ids, true);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -1504,7 +1653,7 @@ class forums
 			$diff = '+ ' . ($row['right_id'] - $from_data['left_id'] + 1);
 		}
 
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
 			WHERE " . $this->db->sql_in_set('forum_id', $moved_ids);
 		$this->db->sql_query($sql);
@@ -1515,9 +1664,14 @@ class forums
 	}
 
 	/**
-	 * Move forum content from one to another forum
+	 * Move forum content from one to another forum.
+	 *
+	 * @param int		$from_id		The "from" forum identifier
+	 * @param int		$to_id			The "to" forum identifier
+	 * @param bool		$sync			Whether or not the forums should be resynchronised
+	 * @return array					An array possibly filled with errors
 	 */
-	function move_forum_content($from_id, $to_id, $sync = true)
+	protected function move_forum_content($from_id, $to_id, $sync = true)
 	{
 		$errors = [];
 
@@ -1542,7 +1696,7 @@ class forums
 			return $errors;
 		}
 
-		$table_ary = [LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE];
+		$table_ary = [$this->tables['log'], $this->tables['posts'], $this->tables['topics'], $this->tables['drafts'], $this->tables['topics_track']];
 
 		/**
 		 * Perform additional actions before move forum content
@@ -1563,7 +1717,7 @@ class forums
 		}
 		unset($table_ary);
 
-		$table_ary = [FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, MODERATOR_CACHE_TABLE];
+		$table_ary = [$this->tables['forums_access'], $this->tables['forums_track'], $this->tables['forums_watch'], $this->tables['moderator_cache']];
 
 		foreach ($table_ary as $table)
 		{
@@ -1596,22 +1750,31 @@ class forums
 	}
 
 	/**
-	 * Remove complete forum
+	 * Remove complete forum.
+	 *
+	 * @param int		$forum_id			The forum identifier
+	 * @param string	$action_posts		The action for the forum's posts
+	 * @param string	$action_subforums	The action for the forum's subforums
+	 * @param int		$posts_to_id		The "to" forum identifier for the posts action
+	 * @param int		$subforums_to_id	The "to" forum identifier for the subforums action
+	 * @return array						Array possibly filled with errors
 	 */
-	function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
+	protected function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
 	{
+		$errors = [];
+
+		$forum_ids = [$forum_id];
 		$forum_data = $this->get_forum_info($forum_id);
 
-		$errors = [];
-		$log_action_posts = $log_action_forums = $posts_to_name = $subforums_to_name = '';
-		$forum_ids = [$forum_id];
+		$log_action_posts = $log_action_forums = '';
+		$posts_to_name = $subforums_to_name = '';
 
 		if ($action_posts == 'delete')
 		{
 			$log_action_posts = 'POSTS';
 			$errors = array_merge($errors, $this->delete_forum_content($forum_id));
 		}
-		else if ($action_posts == 'move')
+		else if ($action_posts === 'move')
 		{
 			if (!$posts_to_id)
 			{
@@ -1622,13 +1785,13 @@ class forums
 				$log_action_posts = 'MOVE_POSTS';
 
 				$sql = 'SELECT forum_name
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $posts_to_id;
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $posts_to_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
 					$errors[] = $this->language->lang('NO_FORUM');
 				}
@@ -1640,12 +1803,14 @@ class forums
 			}
 		}
 
-		if (count($errors))
+		if (!empty($errors))
 		{
 			return $errors;
 		}
 
-		if ($action_subforums == 'delete')
+		$diff = 0;
+
+		if ($action_subforums === 'delete')
 		{
 			$log_action_forums = 'FORUMS';
 			$rows = get_forum_branch($forum_id, 'children', 'descending', false);
@@ -1656,26 +1821,26 @@ class forums
 				$errors = array_merge($errors, $this->delete_forum_content($row['forum_id']));
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
 
 			$diff = count($forum_ids) * 2;
 
-			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
+			$sql = 'DELETE FROM ' . $this->tables['forums'] . '
 				WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+			$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
 				WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+			$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
 				WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 			$this->db->sql_query($sql);
 		}
-		else if ($action_subforums == 'move')
+		else if ($action_subforums === 'move')
 		{
 			if (!$subforums_to_id)
 			{
@@ -1686,13 +1851,13 @@ class forums
 				$log_action_forums = 'MOVE_FORUMS';
 
 				$sql = 'SELECT forum_name
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $subforums_to_id;
+					FROM ' . $this->tables['forums'] . '
+					WHERE forum_id = ' . (int) $subforums_to_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
 					$errors[] = $this->language->lang('NO_FORUM');
 				}
@@ -1701,40 +1866,40 @@ class forums
 					$subforums_to_name = $row['forum_name'];
 
 					$sql = 'SELECT forum_id
-						FROM ' . FORUMS_TABLE . "
-						WHERE parent_id = $forum_id";
+						FROM ' . $this->tables['forums'] . '
+						WHERE parent_id = ' . (int) $forum_id;
 					$result = $this->db->sql_query($sql);
-
 					while ($row = $this->db->sql_fetchrow($result))
 					{
-						$this->move_forum($row['forum_id'], $subforums_to_id);
+						$this->move_forum((int) $row['forum_id'], $subforums_to_id);
 					}
 					$this->db->sql_freeresult($result);
 
 					// Grab new forum data for correct tree updating later
 					$forum_data = $this->get_forum_info($forum_id);
 
-					$sql = 'UPDATE ' . FORUMS_TABLE . "
-						SET parent_id = $subforums_to_id
-						WHERE parent_id = $forum_id";
+					$sql = 'UPDATE ' . $this->tables['forums'] . '
+						SET parent_id = ' . (int) $subforums_to_id . '
+						WHERE parent_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
 					$diff = 2;
-					$sql = 'DELETE FROM ' . FORUMS_TABLE . "
-						WHERE forum_id = $forum_id";
+
+					$sql = 'DELETE FROM ' . $this->tables['forums'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
-						WHERE forum_id = $forum_id";
+					$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
-						WHERE forum_id = $forum_id";
+					$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+						WHERE forum_id = ' . (int) $forum_id;
 					$this->db->sql_query($sql);
 				}
 			}
 
-			if (count($errors))
+			if (!empty($errors))
 			{
 				return $errors;
 			}
@@ -1742,35 +1907,35 @@ class forums
 		else
 		{
 			$diff = 2;
-			$sql = 'DELETE FROM ' . FORUMS_TABLE . "
-				WHERE forum_id = $forum_id";
+
+			$sql = 'DELETE FROM ' . $this->tables['forums'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
-				WHERE forum_id = $forum_id";
+			$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
-				WHERE forum_id = $forum_id";
+			$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+				WHERE forum_id = ' . (int) $forum_id;
 			$this->db->sql_query($sql);
 		}
 
 		// Resync tree
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET right_id = right_id - $diff
 			WHERE left_id < {$forum_data['right_id']} AND right_id > {$forum_data['right_id']}";
 		$this->db->sql_query($sql);
 
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
 			WHERE left_id > {$forum_data['right_id']}";
 		$this->db->sql_query($sql);
 
 		// Delete forum ids from extension groups table
 		$sql = 'SELECT group_id, allowed_forums
-			FROM ' . EXTENSION_GROUPS_TABLE;
+			FROM ' . $this->tables['extension_groups'];
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (!$row['allowed_forums'])
@@ -1781,9 +1946,9 @@ class forums
 			$allowed_forums = unserialize(trim($row['allowed_forums']));
 			$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
-			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-				SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
-				WHERE group_id = {$row['group_id']}";
+			$sql = 'UPDATE ' . $this->tables['extension_groups'] . "
+				SET allowed_forums = '" . (!empty($allowed_forums) ? serialize($allowed_forums) : '') . "'
+				WHERE group_id = " . (int) $row['group_id'];
 			$this->db->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
@@ -1835,77 +2000,77 @@ class forums
 	}
 
 	/**
-	 * Delete forum content
+	 * Delete forum content.
+	 *
+	 * @param int		$forum_id		The forum identifier
+	 * @return array
 	 */
-	function delete_forum_content($forum_id)
+	protected function delete_forum_content($forum_id)
 	{
 		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
 
 		$this->db->sql_transaction('begin');
 
+		$topic_ids = [];
+
 		// Select then delete all attachments
 		$sql = 'SELECT a.topic_id
-			FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a
-			WHERE p.forum_id = $forum_id
-				AND a.in_message = 0
-				AND a.topic_id = p.topic_id";
+			FROM ' . $this->tables['posts'] . ' p,
+				' . $this->tables['attachments'] . ' a
+			WHERE a.in_message = 0
+				AND a.topic_id = p.topic_id
+				AND p.forum_id = ' . (int) $forum_id;
 		$result = $this->db->sql_query($sql);
-
-		$topic_ids = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$topic_ids[] = $row['topic_id'];
+			$topic_ids[] = (int) $row['topic_id'];
 		}
 		$this->db->sql_freeresult($result);
 
-		/** @var \phpbb\attachment\manager $attachment_manager */
-		$attachment_manager = $phpbb_container->get('attachment.manager');
-		$attachment_manager->delete('topic', $topic_ids, false);
-		unset($attachment_manager);
+		$this->attachment_manager->delete('topic', $topic_ids, false);
 
 		// Delete shadow topics pointing to topics in this forum
 		delete_topic_shadows($forum_id);
 
+		$post_counts = [];
+
 		// Before we remove anything we make sure we are able to adjust the post counts later. ;)
 		$sql = 'SELECT poster_id
-			FROM ' . POSTS_TABLE . '
-			WHERE forum_id = ' . $forum_id . '
+			FROM ' . $this->tables['posts'] . '
+			WHERE forum_id = ' . (int) $forum_id . '
 				AND post_postcount = 1
 				AND post_visibility = ' . ITEM_APPROVED;
 		$result = $this->db->sql_query($sql);
-
-		$post_counts = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
+			$post_counts[$row['poster_id']] = !empty($post_counts[$row['poster_id']]) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
 		$this->db->sql_freeresult($result);
 
 		switch ($this->db->get_sql_layer())
 		{
 			case 'mysqli':
-
 				// Delete everything else and thank MySQL for offering multi-table deletion
 				$tables_ary = [
-					SEARCH_WORDMATCH_TABLE	=> 'post_id',
-					REPORTS_TABLE			=> 'post_id',
-					WARNINGS_TABLE			=> 'post_id',
-					BOOKMARKS_TABLE			=> 'topic_id',
-					TOPICS_WATCH_TABLE		=> 'topic_id',
-					TOPICS_POSTED_TABLE		=> 'topic_id',
-					POLL_OPTIONS_TABLE		=> 'topic_id',
-					POLL_VOTES_TABLE		=> 'topic_id',
+					$this->tables['search_wordmatch']	=> 'post_id',
+					$this->tables['reports']			=> 'post_id',
+					$this->tables['warnings']			=> 'post_id',
+					$this->tables['bookmarks']			=> 'topic_id',
+					$this->tables['topics_watch']		=> 'topic_id',
+					$this->tables['topics_posted']		=> 'topic_id',
+					$this->tables['poll_options']		=> 'topic_id',
+					$this->tables['poll_votes']			=> 'topic_id',
 				];
 
-				$sql = 'DELETE ' . POSTS_TABLE;
-				$sql_using = "\nFROM " . POSTS_TABLE;
-				$sql_where = "\nWHERE " . POSTS_TABLE . ".forum_id = $forum_id\n";
+				$sql = 'DELETE ' . $this->tables['posts'];
+				$sql_using = "\nFROM " . $this->tables['posts'];
+				$sql_where = "\nWHERE " . $this->tables['posts'] . ".forum_id = $forum_id\n";
 
 				foreach ($tables_ary as $table => $field)
 				{
 					$sql .= ", $table ";
 					$sql_using .= ", $table ";
-					$sql_where .= "\nAND $table.$field = " . POSTS_TABLE . ".$field";
+					$sql_where .= "\nAND $table.$field = " . $this->tables['posts'] . ".$field";
 				}
 
 				$this->db->sql_query($sql . $sql_using . $sql_where);
@@ -1917,17 +2082,17 @@ class forums
 				// Delete everything else and curse your DB for not offering multi-table deletion
 				$tables_ary = [
 					'post_id'	=>	[
-						SEARCH_WORDMATCH_TABLE,
-						REPORTS_TABLE,
-						WARNINGS_TABLE,
+						$this->tables['search_wordmatch'],
+						$this->tables['reports'],
+						$this->tables['warnings'],
 					],
 
 					'topic_id'	=>	[
-						BOOKMARKS_TABLE,
-						TOPICS_WATCH_TABLE,
-						TOPICS_POSTED_TABLE,
-						POLL_OPTIONS_TABLE,
-						POLL_VOTES_TABLE,
+						$this->tables['bookmarks'],
+						$this->tables['topics_watch'],
+						$this->tables['topics_posted'],
+						$this->tables['poll_options'],
+						$this->tables['poll_votes'],
 					],
 				];
 
@@ -1940,36 +2105,41 @@ class forums
 
 					do
 					{
-						$sql = "SELECT $field
-							FROM " . POSTS_TABLE . '
-							WHERE forum_id = ' . $forum_id;
-						$result = $this->db->sql_query_limit($sql, $batch_size, $start);
-
 						$ids = [];
+
+						$sql = "SELECT $field
+							FROM " . $this->tables['posts'] . '
+							WHERE forum_id = ' . (int) $forum_id;
+						$result = $this->db->sql_query_limit($sql, $batch_size, $start);
 						while ($row = $this->db->sql_fetchrow($result))
 						{
 							$ids[] = $row[$field];
 						}
 						$this->db->sql_freeresult($result);
 
-						if (count($ids))
+						if (!empty($ids))
 						{
 							$start += count($ids);
 
 							foreach ($tables as $table)
 							{
-								$this->db->sql_query("DELETE FROM $table WHERE " . $this->db->sql_in_set($field, $ids));
+								$sql = "DELETE FROM $table WHERE " . $this->db->sql_in_set($field, $ids);
+								$this->db->sql_query($sql);
 							}
 						}
 					}
-					while (count($ids) == $batch_size);
+					while (count($ids) === $batch_size);
 				}
 				unset($ids);
 
 			break;
 		}
 
-		$table_ary = [FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE];
+		$table_ary = [
+			$this->tables['forums_access'], $this->tables['forums_track'], $this->tables['forums_watch'],
+			$this->tables['log'], $this->tables['moderator_cache'], $this->tables['posts'],
+			$this->tables['topics'], $this->tables['topics_track'],
+		];
 
 		/**
 		 * Perform additional actions before forum content deletion
@@ -1981,42 +2151,39 @@ class forums
 		 * @var	array	post_counts	Array of counts of posts in the forum, by poster_id
 		 * @since 3.1.6-RC1
 		 */
-		$vars = [
-				'table_ary',
-				'forum_id',
-				'topic_ids',
-				'post_counts',
-		];
+		$vars = ['table_ary', 'forum_id', 'topic_ids', 'post_counts'];
 		extract($this->dispatcher->trigger_event('core.delete_forum_content_before_query', compact($vars)));
 
 		foreach ($table_ary as $table)
 		{
-			$this->db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
+			$sql = "DELETE FROM $table WHERE forum_id = " . (int) $forum_id;
+			$this->db->sql_query($sql);
 		}
 
 		// Set forum ids to 0
-		$table_ary = [DRAFTS_TABLE];
+		$table_ary = [$this->tables['drafts']];
 
 		foreach ($table_ary as $table)
 		{
-			$this->db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
+			$sql = "UPDATE $table SET forum_id = 0 WHERE forum_id = " . (int) $forum_id;
+			$this->db->sql_query($sql);
 		}
 
 		// Adjust users post counts
-		if (count($post_counts))
+		if (!empty($post_counts))
 		{
-			foreach ($post_counts as $poster_id => $substract)
+			foreach ($post_counts as $poster_id => $subtract)
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'UPDATE ' . $this->tables['users'] . '
 					SET user_posts = 0
 					WHERE user_id = ' . $poster_id . '
-					AND user_posts < ' . $substract;
+					AND user_posts < ' . $subtract;
 				$this->db->sql_query($sql);
 
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_posts = user_posts - ' . $substract . '
+				$sql = 'UPDATE ' . $this->tables['users'] . '
+					SET user_posts = user_posts - ' . $subtract . '
 					WHERE user_id = ' . $poster_id . '
-					AND user_posts >= ' . $substract;
+					AND user_posts >= ' . $subtract;
 				$this->db->sql_query($sql);
 			}
 		}
@@ -2025,7 +2192,7 @@ class forums
 
 		// Make sure the overall post/topic count is correct...
 		$sql = 'SELECT COUNT(post_id) AS stat
-			FROM ' . POSTS_TABLE . '
+			FROM ' . $this->tables['posts'] . '
 			WHERE post_visibility = ' . ITEM_APPROVED;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -2034,7 +2201,7 @@ class forums
 		$this->config->set('num_posts', (int) $row['stat'], false);
 
 		$sql = 'SELECT COUNT(topic_id) AS stat
-			FROM ' . TOPICS_TABLE . '
+			FROM ' . $this->tables['topics'] . '
 			WHERE topic_visibility = ' . ITEM_APPROVED;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -2043,7 +2210,7 @@ class forums
 		$this->config->set('num_topics', (int) $row['stat'], false);
 
 		$sql = 'SELECT COUNT(attach_id) as stat
-			FROM ' . ATTACHMENTS_TABLE;
+			FROM ' . $this->tables['attachments'];
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -2051,7 +2218,7 @@ class forums
 		$this->config->set('num_files', (int) $row['stat'], false);
 
 		$sql = 'SELECT SUM(filesize) as stat
-			FROM ' . ATTACHMENTS_TABLE;
+			FROM ' . $this->tables['attachments'];
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -2062,10 +2229,19 @@ class forums
 	}
 
 	/**
-	 * Move forum position by $steps up/down
+	 * Move forum position by $steps up/down.
+	 *
+	 * @todo use \phpbb\tree\nestedset ?
+	 *
+	 * @param array		$forum_row		The forum data
+	 * @param string	$action			The move action (move_up|move_down)
+	 * @param int		$steps			The step amount
+	 * @return string					The targeted forum name
 	 */
-	function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
+	protected function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
 	{
+		$target = [];
+
 		/**
 		 * Fetch all the siblings between the module's current spot
 		 * and where we want to move it to. If there are less than $steps
@@ -2073,19 +2249,17 @@ class forums
 		 * module will move as far as possible
 		 */
 		$sql = 'SELECT forum_id, forum_name, left_id, right_id
-			FROM ' . FORUMS_TABLE . "
+			FROM ' . $this->tables['forums'] . "
 			WHERE parent_id = {$forum_row['parent_id']}
-				AND " . (($action == 'move_up') ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
+				AND " . ($action === 'move_up' ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
 		$result = $this->db->sql_query_limit($sql, $steps);
-
-		$target = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$target = $row;
 		}
 		$this->db->sql_freeresult($result);
 
-		if (!count($target))
+		if (empty($target))
 		{
 			// The forum is already on top or bottom
 			return false;
@@ -2093,12 +2267,12 @@ class forums
 
 		/**
 		 * $left_id and $right_id define the scope of the nodes that are affected by the move.
-		 * $diff_up and $diff_down are the values to substract or add to each node's left_id
+		 * $diff_up and $diff_down are the values to subtract or add to each node's left_id
 		 * and right_id in order to move them up or down.
 		 * $move_up_left and $move_up_right define the scope of the nodes that are moving
 		 * up. Other nodes in the scope of ($left_id, $right_id) are considered to move down.
 		 */
-		if ($action == 'move_up')
+		if ($action === 'move_up')
 		{
 			$left_id = $target['left_id'];
 			$right_id = $forum_row['right_id'];
@@ -2122,7 +2296,7 @@ class forums
 		}
 
 		// Now do the dirty job
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
+		$sql = 'UPDATE ' . $this->tables['forums'] . "
 			SET left_id = left_id + CASE
 				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
@@ -2141,44 +2315,19 @@ class forums
 	}
 
 	/**
-	 * Display progress bar for syncinc forums
+	 * Display progress bar for syncing forums.
+	 *
+	 * @param int		$start
+	 * @param int		$total
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function display_progress_bar($start, $total)
+	protected function display_progress_bar($start, $total)
 	{
-		adm_page_header($this->language->lang('SYNC_IN_PROGRESS'));
-
-		$this->template->set_filenames([
-			'body'	=> 'progress_bar.html']
-		);
-
 		$this->template->assign_vars([
 			'L_PROGRESS'			=> $this->language->lang('SYNC_IN_PROGRESS'),
-			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($this->language->lang('SYNC_IN_PROGRESS_EXPLAIN'), $start, $total) : $this->language->lang('SYNC_IN_PROGRESS')]
-		);
-
-		adm_page_footer();
-	}
-
-	/**
-	 * Display copy permission page
-	 * Not used at the moment - we will have a look at it for 3.0.7
-	 */
-	function copy_permission_page($forum_data)
-	{
-		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
-		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
-
-		$l_acl = sprintf($this->language->lang('COPY_TO_ACL'), '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url) . '">', '</a>');
-
-		$this->tpl_name = 'acp_forums_copy_perm';
-
-		$this->template->assign_vars([
-			'U_ACL'				=> append_sid("{$this->admin_path}index.$this->php_ext", 'i=permissions' . $acl_url),
-			'L_ACL_LINK'		=> $l_acl,
-			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
-			'S_COPY_ACTION'		=> $action,
-			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], $forum_data['forum_id'], false, false, false),
+			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? $this->language->lang('SYNC_IN_PROGRESS_EXPLAIN', $start, $total) : $this->language->lang('SYNC_IN_PROGRESS'),
 		]);
-	}
 
+		return $this->helper->render('progress_bar.html', 'SYNC_IN_PROGRESS');
+	}
 }

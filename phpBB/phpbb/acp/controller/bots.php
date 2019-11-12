@@ -275,10 +275,10 @@ class bots
 
 							if ($group_row === false)
 							{
-								return trigger_error($this->language->lang('NO_BOT_GROUP') . $this->helper->adm_back_link($this->helper->route('acp_bots', [
+								return trigger_error($this->language->lang('NO_BOT_GROUP') . $this->helper->adm_back_route('acp_bots', [
 									'action'	=> $action,
 									'id'		=> $bot_id,
-								])), E_USER_WARNING);
+								]), E_USER_WARNING);
 							}
 
 							$user_id = user_add([
@@ -316,10 +316,10 @@ class bots
 
 							if ($row === false)
 							{
-								return trigger_error($this->language->lang('NO_BOT') . $this->helper->adm_back_link($this->helper->route('acp_bots', [
+								return trigger_error($this->language->lang('NO_BOT') . $this->helper->adm_back_route('acp_bots', [
 									'action'	=> $action,
 									'id'		=> $bot_id,
-								])), E_USER_WARNING);
+								]), E_USER_WARNING);
 							}
 
 							$sql_ary = [
@@ -375,10 +375,10 @@ class bots
 
 					if ($bot_row === false)
 					{
-						return trigger_error($this->language->lang('NO_BOT') . $this->helper->adm_back_link($this->helper->route('acp_bots', [
+						return trigger_error($this->language->lang('NO_BOT') . $this->helper->adm_back_route('acp_bots', [
 							'action'	=> $action,
 							'id'		=> $bot_id,
-						])), E_USER_WARNING);
+						]), E_USER_WARNING);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];

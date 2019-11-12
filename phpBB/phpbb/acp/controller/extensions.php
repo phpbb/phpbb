@@ -822,6 +822,10 @@ class extensions
 						$extensions_md[$ext_name]['S_VERSIONCHECK'] = false;
 					}
 				}
+				catch (version_check_exception $e)
+				{
+					$extensions_md[$ext_name]['S_VERSIONCHECK'] = false;
+				}
 				catch (exception_interface $e)
 				{
 					$this->template->assign_block_vars('disabled', [

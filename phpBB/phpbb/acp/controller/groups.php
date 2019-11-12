@@ -15,25 +15,153 @@ namespace phpbb\acp\controller;
 
 class groups
 {
-	var $u_action;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	public function main($id, $mode)
+	/** @var \phpbb\avatar\manager */
+	protected $avatar_manager;
+
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
+
+	/** @var \phpbb\groupposition\legend */
+	protected $group_legend;
+
+	/** @var \phpbb\groupposition\teampage */
+	protected $group_teampage;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\pagination */
+	protected $pagination;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/** @var bool Whether or not this user is a founder */
+	protected $is_founder;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth						$auth				Auth object
+	 * @param \phpbb\avatar\manager					$avatar_manager		Avatar manager object
+	 * @param \phpbb\cache\driver\driver_interface	$cache				Cache object
+	 * @param \phpbb\config\config					$config				Config object
+	 * @param \phpbb\db\driver\driver_interface		$db					Database object
+	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
+	 * @param \phpbb\group\helper					$group_helper		Group helper object
+	 * @param \phpbb\groupposition\legend			$group_legend		Group position: legend object
+	 * @param \phpbb\groupposition\teampage			$group_teampage		Group position: teampage object
+	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper object
+	 * @param \phpbb\language\language				$language			Language object
+	 * @param \phpbb\pagination						$pagination			Pagination object
+	 * @param \phpbb\request\request				$request			Request object
+	 * @param \phpbb\template\template				$template			Template object
+	 * @param \phpbb\user							$user				User object
+	 * @param string								$admin_path			phpBB admin path
+	 * @param string								$root_path			phpBB root path
+	 * @param string								$php_ext			php File extension
+	 * @param array									$tables				phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\avatar\manager $avatar_manager,
+		\phpbb\cache\driver\driver_interface $cache,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\group\helper $group_helper,
+		\phpbb\groupposition\legend $group_legend,
+		\phpbb\groupposition\teampage $group_teampage,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\pagination $pagination,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
 	{
-		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$this->auth				= $auth;
+		$this->avatar_manager	= $avatar_manager;
+		$this->cache			= $cache;
+		$this->config			= $config;
+		$this->db				= $db;
+		$this->dispatcher		= $dispatcher;
+		$this->group_helper		= $group_helper;
+		$this->group_legend		= $group_legend;
+		$this->group_teampage	= $group_teampage;
+		$this->helper			= $helper;
+		$this->language			= $language;
+		$this->pagination		= $pagination;
+		$this->request			= $request;
+		$this->template			= $template;
+		$this->user				= $user;
 
+		$this->admin_path		= $admin_path;
+		$this->root_path		= $root_path;
+		$this->php_ext			= $php_ext;
+		$this->tables			= $tables;
+
+		$this->is_founder		= (int) $user->data['user_type'] === USER_FOUNDER;
+	}
+
+	public function main($mode, $action = '', $g = 0, $page = 1)
+	{
 		$this->language->add_lang('acp/groups');
-		$this->tpl_name = 'acp_groups';
-		$this->page_title = 'ACP_GROUPS_MANAGE';
 
+		switch ($mode)
+		{
+			case 'position':
+				return $this->manage_position();
+
+			default:
+				return $this->manage_groups($action, (int) $g, (int) $page);
+		}
+	}
+
+	public function manage_groups($action, $group_id, $page)
+	{
 		$form_key = 'acp_groups';
 		add_form_key($form_key);
-
-		if ($mode == 'position')
-		{
-			$this->manage_position();
-			return;
-		}
 
 		if (!function_exists('group_user_attributes'))
 		{
@@ -41,17 +169,17 @@ class groups
 		}
 
 		// Check and set some common vars
-		$action		= ($this->request->is_set_post('add')) ? 'add' : (($this->request->is_set_post('addusers')) ? 'addusers' : $this->request->variable('action', ''));
-		$group_id	= $this->request->variable('g', 0);
+		$action		= $this->request->is_set_post('addusers') ? 'addusers' : $action;
+		$action		= $this->request->is_set_post('add') ? 'add' : $action;
+		$update		= $this->request->is_set_post('update');
+
 		$mark_ary	= $this->request->variable('mark', [0]);
 		$name_ary	= $this->request->variable('usernames', '', true);
 		$leader		= $this->request->variable('leader', 0);
 		$default	= $this->request->variable('default', 0);
-		$start		= $this->request->variable('start', 0);
-		$update		= ($this->request->is_set_post('update')) ? true : false;
 
-		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
 
 		// Clear some vars
 		$group_row = [];
@@ -60,23 +188,23 @@ class groups
 		if ($group_id)
 		{
 			$sql = 'SELECT g.*, t.teampage_position AS group_teampage
-				FROM ' . GROUPS_TABLE . ' g
-				LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+				FROM ' . $this->tables['groups'] . ' g
+				LEFT JOIN ' . $this->tables['teampage'] . ' t
 					ON (t.group_id = g.group_id)
-				WHERE g.group_id = ' . $group_id;
+				WHERE g.group_id = ' . (int) $group_id;
 			$result = $this->db->sql_query($sql);
 			$group_row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			if (!$group_row)
+			if ($group_row === false)
 			{
-				trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 			}
 
 			// Check if the user is allowed to manage this group if set to founder only.
-			if ($this->user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
+			if ($this->is_founder === false && $group_row['group_founder_manage'])
 			{
-				trigger_error($this->language->lang('NOT_ALLOWED_MANAGE_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('NOT_ALLOWED_MANAGE_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 			}
 		}
 
@@ -88,12 +216,12 @@ class groups
 			case 'promote':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				// Approve, demote or promote
@@ -102,6 +230,8 @@ class groups
 
 				if (!$error)
 				{
+					$message = '';
+
 					switch ($action)
 					{
 						case 'demote':
@@ -117,11 +247,11 @@ class groups
 						break;
 					}
 
-					trigger_error($this->language->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					return $this->helper->message_back($this->language->lang($message), 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
-					trigger_error($this->language->lang($error) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					return trigger_error($this->language->lang($error) . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]), E_USER_WARNING);
 				}
 
 			break;
@@ -129,28 +259,27 @@ class groups
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 				else if (empty($mark_ary))
 				{
-					trigger_error($this->language->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_USERS') . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
 				{
 					$group_name = $this->group_helper->get_name($group_row['group_name']);
 					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
-					trigger_error($this->language->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+
+					return trigger_error($this->language->lang('GROUP_DEFS_UPDATED') . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]));
 				}
 				else
 				{
 					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'mark'		=> $mark_ary,
-						'g'			=> $group_id,
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> $action])
-					);
+					]));
+
+					return redirect($this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]));
 				}
 			break;
 
@@ -163,24 +292,24 @@ class groups
 
 					do
 					{
-						$sql = 'SELECT user_id
-							FROM ' . USER_GROUP_TABLE . "
-							WHERE group_id = $group_id
-							ORDER BY user_id";
-						$result = $this->db->sql_query_limit($sql, 200, $start);
-
 						$mark_ary = [];
+
+						$sql = 'SELECT user_id
+							FROM ' . $this->tables['user_group'] . '
+							WHERE group_id = ' . (int) $group_id . '
+							ORDER BY user_id';
+						$result = $this->db->sql_query_limit($sql, 200, $start);
 						if ($row = $this->db->sql_fetchrow($result))
 						{
 							do
 							{
-								$mark_ary[] = $row['user_id'];
+								$mark_ary[] = (int) $row['user_id'];
 							}
 							while ($row = $this->db->sql_fetchrow($result));
 
 							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
-							$start = (count($mark_ary) < 200) ? 0 : $start + 200;
+							$start = count($mark_ary) < 200 ? 0 : $start + 200;
 						}
 						else
 						{
@@ -190,34 +319,33 @@ class groups
 					}
 					while ($start);
 
-					trigger_error($this->language->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					return $this->helper->message_back('GROUP_DEFS_UPDATED', 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
 					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'mark'		=> $mark_ary,
-						'g'			=> $group_id,
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> $action])
-					);
+					]));
+
+					return redirect($this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]));
 				}
 			break;
 
 			case 'deleteusers':
 				if (empty($mark_ary))
 				{
-					trigger_error($this->language->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_USERS') . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]), E_USER_WARNING);
 				}
+
 			case 'delete':
 				if (!$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -230,7 +358,7 @@ class groups
 							if (!$this->auth->acl_get('a_groupdel'))
 							{
 								send_status_line(403, 'Forbidden');
-								trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+								return trigger_error($this->language->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -242,53 +370,55 @@ class groups
 						break;
 					}
 
-					$back_link = ($action == 'delete') ? $this->u_action : $this->u_action . '&amp;action=list&amp;g=' . $group_id;
+					$message = $action === 'delete' ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
+					$params = $action === 'delete' ? [] : ['action' => 'list', 'g' => $group_id];
 
 					if ($error)
 					{
-						trigger_error($this->language->lang($error) . adm_back_link($back_link), E_USER_WARNING);
+						return trigger_error($this->language->lang($error) . $this->helper->adm_back_route('acp_groups_manage', $params), E_USER_WARNING);
 					}
 
-					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($this->language->lang($message) . adm_back_link($back_link));
+					return $this->helper->message_back($message, 'acp_groups_manage', $params);
 				}
 				else
 				{
 					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'mark'		=> $mark_ary,
-						'g'			=> $group_id,
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> $action])
-					);
+					]), 'confirm_body.html', $this->helper->route('acp_groups_manage', ['action' => $action, 'g' => $group_id]));
+
+					$params = $action === 'delete' ? [] : ['action' => 'list', 'g' => $group_id];
+
+					return redirect($this->helper->route('acp_groups_manage', $params));
 				}
 			break;
 
 			case 'addusers':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($this->language->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_USERS') . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]), E_USER_WARNING);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
 				$group_name = $this->group_helper->get_name($group_row['group_name']);
 
 				// Add user/s to group
-				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
+				$error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row);
+
+				if ($error)
 				{
 					$display_message = $this->language->lang($error);
 
-					if ($error == 'GROUP_USERS_INVALID')
+					if ($error === 'GROUP_USERS_INVALID')
 					{
 						// Find which users don't exist
 						$actual_name_ary = $name_ary;
@@ -298,30 +428,30 @@ class groups
 						$display_message = $this->language->lang('GROUP_USERS_INVALID', implode($this->language->lang('COMMA_SEPARATOR'), array_udiff($name_ary, $actual_name_ary, 'strcasecmp')));
 					}
 
-					trigger_error($display_message . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					return trigger_error($display_message . $this->helper->adm_back_route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]), E_USER_WARNING);
 				}
 
-				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($this->language->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				$message = $leader ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+
+				return $this->helper->message_back($message, 'acp_manage_groups', ['action' => 'list', 'g' => $group_id]);
 			break;
 
 			case 'edit':
 			case 'add':
-
 				if (!function_exists('display_forums'))
 				{
 					include($this->root_path . 'includes/functions_display.' . $this->php_ext);
 				}
 
-				if ($action == 'edit' && !$group_id)
+				if ($action === 'edit' && !$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
-				if ($action == 'add' && !$this->auth->acl_get('a_groupadd'))
+				if ($action === 'add' && !$this->auth->acl_get('a_groupadd'))
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
 
 				$error = [];
@@ -332,9 +462,6 @@ class groups
 				$avatar_drivers = null;
 				$avatar_data = null;
 				$avatar_error = [];
-
-				/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
-				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 				if ($this->config['allow_avatar'])
 				{
@@ -353,20 +480,17 @@ class groups
 					if (confirm_box(true))
 					{
 						$avatar_data['id'] = substr($avatar_data['id'], 1);
-						$this->avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
+						$this->avatar_manager->handle_avatar_delete($this->db, $this->user, $avatar_data, $this->tables['groups'], 'group_');
 
-						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-						trigger_error($this->language->lang($message) . adm_back_link($this->u_action));
+						$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+
+						return $this->helper->message_back($message, 'acp_groups_manage');
 					}
 					else
 					{
 						confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
-								'avatar_delete'     => true,
-								'i'                 => $id,
-								'mode'              => $mode,
-								'g'			        => $group_id,
-								'action'            => $action])
-						);
+							'avatar_delete'     => true,
+						]));
 					}
 				}
 
@@ -375,7 +499,7 @@ class groups
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 					}
 
 					$group_name	= $this->request->variable('group_name', '', true);
@@ -398,7 +522,7 @@ class groups
 						'skip_auth'			=> $this->request->variable('group_skip_auth', 0),
 					];
 
-					if ($this->user->data['user_type'] == USER_FOUNDER)
+					if ($this->is_founder)
 					{
 						$submit_ary['founder_manage'] = $this->request->is_set('group_founder_manage') ? 1 : 0;
 					}
@@ -411,7 +535,7 @@ class groups
 						if (in_array($driver_name, $avatar_drivers) && !$this->request->is_set_post('avatar_delete'))
 						{
 							$driver = $this->avatar_manager->get_driver($driver_name);
-							$result = $driver->process_form($request, $template, $user, $avatar_data, $avatar_error);
+							$result = $driver->process_form($this->request, $this->template, $this->user, $avatar_data, $avatar_error);
 
 							if ($result && empty($avatar_error))
 							{
@@ -422,20 +546,21 @@ class groups
 						else
 						{
 							$driver = $this->avatar_manager->get_driver($avatar_data['avatar_type']);
+
 							if ($driver)
 							{
 								$driver->delete($avatar_data);
 							}
 
 							// Removing the avatar
-							$submit_ary['avatar_type'] = '';
 							$submit_ary['avatar'] = '';
+							$submit_ary['avatar_type'] = '';
 							$submit_ary['avatar_width'] = 0;
 							$submit_ary['avatar_height'] = 0;
 						}
 
 						// Merge any avatar errors into the primary error array
-						$error = array_merge($error, $this->avatar_manager->localize_errors($user, $avatar_error));
+						$error = array_merge($error, $this->avatar_manager->localize_errors($this->user, $avatar_error));
 					}
 
 					/*
@@ -457,8 +582,8 @@ class groups
 					 * @var	int		group_id			The group id
 					 * @var	array	group_row			Array with new group data
 					 * @var	array	error				Array of errors, if you add errors
-					 *							ensure to update the template variables
-					 *							S_ERROR and ERROR_MSG to display it
+					 *									ensure to update the template variables
+					 *									S_ERROR and ERROR_MSG to display it
 					 * @var	string	group_name			The group name
 					 * @var	string	group_desc			The group description
 					 * @var	int		group_type			The group type
@@ -491,13 +616,14 @@ class groups
 						$error = array_merge($error, $validation_error);
 					}
 
-					if (!count($error))
+					if (empty($error))
 					{
-						// Only set the rank, colour, etc. if it's changed or if we're adding a new
-						// group. This prevents existing group members being updated if no changes
-						// were made.
-						// However there are some attributes that need to be set everytime,
-						// otherwise the group gets removed from the feature.
+						/**
+						 * Only set the rank, colour, etc. if it's changed or we're adding a new group.
+						 * This prevents existing group members being updated if no changes were made.
+						 * However there are some attributes that need to be set every time,
+						 * otherwise the group gets removed from the feature.
+						 */
 						$set_attributes = ['legend', 'teampage'];
 
 						$group_attributes = [];
@@ -525,8 +651,8 @@ class groups
 						 * @var	int		group_id			The group id
 						 * @var	array	group_row			Array with new group data
 						 * @var	array	error				Array of errors, if you add errors
-						 *							ensure to update the template variables
-						 *							S_ERROR and ERROR_MSG to display it
+						 *									ensure to update the template variables
+						 *									S_ERROR and ERROR_MSG to display it
 						 * @var	string	group_name			The group name
 						 * @var	string	group_desc			The group description
 						 * @var	int		group_type			The group type
@@ -555,44 +681,58 @@ class groups
 
 						foreach ($test_variables as $test => $type)
 						{
-							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
+							if (isset($submit_ary[$test]) && ($action === 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
 							{
 								settype($submit_ary[$test], $type);
 								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
 							}
 						}
 
-						if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
+						$error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies);
+
+						if (!$error)
 						{
 							$group_perm_from = $this->request->variable('group_perm_from', 0);
 
-							// Copy permissions?
-							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transferred.
-							// We do not limit on one auth category because this can lead to incomplete permissions being tricky to fix for the admin, roles being assigned or added non-default permissions.
-							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
-							if ($group_perm_from && $action == 'add' && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
+							/**
+							 * Copy permissions?
+							 *
+							 * If the user has the a_authgroups permission and
+							 * at least one additional permission ability set,
+							 * the permissions are fully transferred.
+							 * We do not limit on one auth category because
+							 * this can lead to incomplete permissions being tricky to fix for the admin,
+							 * roles being assigned or added non-default permissions.
+							 * Since the user only has the option to copy permissions from non leader managed groups,
+							 * this seems to be a good compromise.
+							 */
+							if ($group_perm_from && $action === 'add' && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
 							{
 								$sql = 'SELECT group_founder_manage
-									FROM ' . GROUPS_TABLE . '
-									WHERE group_id = ' . $group_perm_from;
+									FROM ' . $this->tables['groups'] . '
+									WHERE group_id = ' . (int) $group_perm_from;
 								$result = $this->db->sql_query($sql);
 								$check_row = $this->db->sql_fetchrow($result);
 								$this->db->sql_freeresult($result);
 
 								// Check the group if non-founder
-								if ($check_row && ($this->user->data['user_type'] == USER_FOUNDER || $check_row['group_founder_manage'] == 0))
+								if ($check_row && ($this->is_founder === true || $check_row['group_founder_manage'] == 0))
 								{
-									// From the mysql documentation:
-									// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-									// Due to this we stay on the safe side if we do the insertion "the manual way"
+									/**
+									 * From the MySQL Documentation:
+									 * Prior to MySQL 4.0.14, the target table of the INSERT statement
+									 * cannot appear in the FROM clause of the SELECT part of the query.
+									 * This limitation is lifted in 4.0.14
+									 * Due to this we stay on the safe side if we do the insertion "the manual way".
+									 */
 
-									// Copy permisisons from/to the acl groups table (only group_id gets changed)
-									$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
-										FROM ' . ACL_GROUPS_TABLE . '
-										WHERE group_id = ' . $group_perm_from;
-									$result = $this->db->sql_query($sql);
-
+									// Copy permissions from/to the acl groups table (only group_id gets changed)
 									$groups_sql_ary = [];
+
+									$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+										FROM ' . $this->tables['acl_groups'] . '
+										WHERE group_id = ' . (int) $group_perm_from;
+									$result = $this->db->sql_query($sql);
 									while ($row = $this->db->sql_fetchrow($result))
 									{
 										$groups_sql_ary[] = [
@@ -606,22 +746,26 @@ class groups
 									$this->db->sql_freeresult($result);
 
 									// Now insert the data
-									$this->db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+									$this->db->sql_multi_insert($this->tables['acl_groups'], $groups_sql_ary);
 
 									$this->auth->acl_clear_prefetch();
 								}
 							}
 
-							$this->cache->destroy('sql', [GROUPS_TABLE, TEAMPAGE_TABLE]);
+							$this->cache->destroy('sql', [$this->tables['groups'], $this->tables['teampage']]);
 
-							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-							trigger_error($this->language->lang($message) . adm_back_link($this->u_action));
+							$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+
+							return $this->helper->message_back($message, 'acp_groups_manage');
 						}
 					}
 
-					if (count($error))
+					$group_rank = '';
+					$group_desc_data = [];
+
+					if (!empty($error))
 					{
-						$error = array_map([&$user, 'lang'], $error);
+						$error = array_map([$this->language, 'lang'], $error);
 						$group_rank = $submit_ary['rank'];
 
 						$group_desc_data = [
@@ -635,34 +779,33 @@ class groups
 				else if (!$group_id)
 				{
 					$group_name = $this->request->variable('group_name', '', true);
+					$group_rank = 0;
+					$group_type = GROUP_OPEN;
 					$group_desc_data = [
 						'text'			=> '',
 						'allow_bbcode'	=> true,
 						'allow_smilies'	=> true,
 						'allow_urls'	=> true,
 					];
-					$group_rank = 0;
-					$group_type = GROUP_OPEN;
 				}
 				else
 				{
 					$group_name = $group_row['group_name'];
-					$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_options']);
 					$group_type = $group_row['group_type'];
 					$group_rank = $group_row['group_rank'];
+					$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_options']);
 				}
 
+				$rank_options = '<option value="0"' . (empty($group_rank) ? ' selected="selected"' : '') . '>' . $this->language->lang('USER_DEFAULT') . '</option>';
+
 				$sql = 'SELECT *
-					FROM ' . RANKS_TABLE . '
+					FROM ' . $this->tables['ranks'] . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
 				$result = $this->db->sql_query($sql);
-
-				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $this->language->lang('USER_DEFAULT') . '</option>';
-
 				while ($row = $this->db->sql_fetchrow($result))
 				{
-					$selected = ($group_rank && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
+					$selected = $group_rank && $row['rank_id'] == $group_rank ? ' selected="selected"' : '';
 					$rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
 				}
 				$this->db->sql_freeresult($result);
@@ -680,10 +823,10 @@ class groups
 
 					// Assign min and max values before generating avatar driver html
 					$this->template->assign_vars([
-							'AVATAR_MIN_WIDTH'		=> $this->config['avatar_min_width'],
-							'AVATAR_MAX_WIDTH'		=> $this->config['avatar_max_width'],
-							'AVATAR_MIN_HEIGHT'		=> $this->config['avatar_min_height'],
-							'AVATAR_MAX_HEIGHT'		=> $this->config['avatar_max_height'],
+						'AVATAR_MIN_WIDTH'		=> $this->config['avatar_min_width'],
+						'AVATAR_MAX_WIDTH'		=> $this->config['avatar_max_width'],
+						'AVATAR_MIN_HEIGHT'		=> $this->config['avatar_min_height'],
+						'AVATAR_MAX_HEIGHT'		=> $this->config['avatar_max_height'],
 					]);
 
 					foreach ($avatar_drivers as $current_driver)
@@ -695,28 +838,29 @@ class groups
 							'avatar' => $driver->get_acp_template_name(),
 						]);
 
-						if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
+						if ($driver->prepare_form($this->request, $this->template, $this->user, $avatar_data, $avatar_error))
 						{
 							$driver_name = $this->avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
-							$this->template->assign_block_vars('avatar_drivers', [
-								'L_TITLE' => $this->language->lang($driver_upper . '_TITLE'),
-								'L_EXPLAIN' => $this->language->lang($driver_upper . '_EXPLAIN'),
 
-								'DRIVER' => $driver_name,
-								'SELECTED' => $current_driver == $selected_driver,
-								'OUTPUT' => $this->template->assign_display('avatar'),
+							$this->template->assign_block_vars('avatar_drivers', [
+								'L_TITLE'	=> $this->language->lang($driver_upper . '_TITLE'),
+								'L_EXPLAIN'	=> $this->language->lang($driver_upper . '_EXPLAIN'),
+
+								'DRIVER'	=> $driver_name,
+								'SELECTED'	=> $current_driver == $selected_driver,
+								'OUTPUT'	=> $this->template->assign_display('avatar'),
 							]);
 						}
 					}
 				}
 
-				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
+				$avatar = $this->group_helper->get_avatar($group_row, 'GROUP_AVATAR', true);
 
-				if (isset($phpbb_avatar_manager) && !$update)
+				if (!$update)
 				{
 					// Merge any avatar errors into the primary error array
-					$error = array_merge($error, $this->avatar_manager->localize_errors($user, $avatar_error));
+					$error = array_merge($error, $this->avatar_manager->localize_errors($this->user, $avatar_error));
 				}
 
 				$back_link = $this->request->variable('back_link', '');
@@ -724,47 +868,37 @@ class groups
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=groups&amp;u=' . $this->request->variable('u', 0));
+						$u_back = $this->helper->route('acp_users_manage', ['mode' => 'groups', 'u' => $this->request->variable('u', 0)]);
 					break;
 
 					default:
-						$u_back = $this->u_action;
+						$u_back = $this->helper->route('acp_groups_manage');
 					break;
 				}
 
-				$this->template->assign_vars([
-					'S_EDIT'			=> true,
-					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
-					'S_GROUP_PERM'		=> ($action == 'add' && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
-					'S_INCLUDE_SWATCH'	=> true,
-					'S_ERROR'			=> (count($error)) ? true : false,
-					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
-					'S_USER_FOUNDER'	=> ($this->user->data['user_type'] == USER_FOUNDER) ? true : false,
-					'S_AVATARS_ENABLED'		=> ($this->config['allow_avatar'] && $avatars_enabled),
+				$s_add = $action === 'add';
+				$s_errors = !empty($error);
 
-					'ERROR_MSG'				=> (count($error)) ? implode('<br />', $error) : '',
+				$this->template->assign_vars([
+					'S_ERROR'				=> $s_errors,
+					'ERROR_MSG'				=> $s_errors ? implode('<br />', $error) : '',
+
 					'GROUP_NAME'			=> $this->group_helper->get_name($group_name),
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
-					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
-					'GROUP_FOUNDER_MANAGE'	=> (isset($group_row['group_founder_manage']) && $group_row['group_founder_manage']) ? ' checked="checked"' : '',
-					'GROUP_LEGEND'			=> (isset($group_row['group_legend']) && $group_row['group_legend']) ? ' checked="checked"' : '',
-					'GROUP_TEAMPAGE'		=> (isset($group_row['group_teampage']) && $group_row['group_teampage']) ? ' checked="checked"' : '',
-					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
-					'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
-					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
-					'GROUP_SKIP_AUTH'		=> (!empty($group_row['group_skip_auth'])) ? ' checked="checked"' : '',
+					'GROUP_RECEIVE_PM'		=> isset($group_row['group_receive_pm']) && $group_row['group_receive_pm'] ? ' checked="checked"' : '',
+					'GROUP_FOUNDER_MANAGE'	=> isset($group_row['group_founder_manage']) && $group_row['group_founder_manage'] ? ' checked="checked"' : '',
+					'GROUP_LEGEND'			=> isset($group_row['group_legend']) && $group_row['group_legend'] ? ' checked="checked"' : '',
+					'GROUP_TEAMPAGE'		=> isset($group_row['group_teampage']) && $group_row['group_teampage'] ? ' checked="checked"' : '',
+					'GROUP_MESSAGE_LIMIT'	=> isset($group_row['group_message_limit']) ? $group_row['group_message_limit'] : 0,
+					'GROUP_MAX_RECIPIENTS'	=> isset($group_row['group_max_recipients']) ? $group_row['group_max_recipients'] : 0,
+					'GROUP_COLOUR'			=> isset($group_row['group_colour']) ? $group_row['group_colour'] : '',
+					'GROUP_SKIP_AUTH'		=> !empty($group_row['group_skip_auth']) ? ' checked="checked"' : '',
 
-					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
-					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
-					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
-
-					'S_RANK_OPTIONS'		=> $rank_options,
-					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($this->user->data['user_type'] == USER_FOUNDER) ? false : 0)),
 					'AVATAR'				=> empty($avatar) ? '<img src="' . $this->admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $this->config['avatar_filesize'],
-					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+					'AVATAR_WIDTH'			=> isset($group_row['group_avatar_width']) ? $group_row['group_avatar_width'] : '',
+					'AVATAR_HEIGHT'			=> isset($group_row['group_avatar_height']) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
@@ -772,14 +906,29 @@ class groups
 					'GROUP_TYPE_HIDDEN'		=> GROUP_HIDDEN,
 					'GROUP_TYPE_SPECIAL'	=> GROUP_SPECIAL,
 
-					'GROUP_FREE'		=> $type_free,
-					'GROUP_OPEN'		=> $type_open,
-					'GROUP_CLOSED'		=> $type_closed,
-					'GROUP_HIDDEN'		=> $type_hidden,
+					'GROUP_FREE'			=> $type_free,
+					'GROUP_OPEN'			=> $type_open,
+					'GROUP_CLOSED'			=> $type_closed,
+					'GROUP_HIDDEN'			=> $type_hidden,
 
-					'U_BACK'			=> $u_back,
-					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
-					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
+					'L_AVATAR_EXPLAIN'		=> phpbb_avatar_explanation_string(),
+
+					'S_ADD_GROUP'			=> $s_add,
+					'S_AVATARS_ENABLED'		=> $this->config['allow_avatar'] && $avatars_enabled,
+					'S_DESC_BBCODE_CHECKED'	=> (bool) $group_desc_data['allow_bbcode'],
+					'S_DESC_URLS_CHECKED'	=> (bool) $group_desc_data['allow_urls'],
+					'S_DESC_SMILIES_CHECKED'=> (bool) $group_desc_data['allow_smilies'],
+					'S_EDIT'				=> true,
+					'S_GROUP_PERM'			=> ($s_add && $this->auth->acl_get('a_authgroups') && $this->auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
+					'S_INCLUDE_SWATCH'		=> true,
+					'S_USER_FOUNDER'		=> $this->is_founder,
+					'S_SPECIAL_GROUP'		=> $group_type == GROUP_SPECIAL,
+
+					'S_RANK_OPTIONS'		=> $rank_options,
+					'S_GROUP_OPTIONS'		=> group_select_options(false, false, ($this->is_founder ? false : 0)),
+
+					'U_ACTION'				=> $this->helper->route('acp_groups_manage', ['action' => $action, 'g' => $group_id]),
+					'U_BACK'				=> $u_back,
 				]);
 
 				/**
@@ -787,8 +936,7 @@ class groups
 				 *
 				 * @event core.acp_manage_group_display_form
 				 * @var	string	action				Type of the action: add|edit
-				 * @var	bool	update				Do we display the form only
-				 *							or did the user press submit
+				 * @var	bool	update				Do we display the form only or did the user press submit
 				 * @var	int		group_id			The group id
 				 * @var	array	group_row			Array with new group data
 				 * @var	string	group_name			The group name
@@ -797,8 +945,8 @@ class groups
 				 * @var	string	group_rank			The group rank
 				 * @var	string	rank_options		The rank options
 				 * @var	array	error				Array of errors, if you add errors
-				 *							ensure to update the template variables
-				 *							S_ERROR and ERROR_MSG to display it
+				 *									ensure to update the template variables
+				 *									S_ERROR and ERROR_MSG to display it
 				 * @since 3.1.0-b5
 				 */
 				$vars = [
@@ -815,49 +963,45 @@ class groups
 				];
 				extract($this->dispatcher->trigger_event('core.acp_manage_group_display_form', compact($vars)));
 
-				return;
+				return $this->helper->render('acp_groups.html', $this->language->lang('ACP_GROUPS_MANAGE'));
 			break;
 
 			case 'list':
-
 				if (!$group_id)
 				{
-					trigger_error($this->language->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_GROUP') . $this->helper->adm_back_route('acp_groups_manage'), E_USER_WARNING);
 				}
-
-				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
-				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
 				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_colour, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
-					WHERE ug.group_id = $group_id
+					FROM ' . $this->tables['users'] . ' u,
+						' . $this->tables['user_group'] . ' ug
+					WHERE ug.group_id = ' . (int) $group_id . '
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 1
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean';
 				$result = $this->db->sql_query($sql);
-
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$this->template->assign_block_vars('leader', [
-						'U_USER_EDIT'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
-
 						'USERNAME'			=> $row['username'],
 						'USERNAME_COLOUR'	=> $row['user_colour'],
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $this->user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
 						'USER_ID'			=> $row['user_id'],
+						'JOINED'			=> $row['user_regdate'] ? $this->user->format_date($row['user_regdate']) : ' - ',
+
+						'S_GROUP_DEFAULT'	=> $row['group_id'] == $group_id,
+
+						'U_USER_EDIT'		=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
 					]);
 				}
 				$this->db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
 				$sql = 'SELECT COUNT(user_id) AS total_members
-					FROM ' . USER_GROUP_TABLE . "
-					WHERE group_id = $group_id
-						AND group_leader = 0";
+					FROM ' . $this->tables['user_group'] . '
+					WHERE group_leader = 0
+						AND group_id = ' . (int) $group_id;
 				$result = $this->db->sql_query($sql);
 				$total_members = (int) $this->db->sql_fetchfield('total_members');
 				$this->db->sql_freeresult($result);
@@ -870,76 +1014,77 @@ class groups
 					$s_action_options .= '<option value="' . $option . '">' . $this->language->lang('GROUP_' . $lang) . '</option>';
 				}
 
-				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
-				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_members, $this->config['topics_per_page'], $start);
+				$this->pagination->generate_template_pagination([
+					'routes' => ['acp_groups_manage', 'acp_groups_manage_pagination'],
+					'params' => ['action' => $action, 'g' => $group_id],
+				], 'pagination', 'page', $total_members, $limit, $start);
 
 				$this->template->assign_vars([
-					'S_LIST'			=> true,
-					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
+					'GROUP_NAME'		=> $this->group_helper->get_name($group_row['group_name']),
+
 					'S_ACTION_OPTIONS'	=> $s_action_options,
+					'S_GROUP_SPECIAL'	=> $group_row['group_type'] == GROUP_SPECIAL,
+					'S_LIST'			=> true,
 
-					'GROUP_NAME'	=> $this->group_helper->get_name($group_row['group_name']),
-
-					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->helper->route('acp_groups_manage', ['action' => $action, 'g' => $group_id]),
+					'U_BACK'			=> $this->helper->route('acp_groups_manage'),
+					'U_DEFAULT_ALL'		=> $this->helper->route('acp_groups_manage', ['action' => 'set_default_on_all', 'g' => $group_id]),
 					'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				]);
-
-				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug
-					WHERE ug.group_id = $group_id
-						AND u.user_id = ug.user_id
-						AND ug.group_leader = 0
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
 
 				$pending = false;
 
+				// Grab the members
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
+					FROM ' . $this->tables['users'] . ' u,
+						' . $this->tables['user_group'] . ' ug
+					WHERE ug.group_id = ' . (int) $group_id . '
+						AND u.user_id = ug.user_id
+						AND ug.group_leader = 0
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean';
+				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					if ($row['user_pending'] && !$pending)
 					{
-						$this->template->assign_block_vars('member', [
-							'S_PENDING'		=> true]
-						);
+						$this->template->assign_block_vars('member', ['S_PENDING' => true]);
 
 						$pending = true;
 					}
 
 					$this->template->assign_block_vars('member', [
-						'U_USER_EDIT'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
-
+						'USER_ID'			=> $row['user_id'],
 						'USERNAME'			=> $row['username'],
 						'USERNAME_COLOUR'	=> $row['user_colour'],
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $this->user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id']]
-					);
+						'JOINED'			=> $row['user_regdate'] ? $this->user->format_date($row['user_regdate']) : ' - ',
+
+						'S_GROUP_DEFAULT'	=> $row['group_id'] == $group_id,
+
+						'U_USER_EDIT'		=> $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $row['user_id']]),
+					]);
 				}
 				$this->db->sql_freeresult($result);
 
-				return;
+				return $this->helper->render('acp_groups.html', $this->language->lang('GROUP_MEMBERS'));
 			break;
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'		=> $this->u_action,
-			'S_GROUP_ADD'	=> ($this->auth->acl_get('a_groupadd')) ? true : false]
-		);
+			'U_ACTION'		=> $this->helper->route('acp_groups_manage'),
+			'S_GROUP_ADD'	=> (bool) $this->auth->acl_get('a_groupadd'),
+		]);
+
+		$lookup = $cached_group_data = [];
 
 		// Get us all the groups
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
-			FROM ' . GROUPS_TABLE . ' g
+			FROM ' . $this->tables['groups'] . ' g
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $this->db->sql_query($sql);
-
-		$lookup = $cached_group_data = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
+			$type = $row['group_type'] == GROUP_SPECIAL ? 'special' : 'normal';
 
 			// used to determine what type a group is
 			$lookup[$row['group_id']] = $type;
@@ -953,11 +1098,10 @@ class groups
 
 		// How many people are in which group?
 		$sql = 'SELECT COUNT(ug.user_id) AS total_members, SUM(ug.user_pending) AS pending_members, ug.group_id
-			FROM ' . USER_GROUP_TABLE . ' ug
+			FROM ' . $this->tables['user_group'] . ' ug
 			WHERE ' . $this->db->sql_in_set('ug.group_id', array_keys($lookup)) . '
 			GROUP BY ug.group_id';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$type = $lookup[$row['group_id']];
@@ -971,59 +1115,53 @@ class groups
 
 		foreach ($cached_group_data as $type => $row_ary)
 		{
-			if ($type == 'special')
+			if ($type === 'special')
 			{
-				$this->template->assign_block_vars('groups', [
-					'S_SPECIAL'			=> true]
-				);
+				$this->template->assign_block_vars('groups', ['S_SPECIAL' => true]);
 			}
 
 			foreach ($row_ary as $group_id => $row)
 			{
-				$group_name = (!empty($this->language->lang['G_' . $row['group_name']]))? $this->language->lang['G_' . $row['group_name']] : $row['group_name'];
-
 				$this->template->assign_block_vars('groups', [
-					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
-					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
-					'U_DELETE'		=> ($this->auth->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
+					'GROUP_NAME'		=> $this->group_helper->get_name($row['group_name']),
+					'GROUP_COLOR'		=> $row['group_colour'],
+					'PENDING_MEMBERS'	=> $row['pending_members'],
+					'TOTAL_MEMBERS'		=> $row['total_members'],
 
-					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
+					'S_GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 
-					'GROUP_NAME'	=> $group_name,
-					'GROUP_COLOR'	=> $row['group_colour'],
-					'TOTAL_MEMBERS'	=> $row['total_members'],
-					'PENDING_MEMBERS' => $row['pending_members'],
+					'U_EDIT'			=> $this->helper->route('acp_groups_manage', ['action' => 'edit', 'g' => $group_id]),
+					'U_DELETE'			=> $this->auth->acl_get('a_groupdel') ? $this->helper->route('acp_groups_manage', ['action' => 'delete', 'g' => $group_id]) : '',
+					'U_LIST'			=> $this->helper->route('acp_groups_manage', ['action' => 'list', 'g' => $group_id]),
 				]);
 			}
 		}
+
+		return $this->helper->render('acp_groups.html', $this->language->lang('GROUP_MEMBERS'));
 	}
 
 	public function manage_position()
 	{
-		$this->tpl_name = 'acp_groups_position';
-		$this->page_title = 'ACP_GROUPS_POSITION';
-
 		$field = $this->request->variable('field', '');
 		$action = $this->request->variable('action', '');
 		$group_id = $this->request->variable('g', 0);
 		$teampage_id = $this->request->variable('t', 0);
 		$category_id = $this->request->variable('c', 0);
 
-		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_position = null;
 
 		if ($field && !in_array($field, ['legend', 'teampage']))
 		{
 			// Invalid mode
-			trigger_error($this->language->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MODE') . $this->helper->adm_back_route('acp_groups_positions'), E_USER_WARNING);
 		}
 		else if ($field && in_array($field, ['legend', 'teampage']))
 		{
-			/* @var $group_position \phpbb\groupposition\groupposition_interface */
-			$group_position = $phpbb_container->get('groupposition.' . $field);
+			/** @var \phpbb\groupposition\legend|\phpbb\groupposition\teampage $group_position */
+			$group_position = $this->{'group_' . $field};
 		}
 
-		if ($field == 'teampage')
+		if ($field === 'teampage')
 		{
 			try
 			{
@@ -1038,49 +1176,37 @@ class groups
 					break;
 
 					case 'delete':
-						$group_position->delete_teampage($teampage_id);
-					break;
-
 					case 'move_up':
-						$group_position->move_up_teampage($teampage_id);
-					break;
-
 					case 'move_down':
-						$group_position->move_down_teampage($teampage_id);
+						$group_position->{$action . '_teampage'}($teampage_id);
 					break;
 				}
 			}
 			catch (\phpbb\groupposition\exception $exception)
 			{
-				trigger_error($this->language->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang($exception->getMessage()) . $this->helper->adm_back_route('acp_groups_positions'), E_USER_WARNING);
 			}
 		}
-		else if ($field == 'legend')
+		else if ($field === 'legend')
 		{
 			try
 			{
 				switch ($action)
 				{
 					case 'add':
-						$group_position->add_group($group_id);
-					break;
-
 					case 'delete':
-						$group_position->delete_group($group_id);
+						$group_position->{$action . '_group'}($group_id);
 					break;
 
 					case 'move_up':
-						$group_position->move_up($group_id);
-					break;
-
 					case 'move_down':
-						$group_position->move_down($group_id);
+						$group_position->$action($group_id);
 					break;
 				}
 			}
 			catch (\phpbb\groupposition\exception $exception)
 			{
-				trigger_error($this->language->lang($exception->getMessage()) . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang($exception->getMessage()) . $this->helper->adm_back_route('acp_groups_positions'), E_USER_WARNING);
 			}
 		}
 		else
@@ -1090,40 +1216,43 @@ class groups
 				case 'set_config_teampage':
 					$this->config->set('teampage_forums', $this->request->variable('teampage_forums', 0));
 					$this->config->set('teampage_memberships', $this->request->variable('teampage_memberships', 0));
-					trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_groups_positions');
 				break;
 
 				case 'set_config_legend':
 					$this->config->set('legend_sort_groupname', $this->request->variable('legend_sort_groupname', 0));
-					trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+
+					return $this->helper->message_back('CONFIG_UPDATED', 'acp_groups_positions');
 				break;
 			}
 		}
 
-		if (($action == 'move_up' || $action == 'move_down') && $this->request->is_ajax())
+		if (($action === 'move_up' || $action === 'move_down') && $this->request->is_ajax())
 		{
 			$json_response = new \phpbb\json_response;
 			$json_response->send(['success' => true]);
 		}
 
 		$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
-			FROM ' . GROUPS_TABLE . '
+			FROM ' . $this->tables['groups'] . '
 			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$group_name = $this->group_helper->get_name($row['group_name']);
+
 			if ($row['group_legend'])
 			{
 				$this->template->assign_block_vars('legend', [
 					'GROUP_NAME'	=> $group_name,
-					'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
-					'GROUP_TYPE'	=> $this->language->lang[\phpbb\groupposition\legend::group_type_language($row['group_type'])],
+					'GROUP_COLOUR'	=> $row['group_colour'] ? '#' . $row['group_colour'] : '',
+					'GROUP_TYPE'	=> $this->language->lang(\phpbb\groupposition\legend::group_type_language($row['group_type'])),
 
-					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
-					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
-					'U_DELETE'		=> "{$this->u_action}&amp;field=legend&amp;action=delete&amp;g=" . $row['group_id'],
+					// @todo generate_link_hash() ?
+					'U_DELETE'		=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'delete', 'g' => $group_id]),
+					'U_MOVE_DOWN'	=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'move_down', 'g' => $group_id]),
+					'U_MOVE_UP'		=> $this->helper->route('acp_groups_positions', ['field' => 'legend', 'action' => 'move_up', 'g' => $group_id]),
 				]);
 			}
 			else
@@ -1131,37 +1260,35 @@ class groups
 				$this->template->assign_block_vars('add_legend', [
 					'GROUP_ID'		=> (int) $row['group_id'],
 					'GROUP_NAME'	=> $group_name,
-					'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+					'GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 				]);
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$category_url_param = (($category_id) ? '&amp;c=' . $category_id : '');
+		$cat_param = $category_id ? ['c' => $category_id] : [];
 
 		$sql = 'SELECT t.*, g.group_name, g.group_colour, g.group_type
-			FROM ' . TEAMPAGE_TABLE . ' t
-			LEFT JOIN ' . GROUPS_TABLE . ' g
+			FROM ' . $this->tables['teampage'] . ' t
+			LEFT JOIN ' . $this->tables['groups'] . ' g
 				ON (t.group_id = g.group_id)
-			WHERE t.teampage_parent = ' . $category_id . '
-				OR t.teampage_id = ' . $category_id . '
+			WHERE t.teampage_parent = ' . (int) $category_id . '
+				OR t.teampage_id = ' . (int) $category_id . '
 			ORDER BY t.teampage_position ASC';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if ($row['teampage_id'] == $category_id)
 			{
-				$this->template->assign_vars([
-					'CURRENT_CATEGORY_NAME'		=> $row['teampage_name'],
-				]);
+				$this->template->assign_var('CURRENT_CATEGORY_NAME', $row['teampage_name']);
+
 				continue;
 			}
 
 			if ($row['group_id'])
 			{
 				$group_name = $this->group_helper->get_name($row['group_name']);
-				$group_type = $this->language->lang[\phpbb\groupposition\teampage::group_type_language($row['group_type'])];
+				$group_type = $this->language->lang(\phpbb\groupposition\teampage::group_type_language($row['group_type']));
 			}
 			else
 			{
@@ -1171,46 +1298,49 @@ class groups
 
 			$this->template->assign_block_vars('teampage', [
 				'GROUP_NAME'	=> $group_name,
-				'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
+				'GROUP_COLOUR'	=> $row['group_colour'] ? '#' . $row['group_colour'] : '',
 				'GROUP_TYPE'	=> $group_type,
 
-				'U_CATEGORY'	=> (!$row['group_id']) ? "{$this->u_action}&amp;c=" . $row['teampage_id'] : '',
-				'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=teampage&amp;action=move_down{$category_url_param}&amp;t=" . $row['teampage_id'],
-				'U_MOVE_UP'		=> "{$this->u_action}&amp;field=teampage&amp;action=move_up{$category_url_param}&amp;t=" . $row['teampage_id'],
-				'U_DELETE'		=> "{$this->u_action}&amp;field=teampage&amp;action=delete{$category_url_param}&amp;t=" . $row['teampage_id'],
+				// @todo generate_link_hash() ??
+				'U_CATEGORY'	=> !$row['group_id'] ? $this->helper->route('acp_groups_positions', ['c' => $row['teampage_id']]) : '',
+				'U_DELETE'		=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'delete', 't' => $row['teampage_id']] + $cat_param),
+				'U_MOVE_DOWN'	=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'move_down', 't' => $row['teampage_id']] + $cat_param),
+				'U_MOVE_UP'		=> $this->helper->route('acp_groups_positions', ['field' => 'teampage', 'action' => 'move_up', 't' => $row['teampage_id']] + $cat_param),
 			]);
 		}
 		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
-			FROM ' . GROUPS_TABLE . ' g
-			LEFT JOIN ' . TEAMPAGE_TABLE . ' t
+			FROM ' . $this->tables['groups'] . ' g
+			LEFT JOIN ' . $this->tables['teampage'] . ' t
 				ON (t.group_id = g.group_id)
 			WHERE t.teampage_id IS NULL
 			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$group_name = $this->group_helper->get_name($row['group_name']);
 			$this->template->assign_block_vars('add_teampage', [
 				'GROUP_ID'		=> (int) $row['group_id'],
 				'GROUP_NAME'	=> $group_name,
-				'GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL),
+				'GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 			]);
 		}
 		$this->db->sql_freeresult($result);
 
 		$this->template->assign_vars([
-			'U_ACTION'					=> $this->u_action,
-			'U_ACTION_LEGEND'			=> $this->u_action . '&amp;field=legend',
-			'U_ACTION_TEAMPAGE'			=> $this->u_action . '&amp;field=teampage' . $category_url_param,
-			'U_ACTION_TEAMPAGE_CAT'		=> $this->u_action . '&amp;field=teampage_cat',
+			'DISPLAY_FORUMS'			=> (bool) $this->config['teampage_forums'],
+			'DISPLAY_MEMBERSHIPS'		=> $this->config['teampage_memberships'],
+			'LEGEND_SORT_GROUPNAME'		=> (bool) $this->config['legend_sort_groupname'],
 
 			'S_TEAMPAGE_CATEGORY'		=> $category_id,
-			'DISPLAY_FORUMS'			=> ($this->config['teampage_forums']) ? true : false,
-			'DISPLAY_MEMBERSHIPS'		=> $this->config['teampage_memberships'],
-			'LEGEND_SORT_GROUPNAME'		=> ($this->config['legend_sort_groupname']) ? true : false,
+
+			'U_ACTION'					=> $this->helper->route('acp_groups_positions'),
+			'U_ACTION_LEGEND'			=> $this->helper->route('acp_groups_positions', ['field' => 'legend']),
+			'U_ACTION_TEAMPAGE'			=> $this->helper->route('acp_groups_positions', ['field' => 'teampage'] + $cat_param),
+			'U_ACTION_TEAMPAGE_CAT'		=> $this->helper->route('acp_groups_positions', ['field' => 'teampage_cat']),
 		]);
+
+		return $this->helper->render('acp_groups_position.html', $this->language->lang('ACP_GROUPS_POSITION'));
 	}
 }
