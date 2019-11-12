@@ -45,6 +45,11 @@ class ucp_register
 		$change_lang	= $request->variable('change_lang', '');
 		$user_lang		= $request->variable('lang', $user->lang_name);
 
+		if ($agreed && !check_form_key('ucp_register'))
+		{
+			$agreed = false;
+		}
+
 		/**
 		* Add UCP register data before they are assigned to the template or submitted
 		*
@@ -67,14 +72,7 @@ class ucp_register
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_register_requests_after', compact($vars)));
 
-		if ($agreed)
-		{
-			add_form_key('ucp_register');
-		}
-		else
-		{
-			add_form_key('ucp_register_terms');
-		}
+		add_form_key('ucp_register');
 
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
