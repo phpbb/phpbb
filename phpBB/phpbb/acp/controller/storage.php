@@ -46,7 +46,7 @@ class storage
 	public $u_action;
 
 	/**
-	 *  @param string $id
+	 * @param string $id
 	 * @param string $mode
 	 */
 	public function main($id, $mode)

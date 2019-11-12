@@ -68,8 +68,8 @@ class ranks
 				 * Modify the SQL array when saving a rank
 				 *
 				 * @event core.acp_ranks_save_modify_sql_ary
-				 * @var	int		rank_id		The ID of the rank (if available)
-				 * @var	array	sql_ary		Array with the rank's data
+				 * @var int		rank_id		The ID of the rank (if available)
+				 * @var array	sql_ary		Array with the rank's data
 				 * @since 3.1.0-RC3
 				 */
 				$vars = ['rank_id', 'sql_ary'];
@@ -221,8 +221,8 @@ class ranks
 				 * Modify the template output array for editing/adding ranks
 				 *
 				 * @event core.acp_ranks_edit_modify_tpl_ary
-				 * @var	array	ranks		Array with the rank's data
-				 * @var	array	tpl_ary		Array with the rank's template data
+				 * @var array	ranks		Array with the rank's data
+				 * @var array	tpl_ary		Array with the rank's template data
 				 * @since 3.1.0-RC3
 				 */
 				$vars = ['ranks', 'tpl_ary'];
@@ -261,8 +261,8 @@ class ranks
 			 * Modify the template output array for each listed rank
 			 *
 			 * @event core.acp_ranks_list_modify_rank_row
-			 * @var	array	row			Array with the rank's data
-			 * @var	array	rank_row	Array with the rank's template data
+			 * @var array	row			Array with the rank's data
+			 * @var array	rank_row	Array with the rank's template data
 			 * @since 3.1.0-RC3
 			 */
 			$vars = ['row', 'rank_row'];

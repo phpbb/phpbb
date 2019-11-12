@@ -309,7 +309,7 @@ class prune
 				{
 					$this->template->assign_block_vars('users', [
 						'USERNAME'			=> $usernames[$user_id],
-						'USER_ID'           => $user_id,
+						'USER_ID'			=> $user_id,
 						'U_PROFILE'			=> get_username_string('profile', $user_id, $usernames[$user_id]),
 						'U_USER_ADMIN'		=> ($this->auth->acl_get('a_user')) ? append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $this->user->session_id) : '',
 					]);

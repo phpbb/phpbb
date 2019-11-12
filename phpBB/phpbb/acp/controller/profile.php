@@ -393,14 +393,14 @@ class profile
 				 * Event to add initialization for new profile field table fields
 				 *
 				 * @event core.acp_profile_create_edit_init
-				 * @var	string	action			create|edit
-				 * @var	int		step			Configuration step (1|2|3)
-				 * @var	bool	submit			Form has been submitted
-				 * @var	bool	save			Configuration should be saved
-				 * @var	string	field_type		Type of the field we are dealing with
-				 * @var	array	field_row		Array of data about the field
-				 * @var	array	exclude			Array of excluded fields by step
-				 * @var	array	visibility_ary	Array of fields that are visibility related
+				 * @var string	action			create|edit
+				 * @var int		step			Configuration step (1|2|3)
+				 * @var bool	submit			Form has been submitted
+				 * @var bool	save			Configuration should be saved
+				 * @var string	field_type		Type of the field we are dealing with
+				 * @var array	field_row		Array of data about the field
+				 * @var array	exclude			Array of excluded fields by step
+				 * @var array	visibility_ary	Array of fields that are visibility related
 				 * @since 3.1.6-RC1
 				 */
 				$vars = [
@@ -515,7 +515,7 @@ class profile
 				}
 
 				// Check for general issues in every step
-				if ($submit) //  && $step == 1
+				if ($submit) // && $step == 1
 				{
 					// Check values for step 1
 					if ($cp->vars['field_ident'] == '')
@@ -697,14 +697,14 @@ class profile
 				 * Event to add template variables for new profile field table fields
 				 *
 				 * @event core.acp_profile_create_edit_after
-				 * @var	string	action			create|edit
-				 * @var	int		step			Configuration step (1|2|3)
-				 * @var	bool	submit			Form has been submitted
-				 * @var	bool	save			Configuration should be saved
-				 * @var	string	field_type		Type of the field we are dealing with
-				 * @var	array	field_data		Array of data about the field
-				 * @var	array	s_hidden_fields	Array of hidden fields in case this needs modification
-				 * @var	array	options			Array of options specific to this step
+				 * @var string	action			create|edit
+				 * @var int		step			Configuration step (1|2|3)
+				 * @var bool	submit			Form has been submitted
+				 * @var bool	save			Configuration should be saved
+				 * @var string	field_type		Type of the field we are dealing with
+				 * @var array	field_data		Array of data about the field
+				 * @var array	s_hidden_fields	Array of hidden fields in case this needs modification
+				 * @var array	options			Array of options specific to this step
 				 * @since 3.1.6-RC1
 				 */
 				$vars = [
@@ -736,10 +736,10 @@ class profile
 		 * Event to handle actions on the ACP profile fields page
 		 *
 		 * @event core.acp_profile_action
-		 * @var	string	action		Action that is being performed
-		 * @var	string	tpl_name	Template file to load
-		 * @var	string	page_title	Page title
-		 * @var	string	u_action	The URL we are at, read only
+		 * @var string	action		Action that is being performed
+		 * @var string	tpl_name	Template file to load
+		 * @var string	page_title	Page title
+		 * @var string	u_action	The URL we are at, read only
 		 * @since 3.2.2-RC1
 		 */
 		$vars = [
@@ -798,9 +798,9 @@ class profile
 			 * Event to modify profile field data before it is assigned to the template
 			 *
 			 * @event core.acp_profile_modify_profile_row
-			 * @var	array	row				Array with data for the current profile field
-			 * @var	array	field_block		Template data that is being assigned to the 'fields' block
-			 * @var	object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
+			 * @var array	row				Array with data for the current profile field
+			 * @var array	field_block		Template data that is being assigned to the 'fields' block
+			 * @var object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
 			 * @since 3.2.2-RC1
 			 */
 			$vars = [
@@ -894,7 +894,7 @@ class profile
 						break;
 
 						case 'optionfield':
-							$value = ((isset($value[$lang_id])) ? ((is_array($value[$lang_id])) ?  implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var));
+							$value = ((isset($value[$lang_id])) ? ((is_array($value[$lang_id])) ? implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var));
 							$lang_options[$lang_id]['fields'][$field] = [
 								'TITLE'		=> $this->language->lang('CP_' . strtoupper($field)),
 								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . $value . '</textarea></dd>',
@@ -977,10 +977,10 @@ class profile
 		 * Event to modify profile field configuration data before saving to database
 		 *
 		 * @event core.acp_profile_create_edit_save_before
-		 * @var	string	action			create|edit
-		 * @var	string	field_type		Type of the field we are dealing with
-		 * @var	array	field_data		Array of data about the field
-		 * @var	array	profile_fields	Array of fields to be sent to the database
+		 * @var string	action			create|edit
+		 * @var string	field_type		Type of the field we are dealing with
+		 * @var array	field_data		Array of data about the field
+		 * @var array	profile_fields	Array of fields to be sent to the database
 		 * @since 3.1.6-RC1
 		 */
 		$vars = [

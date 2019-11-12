@@ -126,14 +126,14 @@ class ban
 				 * Use this event to modify the ban details before the ban is performed
 				 *
 				 * @event core.acp_ban_before
-				 * @var	string	mode				One of the following: user, ip, email
-				 * @var	string	ban					Either string or array with usernames, ips or email addresses
-				 * @var	int		ban_length			Ban length in minutes
-				 * @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
-				 * @var	bool	ban_exclude			Are we banning or excluding from another ban
-				 * @var	string	ban_reason			Ban reason displayed to moderators
-				 * @var	string	ban_give_reason		Ban reason displayed to the banned user
-				 * @var	mixed	abort_ban			Either false, or an error message that is displayed to the user.
+				 * @var string	mode				One of the following: user, ip, email
+				 * @var string	ban					Either string or array with usernames, ips or email addresses
+				 * @var int		ban_length			Ban length in minutes
+				 * @var string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+				 * @var bool	ban_exclude			Are we banning or excluding from another ban
+				 * @var string	ban_reason			Ban reason displayed to moderators
+				 * @var string	ban_give_reason		Ban reason displayed to the banned user
+				 * @var mixed	abort_ban			Either false, or an error message that is displayed to the user.
 				 *									If a string is given the bans are not issued.
 				 * @since 3.1.0-RC5
 				 */
@@ -160,13 +160,13 @@ class ban
 				 * Use this event to perform actions after the ban has been performed
 				 *
 				 * @event core.acp_ban_after
-				 * @var	string	mode				One of the following: user, ip, email
-				 * @var	string	ban					Either string or array with usernames, ips or email addresses
-				 * @var	int		ban_length			Ban length in minutes
-				 * @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
-				 * @var	bool	ban_exclude			Are we banning or excluding from another ban
-				 * @var	string	ban_reason			Ban reason displayed to moderators
-				 * @var	string	ban_give_reason		Ban reason displayed to the banned user
+				 * @var string	mode				One of the following: user, ip, email
+				 * @var string	ban					Either string or array with usernames, ips or email addresses
+				 * @var int		ban_length			Ban length in minutes
+				 * @var string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+				 * @var bool	ban_exclude			Are we banning or excluding from another ban
+				 * @var string	ban_reason			Ban reason displayed to moderators
+				 * @var string	ban_give_reason		Ban reason displayed to the banned user
 				 * @since 3.1.0-RC5
 				 */
 				$vars = [

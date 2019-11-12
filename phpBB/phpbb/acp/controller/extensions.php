@@ -159,11 +159,11 @@ class extensions
 		 * Event to run a specific action on extension
 		 *
 		 * @event core.acp_extensions_run_action_before
-		 * @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
-		 * @var	string	ext_name		Extension name from request
-		 * @var	int		safe_time_limit	Safe limit of execution time
-		 * @var	int		start_time		Start time
-		 * @var	string	tpl_name		Template file to load
+		 * @var string	action			Action to run; if the event completes execution of the action, should be set to 'none'
+		 * @var string	ext_name		Extension name from request
+		 * @var int		safe_time_limit	Safe limit of execution time
+		 * @var int		start_time		Start time
+		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 * @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
 		 * @changed 4.0.0				Removed u_action
@@ -524,11 +524,11 @@ class extensions
 		 * Event to run after a specific action on extension has completed
 		 *
 		 * @event core.acp_extensions_run_action_after
-		 * @var	string	action			Action that has run
-		 * @var	string	ext_name		Extension name from request
-		 * @var	int		safe_time_limit	Safe limit of execution time
-		 * @var	int		start_time		Start time
-		 * @var	string	tpl_name		Template file to load
+		 * @var string	action			Action that has run
+		 * @var string	ext_name		Extension name from request
+		 * @var int		safe_time_limit	Safe limit of execution time
+		 * @var int		start_time		Start time
+		 * @var string	tpl_name		Template file to load
 		 * @since 3.1.11-RC1
 		 * @changed 4.0.0				Removed u_action
 		 */
@@ -732,7 +732,7 @@ class extensions
 		else
 		{
 			$message_title = $this->language->lang('INFORMATION');
-			$message_text  = $this->language->lang_array($e->getMessage(), $e->get_parameters());
+			$message_text = $this->language->lang_array($e->getMessage(), $e->get_parameters());
 		}
 
 		$this->template->assign_vars([

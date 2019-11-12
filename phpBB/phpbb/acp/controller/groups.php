@@ -247,7 +247,7 @@ class groups
 						break;
 					}
 
-					return $this->helper->message_back($this->language->lang($message), 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
+					return $this->helper->message_back($message, 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 				}
 				else
 				{
@@ -433,7 +433,7 @@ class groups
 
 				$message = $leader ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
 
-				return $this->helper->message_back($message, 'acp_manage_groups', ['action' => 'list', 'g' => $group_id]);
+				return $this->helper->message_back($message, 'acp_groups_manage', ['action' => 'list', 'g' => $group_id]);
 			break;
 
 			case 'edit':
@@ -489,7 +489,7 @@ class groups
 					else
 					{
 						confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
-							'avatar_delete'     => true,
+							'avatar_delete'	=> true,
 						]));
 					}
 				}
@@ -578,20 +578,20 @@ class groups
 					 * Request group data and operate on it
 					 *
 					 * @event core.acp_manage_group_request_data
-					 * @var	string	action				Type of the action: add|edit
-					 * @var	int		group_id			The group id
-					 * @var	array	group_row			Array with new group data
-					 * @var	array	error				Array of errors, if you add errors
+					 * @var string	action				Type of the action: add|edit
+					 * @var int		group_id			The group id
+					 * @var array	group_row			Array with new group data
+					 * @var array	error				Array of errors, if you add errors
 					 *									ensure to update the template variables
 					 *									S_ERROR and ERROR_MSG to display it
-					 * @var	string	group_name			The group name
-					 * @var	string	group_desc			The group description
-					 * @var	int		group_type			The group type
-					 * @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
-					 * @var	bool	allow_desc_urls		Allow urls in group description: true|false
-					 * @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
-					 * @var	array	submit_ary			Array with new group data
-					 * @var	array	validation_checks	Array with validation data
+					 * @var string	group_name			The group name
+					 * @var string	group_desc			The group description
+					 * @var int		group_type			The group type
+					 * @var bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+					 * @var bool	allow_desc_urls		Allow urls in group description: true|false
+					 * @var bool	allow_desc_smilies	Allow smiles in group description: true|false
+					 * @var array	submit_ary			Array with new group data
+					 * @var array	validation_checks	Array with validation data
 					 * @since 3.1.0-b5
 					 */
 					$vars = [
@@ -647,20 +647,20 @@ class groups
 						 * Initialise data before we display the add/edit form
 						 *
 						 * @event core.acp_manage_group_initialise_data
-						 * @var	string	action				Type of the action: add|edit
-						 * @var	int		group_id			The group id
-						 * @var	array	group_row			Array with new group data
-						 * @var	array	error				Array of errors, if you add errors
+						 * @var string	action				Type of the action: add|edit
+						 * @var int		group_id			The group id
+						 * @var array	group_row			Array with new group data
+						 * @var array	error				Array of errors, if you add errors
 						 *									ensure to update the template variables
 						 *									S_ERROR and ERROR_MSG to display it
-						 * @var	string	group_name			The group name
-						 * @var	string	group_desc			The group description
-						 * @var	int		group_type			The group type
-						 * @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
-						 * @var	bool	allow_desc_urls		Allow urls in group description: true|false
-						 * @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
-						 * @var	array	submit_ary			Array with new group data
-						 * @var	array	test_variables		Array with variables for test
+						 * @var string	group_name			The group name
+						 * @var string	group_desc			The group description
+						 * @var int		group_type			The group type
+						 * @var bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+						 * @var bool	allow_desc_urls		Allow urls in group description: true|false
+						 * @var bool	allow_desc_smilies	Allow smiles in group description: true|false
+						 * @var array	submit_ary			Array with new group data
+						 * @var array	test_variables		Array with variables for test
 						 * @since 3.1.0-b5
 						 */
 						$vars = [
@@ -848,8 +848,8 @@ class groups
 								'L_EXPLAIN'	=> $this->language->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER'	=> $driver_name,
-								'SELECTED'	=> $current_driver == $selected_driver,
 								'OUTPUT'	=> $this->template->assign_display('avatar'),
+								'SELECTED'	=> $current_driver == $selected_driver,
 							]);
 						}
 					}
@@ -935,16 +935,16 @@ class groups
 				 * Modify group template data before we display the form
 				 *
 				 * @event core.acp_manage_group_display_form
-				 * @var	string	action				Type of the action: add|edit
-				 * @var	bool	update				Do we display the form only or did the user press submit
-				 * @var	int		group_id			The group id
-				 * @var	array	group_row			Array with new group data
-				 * @var	string	group_name			The group name
-				 * @var	int		group_type			The group type
-				 * @var	array	group_desc_data		The group description data
-				 * @var	string	group_rank			The group rank
-				 * @var	string	rank_options		The rank options
-				 * @var	array	error				Array of errors, if you add errors
+				 * @var string	action				Type of the action: add|edit
+				 * @var bool	update				Do we display the form only or did the user press submit
+				 * @var int		group_id			The group id
+				 * @var array	group_row			Array with new group data
+				 * @var string	group_name			The group name
+				 * @var int		group_type			The group type
+				 * @var array	group_desc_data		The group description data
+				 * @var string	group_rank			The group rank
+				 * @var string	rank_options		The rank options
+				 * @var array	error				Array of errors, if you add errors
 				 *									ensure to update the template variables
 				 *									S_ERROR and ERROR_MSG to display it
 				 * @since 3.1.0-b5
@@ -1042,7 +1042,7 @@ class groups
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 0
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean';
-				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
+				$result = $this->db->sql_query_limit($sql, $limit, $start);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					if ($row['user_pending'] && !$pending)
@@ -1240,12 +1240,10 @@ class groups
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$group_name = $this->group_helper->get_name($row['group_name']);
-
 			if ($row['group_legend'])
 			{
 				$this->template->assign_block_vars('legend', [
-					'GROUP_NAME'	=> $group_name,
+					'GROUP_NAME'	=> $this->group_helper->get_name($row['group_name']),
 					'GROUP_COLOUR'	=> $row['group_colour'] ? '#' . $row['group_colour'] : '',
 					'GROUP_TYPE'	=> $this->language->lang(\phpbb\groupposition\legend::group_type_language($row['group_type'])),
 
@@ -1259,7 +1257,7 @@ class groups
 			{
 				$this->template->assign_block_vars('add_legend', [
 					'GROUP_ID'		=> (int) $row['group_id'],
-					'GROUP_NAME'	=> $group_name,
+					'GROUP_NAME'	=> $this->group_helper->get_name($row['group_name']),
 					'GROUP_SPECIAL'	=> $row['group_type'] == GROUP_SPECIAL,
 				]);
 			}

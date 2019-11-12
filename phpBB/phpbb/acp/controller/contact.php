@@ -11,6 +11,8 @@
  *
  */
 
+namespace phpbb\acp\controller;
+
 class contact
 {
 	/** @var \phpbb\config\config */

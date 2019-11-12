@@ -258,8 +258,8 @@ class forums
 					 * Request forum data and operate on it (parse texts, etc.)
 					 *
 					 * @event core.acp_manage_forums_request_data
-					 * @var	string	action		Type of the action: add|edit
-					 * @var	array	forum_data	Array with new forum data
+					 * @var string	action		Type of the action: add|edit
+					 * @var array	forum_data	Array with new forum data
 					 * @since 3.1.0-a1
 					 */
 					$vars = ['action', 'forum_data'];
@@ -494,7 +494,7 @@ class forums
 
 				$this->cache->destroy('sql', $this->tables['forums']);
 
-				$this->template->assign_var('L_FORUM_RESYNCED', sprintf($this->language->lang('FORUM_RESYNCED'), $row['forum_name']));
+				$this->template->assign_var('L_FORUM_RESYNCED', $this->language->lang('FORUM_RESYNCED', $row['forum_name']));
 			break;
 
 			case 'add':
@@ -587,15 +587,15 @@ class forums
 				 * Initialise data before we display the add/edit form
 				 *
 				 * @event core.acp_manage_forums_initialise_data
-				 * @var	string	action		Type of the action: add|edit
-				 * @var	bool	update		Do we display the form only
+				 * @var string	action		Type of the action: add|edit
+				 * @var bool	update		Do we display the form only
 				 *							or did the user press submit
-				 * @var	int		forum_id	When editing: the forum id,
+				 * @var int		forum_id	When editing: the forum id,
 				 *							when creating: the parent forum id
-				 * @var	array	row			Array with current forum data
+				 * @var array	row			Array with current forum data
 				 *							empty when creating new forum
-				 * @var	array	forum_data	Array with new forum data
-				 * @var	string	parents_list	List of parent options
+				 * @var array	forum_data	Array with new forum data
+				 * @var string	parents_list	List of parent options
 				 * @since 3.1.0-a1
 				 */
 				$vars = ['action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list'];
@@ -711,7 +711,7 @@ class forums
 					if ($postable_forum_exists)
 					{
 						$this->template->assign_vars([
-							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id),  // , false, true, false???
+							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id), // , false, true, false???
 						]);
 					}
 
@@ -767,7 +767,7 @@ class forums
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
 					'FORUM_IMAGE'				=> $forum_data['forum_image'],
-					'FORUM_IMAGE_SRC'			=> ($forum_data['forum_image']) ? $this->root_path . $forum_data['forum_image'] : '',
+					'FORUM_IMAGE_SRC'			=> ($forum_data['forum_image']) ? $this->web_path . $forum_data['forum_image'] : '',
 					'FORUM_POST'				=> FORUM_POST,
 					'FORUM_LINK'				=> FORUM_LINK,
 					'FORUM_CAT'					=> FORUM_CAT,
@@ -825,18 +825,18 @@ class forums
 				 * Modify forum template data before we display the form
 				 *
 				 * @event core.acp_manage_forums_display_form
-				 * @var	string	action			Type of the action: add|edit
-				 * @var	bool	update			Do we display the form only or did the user press submit
-				 * @var	int		forum_id		When editing: the forum id,
+				 * @var string	action			Type of the action: add|edit
+				 * @var bool	update			Do we display the form only or did the user press submit
+				 * @var int		forum_id		When editing: the forum id,
 				 *								when creating: the parent forum id
-				 * @var	array	row				array with current forum data
+				 * @var array	row				array with current forum data
 				 *								empty when creating new forum
-				 * @var	array	forum_data		Array with new forum data
-				 * @var	string	parents_list	List of parent options
-				 * @var	array	errors			Array of errors, if you add errors
+				 * @var array	forum_data		Array with new forum data
+				 * @var string	parents_list	List of parent options
+				 * @var array	errors			Array of errors, if you add errors
 				 *								ensure to update the template variables
 				 *								S_ERROR and ERROR_MSG to display it
-				 * @var	array	template_data	Array with new forum data
+				 * @var array	template_data	Array with new forum data
 				 * @since 3.1.0-a1
 				 */
 				$vars = [
@@ -984,7 +984,7 @@ class forums
 		 * Modify the forum list data
 		 *
 		 * @event core.acp_manage_forums_modify_forum_list
-		 * @var	array	rowset	Array with the forums list data
+		 * @var array		rowset		Array with the forums list data
 		 * @since 3.1.10-RC1
 		 */
 		$vars = ['rowset'];
@@ -1107,9 +1107,8 @@ class forums
 		 * Validate the forum data before we create/update the forum
 		 *
 		 * @event core.acp_manage_forums_validate_data
-		 * @var	array	forum_data	Array with new forum data
-		 * @var	array	errors		Array of errors, should be strings and not
-		 *							language key.
+		 * @var array	forum_data	Array with new forum data
+		 * @var array	errors		Array of errors, should be strings and not language key.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['forum_data', 'errors'];
@@ -1237,8 +1236,8 @@ class forums
 		 * Remove invalid values from forum_data_sql that should not be updated
 		 *
 		 * @event core.acp_manage_forums_update_data_before
-		 * @var	array	forum_data		Array with forum data
-		 * @var	array	forum_data_sql	Array with data we are going to update
+		 * @var array	forum_data		Array with forum data
+		 * @var array	forum_data_sql	Array with data we are going to update
 		 * 								If forum_data_sql[forum_id] is set, we update that forum,
 		 * 								otherwise a new one is created.
 		 * @since 3.1.0-a1
@@ -1526,12 +1525,12 @@ class forums
 		 * Event after a forum was updated or created
 		 *
 		 * @event core.acp_manage_forums_update_data_after
-		 * @var	array	forum_data		Array with forum data
-		 * @var	array	forum_data_sql	Array with data we updated
-		 * @var	bool	is_new_forum	Did we create a forum or update one
+		 * @var array	forum_data		Array with forum data
+		 * @var array	forum_data_sql	Array with data we updated
+		 * @var bool	is_new_forum	Did we create a forum or update one
 		 *								If you want to overwrite this value,
 		 *								ensure to set forum_data_sql['forum_id']
-		 * @var	array	errors			Array of errors, should be strings and not language key.
+		 * @var array	errors			Array of errors, should be strings and not language key.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['forum_data', 'forum_data_sql', 'is_new_forum', 'errors'];
@@ -1571,9 +1570,9 @@ class forums
 		 * This event may be triggered, when a forum is deleted
 		 *
 		 * @event core.acp_manage_forums_move_children
-		 * @var	int		from_id		Id of the current parent forum
-		 * @var	int		to_id		Id of the new parent forum
-		 * @var	array	errors		Array of errors, should be strings and not language key.
+		 * @var int		from_id		Id of the current parent forum
+		 * @var int		to_id		Id of the new parent forum
+		 * @var array	errors		Array of errors, should be strings and not language key.
 		 * @since 3.1.0-a1
 		 */
 		$vars = ['from_id', 'to_id', 'errors'];
@@ -1679,10 +1678,10 @@ class forums
 		 * Event when we move content from one forum to another
 		 *
 		 * @event core.acp_manage_forums_move_content
-		 * @var	int		from_id		Id of the current parent forum
-		 * @var	int		to_id		Id of the new parent forum
-		 * @var	bool	sync		Shall we sync the "to"-forum's data
-		 * @var	array	errors		Array of errors, should be strings and not
+		 * @var int		from_id		Id of the current parent forum
+		 * @var int		to_id		Id of the new parent forum
+		 * @var bool	sync		Shall we sync the "to"-forum's data
+		 * @var array	errors		Array of errors, should be strings and not
 		 *							language key. If this array is not empty,
 		 *							The content will not be moved.
 		 * @since 3.1.0-a1
@@ -1702,7 +1701,7 @@ class forums
 		 * Perform additional actions before move forum content
 		 *
 		 * @event core.acp_manage_forums_move_content_sql_before
-		 * @var	array	table_ary	Array of tables from which forum_id will be updated
+		 * @var array	table_ary	Array of tables from which forum_id will be updated
 		 * @since 3.2.4-RC1
 		 */
 		$vars = ['table_ary'];
@@ -1730,10 +1729,9 @@ class forums
 		 * Event when content has been moved from one forum to another
 		 *
 		 * @event core.acp_manage_forums_move_content_after
-		 * @var	int		from_id		Id of the current parent forum
-		 * @var	int		to_id		Id of the new parent forum
-		 * @var	bool	sync		Shall we sync the "to"-forum's data
-		 *
+		 * @var int		from_id		Id of the current parent forum
+		 * @var int		to_id		Id of the new parent forum
+		 * @var bool	sync		Shall we sync the "to"-forum's data
 		 * @since 3.2.9-RC1
 		 */
 		$vars = ['from_id', 'to_id', 'sync'];
@@ -2145,10 +2143,10 @@ class forums
 		 * Perform additional actions before forum content deletion
 		 *
 		 * @event core.delete_forum_content_before_query
-		 * @var	array	table_ary	Array of tables from which all rows will be deleted that hold the forum_id
-		 * @var	int		forum_id	the forum id
-		 * @var	array	topic_ids	Array of the topic ids from the forum to be deleted
-		 * @var	array	post_counts	Array of counts of posts in the forum, by poster_id
+		 * @var array	table_ary	Array of tables from which all rows will be deleted that hold the forum_id
+		 * @var int		forum_id	the forum id
+		 * @var array	topic_ids	Array of the topic ids from the forum to be deleted
+		 * @var array	post_counts	Array of counts of posts in the forum, by poster_id
 		 * @since 3.1.6-RC1
 		 */
 		$vars = ['table_ary', 'forum_id', 'topic_ids', 'post_counts'];

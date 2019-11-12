@@ -188,11 +188,11 @@ class bbcodes
 				 * Modify custom bbcode template data before we display the add/edit form
 				 *
 				 * @event core.acp_bbcodes_edit_add
-				 * @var	string	action			Type of the action: add|edit
-				 * @var	array	tpl_ary			Array with custom bbcode add/edit data
-				 * @var	int		bbcode_id		When editing: the bbcode id,
+				 * @var string	action			Type of the action: add|edit
+				 * @var array	tpl_ary			Array with custom bbcode add/edit data
+				 * @var int		bbcode_id		When editing: the bbcode id,
 				 *								when creating: 0
-				 * @var	array	bbcode_tokens	Array of bbcode tokens
+				 * @var array	bbcode_tokens	Array of bbcode tokens
 				 * @since 3.1.0-a3
 				 */
 				$vars = ['action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens'];
@@ -219,15 +219,15 @@ class bbcodes
 				 * Modify custom bbcode data before the modify/create action
 				 *
 				 * @event core.acp_bbcodes_modify_create
-				 * @var	string	action				Type of the action: modify|create
-				 * @var	array	sql_ary				Array with new bbcode data
-				 * @var	int		bbcode_id			When editing: the bbcode id,
+				 * @var string	action				Type of the action: modify|create
+				 * @var array	sql_ary				Array with new bbcode data
+				 * @var int		bbcode_id			When editing: the bbcode id,
 				 *									when creating: 0
-				 * @var	bool	display_on_posting	Display bbcode on posting form
-				 * @var	string	bbcode_match		The bbcode usage string to match
-				 * @var	string	bbcode_tpl			The bbcode HTML replacement string
-				 * @var	string	bbcode_helpline		The bbcode help line string
-				 * @var	array	hidden_fields		Array of hidden fields for use when
+				 * @var bool	display_on_posting	Display bbcode on posting form
+				 * @var string	bbcode_match		The bbcode usage string to match
+				 * @var string	bbcode_tpl			The bbcode HTML replacement string
+				 * @var string	bbcode_helpline		The bbcode help line string
+				 * @var array	hidden_fields		Array of hidden fields for use when
 				 *									submitting form when $warn_unsafe is true
 				 * @since 3.1.0-a3
 				 */
@@ -243,22 +243,25 @@ class bbcodes
 				];
 				extract($this->dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
+				global $phpbb_container;
+
 				$acp_utils   = $phpbb_container->get('text_formatter.acp_utils');
 				$bbcode_info = $acp_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
-				$warn_unsafe = ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE);
+				$warn_unsafe = $bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE;
 
 				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_TEMPLATE)
 				{
-					trigger_error($user->lang['BBCODE_INVALID_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('BBCODE_INVALID_TEMPLATE') . $this->helper->adm_back_route('acp_bbcodes'), E_USER_WARNING);
 				}
+
 				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_DEFINITION)
 				{
-					trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('BBCODE_INVALID') . $this->helper->adm_back_route('acp_bbcodes'), E_USER_WARNING);
 				}
 
 				if (!$warn_unsafe && !check_form_key($form_key))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_bbcodes'), E_USER_WARNING);
 				}
 
 				if (!$warn_unsafe || confirm_box(true))
@@ -378,9 +381,9 @@ class bbcodes
 					 * Event after a BBCode has been added or updated
 					 *
 					 * @event core.acp_bbcodes_modify_create_after
-					 * @var	string	action		Type of the action: modify|create
-					 * @var	int		bbcode_id	The id of the added or updated bbcode
-					 * @var	array	sql_ary		Array with bbcode data (read only)
+					 * @var string	action		Type of the action: modify|create
+					 * @var int		bbcode_id	The id of the added or updated bbcode
+					 * @var array	sql_ary		Array with bbcode data (read only)
 					 * @since 3.2.4-RC1
 					 */
 					$vars = [
@@ -433,9 +436,9 @@ class bbcodes
 						 * Event after a BBCode has been deleted
 						 *
 						 * @event core.acp_bbcodes_delete_after
-						 * @var	string	action		Type of the action: delete
-						 * @var	int		bbcode_id	The id of the deleted bbcode
-						 * @var	string	bbcode_tag	The tag of the deleted bbcode
+						 * @var string	action		Type of the action: delete
+						 * @var int		bbcode_id	The id of the deleted bbcode
+						 * @var string	bbcode_tag	The tag of the deleted bbcode
 						 * @since 3.2.4-RC1
 						 */
 						$vars = [
@@ -485,9 +488,9 @@ class bbcodes
 		 * Modify custom bbcode template data before we display the form
 		 *
 		 * @event core.acp_bbcodes_display_form
-		 * @var	string	action			Type of the action: modify|create
-		 * @var	array	sql_ary			The SQL array to get custom bbcode data
-		 * @var	array	template_data	Array with form template data
+		 * @var string	action			Type of the action: modify|create
+		 * @var array	sql_ary			The SQL array to get custom bbcode data
+		 * @var array	template_data	Array with form template data
 		 * @since 3.1.0-a3
 		 * @changed 4.0.0
 		 */
@@ -510,8 +513,8 @@ class bbcodes
 			 * Modify display of custom bbcodes in the form
 			 *
 			 * @event core.acp_bbcodes_display_bbcodes
-			 * @var	array	row				Array with current bbcode data
-			 * @var	array	bbcodes_array	Array of bbcodes template data
+			 * @var array	row				Array with current bbcode data
+			 * @var array	bbcodes_array	Array of bbcodes template data
 			 * @since 3.1.0-a3
 			 * @changed 4.0.0
 			 */

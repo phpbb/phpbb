@@ -226,8 +226,8 @@ class language
 					 * Run code after language deleted
 					 *
 					 * @event core.acp_language_after_delete
-					 * @var	string 	lang_iso     	Language ISO code
-					 * @var	string  delete_message  Delete message appear to user
+					 * @var string	lang_iso		Language ISO code
+					 * @var string	delete_message	Delete message appear to user
 					 * @since 3.2.2-RC1
 					 */
 					$vars = ['lang_iso', 'delete_message'];
