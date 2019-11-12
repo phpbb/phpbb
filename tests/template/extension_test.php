@@ -109,7 +109,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 
 		$this->template->set_custom_style('tests', [
 			$this->template_path,
-			$phpbb_root_path . 'styles/prosilver/template',
+			$phpbb_root_path . 'styles/all/templates',
 		]);
 	}
 

@@ -103,7 +103,7 @@ class icon extends \Twig\Extension\AbstractExtension
 
 		try
 		{
-			return $environment->render("icons/{$type}.html", [
+			return $environment->render("macros/icons/{$type}.html", [
 				'ATTRIBUTES'	=> (string) $this->implode_attributes($attributes),
 				'CLASSES'		=> (string) $classes,
 				'ICON'			=> (string) $icon,
