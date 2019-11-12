@@ -250,8 +250,7 @@ class session
 			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
-				// check IPv4 first, the IPv6 is hopefully only going to be used very seldom
-				if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+				if (!filter_var($ip, FILTER_VALIDATE_IP))
 				{
 					// contains invalid data, don't use the forwarded for header
 					$this->forwarded_for = '';
@@ -311,49 +310,17 @@ class session
 
 		foreach ($ips as $ip)
 		{
-			if (function_exists('phpbb_ip_normalise'))
+			// Normalise IP address
+			$ip = phpbb_ip_normalise($ip);
+
+			if ($ip === false)
 			{
-				// Normalise IP address
-				$ip = phpbb_ip_normalise($ip);
-
-				if (empty($ip))
-				{
-					// IP address is invalid.
-					break;
-				}
-
-				// IP address is valid.
-				$this->ip = $ip;
-
-				// Skip legacy code.
-				continue;
-			}
-
-			if (preg_match(get_preg_expression('ipv4'), $ip))
-			{
-				$this->ip = $ip;
-			}
-			else if (preg_match(get_preg_expression('ipv6'), $ip))
-			{
-				// Quick check for IPv4-mapped address in IPv6
-				if (stripos($ip, '::ffff:') === 0)
-				{
-					$ipv4 = substr($ip, 7);
-
-					if (preg_match(get_preg_expression('ipv4'), $ipv4))
-					{
-						$ip = $ipv4;
-					}
-				}
-
-				$this->ip = $ip;
-			}
-			else
-			{
-				// We want to use the last valid address in the chain
-				// Leave foreach loop when address is invalid
+				// IP address is invalid.
 				break;
 			}
+
+			// IP address is valid.
+			$this->ip = $ip;
 		}
 
 		$this->load = false;
@@ -1400,7 +1367,7 @@ class session
 
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
-				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
 				{
 					$info = array($dnsbl, $lookup . $ip);
 				}
@@ -1444,7 +1411,7 @@ class session
 		{
 			// One problem here... the return parameter for the "windows" method is different from what
 			// we expect... this may render this check useless...
-			if (phpbb_checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
+			if (checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
 			{
 				return true;
 			}

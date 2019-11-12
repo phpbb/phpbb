@@ -810,7 +810,7 @@ class ftp_fsock extends transfer
 			$server_ip = substr($socket_name, 0, strrpos($socket_name, ':'));
 		}
 
-		if (!isset($server_ip) || preg_match(get_preg_expression('ipv4'), $server_ip))
+		if (isset($server_ip) && filter_var($server_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) // ipv4
 		{
 			// Passive mode
 			$this->_send_command('PASV', '', false);
@@ -831,7 +831,7 @@ class ftp_fsock extends transfer
 			$server_ip = $temp[0] . '.' . $temp[1] . '.' . $temp[2] . '.' . $temp[3];
 			$server_port = $temp[4] * 256 + $temp[5];
 		}
-		else
+		else // ipv6
 		{
 			// Extended Passive Mode - RFC2428
 			$this->_send_command('EPSV', '', false);

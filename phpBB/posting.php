@@ -261,12 +261,6 @@ if ($mode == 'popup')
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
-{
-	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
-}
-
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
 $topic_id	= (!empty($post_data['topic_id'])) ? (int) $post_data['topic_id'] : (int) $topic_id;
@@ -430,6 +424,12 @@ if (!$is_authed || !empty($error))
 	}
 
 	login_box('', $message);
+}
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
 }
 
 // Is the user able to post within this forum?
@@ -1032,11 +1032,23 @@ if ($submit || $preview || $refresh || $save)
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
 
-	// Check for out-of-bounds characters that are currently
-	// not supported by utf8_bin in MySQL
+	/**
+	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 */
+	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
+
+	/**
+	 * This should never happen again.
+	 * Leaving the fallback here just in case there will be the need of it.
+	 *
+	 * Check for out-of-bounds characters that are currently
+	 * not supported by utf8_bin in MySQL
+	 */
 	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
 	{
-		$character_list = implode('<br />', $matches[0]);
+		$character_list = implode('<br>', $matches[0]);
+
 		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
 	}
 
