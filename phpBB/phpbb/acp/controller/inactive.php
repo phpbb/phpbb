@@ -1,25 +1,19 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_inactive
+class inactive
 {
 	var $u_action;
 	var $p_master;
@@ -29,27 +23,24 @@ class acp_inactive
 		$this->p_master = $p_master;
 	}
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
-
 		if (!function_exists('user_active_flip'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		$user->add_lang('memberlist');
+		$this->language->add_lang('memberlist');
 
-		$action = $request->variable('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? $request->variable('mark', array(0)) : array();
-		$start	= $request->variable('start', 0);
-		$submit = isset($_POST['submit']);
+		$action = $this->request->variable('action', '');
+		$mark	= ($this->request->is_set('mark')) ? $this->request->variable('mark', [0]) : [];
+		$start	= $this->request->variable('start', 0);
+		$submit = $this->request->is_set_post('submit');
 
 		// Sort keys
-		$sort_days	= $request->variable('st', 0);
-		$sort_key	= $request->variable('sk', 'i');
-		$sort_dir	= $request->variable('sd', 'd');
+		$sort_days	= $this->request->variable('st', 0);
+		$sort_key	= $this->request->variable('sk', 'i');
+		$sort_dir	= $this->request->variable('sd', 'd');
 
 		$form_key = 'acp_inactive';
 		add_form_key($form_key);
@@ -60,12 +51,12 @@ class acp_inactive
 		// We build the sort key and per page settings here, because they may be needed later
 
 		// Number of entries to display
-		$per_page = $request->variable('users_per_page', (int) $config['topics_per_page']);
+		$per_page = $this->request->variable('users_per_page', (int) $this->config['topics_per_page']);
 
 		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('i' => $user->lang['SORT_INACTIVE'], 'j' => $user->lang['SORT_REG_DATE'], 'l' => $user->lang['SORT_LAST_VISIT'], 'd' => $user->lang['SORT_LAST_REMINDER'], 'r' => $user->lang['SORT_REASON'], 'u' => $user->lang['SORT_USERNAME'], 'p' => $user->lang['SORT_POSTS'], 'e' => $user->lang['SORT_REMINDER']);
-		$sort_by_sql = array('i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'd' => 'user_reminded_time', 'r' => 'user_inactive_reason', 'u' => 'username_clean', 'p' => 'user_posts', 'e' => 'user_reminded');
+		$limit_days = [0 => $this->language->lang('ALL_ENTRIES'), 1 => $this->language->lang('1_DAY'), 7 => $this->language->lang('7_DAYS'), 14 => $this->language->lang('2_WEEKS'), 30 => $this->language->lang('1_MONTH'), 90 => $this->language->lang('3_MONTHS'), 180 => $this->language->lang('6_MONTHS'), 365 => $this->language->lang('1_YEAR')];
+		$sort_by_text = ['i' => $this->language->lang('SORT_INACTIVE'), 'j' => $this->language->lang('SORT_REG_DATE'), 'l' => $this->language->lang('SORT_LAST_VISIT'), 'd' => $this->language->lang('SORT_LAST_REMINDER'), 'r' => $this->language->lang('SORT_REASON'), 'u' => $this->language->lang('SORT_USERNAME'), 'p' => $this->language->lang('SORT_POSTS'), 'e' => $this->language->lang('SORT_REMINDER')];
+		$sort_by_sql = ['i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'd' => 'user_reminded_time', 'r' => 'user_inactive_reason', 'u' => 'username_clean', 'p' => 'user_posts', 'e' => 'user_reminded'];
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -74,7 +65,7 @@ class acp_inactive
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			switch ($action)
@@ -84,39 +75,39 @@ class acp_inactive
 
 					$sql = 'SELECT user_id, username
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
+						WHERE ' . $this->db->sql_in_set('user_id', $mark);
+					$result = $this->db->sql_query($sql);
 
-					$user_affected = array();
-					while ($row = $db->sql_fetchrow($result))
+					$user_affected = [];
+					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$user_affected[$row['user_id']] = $row['username'];
 					}
-					$db->sql_freeresult($result);
+					$this->db->sql_freeresult($result);
 
 					if ($action == 'activate')
 					{
 						// Get those 'being activated'...
-						$sql = 'SELECT user_id, username' . (($config['require_activation'] == USER_ACTIVATION_ADMIN) ? ', user_email, user_lang' : '') . '
+						$sql = 'SELECT user_id, username' . (($this->config['require_activation'] == USER_ACTIVATION_ADMIN) ? ', user_email, user_lang' : '') . '
 							FROM ' . USERS_TABLE . '
-							WHERE ' . $db->sql_in_set('user_id', $mark) . '
+							WHERE ' . $this->db->sql_in_set('user_id', $mark) . '
 								AND user_type = ' . USER_INACTIVE;
-						$result = $db->sql_query($sql);
+						$result = $this->db->sql_query($sql);
 
-						$inactive_users = array();
-						while ($row = $db->sql_fetchrow($result))
+						$inactive_users = [];
+						while ($row = $this->db->sql_fetchrow($result))
 						{
 							$inactive_users[] = $row;
 						}
-						$db->sql_freeresult($result);
+						$this->db->sql_freeresult($result);
 
 						user_active_flip('activate', $mark);
 
-						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
+						if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
 						{
 							if (!class_exists('messenger'))
 							{
-								include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+								include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 							}
 
 							$messenger = new messenger(false);
@@ -129,8 +120,8 @@ class acp_inactive
 
 								$messenger->anti_abuse_headers($config, $user);
 
-								$messenger->assign_vars(array(
-									'USERNAME'	=> htmlspecialchars_decode($row['username']))
+								$messenger->assign_vars([
+									'USERNAME'	=> htmlspecialchars_decode($row['username'])]
 								);
 
 								$messenger->send(NOTIFY_EMAIL);
@@ -143,18 +134,18 @@ class acp_inactive
 						{
 							foreach ($inactive_users as $row)
 							{
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($row['username']));
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
-									'reportee_id' => $row['user_id']
-								));
+								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE', false, [$row['username']]);
+								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE_USER', false, [
+									'reportee_id' => $row['user_id'],
+								]);
 							}
 
-							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error(sprintf($this->language->lang('LOG_INACTIVE_ACTIVATE'), implode($this->language->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
 						$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
-						$u_action .= ($per_page != $config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+						$u_action .= ($per_page != $this->config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
 
 						redirect($u_action);
 					}
@@ -162,58 +153,58 @@ class acp_inactive
 					{
 						if (confirm_box(true))
 						{
-							if (!$auth->acl_get('a_userdel'))
+							if (!$this->auth->acl_get('a_userdel'))
 							{
 								send_status_line(403, 'Forbidden');
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							user_delete('retain', $mark, true);
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
+							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, [implode(', ', $user_affected)]);
 
-							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
+							trigger_error(sprintf($this->language->lang('LOG_INACTIVE_DELETE'), implode($this->language->lang('COMMA_SEPARATOR'), $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
-							$s_hidden_fields = array(
+							$s_hidden_fields = [
 								'mode'			=> $mode,
 								'action'		=> $action,
 								'mark'			=> $mark,
 								'submit'		=> 1,
 								'start'			=> $start,
-							);
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+							];
+							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
 						}
 					}
 
 				break;
 
 				case 'remind':
-					if (empty($config['email_enable']))
+					if (empty($this->config['email_enable']))
 					{
-						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark) . '
+						WHERE ' . $this->db->sql_in_set('user_id', $mark) . '
 							AND user_inactive_reason';
 
-					$sql .= ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? ' = ' . INACTIVE_REMIND : ' <> ' . INACTIVE_MANUAL;
+					$sql .= ($this->config['require_activation'] == USER_ACTIVATION_ADMIN) ? ' = ' . INACTIVE_REMIND : ' <> ' . INACTIVE_MANUAL;
 
-					$result = $db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 
-					if ($row = $db->sql_fetchrow($result))
+					if ($row = $this->db->sql_fetchrow($result))
 					{
 						// Send the messages
 						if (!class_exists('messenger'))
 						{
-							include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 						}
 
 						$messenger = new messenger();
-						$usernames = $user_ids = array();
+						$usernames = $user_ids = [];
 
 						do
 						{
@@ -223,10 +214,10 @@ class acp_inactive
 
 							$messenger->anti_abuse_headers($config, $user);
 
-							$messenger->assign_vars(array(
+							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
-								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+								'REGISTER_DATE'	=> $this->user->format_date($row['user_regdate'], false, true),
+								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey']]
 							);
 
 							$messenger->send($row['user_notify_type']);
@@ -234,7 +225,7 @@ class acp_inactive
 							$usernames[] = $row['username'];
 							$user_ids[] = (int) $row['user_id'];
 						}
-						while ($row = $db->sql_fetchrow($result));
+						while ($row = $this->db->sql_fetchrow($result));
 
 						$messenger->save_queue();
 
@@ -242,18 +233,18 @@ class acp_inactive
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_reminded = user_reminded + 1,
 								user_reminded_time = ' . time() . '
-							WHERE ' . $db->sql_in_set('user_id', $user_ids);
-						$db->sql_query($sql);
+							WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
+						$this->db->sql_query($sql);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INACTIVE_REMIND', false, [implode(', ', $usernames)]);
 
-						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
+						trigger_error(sprintf($this->language->lang('LOG_INACTIVE_REMIND'), implode($this->language->lang('COMMA_SEPARATOR'), $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
-					$db->sql_freeresult($result);
+					$this->db->sql_freeresult($result);
 
 					// For remind we really need to redirect, else a refresh can result in more than one reminder
 					$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
-					$u_action .= ($per_page != $config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
+					$u_action .= ($per_page != $this->config['topics_per_page']) ? "&amp;users_per_page=$per_page" : '';
 
 					redirect($u_action);
 
@@ -265,46 +256,46 @@ class acp_inactive
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$inactive = array();
+		$inactive = [];
 		$inactive_count = 0;
 
 		$start = view_inactive_users($inactive, $inactive_count, $per_page, $start, $sql_where, $sql_sort);
 
 		foreach ($inactive as $row)
 		{
-			$template->assign_block_vars('inactive', array(
-				'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
-				'REMINDED_DATE'	=> $user->format_date($row['user_reminded_time']),
-				'JOINED'		=> $user->format_date($row['user_regdate']),
-				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+			$this->template->assign_block_vars('inactive', [
+				'INACTIVE_DATE'	=> $this->user->format_date($row['user_inactive_time']),
+				'REMINDED_DATE'	=> $this->user->format_date($row['user_reminded_time']),
+				'JOINED'		=> $this->user->format_date($row['user_regdate']),
+				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $this->user->format_date($row['user_lastvisit']),
 
 				'REASON'		=> $row['inactive_reason'],
 				'USER_ID'		=> $row['user_id'],
 				'POSTS'			=> ($row['user_posts']) ? $row['user_posts'] : 0,
 				'REMINDED'		=> $row['user_reminded'],
 
-				'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
+				'REMINDED_EXPLAIN'	=> $this->language->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $this->user->format_date($row['user_reminded_time'])),
 
-				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;redirect=acp_inactive')),
+				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview&amp;redirect=acp_inactive')),
 				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_EMAIL'		=> $row['user_email'],
 
-				'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
-				'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
-			));
+				'U_USER_ADMIN'	=> append_sid("{$this->admin_path}index.$this->php_ext", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+				'U_SEARCH_USER'	=> ($this->auth->acl_get('u_search')) ? append_sid("{$this->root_path}search.$this->php_ext", "author_id={$row['user_id']}&amp;sr=posts") : '',
+			]);
 		}
 
-		$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
-		if ($config['email_enable'])
+		$option_ary = ['activate' => 'ACTIVATE', 'delete' => 'DELETE'];
+		if ($this->config['email_enable'])
 		{
-			$option_ary += array('remind' => 'REMIND');
+			$option_ary += ['remind' => 'REMIND'];
 		}
 
 		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
-		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $inactive_count, $per_page, $start);
+		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $inactive_count, $per_page, $start);
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_INACTIVE_USERS'		=> true,
 			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
 
@@ -314,7 +305,7 @@ class acp_inactive
 			'USERS_PER_PAGE'	=> $per_page,
 
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",
-		));
+		]);
 
 		$this->tpl_name = 'acp_inactive';
 		$this->page_title = 'ACP_INACTIVE_USERS';

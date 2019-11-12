@@ -1,28 +1,22 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\acp\controller;
 
 use phpbb\exception\exception_interface;
 use phpbb\exception\version_check_exception;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-class acp_extensions
+class extensions
 {
 	public $u_action;
 
@@ -48,12 +42,11 @@ class acp_extensions
 	private $u_catalog_action;
 
 	/** @var string */
-	private $phpbb_root_path;
+	private $this->root_path;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path;
 
 		$this->db       = $db;
 		$this->config = $config;
@@ -65,9 +58,9 @@ class acp_extensions
 		$this->ext_manager = $phpbb_extension_manager;
 		$this->phpbb_container = $phpbb_container;
 		$this->php_ini = $this->phpbb_container->get('php_ini');
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $this->root_path;
 
-		$this->user->add_lang(['install', 'acp/extensions', 'migrator']);
+		$this->language->add_lang(['install', 'acp/extensions', 'migrator']);
 
 		switch ($mode)
 		{
@@ -82,8 +75,6 @@ class acp_extensions
 
 	public function main_mode($id, $mode)
 	{
-		global $phpbb_extension_manager, $phpbb_container, $phpbb_admin_path, $phpEx;
-
 		$this->page_title = 'ACP_EXTENSIONS';
 
 		$action = $this->request->variable('action', 'list');
@@ -100,27 +91,27 @@ class acp_extensions
 			$ext_name = '';
 		}
 
-		if (in_array($action, array('enable', 'disable', 'delete_data')) && !check_link_hash($this->request->variable('hash', ''), $action . '.' . $ext_name))
+		if (in_array($action, ['enable', 'disable', 'delete_data']) && !check_link_hash($this->request->variable('hash', ''), $action . '.' . $ext_name))
 		{
 			trigger_error('FORM_INVALID', E_USER_WARNING);
 		}
 
 		/**
-		* Event to run a specific action on extension
-		*
-		* @event core.acp_extensions_run_action_before
-		* @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
-		* @var	string	u_action		Url we are at
-		* @var	string	ext_name		Extension name from request
-		* @var	int		safe_time_limit	Safe limit of execution time
-		* @var	int		start_time		Start time
-		* @var	string	tpl_name		Template file to load
-		* @since 3.1.11-RC1
-		* @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
-		*/
+		 * Event to run a specific action on extension
+		 *
+		 * @event core.acp_extensions_run_action_before
+		 * @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
+		 * @var	string	u_action		Url we are at
+		 * @var	string	ext_name		Extension name from request
+		 * @var	int		safe_time_limit	Safe limit of execution time
+		 * @var	int		start_time		Start time
+		 * @var	string	tpl_name		Template file to load
+		 * @since 3.1.11-RC1
+		 * @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
+		 */
 		$u_action = $this->u_action;
 		$tpl_name = '';
-		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		$vars = ['action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name'];
 		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_before', compact($vars)));
 
 		// In case they have been updated by the event
@@ -138,12 +129,12 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+				$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
 				trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
-		$this->u_catalog_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=catalog");
+		$this->u_catalog_action = append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;mode=catalog");
 
 		// What are we doing?
 		switch ($action)
@@ -157,16 +148,16 @@ class acp_extensions
 
 				if ($force_unstable)
 				{
-					$s_hidden_fields = build_hidden_fields(array(
+					$s_hidden_fields = build_hidden_fields([
 						'force_unstable'	=> $force_unstable,
-					));
+					]);
 
-					confirm_box(false, $this->user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+					confirm_box(false, $this->language->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
 				}
 				else
 				{
 					$this->config->set('extension_force_unstable', false);
-					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 			break;
 
@@ -175,7 +166,7 @@ class acp_extensions
 				if (confirm_box(true))
 				{
 					$this->config->set('extension_force_unstable', true);
-					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 
 				/** @var \phpbb\composer\manager $composer_manager */
@@ -191,13 +182,13 @@ class acp_extensions
 				$this->list_disabled_exts($phpbb_extension_manager, $managed_packages);
 				$this->list_available_exts($phpbb_extension_manager, $managed_packages);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
 					'MANAGED_EXTENSIONS'	=> $managed_packages,
 					'U_CATALOG_ACTION' 		=> $this->u_catalog_action,
-				));
+				]);
 				$this->request->disable_super_globals();
 
 				$this->tpl_name = 'acp_ext_list';
@@ -210,7 +201,7 @@ class acp_extensions
 				}
 				catch (exception_interface $e)
 				{
-					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -229,12 +220,12 @@ class acp_extensions
 				}
 				else
 				{
-					confirm_box(false, $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'action'	=> 'enable_pre',
 						'ext_name'	=> $ext_name,
-					)));
+					]));
 				}
 			break;
 
@@ -245,7 +236,7 @@ class acp_extensions
 				}
 				catch (exception_interface $e)
 				{
-					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -266,18 +257,18 @@ class acp_extensions
 					}
 
 					// Update custom style for admin area
-					$this->template->set_custom_style(array(
-						array(
+					$this->template->set_custom_style([
+						[
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
-						),
-					), array($this->phpbb_root_path . 'adm/style'));
+						],
+					], [$this->phpbb_root_path . 'adm/style']);
 
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), [$ext_name]);
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					trigger_error($this->language->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
 				}
 
 				if ($this->request->is_ajax())
@@ -294,12 +285,10 @@ class acp_extensions
 							'time'	=> 0,
 						],
 					];
-
 					$json_response = new \phpbb\json_response;
 					$json_response->send($data);
 				}
-
-				trigger_error($this->user->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				trigger_error($this->language->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'disable_pre':
@@ -314,12 +303,12 @@ class acp_extensions
 				}
 				else
 				{
-					confirm_box(false, $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'action'	=> 'disable_pre',
 						'ext_name'	=> $ext_name,
-					)));
+					]));
 				}
 			break;
 
@@ -340,7 +329,7 @@ class acp_extensions
 						trigger_error('EXTENSION_DISABLE_IN_PROGRESS', E_USER_NOTICE);
 					}
 				}
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), [$ext_name]);
 
 				if ($this->request->is_ajax())
 				{
@@ -361,8 +350,7 @@ class acp_extensions
 					$json_response = new \phpbb\json_response;
 					$json_response->send($data);
 				}
-
-				trigger_error($this->user->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				trigger_error($this->language->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'delete_data_pre':
@@ -377,12 +365,12 @@ class acp_extensions
 				}
 				else
 				{
-					confirm_box(false, $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'action'	=> 'delete_data_pre',
 						'ext_name'	=> $ext_name,
-					)));
+					]));
 				}
 			break;
 
@@ -405,11 +393,11 @@ class acp_extensions
 							trigger_error('EXTENSION_DELETE_DATA_IN_PROGRESS', E_USER_NOTICE);
 						}
 					}
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), [$ext_name]);
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					trigger_error($this->language->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
 				}
 
 				if ($this->request->is_ajax())
@@ -430,8 +418,7 @@ class acp_extensions
 					$json_response = new \phpbb\json_response;
 					$json_response->send($data);
 				}
-
-				trigger_error($this->user->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				trigger_error($this->language->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'details':
@@ -445,21 +432,21 @@ class acp_extensions
 					{
 						$updates_available = $this->ext_manager->version_check($md_manager, $this->request->variable('versioncheck_force', false), false, $this->config['extension_force_unstable'] ? 'unstable' : null);
 
-						$this->template->assign_vars(array(
+						$this->template->assign_vars([
 							'S_UP_TO_DATE' => empty($updates_available),
-							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-						));
+							'UP_TO_DATE_MSG' => $this->language->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+						]);
 
 						$this->template->assign_block_vars('updates_available', $updates_available);
 					}
 					catch (exception_interface $e)
 					{
-						$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+						$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
 
-						$this->template->assign_vars(array(
+						$this->template->assign_vars([
 							'S_VERSIONCHECK_FAIL' => true,
 							'VERSIONCHECK_FAIL_REASON' => ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
-						));
+						]);
 					}
 					$this->template->assign_var('S_VERSIONCHECK', true);
 				}
@@ -468,30 +455,30 @@ class acp_extensions
 					$this->template->assign_var('S_VERSIONCHECK', false);
 				}
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'U_BACK'				=> $this->u_action . '&amp;action=list',
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name')),
-				));
+				]);
 
 				$this->tpl_name = 'acp_ext_details';
 			break;
 		}
 
 		/**
-		* Event to run after a specific action on extension has completed
-		*
-		* @event core.acp_extensions_run_action_after
-		* @var	string	action			Action that has run
-		* @var	string	u_action		Url we are at
-		* @var	string	ext_name		Extension name from request
-		* @var	int		safe_time_limit	Safe limit of execution time
-		* @var	int		start_time		Start time
-		* @var	string	tpl_name		Template file to load
-		* @since 3.1.11-RC1
-		*/
+		 * Event to run after a specific action on extension has completed
+		 *
+		 * @event core.acp_extensions_run_action_after
+		 * @var	string	action			Action that has run
+		 * @var	string	u_action		Url we are at
+		 * @var	string	ext_name		Extension name from request
+		 * @var	int		safe_time_limit	Safe limit of execution time
+		 * @var	int		start_time		Start time
+		 * @var	string	tpl_name		Template file to load
+		 * @since 3.1.11-RC1
+		 */
 		$u_action = $this->u_action;
 		$tpl_name = $this->tpl_name;
-		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		$vars = ['action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name'];
 		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_after', compact($vars)));
 
 		// In case they have been updated by the event
@@ -507,8 +494,6 @@ class acp_extensions
 	 */
 	public function catalog_mode($id, $mode)
 	{
-		global $phpbb_container;
-
 		$action = $this->request->variable('action', 'list');
 
 		/** @var \phpbb\language\language $language */
@@ -526,8 +511,8 @@ class acp_extensions
 			$this->tpl_name = 'message_body';
 
 			$this->template->assign_vars([
-				'MESSAGE_TITLE'	=> $language->lang('EXTENSIONS_CATALOG_NOT_AVAILABLE'),
-				'MESSAGE_TEXT'	=> $language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'),
+				'MESSAGE_TITLE'	=> $this->language->lang('EXTENSIONS_CATALOG_NOT_AVAILABLE'),
+				'MESSAGE_TEXT'	=> $this->language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'),
 			]);
 
 			return;
@@ -546,7 +531,7 @@ class acp_extensions
 				}
 
 				$formatter = new \phpbb\composer\io\html_output_formatter([
-					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow'),
 				]);
 
 				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
@@ -562,13 +547,13 @@ class acp_extensions
 				}
 				$this->tpl_name = 'detailed_message_body';
 
-				$this->template->assign_vars(array(
-						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_INSTALL'),
-						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_INSTALLED') . adm_back_link($this->u_action),
+				$this->template->assign_vars([
+						'MESSAGE_TITLE'			=> $this->language->lang('ACP_EXTENSIONS_INSTALL'),
+						'MESSAGE_TEXT'			=> $this->language->lang('EXTENSIONS_INSTALLED') . adm_back_link($this->u_action),
 						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'MESSAGE_DETAIL_LEGEND'	=> $this->language->lang('COMPOSER_OUTPUT'),
 						'S_USER_NOTICE'			=> true,
-					)
+					]
 				);
 
 			break;
@@ -583,7 +568,7 @@ class acp_extensions
 				}
 
 				$formatter = new \phpbb\composer\io\html_output_formatter([
-					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow'),
 				]);
 
 				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
@@ -599,13 +584,13 @@ class acp_extensions
 				}
 				$this->tpl_name = 'detailed_message_body';
 
-				$this->template->assign_vars(array(
-						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_REMOVE'),
-						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_REMOVED') . adm_back_link($this->u_action),
+				$this->template->assign_vars([
+						'MESSAGE_TITLE'			=> $this->language->lang('ACP_EXTENSIONS_REMOVE'),
+						'MESSAGE_TEXT'			=> $this->language->lang('EXTENSIONS_REMOVED') . adm_back_link($this->u_action),
 						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'MESSAGE_DETAIL_LEGEND'	=> $this->language->lang('COMPOSER_OUTPUT'),
 						'S_USER_NOTICE'			=> true,
-					)
+					]
 				);
 
 			break;
@@ -620,7 +605,7 @@ class acp_extensions
 				}
 
 				$formatter = new \phpbb\composer\io\html_output_formatter([
-					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow'),
 				]);
 
 				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
@@ -636,13 +621,13 @@ class acp_extensions
 				}
 				$this->tpl_name = 'detailed_message_body';
 
-				$this->template->assign_vars(array(
-						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_UPDATE'),
-						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_UPDATED') . adm_back_link($this->u_action),
+				$this->template->assign_vars([
+						'MESSAGE_TITLE'			=> $this->language->lang('ACP_EXTENSIONS_UPDATE'),
+						'MESSAGE_TEXT'			=> $this->language->lang('EXTENSIONS_UPDATED') . adm_back_link($this->u_action),
 						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'MESSAGE_DETAIL_LEGEND'	=> $this->language->lang('COMPOSER_OUTPUT'),
 						'S_USER_NOTICE'			=> true,
-					)
+					]
 				);
 
 			break;
@@ -657,7 +642,7 @@ class acp_extensions
 				}
 
 				$formatter = new \phpbb\composer\io\html_output_formatter([
-					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow'),
 				]);
 
 				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
@@ -673,13 +658,13 @@ class acp_extensions
 				}
 				$this->tpl_name = 'detailed_message_body';
 
-				$this->template->assign_vars(array(
-						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_MANAGE'),
-						'MESSAGE_TEXT'			=> $language->lang('EXTENSION_MANAGED_SUCCESS', $extension) . adm_back_link($this->u_action),
+				$this->template->assign_vars([
+						'MESSAGE_TITLE'			=> $this->language->lang('ACP_EXTENSIONS_MANAGE'),
+						'MESSAGE_TEXT'			=> $this->language->lang('EXTENSION_MANAGED_SUCCESS', $extension) . adm_back_link($this->u_action),
 						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'MESSAGE_DETAIL_LEGEND'	=> $this->language->lang('COMPOSER_OUTPUT'),
 						'S_USER_NOTICE'			=> true,
-					)
+					]
 				);
 
 			break;
@@ -690,7 +675,7 @@ class acp_extensions
 					$this->config->set('exts_composer_packagist', true);
 					$composer_manager->reset_cache();
 
-					trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 
 				$submit = $this->request->is_set('update');
@@ -698,7 +683,7 @@ class acp_extensions
 				{
 					if (!check_form_key('catalog_settings'))
 					{
-						trigger_error($language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$enable_packagist = $this->request->variable('enable_packagist', false);
@@ -732,16 +717,16 @@ class acp_extensions
 
 					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
-						$s_hidden_fields = build_hidden_fields(array(
-							'enable_packagist'	=> $enable_packagist
-						));
+						$s_hidden_fields = build_hidden_fields([
+							'enable_packagist'	=> $enable_packagist,
+						]);
 
-						confirm_box(false, $language->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields);
+						confirm_box(false, $this->language->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields);
 					}
 					else
 					{
 						$this->config->set('exts_composer_packagist', $enable_packagist);
-						trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+						trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 					}
 				}
 
@@ -759,7 +744,7 @@ class acp_extensions
 
 				$extensions = array_slice($available_extensions, $start, 20);
 
-				$pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
+				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
 
 				$this->page_title = 'ACP_EXTENSIONS_CATALOG';
 				$this->tpl_name = 'acp_ext_catalog';
@@ -798,11 +783,11 @@ class acp_extensions
 
 		if ($e->getPrevious())
 		{
-			$message_title = $language->lang_array($e->getMessage(), $e->get_parameters());
+			$message_title = $this->language->lang_array($e->getMessage(), $e->get_parameters());
 
 			if ($e->getPrevious() instanceof \phpbb\exception\exception_interface)
 			{
-				$message_text  = $language->lang_array($e->getPrevious()->getMessage(), $e->getPrevious()->get_parameters()) . adm_back_link($this->u_action);
+				$message_text  = $this->language->lang_array($e->getPrevious()->getMessage(), $e->getPrevious()->get_parameters()) . adm_back_link($this->u_action);
 			}
 			else
 			{
@@ -811,17 +796,17 @@ class acp_extensions
 		}
 		else
 		{
-			$message_title = $language->lang('INFORMATION');
-			$message_text  = $language->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
+			$message_title = $this->language->lang('INFORMATION');
+			$message_text  = $this->language->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'MESSAGE_TITLE'			=> $message_title,
 				'MESSAGE_TEXT'			=> $message_text,
 				'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-				'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+				'MESSAGE_DETAIL_LEGEND'	=> $this->language->lang('COMPOSER_OUTPUT'),
 				'S_USER_ERROR'			=> true,
-			)
+			]
 		);
 	}
 
@@ -835,7 +820,7 @@ class acp_extensions
 	 */
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
 	{
-		$enabled_extension_meta_data = array();
+		$enabled_extension_meta_data = [];
 
 		foreach ($this->ext_manager->all_enabled() as $name => $location)
 		{
@@ -844,11 +829,11 @@ class acp_extensions
 			try
 			{
 				$meta = $md_manager->get_metadata('all');
-				$enabled_extension_meta_data[$name] = array(
+				$enabled_extension_meta_data[$name] = [
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
 					'META_NAME' => $md_manager->get_metadata('name'),
-				);
+				];
 
 				if (isset($meta['extra']['version-check']))
 				{
@@ -873,11 +858,11 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+				$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
+				$this->template->assign_block_vars('disabled', [
+					'META_DISPLAY_NAME'		=> $this->language->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
-				));
+				]);
 			}
 			catch (\RuntimeException $e)
 			{
@@ -885,7 +870,7 @@ class acp_extensions
 			}
 		}
 
-		uasort($enabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
+		uasort($enabled_extension_meta_data, [$this, 'sort_extension_meta_data_table']);
 
 		foreach ($enabled_extension_meta_data as $name => $block_vars)
 		{
@@ -894,9 +879,9 @@ class acp_extensions
 
 			$this->template->assign_block_vars('enabled', $block_vars);
 
-			$this->output_actions('enabled', array(
+			$this->output_actions('enabled', [
 				'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
-			));
+			]);
 
 			if (isset($managed_packages[$block_vars['META_NAME']]))
 			{
@@ -905,7 +890,7 @@ class acp_extensions
 					'REMOVE' => [
 						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 						'color' => '#BC2A4D;',
-					]
+					],
 				]);
 			}
 		}
@@ -921,7 +906,7 @@ class acp_extensions
 	 */
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
 	{
-		$disabled_extension_meta_data = array();
+		$disabled_extension_meta_data = [];
 
 		foreach ($this->ext_manager->all_disabled() as $name => $location)
 		{
@@ -930,11 +915,11 @@ class acp_extensions
 			try
 			{
 				$meta = $md_manager->get_metadata('all');
-				$disabled_extension_meta_data[$name] = array(
+				$disabled_extension_meta_data[$name] = [
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
 					'META_NAME' => $md_manager->get_metadata('name'),
-				);
+				];
 
 				if (isset($meta['extra']['version-check']))
 				{
@@ -956,11 +941,11 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+				$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
+				$this->template->assign_block_vars('disabled', [
+					'META_DISPLAY_NAME'		=> $this->language->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
-				));
+				]);
 			}
 			catch (\RuntimeException $e)
 			{
@@ -968,7 +953,7 @@ class acp_extensions
 			}
 		}
 
-		uasort($disabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
+		uasort($disabled_extension_meta_data, [$this, 'sort_extension_meta_data_table']);
 
 		foreach ($disabled_extension_meta_data as $name => $block_vars)
 		{
@@ -977,10 +962,10 @@ class acp_extensions
 
 			$this->template->assign_block_vars('disabled', $block_vars);
 
-			$this->output_actions('disabled', array(
+			$this->output_actions('disabled', [
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
 				'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
-			));
+			]);
 
 			if (isset($managed_packages[$block_vars['META_NAME']]))
 			{
@@ -989,7 +974,7 @@ class acp_extensions
 					'REMOVE' => [
 						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 						'color' => '#BC2A4D;',
-					]
+					],
 				]);
 			}
 		}
@@ -1007,7 +992,7 @@ class acp_extensions
 	{
 		$uninstalled = array_diff_key($this->ext_manager->all_available(), $this->ext_manager->all_configured());
 
-		$available_extension_meta_data = array();
+		$available_extension_meta_data = [];
 
 		foreach ($uninstalled as $name => $location)
 		{
@@ -1016,11 +1001,11 @@ class acp_extensions
 			try
 			{
 				$meta = $md_manager->get_metadata('all');
-				$available_extension_meta_data[$name] = array(
+				$available_extension_meta_data[$name] = [
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
 					'META_NAME' => $md_manager->get_metadata('name'),
-				);
+				];
 
 				if (isset($meta['extra']['version-check']))
 				{
@@ -1042,15 +1027,15 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+				$message = call_user_func_array([$this->user, 'lang'], array_merge([$e->getMessage()], $e->get_parameters()));
+				$this->template->assign_block_vars('disabled', [
+					'META_DISPLAY_NAME'		=> $this->language->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
-				));
+				]);
 			}
 		}
 
-		uasort($available_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
+		uasort($available_extension_meta_data, [$this, 'sort_extension_meta_data_table']);
 
 		foreach ($available_extension_meta_data as $name => $block_vars)
 		{
@@ -1059,22 +1044,22 @@ class acp_extensions
 
 			$this->template->assign_block_vars('disabled', $block_vars);
 
-			$this->output_actions('disabled', array(
+			$this->output_actions('disabled', [
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-			));
+			]);
 		}
 	}
 
 	/**
-	* Output actions to a block
-	*
-	* @param string $block
-	* @param array $actions
-	* @return array List of actions to be performed on the extension
-	*/
+	 * Output actions to a block
+	 *
+	 * @param string $block
+	 * @param array $actions
+	 * @return array List of actions to be performed on the extension
+	 */
 	private function output_actions($block, $actions)
 	{
-		$vars_ary = array();
+		$vars_ary = [];
 		foreach ($actions as $lang => $options)
 		{
 			$url = $options;
@@ -1083,12 +1068,12 @@ class acp_extensions
 				$url = $options['url'];
 			}
 
-			$vars = array(
-				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
-				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
+			$vars = [
+				'L_ACTION'			=> $this->language->lang('EXTENSION_' . $lang),
+				'L_ACTION_EXPLAIN'	=> (isset($this->language->lang('EXTENSION_' . $lang . '_EXPLAIN'))) ? $this->language->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
 				'ACTION_AJAX'		=> 'ext_' . strtolower($lang),
-			);
+			];
 
 			if (isset($options['color']))
 			{
@@ -1104,22 +1089,22 @@ class acp_extensions
 	}
 
 	/**
-	* Sort helper for the table containing the metadata about the extensions.
-	*/
+	 * Sort helper for the table containing the metadata about the extensions.
+	 */
 	protected function sort_extension_meta_data_table($val1, $val2)
 	{
 		return strnatcasecmp($val1['META_DISPLAY_NAME'], $val2['META_DISPLAY_NAME']);
 	}
 
 	/**
-	* Outputs extension metadata into the template
-	*
-	* @param array $metadata Array with all metadata for the extension
-	* @return null
-	*/
+	 * Outputs extension metadata into the template
+	 *
+	 * @param array $metadata Array with all metadata for the extension
+	 * @return null
+	 */
 	public function output_metadata_to_template($metadata)
 	{
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'META_NAME'			=> $metadata['name'],
 			'META_TYPE'			=> $metadata['type'],
 			'META_DESCRIPTION'	=> (isset($metadata['description'])) ? $metadata['description'] : '',
@@ -1135,25 +1120,25 @@ class acp_extensions
 			'META_REQUIRE_PHPBB_FAIL'	=> (isset($metadata['extra']['soft-require']['phpbb/phpbb'])) ? false : true,
 
 			'META_DISPLAY_NAME'	=> (isset($metadata['extra']['display-name'])) ? $metadata['extra']['display-name'] : '',
-		));
+		]);
 
 		foreach ($metadata['authors'] as $author)
 		{
-			$this->template->assign_block_vars('meta_authors', array(
+			$this->template->assign_block_vars('meta_authors', [
 				'AUTHOR_NAME'		=> $author['name'],
 				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
 				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $author['role'] : '',
-			));
+			]);
 		}
 	}
 
 	/**
-	* Checks whether the extension can be enabled. Triggers error if not.
-	* Error message can be set by the extension.
-	*
-	* @param \phpbb\extension\extension_interface $extension Extension to check
-	*/
+	 * Checks whether the extension can be enabled. Triggers error if not.
+	 * Error message can be set by the extension.
+	 *
+	 * @param \phpbb\extension\extension_interface $extension Extension to check
+	 */
 	protected function check_is_enableable(\phpbb\extension\extension_interface $extension)
 	{
 		$message = $extension->is_enableable();
@@ -1161,7 +1146,7 @@ class acp_extensions
 		{
 			if (empty($message))
 			{
-				$message = $this->user->lang('EXTENSION_NOT_ENABLEABLE');
+				$message = $this->language->lang('EXTENSION_NOT_ENABLEABLE');
 			}
 			else if (is_array($message))
 			{

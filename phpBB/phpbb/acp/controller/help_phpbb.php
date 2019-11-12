@@ -1,35 +1,27 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_help_phpbb
+class help_phpbb
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $config, $request, $template, $user, $phpbb_dispatcher, $phpbb_admin_path, $phpbb_root_path, $phpEx;
-
 		if (!class_exists('phpbb_questionnaire_data_collector'))
 		{
-			include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
+			include($this->root_path . 'includes/questionnaire/questionnaire.' . $this->php_ext);
 		}
 
 		$collect_url = "https://www.phpbb.com/statistics/send";
@@ -37,15 +29,15 @@ class acp_help_phpbb
 		$this->tpl_name = 'acp_help_phpbb';
 		$this->page_title = 'ACP_HELP_PHPBB';
 
-		$submit = ($request->is_set_post('submit')) ? true : false;
+		$submit = ($this->request->is_set_post('submit')) ? true : false;
 
 		$form_key = 'acp_help_phpbb';
 		add_form_key($form_key);
-		$error = array();
+		$error = [];
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = $this->language->lang('FORM_INVALID');
 		}
 		// Do not write values if there is an error
 		if (count($error))
@@ -54,14 +46,14 @@ class acp_help_phpbb
 		}
 
 		// generate a unique id if necessary
-		if (!isset($config['questionnaire_unique_id']))
+		if (!isset($this->config['questionnaire_unique_id']))
 		{
 			$install_id = unique_id();
-			$config->set('questionnaire_unique_id', $install_id);
+			$this->config->set('questionnaire_unique_id', $install_id);
 		}
 		else
 		{
-			$install_id = $config['questionnaire_unique_id'];
+			$install_id = $this->config['questionnaire_unique_id'];
 		}
 
 		$collector = new phpbb_questionnaire_data_collector($install_id);
@@ -78,15 +70,15 @@ class acp_help_phpbb
 		 * @var	boolean	submit			Do we display the form or process the submission
 		 * @since 3.2.0-RC2
 		 */
-		$vars = array('submit');
-		extract($phpbb_dispatcher->trigger_event('core.acp_help_phpbb_submit_before', compact($vars)));
+		$vars = ['submit'];
+		extract($this->dispatcher->trigger_event('core.acp_help_phpbb_submit_before', compact($vars)));
 
 		if ($submit)
 		{
-			$config->set('help_send_statistics', $request->variable('help_send_statistics', false));
-			$response = $request->variable('send_statistics_response', '');
+			$this->config->set('help_send_statistics', $this->request->variable('help_send_statistics', false));
+			$response = $this->request->variable('send_statistics_response', '');
 
-			$config->set('help_send_statistics_time', time());
+			$this->config->set('help_send_statistics_time', time());
 
 			if (!empty($response))
 			{
@@ -94,27 +86,27 @@ class acp_help_phpbb
 
 				if ($decoded_response && isset($decoded_response['status']) && $decoded_response['status'] == 'ok')
 				{
-					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 
-			trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+			trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_COLLECT_STATS'		=> $collect_url,
-			'S_COLLECT_STATS'		=> (!empty($config['help_send_statistics'])) ? true : false,
+			'S_COLLECT_STATS'		=> (!empty($this->config['help_send_statistics'])) ? true : false,
 			'S_STATS'				=> $collector->get_data_raw(),
 			'S_STATS_DATA'			=> json_encode($collector->get_data_raw()),
-			'U_ACP_MAIN'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+			'U_ACP_MAIN'			=> append_sid("{$this->admin_path}index.$this->php_ext"),
 			'U_ACTION'				=> $this->u_action,
 			// Pass earliest time we should try to send stats again
-			'COLLECT_STATS_TIME'	=> intval($config['help_send_statistics_time']) + 86400,
-		));
+			'COLLECT_STATS_TIME'	=> intval($this->config['help_send_statistics_time']) + 86400,
+		]);
 
 		$raw = $collector->get_data_raw();
 
@@ -122,12 +114,12 @@ class acp_help_phpbb
 		{
 			if ($provider == 'install_id')
 			{
-				$data = array($provider => $data);
+				$data = [$provider => $data];
 			}
 
-			$template->assign_block_vars('providers', array(
+			$this->template->assign_block_vars('providers', [
 				'NAME'	=> htmlspecialchars($provider),
-			));
+			]);
 
 			foreach ($data as $key => $value)
 			{
@@ -136,10 +128,10 @@ class acp_help_phpbb
 					$value = utf8_wordwrap(serialize($value), 75, "\n", true);
 				}
 
-				$template->assign_block_vars('providers.values', array(
+				$this->template->assign_block_vars('providers.values', [
 					'KEY'	=> utf8_htmlspecialchars($key),
 					'VALUE'	=> utf8_htmlspecialchars($value),
-				));
+				]);
 			}
 		}
 	}

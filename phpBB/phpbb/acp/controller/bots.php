@@ -1,46 +1,37 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_bots
+class bots
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $config, $db, $user, $template, $cache, $request, $phpbb_log;
-		global $phpbb_root_path, $phpEx;
+		$action = $this->request->variable('action', '');
+		$submit = ($this->request->is_set_post('submit')) ? true : false;
+		$mark	= $this->request->variable('mark', [0]);
+		$bot_id	= $this->request->variable('id', 0);
 
-		$action = $request->variable('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
-		$mark	= $request->variable('mark', array(0));
-		$bot_id	= $request->variable('id', 0);
-
-		if (isset($_POST['add']))
+		if ($this->request->is_set_post('add'))
 		{
 			$action = 'add';
 		}
 
-		$error = array();
+		$error = [];
 
-		$user->add_lang('acp/bots');
+		$this->language->add_lang('acp/bots');
 		$this->tpl_name = 'acp_bots';
 		$this->page_title = 'ACP_BOTS';
 		$form_key = 'acp_bots';
@@ -48,7 +39,7 @@ class acp_bots
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = $this->language->lang('FORM_INVALID');
 		}
 
 		// User wants to do something, how inconsiderate of them!
@@ -62,10 +53,10 @@ class acp_bots
 					$sql = 'UPDATE ' . BOTS_TABLE . "
 						SET bot_active = 1
 						WHERE bot_id $sql_id";
-					$db->sql_query($sql);
+					$this->db->sql_query($sql);
 				}
 
-				$cache->destroy('_bots');
+				$this->cache->destroy('_bots');
 			break;
 
 			case 'deactivate':
@@ -76,10 +67,10 @@ class acp_bots
 					$sql = 'UPDATE ' . BOTS_TABLE . "
 						SET bot_active = 0
 						WHERE bot_id $sql_id";
-					$db->sql_query($sql);
+					$this->db->sql_query($sql);
 				}
 
-				$cache->destroy('_bots');
+				$this->cache->destroy('_bots');
 			break;
 
 			case 'delete':
@@ -93,47 +84,47 @@ class acp_bots
 						$sql = 'SELECT bot_name, user_id
 							FROM ' . BOTS_TABLE . "
 							WHERE bot_id $sql_id";
-						$result = $db->sql_query($sql);
+						$result = $this->db->sql_query($sql);
 
-						$user_id_ary = $bot_name_ary = array();
-						while ($row = $db->sql_fetchrow($result))
+						$user_id_ary = $bot_name_ary = [];
+						while ($row = $this->db->sql_fetchrow($result))
 						{
 							$user_id_ary[] = (int) $row['user_id'];
 							$bot_name_ary[] = $row['bot_name'];
 						}
-						$db->sql_freeresult($result);
+						$this->db->sql_freeresult($result);
 
-						$db->sql_transaction('begin');
+						$this->db->sql_transaction('begin');
 
 						$sql = 'DELETE FROM ' . BOTS_TABLE . "
 							WHERE bot_id $sql_id";
-						$db->sql_query($sql);
+						$this->db->sql_query($sql);
 
 						if (count($user_id_ary))
 						{
-							$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+							$_tables = [USERS_TABLE, USER_GROUP_TABLE];
 							foreach ($_tables as $table)
 							{
 								$sql = "DELETE FROM $table
-									WHERE " . $db->sql_in_set('user_id', $user_id_ary);
-								$db->sql_query($sql);
+									WHERE " . $this->db->sql_in_set('user_id', $user_id_ary);
+								$this->db->sql_query($sql);
 							}
 						}
 
-						$db->sql_transaction('commit');
+						$this->db->sql_transaction('commit');
 
-						$cache->destroy('_bots');
+						$this->cache->destroy('_bots');
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_DELETE', false, array(implode(', ', $bot_name_ary)));
-						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_BOT_DELETE', false, [implode(', ', $bot_name_ary)]);
+						trigger_error($this->language->lang('BOT_DELETED') . adm_back_link($this->u_action));
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 							'mark'		=> $mark,
 							'id'		=> $bot_id,
 							'mode'		=> $mode,
-							'action'	=> $action))
+							'action'	=> $action])
 						);
 					}
 				}
@@ -144,30 +135,30 @@ class acp_bots
 
 				if (!function_exists('user_update_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 				}
 
-				$bot_row = array(
-					'bot_name'		=> $request->variable('bot_name', '', true),
-					'bot_agent'		=> $request->variable('bot_agent', ''),
-					'bot_ip'		=> $request->variable('bot_ip', ''),
-					'bot_active'	=> $request->variable('bot_active', true),
-					'bot_lang'		=> $request->variable('bot_lang', $config['default_lang']),
-					'bot_style'		=> $request->variable('bot_style' , $config['default_style']),
-				);
+				$bot_row = [
+					'bot_name'		=> $this->request->variable('bot_name', '', true),
+					'bot_agent'		=> $this->request->variable('bot_agent', ''),
+					'bot_ip'		=> $this->request->variable('bot_ip', ''),
+					'bot_active'	=> $this->request->variable('bot_active', true),
+					'bot_lang'		=> $this->request->variable('bot_lang', $this->config['default_lang']),
+					'bot_style'		=> $this->request->variable('bot_style' , $this->config['default_style']),
+				];
 
 				if ($submit)
 				{
 					if (!$bot_row['bot_agent'] && !$bot_row['bot_ip'])
 					{
-						$error[] = $user->lang['ERR_BOT_NO_MATCHES'];
+						$error[] = $this->language->lang('ERR_BOT_NO_MATCHES');
 					}
 
 					if ($bot_row['bot_ip'] && !preg_match('#^[\d\.,:]+$#', $bot_row['bot_ip']))
 					{
 						if (!$ip_list = gethostbynamel($bot_row['bot_ip']))
 						{
-							$error[] = $user->lang['ERR_BOT_NO_IP'];
+							$error[] = $this->language->lang('ERR_BOT_NO_IP');
 						}
 						else
 						{
@@ -177,9 +168,9 @@ class acp_bots
 					$bot_row['bot_ip'] = str_replace(' ', '', $bot_row['bot_ip']);
 
 					// Make sure the admin is not adding a bot with an user agent similar to his one
-					if ($bot_row['bot_agent'] && substr($user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
+					if ($bot_row['bot_agent'] && substr($this->user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
 					{
-						$error[] = $user->lang['ERR_BOT_AGENT_MATCHES_UA'];
+						$error[] = $this->language->lang('ERR_BOT_AGENT_MATCHES_UA');
 					}
 
 					$bot_name = false;
@@ -189,13 +180,13 @@ class acp_bots
 							FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
 							WHERE b.bot_id = $bot_id
 								AND u.user_id = b.user_id";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = $this->db->sql_query($sql);
+						$row = $this->db->sql_fetchrow($result);
+						$this->db->sql_freeresult($result);
 
 						if (!$bot_row)
 						{
-							$error[] = $user->lang['NO_BOT'];
+							$error[] = $this->language->lang('NO_BOT');
 						}
 						else
 						{
@@ -204,7 +195,7 @@ class acp_bots
 					}
 					if (!$this->validate_botname($bot_row['bot_name'], $bot_name))
 					{
-						$error[] = $user->lang['BOT_NAME_TAKEN'];
+						$error[] = $this->language->lang('BOT_NAME_TAKEN');
 					}
 
 					if (!count($error))
@@ -216,16 +207,16 @@ class acp_bots
 								FROM ' . GROUPS_TABLE . "
 								WHERE group_name = 'BOTS'
 									AND group_type = " . GROUP_SPECIAL;
-							$result = $db->sql_query($sql);
-							$group_row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = $this->db->sql_query($sql);
+							$group_row = $this->db->sql_fetchrow($result);
+							$this->db->sql_freeresult($result);
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error($this->language->lang('NO_BOT_GROUP') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
-							$user_id = user_add(array(
+							$user_id = user_add([
 								'user_type'				=> (int) USER_IGNORE,
 								'group_id'				=> (int) $group_row['group_id'],
 								'username'				=> (string) $bot_row['bot_name'],
@@ -236,16 +227,16 @@ class acp_bots
 								'user_lang'				=> (string) $bot_row['bot_lang'],
 								'user_style'			=> (int) $bot_row['bot_style'],
 								'user_allow_massemail'	=> 0,
-							));
+							]);
 
-							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', [
 								'user_id'		=> (int) $user_id,
 								'bot_name'		=> (string) $bot_row['bot_name'],
 								'bot_active'	=> (int) $bot_row['bot_active'],
 								'bot_agent'		=> (string) $bot_row['bot_agent'],
-								'bot_ip'		=> (string) $bot_row['bot_ip'])
+								'bot_ip'		=> (string) $bot_row['bot_ip']]
 							);
-							$db->sql_query($sql);
+							$this->db->sql_query($sql);
 
 							$log = 'ADDED';
 						}
@@ -254,19 +245,19 @@ class acp_bots
 							$sql = 'SELECT user_id, bot_name
 								FROM ' . BOTS_TABLE . "
 								WHERE bot_id = $bot_id";
-							$result = $db->sql_query($sql);
-							$row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = $this->db->sql_query($sql);
+							$row = $this->db->sql_fetchrow($result);
+							$this->db->sql_freeresult($result);
 
 							if (!$row)
 							{
-								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error($this->language->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
-							$sql_ary = array(
+							$sql_ary = [
 								'user_style'	=> (int) $bot_row['bot_style'],
 								'user_lang'		=> (string) $bot_row['bot_lang'],
-							);
+							];
 
 							if ($bot_row['bot_name'] !== $row['bot_name'])
 							{
@@ -274,16 +265,16 @@ class acp_bots
 								$sql_ary['username_clean'] = (string) utf8_clean_string($bot_row['bot_name']);
 							}
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
-							$db->sql_query($sql);
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
+							$this->db->sql_query($sql);
 
-							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', [
 								'bot_name'		=> (string) $bot_row['bot_name'],
 								'bot_active'	=> (int) $bot_row['bot_active'],
 								'bot_agent'		=> (string) $bot_row['bot_agent'],
-								'bot_ip'		=> (string) $bot_row['bot_ip'])
+								'bot_ip'		=> (string) $bot_row['bot_ip']]
 							) . " WHERE bot_id = $bot_id";
-							$db->sql_query($sql);
+							$this->db->sql_query($sql);
 
 							// Updated username?
 							if ($bot_row['bot_name'] !== $row['bot_name'])
@@ -294,10 +285,10 @@ class acp_bots
 							$log = 'UPDATED';
 						}
 
-						$cache->destroy('_bots');
+						$this->cache->destroy('_bots');
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_' . $log, false, array($bot_row['bot_name']));
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_BOT_' . $log, false, [$bot_row['bot_name']]);
+						trigger_error($this->language->lang('BOT_' . $log) . adm_back_link($this->u_action));
 
 					}
 				}
@@ -307,13 +298,13 @@ class acp_bots
 						FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
 						WHERE b.bot_id = $bot_id
 							AND u.user_id = b.user_id";
-					$result = $db->sql_query($sql);
-					$bot_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = $this->db->sql_query($sql);
+					$bot_row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
 
 					if (!$bot_row)
 					{
-						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+						trigger_error($this->language->lang('NO_BOT') . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];
@@ -322,11 +313,11 @@ class acp_bots
 				}
 
 				$s_active_options = '';
-				$_options = array('0' => 'NO', '1' => 'YES');
+				$_options = ['0' => 'NO', '1' => 'YES'];
 				foreach ($_options as $value => $lang)
 				{
 					$selected = ($bot_row['bot_active'] == $value) ? ' selected="selected"' : '';
-					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $this->language->lang($lang) . '</option>';
 				}
 
 				$style_select = style_select($bot_row['bot_style'], true);
@@ -334,8 +325,8 @@ class acp_bots
 
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
-				$template->assign_vars(array(
-					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
+				$this->template->assign_vars([
+					'L_TITLE'		=> $this->language->lang('BOT_' . $l_title),
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (count($error)) ? implode('<br />', $error) : '',
@@ -349,7 +340,7 @@ class acp_bots
 					'S_STYLE_OPTIONS'	=> $style_select,
 					'S_LANG_OPTIONS'	=> $lang_select,
 					'S_ERROR'			=> (count($error)) ? true : false,
-					)
+					]
 				);
 
 				return;
@@ -357,58 +348,56 @@ class acp_bots
 			break;
 		}
 
-		if ($request->is_ajax() && ($action == 'activate' || $action == 'deactivate'))
+		if ($this->request->is_ajax() && ($action == 'activate' || $action == 'deactivate'))
 		{
 			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
-				'text'	=> $user->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
-			));
+			$json_response->send([
+				'text'	=> $this->language->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
+			]);
 		}
 
 		$s_options = '';
-		$_options = array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE');
+		$_options = ['activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE'];
 		foreach ($_options as $value => $lang)
 		{
-			$s_options .= '<option value="' . $value . '">' . $user->lang[$lang] . '</option>';
+			$s_options .= '<option value="' . $value . '">' . $this->language->lang($lang) . '</option>';
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'		=> $this->u_action,
-			'S_BOT_OPTIONS'	=> $s_options)
+			'S_BOT_OPTIONS'	=> $s_options]
 		);
 
 		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit
 			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u
 			WHERE u.user_id = b.user_id
 			ORDER BY u.user_lastvisit DESC, b.bot_name ASC';
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$active_lang = (!$row['bot_active']) ? 'BOT_ACTIVATE' : 'BOT_DEACTIVATE';
 			$active_value = (!$row['bot_active']) ? 'activate' : 'deactivate';
 
-			$template->assign_block_vars('bots', array(
+			$this->template->assign_block_vars('bots', [
 				'BOT_NAME'		=> $row['bot_name'],
 				'BOT_ID'		=> $row['bot_id'],
-				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
+				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $this->user->format_date($row['user_lastvisit']) : $this->language->lang('BOT_NEVER'),
 
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
-				'L_ACTIVATE_DEACTIVATE'	=> $user->lang[$active_lang],
+				'L_ACTIVATE_DEACTIVATE'	=> $this->language->lang($active_lang),
 				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
-				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
+				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete"]
 			);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 
 	/**
-	* Validate bot name against username table
-	*/
+	 * Validate bot name against username table
+	 */
 	function validate_botname($newname, $oldname = false)
 	{
-		global $db;
-
 		if ($oldname && utf8_clean_string($newname) === $oldname)
 		{
 			return true;
@@ -417,10 +406,10 @@ class acp_bots
 		// Admins might want to use names otherwise forbidden, thus we only check for duplicates.
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($newname)) . "'";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($newname)) . "'";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		return ($row) ? false : true;
 	}

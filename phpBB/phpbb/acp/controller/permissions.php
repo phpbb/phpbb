@@ -1,25 +1,19 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_permissions
+class permissions
 {
 	var $u_action;
 	var $permission_dropdown;
@@ -29,26 +23,23 @@ class acp_permissions
 	 */
 	protected $permissions;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_container, $request;
-		global $config, $phpbb_root_path, $phpEx;
-
 		if (!function_exists('user_get_id_name'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
 		if (!class_exists('auth_admin'))
 		{
-			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			include($this->root_path . 'includes/acp/auth.' . $this->php_ext);
 		}
 
 		$this->permissions = $phpbb_container->get('acl.permissions');
 
 		$auth_admin = new auth_admin();
 
-		$user->add_lang('acp/permissions');
+		$this->language->add_lang('acp/permissions');
 		add_permission_language();
 
 		$this->tpl_name = 'acp_permissions';
@@ -56,15 +47,15 @@ class acp_permissions
 		// Trace has other vars
 		if ($mode == 'trace')
 		{
-			$user_id = $request->variable('u', 0);
-			$forum_id = $request->variable('f', 0);
-			$permission = $request->variable('auth', '');
+			$user_id = $this->request->variable('u', 0);
+			$forum_id = $this->request->variable('f', 0);
+			$permission = $this->request->variable('auth', '');
 
 			$this->tpl_name = 'permission_trace';
 
-			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
+			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $this->auth->acl_get('a_viewauth'))
 			{
-				$this->page_title = sprintf($user->lang['TRACE_PERMISSION'], $this->permissions->get_permission_lang($permission));
+				$this->page_title = sprintf($this->language->lang('TRACE_PERMISSION'), $this->permissions->get_permission_lang($permission));
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
@@ -76,7 +67,7 @@ class acp_permissions
 		{
 			$this->tpl_name = 'permission_forum_copy';
 
-			if ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
+			if ($this->auth->acl_get('a_fauth') && $this->auth->acl_get('a_authusers') && $this->auth->acl_get('a_authgroups') && $this->auth->acl_get('a_mauth'))
 			{
 				$this->page_title = 'ACP_FORUM_PERMISSIONS_COPY';
 				$this->copy_forum_permissions();
@@ -87,20 +78,20 @@ class acp_permissions
 		}
 
 		// Set some vars
-		$action = $request->variable('action', array('' => 0));
+		$action = $this->request->variable('action', ['' => 0]);
 		$action = key($action);
-		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
+		$action = ($this->request->is_set_post('psubmit')) ? 'apply_permissions' : $action;
 
-		$all_forums = $request->variable('all_forums', 0);
-		$subforum_id = $request->variable('subforum_id', 0);
-		$forum_id = $request->variable('forum_id', array(0));
+		$all_forums = $this->request->variable('all_forums', 0);
+		$subforum_id = $this->request->variable('subforum_id', 0);
+		$forum_id = $this->request->variable('forum_id', [0]);
 
-		$username = $request->variable('username', array(''), true);
-		$usernames = $request->variable('usernames', '', true);
-		$user_id = $request->variable('user_id', array(0));
+		$username = $this->request->variable('username', [''], true);
+		$usernames = $this->request->variable('usernames', '', true);
+		$user_id = $this->request->variable('user_id', [0]);
 
-		$group_id = $request->variable('group_id', array(0));
-		$select_all_groups = $request->variable('select_all_groups', 0);
+		$group_id = $this->request->variable('group_id', [0]);
+		$select_all_groups = $this->request->variable('select_all_groups', 0);
 
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);
@@ -109,19 +100,19 @@ class acp_permissions
 		if ($select_all_groups)
 		{
 			// Add default groups to selection
-			$sql_and = (!$config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
+			$sql_and = (!$this->config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
 
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_type = ' . GROUP_SPECIAL . "
 				$sql_and";
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$group_id[] = $row['group_id'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		// Map usernames to ids and vice versa
@@ -137,7 +128,7 @@ class acp_permissions
 
 			if (!count($user_id))
 			{
-				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('SELECTED_USER_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		unset($username);
@@ -148,18 +139,18 @@ class acp_permissions
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				ORDER BY left_id';
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			$forum_id = array();
-			while ($row = $db->sql_fetchrow($result))
+			$forum_id = [];
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$forum_id[] = (int) $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 		else if ($subforum_id)
 		{
-			$forum_id = array();
+			$forum_id = [];
 			foreach (get_forum_branch($subforum_id, 'children') as $row)
 			{
 				$forum_id[] = (int) $row['forum_id'];
@@ -174,8 +165,8 @@ class acp_permissions
 		{
 			$this->page_title = 'ACP_PERMISSIONS';
 
-			$template->assign_vars(array(
-				'S_INTRO'		=> true)
+			$this->template->assign_vars([
+				'S_INTRO'		=> true]
 			);
 
 			return;
@@ -185,44 +176,44 @@ class acp_permissions
 		{
 			case 'setting_user_global':
 			case 'setting_group_global':
-				$this->permission_dropdown = array('u_', 'm_', 'a_');
-				$permission_victim = ($mode == 'setting_user_global') ? array('user') : array('group');
+				$this->permission_dropdown = ['u_', 'm_', 'a_'];
+				$permission_victim = ($mode == 'setting_user_global') ? ['user'] : ['group'];
 				$this->page_title = ($mode == 'setting_user_global') ? 'ACP_USERS_PERMISSIONS' : 'ACP_GROUPS_PERMISSIONS';
 			break;
 
 			case 'setting_user_local':
 			case 'setting_group_local':
-				$this->permission_dropdown = array('f_', 'm_');
-				$permission_victim = ($mode == 'setting_user_local') ? array('user', 'forums') : array('group', 'forums');
+				$this->permission_dropdown = ['f_', 'm_'];
+				$permission_victim = ($mode == 'setting_user_local') ? ['user', 'forums'] : ['group', 'forums'];
 				$this->page_title = ($mode == 'setting_user_local') ? 'ACP_USERS_FORUM_PERMISSIONS' : 'ACP_GROUPS_FORUM_PERMISSIONS';
 			break;
 
 			case 'setting_admin_global':
 			case 'setting_mod_global':
-				$this->permission_dropdown = (strpos($mode, '_admin_') !== false) ? array('a_') : array('m_');
-				$permission_victim = array('usergroup');
+				$this->permission_dropdown = (strpos($mode, '_admin_') !== false) ? ['a_'] : ['m_'];
+				$permission_victim = ['usergroup'];
 				$this->page_title = ($mode == 'setting_admin_global') ? 'ACP_ADMINISTRATORS' : 'ACP_GLOBAL_MODERATORS';
 			break;
 
 			case 'setting_mod_local':
 			case 'setting_forum_local':
-				$this->permission_dropdown = ($mode == 'setting_mod_local') ? array('m_') : array('f_');
-				$permission_victim = array('forums', 'usergroup');
+				$this->permission_dropdown = ($mode == 'setting_mod_local') ? ['m_'] : ['f_'];
+				$permission_victim = ['forums', 'usergroup'];
 				$this->page_title = ($mode == 'setting_mod_local') ? 'ACP_FORUM_MODERATORS' : 'ACP_FORUM_PERMISSIONS';
 			break;
 
 			case 'view_admin_global':
 			case 'view_user_global':
 			case 'view_mod_global':
-				$this->permission_dropdown = ($mode == 'view_admin_global') ? array('a_') : (($mode == 'view_user_global') ? array('u_') : array('m_'));
-				$permission_victim = array('usergroup_view');
+				$this->permission_dropdown = ($mode == 'view_admin_global') ? ['a_'] : (($mode == 'view_user_global') ? ['u_'] : ['m_']);
+				$permission_victim = ['usergroup_view'];
 				$this->page_title = ($mode == 'view_admin_global') ? 'ACP_VIEW_ADMIN_PERMISSIONS' : (($mode == 'view_user_global') ? 'ACP_VIEW_USER_PERMISSIONS' : 'ACP_VIEW_GLOBAL_MOD_PERMISSIONS');
 			break;
 
 			case 'view_mod_local':
 			case 'view_forum_local':
-				$this->permission_dropdown = ($mode == 'view_mod_local') ? array('m_') : array('f_');
-				$permission_victim = array('forums', 'usergroup_view');
+				$this->permission_dropdown = ($mode == 'view_mod_local') ? ['m_'] : ['f_'];
+				$permission_victim = ['forums', 'usergroup_view'];
 				$this->page_title = ($mode == 'view_mod_local') ? 'ACP_VIEW_FORUM_MOD_PERMISSIONS' : 'ACP_VIEW_FORUM_PERMISSIONS';
 			break;
 
@@ -231,17 +222,17 @@ class acp_permissions
 			break;
 		}
 
-		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'])
+		$this->template->assign_vars([
+			'L_TITLE'		=> $this->language->lang[$this->page_title],
+			'L_EXPLAIN'		=> $this->language->lang[$this->page_title . '_EXPLAIN']]
 		);
 
 		// Get permission type
-		$permission_type = $request->variable('type', $this->permission_dropdown[0]);
+		$permission_type = $this->request->variable('type', $this->permission_dropdown[0]);
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
-			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('WRONG_PERMISSION_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Handle actions
@@ -253,8 +244,8 @@ class acp_permissions
 					if (confirm_box(true))
 					{
 						// All users/groups selected?
-						$all_users = (isset($_POST['all_users'])) ? true : false;
-						$all_groups = (isset($_POST['all_groups'])) ? true : false;
+						$all_users = ($this->request->is_set_post('all_users')) ? true : false;
+						$all_groups = ($this->request->is_set_post('all_groups')) ? true : false;
 
 						if ($all_users || $all_groups)
 						{
@@ -276,12 +267,12 @@ class acp_permissions
 						}
 						else
 						{
-							trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('NO_USER_GROUP_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					else
 					{
-						if (isset($_POST['cancel']))
+						if ($this->request->is_set_post('cancel'))
 						{
 							$u_redirect = $this->u_action . '&amp;type=' . $permission_type;
 							foreach ($forum_id as $fid)
@@ -291,50 +282,50 @@ class acp_permissions
 							redirect($u_redirect);
 						}
 
-						$s_hidden_fields = array(
+						$s_hidden_fields = [
 							'i'				=> $id,
 							'mode'			=> $mode,
-							'action'		=> array($action => 1),
+							'action'		=> [$action => 1],
 							'user_id'		=> $user_id,
 							'group_id'		=> $group_id,
 							'forum_id'		=> $forum_id,
 							'type'			=> $permission_type,
-						);
-						if (isset($_POST['all_users']))
+						];
+						if ($this->request->is_set_post('all_users'))
 						{
 							$s_hidden_fields['all_users'] = 1;
 						}
-						if (isset($_POST['all_groups']))
+						if ($this->request->is_set_post('all_groups'))
 						{
 							$s_hidden_fields['all_groups'] = 1;
 						}
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+						confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
 					}
 				break;
 
 				case 'apply_permissions':
-					if (!isset($_POST['setting']))
+					if (!$this->request->is_set_post('setting'))
 					{
 						send_status_line(403, 'Forbidden');
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
 				break;
 
 				case 'apply_all_permissions':
-					if (!isset($_POST['setting']))
+					if (!$this->request->is_set_post('setting'))
 					{
 						send_status_line(403, 'Forbidden');
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -355,9 +346,9 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_SELECT_FORUM'		=> true,
-						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true, false, false))
+						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true, false, false)]
 					);
 
 				break;
@@ -382,12 +373,12 @@ class acp_permissions
 					// Build subforum options
 					$s_subforum_options = $this->build_subforum_options($forum_list);
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_SELECT_FORUM'		=> true,
 						'S_FORUM_OPTIONS'		=> $s_forum_options,
 						'S_SUBFORUM_OPTIONS'	=> $s_subforum_options,
 						'S_FORUM_ALL'			=> true,
-						'S_FORUM_MULTIPLE'		=> true)
+						'S_FORUM_MULTIPLE'		=> true]
 					);
 
 				break;
@@ -400,10 +391,10 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_SELECT_USER'			=> true,
-						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
-					));
+						'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
+					]);
 
 				break;
 
@@ -415,18 +406,18 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_SELECT_GROUP'		=> true,
 						'S_GROUP_OPTIONS'		=> group_select_options(false, false, false), // Show all groups
-					));
+					]);
 
 				break;
 
 				case 'usergroup':
 				case 'usergroup_view':
 
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+					$all_users = ($this->request->is_set_post('all_users')) ? true : false;
+					$all_groups = ($this->request->is_set_post('all_groups')) ? true : false;
 
 					if ((count($user_id) && !$all_users) || (count($group_id) && !$all_groups))
 					{
@@ -458,14 +449,14 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_SELECT_USERGROUP'		=> ($victim == 'usergroup') ? true : false,
 						'S_SELECT_USERGROUP_VIEW'	=> ($victim == 'usergroup_view') ? true : false,
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], false),	// Show all groups
-						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
-					));
+						'U_FIND_USERNAME'			=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
+					]);
 
 				break;
 			}
@@ -475,22 +466,22 @@ class acp_permissions
 			// We need to see if the number of forums can be increased or need to be decreased.
 
 			// Setting permissions screen
-			$s_hidden_fields = build_hidden_fields(array(
+			$s_hidden_fields = build_hidden_fields([
 					'user_id'		=> $user_id,
 					'group_id'		=> $group_id,
 					'forum_id'		=> $forum_id,
 					'type'			=> $permission_type,
-			));
+			]);
 
-			$template->assign_vars(array(
+			$this->template->assign_vars([
 				'U_ACTION'				=> $this->u_action,
 				'ANONYMOUS_USER_ID'		=> ANONYMOUS,
 
 				'S_SELECT_VICTIM'		=> true,
 				'S_ALLOW_ALL_SELECT'	=> (count($forum_id) > 5) ? false : true,
-				'S_CAN_SELECT_USER'		=> ($auth->acl_get('a_authusers')) ? true : false,
-				'S_CAN_SELECT_GROUP'	=> ($auth->acl_get('a_authgroups')) ? true : false,
-				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+				'S_CAN_SELECT_USER'		=> ($this->auth->acl_get('a_authusers')) ? true : false,
+				'S_CAN_SELECT_GROUP'	=> ($this->auth->acl_get('a_authgroups')) ? true : false,
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields]
 			);
 
 			// Let the forum names being displayed
@@ -498,20 +489,20 @@ class acp_permissions
 			{
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
-					WHERE ' . $db->sql_in_set('forum_id', $forum_id) . '
+					WHERE ' . $this->db->sql_in_set('forum_id', $forum_id) . '
 					ORDER BY left_id ASC';
-				$result = $db->sql_query($sql);
+				$result = $this->db->sql_query($sql);
 
-				$forum_names = array();
-				while ($row = $db->sql_fetchrow($result))
+				$forum_names = [];
+				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$forum_names[] = $row['forum_name'];
 				}
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_FORUM_NAMES'		=> (count($forum_names)) ? true : false,
-					'FORUM_NAMES'		=> implode($user->lang['COMMA_SEPARATOR'], $forum_names))
+					'FORUM_NAMES'		=> implode($this->language->lang('COMMA_SEPARATOR'), $forum_names)]
 				);
 			}
 
@@ -519,31 +510,31 @@ class acp_permissions
 		}
 
 		// Setting permissions screen
-		$s_hidden_fields = build_hidden_fields(array(
+		$s_hidden_fields = build_hidden_fields([
 				'user_id'		=> $user_id,
 				'group_id'		=> $group_id,
 				'forum_id'		=> $forum_id,
 				'type'			=> $permission_type,
-		));
+		]);
 
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (count($forum_id) && !count($user_id) && !count($group_id))
 		{
-			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('ONLY_FORUM_DEFINED') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_PERMISSION_DROPDOWN'		=> (count($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type, $permission_scope) : false,
 			'L_PERMISSION_TYPE'			=> $this->permissions->get_type_lang($permission_type),
 
 			'U_ACTION'					=> $this->u_action,
-			'S_HIDDEN_FIELDS'			=> $s_hidden_fields)
+			'S_HIDDEN_FIELDS'			=> $s_hidden_fields]
 		);
 
 		if (strpos($mode, 'setting_') === 0)
 		{
-			$template->assign_vars(array(
-				'S_SETTING_PERMISSIONS'		=> true)
+			$this->template->assign_vars([
+				'S_SETTING_PERMISSIONS'		=> true]
 			);
 
 			$hold_ary = $auth_admin->get_mask('set', (count($user_id)) ? $user_id : false, (count($group_id)) ? $group_id : false, (count($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, ACL_NO);
@@ -551,8 +542,8 @@ class acp_permissions
 		}
 		else
 		{
-			$template->assign_vars(array(
-				'S_VIEWING_PERMISSIONS'		=> true)
+			$this->template->assign_vars([
+				'S_VIEWING_PERMISSIONS'		=> true]
 			);
 
 			$hold_ary = $auth_admin->get_mask('view', (count($user_id)) ? $user_id : false, (count($group_id)) ? $group_id : false, (count($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, ACL_NEVER);
@@ -561,12 +552,10 @@ class acp_permissions
 	}
 
 	/**
-	* Build +subforum options
-	*/
+	 * Build +subforum options
+	 */
 	function build_subforum_options($forum_list)
 	{
-		global $user;
-
 		$s_options = '';
 
 		$forum_list = array_merge($forum_list);
@@ -595,7 +584,7 @@ class acp_permissions
 
 			if ($branch_there)
 			{
-				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
+				$s_options .= ' [' . $this->language->lang('PLUS_SUBFORUMS') . ']';
 			}
 
 			$s_options .= '</option>';
@@ -605,16 +594,14 @@ class acp_permissions
 	}
 
 	/**
-	* Build dropdown field for changing permission types
-	*/
+	 * Build dropdown field for changing permission types
+	 */
 	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
-		global $auth;
-
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
 		{
-			if (!$auth->acl_get('a_' . str_replace('_', '', $setting) . 'auth'))
+			if (!$this->auth->acl_get('a_' . str_replace('_', '', $setting) . 'auth'))
 			{
 				continue;
 			}
@@ -628,12 +615,10 @@ class acp_permissions
 	}
 
 	/**
-	* Check if selected items exist. Remove not found ids and if empty return error.
-	*/
+	 * Check if selected items exist. Remove not found ids and if empty return error.
+	 */
 	function check_existence($mode, &$ids)
 	{
-		global $db, $user;
-
 		switch ($mode)
 		{
 			case 'user':
@@ -656,48 +641,45 @@ class acp_permissions
 		{
 			$sql = "SELECT $sql_id
 				FROM $table
-				WHERE " . $db->sql_in_set($sql_id, $ids);
-			$result = $db->sql_query($sql);
+				WHERE " . $this->db->sql_in_set($sql_id, $ids);
+			$result = $this->db->sql_query($sql);
 
-			$ids = array();
-			while ($row = $db->sql_fetchrow($result))
+			$ids = [];
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$ids[] = (int) $row[$sql_id];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		if (!count($ids))
 		{
-			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('SELECTED_' . strtoupper($mode) . '_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 
 	/**
-	* Apply permissions
-	*/
+	 * Apply permissions
+	 */
 	function set_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
-		global $db, $cache, $user, $auth;
-		global $request;
-
-		$psubmit = $request->variable('psubmit', array(0 => array(0 => 0)));
+		$psubmit = $this->request->variable('psubmit', [0 => [0 => 0]]);
 
 		// User or group to be set?
 		$ug_type = (count($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!$this->auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$this->auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// We loop through the auth settings defined in our submit
 		$ug_id = key($psubmit);
 		$forum_id = key($psubmit[$ug_id]);
 
-		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
+		$settings = $this->request->variable('setting', [0 => [0 => ['' => 0]]], false, \phpbb\request\request_interface::POST);
 		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
@@ -706,14 +688,14 @@ class acp_permissions
 		$auth_settings = $settings[$ug_id][$forum_id];
 
 		// Do we have a role we want to set?
-		$roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
+		$roles = $this->request->variable('role', [0 => [0 => 0]], false, \phpbb\request\request_interface::POST);
 		$assigned_role = (isset($roles[$ug_id][$forum_id])) ? (int) $roles[$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
-		$inherit = $request->variable('inherit', array(0 => array(0)));
+		$inherit = $this->request->variable('inherit', [0 => [0]]);
 
-		$ug_id = array($ug_id);
-		$forum_id = array($forum_id);
+		$ug_id = [$ug_id];
+		$forum_id = [$forum_id];
 
 		if (count($inherit))
 		{
@@ -759,30 +741,27 @@ class acp_permissions
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
 
 		meta_refresh(5, $this->u_action);
-		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 	}
 
 	/**
-	* Apply all permissions
-	*/
+	 * Apply all permissions
+	 */
 	function set_all_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
-		global $db, $cache, $user, $auth;
-		global $request;
-
 		// User or group to be set?
 		$ug_type = (count($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!$this->auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$this->auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
-		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
-		$ug_ids = $forum_ids = array();
+		$auth_settings = $this->request->variable('setting', [0 => [0 => ['' => 0]]], false, \phpbb\request\request_interface::POST);
+		$auth_roles = $this->request->variable('role', [0 => [0 => 0]], false, \phpbb\request\request_interface::POST);
+		$ug_ids = $forum_ids = [];
 
 		// We need to go through the auth settings
 		foreach ($auth_settings as $ug_id => $forum_auth_row)
@@ -831,35 +810,33 @@ class acp_permissions
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
 			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids));
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
+			trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
 		}
 		else
 		{
 			meta_refresh(5, $this->u_action);
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+			trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 		}
 	}
 
 	/**
-	* Compare auth settings with auth settings from role
-	* returns false if they differ, true if they are equal
-	*/
+	 * Compare auth settings with auth settings from role
+	 * returns false if they differ, true if they are equal
+	 */
 	function check_assigned_role($role_id, &$auth_settings)
 	{
-		global $db;
-
 		$sql = 'SELECT o.auth_option, r.auth_setting
 			FROM ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_ROLES_DATA_TABLE . ' r
 			WHERE o.auth_option_id = r.auth_option_id
 				AND r.role_id = ' . $role_id;
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		$test_auth_settings = array();
-		while ($row = $db->sql_fetchrow($result))
+		$test_auth_settings = [];
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$test_auth_settings[$row['auth_option']] = $row['auth_setting'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		// We need to add any ACL_NO setting from auth_settings to compare correctly
 		foreach ($auth_settings as $option => $setting)
@@ -879,20 +856,18 @@ class acp_permissions
 	}
 
 	/**
-	* Remove permissions
-	*/
+	 * Remove permissions
+	 */
 	function remove_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db, $cache, $auth;
-
 		// User or group to be set?
 		$ug_type = (count($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!$this->auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$this->auth->acl_get('a_auth' . $ug_type . 's'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (count($forum_id) ? $forum_id : false), $permission_type);
@@ -903,92 +878,88 @@ class acp_permissions
 			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
-		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (count($forum_id) ? $forum_id : array(0 => 0)));
+		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (count($forum_id) ? $forum_id : [0 => 0]));
 
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
 			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id));
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
+			trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
 		}
 		else
 		{
 			meta_refresh(5, $this->u_action);
-			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+			trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 		}
 	}
 
 	/**
-	* Log permission changes
-	*/
+	 * Log permission changes
+	 */
 	function log_action($mode, $action, $permission_type, $ug_type, $ug_id, $forum_id)
 	{
-		global $db, $user, $phpbb_log, $phpbb_container;
-
 		if (!is_array($ug_id))
 		{
-			$ug_id = array($ug_id);
+			$ug_id = [$ug_id];
 		}
 
 		if (!is_array($forum_id))
 		{
-			$forum_id = array($forum_id);
+			$forum_id = [$forum_id];
 		}
 
 		// Logging ... first grab user or groupnames ...
 		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE ' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE ';
-		$sql .= $db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
-		$result = $db->sql_query($sql);
+		$sql .= $this->db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
+		$result = $this->db->sql_query($sql);
 
 		/** @var \phpbb\group\helper $group_helper */
 		$group_helper = $phpbb_container->get('group_helper');
 
 		$l_ug_list = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$group_name = $group_helper->get_name($row['name']);
+			$group_name = $this->group_helper->get_name($row['name']);
 			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . $group_name . '</span>' : $group_name);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		$mode = str_replace('setting_', '', $mode);
 
 		if ($forum_id[0] == 0)
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_ug_list));
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, [$l_ug_list]);
 		}
 		else
 		{
 			// Grab the forum details if non-zero forum_id
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
-			$result = $db->sql_query($sql);
+				WHERE ' . $this->db->sql_in_set('forum_id', $forum_id);
+			$result = $this->db->sql_query($sql);
 
 			$l_forum_list = '';
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$l_forum_list .= (($l_forum_list != '') ? ', ' : '') . $row['forum_name'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_forum_list, $l_ug_list));
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, [$l_forum_list, $l_ug_list]);
 		}
 	}
 
 	/**
-	* Display a complete trace tree for the selected permission to determine where settings are set/unset
-	*/
+	 * Display a complete trace tree for the selected permission to determine where settings are set/unset
+	 */
 	function permission_trace($user_id, $forum_id, $permission)
 	{
-		global $db, $template, $user, $auth, $request, $phpbb_container;
-
-		if ($user_id != $user->data['user_id'])
+		if ($user_id != $this->user->data['user_id'])
 		{
-			$userdata = $auth->obtain_user_data($user_id);
+			$userdata = $this->auth->obtain_user_data($user_id);
 		}
 		else
 		{
-			$userdata = $user->data;
+			$userdata = $this->user->data;
 		}
 
 		if (!$userdata)
@@ -1006,29 +977,29 @@ class acp_permissions
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$result = $db->sql_query($sql, 3600);
-			$forum_name = $db->sql_fetchfield('forum_name');
-			$db->sql_freeresult($result);
+			$result = $this->db->sql_query($sql, 3600);
+			$forum_name = $this->db->sql_fetchfield('forum_name');
+			$this->db->sql_freeresult($result);
 		}
 
-		$back = $request->variable('back', 0);
+		$back = $this->request->variable('back', 0);
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'PERMISSION'			=> $this->permissions->get_permission_lang($permission),
 			'PERMISSION_USERNAME'	=> $userdata['username'],
 			'FORUM_NAME'			=> $forum_name,
 
 			'S_GLOBAL_TRACE'		=> ($forum_id) ? false : true,
 
-			'U_BACK'				=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '')
+			'U_BACK'				=> ($back) ? build_url(['f', 'back']) . "&amp;f=$back" : '']
 		);
 
-		$template->assign_block_vars('trace', array(
-			'WHO'			=> $user->lang['DEFAULT'],
-			'INFORMATION'	=> $user->lang['TRACE_DEFAULT'],
+		$this->template->assign_block_vars('trace', [
+			'WHO'			=> $this->language->lang('DEFAULT'),
+			'INFORMATION'	=> $this->language->lang('TRACE_DEFAULT'),
 
 			'S_SETTING_NO'		=> true,
-			'S_TOTAL_NO'		=> true)
+			'S_TOTAL_NO'		=> true]
 		);
 
 		$sql = 'SELECT DISTINCT g.group_name, g.group_id, g.group_type
@@ -1038,17 +1009,17 @@ class acp_permissions
 				AND ug.user_pending = 0
 				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 			ORDER BY g.group_type DESC, g.group_id DESC';
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		$groups = array();
-		while ($row = $db->sql_fetchrow($result))
+		$groups = [];
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$groups[$row['group_id']] = array(
+			$groups[$row['group_id']] = [
 				'auth_setting'		=> ACL_NO,
-				'group_name'		=> $group_helper->get_name($row['group_name']),
-			);
+				'group_name'		=> $this->group_helper->get_name($row['group_name']),
+			];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		$total = ACL_NO;
 		$add_key = (($forum_id) ? '_LOCAL' : '');
@@ -1056,7 +1027,7 @@ class acp_permissions
 		if (count($groups))
 		{
 			// Get group auth settings
-			$hold_ary = $auth->acl_group_raw_data(array_keys($groups), $permission, $forum_id);
+			$hold_ary = $this->auth->acl_group_raw_data(array_keys($groups), $permission, $forum_id);
 
 			foreach ($hold_ary as $group_id => $forum_ary)
 			{
@@ -1069,21 +1040,21 @@ class acp_permissions
 				switch ($row['auth_setting'])
 				{
 					case ACL_NO:
-						$information = $user->lang['TRACE_GROUP_NO' . $add_key];
+						$information = $this->language->lang('TRACE_GROUP_NO' . $add_key);
 					break;
 
 					case ACL_YES:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_YES_TOTAL_NO' . $add_key]);
+						$information = ($total == ACL_YES) ? $this->language->lang('TRACE_GROUP_YES_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $this->language->lang('TRACE_GROUP_YES_TOTAL_NEVER' . $add_key) : $this->language->lang('TRACE_GROUP_YES_TOTAL_NO' . $add_key));
 						$total = ($total == ACL_NO) ? ACL_YES : $total;
 					break;
 
 					case ACL_NEVER:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_NEVER_TOTAL_NO' . $add_key]);
+						$information = ($total == ACL_YES) ? $this->language->lang('TRACE_GROUP_NEVER_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $this->language->lang('TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key) : $this->language->lang('TRACE_GROUP_NEVER_TOTAL_NO' . $add_key));
 						$total = ACL_NEVER;
 					break;
 				}
 
-				$template->assign_block_vars('trace', array(
+				$this->template->assign_block_vars('trace', [
 					'WHO'			=> $row['group_name'],
 					'INFORMATION'	=> $information,
 
@@ -1092,34 +1063,34 @@ class acp_permissions
 					'S_SETTING_NEVER'	=> ($row['auth_setting'] == ACL_NEVER) ? true : false,
 					'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false,
 					'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
-					'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
+					'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false]
 				);
 			}
 		}
 
 		// Get user specific permission... globally or for this forum
-		$hold_ary = $auth->acl_user_raw_data($user_id, $permission, $forum_id);
+		$hold_ary = $this->auth->acl_user_raw_data($user_id, $permission, $forum_id);
 		$auth_setting = (!count($hold_ary)) ? ACL_NO : $hold_ary[$user_id][$forum_id][$permission];
 
 		switch ($auth_setting)
 		{
 			case ACL_NO:
-				$information = ($total == ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO' . $add_key] : $user->lang['TRACE_USER_KEPT' . $add_key];
+				$information = ($total == ACL_NO) ? $this->language->lang('TRACE_USER_NO_TOTAL_NO' . $add_key) : $this->language->lang('TRACE_USER_KEPT' . $add_key);
 				$total = ($total == ACL_NO) ? ACL_NEVER : $total;
 			break;
 
 			case ACL_YES:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_YES_TOTAL_NO' . $add_key]);
+				$information = ($total == ACL_YES) ? $this->language->lang('TRACE_USER_YES_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $this->language->lang('TRACE_USER_YES_TOTAL_NEVER' . $add_key) : $this->language->lang('TRACE_USER_YES_TOTAL_NO' . $add_key));
 				$total = ($total == ACL_NO) ? ACL_YES : $total;
 			break;
 
 			case ACL_NEVER:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_NEVER_TOTAL_NO' . $add_key]);
+				$information = ($total == ACL_YES) ? $this->language->lang('TRACE_USER_NEVER_TOTAL_YES' . $add_key) : (($total == ACL_NEVER) ? $this->language->lang('TRACE_USER_NEVER_TOTAL_NEVER' . $add_key) : $this->language->lang('TRACE_USER_NEVER_TOTAL_NO' . $add_key));
 				$total = ACL_NEVER;
 			break;
 		}
 
-		$template->assign_block_vars('trace', array(
+		$this->template->assign_block_vars('trace', [
 			'WHO'			=> $userdata['username'],
 			'INFORMATION'	=> $information,
 
@@ -1128,12 +1099,12 @@ class acp_permissions
 			'S_SETTING_NEVER'	=> ($auth_setting == ACL_NEVER) ? true : false,
 			'S_TOTAL_NO'		=> false,
 			'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
-			'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
+			'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false]
 		);
 
-		if ($forum_id != 0 && isset($auth->acl_options['global'][$permission]))
+		if ($forum_id != 0 && isset($this->auth->acl_options['global'][$permission]))
 		{
-			if ($user_id != $user->data['user_id'])
+			if ($user_id != $this->user->data['user_id'])
 			{
 				$auth2 = new \phpbb\auth\auth();
 				$auth2->acl($userdata);
@@ -1141,24 +1112,24 @@ class acp_permissions
 			}
 			else
 			{
-				$auth_setting = $auth->acl_get($permission);
+				$auth_setting = $this->auth->acl_get($permission);
 			}
 
 			if ($auth_setting)
 			{
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_YES'] : $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_NEVER'];
+				$information = ($total == ACL_YES) ? $this->language->lang('TRACE_USER_GLOBAL_YES_TOTAL_YES') : $this->language->lang('TRACE_USER_GLOBAL_YES_TOTAL_NEVER');
 				$total = ACL_YES;
 			}
 			else
 			{
-				$information = $user->lang['TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'];
+				$information = $this->language->lang('TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT');
 			}
 
 			// If there is no auth information we do not need to worry the user by showing non-relevant data.
 			if ($auth_setting)
 			{
-				$template->assign_block_vars('trace', array(
-					'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
+				$this->template->assign_block_vars('trace', [
+					'WHO'			=> sprintf($this->language->lang('TRACE_GLOBAL_SETTING'), $userdata['username']),
 					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
 					'S_SETTING_NO'		=> false,
@@ -1166,7 +1137,7 @@ class acp_permissions
 					'S_SETTING_NEVER'	=> !$auth_setting,
 					'S_TOTAL_NO'		=> false,
 					'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
-					'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
+					'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false]
 				);
 			}
 		}
@@ -1174,44 +1145,42 @@ class acp_permissions
 		// Take founder status into account, overwriting the default values
 		if ($userdata['user_type'] == USER_FOUNDER && strpos($permission, 'a_') === 0)
 		{
-			$template->assign_block_vars('trace', array(
+			$this->template->assign_block_vars('trace', [
 				'WHO'			=> $userdata['username'],
-				'INFORMATION'	=> $user->lang['TRACE_USER_FOUNDER'],
+				'INFORMATION'	=> $this->language->lang('TRACE_USER_FOUNDER'),
 
 				'S_SETTING_NO'		=> ($auth_setting == ACL_NO) ? true : false,
 				'S_SETTING_YES'		=> ($auth_setting == ACL_YES) ? true : false,
 				'S_SETTING_NEVER'	=> ($auth_setting == ACL_NEVER) ? true : false,
 				'S_TOTAL_NO'		=> false,
 				'S_TOTAL_YES'		=> true,
-				'S_TOTAL_NEVER'		=> false)
+				'S_TOTAL_NEVER'		=> false]
 			);
 
 			$total = ACL_YES;
 		}
 
 		// Total value...
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_RESULT_NO'		=> ($total == ACL_NO) ? true : false,
 			'S_RESULT_YES'		=> ($total == ACL_YES) ? true : false,
 			'S_RESULT_NEVER'	=> ($total == ACL_NEVER) ? true : false,
-		));
+		]);
 	}
 
 	/**
-	* Handles copying permissions from one forum to others
-	*/
+	 * Handles copying permissions from one forum to others
+	 */
 	function copy_forum_permissions()
 	{
-		global $db, $auth, $cache, $template, $user, $request;
+		$this->language->add_lang('acp/forums');
 
-		$user->add_lang('acp/forums');
-
-		$submit = isset($_POST['submit']) ? true : false;
+		$submit = $this->request->is_set_post('submit') ? true : false;
 
 		if ($submit)
 		{
-			$src = $request->variable('src_forum_id', 0);
-			$dest = $request->variable('dest_forum_ids', array(0));
+			$src = $this->request->variable('src_forum_id', 0);
+			$dest = $this->request->variable('dest_forum_ids', [0]);
 
 			if (confirm_box(true))
 			{
@@ -1219,86 +1188,84 @@ class acp_permissions
 				{
 					phpbb_cache_moderators($db, $cache, $auth);
 
-					$auth->acl_clear_prefetch();
-					$cache->destroy('sql', FORUMS_TABLE);
+					$this->auth->acl_clear_prefetch();
+					$this->cache->destroy('sql', FORUMS_TABLE);
 
-					trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('AUTH_UPDATED') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang['SELECTED_FORUM_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('SELECTED_FORUM_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 			else
 			{
-				$s_hidden_fields = array(
+				$s_hidden_fields = [
 					'submit'			=> $submit,
 					'src_forum_id'		=> $src,
 					'dest_forum_ids'	=> $dest,
-				);
+				];
 
 				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-				confirm_box(false, $user->lang['COPY_PERMISSIONS_CONFIRM'], $s_hidden_fields);
+				confirm_box(false, $this->language->lang('COPY_PERMISSIONS_CONFIRM'), $s_hidden_fields);
 			}
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_FORUM_OPTIONS' => make_forum_select(false, false, false, false, false),
-		));
+		]);
 	}
 
 	/**
-	* Get already assigned users/groups
-	*/
+	 * Get already assigned users/groups
+	 */
 	function retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type)
 	{
-		global $db, $phpbb_container;
-
 		/** @var \phpbb\group\helper $group_helper */
 		$group_helper = $phpbb_container->get('group_helper');
 
-		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((count($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
+		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((count($forum_id)) ? 'AND ' . $this->db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
 
 		// Permission options are only able to be a permission set... therefore we will pre-fetch the possible options and also the possible roles
-		$option_ids = $role_ids = array();
+		$option_ids = $role_ids = [];
 
 		$sql = 'SELECT auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . '
-			WHERE auth_option ' . $db->sql_like_expression($permission_type . $db->get_any_char());
-		$result = $db->sql_query($sql);
+			WHERE auth_option ' . $this->db->sql_like_expression($permission_type . $this->db->get_any_char());
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$option_ids[] = (int) $row['auth_option_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		if (count($option_ids))
 		{
 			$sql = 'SELECT DISTINCT role_id
 				FROM ' . ACL_ROLES_DATA_TABLE . '
-				WHERE ' . $db->sql_in_set('auth_option_id', $option_ids);
-			$result = $db->sql_query($sql);
+				WHERE ' . $this->db->sql_in_set('auth_option_id', $option_ids);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$role_ids[] = (int) $row['role_id'];
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		if (count($option_ids) && count($role_ids))
 		{
-			$sql_where = 'AND (' . $db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . $db->sql_in_set('a.auth_role_id', $role_ids) . ')';
+			$sql_where = 'AND (' . $this->db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . $this->db->sql_in_set('a.auth_role_id', $role_ids) . ')';
 		}
 		else if (count($role_ids))
 		{
-			$sql_where = 'AND ' . $db->sql_in_set('a.auth_role_id', $role_ids);
+			$sql_where = 'AND ' . $this->db->sql_in_set('a.auth_role_id', $role_ids);
 		}
 		else if (count($option_ids))
 		{
-			$sql_where = 'AND ' . $db->sql_in_set('a.auth_option_id', $option_ids);
+			$sql_where = 'AND ' . $this->db->sql_in_set('a.auth_option_id', $option_ids);
 		}
 
 		// Not ideal, due to the filesort, non-use of indexes, etc.
@@ -1308,16 +1275,16 @@ class acp_permissions
 				$sql_forum_id
 				$sql_where
 			ORDER BY u.username_clean, u.user_regdate ASC";
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$s_defined_user_options = '';
-		$defined_user_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		$defined_user_ids = [];
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$s_defined_user_options .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
 			$defined_user_ids[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT DISTINCT g.group_type, g.group_name, g.group_id
 			FROM ' . GROUPS_TABLE . ' g, ' . ACL_GROUPS_TABLE . " a
@@ -1325,22 +1292,22 @@ class acp_permissions
 				$sql_forum_id
 				$sql_where
 			ORDER BY g.group_type DESC, g.group_name ASC";
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$s_defined_group_options = '';
-		$defined_group_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		$defined_group_ids = [];
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
+			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $this->group_helper->get_name($row['group_name']) . '</option>';
 			$defined_group_ids[] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		return array(
+		return [
 			'group_ids'			=> $defined_group_ids,
 			'group_ids_options'	=> $s_defined_group_options,
 			'user_ids'			=> $defined_user_ids,
-			'user_ids_options'	=> $s_defined_user_options
-		);
+			'user_ids_options'	=> $s_defined_user_options,
+		];
 	}
 }

@@ -1,54 +1,45 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_database
+class database
 {
 	protected $db_tools;
 	protected $temp;
 	public $u_action;
 	public $page_title;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $cache, $db, $user, $template, $table_prefix, $request;
-		global $phpbb_root_path, $phpbb_container, $phpbb_log, $table_prefix;
-
 		$this->db_tools = $phpbb_container->get('dbal.tools');
 		$this->temp = $phpbb_container->get('filesystem.temp');
 		/** @var \phpbb\storage\storage $storage */
 		$storage = $phpbb_container->get('storage.backup');
 
-		$user->add_lang('acp/database');
+		$this->language->add_lang('acp/database');
 
 		$this->tpl_name = 'acp_database';
 		$this->page_title = 'ACP_DATABASE';
 
-		$action	= $request->variable('action', '');
+		$action	= $this->request->variable('action', '');
 
 		$form_key = 'acp_database';
 		add_form_key($form_key);
 
-		$template->assign_vars(array(
-			'MODE'	=> $mode
-		));
+		$this->template->assign_vars([
+			'MODE'	=> $mode,
+		]);
 
 		switch ($mode)
 		{
@@ -59,18 +50,18 @@ class acp_database
 				switch ($action)
 				{
 					case 'download':
-						$type	= $request->variable('type', '');
-						$table	= array_intersect($this->db_tools->sql_list_tables(), $request->variable('table', array('')));
-						$format	= $request->variable('method', '');
+						$type	= $this->request->variable('type', '');
+						$table	= array_intersect($this->db_tools->sql_list_tables(), $this->request->variable('table', ['']));
+						$format	= $this->request->variable('method', '');
 
 						if (!count($table))
 						{
-							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('TABLE_SELECT_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (!check_form_key($form_key))
 						{
-							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = true;
@@ -114,7 +105,7 @@ class acp_database
 								else
 								{
 									// Add command to empty table before write data on it
-									switch ($db->get_sql_layer())
+									switch ($this->db->get_sql_layer())
 									{
 										case 'sqlite3':
 											$extractor->flush('DELETE FROM ' . $table_name . ";\n");
@@ -192,7 +183,7 @@ class acp_database
 								// Save to database
 								$sql = "INSERT INTO " . $table_prefix . "backups (filename)
 									VALUES ('$file');";
-								$db->sql_query($sql);
+								$this->db->sql_query($sql);
 							}
 						}
 						catch (\phpbb\exception\runtime_exception $e)
@@ -200,9 +191,9 @@ class acp_database
 							trigger_error($e->getMessage(), E_USER_ERROR);
 						}
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_BACKUP');
 
-						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
+						trigger_error($this->language->lang('BACKUP_SUCCESS') . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -212,18 +203,18 @@ class acp_database
 						{
 							if (strlen($table_prefix) === 0 || stripos($table_name, $table_prefix) === 0)
 							{
-								$template->assign_block_vars('tables', array(
-									'TABLE'	=> $table_name
-								));
+								$this->template->assign_block_vars('tables', [
+									'TABLE'	=> $table_name,
+								]);
 							}
 						}
 						unset($tables);
 
-						$template->assign_vars(array(
-							'U_ACTION'	=> $this->u_action . '&amp;action=download'
-						));
+						$this->template->assign_vars([
+							'U_ACTION'	=> $this->u_action . '&amp;action=download',
+						]);
 
-						$available_methods = array('gzip' => 'zlib', 'bzip2' => 'bz2');
+						$available_methods = ['gzip' => 'zlib', 'bzip2' => 'bz2'];
 
 						foreach ($available_methods as $type => $module)
 						{
@@ -232,14 +223,14 @@ class acp_database
 								continue;
 							}
 
-							$template->assign_block_vars('methods', array(
-								'TYPE'	=> $type
-							));
+							$this->template->assign_block_vars('methods', [
+								'TYPE'	=> $type,
+							]);
 						}
 
-						$template->assign_block_vars('methods', array(
-							'TYPE'	=> 'text'
-						));
+						$this->template->assign_block_vars('methods', [
+							'TYPE'	=> 'text',
+						]);
 					break;
 				}
 			break;
@@ -251,14 +242,14 @@ class acp_database
 				switch ($action)
 				{
 					case 'submit':
-						$delete = $request->variable('delete', '');
-						$file = $request->variable('file', '');
+						$delete = $this->request->variable('delete', '');
+						$file = $this->request->variable('file', '');
 
 						$backup_info = $this->get_backup_file($db, $file);
 
 						if (empty($backup_info))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
@@ -271,23 +262,23 @@ class acp_database
 									$storage->delete($backup_info['file_name']);
 
 									// Add log entry
-									$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
+									$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_DELETE');
 
 									// Remove from database
 									$sql = "DELETE FROM " . $table_prefix . "backups
-										WHERE filename = '" . $db->sql_escape($backup_info['file_name']) . "';";
-									$db->sql_query($sql);
+										WHERE filename = '" . $this->db->sql_escape($backup_info['file_name']) . "';";
+									$this->db->sql_query($sql);
 								}
 								catch (\Exception $e)
 								{
-									trigger_error($user->lang['BACKUP_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+									trigger_error($this->language->lang('BACKUP_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
 								}
 
-								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+								trigger_error($this->language->lang('BACKUP_DELETE') . adm_back_link($this->u_action));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+								confirm_box(false, $this->language->lang('DELETE_SELECTED_BACKUP'), build_hidden_fields(['delete' => $delete, 'file' => $file]));
 							}
 						}
 						else if (confirm_box(true))
@@ -307,7 +298,7 @@ class acp_database
 							}
 							catch (\phpbb\storage\exception\exception $e)
 							{
-								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
+								trigger_error($this->language->lang('RESTORE_DOWNLOAD_FAIL') . adm_back_link($this->u_action));
 							}
 
 							switch ($backup_info['extension'])
@@ -341,17 +332,17 @@ class acp_database
 
 								default:
 									@unlink($temp_file_name);
-									trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+									trigger_error($this->language->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 									return;
 							}
 
-							switch ($db->get_sql_layer())
+							switch ($this->db->get_sql_layer())
 							{
 								case 'mysqli':
 								case 'sqlite3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										$this->db->sql_query($sql);
 									}
 								break;
 
@@ -367,16 +358,16 @@ class acp_database
 											$sql = "SELECT domain_name
 												FROM information_schema.domains
 												WHERE domain_name = '$domain';";
-											$result = $db->sql_query($sql);
-											if (!$db->sql_fetchrow($result))
+											$result = $this->db->sql_query($sql);
+											if (!$this->db->sql_fetchrow($result))
 											{
-												$db->sql_query($query);
+												$this->db->sql_query($query);
 											}
-											$db->sql_freeresult($result);
+											$this->db->sql_freeresult($result);
 										}
 										else
 										{
-											$db->sql_query($query);
+											$this->db->sql_query($query);
 										}
 
 										if (substr($query, 0, 4) == 'COPY')
@@ -385,12 +376,12 @@ class acp_database
 											{
 												if ($sub === false)
 												{
-													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+													trigger_error($this->language->lang('RESTORE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
 												}
-												pg_put_line($db->get_db_connect_id(), $sub . "\n");
+												pg_put_line($this->db->get_db_connect_id(), $sub . "\n");
 											}
-											pg_put_line($db->get_db_connect_id(), "\\.\n");
-											pg_end_copy($db->get_db_connect_id());
+											pg_put_line($this->db->get_db_connect_id(), "\\.\n");
+											pg_end_copy($this->db->get_db_connect_id());
 										}
 									}
 								break;
@@ -398,7 +389,7 @@ class acp_database
 								case 'oracle':
 									while (($sql = $fgetd($fp, "/\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										$this->db->sql_query($sql);
 									}
 								break;
 
@@ -406,7 +397,7 @@ class acp_database
 								case 'mssqlnative':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										$this->db->sql_query($sql);
 									}
 								break;
 							}
@@ -416,15 +407,15 @@ class acp_database
 							@unlink($temp_file_name);
 
 							// Purge the cache due to updated data
-							$cache->purge();
+							$this->cache->purge();
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
-							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
+							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_RESTORE');
+							trigger_error($this->language->lang('RESTORE_SUCCESS') . adm_back_link($this->u_action));
 							break;
 						}
 						else
 						{
-							confirm_box(false, $user->lang['RESTORE_SELECTED_BACKUP'], build_hidden_fields(array('file' => $file)));
+							confirm_box(false, $this->language->lang('RESTORE_SELECTED_BACKUP'), build_hidden_fields(['file' => $file]));
 						}
 
 					default:
@@ -436,17 +427,17 @@ class acp_database
 
 							foreach ($backup_files as $name => $file)
 							{
-								$template->assign_block_vars('files', array(
+								$this->template->assign_block_vars('files', [
 									'FILE'		=> sha1($file),
-									'NAME'		=> $user->format_date($name, 'd-m-Y H:i', true),
+									'NAME'		=> $this->user->format_date($name, 'd-m-Y H:i', true),
 									'SUPPORTED'	=> true,
-								));
+								]);
 							}
 						}
 
-						$template->assign_vars(array(
-							'U_ACTION'	=> $this->u_action . '&amp;action=submit'
-						));
+						$this->template->assign_vars([
+							'U_ACTION'	=> $this->u_action . '&amp;action=submit',
+						]);
 					break;
 				}
 			break;
@@ -499,9 +490,9 @@ class acp_database
 
 		$sql = 'SELECT filename
 			FROM ' . BACKUPS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $row['filename'], $matches))
 			{
@@ -511,7 +502,7 @@ class acp_database
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
 		return $backup_files;
 	}
@@ -549,7 +540,6 @@ function get_usable_memory()
 		$memory_limit = (int) $regs[1];
 		switch ($regs[2])
 		{
-
 			case 'k':
 			case 'K':
 				$memory_limit *= 1024;
@@ -589,7 +579,7 @@ function sanitize_data_mssql($text)
 	$data = preg_split('/[\n\t\r\b\f]/', $text);
 	preg_match_all('/[\n\t\r\b\f]/', $text, $matches);
 
-	$val = array();
+	$val = [];
 
 	foreach ($data as $value)
 	{
@@ -613,7 +603,7 @@ function sanitize_data_oracle($text)
 	$data = preg_split('/[\0\b\f\'\/]/', $text);
 	preg_match_all('/[\0\r\b\f\'\/]/', $text, $matches);
 
-	$val = array();
+	$val = [];
 
 	foreach ($data as $value)
 	{
@@ -635,7 +625,7 @@ function sanitize_data_generic($text)
 	$data = preg_split('/[\n\t\r\b\f]/', $text);
 	preg_match_all('/[\n\t\r\b\f]/', $text, $matches);
 
-	$val = array();
+	$val = [];
 
 	foreach ($data as $value)
 	{
@@ -682,7 +672,7 @@ function fgetd(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 
 function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 {
-	static $array = array();
+	static $array = [];
 	static $record = '';
 
 	if (!count($array))

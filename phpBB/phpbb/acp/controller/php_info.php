@@ -1,32 +1,24 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_php_info
+class php_info
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $template;
-
 		if ($mode != 'info')
 		{
 			trigger_error('NO_MODE', E_USER_ERROR);
@@ -64,10 +56,10 @@ class acp_php_info
 		}
 		$output = preg_replace('#<table[^>]+>#i', '<table>', $output);
 		$output = preg_replace('#<img border="0"#i', '<img', $output);
-		$output = str_replace(array('class="e"', 'class="v"', 'class="h"', '<hr />', '<font', '</font>'), array('class="row1"', 'class="row2"', '', '', '<span', '</span>'), $output);
+		$output = str_replace(['class="e"', 'class="v"', 'class="h"', '<hr />', '<font', '</font>'], ['class="row1"', 'class="row2"', '', '', '<span', '</span>'], $output);
 
 		// Fix invalid anchor names (eg "module_Zend Optimizer")
-		$output = preg_replace_callback('#<a name="([^"]+)">#', array($this, 'remove_spaces'), $output);
+		$output = preg_replace_callback('#<a name="([^"]+)">#', [$this, 'remove_spaces'], $output);
 
 		if (empty($output))
 		{
@@ -79,7 +71,7 @@ class acp_php_info
 		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output);
 		$output = (!empty($output[1][0])) ? $output[1][0] : $orig_output;
 
-		$template->assign_var('PHPINFO', $output);
+		$this->template->assign_var('PHPINFO', $output);
 	}
 
 	function remove_spaces($matches)

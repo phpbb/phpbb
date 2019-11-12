@@ -1,46 +1,34 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
-*/
-class acp_icons
+ * @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
+ */
+class icons
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $db, $user, $template, $cache;
-		global $config, $phpbb_root_path;
-		global $request, $phpbb_container;
-
-		$user->add_lang('acp/posting');
+		$this->language->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = $request->variable('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : $action;
-		$action = (isset($_POST['edit'])) ? 'edit' : $action;
-		$action = (isset($_POST['import'])) ? 'import' : $action;
-		$icon_id = $request->variable('id', 0);
-		$submit = $request->is_set_post('submit', false);
+		$action = $this->request->variable('action', '');
+		$action = ($this->request->is_set_post('add')) ? 'add' : $action;
+		$action = ($this->request->is_set_post('edit')) ? 'edit' : $action;
+		$action = ($this->request->is_set_post('import')) ? 'import' : $action;
+		$icon_id = $this->request->variable('id', 0);
+		$submit = $this->request->is_set_post('submit', false);
 
 		$form_key = 'acp_icons';
 		add_form_key($form_key);
@@ -56,27 +44,27 @@ class acp_icons
 				$table = SMILIES_TABLE;
 				$lang = 'SMILIES';
 				$fields = 'smiley';
-				$img_path = $config['smilies_path'];
+				$img_path = $this->config['smilies_path'];
 			break;
 
 			case 'icons':
 				$table = ICONS_TABLE;
 				$lang = 'ICONS';
 				$fields = 'icons';
-				$img_path = $config['icons_path'];
+				$img_path = $this->config['icons_path'];
 			break;
 		}
 
 		$this->page_title = 'ACP_' . $lang;
 
 		// Clear some arrays
-		$_images = $_paks = array();
+		$_images = $_paks = [];
 		$notice = '';
 
 		// Grab file list of paks and images
 		if ($action == 'edit' || $action == 'add' || $action == 'import')
 		{
-			$imglist = filelist($phpbb_root_path . $img_path, '');
+			$imglist = filelist($this->root_path . $img_path, '');
 
 			foreach ($imglist as $path => $img_ary)
 			{
@@ -89,7 +77,7 @@ class acp_icons
 
 				foreach ($img_ary as $img)
 				{
-					$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
+					$img_size = getimagesize($this->root_path . $img_path . '/' . $path . $img);
 
 					if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
 					{
@@ -118,11 +106,11 @@ class acp_icons
 			}
 			unset($imglist);
 
-			if ($dir = @opendir($phpbb_root_path . $img_path))
+			if ($dir = @opendir($this->root_path . $img_path))
 			{
 				while (($file = readdir($dir)) !== false)
 				{
-					if (is_file($phpbb_root_path . $img_path . '/' . $file) && preg_match('#\.pak$#i', $file))
+					if (is_file($this->root_path . $img_path . '/' . $file) && preg_match('#\.pak$#i', $file))
 					{
 						$_paks[] = $file;
 					}
@@ -141,13 +129,13 @@ class acp_icons
 		{
 			case 'edit':
 				unset($_images);
-				$_images = array();
+				$_images = [];
 
 			// no break;
 
 			case 'add':
 
-				$smilies = $default_row = array();
+				$smilies = $default_row = [];
 				$smiley_options = $order_list = $add_order_list = '';
 
 				if ($action == 'add' && $mode == 'smilies')
@@ -155,16 +143,16 @@ class acp_icons
 					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY smiley_order';
-					$result = $db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = $this->db->sql_fetchrow($result))
 					{
 						if (empty($smilies[$row['smiley_url']]))
 						{
 							$smilies[$row['smiley_url']] = $row;
 						}
 					}
-					$db->sql_freeresult($result);
+					$this->db->sql_freeresult($result);
 
 					if (count($smilies))
 					{
@@ -179,14 +167,14 @@ class acp_icons
 							}
 							$smiley_options .= '<option value="' . $row['smiley_url'] . '"' . (($selected) ? ' selected="selected"' : '') . '>' . $row['smiley_url'] . '</option>';
 
-							$template->assign_block_vars('smile', array(
+							$this->template->assign_block_vars('smile', [
 								'SMILEY_URL'	=> addslashes($row['smiley_url']),
 								'CODE'			=> addslashes($row['code']),
 								'EMOTION'		=> addslashes($row['emotion']),
 								'WIDTH'			=> $row['smiley_width'],
 								'HEIGHT'		=> $row['smiley_height'],
 								'ORDER'			=> $row['smiley_order'] + 1,
-							));
+							]);
 						}
 					}
 				}
@@ -194,15 +182,15 @@ class acp_icons
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
-				$result = $db->sql_query($sql);
+				$result = $this->db->sql_query($sql);
 
-				$data = array();
+				$data = [];
 				$after = false;
-				$order_lists = array('', '');
-				$add_order_lists = array('', '');
+				$order_lists = ['', ''];
+				$add_order_lists = ['', ''];
 				$display_count = 0;
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = $this->db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
 					{
@@ -232,18 +220,18 @@ class acp_icons
 							$display_count++;
 						}
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-						$order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_lists[$row['display_on_posting']];
+						$order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($this->language->lang('AFTER_' . $lang), ' -&gt; ' . $after_txt) . '</option>' . $order_lists[$row['display_on_posting']];
 
 						if (!empty($default_row))
 						{
-							$add_order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $add_order_lists[$row['display_on_posting']];
+							$add_order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($this->language->lang('AFTER_' . $lang), ' -&gt; ' . $after_txt) . '</option>' . $add_order_lists[$row['display_on_posting']];
 						}
 					}
 				}
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
-				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>';
-				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>';
+				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $this->language->lang('FIRST') . '</option>';
+				$add_order_list = '<option value="1">' . $this->language->lang('FIRST') . '</option>';
 
 				if ($action == 'add')
 				{
@@ -254,7 +242,7 @@ class acp_icons
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
 
-				$template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_EDIT'		=> true,
 					'S_SMILIES'		=> ($mode == 'smilies') ? true : false,
 					'S_ADD'			=> ($action == 'add') ? true : false,
@@ -263,29 +251,29 @@ class acp_icons
 					'S_ORDER_LIST_UNDISPLAY'	=> $order_list . $order_lists[0],
 					'S_ORDER_LIST_DISPLAY_COUNT'	=> $display_count + 1,
 
-					'L_TITLE'		=> $user->lang['ACP_' . $lang],
-					'L_EXPLAIN'		=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-					'L_CONFIG'		=> $user->lang[$lang . '_CONFIG'],
-					'L_URL'			=> $user->lang[$lang . '_URL'],
-					'L_LOCATION'	=> $user->lang[$lang . '_LOCATION'],
-					'L_WIDTH'		=> $user->lang[$lang . '_WIDTH'],
-					'L_HEIGHT'		=> $user->lang[$lang . '_HEIGHT'],
-					'L_ORDER'		=> $user->lang[$lang . '_ORDER'],
-					'L_NO_ICONS'	=> $user->lang['NO_' . $lang . '_' . strtoupper($action)],
+					'L_TITLE'		=> $this->language->lang('ACP_' . $lang),
+					'L_EXPLAIN'		=> $this->language->lang('ACP_' . $lang . '_EXPLAIN'),
+					'L_CONFIG'		=> $this->language->lang($lang . '_CONFIG'),
+					'L_URL'			=> $this->language->lang($lang . '_URL'),
+					'L_LOCATION'	=> $this->language->lang($lang . '_LOCATION'),
+					'L_WIDTH'		=> $this->language->lang($lang . '_WIDTH'),
+					'L_HEIGHT'		=> $this->language->lang($lang . '_HEIGHT'),
+					'L_ORDER'		=> $this->language->lang($lang . '_ORDER'),
+					'L_NO_ICONS'	=> $this->language->lang('NO_' . $lang . '_' . strtoupper($action)),
 
 					'COLSPAN'		=> $colspan,
 					'ID'			=> $icon_id,
 
 					'U_BACK'		=> $this->u_action,
 					'U_ACTION'		=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify'),
-				));
+				]);
 
 				foreach ($data as $img => $img_row)
 				{
-					$template->assign_block_vars('items', array(
+					$this->template->assign_block_vars('items', [
 						'IMG'		=> $img,
 						'A_IMG'		=> addslashes($img),
-						'IMG_SRC'	=> $phpbb_root_path . $img_path . '/' . $img,
+						'IMG_SRC'	=> $this->root_path . $img_path . '/' . $img,
 
 						'CODE'		=> ($mode == 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',
 						'EMOTION'	=> ($mode == 'smilies' && isset($img_row['emotion'])) ? $img_row['emotion'] : '',
@@ -297,13 +285,13 @@ class acp_icons
 						'TEXT_ALT'		    => ($mode == 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : $img,
 						'ALT'			    => ($mode == 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : '',
 						'POSTING_CHECKED'	=> (!empty($img_row['display_on_posting']) || $action == 'add') ? ' checked="checked"' : '',
-					));
+					]);
 				}
 
 				// Ok, another row for adding an addition code for a pre-existing image...
 				if ($action == 'add' && $mode == 'smilies' && count($smilies))
 				{
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_ADD_CODE'		=> true,
 
 						'S_IMG_OPTIONS'		=> $smiley_options,
@@ -311,7 +299,7 @@ class acp_icons
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
 
-						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
+						'IMG_SRC'			=> $this->root_path . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 
 						'CODE'				=> $default_row['code'],
@@ -319,7 +307,7 @@ class acp_icons
 
 						'WIDTH'				=> $default_row['smiley_width'],
 						'HEIGHT'			=> $default_row['smiley_height'],
-					));
+					]);
 				}
 
 				return;
@@ -331,29 +319,29 @@ class acp_icons
 
 				if (!check_form_key($form_key))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Get items to create/modify
-				$images = (isset($_POST['image'])) ? array_keys($request->variable('image', array('' => 0))) : array();
+				$images = ($this->request->is_set_post('image')) ? array_keys($this->request->variable('image', ['' => 0])) : [];
 
 				// Now really get the items
-				$image_id		= (isset($_POST['id'])) ? $request->variable('id', array('' => 0)) : array();
-				$image_order	= (isset($_POST['order'])) ? $request->variable('order', array('' => 0)) : array();
-				$image_width	= (isset($_POST['width'])) ? $request->variable('width', array('' => 0)) : array();
-				$image_height	= (isset($_POST['height'])) ? $request->variable('height', array('' => 0)) : array();
-				$image_add		= (isset($_POST['add_img'])) ? $request->variable('add_img', array('' => 0)) : array();
-				$image_emotion	= $request->variable('emotion', array('' => ''), true);
-				$image_code		= $request->variable('code', array('' => ''), true);
-				$image_alt		= ($request->is_set_post('alt')) ? $request->variable('alt', array('' => ''), true) : array();
-				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? $request->variable('display_on_posting', array('' => 0)) : array();
+				$image_id		= ($this->request->is_set_post('id')) ? $this->request->variable('id', ['' => 0]) : [];
+				$image_order	= ($this->request->is_set_post('order')) ? $this->request->variable('order', ['' => 0]) : [];
+				$image_width	= ($this->request->is_set_post('width')) ? $this->request->variable('width', ['' => 0]) : [];
+				$image_height	= ($this->request->is_set_post('height')) ? $this->request->variable('height', ['' => 0]) : [];
+				$image_add		= ($this->request->is_set_post('add_img')) ? $this->request->variable('add_img', ['' => 0]) : [];
+				$image_emotion	= $this->request->variable('emotion', ['' => ''], true);
+				$image_code		= $this->request->variable('code', ['' => ''], true);
+				$image_alt		= ($this->request->is_set_post('alt')) ? $this->request->variable('alt', ['' => ''], true) : [];
+				$image_display_on_posting = ($this->request->is_set_post('display_on_posting')) ? $this->request->variable('display_on_posting', ['' => 0]) : [];
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
-				if ($request->variable('add_additional_code', false, false, \phpbb\request\request_interface::POST))
+				if ($this->request->variable('add_additional_code', false, false, \phpbb\request\request_interface::POST))
 				{
-					$add_image			= $request->variable('add_image', '');
-					$add_code			= $request->variable('add_code', '', true);
-					$add_emotion		= $request->variable('add_emotion', '', true);
+					$add_image			= $this->request->variable('add_image', '');
+					$add_code			= $this->request->variable('add_code', '', true);
+					$add_emotion		= $this->request->variable('add_emotion', '', true);
 
 					if ($add_image && $add_emotion && $add_code)
 					{
@@ -362,15 +350,15 @@ class acp_icons
 
 						$image_code[$add_image] = $add_code;
 						$image_emotion[$add_image] = $add_emotion;
-						$image_width[$add_image] = $request->variable('add_width', 0);
-						$image_height[$add_image] = $request->variable('add_height', 0);
+						$image_width[$add_image] = $this->request->variable('add_width', 0);
+						$image_height[$add_image] = $this->request->variable('add_height', 0);
 
-						if ($request->variable('add_display_on_posting', false, false, \phpbb\request\request_interface::POST))
+						if ($this->request->variable('add_display_on_posting', false, false, \phpbb\request\request_interface::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}
 
-						$image_order[$add_image] = $request->variable('add_order', 0);
+						$image_order[$add_image] = $this->request->variable('add_order', 0);
 					}
 				}
 
@@ -389,12 +377,12 @@ class acp_icons
 
 					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
 					{
-						trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
 				$icons_updated = 0;
-				$errors = array();
+				$errors = [];
 				foreach ($images as $image)
 				{
 					if ($mode == 'smilies' && ($image_emotion[$image] == '' || $image_code[$image] == ''))
@@ -405,7 +393,7 @@ class acp_icons
 					{
 						// skip images where add wasn't checked
 					}
-					else if (!file_exists($phpbb_root_path . $img_path . '/' . $image))
+					else if (!file_exists($this->root_path . $img_path . '/' . $image))
 					{
 						$errors[$image] = 'SMILIE_NO_FILE';
 					}
@@ -413,7 +401,7 @@ class acp_icons
 					{
 						if ($image_width[$image] == 0 || $image_height[$image] == 0)
 						{
-							$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $image);
+							$img_size = getimagesize($this->root_path . $img_path . '/' . $image);
 							$image_width[$image] = $img_size[0];
 							$image_height[$image] = $img_size[1];
 						}
@@ -433,40 +421,40 @@ class acp_icons
 							}
 						}
 
-						$img_sql = array(
+						$img_sql = [
 							$fields . '_url'		=> $image,
 							$fields . '_width'		=> $image_width[$image],
 							$fields . '_height'		=> $image_height[$image],
 							'display_on_posting'	=> (isset($image_display_on_posting[$image])) ? 1 : 0,
-						);
+						];
 
 						if ($mode == 'smilies')
 						{
-							$img_sql = array_merge($img_sql, array(
+							$img_sql = array_merge($img_sql, [
 								'emotion'	=> $image_emotion[$image],
-								'code'		=> $image_code[$image])
+								'code'		=> $image_code[$image]]
 							);
 						}
 
 						if ($mode == 'icons')
 						{
-							$img_sql = array_merge($img_sql, array(
-								'icons_alt'	=> $image_alt[$image])
+							$img_sql = array_merge($img_sql, [
+								'icons_alt'	=> $image_alt[$image]]
 							);
 						}
 
 						// Image_order holds the 'new' order value
 						if (!empty($image_order[$image]))
 						{
-							$img_sql = array_merge($img_sql, array(
-								$fields . '_order'	=>	$image_order[$image])
+							$img_sql = array_merge($img_sql, [
+								$fields . '_order'	=>	$image_order[$image]]
 							);
 
 							// Since we always add 'after' an item, we just need to increase all following + the current by one
 							$sql = "UPDATE $table
 								SET {$fields}_order = {$fields}_order + 1
 								WHERE {$fields}_order >= {$image_order[$image]}";
-							$db->sql_query($sql);
+							$this->db->sql_query($sql);
 
 							// If we adjust the order, we need to adjust all other orders too - they became inaccurate...
 							foreach ($image_order as $_image => $_order)
@@ -486,46 +474,46 @@ class acp_icons
 						if ($action == 'modify'  && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
-								SET " . $db->sql_build_array('UPDATE', $img_sql) . "
+								SET " . $this->db->sql_build_array('UPDATE', $img_sql) . "
 								WHERE {$fields}_id = " . $image_id[$image];
-							$db->sql_query($sql);
+							$this->db->sql_query($sql);
 							$icons_updated++;
 						}
 						else if ($action !== 'modify')
 						{
-							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
-							$db->sql_query($sql);
+							$sql = "INSERT INTO $table " . $this->db->sql_build_array('INSERT', $img_sql);
+							$this->db->sql_query($sql);
 							$icons_updated++;
 						}
 
 					}
 				}
 
-				$cache->destroy('_icons');
-				$cache->destroy('sql', $table);
+				$this->cache->destroy('_icons');
+				$this->cache->destroy('sql', $table);
 				$phpbb_container->get('text_formatter.cache')->invalidate();
 
 				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$errormsgs = '';
 				foreach ($errors as $img => $error)
 				{
-					$errormsgs .= '<br />' . sprintf($user->lang[$error], $img);
+					$errormsgs .= '<br />' . sprintf($this->language->lang($error), $img);
 				}
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang($lang . '_EDITED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($this->language->lang($lang . '_EDITED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($user->lang($lang . '_ADDED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
+					trigger_error($this->language->lang($lang . '_ADDED', $icons_updated) . $errormsgs . adm_back_link($this->u_action), $level);
 				}
 
 			break;
 
 			case 'import':
 
-				$pak = $request->variable('pak', '');
-				$current = $request->variable('current', '');
+				$pak = $this->request->variable('pak', '');
+				$current = $this->request->variable('current', '');
 
 				if ($pak != '')
 				{
@@ -533,12 +521,12 @@ class acp_icons
 
 					if (!check_form_key($form_key))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
+					if (!($pak_ary = @file($this->root_path . $img_path . '/' . $pak)))
 					{
-						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('PAK_FILE_NOT_READABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					// Make sure the pak_ary is valid
@@ -549,26 +537,26 @@ class acp_icons
 							if ((count($data[1]) != 4 && $mode == 'icons') ||
 								((count($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode == 'smilies' ))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($this->language->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 						}
 						else
 						{
-							trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						switch ($db->get_sql_layer())
+						switch ($this->db->get_sql_layer())
 						{
 							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . $table);
+								$this->db->sql_query('DELETE FROM ' . $table);
 							break;
 
 							default:
-								$db->sql_query('TRUNCATE TABLE ' . $table);
+								$this->db->sql_query('TRUNCATE TABLE ' . $table);
 							break;
 						}
 
@@ -579,27 +567,27 @@ class acp_icons
 
 							case 'icons':
 								// Reset all icon_ids
-								$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET icon_id = 0');
-								$db->sql_query('UPDATE ' . POSTS_TABLE . ' SET icon_id = 0');
+								$this->db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET icon_id = 0');
+								$this->db->sql_query('UPDATE ' . POSTS_TABLE . ' SET icon_id = 0');
 							break;
 						}
 					}
 					else
 					{
-						$cur_img = array();
+						$cur_img = [];
 
 						$field_sql = ($mode == 'smilies') ? 'code' : 'icons_url';
 
 						$sql = "SELECT $field_sql
 							FROM $table";
-						$result = $db->sql_query($sql);
+						$result = $this->db->sql_query($sql);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = $this->db->sql_fetchrow($result))
 						{
 							++$order;
 							$cur_img[$row[$field_sql]] = 1;
 						}
-						$db->sql_freeresult($result);
+						$this->db->sql_freeresult($result);
 					}
 
 					if ($mode == 'smilies')
@@ -607,19 +595,19 @@ class acp_icons
 						$smiley_count = $this->item_count($table);
 						if ($smiley_count + count($pak_ary) > SMILEY_LIMIT)
 						{
-							trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($this->language->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 
 					foreach ($pak_ary as $pak_entry)
 					{
-						$data = array();
+						$data = [];
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((count($data[1]) != 4 && $mode == 'icons') ||
 								(count($data[1]) != 6 && $mode == 'smilies'))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($this->language->lang('WRONG_PAK_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							// Stripslash here because it got addslashed before... (on export)
@@ -639,53 +627,53 @@ class acp_icons
 								($mode == 'icons' && !empty($cur_img[$img]))))
 							{
 								$replace_sql = ($mode == 'smilies') ? $code : $img;
-								$sql = array(
+								$sql = [
 									$fields . '_url'		=> $img,
 									$fields . '_height'		=> (int) $height,
 									$fields . '_width'		=> (int) $width,
 									'display_on_posting'	=> (int) $display_on_posting,
-								);
+								];
 
 								if ($mode == 'smilies')
 								{
-									$sql = array_merge($sql, array(
+									$sql = array_merge($sql, [
 										'emotion'				=> $emotion,
-									));
+									]);
 								}
 
-								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . "
-									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'";
-								$db->sql_query($sql);
+								$sql = "UPDATE $table SET " . $this->db->sql_build_array('UPDATE', $sql) . "
+									WHERE $field_sql = '" . $this->db->sql_escape($replace_sql) . "'";
+								$this->db->sql_query($sql);
 							}
 							else
 							{
 								++$order;
 
-								$sql = array(
+								$sql = [
 									$fields . '_url'	=> $img,
 									$fields . '_height'	=> (int) $height,
 									$fields . '_width'	=> (int) $width,
 									$fields . '_order'	=> (int) $order,
 									'display_on_posting'=> (int) $display_on_posting,
-								);
+								];
 
 								if ($mode == 'smilies')
 								{
-									$sql = array_merge($sql, array(
+									$sql = array_merge($sql, [
 										'code'				=> $code,
 										'emotion'			=> $emotion,
-									));
+									]);
 								}
-								$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
+								$this->db->sql_query("INSERT INTO $table " . $this->db->sql_build_array('INSERT', $sql));
 							}
 						}
 					}
 
-					$cache->destroy('_icons');
-					$cache->destroy('sql', $table);
+					$this->cache->destroy('_icons');
+					$this->cache->destroy('sql', $table);
 					$phpbb_container->get('text_formatter.cache')->invalidate();
 
-					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
+					trigger_error($this->language->lang($lang . '_IMPORT_SUCCESS') . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -696,20 +684,20 @@ class acp_icons
 						$pak_options .= '<option value="' . $pak . '">' . htmlspecialchars($pak) . '</option>';
 					}
 
-					$template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_CHOOSE_PAK'		=> true,
 						'S_PAK_OPTIONS'		=> $pak_options,
 
-						'L_TITLE'			=> $user->lang['ACP_' . $lang],
-						'L_EXPLAIN'			=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-						'L_NO_PAK_OPTIONS'	=> $user->lang['NO_' . $lang . '_PAK'],
-						'L_CURRENT'			=> $user->lang['CURRENT_' . $lang],
-						'L_CURRENT_EXPLAIN'	=> $user->lang['CURRENT_' . $lang . '_EXPLAIN'],
-						'L_IMPORT_SUBMIT'	=> $user->lang['IMPORT_' . $lang],
+						'L_TITLE'			=> $this->language->lang('ACP_' . $lang),
+						'L_EXPLAIN'			=> $this->language->lang('ACP_' . $lang . '_EXPLAIN'),
+						'L_NO_PAK_OPTIONS'	=> $this->language->lang('NO_' . $lang . '_PAK'),
+						'L_CURRENT'			=> $this->language->lang('CURRENT_' . $lang),
+						'L_CURRENT_EXPLAIN'	=> $this->language->lang('CURRENT_' . $lang . '_EXPLAIN'),
+						'L_IMPORT_SUBMIT'	=> $this->language->lang('IMPORT_' . $lang),
 
 						'U_BACK'		=> $this->u_action,
 						'U_ACTION'		=> $this->u_action . '&amp;action=import',
-						)
+						]
 					);
 				}
 			break;
@@ -719,12 +707,12 @@ class acp_icons
 				$this->page_title = 'EXPORT_' . $lang;
 				$this->tpl_name = 'message_body';
 
-				$template->assign_vars(array(
-					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
+				$this->template->assign_vars([
+					'MESSAGE_TITLE'		=> $this->language->lang('EXPORT_' . $lang),
+					'MESSAGE_TEXT'		=> sprintf($this->language->lang('EXPORT_' . $lang . '_EXPLAIN'), '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
 
 					'S_USER_NOTICE'		=> true,
-					)
+					]
 				);
 
 				return;
@@ -733,18 +721,18 @@ class acp_icons
 
 			case 'send':
 
-				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				if (!check_link_hash($this->request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order";
-				$result = $db->sql_query($sql);
+				$result = $this->db->sql_query($sql);
 
 				$pak = '';
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$pak .= "'" . addslashes($row[$fields . '_url']) . "', ";
 					$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
@@ -759,7 +747,7 @@ class acp_icons
 
 					$pak .= "\n";
 				}
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
 				if ($pak != '')
 				{
@@ -777,7 +765,7 @@ class acp_icons
 				}
 				else
 				{
-					trigger_error($user->lang['NO_' . strtoupper($fields) . '_EXPORT'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('NO_' . strtoupper($fields) . '_EXPORT') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			break;
@@ -788,7 +776,7 @@ class acp_icons
 				{
 					$sql = "DELETE FROM $table
 						WHERE {$fields}_id = $icon_id";
-					$db->sql_query($sql);
+					$this->db->sql_query($sql);
 
 					switch ($mode)
 					{
@@ -797,42 +785,42 @@ class acp_icons
 
 						case 'icons':
 							// Reset appropriate icon_ids
-							$db->sql_query('UPDATE ' . TOPICS_TABLE . "
+							$this->db->sql_query('UPDATE ' . TOPICS_TABLE . "
 								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 
-							$db->sql_query('UPDATE ' . POSTS_TABLE . "
+							$this->db->sql_query('UPDATE ' . POSTS_TABLE . "
 								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 						break;
 					}
 
-					$notice = $user->lang[$lang . '_DELETED'];
+					$notice = $this->language->lang($lang . '_DELETED');
 
-					$cache->destroy('_icons');
-					$cache->destroy('sql', $table);
+					$this->cache->destroy('_icons');
+					$this->cache->destroy('sql', $table);
 					$phpbb_container->get('text_formatter.cache')->invalidate();
 
-					if ($request->is_ajax())
+					if ($this->request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response;
-						$json_response->send(array(
-							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+						$json_response->send([
+							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $notice,
-							'REFRESH_DATA'	=> array(
-								'time'	=> 3
-							)
-						));
+							'REFRESH_DATA'	=> [
+								'time'	=> 3,
+							],
+						]);
 					}
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'id'		=> $icon_id,
 						'action'	=> 'delete',
-					)));
+					]));
 				}
 
 			break;
@@ -840,18 +828,18 @@ class acp_icons
 			case 'move_up':
 			case 'move_down':
 
-				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				if (!check_link_hash($this->request->variable('hash', ''), 'acp_icons'))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Get current order id...
 				$sql = "SELECT {$fields}_order as current_order
 					FROM $table
 					WHERE {$fields}_id = $icon_id";
-				$result = $db->sql_query($sql);
-				$current_order = (int) $db->sql_fetchfield('current_order');
-				$db->sql_freeresult($result);
+				$result = $this->db->sql_query($sql);
+				$current_order = (int) $this->db->sql_fetchfield('current_order');
+				$this->db->sql_freeresult($result);
 
 				if ($current_order == 0 && $action == 'move_up')
 				{
@@ -867,8 +855,8 @@ class acp_icons
 					SET {$fields}_order = $current_order
 					WHERE {$fields}_order = $switch_order_id
 						AND {$fields}_id <> $icon_id";
-				$db->sql_query($sql);
-				$move_executed = (bool) $db->sql_affectedrows();
+				$this->db->sql_query($sql);
+				$move_executed = (bool) $this->db->sql_affectedrows();
 
 				// Only update the other entry too if the previous entry got updated
 				if ($move_executed)
@@ -877,19 +865,19 @@ class acp_icons
 						SET {$fields}_order = $switch_order_id
 						WHERE {$fields}_order = $current_order
 							AND {$fields}_id = $icon_id";
-					$db->sql_query($sql);
+					$this->db->sql_query($sql);
 				}
 
-				$cache->destroy('_icons');
-				$cache->destroy('sql', $table);
+				$this->cache->destroy('_icons');
+				$this->cache->destroy('sql', $table);
 				$phpbb_container->get('text_formatter.cache')->invalidate();
 
-				if ($request->is_ajax())
+				if ($this->request->is_ajax())
 				{
 					$json_response = new \phpbb\json_response;
-					$json_response->send(array(
+					$json_response->send([
 						'success'	=> $move_executed,
-					));
+					]);
 				}
 
 			break;
@@ -899,9 +887,9 @@ class acp_icons
 		$sql = "SELECT {$fields}_id AS order_id, {$fields}_order AS fields_order
 			FROM $table
 			ORDER BY display_on_posting DESC, {$fields}_order";
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = $this->db->sql_fetchrow($result))
 		{
 			$order = 0;
 			do
@@ -909,23 +897,23 @@ class acp_icons
 				++$order;
 				if ($row['fields_order'] != $order)
 				{
-					$db->sql_query("UPDATE $table
+					$this->db->sql_query("UPDATE $table
 						SET {$fields}_order = $order
 						WHERE {$fields}_id = " . $row['order_id']);
 				}
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = $this->db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['ACP_' . $lang],
-			'L_EXPLAIN'			=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-			'L_IMPORT'			=> $user->lang['IMPORT_' . $lang],
-			'L_EXPORT'			=> $user->lang['EXPORT_' . $lang],
-			'L_NOT_DISPLAYED'	=> $user->lang[$lang . '_NOT_DISPLAYED'],
-			'L_ICON_ADD'		=> $user->lang['ADD_' . $lang],
-			'L_ICON_EDIT'		=> $user->lang['EDIT_' . $lang],
+		$this->template->assign_vars([
+			'L_TITLE'			=> $this->language->lang('ACP_' . $lang),
+			'L_EXPLAIN'			=> $this->language->lang('ACP_' . $lang . '_EXPLAIN'),
+			'L_IMPORT'			=> $this->language->lang('IMPORT_' . $lang),
+			'L_EXPORT'			=> $this->language->lang('EXPORT_' . $lang),
+			'L_NOT_DISPLAYED'	=> $this->language->lang($lang . '_NOT_DISPLAYED'),
+			'L_ICON_ADD'		=> $this->language->lang('ADD_' . $lang),
+			'L_ICON_EDIT'		=> $this->language->lang('EDIT_' . $lang),
 
 			'NOTICE'			=> $notice,
 			'COLSPAN'			=> ($mode == 'smilies') ? 5 : 3,
@@ -935,12 +923,12 @@ class acp_icons
 			'U_ACTION'			=> $this->u_action,
 			'U_IMPORT'			=> $this->u_action . '&amp;action=import',
 			'U_EXPORT'			=> $this->u_action . '&amp;action=export',
-			)
+			]
 		);
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
-		$pagination_start = $request->variable('start', 0);
+		$pagination_start = $this->request->variable('start', 0);
 		$spacer = false;
 
 		$item_count = $this->item_count($table);
@@ -948,16 +936,16 @@ class acp_icons
 		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
-		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $pagination_start);
+		$result = $this->db->sql_query_limit($sql, $this->config['smilies_per_page'], $pagination_start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$alt_text = ($mode == 'smilies') ? $row['code'] : (($mode == 'icons' && !empty($row['icons_alt'])) ? $row['icons_alt'] : $row['icons_url']);
 
-			$template->assign_block_vars('items', array(
+			$this->template->assign_block_vars('items', [
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
-				'IMG_SRC'		=> $phpbb_root_path . $img_path . '/' . $row[$fields . '_url'],
+				'IMG_SRC'		=> $this->root_path . $img_path . '/' . $row[$fields . '_url'],
 				'WIDTH'			=> $row[$fields . '_width'],
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> (isset($row['code'])) ? $row['code'] : '',
@@ -966,16 +954,16 @@ class acp_icons
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
 				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
 				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
-			));
+			]);
 
 			if (!$spacer && !$row['display_on_posting'])
 			{
 				$spacer = true;
 			}
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
+		$this->pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $item_count, $this->config['smilies_per_page'], $pagination_start);
 	}
 
 	/**
@@ -986,13 +974,11 @@ class acp_icons
 	 */
 	/* private */ function item_count($table)
 	{
-		global $db;
-
 		$sql = "SELECT COUNT(*) AS item_count
 			FROM $table";
-		$result = $db->sql_query($sql);
-		$item_count = (int) $db->sql_fetchfield('item_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$item_count = (int) $this->db->sql_fetchfield('item_count');
+		$this->db->sql_freeresult($result);
 
 		return $item_count;
 	}

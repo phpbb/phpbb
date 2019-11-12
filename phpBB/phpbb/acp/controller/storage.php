@@ -1,25 +1,19 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_storage
+class storage
 {
 	/** @var \phpbb\config $config */
 	protected $config;
@@ -57,8 +51,6 @@ class acp_storage
 	 */
 	public function main($id, $mode)
 	{
-		global $phpbb_container, $phpbb_dispatcher;
-
 		$this->config = $phpbb_container->get('config');
 		$this->lang = $phpbb_container->get('language');
 		$this->request = $phpbb_container->get('request');
@@ -76,7 +68,7 @@ class acp_storage
 		 * @event core.acp_storage_load
 		 * @since 3.3.0-a1
 		 */
-		$phpbb_dispatcher->dispatch('core.acp_storage_load');
+		$this->dispatcher->dispatch('core.acp_storage_load');
 
 		$this->overview($id, $mode);
 	}
@@ -182,11 +174,11 @@ class acp_storage
 			];
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'STORAGES' => $this->storage_collection,
 			'STORAGE_STATS' => $storage_stats,
 			'PROVIDERS' => $this->provider_collection,
-		));
+		]);
 	}
 
 	/**

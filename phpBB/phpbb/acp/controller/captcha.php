@@ -1,42 +1,33 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_captcha
+class captcha
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $user, $template, $phpbb_log, $request;
-		global $config, $phpbb_container;
-
-		$user->add_lang('acp/board');
+		$this->language->add_lang('acp/board');
 
 		/* @var $factory \phpbb\captcha\factory */
 		$factory = $phpbb_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 
-		$selected = $request->variable('select_captcha', $config['captcha_plugin']);
-		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $config['captcha_plugin'];
-		$configure = $request->variable('configure', false);
+		$selected = $this->request->variable('select_captcha', $this->config['captcha_plugin']);
+		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $this->config['captcha_plugin'];
+		$configure = $this->request->variable('configure', false);
 
 		// Oh, they are just here for the view
 		if (isset($_GET['captcha_demo']))
@@ -52,58 +43,58 @@ class acp_captcha
 		}
 		else
 		{
-			$config_vars = array(
-				'enable_confirm'		=> array(
+			$config_vars = [
+				'enable_confirm'		=> [
 					'tpl'		=> 'REG_ENABLE',
 					'default'	=> false,
 					'validate'	=> 'bool',
 					'lang'		=> 'VISUAL_CONFIRM_REG',
-				),
-				'enable_post_confirm'	=> array(
+				],
+				'enable_post_confirm'	=> [
 					'tpl'		=> 'POST_ENABLE',
 					'default'	=> false,
 					'validate'	=> 'bool',
 					'lang'		=> 'VISUAL_CONFIRM_POST',
-				),
-				'confirm_refresh'		=> array(
+				],
+				'confirm_refresh'		=> [
 					'tpl'		=> 'CONFIRM_REFRESH',
 					'default'	=> false,
 					'validate'	=> 'bool',
 					'lang'		=> 'VISUAL_CONFIRM_REFRESH',
-				),
-				'max_reg_attempts'		=> array(
+				],
+				'max_reg_attempts'		=> [
 					'tpl'		=> 'REG_LIMIT',
 					'default'	=> 0,
 					'validate'	=> 'int:0:99999',
 					'lang'		=> 'REG_LIMIT',
-				),
-				'max_login_attempts'	=> array(
+				],
+				'max_login_attempts'	=> [
 					'tpl'		=> 'MAX_LOGIN_ATTEMPTS',
 					'default'	=> 0,
 					'validate'	=> 'int:0:99999',
 					'lang'		=> 'MAX_LOGIN_ATTEMPTS',
-				),
-			);
+				],
+			];
 
 			$this->tpl_name = 'acp_captcha';
 			$this->page_title = 'ACP_VC_SETTINGS';
 			$form_key = 'acp_captcha';
 			add_form_key($form_key);
 
-			$submit = $request->variable('main_submit', false);
-			$error = $cfg_array = array();
+			$submit = $this->request->variable('main_submit', false);
+			$error = $cfg_array = [];
 
 			if ($submit)
 			{
 				foreach ($config_vars as $config_var => $options)
 				{
-					$cfg_array[$config_var] = $request->variable($config_var, $options['default']);
+					$cfg_array[$config_var] = $this->request->variable($config_var, $options['default']);
 				}
 				validate_config_vars($config_vars, $cfg_array, $error);
 
 				if (!check_form_key($form_key))
 				{
-					$error[] = $user->lang['FORM_INVALID'];
+					$error[] = $this->language->lang('FORM_INVALID');
 				}
 				if ($error)
 				{
@@ -115,29 +106,29 @@ class acp_captcha
 			{
 				foreach ($cfg_array as $key => $value)
 				{
-					$config->set($key, $value);
+					$this->config->set($key, $value);
 				}
 
-				if ($selected !== $config['captcha_plugin'])
+				if ($selected !== $this->config['captcha_plugin'])
 				{
 					// sanity check
 					if (isset($captchas['available'][$selected]))
 					{
-						$old_captcha = $factory->get_instance($config['captcha_plugin']);
+						$old_captcha = $factory->get_instance($this->config['captcha_plugin']);
 						$old_captcha->uninstall();
 
-						$config->set('captcha_plugin', $selected);
-						$new_captcha = $factory->get_instance($config['captcha_plugin']);
+						$this->config->set('captcha_plugin', $selected);
+						$new_captcha = $factory->get_instance($this->config['captcha_plugin']);
 						$new_captcha->install();
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_VISUAL');
 					}
 					else
 					{
-						trigger_error($user->lang['CAPTCHA_UNAVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($this->language->lang('CAPTCHA_UNAVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
-				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 			}
 			else
 			{
@@ -145,41 +136,39 @@ class acp_captcha
 				foreach ($captchas['available'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang($title) . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $this->language->lang($title) . '</option>';
 				}
 
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang($title) . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $this->language->lang($title) . '</option>';
 				}
 
 				$demo_captcha = $factory->get_instance($selected);
 
 				foreach ($config_vars as $config_var => $options)
 				{
-					$template->assign_var($options['tpl'], (isset($_POST[$config_var])) ? $request->variable($config_var, $options['default']) : $config[$config_var]) ;
+					$this->template->assign_var($options['tpl'], (isset($_POST[$config_var])) ? $this->request->variable($config_var, $options['default']) : $this->config[$config_var]) ;
 				}
 
-				$template->assign_vars(array(
+				$this->template->assign_vars([
 					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
 					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
 					'CAPTCHA_SELECT'		=> $captcha_select,
 					'ERROR_MSG'				=> implode('<br />', $error),
 
 					'U_ACTION'				=> $this->u_action,
-				));
+				]);
 			}
 		}
 	}
 
 	/**
-	* Entry point for delivering image CAPTCHAs in the ACP.
-	*/
+	 * Entry point for delivering image CAPTCHAs in the ACP.
+	 */
 	function deliver_demo($selected)
 	{
-		global $phpbb_container;
-
 		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();

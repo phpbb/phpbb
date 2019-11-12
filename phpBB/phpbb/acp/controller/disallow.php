@@ -1,33 +1,25 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\acp\controller;
 
-class acp_disallow
+class disallow
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $phpbb_log, $request;
-
-		$user->add_lang('acp/posting');
+		$this->language->add_lang('acp/posting');
 
 		// Set up general vars
 		$this->tpl_name = 'acp_disallow';
@@ -36,80 +28,80 @@ class acp_disallow
 		$form_key = 'acp_disallow';
 		add_form_key($form_key);
 
-		$disallow = (isset($_POST['disallow'])) ? true : false;
-		$allow = (isset($_POST['allow'])) ? true : false;
+		$disallow = ($this->request->is_set_post() ? true : false;
+		$allow = ($this->request->is_set_post('allow')) ? true : false;
 
 		if (($allow || $disallow) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($disallow)
 		{
-			$disallowed_user = str_replace('*', '%', $request->variable('disallowed_user', '', true));
+			$disallowed_user = str_replace('*', '%', $this->request->variable('disallowed_user', '', true));
 
 			if (!$disallowed_user)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'SELECT disallow_id
 				FROM ' . DISALLOW_TABLE . "
-				WHERE disallow_username = '" . $db->sql_escape($disallowed_user) . "'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE disallow_username = '" . $this->db->sql_escape($disallowed_user) . "'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
 
 			if ($row)
 			{
-				trigger_error($user->lang['DISALLOWED_ALREADY'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('DISALLOWED_ALREADY') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
-			$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $this->db->sql_build_array('INSERT', ['disallow_username' => $disallowed_user]);
+			$this->db->sql_query($sql);
 
-			$cache->destroy('_disallowed_usernames');
+			$this->cache->destroy('_disallowed_usernames');
 
-			$message = $user->lang['DISALLOW_SUCCESSFUL'];
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_ADD', false, array(str_replace('%', '*', $disallowed_user)));
+			$message = $this->language->lang('DISALLOW_SUCCESSFUL');
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DISALLOW_ADD', false, [str_replace('%', '*', $disallowed_user)]);
 
 			trigger_error($message . adm_back_link($this->u_action));
 		}
 		else if ($allow)
 		{
-			$disallowed_id = $request->variable('disallowed_id', 0);
+			$disallowed_id = $this->request->variable('disallowed_id', 0);
 
 			if (!$disallowed_id)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('NO_USERNAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
 				WHERE disallow_id = ' . $disallowed_id;
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$cache->destroy('_disallowed_usernames');
+			$this->cache->destroy('_disallowed_usernames');
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_DELETE');
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DISALLOW_DELETE');
 
-			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
+			trigger_error($this->language->lang('DISALLOWED_DELETED') . adm_back_link($this->u_action));
 		}
 
 		// Grab the current list of disallowed usernames...
 		$sql = 'SELECT *
 			FROM ' . DISALLOW_TABLE;
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$disallow_select = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$disallow_select .= '<option value="' . $row['disallow_id'] . '">' . str_replace('%', '*', $row['disallow_username']) . '</option>';
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'				=> $this->u_action,
-			'S_DISALLOWED_NAMES'	=> $disallow_select)
+			'S_DISALLOWED_NAMES'	=> $disallow_select]
 		);
 	}
 }

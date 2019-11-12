@@ -1,36 +1,28 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\acp\helper;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* ACP Permission/Auth class
-*/
+ * ACP Permission/Auth class
+ */
 class auth_admin extends \phpbb\auth\auth
 {
 	/**
-	* Init auth settings
-	*/
+	 * Init auth settings
+	 */
 	function __construct()
 	{
-		global $db, $cache;
-
 		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option_id, auth_option, is_global, is_local
@@ -38,8 +30,7 @@ class auth_admin extends \phpbb\auth\auth
 				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
 
-			$global = $local = 0;
-			$this->acl_options = array();
+			$			$this->acl_options = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['is_global'])
@@ -62,27 +53,24 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Get permission mask
-	* This function only supports getting permissions of one type (for example a_)
-	*
-	* @param set|view $mode defines the permissions we get, view gets effective permissions (checking user AND group permissions), set only gets the user or group permission set alone
-	* @param mixed $user_id user ids to search for (a user_id or a group_id has to be specified at least)
-	* @param mixed $group_id group ids to search for, return group related settings (a user_id or a group_id has to be specified at least)
-	* @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings
-	* @param string $auth_option the auth_option defines the permission setting to look for (a_ for example)
-	* @param local|global $scope the scope defines the permission scope. If local, a forum_id is additionally required
-	* @param ACL_NEVER|ACL_NO|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
-	*/
+	 * Get permission mask
+	 * This function only supports getting permissions of one type (for example a_)
+	 *
+	 * @param set|view $mode defines the permissions we get, view gets effective permissions (checking user AND group permissions), set only gets the user or group permission set alone
+	 * @param mixed $user_id user ids to search for (a user_id or a group_id has to be specified at least)
+	 * @param mixed $group_id group ids to search for, return group related settings (a user_id or a group_id has to be specified at least)
+	 * @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings
+	 * @param string $auth_option the auth_option defines the permission setting to look for (a_ for example)
+	 * @param local|	 * @param ACL_NEVER|ACL_NO|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
+	 */
 	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
 	{
-		global $db, $user;
-
-		$hold_ary = array();
+		$hold_ary = [];
 		$view_user_mask = ($mode == 'view' && $group_id === false) ? true : false;
 
 		if ($auth_option === false || $scope === false)
 		{
-			return array();
+			return [];
 		}
 
 		$acl_user_function = ($mode == 'set') ? 'acl_user_raw_data' : 'acl_raw_data';
@@ -100,11 +88,11 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		// Make sure hold_ary is filled with every setting (prevents missing forums/users/groups)
-		$ug_id = ($group_id !== false) ? ((!is_array($group_id)) ? array($group_id) : $group_id) : ((!is_array($user_id)) ? array($user_id) : $user_id);
-		$forum_ids = ($forum_id !== false) ? ((!is_array($forum_id)) ? array($forum_id) : $forum_id) : (($scope == 'global') ? array(0) : array());
+		$ug_id = ($group_id !== false) ? ((!is_array($group_id)) ? [$group_id] : $group_id) : ((!is_array($user_id)) ? [$user_id] : $user_id);
+		$forum_ids = ($forum_id !== false) ? ((!is_array($forum_id)) ? [$forum_id] : $forum_id) : (($scope == 'global') ? [0] : []);
 
 		// Only those options we need
-		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
+		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), ['']);
 
 		// If forum_ids is false and the scope is local we actually want to have all forums within the array
 		if ($scope == 'local' && !count($forum_ids))
@@ -138,14 +126,13 @@ class auth_admin extends \phpbb\auth\auth
 				}
 				else
 				{
-					global $auth;
-					$auth2 = &$auth;
+										$auth2 = &$auth;
 				}
 
-				$hold_ary[$userdata['user_id']] = array();
+				$hold_ary[$userdata['user_id']] = [];
 				foreach ($forum_ids as $f_id)
 				{
-					$hold_ary[$userdata['user_id']][$f_id] = array();
+					$hold_ary[$userdata['user_id']][$f_id] = [];
 					foreach ($compare_options as $option)
 					{
 						$hold_ary[$userdata['user_id']][$f_id][$option] = $auth2->acl_get($option, $f_id);
@@ -162,14 +149,14 @@ class auth_admin extends \phpbb\auth\auth
 		{
 			if (!isset($hold_ary[$_id]))
 			{
-				$hold_ary[$_id] = array();
+				$hold_ary[$_id] = [];
 			}
 
 			foreach ($forum_ids as $f_id)
 			{
 				if (!isset($hold_ary[$_id][$f_id]))
 				{
-					$hold_ary[$_id][$f_id] = array();
+					$hold_ary[$_id][$f_id] = [];
 				}
 			}
 		}
@@ -195,8 +182,7 @@ class auth_admin extends \phpbb\auth\auth
 			{
 				foreach ($row as $id => $options)
 				{
-					// Do not include the global auth_option
-					unset($options[$auth_option]);
+					// Do not include the 					unset($options[$auth_option]);
 
 					// Not a "fine" solution, but at all it's a 1-dimensional
 					// array_diff_key function filling the resulting array values with zeros
@@ -223,14 +209,12 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Get permission mask for roles
-	* This function only supports getting masks for one role
-	*/
+	 * Get permission mask for roles
+	 * This function only supports getting masks for one role
+	 */
 	function get_role_mask($role_id)
 	{
-		global $db;
-
-		$hold_ary = array();
+		$hold_ary = [];
 
 		// Get users having this role set...
 		$sql = 'SELECT user_id, forum_id
@@ -262,12 +246,10 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Display permission mask (assign to template)
-	*/
+	 * Display permission mask (assign to template)
+	 */
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_container;
-
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
@@ -302,7 +284,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 		$result = $db->sql_query($sql);
 
-		$ug_names_ary = array();
+		$ug_names_ary = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : $group_helper->get_name($row['ug_name']);
@@ -310,14 +292,14 @@ class auth_admin extends \phpbb\auth\auth
 		$db->sql_freeresult($result);
 
 		// Get used forums
-		$forum_ids = array();
+		$forum_ids = [];
 		foreach ($hold_ary as $ug_id => $row)
 		{
 			$forum_ids = array_merge($forum_ids, array_keys($row));
 		}
 		$forum_ids = array_unique($forum_ids);
 
-		$forum_names_ary = array();
+		$forum_names_ary = [];
 		if ($local)
 		{
 			$forum_names_ary = make_forum_select(false, false, true, false, false, false, true);
@@ -344,7 +326,7 @@ class auth_admin extends \phpbb\auth\auth
 			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 
-		$roles = array();
+		$roles = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$roles[$row['role_id']] = $row;
@@ -358,7 +340,7 @@ class auth_admin extends \phpbb\auth\auth
 
 		if (count($roles))
 		{
-			$s_role_js_array = array();
+			$s_role_js_array = [];
 
 			// Make sure every role (even if empty) has its array defined
 			foreach ($roles as $_role_id => $null)
@@ -391,7 +373,7 @@ class auth_admin extends \phpbb\auth\auth
 		unset($s_role_js_array);
 
 		// Now obtain memberships
-		$user_groups_default = $user_groups_custom = array();
+		$user_groups_default = $user_groups_custom = [];
 		if ($user_mode == 'user' && $group_display)
 		{
 			$sql = 'SELECT group_id, group_name, group_type
@@ -399,7 +381,7 @@ class auth_admin extends \phpbb\auth\auth
 				ORDER BY group_type DESC, group_name ASC';
 			$result = $db->sql_query($sql);
 
-			$groups = array();
+			$groups = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$groups[$row['group_id']] = $row;
@@ -425,7 +407,7 @@ class auth_admin extends \phpbb\auth\auth
 		if (count($forum_ids) == 1 || ($local && count($ug_names_ary) > 1))
 		{
 			$hold_ary_temp = $hold_ary;
-			$hold_ary = array();
+			$hold_ary = [];
 			foreach ($hold_ary_temp as $ug_id => $row)
 			{
 				foreach ($forum_names_ary as $forum_id => $forum_row)
@@ -440,10 +422,10 @@ class auth_admin extends \phpbb\auth\auth
 
 			foreach ($hold_ary as $forum_id => $forum_array)
 			{
-				$content_array = $categories = array();
+				$content_array = $categories = [];
 				$this->build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
 
-				$template->assign_block_vars($tpl_pmask, array(
+				$template->assign_block_vars($tpl_pmask, [
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 					'PADDING'		=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 
@@ -457,7 +439,7 @@ class auth_admin extends \phpbb\auth\auth
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
 					'S_NUM_OBJECTS'	=> count($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
-					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
+					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false]
 				);
 
 				foreach ($content_array as $ug_id => $ug_array)
@@ -465,30 +447,30 @@ class auth_admin extends \phpbb\auth\auth
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
-					$role_options = array();
+					$role_options = [];
 
 					$s_role_options = '';
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
 					foreach ($roles as $role_id => $role_row)
 					{
-						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
-						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						$role_description = (!empty($language->lang[$role_row['role_description']])) ? $language->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
+						$role_name = (!empty($language->lang[$role_row['role_name']])) ? $language->lang[$role_row['role_name']] : $role_row['role_name'];
 
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
 
-						$role_options[] = array(
+						$role_options[] = [
 							'ID'	=> $role_id,
 							'ROLE_NAME'	=> $role_name,
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
-						);
+						];
 					}
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($language->lang('NO_ROLE_ASSIGNED_EXPLAIN')) . '">' . $language->lang('NO_ROLE_ASSIGNED') . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -509,14 +491,14 @@ class auth_admin extends \phpbb\auth\auth
 						$s_custom_permissions = false;
 					}
 
-					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
+					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, [
 						'NAME'				=> $ug_names_ary[$ug_id],
 						'UG_ID'				=> $ug_id,
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'S_CUSTOM'			=> $s_custom_permissions,
 						'FORUM_ID'			=> $forum_id,
 						'S_ROLE_ID'			=> $current_role_id,
-					));
+					]);
 
 					$template->assign_block_vars_array($tpl_pmask . '.' . $tpl_fmask . '.role_options', $role_options);
 
@@ -537,15 +519,15 @@ class auth_admin extends \phpbb\auth\auth
 					continue;
 				}
 
-				$content_array = $categories = array();
+				$content_array = $categories = [];
 				$this->build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
 
-				$template->assign_block_vars($tpl_pmask, array(
+				$template->assign_block_vars($tpl_pmask, [
 					'NAME'			=> $ug_name,
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
-					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && count($user_groups_default[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_default[$ug_id]) : '',
-					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && count($user_groups_custom[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_custom[$ug_id]) : '',
+					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && count($user_groups_default[$ug_id])) ? implode($language->lang('COMMA_SEPARATOR'), $user_groups_default[$ug_id]) : '',
+					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && count($user_groups_custom[$ug_id])) ? implode($language->lang('COMMA_SEPARATOR'), $user_groups_custom[$ug_id]) : '',
 					'L_ACL_TYPE'			=> $l_acl_type,
 
 					'S_LOCAL'		=> ($local) ? true : false,
@@ -554,7 +536,7 @@ class auth_admin extends \phpbb\auth\auth
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
 					'S_NUM_OBJECTS'	=> count($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
-					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
+					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false]
 				);
 
 				foreach ($content_array as $forum_id => $forum_array)
@@ -562,30 +544,30 @@ class auth_admin extends \phpbb\auth\auth
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
-					$role_options = array();
+					$role_options = [];
 
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 					$s_role_options = '';
 
 					foreach ($roles as $role_id => $role_row)
 					{
-						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
-						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						$role_description = (!empty($language->lang[$role_row['role_description']])) ? $language->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
+						$role_name = (!empty($language->lang[$role_row['role_name']])) ? $language->lang[$role_row['role_name']] : $role_row['role_name'];
 
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
 
-						$role_options[] = array(
+						$role_options[] = [
 							'ID'	=> $role_id,
 							'ROLE_NAME'	=> $role_name,
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
-						);
+						];
 					}
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($language->lang('NO_ROLE_ASSIGNED_EXPLAIN')) . '">' . $language->lang('NO_ROLE_ASSIGNED') . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -606,13 +588,13 @@ class auth_admin extends \phpbb\auth\auth
 						$s_custom_permissions = false;
 					}
 
-					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
+					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, [
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 						'S_CUSTOM'			=> $s_custom_permissions,
 						'UG_ID'				=> $ug_id,
 						'S_ROLE_OPTIONS'	=> $s_role_options,
-						'FORUM_ID'			=> $forum_id)
+						'FORUM_ID'			=> $forum_id]
 					);
 
 					$template->assign_block_vars_array($tpl_pmask . '.' . $tpl_fmask . '.role_options', $role_options);
@@ -626,13 +608,10 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Display permission mask for roles
-	*/
+	 * Display permission mask for roles
+	 */
 	function display_role_mask(&$hold_ary)
 	{
-		global $db, $template, $user, $phpbb_root_path, $phpEx;
-		global $phpbb_container;
-
 		if (!count($hold_ary))
 		{
 			return;
@@ -649,7 +628,7 @@ class auth_admin extends \phpbb\auth\auth
 		$result = $db->sql_query($sql);
 
 		// If the role is used globally, then reflect that
-		$forum_names = (isset($hold_ary[0])) ? array(0 => '') : array();
+		$forum_names = (isset($hold_ary[0])) ? [0 => ''] : [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_names[$row['forum_id']] = $row['forum_name'];
@@ -660,9 +639,9 @@ class auth_admin extends \phpbb\auth\auth
 		{
 			$auth_ary = $hold_ary[$forum_id];
 
-			$template->assign_block_vars('role_mask', array(
-				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_name,
-				'FORUM_ID'			=> $forum_id)
+			$template->assign_block_vars('role_mask', [
+				'NAME'				=> ($forum_id == 0) ? $language->lang('GLOBAL_MASK') : $forum_name,
+				'FORUM_ID'			=> $forum_id]
 			);
 
 			if (isset($auth_ary['users']) && count($auth_ary['users']))
@@ -675,11 +654,11 @@ class auth_admin extends \phpbb\auth\auth
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('role_mask.users', array(
+					$template->assign_block_vars('role_mask.users', [
 						'USER_ID'		=> $row['user_id'],
 						'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username']),
 						'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username']),
-					));
+					]);
 				}
 				$db->sql_freeresult($result);
 			}
@@ -694,10 +673,10 @@ class auth_admin extends \phpbb\auth\auth
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('role_mask.groups', array(
+					$template->assign_block_vars('role_mask.groups', [
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> $group_helper->get_name($row['group_name']),
-						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g={$row['group_id']}"))
+						'U_PROFILE'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", "mode=group&amp;g={$row['group_id']}")]
 					);
 				}
 				$db->sql_freeresult($result);
@@ -706,23 +685,21 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* NOTE: this function is not in use atm
-	* Add a new option to the list ... $options is a hash of form ->
-	* $options = array(
-	*	'local'		=> array('option1', 'option2', ...),
-	*	'global'	=> array('optionA', 'optionB', ...)
-	* );
-	*/
+	 * NOTE: this function is not in use atm
+	 * Add a new option to the list ... $options is a hash of form ->
+	 * $options = array(
+	 *	'local'		=> array('option1', 'option2', ...),
+	 *	'global'	=> array('optionA', 'optionB', ...)
+	 * );
+	 */
 	function acl_add_option($options)
 	{
-		global $db, $cache;
-
 		if (!is_array($options))
 		{
 			return false;
 		}
 
-		$cur_options = array();
+		$cur_options = [];
 
 		// Determine current options
 		$sql = 'SELECT auth_option, is_global, is_local
@@ -739,7 +716,7 @@ class auth_admin extends \phpbb\auth\auth
 		// Here we need to insert new options ... this requires discovering whether
 		// an options is global, local or both and whether we need to add an permission
 		// set flag (x_)
-		$new_options = array('local' => array(), 'global' => array());
+		$new_options = ['local' => [], 'global' => []];
 
 		foreach ($options as $type => $option_ary)
 		{
@@ -759,13 +736,13 @@ class auth_admin extends \phpbb\auth\auth
 		}
 		unset($options);
 
-		$options = array();
+		$options = [];
 		$options['local'] = array_diff($new_options['local'], $new_options['global']);
 		$options['global'] = array_diff($new_options['global'], $new_options['local']);
 		$options['both'] = array_intersect($new_options['local'], $new_options['global']);
 
 		// Now check which options to add/update
-		$add_options = $update_options = array();
+		$add_options = $update_options = [];
 
 		// First local ones...
 		foreach ($options as $type => $option_ary)
@@ -774,11 +751,11 @@ class auth_admin extends \phpbb\auth\auth
 			{
 				if (!isset($cur_options[$option]))
 				{
-					$add_options[] = array(
+					$add_options[] = [
 						'auth_option'	=> (string) $option,
 						'is_global'		=> ($type == 'global' || $type == 'both') ? 1 : 0,
-						'is_local'		=> ($type == 'local' || $type == 'both') ? 1 : 0
-					);
+						'is_local'		=> ($type == 'local' || $type == 'both') ? 1 : 0,
+					];
 
 					continue;
 				}
@@ -791,9 +768,7 @@ class auth_admin extends \phpbb\auth\auth
 
 				// New type is always both:
 				// If is now both, we set both.
-				// If it was global the new one is local and we need to set it to both
-				// If it was local the new one is global and we need to set it to both
-				$update_options[] = $option;
+				// If it was 				// If it was local the new one is 				$update_options[] = $option;
 			}
 		}
 
@@ -805,8 +780,7 @@ class auth_admin extends \phpbb\auth\auth
 		if (!empty($update_options))
 		{
 			$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . '
-				SET is_global = 1, is_local = 1
-				WHERE ' . $db->sql_in_set('auth_option', $update_options);
+				SET is_				WHERE ' . $db->sql_in_set('auth_option', $update_options);
 			$db->sql_query($sql);
 		}
 
@@ -814,29 +788,27 @@ class auth_admin extends \phpbb\auth\auth
 		$this->acl_clear_prefetch();
 
 		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.
-		$this->acl_options = array();
+		$this->acl_options = [];
 		$this->__construct();
 
 		return true;
 	}
 
 	/**
-	* Set a user or group ACL record
-	*/
+	 * Set a user or group ACL record
+	 */
 	function acl_set($ug_type, $forum_id, $ug_id, $auth, $role_id = 0, $clear_prefetch = true)
 	{
-		global $db;
-
 		// One or more forums
 		if (!is_array($forum_id))
 		{
-			$forum_id = array($forum_id);
+			$forum_id = [$forum_id];
 		}
 
 		// One or more users
 		if (!is_array($ug_id))
 		{
-			$ug_id = array($ug_id);
+			$ug_id = [$ug_id];
 		}
 
 		$ug_id_sql = $db->sql_in_set($ug_type . '_id', array_map('intval', $ug_id));
@@ -861,7 +833,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		// Remove current auth options...
-		$auth_option_ids = array((int) $any_option_id);
+		$auth_option_ids = [(int) $any_option_id];
 		foreach ($auth as $auth_option => $auth_setting)
 		{
 			$auth_option_ids[] = (int) $this->acl_options['id'][$auth_option];
@@ -879,7 +851,7 @@ class auth_admin extends \phpbb\auth\auth
 			WHERE role_type = '" . $db->sql_escape($flag) . "'";
 		$result = $db->sql_query($sql);
 
-		$role_ids = array();
+		$role_ids = [];
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$role_ids[] = $row['role_id'];
@@ -905,7 +877,7 @@ class auth_admin extends \phpbb\auth\auth
 			}
 		}
 
-		$sql_ary = array();
+		$sql_ary = [];
 		foreach ($forum_id as $forum)
 		{
 			$forum = (int) $forum;
@@ -914,13 +886,13 @@ class auth_admin extends \phpbb\auth\auth
 			{
 				foreach ($ug_id as $id)
 				{
-					$sql_ary[] = array(
+					$sql_ary[] = [
 						$id_field			=> (int) $id,
 						'forum_id'			=> (int) $forum,
 						'auth_option_id'	=> 0,
 						'auth_setting'		=> 0,
 						'auth_role_id'		=> (int) $role_id,
-					);
+					];
 				}
 			}
 			else
@@ -933,12 +905,12 @@ class auth_admin extends \phpbb\auth\auth
 					{
 						foreach ($ug_id as $id)
 						{
-							$sql_ary[] = array(
+							$sql_ary[] = [
 								$id_field			=> (int) $id,
 								'forum_id'			=> (int) $forum,
 								'auth_option_id'	=> (int) $auth_option_id,
-								'auth_setting'		=> (int) $setting
-							);
+								'auth_setting'		=> (int) $setting,
+							];
 						}
 					}
 				}
@@ -954,12 +926,10 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Set a role-specific ACL record
-	*/
+	 * Set a role-specific ACL record
+	 */
 	function acl_set_role($role_id, $auth)
 	{
-		global $db;
-
 		// Get any-flag as required
 		reset($auth);
 		$flag = key($auth);
@@ -980,29 +950,29 @@ class auth_admin extends \phpbb\auth\auth
 			}
 		}
 
-		$sql_ary = array();
+		$sql_ary = [];
 		foreach ($auth as $auth_option => $setting)
 		{
 			$auth_option_id = (int) $this->acl_options['id'][$auth_option];
 
 			if ($setting != ACL_NO)
 			{
-				$sql_ary[] = array(
+				$sql_ary[] = [
 					'role_id'			=> (int) $role_id,
 					'auth_option_id'	=> (int) $auth_option_id,
-					'auth_setting'		=> (int) $setting
-				);
+					'auth_setting'		=> (int) $setting,
+				];
 			}
 		}
 
 		// If no data is there, we set the any-flag to ACL_NEVER...
 		if (!count($sql_ary))
 		{
-			$sql_ary[] = array(
+			$sql_ary[] = [
 				'role_id'			=> (int) $role_id,
 				'auth_option_id'	=> (int) $this->acl_options['id'][$flag],
-				'auth_setting'		=> ACL_NEVER
-			);
+				'auth_setting'		=> ACL_NEVER,
+			];
 		}
 
 		// Remove current auth options...
@@ -1017,22 +987,20 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Remove local permission
-	*/
+	 * Remove local permission
+	 */
 	function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
 	{
-		global $db;
-
 		if ($ug_id === false && $forum_id === false)
 		{
 			return;
 		}
 
-		$option_id_ary = array();
+		$option_id_ary = [];
 		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field = $mode . '_id';
 
-		$where_sql = array();
+		$where_sql = [];
 
 		if ($forum_id !== false)
 		{
@@ -1053,7 +1021,7 @@ class auth_admin extends \phpbb\auth\auth
 				WHERE auth_option " . $db->sql_like_expression($permission_type . $db->get_any_char());
 			$result = $db->sql_query($sql);
 
-			$auth_id_ary = array();
+			$auth_id_ary = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$option_id_ary[] = $row['auth_option_id'];
@@ -1071,7 +1039,7 @@ class auth_admin extends \phpbb\auth\auth
 				ORDER BY auth_role_id';
 			$result = $db->sql_query($sql);
 
-			$cur_role_auth = array();
+			$cur_role_auth = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$cur_role_auth[$row['auth_role_id']][$row['forum_id']][] = $row[$id_field];
@@ -1087,7 +1055,7 @@ class auth_admin extends \phpbb\auth\auth
 						AND ' . $db->sql_in_set('rd.role_id', array_keys($cur_role_auth));
 				$result = $db->sql_query($sql);
 
-				$auth_settings = array();
+				$auth_settings = [];
 				while ($row = $db->sql_fetchrow($result))
 				{
 					// We need to fill all auth_options, else setting it will fail...
@@ -1124,13 +1092,11 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Assign category to template
-	* used by display_mask()
-	*/
+	 * Assign category to template
+	 * used by display_mask()
+	 */
 	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
-		global $template, $phpbb_admin_path, $phpEx, $phpbb_container;
-
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
@@ -1141,18 +1107,18 @@ class auth_admin extends \phpbb\auth\auth
 				continue;
 			}
 
-			$template->assign_block_vars($tpl_cat, array(
+			$template->assign_block_vars($tpl_cat, [
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
 				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
-			));
+			]);
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
-			*	Commented out due to it's memory consumption and time needed
-			*
-			$key_array = array_intersect(array_keys($user->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
+			 *	Commented out due to it's memory consumption and time needed
+			 *
+			$key_array = array_intersect(array_keys($language->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
 			$values_array = $cat_array['permissions'];
 
 			$cat_array['permissions'] = array();
@@ -1163,7 +1129,8 @@ class auth_admin extends \phpbb\auth\auth
 				$cat_array['permissions'][$key] = $values_array[$key];
 			}
 			unset($key_array, $values_array);
-*/
+			*/
+
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				if (!$phpbb_permissions->permission_defined($permission))
@@ -1173,7 +1140,7 @@ class auth_admin extends \phpbb\auth\auth
 
 				if ($s_view)
 				{
-					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
+					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, [
 						'S_YES'		=> ($allowed == ACL_YES) ? true : false,
 						'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
 
@@ -1182,15 +1149,15 @@ class auth_admin extends \phpbb\auth\auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> ($show_trace) ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
+						'UA_TRACE'		=> ($show_trace) ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
 						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
-					));
+					]);
 				}
 				else
 				{
-					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
+					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, [
 						'S_YES'		=> ($allowed == ACL_YES) ? true : false,
 						'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
 						'S_NO'		=> ($allowed == ACL_NO) ? true : false,
@@ -1200,24 +1167,22 @@ class auth_admin extends \phpbb\auth\auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> ($show_trace) ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
+						'UA_TRACE'		=> ($show_trace) ? append_sid("{$this->admin_path}index.$this->php_ext", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
 						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
-					));
+					]);
 				}
 			}
 		}
 	}
 
 	/**
-	* Building content array from permission rows with explicit key ordering
-	* used by display_mask()
-	*/
+	 * Building content array from permission rows with explicit key ordering
+	 * used by display_mask()
+	 */
 	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
 	{
-		global $phpbb_container;
-
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
@@ -1244,17 +1209,17 @@ class auth_admin extends \phpbb\auth\auth
 				// Build our content array
 				if (!isset($content_array[$forum_id]))
 				{
-					$content_array[$forum_id] = array();
+					$content_array[$forum_id] = [];
 				}
 
 				if (!isset($content_array[$forum_id][$cat]))
 				{
-					$content_array[$forum_id][$cat] = array(
+					$content_array[$forum_id][$cat] = [
 						'S_YES'			=> false,
 						'S_NEVER'		=> false,
 						'S_NO'			=> false,
-						'permissions'	=> array(),
-					);
+						'permissions'	=> [],
+					];
 				}
 
 				$content_array[$forum_id][$cat]['S_YES'] |= ($auth_setting == ACL_YES) ? true : false;
@@ -1267,16 +1232,14 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
-	* Use permissions from another user. This transferes a permission set from one user to another.
-	* The other user is always able to revert back to his permission set.
-	* This function does not check for lower/higher permissions, it is possible for the user to gain
-	* "more" permissions by this.
-	* Admin permissions will not be copied.
-	*/
+	 * Use permissions from another user. This transferes a permission set from one user to another.
+	 * The other user is always able to revert back to his permission set.
+	 * This function does not check for lower/higher permissions, it is possible for the user to gain
+	 * "more" permissions by this.
+	 * Admin permissions will not be copied.
+	 */
 	function ghost_permissions($from_user_id, $to_user_id)
 	{
-		global $db;
-
 		if ($to_user_id == ANONYMOUS)
 		{
 			return false;
@@ -1284,8 +1247,7 @@ class auth_admin extends \phpbb\auth\auth
 
 		$hold_ary = $this->acl_raw_data_single_user($from_user_id);
 
-		// Key 0 in $hold_ary are global options, all others are forum_ids
-
+		// Key 0 in $hold_ary are
 		// We disallow copying admin permissions
 		foreach ($this->acl_options['global'] as $opt => $id)
 		{

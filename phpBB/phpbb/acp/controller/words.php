@@ -1,43 +1,33 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* @todo [words] check regular expressions for special char replacements (stored specialchared in db)
-*/
-class acp_words
+ * @todo [words] check regular expressions for special char replacements (stored specialchared in db)
+ */
+class words
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $phpbb_log, $request, $phpbb_container;
-
-		$user->add_lang('acp/posting');
+		$this->language->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = $request->variable('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : ((isset($_POST['save'])) ? 'save' : $action);
+		$action = $this->request->variable('action', '');
+		$action = ($this->request->is_set_post('add')) ? 'add' : (($this->request->is_set_post('save')) ? 'save' : $action);
 
 		$s_hidden_fields = '';
-		$word_info = array();
+		$word_info = [];
 
 		$this->tpl_name = 'acp_words';
 		$this->page_title = 'ACP_WORDS';
@@ -49,31 +39,31 @@ class acp_words
 		{
 			case 'edit':
 
-				$word_id = $request->variable('id', 0);
+				$word_id = $this->request->variable('id', 0);
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
 					FROM ' . WORDS_TABLE . "
 					WHERE word_id = $word_id";
-				$result = $db->sql_query($sql);
-				$word_info = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = $this->db->sql_query($sql);
+				$word_info = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
 
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 
 			case 'add':
 
-				$template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_EDIT_WORD'		=> true,
 					'U_ACTION'			=> $this->u_action,
 					'U_BACK'			=> $this->u_action,
 					'WORD'				=> (isset($word_info['word'])) ? $word_info['word'] : '',
 					'REPLACEMENT'		=> (isset($word_info['replacement'])) ? $word_info['replacement'] : '',
-					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields]
 				);
 
 				return;
@@ -84,54 +74,54 @@ class acp_words
 
 				if (!check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$word_id		= $request->variable('id', 0);
-				$word			= $request->variable('word', '', true);
-				$replacement	= $request->variable('replacement', '', true);
+				$word_id		= $this->request->variable('id', 0);
+				$word			= $this->request->variable('word', '', true);
+				$replacement	= $this->request->variable('replacement', '', true);
 
 				if ($word === '' || $replacement === '')
 				{
-					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('ENTER_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Replace multiple consecutive asterisks with single one as those are not needed
 				$word = preg_replace('#\*{2,}#', '*', $word);
 
-				$sql_ary = array(
+				$sql_ary = [
 					'word'			=> $word,
-					'replacement'	=> $replacement
-				);
+					'replacement'	=> $replacement,
+				];
 
 				if ($word_id)
 				{
-					$db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);
+					$this->db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);
 				}
 				else
 				{
-					$db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					$this->db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary));
 				}
 
-				$cache->destroy('_word_censors');
+				$this->cache->destroy('_word_censors');
 				$phpbb_container->get('text_formatter.cache')->invalidate();
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($word));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_action, false, [$word]);
 
-				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
+				$message = ($word_id) ? $this->language->lang('WORD_UPDATED') : $this->language->lang('WORD_ADDED');
 				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
 
 			case 'delete':
 
-				$word_id = $request->variable('id', 0);
+				$word_id = $this->request->variable('id', 0);
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->language->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -139,53 +129,53 @@ class acp_words
 					$sql = 'SELECT word
 						FROM ' . WORDS_TABLE . "
 						WHERE word_id = $word_id";
-					$result = $db->sql_query($sql);
-					$deleted_word = $db->sql_fetchfield('word');
-					$db->sql_freeresult($result);
+					$result = $this->db->sql_query($sql);
+					$deleted_word = $this->db->sql_fetchfield('word');
+					$this->db->sql_freeresult($result);
 
 					$sql = 'DELETE FROM ' . WORDS_TABLE . "
 						WHERE word_id = $word_id";
-					$db->sql_query($sql);
+					$this->db->sql_query($sql);
 
-					$cache->destroy('_word_censors');
+					$this->cache->destroy('_word_censors');
 					$phpbb_container->get('text_formatter.cache')->invalidate();
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_WORD_DELETE', false, [$deleted_word]);
 
-					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
+					trigger_error($this->language->lang('WORD_REMOVED') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'id'		=> $word_id,
 						'action'	=> 'delete',
-					)));
+					]));
 				}
 
 			break;
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'			=> $this->u_action,
-			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields]
 		);
 
 		$sql = 'SELECT *
 			FROM ' . WORDS_TABLE . '
 			ORDER BY word';
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('words', array(
+			$this->template->assign_block_vars('words', [
 				'WORD'			=> $row['word'],
 				'REPLACEMENT'	=> $row['replacement'],
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['word_id'],
-				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'])
+				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id']]
 			);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 }
