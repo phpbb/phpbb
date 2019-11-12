@@ -142,13 +142,12 @@ class board
 		 * Validation types are:
 		 * 		string, int, bool,
 		 * 		script_path (absolute path in url - beginning with / and no trailing slash),
-		 * 		rpath (relative), rwpath (realtive, writable), path (relative path, but able to escape the root), wpath (writable)
+		 * 		rpath (relative), rwpath (relative, writable), path (relative path, but able to escape the root), wpath (writable)
 		 */
 		switch ($mode)
 		{
-			case 'settings':
+			case 'board':
 				$display_vars = [
-					'title'	=> 'ACP_BOARD_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_BOARD_SETTINGS',
 						'sitename'				=> ['lang' => 'SITE_NAME', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => false],
@@ -156,11 +155,11 @@ class board
 						'site_home_url'			=> ['lang' => 'SITE_HOME_URL', 'validate' => 'url', 'type' => 'url:40:255', 'explain' => true],
 						'site_home_text'		=> ['lang' => 'SITE_HOME_TEXT', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => true],
 						'board_index_text'		=> ['lang' => 'BOARD_INDEX_TEXT', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => true],
-						'board_disable'			=> ['lang' => 'DISABLE_BOARD', 'validate' => 'bool', 'type' => 'custom', 'method' => 'board_disable', 'explain' => true],
+						'board_disable'			=> ['lang' => 'DISABLE_BOARD', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'board_disable'], 'explain' => true],
 						'board_disable_msg'		=> false,
 						'default_lang'			=> ['lang' => 'DEFAULT_LANGUAGE', 'validate' => 'lang', 'type' => 'select', 'function' => 'language_select', 'params' => ['{CONFIG_VALUE}'], 'explain' => false],
-						'default_dateformat'	=> ['lang' => 'DEFAULT_DATE_FORMAT', 'validate' => 'string', 'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true],
-						'board_timezone'		=> ['lang' => 'SYSTEM_TIMEZONE', 'validate' => 'timezone', 'type' => 'custom', 'method' => 'timezone_select', 'explain' => true],
+						'default_dateformat'	=> ['lang' => 'DEFAULT_DATE_FORMAT', 'validate' => 'string', 'type' => 'custom', 'function' => [$this, 'dateformat_select'], 'explain' => true],
+						'board_timezone'		=> ['lang' => 'SYSTEM_TIMEZONE', 'validate' => 'timezone', 'type' => 'custom', 'function' => [$this, 'timezone_select'], 'explain' => true],
 
 						'legend2'				=> 'BOARD_STYLE',
 						'default_style'			=> ['lang' => 'DEFAULT_STYLE', 'validate' => 'int', 'type' => 'select', 'function' => 'style_select', 'params' => ['{CONFIG_VALUE}', false], 'explain' => true],
@@ -177,7 +176,6 @@ class board
 
 			case 'features':
 				$display_vars = [
-					'title'	=> 'ACP_BOARD_FEATURES',
 					'vars'	=> [
 						'legend1'					=> 'ACP_BOARD_FEATURES',
 						'allow_privmsg'				=> ['lang' => 'BOARD_PM', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
@@ -196,7 +194,7 @@ class board
 						'allow_birthdays'			=> ['lang' => 'ALLOW_BIRTHDAYS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'display_last_subject'		=> ['lang' => 'DISPLAY_LAST_SUBJECT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'display_unapproved_posts'	=> ['lang' => 'DISPLAY_UNAPPROVED_POSTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'allow_quick_reply'			=> ['lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'method' => 'quick_reply', 'explain' => true],
+						'allow_quick_reply'			=> ['lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'quick_reply'], 'explain' => true],
 
 						'legend2'					=> 'ACP_SUBMIT_CHANGES',
 					],
@@ -222,7 +220,6 @@ class board
 				}
 
 				$display_vars = [
-					'title'	=> 'ACP_AVATAR_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_AVATAR_SETTINGS',
 
@@ -243,16 +240,15 @@ class board
 				}
 			break;
 
-			case 'message':
+			case 'pmg':
 				$display_vars = [
-					'title'	=> 'ACP_MESSAGE_SETTINGS',
 					'lang'	=> 'ucp',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'allow_privmsg'			=> ['lang' => 'BOARD_PM', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'pm_max_boxes'			=> ['lang' => 'BOXES_MAX', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true],
 						'pm_max_msgs'			=> ['lang' => 'BOXES_LIMIT', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true],
-						'full_folder_action'	=> ['lang' => 'FULL_FOLDER_ACTION', 'validate' => 'int', 'type' => 'select', 'method' => 'full_folder_select', 'explain' => true],
+						'full_folder_action'	=> ['lang' => 'FULL_FOLDER_ACTION', 'validate' => 'int', 'type' => 'select', 'function' => [$this, 'full_folder_select'], 'explain' => true],
 						'pm_edit_time'			=> ['lang' => 'PM_EDIT_TIME', 'validate' => 'int:0:99999', 'type' => 'number:0:99999', 'explain' => true, 'append' => ' ' . $this->language->lang('MINUTES')],
 						'pm_max_recipients'		=> ['lang' => 'PM_MAX_RECIPIENTS', 'validate' => 'int:0:99999', 'type' => 'number:0:99999', 'explain' => true],
 
@@ -275,7 +271,6 @@ class board
 
 			case 'post':
 				$display_vars = [
-					'title'	=> 'ACP_POST_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_OPTIONS',
 						'allow_topic_notify'	=> ['lang' => 'ALLOW_TOPIC_NOTIFY', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
@@ -288,7 +283,7 @@ class board
 						'allow_nocensors'		=> ['lang' => 'ALLOW_NO_CENSORS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'allow_bookmarks'		=> ['lang' => 'ALLOW_BOOKMARKS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'enable_post_confirm'	=> ['lang' => 'VISUAL_CONFIRM_POST', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'allow_quick_reply'		=> ['lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'method' => 'quick_reply', 'explain' => true],
+						'allow_quick_reply'		=> ['lang' => 'ALLOW_QUICK_REPLY', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'quick_reply'], 'explain' => true],
 
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
@@ -296,7 +291,7 @@ class board
 						'delete_time'			=> ['lang' => 'DELETE_TIME', 'validate' => 'int:0:99999', 'type' => 'number:0:99999', 'explain' => true, 'append' => ' ' . $this->language->lang('MINUTES')],
 						'display_last_edited'	=> ['lang' => 'DISPLAY_LAST_EDITED', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'flood_interval'		=> ['lang' => 'FLOOD_INTERVAL', 'validate' => 'int:0:9999999999', 'type' => 'number:0:9999999999', 'explain' => true, 'append' => ' ' . $this->language->lang('SECONDS')],
-						'bump_interval'			=> ['lang' => 'BUMP_INTERVAL', 'validate' => 'int:0', 'type' => 'custom', 'method' => 'bump_interval', 'explain' => true],
+						'bump_interval'			=> ['lang' => 'BUMP_INTERVAL', 'validate' => 'int:0', 'type' => 'custom', 'function' => [$this, 'bump_interval'], 'explain' => true],
 						'topics_per_page'		=> ['lang' => 'TOPICS_PER_PAGE', 'validate' => 'int:1:9999', 'type' => 'number:1:9999', 'explain' => false],
 						'posts_per_page'		=> ['lang' => 'POSTS_PER_PAGE', 'validate' => 'int:1:9999', 'type' => 'number:1:9999', 'explain' => false],
 						'smilies_per_page'		=> ['lang' => 'SMILIES_PER_PAGE', 'validate' => 'int:1:9999', 'type' => 'number:1:9999', 'explain' => false],
@@ -318,7 +313,6 @@ class board
 
 			case 'signature':
 				$display_vars = [
-					'title'	=> 'ACP_SIGNATURE_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_OPTIONS',
 						'allow_sig'				=> ['lang' => 'ALLOW_SIG', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => false],
@@ -343,18 +337,17 @@ class board
 
 			case 'registration':
 				$display_vars = [
-					'title'	=> 'ACP_REGISTER_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'max_name_chars'		=> ['lang' => 'USERNAME_LENGTH', 'validate' => 'int:8:180', 'type' => false, 'method' => false, 'explain' => false,],
 
-						'require_activation'	=> ['lang' => 'ACC_ACTIVATION', 'validate' => 'int', 'type' => 'select', 'method' => 'select_acc_activation', 'explain' => true],
+						'require_activation'	=> ['lang' => 'ACC_ACTIVATION', 'validate' => 'int', 'type' => 'select', 'function' => [$this, 'select_acc_activation'], 'explain' => true],
 						'new_member_post_limit'	=> ['lang' => 'NEW_MEMBER_POST_LIMIT', 'validate' => 'int:0:255', 'type' => 'number:0:255', 'explain' => true, 'append' => ' ' . $this->language->lang('POSTS')],
 						'new_member_group_default' => ['lang' => 'NEW_MEMBER_GROUP_DEFAULT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'min_name_chars'		=> ['lang' => 'USERNAME_LENGTH', 'validate' => 'int:1', 'type' => 'custom:5:180', 'method' => 'username_length', 'explain' => true],
-						'min_pass_chars'		=> ['lang' => 'PASSWORD_LENGTH', 'validate' => 'int:1', 'type' => 'custom', 'method' => 'password_length', 'explain' => true],
-						'allow_name_chars'		=> ['lang' => 'USERNAME_CHARS', 'validate' => 'string', 'type' => 'select', 'method' => 'select_username_chars', 'explain' => true],
-						'pass_complex'			=> ['lang' => 'PASSWORD_TYPE', 'validate' => 'string', 'type' => 'select', 'method' => 'select_password_chars', 'explain' => true],
+						'min_name_chars'		=> ['lang' => 'USERNAME_LENGTH', 'validate' => 'int:1', 'type' => 'custom:5:180', 'function' => [$this, 'username_length'], 'explain' => true],
+						'min_pass_chars'		=> ['lang' => 'PASSWORD_LENGTH', 'validate' => 'int:1', 'type' => 'custom', 'function' => [$this, 'password_length'], 'explain' => true],
+						'allow_name_chars'		=> ['lang' => 'USERNAME_CHARS', 'validate' => 'string', 'type' => 'select', 'function' => [$this, 'select_username_chars'], 'explain' => true],
+						'pass_complex'			=> ['lang' => 'PASSWORD_TYPE', 'validate' => 'string', 'type' => 'select', 'function' => [$this, 'select_password_chars'], 'explain' => true],
 						'chg_passforce'			=> ['lang' => 'FORCE_PASS_CHANGE', 'validate' => 'int:0:999', 'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $this->language->lang('DAYS')],
 
 						'legend2'				=> 'GENERAL_OPTIONS',
@@ -376,7 +369,6 @@ class board
 
 			case 'feed':
 				$display_vars = [
-					'title'	=> 'ACP_FEED_MANAGEMENT',
 					'vars'	=> [
 						'legend1'					=> 'ACP_FEED_GENERAL',
 						'feed_enable'				=> ['lang' => 'ACP_FEED_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
@@ -393,18 +385,17 @@ class board
 						'feed_limit_topic'			=> ['lang' => 'ACP_FEED_LIMIT', 'validate' => 'int:5:9999', 'type' => 'number:5:9999', 'explain' => true],
 						'feed_topics_new'			=> ['lang' => 'ACP_FEED_TOPICS_NEW', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
 						'feed_topics_active'		=> ['lang' => 'ACP_FEED_TOPICS_ACTIVE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
-						'feed_news_id'				=> ['lang' => 'ACP_FEED_NEWS', 'validate' => 'string', 'type' => 'custom', 'method' => 'select_news_forums', 'explain' => true],
+						'feed_news_id'				=> ['lang' => 'ACP_FEED_NEWS', 'validate' => 'string', 'type' => 'custom', 'function' => [$this, 'select_news_forums'], 'explain' => true],
 
 						'legend4'					=> 'ACP_FEED_SETTINGS_OTHER',
 						'feed_overall_forums'		=> ['lang' => 'ACP_FEED_OVERALL_FORUMS', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
-						'feed_exclude_id'			=> ['lang' => 'ACP_FEED_EXCLUDE_ID', 'validate' => 'string', 'type' => 'custom', 'method' => 'select_exclude_forums', 'explain' => true],
+						'feed_exclude_id'			=> ['lang' => 'ACP_FEED_EXCLUDE_ID', 'validate' => 'string', 'type' => 'custom', 'function' => [$this, 'select_exclude_forums'], 'explain' => true],
 					],
 				];
 			break;
 
 			case 'cookie':
 				$display_vars = [
-					'title'	=> 'ACP_COOKIE_SETTINGS',
 					'vars'	=> [
 						'legend1'		=> 'ACP_COOKIE_SETTINGS',
 						'cookie_domain'	=> ['lang' => 'COOKIE_DOMAIN', 'validate' => 'string', 'type' => 'text::255', 'explain' => true],
@@ -418,7 +409,6 @@ class board
 
 			case 'load':
 				$display_vars = [
-					'title'	=> 'ACP_LOAD_SETTINGS',
 					'vars'	=> [
 						'legend1'					=> 'GENERAL_SETTINGS',
 						'limit_load'				=> ['lang' => 'LIMIT_LOAD', 'validate' => 'int:0:9999', 'type' => 'number:0:9999', 'explain' => true],
@@ -459,24 +449,22 @@ class board
 
 			case 'auth':
 				$display_vars = [
-					'title'	=> 'ACP_AUTH_SETTINGS',
 					'vars'	=> [
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
-						'auth_method'	=> ['lang' => 'AUTH_METHOD', 'validate' => 'string', 'type' => 'select:1:toggable', 'method' => 'select_auth_method', 'explain' => false],
+						'auth_method'	=> ['lang' => 'AUTH_METHOD', 'validate' => 'string', 'type' => 'select:1:toggable', 'function' => [$this, 'select_auth_method'], 'explain' => false],
 					],
 				];
 			break;
 
 			case 'server':
 				$display_vars = [
-					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
 						'gzip_compress'			=> ['lang' => 'ENABLE_GZIP', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'use_system_cron'		=> ['lang' => 'USE_SYSTEM_CRON', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 
 						'legend2'				=> 'PATH_SETTINGS',
-						'enable_mod_rewrite'	=> ['lang' => 'MOD_REWRITE_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'method' => 'enable_mod_rewrite', 'explain' => true],
+						'enable_mod_rewrite'	=> ['lang' => 'MOD_REWRITE_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'enable_mod_rewrite'], 'explain' => true],
 						'smilies_path'			=> ['lang' => 'SMILIES_PATH', 'validate' => 'rpath', 'type' => 'text:20:255', 'explain' => true],
 						'icons_path'			=> ['lang' => 'ICONS_PATH', 'validate' => 'rpath', 'type' => 'text:20:255', 'explain' => true],
 						'upload_icons_path'		=> ['lang' => 'UPLOAD_ICONS_PATH', 'validate' => 'rpath', 'type' => 'text:20:255', 'explain' => true],
@@ -496,21 +484,20 @@ class board
 
 			case 'security':
 				$display_vars = [
-					'title'	=> 'ACP_SECURITY_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
 						'allow_autologin'		=> ['lang' => 'ALLOW_AUTOLOGIN', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'allow_password_reset'	=> ['lang' => 'ALLOW_PASSWORD_RESET', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'max_autologin_time'	=> ['lang' => 'AUTOLOGIN_LENGTH', 'validate' => 'int:0:99999', 'type' => 'number:0:99999', 'explain' => true, 'append' => ' ' . $this->language->lang('DAYS')],
-						'ip_check'				=> ['lang' => 'IP_VALID', 'validate' => 'int', 'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true],
+						'ip_check'				=> ['lang' => 'IP_VALID', 'validate' => 'int', 'type' => 'custom', 'function' => [$this, 'select_ip_check'], 'explain' => true],
 						'browser_check'			=> ['lang' => 'BROWSER_VALID', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'forwarded_for_check'	=> ['lang' => 'FORWARDED_FOR_VALID', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'referer_validation'	=> ['lang' => 'REFERRER_VALID', 'validate' => 'int:0:3', 'type' => 'custom', 'method' => 'select_ref_check', 'explain' => true],
+						'referer_validation'	=> ['lang' => 'REFERRER_VALID', 'validate' => 'int:0:3', 'type' => 'custom', 'function' => [$this, 'select_ref_check'], 'explain' => true],
 						'remote_upload_verify'	=> ['lang' => 'UPLOAD_CERT_VALID', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'check_dnsbl'			=> ['lang' => 'CHECK_DNSBL', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'email_check_mx'		=> ['lang' => 'EMAIL_CHECK_MX', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'min_pass_chars'		=> ['lang' => 'PASSWORD_LENGTH', 'validate' => 'int:1', 'type' => 'custom', 'method' => 'password_length', 'explain' => true],
-						'pass_complex'			=> ['lang' => 'PASSWORD_TYPE', 'validate' => 'string', 'type' => 'select', 'method' => 'select_password_chars', 'explain' => true],
+						'min_pass_chars'		=> ['lang' => 'PASSWORD_LENGTH', 'validate' => 'int:1', 'type' => 'custom', 'function' => [$this, 'password_length'], 'explain' => true],
+						'pass_complex'			=> ['lang' => 'PASSWORD_TYPE', 'validate' => 'string', 'type' => 'select', 'function' => [$this, 'select_password_chars'], 'explain' => true],
 						'chg_passforce'			=> ['lang' => 'FORCE_PASS_CHANGE', 'validate' => 'int:0:999', 'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $this->language->lang('DAYS')],
 						'max_login_attempts'	=> ['lang' => 'MAX_LOGIN_ATTEMPTS', 'validate' => 'int:0:999', 'type' => 'number:0:999', 'explain' => true],
 						'ip_login_limit_max'	=> ['lang' => 'IP_LOGIN_LIMIT_MAX', 'validate' => 'int:0:999', 'type' => 'number:0:999', 'explain' => true],
@@ -519,13 +506,12 @@ class board
 						'tpl_allow_php'			=> ['lang' => 'TPL_ALLOW_PHP', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'form_token_lifetime'	=> ['lang' => 'FORM_TIME_MAX', 'validate' => 'int:-1:99999', 'type' => 'number:-1:99999', 'explain' => true, 'append' => ' ' . $this->language->lang('SECONDS')],
 						'form_token_sid_guests'	=> ['lang' => 'FORM_SID_GUESTS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-					]
+					],
 				];
 			break;
 
 			case 'email':
 				$display_vars = [
-					'title'	=> 'ACP_EMAIL_SETTINGS',
 					'vars'	=> [
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'email_enable'			=> ['lang' => 'ENABLE_EMAIL', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true],
@@ -538,13 +524,13 @@ class board
 						'email_force_sender'	=> ['lang' => 'EMAIL_FORCE_SENDER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'board_email_sig'		=> ['lang' => 'EMAIL_SIG', 'validate' => 'string', 'type' => 'textarea:5:30', 'explain' => true],
 						'board_hide_emails'		=> ['lang' => 'BOARD_HIDE_EMAILS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'send_test_email'		=> ['lang' => 'SEND_TEST_EMAIL', 'validate' => 'bool', 'type' => 'custom', 'method' => 'send_test_email', 'explain' => true],
+						'send_test_email'		=> ['lang' => 'SEND_TEST_EMAIL', 'validate' => 'bool', 'type' => 'custom', 'function' => [$this, 'send_test_email'], 'explain' => true],
 
 						'legend2'				=> 'SMTP_SETTINGS',
 						'smtp_delivery'			=> ['lang' => 'USE_SMTP', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'smtp_host'				=> ['lang' => 'SMTP_SERVER', 'validate' => 'string', 'type' => 'text:25:50', 'explain' => true],
 						'smtp_port'				=> ['lang' => 'SMTP_PORT', 'validate' => 'int:0:99999', 'type' => 'number:0:99999', 'explain' => true],
-						'smtp_auth_method'		=> ['lang' => 'SMTP_AUTH_METHOD', 'validate' => 'string', 'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true],
+						'smtp_auth_method'		=> ['lang' => 'SMTP_AUTH_METHOD', 'validate' => 'string', 'type' => 'select', 'function' => [$this, 'mail_auth_select'], 'explain' => true],
 						'smtp_username'			=> ['lang' => 'SMTP_USERNAME', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
 						'smtp_password'			=> ['lang' => 'SMTP_PASSWORD', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
 						'smtp_verify_peer'		=> ['lang' => 'SMTP_VERIFY_PEER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
@@ -771,12 +757,14 @@ class board
 			return trigger_error($message . $this->helper->adm_back_route($u_mode), $message_type);
 		}
 
-		$this->template->assign_vars([
-			'L_TITLE'			=> $this->language->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN'	=> $this->language->lang[$display_vars['title'] . '_EXPLAIN'],
+		$s_errors = !empty($errors);
 
-			'S_ERROR'			=> !empty($errors),
-			'ERROR_MSG'			=> implode('<br />', $errors),
+		$this->template->assign_vars([
+			'L_TITLE'			=> $this->language->lang($l_mode),
+			'L_TITLE_EXPLAIN'	=> $this->language->lang($l_mode . '_EXPLAIN'),
+
+			'S_ERROR'			=> $s_errors,
+			'ERROR_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
 
 			'U_ACTION'			=> $this->helper->route($u_mode),
 		]);
@@ -793,7 +781,7 @@ class board
 			{
 				$this->template->assign_block_vars('options', [
 					'S_LEGEND'		=> true,
-					'LEGEND'		=> $this->language->is_set($vars) ? $this->language->lang($vars) : $vars,
+					'LEGEND'		=> $this->language->lang($vars),
 				]);
 
 				continue;
@@ -821,7 +809,7 @@ class board
 			$this->template->assign_block_vars('options', [
 				'KEY'			=> $config_key,
 				'CONTENT'		=> $content,
-				'TITLE'			=> $this->language->is_set($vars['lang']) ? $this->language->lang($vars['lang']) : $vars['lang'],
+				'TITLE'			=> $this->language->lang($vars['lang']),
 				'TITLE_EXPLAIN'	=> $l_explain,
 				'S_EXPLAIN'		=> $vars['explain'] && !empty($l_explain),
 			]);
@@ -1269,28 +1257,29 @@ class board
 	 */
 	public function enable_mod_rewrite($value, $key)
 	{
-		// Determine whether mod_rewrite is enabled on the server
-		// NOTE: This only works on Apache servers on which PHP is NOT
-		// installed as CGI. In that case, there is no way for PHP to
-		// determine whether or not the Apache module is enabled.
-		//
-		// To be clear on the value of $mod_rewite:
-		// null = Cannot determine whether or not the server has mod_rewrite
-		//        enabled
-		// false = Can determine that the server does NOT have mod_rewrite
-		//         enabled
-		// true = Can determine that the server DOES have mod_rewrite_enabled
+		/**
+		 * Determine whether mod_rewrite is enabled on the server
+		 * NOTE: This only works on Apache servers on which PHP is NOT installed as CGI.
+		 * In that case, there is no way for PHP to determine whether or not the Apache module is enabled.
+		 *
+		 * To be clear on the value of $mod_rewrite:
+		 * null:	Can not determine whether or not the server has mod_rewrite enabled
+		 * false:	Can determine that the server does NOT have mod_rewrite enabled
+		 * true:	Can determine that the server DOES have mod_rewrite enabled
+		 */
 		$mod_rewrite = null;
 		if (function_exists('apache_get_modules'))
 		{
 			$mod_rewrite = (bool) in_array('mod_rewrite', apache_get_modules());
 		}
 
-		// If $message is false, mod_rewrite is enabled.
-		// Otherwise, it is not and we need to:
-		// 1) disable the form field
-		// 2) make sure the config value is set to 0
-		// 3) append the message to the return
+		/**
+		 * If $message is false, mod_rewrite is enabled.
+		 * Otherwise it is not and we need to:
+		 * 1) Disable the form field
+		 * 2) Make sure the config value is set to 0
+		 * 3) Append the message to the return
+		 */
 		$value = ($mod_rewrite === false) ? 0 : $value;
 		$message = $mod_rewrite === null ? 'MOD_REWRITE_INFORMATION_UNAVAILABLE' : ($mod_rewrite === false ? 'MOD_REWRITE_DISABLED' : false);
 

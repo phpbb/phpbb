@@ -15,38 +15,108 @@ namespace phpbb\acp\controller;
 
 class database
 {
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
-	protected $temp;
-	public $u_action;
-	public $page_title;
 
-	public function main($id, $mode)
+	/** @var \phpbb\db\extractor\extractor_interface */
+	protected $extractor;
+
+	/** @var \phpbb\filesystem\temp */
+	protected $filesystem_temp;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\storage\storage */
+	protected $storage;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string Table prefix */
+	protected $table_prefix;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\cache\driver\driver_interface		$cache				Cache object
+	 * @param \phpbb\db\driver\driver_interface			$db					Database object
+	 * @param \phpbb\db\tools\tools_interface			$db_tools			Database tools object
+	 * @param \phpbb\db\extractor\extractor_interface	$extractor			Database extractor object
+	 * @param \phpbb\filesystem\temp					$filesystem_temp	Temporary filesystem object
+	 * @param \phpbb\acp\helper\controller				$helper				ACP Controller helper object
+	 * @param \phpbb\language\language					$language			Language object
+	 * @param \phpbb\log\log							$log				Log object
+	 * @param \phpbb\request\request					$request			Request object
+	 * @param \phpbb\storage\storage					$storage			Storage object: backup
+	 * @param \phpbb\template\template					$template			Template object
+	 * @param \phpbb\user								$user				User object
+	 * @param string									$table_prefix		Table prefix
+	 */
+	public function __construct(
+		\phpbb\cache\driver\driver_interface $cache,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\db\tools\tools_interface $db_tools,
+		\phpbb\db\extractor\extractor_interface $extractor,
+		\phpbb\filesystem\temp $filesystem_temp,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\request\request $request,
+		\phpbb\storage\storage $storage,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$table_prefix
+	)
 	{
-		$this->db_tools = $phpbb_container->get('dbal.tools');
-		$this->temp = $phpbb_container->get('filesystem.temp');
-		/** @var \phpbb\storage\storage $storage */
-		$storage = $phpbb_container->get('storage.backup');
+		$this->cache			= $cache;
+		$this->db				= $db;
+		$this->db_tools			= $db_tools;
+		$this->extractor		= $extractor;
+		$this->filesystem_temp	= $filesystem_temp;
+		$this->helper			= $helper;
+		$this->language			= $language;
+		$this->log				= $log;
+		$this->request			= $request;
+		$this->storage			= $storage;
+		$this->template			= $template;
+		$this->user				= $user;
 
+		$this->table_prefix		= $table_prefix;
+	}
+
+	public function main($mode)
+	{
 		$this->language->add_lang('acp/database');
-
-		$this->tpl_name = 'acp_database';
-		$this->page_title = 'ACP_DATABASE';
 
 		$action	= $this->request->variable('action', '');
 
 		$form_key = 'acp_database';
 		add_form_key($form_key);
 
-		$this->template->assign_vars([
-			'MODE'	=> $mode,
-		]);
+		$this->template->assign_var('MODE', $mode);
 
 		switch ($mode)
 		{
 			case 'backup':
-
-				$this->page_title = 'ACP_BACKUP';
-
 				switch ($action)
 				{
 					case 'download':
@@ -54,26 +124,26 @@ class database
 						$table	= array_intersect($this->db_tools->sql_list_tables(), $this->request->variable('table', ['']));
 						$format	= $this->request->variable('method', '');
 
-						if (!count($table))
+						if (empty($table))
 						{
-							trigger_error($this->language->lang('TABLE_SELECT_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
+							return trigger_error($this->language->lang('TABLE_SELECT_ERROR') . $this->helper->adm_back_route('acp_backup'), E_USER_WARNING);
 						}
 
 						if (!check_form_key($form_key))
 						{
-							trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_backup'), E_USER_WARNING);
 						}
 
 						$store = true;
 						$structure = false;
 						$schema_data = false;
 
-						if ($type == 'full' || $type == 'structure')
+						if ($type === 'full' || $type === 'structure')
 						{
 							$structure = true;
 						}
 
-						if ($type == 'full' || $type == 'data')
+						if ($type === 'full' || $type === 'data')
 						{
 							$schema_data = true;
 						}
@@ -87,11 +157,9 @@ class database
 
 						try
 						{
-							/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
-							$extractor = $phpbb_container->get('dbal.extractor');
-							$extractor->init_extractor($format, $filename, $time, false, $store);
+							$this->extractor->init_extractor($format, $filename, $time, false, $store);
 
-							$extractor->write_start($table_prefix);
+							$this->extractor->write_start($this->table_prefix);
 
 							foreach ($table as $table_name)
 							{
@@ -100,7 +168,7 @@ class database
 								{
 									// Add table structure to the backup
 									// This method also add a "drop the table if exists" after trying to write the table structure
-									$extractor->write_table($table_name);
+									$this->extractor->write_table($table_name);
 								}
 								else
 								{
@@ -108,20 +176,20 @@ class database
 									switch ($this->db->get_sql_layer())
 									{
 										case 'sqlite3':
-											$extractor->flush('DELETE FROM ' . $table_name . ";\n");
+											$this->extractor->flush('DELETE FROM ' . $table_name . ";\n");
 										break;
 
 										case 'mssql_odbc':
 										case 'mssqlnative':
-											$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
+											$this->extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
 										break;
 
 										case 'oracle':
-											$extractor->flush('TRUNCATE TABLE ' . $table_name . "/\n");
+											$this->extractor->flush('TRUNCATE TABLE ' . $table_name . "/\n");
 										break;
 
 										default:
-											$extractor->flush('TRUNCATE TABLE ' . $table_name . ";\n");
+											$this->extractor->flush('TRUNCATE TABLE ' . $table_name . ";\n");
 										break;
 									}
 								}
@@ -129,48 +197,50 @@ class database
 								// Write schema data if it exists
 								if ($schema_data)
 								{
-									$extractor->write_data($table_name);
+									$this->extractor->write_data($table_name);
 								}
 							}
 
-							$extractor->write_end();
+							$this->extractor->write_end();
 						}
 						catch (\phpbb\exception\runtime_exception $e)
 						{
-							trigger_error($e->getMessage(), E_USER_ERROR);
+							return trigger_error($e->getMessage() . $this->helper->adm_back_route('acp_backup'), E_USER_ERROR);
 						}
 
 						try
 						{
 							if ($store)
 							{
+								$ext = '';
+
 								// Get file name
 								switch ($format)
 								{
 									case 'text':
 										$ext = '.sql';
-										break;
+									break;
 									case 'bzip2':
 										$ext = '.sql.gz2';
-										break;
+									break;
 									case 'gzip':
 										$ext = '.sql.gz';
-										break;
+									break;
 								}
 
 								$file = $filename . $ext;
 
 								// Copy to storage using streams
-								$temp_dir = $this->temp->get_dir();
+								$temp_dir = $this->filesystem_temp->get_dir();
 
 								$fp = fopen($temp_dir . '/' . $file, 'rb');
 
 								if ($fp === false)
 								{
-									throw new \phpbb\exception\runtime_exception('CANNOT_OPEN_FILE');
+									return trigger_error($this->language->lang('CANNOT_OPEN_FILE') . $this->helper->adm_back_route('acp_backup'), E_USER_WARNING);
 								}
 
-								$storage->write_stream($file, $fp);
+								$this->storage->write_stream($file, $fp);
 
 								if (is_resource($fp))
 								{
@@ -181,19 +251,19 @@ class database
 								@unlink($temp_dir . '/' . $file);
 
 								// Save to database
-								$sql = "INSERT INTO " . $table_prefix . "backups (filename)
+								$sql = "INSERT INTO " . $this->table_prefix . "backups (filename)
 									VALUES ('$file');";
 								$this->db->sql_query($sql);
 							}
 						}
 						catch (\phpbb\exception\runtime_exception $e)
 						{
-							trigger_error($e->getMessage(), E_USER_ERROR);
+							return trigger_error($e->getMessage() . $this->helper->adm_back_route('acp_backup'), E_USER_ERROR);
 						}
 
 						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_BACKUP');
 
-						trigger_error($this->language->lang('BACKUP_SUCCESS') . adm_back_link($this->u_action));
+						return $this->helper->message_back('BACKUP_SUCCESS', 'acp_backup');
 					break;
 
 					default:
@@ -201,18 +271,14 @@ class database
 						asort($tables);
 						foreach ($tables as $table_name)
 						{
-							if (strlen($table_prefix) === 0 || stripos($table_name, $table_prefix) === 0)
+							if (strlen($this->table_prefix) === 0 || stripos($table_name, $this->table_prefix) === 0)
 							{
-								$this->template->assign_block_vars('tables', [
-									'TABLE'	=> $table_name,
-								]);
+								$this->template->assign_block_vars('tables', ['TABLE' => $table_name]);
 							}
 						}
 						unset($tables);
 
-						$this->template->assign_vars([
-							'U_ACTION'	=> $this->u_action . '&amp;action=download',
-						]);
+						$this->template->assign_var('U_ACTION', $this->helper->route('acp_backup', ['action' => 'download']));
 
 						$available_methods = ['gzip' => 'zlib', 'bzip2' => 'bz2'];
 
@@ -223,33 +289,26 @@ class database
 								continue;
 							}
 
-							$this->template->assign_block_vars('methods', [
-								'TYPE'	=> $type,
-							]);
+							$this->template->assign_block_vars('methods', ['TYPE' => $type]);
 						}
 
-						$this->template->assign_block_vars('methods', [
-							'TYPE'	=> 'text',
-						]);
+						$this->template->assign_block_vars('methods', ['TYPE' => 'text']);
 					break;
 				}
 			break;
 
 			case 'restore':
-
-				$this->page_title = 'ACP_RESTORE';
-
 				switch ($action)
 				{
 					case 'submit':
 						$delete = $this->request->variable('delete', '');
 						$file = $this->request->variable('file', '');
 
-						$backup_info = $this->get_backup_file($db, $file);
+						$backup_info = $this->get_backup_file($file);
 
 						if (empty($backup_info))
 						{
-							trigger_error($this->language->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+							return trigger_error($this->language->lang('BACKUP_INVALID') . $this->helper->adm_back_route('acp_restore'), E_USER_WARNING);
 						}
 
 						if ($delete)
@@ -259,36 +318,41 @@ class database
 								try
 								{
 									// Delete from storage
-									$storage->delete($backup_info['file_name']);
+									$this->storage->delete($backup_info['file_name']);
 
 									// Add log entry
 									$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_DELETE');
 
 									// Remove from database
-									$sql = "DELETE FROM " . $table_prefix . "backups
+									$sql = "DELETE FROM " . $this->table_prefix . "backups
 										WHERE filename = '" . $this->db->sql_escape($backup_info['file_name']) . "';";
 									$this->db->sql_query($sql);
 								}
 								catch (\Exception $e)
 								{
-									trigger_error($this->language->lang('BACKUP_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
+									return trigger_error($this->language->lang('BACKUP_ERROR') . $this->helper->adm_back_route('acp_restore'), E_USER_WARNING);
 								}
 
-								trigger_error($this->language->lang('BACKUP_DELETE') . adm_back_link($this->u_action));
+								return $this->helper->message_back('BACKUP_DELETE', 'acp_restore');
 							}
 							else
 							{
-								confirm_box(false, $this->language->lang('DELETE_SELECTED_BACKUP'), build_hidden_fields(['delete' => $delete, 'file' => $file]));
+								confirm_box(false, $this->language->lang('DELETE_SELECTED_BACKUP'), build_hidden_fields([
+									'delete'	=> $delete,
+									'file'		=> $file,
+								]));
+
+								return redirect($this->helper->route('acp_restore'));
 							}
 						}
 						else if (confirm_box(true))
 						{
 							// Copy file to temp folder to decompress it
-							$temp_file_name = $this->temp->get_dir() . '/' . $backup_info['file_name'];
+							$temp_file_name = $this->filesystem_temp->get_dir() . '/' . $backup_info['file_name'];
 
 							try
 							{
-								$stream = $storage->read_stream($backup_info['file_name']);
+								$stream = $this->storage->read_stream($backup_info['file_name']);
 								$fp = fopen($temp_file_name, 'w+b');
 
 								stream_copy_to_stream($stream, $fp);
@@ -298,7 +362,7 @@ class database
 							}
 							catch (\phpbb\storage\exception\exception $e)
 							{
-								trigger_error($this->language->lang('RESTORE_DOWNLOAD_FAIL') . adm_back_link($this->u_action));
+								return trigger_error($this->language->lang('RESTORE_DOWNLOAD_FAIL') . $this->helper->adm_back_route('acp_restore'), E_USER_ERROR);
 							}
 
 							switch ($backup_info['extension'])
@@ -332,8 +396,8 @@ class database
 
 								default:
 									@unlink($temp_file_name);
-									trigger_error($this->language->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
-									return;
+
+									return trigger_error($this->language->lang('BACKUP_INVALID') . $this->helper->adm_back_route('acp_restore'), E_USER_WARNING);
 							}
 
 							switch ($this->db->get_sql_layer())
@@ -376,8 +440,9 @@ class database
 											{
 												if ($sub === false)
 												{
-													trigger_error($this->language->lang('RESTORE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
+													return trigger_error($this->language->lang('RESTORE_FAILURE') . $this->helper->adm_back_route('acp_restore'), E_USER_WARNING);
 												}
+
 												pg_put_line($this->db->get_db_connect_id(), $sub . "\n");
 											}
 											pg_put_line($this->db->get_db_connect_id(), "\\.\n");
@@ -410,16 +475,18 @@ class database
 							$this->cache->purge();
 
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_DB_RESTORE');
-							trigger_error($this->language->lang('RESTORE_SUCCESS') . adm_back_link($this->u_action));
-							break;
+
+							return $this->helper->message_back('RESTORE_SUCCESS', 'acp_restore');
 						}
 						else
 						{
 							confirm_box(false, $this->language->lang('RESTORE_SELECTED_BACKUP'), build_hidden_fields(['file' => $file]));
+
+							return redirect($this->helper->route('acp_restore'));
 						}
 
 					default:
-						$backup_files = $this->get_file_list($db);
+						$backup_files = $this->get_file_list();
 
 						if (!empty($backup_files))
 						{
@@ -435,28 +502,26 @@ class database
 							}
 						}
 
-						$this->template->assign_vars([
-							'U_ACTION'	=> $this->u_action . '&amp;action=submit',
-						]);
+						$this->template->assign_var('U_ACTION', $this->helper->route('acp_restore', ['action' => 'submit']));
 					break;
 				}
 			break;
 		}
+
+		return $this->helper->render('acp_database.html', $this->language->lang('ACP_' . utf8_strtoupper($mode)));
 	}
 
 	/**
 	 * Get backup file from file hash
 	 *
-	 * @param \phpbb\db\driver\driver_interface $db Database driver
-	 * @param string $file_hash Hash of selected file
-	 *
-	 * @return array Backup file data or empty array if unable to find file
+	 * @param string	$file_hash		Hash of selected file
+	 * @return array					Backup file data or empty array if unable to find file
 	 */
-	protected function get_backup_file($db, $file_hash)
+	protected function get_backup_file($file_hash)
 	{
 		$backup_data = [];
 
-		$file_list = $this->get_file_list($db);
+		$file_list = $this->get_file_list();
 		$supported_extensions = $this->get_supported_extensions();
 
 		foreach ($file_list as $file)
@@ -478,20 +543,17 @@ class database
 	/**
 	 * Get backup file list for directory
 	 *
-	 * @param \phpbb\db\driver\driver_interface $db Database driver
-	 *
-	 * @return array List of backup files in specified directory
+	 * @return array								List of backup files in specified directory
 	 */
-	protected function get_file_list($db)
+	protected function get_file_list()
 	{
 		$supported_extensions = $this->get_supported_extensions();
 
 		$backup_files = [];
 
 		$sql = 'SELECT filename
-			FROM ' . BACKUPS_TABLE;
+			FROM ' . $this->table_prefix . 'backups';
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $row['filename'], $matches))
@@ -523,6 +585,7 @@ class database
 			{
 				continue;
 			}
+
 			$extensions[] = $type;
 		}
 
@@ -530,7 +593,15 @@ class database
 	}
 }
 
-// get how much space we allow for a chunk of data, very similar to phpMyAdmin's way of doing things ;-) (hey, we only do this for MySQL anyway :P)
+/**
+ * Get how much space we allow for a chunk of data.
+ * Very similar to phpMyAdmin's way of doing things
+ * (We only do this for MySQL anyway)
+ *
+ * @see \phpbb\db\extractor\mssql_extractor
+ *
+ * @return int
+ */
 function get_usable_memory()
 {
 	$val = trim(@ini_get('memory_limit'));
@@ -574,6 +645,14 @@ function get_usable_memory()
 	return $memory_limit;
 }
 
+/**
+ * Sanitize data (Microsoft SQL).
+ *
+ * @see \phpbb\db\extractor\mssql_extractor
+ *
+ * @param string	$text
+ * @return string
+ */
 function sanitize_data_mssql($text)
 {
 	$data = preg_split('/[\n\t\r\b\f]/', $text);
@@ -596,6 +675,14 @@ function sanitize_data_mssql($text)
 	return implode('+', $val);
 }
 
+/**
+ * Sanitize data (Oracle)
+ *
+ * @see \phpbb\db\extractor\oracle_extractor
+ *
+ * @param string	$text
+ * @return string
+ */
 function sanitize_data_oracle($text)
 {
 //	$data = preg_split('/[\0\n\t\r\b\f\'"\/\\\]/', $text);
@@ -620,6 +707,14 @@ function sanitize_data_oracle($text)
 	return implode('||', $val);
 }
 
+/**
+ * Sanitize data.
+ *
+ * @see \phpbb\db\extractor\sqlite3_extractor
+ *
+ * @param string	$text
+ * @return string
+ */
 function sanitize_data_generic($text)
 {
 	$data = preg_split('/[\n\t\r\b\f]/', $text);

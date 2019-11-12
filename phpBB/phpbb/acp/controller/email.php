@@ -15,60 +15,142 @@ namespace phpbb\acp\controller;
 
 class email
 {
-	var $u_action;
+	/** @var \phpbb\config\config */
+	protected $config;
 
-	public function main($id, $mode)
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\config\config				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$admin_path		phpBB admin path
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->admin_path	= $admin_path;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main()
 	{
 		$this->language->add_lang('acp/email');
-		$this->tpl_name = 'acp_email';
-		$this->page_title = 'ACP_MASS_EMAIL';
+
+		// Set some vars
+		$submit = $this->request->is_set_post('submit');
+		$errors = [];
+
+		$group_id	= $this->request->variable('g', 0);
+		$subject	= $this->request->variable('subject', '', true);
+		$message	= $this->request->variable('message', '', true);
+		$usernames	= $this->request->variable('usernames', '', true);
+		$usernames	= !empty($usernames) ? explode("\n", $usernames) : [];
 
 		$form_key = 'acp_email';
 		add_form_key($form_key);
 
-		// Set some vars
-		$submit = ($this->request->is_set_post('submit')) ? true : false;
-		$error = [];
-
-		$usernames	= $this->request->variable('usernames', '', true);
-		$usernames	= (!empty($usernames)) ? explode("\n", $usernames) : [];
-		$group_id	= $this->request->variable('g', 0);
-		$subject	= $this->request->variable('subject', '', true);
-		$message	= $this->request->variable('message', '', true);
-
 		// Do the job ...
 		if ($submit)
 		{
+			if (!check_form_key($form_key))
+			{
+				$errors[] = $this->language->lang('FORM_INVALID');
+			}
+
 			// Error checking needs to go here ... if no subject and/or no message then skip
 			// over the send and return to the form
 			$use_queue		= ($this->request->is_set_post('send_immediately')) ? false : true;
 			$priority		= $this->request->variable('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
-			if (!check_form_key($form_key))
-			{
-				$error[] = $this->language->lang('FORM_INVALID');
-			}
-
 			if (!$subject)
 			{
-				$error[] = $this->language->lang('NO_EMAIL_SUBJECT');
+				$errors[] = $this->language->lang('NO_EMAIL_SUBJECT');
 			}
 
 			if (!$message)
 			{
-				$error[] = $this->language->lang('NO_EMAIL_MESSAGE');
+				$errors[] = $this->language->lang('NO_EMAIL_MESSAGE');
 			}
 
-			if (!count($error))
+			if (empty($errors))
 			{
 				if (!empty($usernames))
 				{
 					// If giving usernames the admin is able to email inactive users too...
 					$sql_ary = [
 						'SELECT'	=> 'username, user_email, user_jabber, user_notify_type, user_lang',
-						'FROM'		=> [
-							USERS_TABLE		=> '',
-						],
+						'FROM'		=> [$this->tables['users'] => ''],
 						'WHERE'		=> $this->db->sql_in_set('username_clean', array_map('utf8_clean_string', $usernames)) . '
 							AND user_allow_massemail = 1',
 						'ORDER_BY'	=> 'user_lang, user_notify_type',
@@ -81,14 +163,14 @@ class email
 						$sql_ary = [
 							'SELECT'	=> 'u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type',
 							'FROM'		=> [
-								USERS_TABLE			=> 'u',
-								USER_GROUP_TABLE	=> 'ug',
+								$this->tables['users']		=> 'u',
+								$this->tables['user_group']	=> 'ug',
 							],
-							'WHERE'		=> 'ug.group_id = ' . $group_id . '
+							'WHERE'		=> 'ug.group_id = ' . (int) $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id
 								AND u.user_allow_massemail = 1
-								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+								AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 							'ORDER_BY'	=> 'u.user_lang, u.user_notify_type',
 						];
 					}
@@ -96,11 +178,9 @@ class email
 					{
 						$sql_ary = [
 							'SELECT'	=> 'u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
-							'FROM'		=> [
-								USERS_TABLE	=> 'u',
-							],
+							'FROM'		=> [$this->tables['users'] => 'u'],
 							'WHERE'		=> 'u.user_allow_massemail = 1
-								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+								AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 							'ORDER_BY'	=> 'u.user_lang, u.user_notify_type',
 						];
 					}
@@ -108,13 +188,10 @@ class email
 					// Mail banned or not
 					if (!$this->request->is_set('mail_banned_flag'))
 					{
-						$sql_ary['WHERE'] .= ' AND (b.ban_id IS NULL
-						        OR b.ban_exclude = 1)';
+						$sql_ary['WHERE'] .= ' AND (b.ban_id IS NULL OR b.ban_exclude = 1)';
 						$sql_ary['LEFT_JOIN'] = [
 							[
-								'FROM'	=> [
-									BANLIST_TABLE	=> 'b',
-								],
+								'FROM'	=> [$this->tables['banlist'] => 'b'],
 								'ON'	=> 'u.user_id = b.ban_userid',
 							],
 						];
@@ -134,10 +211,11 @@ class email
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 
-				if (!$row)
+				if ($row === false)
 				{
 					$this->db->sql_freeresult($result);
-					trigger_error($this->language->lang('NO_USER') . adm_back_link($this->u_action), E_USER_WARNING);
+
+					return trigger_error($this->language->lang('NO_USER') . $this->helper->adm_back_route('acp_mass_email'), E_USER_WARNING);
 				}
 
 				$i = $j = 0;
@@ -159,7 +237,7 @@ class email
 						{
 							$i = 0;
 
-							if (count($email_list))
+							if (!empty($email_list))
 							{
 								$j++;
 							}
@@ -168,10 +246,10 @@ class email
 							$old_notify_type = $row['user_notify_type'];
 						}
 
+						$email_list[$j][$i]['name']		= $row['username'];
 						$email_list[$j][$i]['lang']		= $row['user_lang'];
 						$email_list[$j][$i]['method']	= $row['user_notify_type'];
 						$email_list[$j][$i]['email']	= $row['user_email'];
-						$email_list[$j][$i]['name']		= $row['username'];
 						$email_list[$j][$i]['jabber']	= $row['user_jabber'];
 						$i++;
 					}
@@ -189,13 +267,13 @@ class email
 				{
 					include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 				}
-				$messenger = new messenger($use_queue);
+				$messenger = new \messenger($use_queue);
 
 				$errored = false;
 
 				$email_template = 'admin_send_email';
 				$template_data = [
-					'CONTACT_EMAIL' => phpbb_get_board_contact($config, $this->php_ext),
+					'CONTACT_EMAIL' => phpbb_get_board_contact($this->config, $this->php_ext),
 					'MESSAGE'		=> htmlspecialchars_decode($message),
 				];
 				$generate_log_entry = true;
@@ -235,17 +313,14 @@ class email
 					{
 						$email_row = $email_list[$i][$j];
 
-						$messenger->{((count($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
+						$messenger->{(count($email_list[$i]) === 1 ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
 						$messenger->im($email_row['jabber'], $email_row['name']);
 					}
 
 					$messenger->template($email_template, $used_lang);
-
-					$messenger->anti_abuse_headers($config, $user);
-
+					$messenger->anti_abuse_headers($this->config, $this->user);
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
-
 					$messenger->assign_vars($template_data);
 
 					if (!($messenger->send($used_method)))
@@ -281,47 +356,52 @@ class email
 
 				if (!$errored)
 				{
-					$message = ($use_queue) ? $this->language->lang('EMAIL_SENT_QUEUE') : $this->language->lang('EMAIL_SENT');
-					trigger_error($message . adm_back_link($this->u_action));
+					return $this->helper->message_back($use_queue ? 'EMAIL_SENT_QUEUE' : 'EMAIL_SENT', 'acp_mass_email');
 				}
 				else
 				{
-					$message = sprintf($this->language->lang('EMAIL_SEND_ERROR'), '<a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=logs&amp;mode=critical') . '">', '</a>');
-					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = $this->language->lang('EMAIL_SEND_ERROR', '<a href="' . $this->helper->route('acp_logs_error') . '">', '</a>');
+
+					return trigger_error($message . $this->helper->adm_back_route('acp_mass_email'), E_USER_WARNING);
 				}
 			}
 		}
 
 		// Exclude bots and guests...
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name IN ('BOTS', 'GUESTS')";
-		$result = $this->db->sql_query($sql);
-
 		$exclude = [];
+
+		$sql = 'SELECT group_id
+			FROM ' . $this->tables['groups'] . '
+			WHERE ' . $this->db->sql_in_set('group_name', ['BOTS', 'GUESTS']);
+		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$exclude[] = $row['group_id'];
+			$exclude[] = (int) $row['group_id'];
 		}
 		$this->db->sql_freeresult($result);
 
-		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $this->language->lang('ALL_USERS') . '</option>';
+		$select_list = '<option value="0"' . (!$group_id ? ' selected="selected"' : '') . '>' . $this->language->lang('ALL_USERS') . '</option>';
 		$select_list .= group_select_options($group_id, $exclude);
 
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $this->language->lang('MAIL_LOW_PRIORITY') . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $this->language->lang('MAIL_NORMAL_PRIORITY') . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . $this->language->lang('MAIL_HIGH_PRIORITY') . '</option>';
 
+		$s_errors = !empty($errors);
+
 		$template_data = [
-			'S_WARNING'				=> (count($error)) ? true : false,
-			'WARNING_MSG'			=> (count($error)) ? implode('<br />', $error) : '',
-			'U_ACTION'				=> $this->u_action,
-			'S_GROUP_OPTIONS'		=> $select_list,
-			'USERNAMES'				=> implode("\n", $usernames),
-			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
-			'SUBJECT'				=> $subject,
+			'S_WARNING'				=> $s_errors,
+			'WARNING_MSG'			=> $s_errors ? implode('<br />', $errors) : '',
+
 			'MESSAGE'				=> $message,
+			'SUBJECT'				=> $subject,
+			'USERNAMES'				=> implode("\n", $usernames),
+
+			'S_GROUP_OPTIONS'		=> $select_list,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options,
+
+			'U_ACTION'				=> $this->helper->route('acp_mass_email'),
+			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
 		];
 
 		/**
@@ -338,5 +418,7 @@ class email
 		extract($this->dispatcher->trigger_event('core.acp_email_display', compact($vars)));
 
 		$this->template->assign_vars($template_data);
+
+		return $this->helper->render('acp_email.html', $this->language->lang('ACP_MASS_EMAIL'));
 	}
 }
