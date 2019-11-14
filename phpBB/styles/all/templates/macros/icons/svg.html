@@ -1,7 +1,7 @@
 {% spaceless %}
 	{% set TITLE_ID = TITLE ? TITLE|lower|replace({' ': '_'}) ~ '-' ~ random() %}
 
-	<svg class="o-icon svg svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"{% if TITLE %}{% if S_HIDDEN %} aria-hidden="true"{% endif %} aria-labelledby="{{ TITLE_ID }}"{% endif %} role="img"{{ ATTRIBUTES }}>
+	<svg class="o-icon o-icon-svg svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"{% if TITLE %}{% if S_HIDDEN %} aria-hidden="true"{% endif %} aria-labelledby="{{ TITLE_ID }}"{% endif %} role="img"{{ ATTRIBUTES }}>
 		{% if TITLE %}<title id="{{ TITLE_ID }}">{{ lang(TITLE) }}</title>{% endif %}
 
 		{{ SOURCE }}
