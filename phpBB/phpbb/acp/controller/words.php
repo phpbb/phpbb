@@ -34,8 +34,8 @@ class words
 		$this->tpl_name = 'acp_words';
 		$this->page_title = 'ACP_WORDS';
 
-		$form_name = 'acp_words';
-		add_form_key($form_name);
+		$form_key = 'acp_words';
+		add_form_key($form_key);
 
 		switch ($action)
 		{
@@ -74,7 +74,7 @@ class words
 
 			case 'save':
 
-				if (!check_form_key($form_name))
+				if (!check_form_key($form_key))
 				{
 					trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}

@@ -93,8 +93,8 @@ class permissions
 		$group_id = $this->request->variable('group_id', [0]);
 		$select_all_groups = $this->request->variable('select_all_groups', 0);
 
-		$form_name = 'acp_permissions';
-		add_form_key($form_name);
+		$form_key = 'acp_permissions';
+		add_form_key($form_key);
 
 		// If select all groups is set, we pre-build the group id array (this option is used for other screens to link to the permission settings screen)
 		if ($select_all_groups)
@@ -309,7 +309,7 @@ class permissions
 						send_status_line(403, 'Forbidden');
 						trigger_error($this->language->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -323,7 +323,7 @@ class permissions
 						send_status_line(403, 'Forbidden');
 						trigger_error($this->language->lang('NO_AUTH_SETTING_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}

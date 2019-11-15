@@ -15,44 +15,103 @@ namespace phpbb\acp\controller;
 
 class logs
 {
-	var $u_action;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	public function main($id, $mode)
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\pagination */
+	protected $pagination;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth				$auth			Auth object
+	 * @param \phpbb\config\config			$config			Config object
+	 * @param \phpbb\acp\helper\controller	$helper			ACP Controller helper object
+	 * @param \phpbb\language\language		$language		Language object
+	 * @param \phpbb\log\log				$log			Log object
+	 * @param \phpbb\pagination				$pagination		Pagination object
+	 * @param \phpbb\request\request		$request		Request object
+	 * @param \phpbb\template\template		$template		Template object
+	 * @param \phpbb\user					$user			User object
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\pagination $pagination,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user
+	)
+	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->pagination	= $pagination;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+	}
+
+	public function main($mode, $page = 1)
 	{
 		$this->language->add_lang('mcp');
+
+		$u_mode = 'acp_logs_' . ($mode === 'critical' ? 'error' : $mode);
 
 		// Set up general vars
 		$action		= $this->request->variable('action', '');
 		$forum_id	= $this->request->variable('f', 0);
-		$start		= $this->request->variable('start', 0);
-		$deletemark = $this->request->variable('delmarked', false, false, \phpbb\request\request_interface::POST);
-		$deleteall	= $this->request->variable('delall', false, false, \phpbb\request\request_interface::POST);
 		$marked		= $this->request->variable('mark', [0]);
+		$delete_all	= $this->request->is_set_post('delall');
+		$delete_mark = $this->request->is_set_post('delmarked');
 
 		// Sort keys
 		$sort_days	= $this->request->variable('st', 0);
 		$sort_key	= $this->request->variable('sk', 't');
 		$sort_dir	= $this->request->variable('sd', 'd');
 
-		$this->tpl_name = 'acp_logs';
-		$this->log_type = constant('LOG_' . strtoupper($mode));
-
-		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
 
 		// Delete entries if requested and able
-		if (($deletemark || $deleteall) && $this->auth->acl_get('a_clearlogs'))
+		if (($delete_mark || $delete_all) && $this->auth->acl_get('a_clearlogs'))
 		{
 			if (confirm_box(true))
 			{
 				$conditions = [];
 
-				if ($deletemark && count($marked))
+				if ($delete_mark && count($marked))
 				{
 					$conditions['log_id'] = ['IN' => $marked];
 				}
 
-				if ($deleteall)
+				if ($delete_all)
 				{
 					if ($sort_days)
 					{
@@ -63,25 +122,25 @@ class logs
 					$conditions['keywords'] = $keywords;
 				}
 
-				/* @var $phpbb_log \phpbb\log\log_interface */
-				$phpbb_log = $phpbb_container->get('log');
 				$this->log->delete($mode, $conditions);
 			}
 			else
 			{
 				confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
+					'mode'		=> $mode,
+					'action'	=> $action,
 					'f'			=> $forum_id,
-					'start'		=> $start,
-					'delmarked'	=> $deletemark,
-					'delall'	=> $deleteall,
+					'delmarked'	=> $delete_mark,
+					'delall'	=> $delete_all,
 					'mark'		=> $marked,
 					'st'		=> $sort_days,
 					'sk'		=> $sort_key,
 					'sd'		=> $sort_dir,
-					'i'			=> $id,
-					'mode'		=> $mode,
-					'action'	=> $action])
-				);
+				]));
+
+				$u_redirect = $page === 1 ? $u_mode : "{$u_mode}_pagination";
+
+				return redirect($this->helper->route($u_redirect, ['page' => $page]));
 			}
 		}
 
@@ -94,54 +153,23 @@ class logs
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 		// Define where and sort sql for use in displaying logs
-		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
-		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+		$sql_where = $sort_days ? (time() - ($sort_days * 86400)) : 0;
+		$sql_sort = $sort_by_sql[$sort_key] . ' ' . ($sort_dir === 'd' ? 'DESC' : 'ASC');
 
 		$keywords = $this->request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
-		$l_title = $this->language->lang('ACP_' . strtoupper($mode) . '_LOGS');
-		$l_title_explain = $this->language->lang('ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN');
-
-		$this->page_title = $l_title;
-
-		// Define forum list if we're looking @ mod logs
-		if ($mode == 'mod')
-		{
-			$forum_box = '<option value="0">' . $this->language->lang('ALL_FORUMS') . '</option>' . make_forum_select($forum_id);
-
-			$this->template->assign_vars([
-				'S_SHOW_FORUMS'			=> true,
-				'S_FORUM_BOX'			=> $forum_box]
-			);
-		}
-
 		// Grab log data
 		$log_data = [];
 		$log_count = 0;
+
 		$start = view_log($mode, $log_data, $log_count, $this->config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
-
-		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $this->config['topics_per_page'], $start);
-
-		$this->template->assign_vars([
-			'L_TITLE'		=> $l_title,
-			'L_EXPLAIN'		=> $l_title_explain,
-			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
-
-			'S_LIMIT_DAYS'	=> $s_limit_days,
-			'S_SORT_KEY'	=> $s_sort_key,
-			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_CLEARLOGS'	=> $this->auth->acl_get('a_clearlogs'),
-			'S_KEYWORDS'	=> $keywords,
-			]
-		);
 
 		foreach ($log_data as $row)
 		{
 			$data = [];
-
 			$checks = ['viewpost', 'viewtopic', 'viewlogs', 'viewforum'];
+
 			foreach ($checks as $check)
 			{
 				if (isset($row[$check]) && $row[$check])
@@ -157,10 +185,46 @@ class logs
 				'IP'				=> $row['ip'],
 				'DATE'				=> $this->user->format_date($row['time']),
 				'ACTION'			=> $row['action'],
-				'DATA'				=> (count($data)) ? implode(' | ', $data) : '',
+				'DATA'				=> !empty($data) ? implode(' | ', $data) : '',
 				'ID'				=> $row['id'],
-				]
-			);
+			]);
 		}
+
+		parse_str($u_sort_param, $params);
+		$params = !empty($keywords) ? $params + ['keywords' => $keywords_param] : $params;
+
+		// Pagination
+		$this->pagination->generate_template_pagination([
+			'routes' => [$u_mode, "{$u_mode}_pagination"],
+			'params' => $params,
+		], 'pagination', 'page', $log_count, $limit, $start);
+
+		$l_title = $this->language->lang('ACP_' . strtoupper($mode) . '_LOGS');
+		$l_explain = $this->language->lang('ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN');
+
+		$this->template->assign_vars([
+			'L_TITLE'		=> $l_title,
+			'L_EXPLAIN'		=> $l_explain,
+			'U_ACTION'		=> $page === 1 ? $this->helper->route($u_mode, $params) : $this->helper->route("{$u_mode}_pagination", $params + ['page' => $page]),
+
+			'S_LIMIT_DAYS'	=> $s_limit_days,
+			'S_SORT_KEY'	=> $s_sort_key,
+			'S_SORT_DIR'	=> $s_sort_dir,
+			'S_CLEARLOGS'	=> $this->auth->acl_get('a_clearlogs'),
+			'S_KEYWORDS'	=> $keywords,
+		]);
+
+		// Define forum list if we're looking @ mod logs
+		if ($mode === 'mod')
+		{
+			$forum_box = '<option value="0">' . $this->language->lang('ALL_FORUMS') . '</option>' . make_forum_select($forum_id);
+
+			$this->template->assign_vars([
+				'S_SHOW_FORUMS'			=> true,
+				'S_FORUM_BOX'			=> $forum_box,
+			]);
+		}
+
+		return $this->helper->render('acp_logs.html', $l_title);
 	}
 }

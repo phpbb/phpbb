@@ -81,8 +81,8 @@ class contact
 		$submit = $this->request->is_set_post('submit');
 		$preview = $this->request->is_set_post('preview');
 
-		$form_name = 'acp_contact';
-		add_form_key($form_name);
+		$form_key = 'acp_contact';
+		add_form_key($form_key);
 
 		if (!function_exists('display_custom_bbcodes'))
 		{
@@ -107,7 +107,7 @@ class contact
 
 		if ($submit || $preview)
 		{
-			if (!check_form_key($form_name))
+			if (!check_form_key($form_key))
 			{
 				$error = $this->language->lang('FORM_INVALID');
 			}

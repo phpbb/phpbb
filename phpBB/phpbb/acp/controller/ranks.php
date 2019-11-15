@@ -30,14 +30,14 @@ class ranks
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
 
-		$form_name = 'acp_ranks';
-		add_form_key($form_name);
+		$form_key = 'acp_ranks';
+		add_form_key($form_key);
 
 		switch ($action)
 		{
 			case 'save':
 
-				if (!check_form_key($form_name))
+				if (!check_form_key($form_key))
 				{
 					trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}

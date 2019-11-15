@@ -29,7 +29,7 @@ class reasons
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
 
-		$form_name = 'acp_reason';
+		$form_key = 'acp_reason';
 		add_form_key('acp_reason');
 
 		$error = [];
@@ -46,7 +46,7 @@ class reasons
 
 				if ($submit)
 				{
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						$error[] = $this->language->lang('FORM_INVALID');
 					}

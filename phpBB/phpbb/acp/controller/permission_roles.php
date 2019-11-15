@@ -42,8 +42,8 @@ class permission_roles
 		$action = $this->request->variable('action', '');
 		$action = ($this->request->is_set_post('add')) ? 'add' : $action;
 
-		$form_name = 'acp_permissions';
-		add_form_key($form_name);
+		$form_key = 'acp_permissions';
+		add_form_key($form_key);
 
 		if (!$role_id && in_array($action, ['remove', 'edit', 'move_up', 'move_down']))
 		{
@@ -140,7 +140,7 @@ class permission_roles
 
 				case 'add':
 
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 					}

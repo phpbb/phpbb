@@ -40,8 +40,8 @@ class users
 
 		$submit		= ($this->request->is_set_post('update') && !$this->request->is_set_post('cancel')) ? true : false;
 
-		$form_name = 'acp_users';
-		add_form_key($form_name);
+		$form_key = 'acp_users';
+		add_form_key($form_key);
 
 		// Whois (special case)
 		if ($action == 'whois')
@@ -275,7 +275,7 @@ class users
 								trigger_error($this->language->lang('CANNOT_BAN_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -329,7 +329,7 @@ class users
 								trigger_error($this->language->lang('CANNOT_FORCE_REACT_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -415,7 +415,7 @@ class users
 								trigger_error($this->language->lang('CANNOT_DEACTIVATE_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -475,7 +475,7 @@ class users
 
 						case 'delsig':
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -501,7 +501,7 @@ class users
 
 						case 'delavatar':
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -619,7 +619,7 @@ class users
 
 						case 'moveposts':
 
-							if (!check_form_key($form_name))
+							if (!check_form_key($form_key))
 							{
 								trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -866,7 +866,7 @@ class users
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						$error[] = 'FORM_INVALID';
 					}
@@ -1169,7 +1169,7 @@ class users
 				// Delete entries if requested and able
 				if (($deletemark || $deleteall) && $this->auth->acl_get('a_clearlogs'))
 				{
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
@@ -1200,7 +1200,7 @@ class users
 
 				if ($submit && $message)
 				{
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
@@ -1467,7 +1467,7 @@ class users
 					{
 						$error = array_merge($error, $cp_error);
 					}
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						$error[] = 'FORM_INVALID';
 					}
@@ -1625,7 +1625,7 @@ class users
 						'post_sd'		=> ['string', false, 1, 1],
 					]);
 
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						$error[] = 'FORM_INVALID';
 					}
@@ -1849,7 +1849,7 @@ class users
 
 					if ($submit)
 					{
-						if (check_form_key($form_name))
+						if (check_form_key($form_key))
 						{
 							$driver_name = $this->avatar_manager->clean_driver_name($this->request->variable('avatar_driver', ''));
 
@@ -1974,7 +1974,7 @@ class users
 
 				if ($submit)
 				{
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
@@ -2034,7 +2034,7 @@ class users
 					$enable_smilies	= ($this->config['allow_sig_smilies']) ? !$this->request->variable('disable_smilies', false) : false;
 					$enable_urls	= ($this->config['allow_sig_links']) ? !$this->request->variable('disable_magic_url', false) : false;
 
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						$error[] = 'FORM_INVALID';
 					}
@@ -2413,7 +2413,7 @@ class users
 				// Add user to group?
 				if ($submit)
 				{
-					if (!check_form_key($form_name))
+					if (!check_form_key($form_key))
 					{
 						trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
