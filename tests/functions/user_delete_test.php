@@ -61,20 +61,21 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
 
 		$oauth_provider = new \phpbb\auth\provider\oauth\oauth(
-			$db,
 			$config,
+			$phpbb_container,
+			$db,
+			$phpbb_dispatcher,
+			$lang,
 			$passwords_manager,
 			$request,
+			$oauth_provider_collection,
 			$user,
 			'phpbb_oauth_tokens',
 			'phpbb_oauth_states',
 			'phpbb_oauth_accounts',
-			$oauth_provider_collection,
 			'phpbb_users',
-			$phpbb_container,
-			$phpbb_dispatcher,
-			$this->phpbb_root_path,
-			$this->php_ext
+			$phpbb_root_path,
+			$phpEx
 		);
 		$provider_collection->offsetSet('auth.provider.oauth', $oauth_provider);
 

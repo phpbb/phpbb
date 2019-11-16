@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\auth\provider\oauth;
 
@@ -20,67 +20,48 @@ use OAuth\Common\Storage\Exception\TokenNotFoundException;
 use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
 
 /**
-* OAuth storage wrapper for phpbb's cache
-*/
+ * OAuth storage wrapper for phpBB's cache
+ */
 class token_storage implements TokenStorageInterface
 {
-	/**
-	* Cache driver.
-	*
-	* @var \phpbb\db\driver\driver_interface
-	*/
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/**
-	* phpBB user
-	*
-	* @var \phpbb\user
-	*/
+	/** @var \phpbb\user */
 	protected $user;
 
-	/**
-	* OAuth token table
-	*
-	* @var string
-	*/
+	/** @var string OAuth table: token storage */
 	protected $oauth_token_table;
 
-	/**
-	* OAuth state table
-	*
-	* @var string
-	*/
+	/** @var string OAuth table: state */
 	protected $oauth_state_table;
 
-	/**
-	* @var object|TokenInterface
-	*/
+	/** @var TokenInterface OAuth token */
 	protected $cachedToken;
 
-	/**
-	* @var string
-	*/
+	/** @var string OAuth state */
 	protected $cachedState;
 
 	/**
-	* Creates token storage for phpBB.
-	*
-	* @param	\phpbb\db\driver\driver_interface	$db
-	* @param	\phpbb\user		$user
-	* @param	string			$oauth_token_table
-	* @param	string			$oauth_state_table
-	*/
+	 * Constructor.
+	 *
+	 * @param \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param \phpbb\user						$user				User object
+	 * @param string							$oauth_token_table	OAuth table: token storage
+	 * @param string							$oauth_state_table	OAuth table: state
+	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $oauth_token_table, $oauth_state_table)
 	{
-		$this->db = $db;
-		$this->user = $user;
+		$this->db	= $db;
+		$this->user	= $user;
+
 		$this->oauth_token_table = $oauth_token_table;
 		$this->oauth_state_table = $oauth_state_table;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function retrieveAccessToken($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -90,10 +71,10 @@ class token_storage implements TokenStorageInterface
 			return $this->cachedToken;
 		}
 
-		$data = array(
+		$data = [
 			'user_id'	=> (int) $this->user->data['user_id'],
 			'provider'	=> $service,
-		);
+		];
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
@@ -104,33 +85,38 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function storeAccessToken($service, TokenInterface $token)
 	{
 		$service = $this->get_service_name_for_db($service);
 
 		$this->cachedToken = $token;
 
-		$data = array(
+		$data = [
 			'oauth_token'	=> $this->json_encode_token($token),
-		);
+		];
 
 		$sql = 'UPDATE ' . $this->oauth_token_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $data) . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-					' . ((int) $this->user->data['user_id'] === ANONYMOUS ? "AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'" : '') . "
-					AND provider = '" . $this->db->sql_escape($service) . "'";
+			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+			WHERE user_id = ' . (int) $this->user->data['user_id'] . "
+				AND provider = '" . $this->db->sql_escape($service) . "'";
+
+		if ((int) $this->user->data['user_id'] === ANONYMOUS)
+		{
+			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+		}
+
 		$this->db->sql_query($sql);
 
 		if (!$this->db->sql_affectedrows())
 		{
-			$data = array(
+			$data = [
 				'user_id'		=> (int) $this->user->data['user_id'],
 				'provider'		=> $service,
 				'oauth_token'	=> $this->json_encode_token($token),
 				'session_id'	=> $this->user->data['session_id'],
-			);
+			];
 
 			$sql = 'INSERT INTO ' . $this->oauth_token_table . $this->db->sql_build_array('INSERT', $data);
 
@@ -141,8 +127,8 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function hasAccessToken($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -152,22 +138,22 @@ class token_storage implements TokenStorageInterface
 			return true;
 		}
 
-		$data = array(
+		$data = [
 			'user_id'	=> (int) $this->user->data['user_id'],
 			'provider'	=> $service,
-		);
+		];
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		return $this->_has_acess_token($data);
+		return $this->has_access_token($data);
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function clearToken($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -189,13 +175,13 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function clearAllTokens()
 	{
 		$this->cachedToken = null;
 
-		$sql = 'DELETE FROM ' . $this->oauth_token_table . '
+		$sql = 'DELETE FROM ' . $this->oauth_token_table . ' 
 			WHERE user_id = ' . (int) $this->user->data['user_id'];
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
@@ -209,31 +195,30 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function storeAuthorizationState($service, $state)
 	{
 		$service = $this->get_service_name_for_db($service);
 
 		$this->cachedState = $state;
 
-		$data = array(
+		$data = [
 			'user_id'		=> (int) $this->user->data['user_id'],
 			'provider'		=> $service,
 			'oauth_state'	=> $state,
 			'session_id'	=> $this->user->data['session_id'],
-		);
+		];
 
-		$sql = 'INSERT INTO ' . $this->oauth_state_table . '
-			' . $this->db->sql_build_array('INSERT', $data);
+		$sql = 'INSERT INTO ' . $this->oauth_state_table . ' ' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
 
 		return $this;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function hasAuthorizationState($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -243,10 +228,10 @@ class token_storage implements TokenStorageInterface
 			return true;
 		}
 
-		$data = array(
+		$data = [
 			'user_id'	=> (int) $this->user->data['user_id'],
 			'provider'	=> $service,
-		);
+		];
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
@@ -257,8 +242,8 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function retrieveAuthorizationState($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -268,10 +253,10 @@ class token_storage implements TokenStorageInterface
 			return $this->cachedState;
 		}
 
-		$data = array(
+		$data = [
 			'user_id'	=> (int) $this->user->data['user_id'],
 			'provider'	=> $service,
-		);
+		];
 
 		if ((int) $this->user->data['user_id'] === ANONYMOUS)
 		{
@@ -282,8 +267,8 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function clearAuthorizationState($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -305,8 +290,8 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function clearAllAuthorizationStates()
 	{
 		$this->cachedState = null;
@@ -325,10 +310,11 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* Updates the user_id field in the database assosciated with the token
-	*
-	* @param	int	$user_id
-	*/
+	 * Updates the user_id field in the database associated with the token.
+	 *
+	 * @param int		$user_id	The user identifier
+	 * @return void
+	 */
 	public function set_user_id($user_id)
 	{
 		if (!$this->cachedToken)
@@ -336,21 +322,24 @@ class token_storage implements TokenStorageInterface
 			return;
 		}
 
+		$data = [
+			'user_id' => (int) $user_id,
+		];
+
 		$sql = 'UPDATE ' . $this->oauth_token_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', array(
-					'user_id' => (int) $user_id
-				)) . '
-				WHERE user_id = ' . (int) $this->user->data['user_id'] . "
-					AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
+			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+			WHERE user_id = ' . (int) $this->user->data['user_id'] . "
+				AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
 		$this->db->sql_query($sql);
 	}
 
 	/**
-	* Checks to see if an access token exists solely by the session_id of the user
-	*
-	* @param	string	$service	The name of the OAuth service
-	* @return	bool	true if they have token, false if they don't
-	*/
+	 * Checks to see if an access token exists solely by the session_id of the user.
+	 *
+	 * @param string	$service	The OAuth service name
+	 * @return bool					true if the user's access token exists,
+	 * 								false if the user's access token does not exist
+	 */
 	public function has_access_token_by_session($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -360,20 +349,21 @@ class token_storage implements TokenStorageInterface
 			return true;
 		}
 
-		$data = array(
+		$data = [
 			'session_id'	=> $this->user->data['session_id'],
 			'provider'		=> $service,
-		);
+		];
 
-		return $this->_has_acess_token($data);
+		return $this->has_access_token($data);
 	}
 
 	/**
-	* Checks to see if a state exists solely by the session_id of the user
-	*
-	* @param	string	$service	The name of the OAuth service
-	* @return	bool	true if they have state, false if they don't
-	*/
+	 * Checks to see if a state exists solely by the session_id of the user.
+	 *
+	 * @param string	$service	The OAuth service name
+	 * @return bool					true if the user's state exists,
+	 * 								false if the user's state does not exist
+	 */
 	public function has_state_by_session($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -383,25 +373,34 @@ class token_storage implements TokenStorageInterface
 			return true;
 		}
 
-		$data = array(
+		$data = [
 			'session_id'	=> $this->user->data['session_id'],
 			'provider'		=> $service,
-		);
+		];
 
 		return (bool) $this->get_state_row($data);
 	}
 
 	/**
-	* A helper function that performs the query for has access token functions
-	*
-	* @param	array	$data
-	* @return	bool
-	*/
-	protected function _has_acess_token($data)
+	 * A helper function that performs the query for has access token functions.
+	 *
+	 * @param array		$data		The SQL WHERE data
+	 * @return bool					true if the user's access token exists,
+	 * 								false if the user's access token does not exist
+	 */
+	protected function has_access_token($data)
 	{
 		return (bool) $this->get_access_token_row($data);
 	}
 
+	/**
+	 * A helper function that performs the query for retrieving access token functions by session.
+	 * Also checks if the token is a valid token.
+	 *
+	 * @param string	$service	The OAuth service provider name
+	 * @return TokenInterface
+	 * @throws TokenNotFoundException
+	 */
 	public function retrieve_access_token_by_session($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -411,14 +410,21 @@ class token_storage implements TokenStorageInterface
 			return $this->cachedToken;
 		}
 
-		$data = array(
+		$data = [
 			'session_id'	=> $this->user->data['session_id'],
-			'provider'	=> $service,
-		);
+			'provider'		=> $service,
+		];
 
 		return $this->_retrieve_access_token($data);
 	}
 
+	/**
+	 * A helper function that performs the query for retrieving state functions by session.
+	 *
+	 * @param string	$service	The OAuth service provider name
+	 * @return string				The OAuth state
+	 * @throws AuthorizationStateNotFoundException
+	 */
 	public function retrieve_state_by_session($service)
 	{
 		$service = $this->get_service_name_for_db($service);
@@ -428,22 +434,22 @@ class token_storage implements TokenStorageInterface
 			return $this->cachedState;
 		}
 
-		$data = array(
+		$data = [
 			'session_id'	=> $this->user->data['session_id'],
-			'provider'	=> $service,
-		);
+			'provider'		=> $service,
+		];
 
 		return $this->_retrieve_state($data);
 	}
 
 	/**
-	* A helper function that performs the query for retrieve access token functions
-	* Also checks if the token is a valid token
-	*
-	* @param	array	$data
-	* @return	mixed
-	* @throws \OAuth\Common\Storage\Exception\TokenNotFoundException
-	*/
+	 * A helper function that performs the query for retrieve access token functions.
+	 * Also checks if the token is a valid token.
+	 *
+	 * @param array		$data		The SQL WHERE data
+	 * @return TokenInterface
+	 * @throws TokenNotFoundException
+	 */
 	protected function _retrieve_access_token($data)
 	{
 		$row = $this->get_access_token_row($data);
@@ -459,19 +465,21 @@ class token_storage implements TokenStorageInterface
 		if (!($token instanceof TokenInterface))
 		{
 			$this->clearToken($data['provider']);
+
 			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
 		$this->cachedToken = $token;
+
 		return $token;
 	}
 
 	/**
-	 * A helper function that performs the query for retrieve state functions
+	 * A helper function that performs the query for retrieve state functions.
 	 *
-	 * @param	array	$data
-	 * @return	mixed
-	 * @throws \OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException
+	 * @param array		$data		The SQL WHERE data
+	 * @return string				The OAuth state
+	 * @throws AuthorizationStateNotFoundException
 	 */
 	protected function _retrieve_state($data)
 	{
@@ -483,18 +491,21 @@ class token_storage implements TokenStorageInterface
 		}
 
 		$this->cachedState = $row['oauth_state'];
+
 		return $this->cachedState;
 	}
 
 	/**
-	* A helper function that performs the query for retrieving an access token
-	*
-	* @param	array	$data
-	* @return	mixed
-	*/
+	 * A helper function that performs the query for retrieving an access token.
+	 *
+	 * @param array		$data		The SQL WHERE data
+	 * @return array|false			array with the OAuth token row,
+	 *                       		false if the token does not exist
+	 */
 	protected function get_access_token_row($data)
 	{
-		$sql = 'SELECT oauth_token FROM ' . $this->oauth_token_table . '
+		$sql = 'SELECT oauth_token 
+			FROM ' . $this->oauth_token_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -504,14 +515,16 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	 * A helper function that performs the query for retrieving a state
+	 * A helper function that performs the query for retrieving a state.
 	 *
-	 * @param	array	$data
-	 * @return	mixed
+	 * @param array		$data		The SQL WHERE data
+	 * @return array|false			array with the OAuth state row,
+	 *                       		false if the state does not exist
 	 */
 	protected function get_state_row($data)
 	{
-		$sql = 'SELECT oauth_state FROM ' . $this->oauth_state_table . '
+		$sql = 'SELECT oauth_state 
+			FROM ' . $this->oauth_state_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -520,16 +533,22 @@ class token_storage implements TokenStorageInterface
 		return $row;
 	}
 
+	/**
+	 * A helper function that JSON encodes a TokenInterface's data.
+	 *
+	 * @param TokenInterface	$token
+	 * @return string					The json encoded TokenInterface's data
+	 */
 	public function json_encode_token(TokenInterface $token)
 	{
-		$members = array(
+		$members = [
 			'accessToken'	=> $token->getAccessToken(),
 			'endOfLife'		=> $token->getEndOfLife(),
 			'extraParams'	=> $token->getExtraParams(),
 			'refreshToken'	=> $token->getRefreshToken(),
 
 			'token_class'	=> get_class($token),
-		);
+		];
 
 		// Handle additional data needed for OAuth1 tokens
 		if ($token instanceof StdOAuth1Token)
@@ -542,6 +561,13 @@ class token_storage implements TokenStorageInterface
 		return json_encode($members);
 	}
 
+	/**
+	 * A helper function that JSON decodes a data string and creates a TokenInterface.
+	 *
+	 * @param string	$json			The json encoded TokenInterface's data
+	 * @return TokenInterface
+	 * @throws TokenNotFoundException
+	 */
 	public function json_decode_token($json)
 	{
 		$token_data = json_decode($json, true);
@@ -557,7 +583,10 @@ class token_storage implements TokenStorageInterface
 		$endOfLife		= $token_data['endOfLife'];
 		$extra_params	= $token_data['extraParams'];
 
-		// Create the token
+		/**
+		 * Create the token
+		 * @var TokenInterface	$token
+		 */
 		$token = new $token_class($access_token, $refresh_token, TokenInterface::EOL_NEVER_EXPIRES, $extra_params);
 		$token->setEndOfLife($endOfLife);
 
@@ -573,20 +602,19 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	* Returns the name of the service as it must be stored in the database.
-	*
-	* @param	string	$service	The name of the OAuth service
-	* @return	string	The name of the OAuth service as it needs to be stored
-	*					in the database.
-	*/
-	protected function get_service_name_for_db($service)
+	 * Returns the service name as it must be stored in the database.
+	 *
+	 * @param string	$provider	The OAuth provider name
+	 * @return string				The OAuth service name
+	 */
+	protected function get_service_name_for_db($provider)
 	{
 		// Enforce the naming convention for oauth services
-		if (strpos($service, 'auth.provider.oauth.service.') !== 0)
+		if (strpos($provider, 'auth.provider.oauth.service.') !== 0)
 		{
-			$service = 'auth.provider.oauth.service.' . strtolower($service);
+			$provider = 'auth.provider.oauth.service.' . strtolower($provider);
 		}
 
-		return $service;
+		return $provider;
 	}
 }
