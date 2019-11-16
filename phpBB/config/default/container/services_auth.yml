@@ -53,11 +53,10 @@ services:
         class: phpbb\auth\provider\oauth\oauth
         arguments:
             - '@config'
-            - '@service_container'
             - '@dbal.conn'
+            - '@auth.provider.db'
             - '@dispatcher'
             - '@language'
-            - '@passwords.manager'
             - '@request'
             - '@auth.provider.oauth.service_collection'
             - '@user'
