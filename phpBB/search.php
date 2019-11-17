@@ -720,6 +720,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if ($sql_where)
 	{
+		$zebra = [];
+
 		if ($show_results == 'posts')
 		{
 			// @todo Joining this query to the one below?
@@ -728,7 +730,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				WHERE user_id = ' . $user->data['user_id'];
 			$result = $db->sql_query($sql);
 
-			$zebra = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$zebra[($row['friend']) ? 'friend' : 'foe'][] = $row['zebra_id'];
