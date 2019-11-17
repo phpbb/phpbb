@@ -87,7 +87,6 @@ class phpbb_auth_provider_ldap_test extends phpbb_database_test_case
 	{
 		$user = array(
 			'username'	=> 'admin',
-			'user_type'
 		);
 
 		$this->assertNull($this->provider->validate_session($user));
