@@ -13,48 +13,69 @@
 
 namespace phpbb\auth\provider;
 
+use phpbb\captcha\factory;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\passwords\manager;
+use phpbb\request\request_interface;
+use phpbb\user;
+
 /**
  * Database authentication provider for phpBB3
  * This is for authentication via the integrated user table
  */
-class db extends \phpbb\auth\provider\base
+class db extends base
 {
+	/** @var factory CAPTCHA factory */
+	protected $captcha_factory;
+
+	/** @var config phpBB config */
+	protected $config;
+
+	/** @var driver_interface DBAL driver instance */
+	protected $db;
+
+	/** @var request_interface Request object */
+	protected $request;
+
+	/** @var user User object */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
+	/** @var string PHP file extension */
+	protected $php_ext;
+
 	/**
 	* phpBB passwords manager
 	*
-	* @var \phpbb\passwords\manager
+	* @var manager
 	*/
 	protected $passwords_manager;
 
 	/**
-	* DI container
-	*
-	* @var \Symfony\Component\DependencyInjection\ContainerInterface
-	*/
-	protected $phpbb_container;
-
-	/**
 	 * Database Authentication Constructor
 	 *
-	 * @param	\phpbb\db\driver\driver_interface		$db
-	 * @param	\phpbb\config\config 		$config
-	 * @param	\phpbb\passwords\manager	$passwords_manager
-	 * @param	\phpbb\request\request		$request
-	 * @param	\phpbb\user			$user
-	 * @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
+	 * @param factory $captcha_factory
+	 * @param	config 		$config
+	 * @param	driver_interface		$db
+	 * @param	manager	$passwords_manager
+	 * @param	request_interface		$request
+	 * @param	user			$user
 	 * @param	string				$phpbb_root_path
 	 * @param	string				$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
+	public function __construct(factory $captcha_factory, config $config, driver_interface $db, manager $passwords_manager, request_interface $request, user $user, $phpbb_root_path, $php_ext)
 	{
-		$this->db = $db;
+		$this->captcha_factory = $captcha_factory;
 		$this->config = $config;
+		$this->db = $db;
 		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->phpbb_container = $phpbb_container;
 	}
 
 	/**
@@ -155,9 +176,7 @@ class db extends \phpbb\auth\provider\base
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
-			/* @var $captcha_factory \phpbb\captcha\factory */
-			$captcha_factory = $this->phpbb_container->get('captcha.factory');
-			$captcha = $captcha_factory->get_instance($this->config['captcha_plugin']);
+			$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate($row);
 			if ($vc_response)

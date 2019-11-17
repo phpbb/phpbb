@@ -13,44 +13,50 @@
 
 namespace phpbb\auth\provider\oauth;
 
+use OAuth\Common\Http\Exception\TokenResponseException;
 use OAuth\ServiceFactory;
 use OAuth\Common\Consumer\Credentials;
 use OAuth\Common\Service\ServiceInterface;
 use OAuth\OAuth1\Service\AbstractService as OAuth1Service;
 use OAuth\OAuth2\Service\AbstractService as OAuth2Service;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use phpbb\auth\provider\base;
+use phpbb\auth\provider\db;
 use phpbb\auth\provider\oauth\service\exception;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\request\request_interface;
+use phpbb\user;
 
 /**
  * OAuth authentication provider for phpBB3
  */
-class oauth extends \phpbb\auth\provider\base
+class oauth extends base
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var ContainerInterface */
-	protected $container;
-
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var db */
+	protected $db_auth;
+
+	/** @var dispatcher */
 	protected $dispatcher;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\passwords\manager */
-	protected $passwords_manager;
-
-	/** @var \phpbb\request\request_interface */
+	/** @var request_interface */
 	protected $request;
 
-	/** @var \phpbb\di\service_collection */
+	/** @var service_collection */
 	protected $service_providers;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
 	/** @var string OAuth table: token storage */
@@ -74,15 +80,14 @@ class oauth extends \phpbb\auth\provider\base
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config				$config					Config object
-	 * @param ContainerInterface				$container				Service container object
-	 * @param \phpbb\db\driver\driver_interface	$db						Database object
-	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
-	 * @param \phpbb\language\language			$language				Language object
-	 * @param \phpbb\passwords\manager			$passwords_manager		Password manager object
-	 * @param \phpbb\request\request_interface	$request				Request object
-	 * @param \phpbb\di\service_collection		$service_providers		OAuth providers service collection
-	 * @param \phpbb\user						$user					User object
+	 * @param config				$config					Config object
+	 * @param driver_interface	$db						Database object
+	 * @param db			$db_auth				DB auth provider
+	 * @param dispatcher			$dispatcher				Event dispatcher object
+	 * @param language			$language				Language object
+	 * @param request_interface	$request				Request object
+	 * @param service_collection		$service_providers		OAuth providers service collection
+	 * @param user						$user					User object
 	 * @param string							$oauth_token_table		OAuth table: token storage
 	 * @param string							$oauth_state_table		OAuth table: state
 	 * @param string							$oauth_account_table	OAuth table: account association
@@ -91,15 +96,14 @@ class oauth extends \phpbb\auth\provider\base
 	 * @param string							$php_ext				php File extension
 	 */
 	public function __construct(
-		\phpbb\config\config $config,
-		ContainerInterface $container,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\event\dispatcher $dispatcher,
-		\phpbb\language\language $language,
-		\phpbb\passwords\manager $passwords_manager,
-		\phpbb\request\request_interface $request,
-		\phpbb\di\service_collection $service_providers,
-		\phpbb\user $user,
+		config $config,
+		driver_interface $db,
+		db $db_auth,
+		dispatcher $dispatcher,
+		language $language,
+		request_interface $request,
+		service_collection $service_providers,
+		user $user,
 		$oauth_token_table,
 		$oauth_state_table,
 		$oauth_account_table,
@@ -109,10 +113,9 @@ class oauth extends \phpbb\auth\provider\base
 	)
 	{
 		$this->config				= $config;
-		$this->container			= $container;
 		$this->db					= $db;
+		$this->db_auth				= $db_auth;
 		$this->dispatcher			= $dispatcher;
-		$this->passwords_manager	= $passwords_manager;
 		$this->language				= $language;
 		$this->service_providers	= $service_providers;
 		$this->request				= $request;
@@ -153,18 +156,7 @@ class oauth extends \phpbb\auth\provider\base
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			$provider = new \phpbb\auth\provider\db(
-				$this->db,
-				$this->config,
-				$this->passwords_manager,
-				$this->request,
-				$this->user,
-				$this->container,
-				$this->root_path,
-				$this->php_ext
-			);
-
-			return $provider->login($username, $password);
+			return $this->db_auth->login($username, $password);
 		}
 
 		// Request the name of the OAuth service
@@ -822,10 +814,10 @@ class oauth extends \phpbb\auth\provider\base
 		switch ($service::OAUTH_VERSION)
 		{
 			case 1:
-				return $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET);
+				return $this->request->is_set('oauth_token', request_interface::GET);
 
 			case 2:
-				return $this->request->is_set('code', \phpbb\request\request_interface::GET);
+				return $this->request->is_set('code', request_interface::GET);
 
 			default:
 				return false;
@@ -850,7 +842,7 @@ class oauth extends \phpbb\auth\provider\base
 				$token		= $service->requestRequestToken();
 				$parameters	= ['oauth_token' => $token->getRequestToken()];
 			}
-			catch (\OAuth\Common\Http\Exception\TokenResponseException $e)
+			catch (TokenResponseException $e)
 			{
 				return [
 					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
