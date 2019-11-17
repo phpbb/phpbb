@@ -51,26 +51,13 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 
 	public function hash_password_data()
 	{
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			return array(
-				array('', '2a', 60),
-				array('passwords.driver.bcrypt_2y', '2a', 60),
-				array('passwords.driver.bcrypt', '2a', 60),
-				array('passwords.driver.salted_md5', 'H', 34),
-				array('passwords.driver.foobar', '', false),
-			);
-		}
-		else
-		{
-			return array(
-				array('', '2y', 60),
-				array('passwords.driver.bcrypt_2y', '2y', 60),
-				array('passwords.driver.bcrypt', '2a', 60),
-				array('passwords.driver.salted_md5', 'H', 34),
-				array('passwords.driver.foobar', '', false),
-			);
-		}
+		return array(
+			array('', '2y', 60),
+			array('passwords.driver.bcrypt_2y', '2y', 60),
+			array('passwords.driver.bcrypt', '2a', 60),
+			array('passwords.driver.salted_md5', 'H', 34),
+			array('passwords.driver.foobar', '', false),
+		);
 	}
 
 	/**
@@ -100,23 +87,12 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 
 	public function check_password_data()
 	{
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			return array(
-				array('passwords.driver.bcrypt'),
-				array('passwords.driver.salted_md5'),
-				array('passwords.driver.phpass'),
-			);
-		}
-		else
-		{
-			return array(
-				array('passwords.driver.bcrypt_2y'),
-				array('passwords.driver.bcrypt'),
-				array('passwords.driver.salted_md5'),
-				array('passwords.driver.phpass'),
-			);
-		}
+		return array(
+			array('passwords.driver.bcrypt_2y'),
+			array('passwords.driver.bcrypt'),
+			array('passwords.driver.salted_md5'),
+			array('passwords.driver.phpass'),
+		);
 	}
 
 	/**
@@ -136,7 +112,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		}
 
 		// Check if convert_flag is correctly set
-		$default_type = (version_compare(PHP_VERSION, '5.3.7', '<')) ? 'passwords.driver.bcrypt' : 'passwords.driver.bcrypt_2y';
+		$default_type = 'passwords.driver.bcrypt_2y';
 		$this->assertEquals(($hash_type !== $default_type), $this->manager->convert_flag);
 	}
 
@@ -200,79 +176,43 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	public function test_hash_password_8bit_bcrypt()
 	{
 		$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt'));
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
-		}
-		else
-		{
-			$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
-		}
+		$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
 	}
 
 	public function combined_hash_data()
 	{
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			return array(
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.bcrypt'),
-				),
-				array(
-					'passwords.driver.phpass',
-					array('passwords.driver.salted_md5'),
-				),
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.phpass', 'passwords.driver.bcrypt'),
-				),
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.salted_md5'),
-					false,
-				),
-				array(
-					'$H$',
-					array('$2a$'),
-				),
-			);
-		}
-		else
-		{
-			return array(
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.bcrypt_2y'),
-				),
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.bcrypt'),
-				),
-				array(
-					'passwords.driver.phpass',
-					array('passwords.driver.salted_md5'),
-				),
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.bcrypt_2y', 'passwords.driver.bcrypt'),
-				),
-				array(
-					'passwords.driver.salted_md5',
-					array('passwords.driver.salted_md5'),
-					false,
-				),
-				array(
-					'passwords.driver.bcrypt_2y',
-					array('passwords.driver.salted_md4'),
-					false,
-				),
-				array(
-					'$H$',
-					array('$2y$'),
-				),
-			);
-		}
+		return array(
+			array(
+				'passwords.driver.salted_md5',
+				array('passwords.driver.bcrypt_2y'),
+			),
+			array(
+				'passwords.driver.salted_md5',
+				array('passwords.driver.bcrypt'),
+			),
+			array(
+				'passwords.driver.phpass',
+				array('passwords.driver.salted_md5'),
+			),
+			array(
+				'passwords.driver.salted_md5',
+				array('passwords.driver.bcrypt_2y', 'passwords.driver.bcrypt'),
+			),
+			array(
+				'passwords.driver.salted_md5',
+				array('passwords.driver.salted_md5'),
+				false,
+			),
+			array(
+				'passwords.driver.bcrypt_2y',
+				array('passwords.driver.salted_md4'),
+				false,
+			),
+			array(
+				'$H$',
+				array('$2y$'),
+			),
+		);
 	}
 
 	/**
