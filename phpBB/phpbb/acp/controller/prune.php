@@ -15,9 +15,101 @@ namespace phpbb\acp\controller;
 
 class prune
 {
-	var $u_action;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	public function main($id, $mode)
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\group\helper				$group_helper	Group helper object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$admin_path		phpBB admin path
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\group\helper $group_helper,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->auth			= $auth;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->admin_path	= $admin_path;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main($mode)
 	{
 		$this->language->add_lang('acp/prune');
 
@@ -26,42 +118,31 @@ class prune
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		switch ($mode)
-		{
-			case 'forums':
-				$this->tpl_name = 'acp_prune_forums';
-				$this->page_title = 'ACP_PRUNE_FORUMS';
-				$this->prune_forums($id, $mode);
-			break;
-
-			case 'users':
-				$this->tpl_name = 'acp_prune_users';
-				$this->page_title = 'ACP_PRUNE_USERS';
-				$this->prune_users($id, $mode);
-			break;
-		}
+		return $this->{'prune_' . $mode}();
 	}
 
 	/**
 	 * Prune forums
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_forums($id, $mode)
+	protected function prune_forums()
 	{
 		$all_forums = $this->request->variable('all_forums', 0);
-		$forum_id = $this->request->variable('f', [0]);
-		$submit = ($this->request->is_set_post('submit')) ? true : false;
+		$forum_ids = $this->request->variable('f', [0]);
+		$submit = $this->request->is_set_post('submit');
 
 		if ($all_forums)
 		{
+			$forum_ids = [];
+
 			$sql = 'SELECT forum_id
-				FROM ' . FORUMS_TABLE . '
+				FROM ' . $this->tables['forums'] . '
 				ORDER BY left_id';
 			$result = $this->db->sql_query($sql);
-
-			$forum_id = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$forum_id[] = $row['forum_id'];
+				$forum_ids[] = $row['forum_id'];
 			}
 			$this->db->sql_freeresult($result);
 		}
@@ -72,31 +153,28 @@ class prune
 			{
 				$prune_posted = $this->request->variable('prune_days', 0);
 				$prune_viewed = $this->request->variable('prune_vieweddays', 0);
-				$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
+				$prune_all = !$prune_posted && !$prune_viewed;
 
 				$prune_flags = 0;
-				$prune_flags += ($this->request->variable('prune_old_polls', 0)) ? 2 : 0;
-				$prune_flags += ($this->request->variable('prune_announce', 0)) ? 4 : 0;
-				$prune_flags += ($this->request->variable('prune_sticky', 0)) ? 8 : 0;
+				$prune_flags += $this->request->variable('prune_old_polls', 0) ? 2 : 0;
+				$prune_flags += $this->request->variable('prune_announce', 0) ? 4 : 0;
+				$prune_flags += $this->request->variable('prune_sticky', 0) ? 8 : 0;
 
 				// Convert days to seconds for timestamp functions...
 				$prunedate_posted = time() - ($prune_posted * 86400);
 				$prunedate_viewed = time() - ($prune_viewed * 86400);
 
-				$this->template->assign_vars([
-					'S_PRUNED'		=> true]
-				);
+				$this->template->assign_var('S_PRUNED', true);
 
-				$sql_forum = (count($forum_id)) ? ' AND ' . $this->db->sql_in_set('forum_id', $forum_id) : '';
+				$sql_forum = !empty($forum_ids) ? ' AND ' . $this->db->sql_in_set('forum_id', $forum_ids) : '';
 
 				// Get a list of forum's or the data for the forum that we are pruning.
 				$sql = 'SELECT forum_id, forum_name
-					FROM ' . FORUMS_TABLE . '
+					FROM ' . $this->tables['forums'] . '
 					WHERE forum_type = ' . FORUM_POST . "
 						$sql_forum
 					ORDER BY left_id ASC";
 				$result = $this->db->sql_query($sql);
-
 				if ($row = $this->db->sql_fetchrow($result))
 				{
 					$prune_ids = [];
@@ -137,10 +215,10 @@ class prune
 						$this->template->assign_block_vars('pruned', [
 							'FORUM_NAME'	=> $row['forum_name'],
 							'NUM_TOPICS'	=> $p_result['topics'],
-							'NUM_POSTS'		=> $p_result['posts']]
-						);
+							'NUM_POSTS'		=> $p_result['posts'],
+						]);
 
-						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
+						$log_data .= ($log_data !== '' ? ', ' : '') . $row['forum_name'];
 					}
 					while ($row = $this->db->sql_fetchrow($result));
 
@@ -151,16 +229,14 @@ class prune
 				}
 				$this->db->sql_freeresult($result);
 
-				return;
+				return $this->helper->render('acp_prune_forums.html', $this->language->lang('ACP_PRUNE_FORUMS'));
 			}
 			else
 			{
 				$hidden_fields = [
-					'i'				=> $id,
-					'mode'			=> $mode,
-					'submit'		=> 1,
+					'submit'		=> true,
 					'all_forums'	=> $all_forums,
-					'f'				=> $forum_id,
+					'f'				=> $forum_ids,
 
 					'prune_days'		=> $this->request->variable('prune_days', 0),
 					'prune_vieweddays'	=> $this->request->variable('prune_vieweddays', 0),
@@ -180,51 +256,53 @@ class prune
 				extract($this->dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
 
 				confirm_box(false, $this->language->lang('PRUNE_FORUM_CONFIRM'), build_hidden_fields($hidden_fields));
+
+				return redirect($this->helper->route('acp_forums_prune'));
 			}
 		}
 
 		// If they haven't selected a forum for pruning yet then
 		// display a select box to use for pruning.
-		if (!count($forum_id))
+		if (empty($forum_ids))
 		{
 			$this->template->assign_vars([
-				'U_ACTION'			=> $this->u_action,
 				'S_SELECT_FORUM'	=> true,
-				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false)]
-			);
+				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false),
+				'U_ACTION'			=> $this->helper->route('acp_forums_prune'),
+			]);
 		}
 		else
 		{
 			$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('forum_id', $forum_id);
+				FROM ' . $this->tables['forums'] . '
+				WHERE ' . $this->db->sql_in_set('forum_id', $forum_ids);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 
-			if (!$row)
+			if ($row === false)
 			{
 				$this->db->sql_freeresult($result);
-				trigger_error($this->language->lang('NO_FORUM') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('NO_FORUM') . $this->helper->adm_back_route('acp_forums_prune'), E_USER_WARNING);
 			}
 
 			$forum_list = $s_hidden_fields = '';
 			do
 			{
-				$forum_list .= (($forum_list != '') ? ', ' : '') . '<b>' . $row['forum_name'] . '</b>';
+				$forum_list .= ($forum_list !== '' ? ', ' : '') . '<b>' . $row['forum_name'] . '</b>';
 				$s_hidden_fields .= '<input type="hidden" name="f[]" value="' . $row['forum_id'] . '" />';
 			}
 			while ($row = $this->db->sql_fetchrow($result));
 
 			$this->db->sql_freeresult($result);
 
-			$l_selected_forums = (count($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
+			$l_selected_forums = count($forum_ids) === 1 ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
 			$template_data = [
-				'L_SELECTED_FORUMS'		=> $this->language->lang($l_selected_forums),
-				'U_ACTION'				=> $this->u_action,
-				'U_BACK'				=> $this->u_action,
 				'FORUM_LIST'			=> $forum_list,
+				'L_SELECTED_FORUMS'		=> $this->language->lang($l_selected_forums),
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+				'U_ACTION'				=> $this->helper->route('acp_forums_prune'),
+				'U_BACK'				=> $this->helper->route('acp_forums_prune'),
 			];
 
 			/**
@@ -239,16 +317,20 @@ class prune
 
 			$this->template->assign_vars($template_data);
 		}
+
+		return $this->helper->render('acp_prune_forums.html', $this->language->lang('ACP_PRUNE_FORUMS'));
 	}
 
 	/**
 	 * Prune users
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	function prune_users($id, $mode)
+	protected function prune_users()
 	{
 		$this->language->add_lang('memberlist');
 
-		$prune = ($this->request->is_set_post('prune')) ? true : false;
+		$prune = $this->request->is_set_post('prune');
 
 		if ($prune)
 		{
@@ -257,41 +339,42 @@ class prune
 
 			if (confirm_box(true))
 			{
+				$log_action = '';
 				$user_ids = $usernames = [];
 
 				$this->get_prune_users($user_ids, $usernames);
-				if (count($user_ids))
+
+				if (!empty($user_ids))
 				{
-					if ($action == 'deactivate')
+					if ($action === 'deactivate')
 					{
 						user_active_flip('deactivate', $user_ids);
-						$l_log = 'LOG_PRUNE_USER_DEAC';
+						$log_action = 'LOG_PRUNE_USER_DEAC';
 					}
-					else if ($action == 'delete')
+					else if ($action === 'delete')
 					{
 						if ($deleteposts)
 						{
 							user_delete('remove', $user_ids);
 
-							$l_log = 'LOG_PRUNE_USER_DEL_DEL';
+							$log_action = 'LOG_PRUNE_USER_DEL_DEL';
 						}
 						else
 						{
 							user_delete('retain', $user_ids, true);
 
-							$l_log = 'LOG_PRUNE_USER_DEL_ANON';
+							$log_action = 'LOG_PRUNE_USER_DEL_ANON';
 						}
 					}
 
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $l_log, false, [implode(', ', $usernames)]);
-					$msg = $this->language->lang('USER_' . strtoupper($action) . '_SUCCESS');
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_action, false, [implode(', ', $usernames)]);
+
+					return $this->helper->message_back('USER_' . strtoupper($action) . '_SUCCESS', 'acp_users_prune');
 				}
 				else
 				{
-					$msg = $this->language->lang('USER_PRUNE_FAILURE');
+					return trigger_error($this->language->lang('USER_PRUNE_FAILURE') . $this->helper->adm_back_route('acp_users_prune'), E_USER_WARNING);
 				}
-
-				trigger_error($msg . adm_back_link($this->u_action));
 			}
 			else
 			{
@@ -299,9 +382,9 @@ class prune
 				$user_ids = $usernames = [];
 				$this->get_prune_users($user_ids, $usernames);
 
-				if (!count($user_ids))
+				if (empty($user_ids))
 				{
-					trigger_error($this->language->lang('USER_PRUNE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('USER_PRUNE_FAILURE') . $this->helper->adm_back_route('acp_users_prune'), E_USER_WARNING);
 				}
 
 				// Assign to template
@@ -311,23 +394,22 @@ class prune
 						'USERNAME'			=> $usernames[$user_id],
 						'USER_ID'			=> $user_id,
 						'U_PROFILE'			=> get_username_string('profile', $user_id, $usernames[$user_id]),
-						'U_USER_ADMIN'		=> ($this->auth->acl_get('a_user')) ? append_sid("{$this->admin_path}index.$this->php_ext", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $this->user->session_id) : '',
+						'U_USER_ADMIN'		=> $this->auth->acl_get('a_user') ? $this->helper->route('acp_users_manage', ['mode' => 'overview', 'u' => $user_id], true, $this->user->session_id) : '',
 					]);
 				}
 
 				$this->template->assign_vars([
-					'S_DEACTIVATE'		=> ($action == 'deactivate') ? true : false,
-					'S_DELETE'			=> ($action == 'delete') ? true : false,
+					'S_DEACTIVATE'		=> $action === 'deactivate',
+					'S_DELETE'			=> $action === 'delete',
 				]);
 
 				confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
-					'i'				=> $id,
-					'mode'			=> $mode,
-					'prune'			=> 1,
-
-					'deleteposts'	=> $this->request->variable('deleteposts', 0),
+					'prune'			=> true,
 					'action'		=> $this->request->variable('action', ''),
+					'deleteposts'	=> $this->request->variable('deleteposts', 0),
 				]), 'confirm_body_prune.html');
+
+				return redirect($this->helper->route('acp_users_prune'));
 			}
 		}
 
@@ -336,7 +418,7 @@ class prune
 
 		foreach ($find_count as $key => $value)
 		{
-			$selected = ($key == 'eq') ? ' selected="selected"' : '';
+			$selected = $key === 'eq' ? ' selected="selected"' : '';
 			$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
 
@@ -347,13 +429,13 @@ class prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
+		$s_group_list = '';
+
 		$sql = 'SELECT group_id, group_name
-			FROM ' . GROUPS_TABLE . '
+			FROM ' . $this->tables['groups'] . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
 			ORDER BY group_name ASC';
 		$result = $this->db->sql_query($sql);
-
-		$s_group_list = '';
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $this->group_helper->get_name($row['group_name']) . '</option>';
@@ -368,23 +450,32 @@ class prune
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'			=> $this->u_action,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
 			'S_GROUP_LIST'		=> $s_group_list,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
+			'U_ACTION'			=> $this->helper->route('acp_users_prune'),
 			'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
 		]);
+
+		return $this->helper->render('acp_prune_users.html', $this->language->lang('ACP_PRUNE_USERS'));
 	}
 
 	/**
 	 * Get user_ids/usernames from those being pruned
+	 *
+	 * @param array		$user_ids	The user identifiers
+	 * @param array		$usernames	The usernames
+	 * @return void
 	 */
-	function get_prune_users(&$user_ids, &$usernames)
+	protected function get_prune_users(array &$user_ids, array &$usernames)
 	{
-		$users_by_name = $this->request->variable('users', '', true);
-		$users_by_id = $this->request->variable('user_ids', [0]);
 		$group_id = $this->request->variable('group_id', 0);
-		$posts_on_queue = (trim($this->request->variable('posts_on_queue', '')) === '') ? false : $this->request->variable('posts_on_queue', 0);
+		$users_by_id = $this->request->variable('user_ids', [0]);
+		$users_by_name = $this->request->variable('users', '', true);
+		$posts_on_queue = trim($this->request->variable('posts_on_queue', '')) === '' ? false : $this->request->variable('posts_on_queue', 0);
+
+		$key_match = [];
+		$queue_select = '';
 
 		if ($users_by_name)
 		{
@@ -410,11 +501,11 @@ class prune
 			$joined_after = $this->request->variable('joined_after', '');
 			$active = $this->request->variable('active', '');
 
-			$count = ($this->request->variable('count', '') === '') ? false : $this->request->variable('count', 0);
+			$count = $this->request->variable('count', '') === '' ? false : $this->request->variable('count', 0);
 
-			$active = ($active) ? explode('-', $active) : [];
-			$joined_before = ($joined_before) ? explode('-', $joined_before) : [];
-			$joined_after = ($joined_after) ? explode('-', $joined_after) : [];
+			$active = $active ? explode('-', $active) : [];
+			$joined_before = $joined_before ? explode('-', $joined_before) : [];
+			$joined_after = $joined_after ? explode('-', $joined_after) : [];
 
 			// calculate the conditions required by the join time criteria
 			$joined_sql = '';
@@ -440,29 +531,29 @@ class prune
 			}
 			// implicit else when both arrays are empty do nothing
 
-			if ((count($active) && count($active) != 3) || (count($joined_before) && count($joined_before) != 3) || (count($joined_after) && count($joined_after) != 3))
+			if ((count($active) && count($active) !== 3) || (count($joined_before) && count($joined_before) !== 3) || (count($joined_after) && count($joined_after) !== 3))
 			{
-				trigger_error($this->language->lang('WRONG_ACTIVE_JOINED_DATE') . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($this->language->lang('WRONG_ACTIVE_JOINED_DATE') . $this->helper->adm_back_route('acp_users_prune'), E_USER_WARNING);
 			}
 
 			$key_match = ['lt' => '<', 'gt' => '>', 'eq' => '='];
 
 			$where_sql = '';
-			$where_sql .= ($username) ? ' AND username_clean ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), utf8_clean_string($username))) : '';
-			$where_sql .= ($email) ? ' AND user_email ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $email)) . ' ' : '';
+			$where_sql .= $username ? ' AND username_clean ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), utf8_clean_string($username))) : '';
+			$where_sql .= $email ? ' AND user_email ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $email)) . ' ' : '';
 			$where_sql .= $joined_sql;
-			$where_sql .= ($count !== false) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
+			$where_sql .= $count !== false ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// First handle pruning of users who never logged in, last active date is 0000-00-00
-			if (count($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
+			if (!empty($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
 			{
 				$where_sql .= ' AND user_lastvisit = 0';
 			}
-			else if (count($active) && $active_select != 'lt')
+			else if (!empty($active) && $active_select != 'lt')
 			{
 				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
 			}
-			else if (count($active))
+			else if (!empty($active))
 			{
 				$where_sql .= ' AND (user_lastvisit > 0 AND user_lastvisit < ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) . ')';
 			}
@@ -475,11 +566,11 @@ class prune
 		}
 
 		// Get bot ids
-		$sql = 'SELECT user_id
-			FROM ' . BOTS_TABLE;
-		$result = $this->db->sql_query($sql);
-
 		$bot_ids = [];
+
+		$sql = 'SELECT user_id
+			FROM ' . $this->tables['bots'];
+		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$bot_ids[] = $row['user_id'];
@@ -489,16 +580,15 @@ class prune
 		// Protect the admin, do not prune if no options are given...
 		if ($where_sql)
 		{
+			$user_ids = $usernames = [];
+
 			// Do not prune founder members
 			$sql = 'SELECT user_id, username
-				FROM ' . USERS_TABLE . '
+				FROM ' . $this->tables['users'] . '
 				WHERE user_id <> ' . ANONYMOUS . '
 					AND user_type <> ' . USER_FOUNDER . "
 				$where_sql";
 			$result = $this->db->sql_query($sql);
-
-			$user_ids = $usernames = [];
-
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				// Do not prune bots and the user currently pruning.
@@ -514,7 +604,8 @@ class prune
 		if ($group_id)
 		{
 			$sql = 'SELECT u.user_id, u.username
-				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
+				FROM ' . $this->tables['user_group'] . ' ug,
+				 	' . $this->tables['users'] . ' u
 				WHERE ug.group_id = ' . (int) $group_id . '
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
@@ -543,7 +634,8 @@ class prune
 		if ($posts_on_queue !== false)
 		{
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				FROM ' . $this->tables['posts'] . ' p, 
+					' . $this->tables['users'] . ' u
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ' . $this->db->sql_in_set('p.post_visibility', [ITEM_UNAPPROVED, ITEM_REAPPROVE]) . '

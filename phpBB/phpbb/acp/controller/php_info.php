@@ -15,18 +15,35 @@ namespace phpbb\acp\controller;
 
 class php_info
 {
-	var $u_action;
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
 
-	public function main($id, $mode)
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\acp\helper\controller	$helper		ACP Controller helper object
+	 * @param \phpbb\language\language		$language	Language object
+	 * @param \phpbb\template\template		$template	Template object
+	 */
+	public function __construct(
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\template\template $template
+	)
 	{
-		if ($mode != 'info')
-		{
-			trigger_error('NO_MODE', E_USER_ERROR);
-		}
+		$this->helper	= $helper;
+		$this->language	= $language;
+		$this->template	= $template;
+	}
 
-		$this->tpl_name = 'acp_php_info';
-		$this->page_title = 'ACP_PHP_INFO';
-
+	public function main()
+	{
 		ob_start();
 		phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES);
 		$phpinfo = ob_get_clean();
@@ -40,7 +57,7 @@ class php_info
 
 		if (empty($phpinfo) || empty($output[1][0]))
 		{
-			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
+			return trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
 		}
 
 		$output = $output[1][0];
@@ -63,18 +80,26 @@ class php_info
 
 		if (empty($output))
 		{
-			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
+			return trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
 		}
 
 		$orig_output = $output;
 
 		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output);
-		$output = (!empty($output[1][0])) ? $output[1][0] : $orig_output;
+		$output = !empty($output[1][0]) ? $output[1][0] : $orig_output;
 
 		$this->template->assign_var('PHPINFO', $output);
+
+		return $this->helper->render('acp_php_info.html', $this->language->lang('ACP_PHP_INFO'));
 	}
 
-	function remove_spaces($matches)
+	/**
+	 * Remove spaces from anchor names.
+	 *
+	 * @param array		$matches
+	 * @return string
+	 */
+	protected function remove_spaces(array $matches)
 	{
 		return '<a name="' . str_replace(' ', '_', $matches[1]) . '">';
 	}
