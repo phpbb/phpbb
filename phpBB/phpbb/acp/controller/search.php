@@ -15,38 +15,135 @@ namespace phpbb\acp\controller;
 
 class search
 {
-	var $u_action;
-	var $state;
-	var $search;
-	var $max_post_id;
-	var $batch_size = 100;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	public function main($id, $mode)
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\extension\manager */
+	protected $ext_manager;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/** @var \phpbb\search\fulltext_mysql @todo Search interface? */
+	protected $search;
+
+	/** @var array */
+	protected $state;
+
+	/** @var int */
+	protected $max_post_id;
+
+	/** @var int */
+	protected $batch_size = 100;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\config\config				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\extension\manager			$ext_manager	Extension manager object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$admin_path		phpBB admin path
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\extension\manager $ext_manager,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->ext_manager	= $ext_manager;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->admin_path	= $admin_path;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main($mode)
 	{
 		$this->language->add_lang('acp/search');
 
 		// For some this may be of help...
 		@ini_set('memory_limit', '128M');
 
-		switch ($mode)
-		{
-			case 'settings':
-				$this->settings($id, $mode);
-			break;
-
-			case 'index':
-				$this->index($id, $mode);
-			break;
-		}
+		return $this->$mode();
 	}
 
-	function settings($id, $mode)
+	protected function settings()
 	{
-		$submit = ($this->request->is_set_post('submit')) ? true : false;
+		$submit = $this->request->is_set_post('submit');
 
 		if ($submit && !check_link_hash($this->request->variable('hash', ''), 'acp_search'))
 		{
-			trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_settings_search'), E_USER_WARNING);
 		}
 
 		$search_types = $this->get_search_types();
@@ -61,9 +158,11 @@ class search
 			'search_store_results'		=> 'integer',
 		];
 
+		/** @var \phpbb\search\fulltext_mysql $search	@todo Search interface? */
 		$search = null;
 		$error = false;
 		$search_options = '';
+
 		foreach ($search_types as $type)
 		{
 			if ($this->init_search($type, $search, $error))
@@ -73,7 +172,7 @@ class search
 
 			$name = $search->get_name();
 
-			$selected = ($this->config['search_type'] == $type) ? ' selected="selected"' : '';
+			$selected = $this->config['search_type'] == $type ? ' selected="selected"' : '';
 			$identifier = substr($type, strrpos($type, '\\') + 1);
 			$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
 
@@ -98,7 +197,7 @@ class search
 		unset($search);
 		unset($error);
 
-		$cfg_array = ($this->request->is_set('config')) ? $this->request->variable('config', ['' => ''], true) : [];
+		$cfg_array = $this->request->is_set('config') ? $this->request->variable('config', ['' => ''], true) : [];
 		$updated = $this->request->variable('updated', false);
 
 		foreach ($settings as $config_name => $var_type)
@@ -135,6 +234,7 @@ class search
 		if ($submit)
 		{
 			$extra_message = '';
+
 			if ($updated)
 			{
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_SEARCH');
@@ -157,27 +257,28 @@ class search
 							{
 								$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_SEARCH');
 							}
+
 							$extra_message = '<br />' . $this->language->lang('SWITCHED_SEARCH_BACKEND') . '<br /><a href="' . append_sid("{$this->admin_path}index.$this->php_ext", 'i=search&amp;mode=index') . '">&raquo; ' . $this->language->lang('GO_TO_SEARCH_INDEX') . '</a>';
 						}
 						else
 						{
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							return trigger_error($error . $this->helper->adm_back_route('acp_settings_search'), E_USER_WARNING);
 						}
 					}
 					else
 					{
 						confirm_box(false, $this->language->lang('CONFIRM_SEARCH_BACKEND'), build_hidden_fields([
-							'i'			=> $id,
-							'mode'		=> $mode,
 							'submit'	=> true,
 							'updated'	=> $updated,
 							'config'	=> ['search_type' => $cfg_array['search_type']],
 						]));
+
+						return redirect($this->helper->route('acp_settings_search'));
 					}
 				}
 				else
 				{
-					trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($error . $this->helper->adm_back_route('acp_settings_search'), E_USER_WARNING);
 				}
 			}
 
@@ -191,42 +292,42 @@ class search
 					{
 						if ($search->config_updated())
 						{
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							return trigger_error($error . $this->helper->adm_back_route('acp_settings_search'), E_USER_WARNING);
 						}
 					}
 				}
 			}
 			else
 			{
-				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($error . $this->helper->adm_back_route('acp_settings_search'), E_USER_WARNING);
 			}
 
-			trigger_error($this->language->lang('CONFIG_UPDATED') . $extra_message . adm_back_link($this->u_action));
+			return $this->helper->message_back($this->language->lang('CONFIG_UPDATED') . $extra_message, 'acp_settings_search');
 		}
 		unset($cfg_array);
 
-		$this->tpl_name = 'acp_search';
-		$this->page_title = 'ACP_SEARCH_SETTINGS';
-
 		$this->template->assign_vars([
-			'LIMIT_SEARCH_LOAD'		=> (float) $this->config['limit_search_load'],
-			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) $this->config['min_search_author_chars'],
-			'SEARCH_INTERVAL'		=> (float) $this->config['search_interval'],
-			'SEARCH_GUEST_INTERVAL'	=> (float) $this->config['search_anonymous_interval'],
-			'SEARCH_STORE_RESULTS'	=> (int) $this->config['search_store_results'],
+			'LIMIT_SEARCH_LOAD'			=> (float) $this->config['limit_search_load'],
+			'SEARCH_INTERVAL'			=> (float) $this->config['search_interval'],
+			'SEARCH_GUEST_INTERVAL'		=> (float) $this->config['search_anonymous_interval'],
+			'SEARCH_STORE_RESULTS'		=> (int) $this->config['search_store_results'],
 			'MAX_NUM_SEARCH_KEYWORDS'	=> (int) $this->config['max_num_search_keywords'],
+			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) $this->config['min_search_author_chars'],
 
+			'S_SETTINGS'			=> true,
 			'S_SEARCH_TYPES'		=> $search_options,
 			'S_YES_SEARCH'			=> (bool) $this->config['load_search'],
-			'S_SETTINGS'			=> true,
 
-			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search')]
-		);
+			'U_ACTION'				=> $this->helper->route('acp_settings_search', ['hash' => generate_link_hash('acp_search')]),
+		]);
+
+		return $this->helper->render('acp_search.html', $this->language->lang('ACP_SETTINGS_SEARCH'));
 	}
 
-	function index($id, $mode)
+	function index()
 	{
 		$action = $this->request->variable('action', '');
+
 		$this->state = explode(',', $this->config['search_indexing_state']);
 
 		if ($this->request->is_set_post('cancel'))
@@ -235,11 +336,10 @@ class search
 			$this->state = [];
 			$this->save_state();
 		}
-		$submit = $this->request->is_set_post('submit', false);
 
 		if (!check_link_hash($this->request->variable('hash', ''), 'acp_search') && in_array($action, ['create', 'delete']))
 		{
-			trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route('acp_search_index'), E_USER_WARNING);
 		}
 
 		if ($action)
@@ -247,8 +347,7 @@ class search
 			switch ($action)
 			{
 				case 'progress_bar':
-					$type = $this->request->variable('type', '');
-					$this->display_progress_bar($type);
+					return $this->display_progress_bar();
 				break;
 
 				case 'delete':
@@ -260,7 +359,7 @@ class search
 				break;
 
 				default:
-					trigger_error('NO_ACTION', E_USER_ERROR);
+					return trigger_error($this->language->lang('NO_ACTION') . $this->helper->adm_back_route('acp_search_index'), E_USER_ERROR);
 				break;
 			}
 
@@ -273,7 +372,7 @@ class search
 			$error = false;
 			if ($this->init_search($this->state[0], $this->search, $error))
 			{
-				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($error . $this->helper->adm_back_route('acp_search_index'), E_USER_WARNING);
 			}
 			$name = $this->search->get_name();
 
@@ -281,7 +380,7 @@ class search
 
 			$this->max_post_id = $this->get_max_post_id();
 
-			$post_counter = (isset($this->state[2])) ? $this->state[2] : 0;
+			$post_counter = isset($this->state[2]) ? $this->state[2] : 0;
 			$this->state[2] = &$post_counter;
 			$this->save_state();
 
@@ -291,26 +390,30 @@ class search
 					if (method_exists($this->search, 'delete_index'))
 					{
 						// pass a reference to myself so the $search object can make use of save_state() and attributes
-						if ($error = $this->search->delete_index($this, append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false)))
+						$error = $this->search->delete_index($this, $this->helper->route('acp_search_index', ['action' => 'delete', 'hash' => generate_link_hash('acp_search')]));
+
+						if ($error)
 						{
 							$this->state = [''];
 							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+
+							return trigger_error($error . $this->helper->adm_back_route('acp_search_index') . $this->close_popup_js(), E_USER_WARNING);
 						}
 					}
 					else
 					{
 						$starttime = microtime(true);
 						$row_count = 0;
+
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
+							$ids = $posters = $forum_ids = [];
+
 							$sql = 'SELECT post_id, poster_id, forum_id
-								FROM ' . POSTS_TABLE . '
+								FROM ' . $this->tables['posts'] . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
 									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
 							$result = $this->db->sql_query($sql);
-
-							$ids = $posters = $forum_ids = [];
 							while ($row = $this->db->sql_fetchrow($result))
 							{
 								$ids[] = $row['post_id'];
@@ -320,7 +423,7 @@ class search
 							$this->db->sql_freeresult($result);
 							$row_count += count($ids);
 
-							if (count($ids))
+							if (!empty($ids))
 							{
 								$this->search->index_remove($ids, $posters, $forum_ids);
 							}
@@ -334,8 +437,10 @@ class search
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($this->language->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $this->language->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
+
+							meta_refresh(1, $this->helper->route('acp_search_index', ['action' => 'delete', 'skip_rows' => $post_counter, 'hash' => generate_link_hash('acp_search')]));
+
+							return $this->helper->message($this->language->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $this->language->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
 						}
 					}
 
@@ -345,26 +450,31 @@ class search
 					$this->save_state();
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, [$name]);
-					trigger_error($this->language->lang('SEARCH_INDEX_REMOVED') . adm_back_link($this->u_action) . $this->close_popup_js());
+
+					return $this->helper->message_back($this->language->lang('SEARCH_INDEX_REMOVED') . $this->close_popup_js(), 'acp_search_index');
 				break;
 
 				case 'create':
 					if (method_exists($this->search, 'create_index'))
 					{
 						// pass a reference to acp_search so the $search object can make use of save_state() and attributes
-						if ($error = $this->search->create_index($this, append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&mode=$mode&action=create", false)))
+						$error = $this->search->delete_index($this, $this->helper->route('acp_search_index', ['action' => 'create', 'hash' => generate_link_hash('acp_search')]));
+
+						if ($error)
 						{
 							$this->state = [''];
 							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+
+							return trigger_error($error . $this->helper->adm_back_route('acp_search_index') . $this->close_popup_js(), E_USER_WARNING);
 						}
 					}
 					else
 					{
-						$sql = 'SELECT forum_id, enable_indexing
-							FROM ' . FORUMS_TABLE;
-						$result = $this->db->sql_query($sql, 3600);
+						$forums = [];
 
+						$sql = 'SELECT forum_id, enable_indexing
+							FROM ' . $this->tables['forums'];
+						$result = $this->db->sql_query($sql, 3600);
 						while ($row = $this->db->sql_fetchrow($result))
 						{
 							$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
@@ -373,10 +483,12 @@ class search
 
 						$starttime = microtime(true);
 						$row_count = 0;
+						$rows = [];
+
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-								FROM ' . POSTS_TABLE . '
+								FROM ' . $this->tables['posts'] . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
 									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
 							$result = $this->db->sql_query($sql);
@@ -422,8 +534,10 @@ class search
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($this->language->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $this->language->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+
+							meta_refresh(1, $this->helper->route('acp_search_index', ['action' => 'create', 'skip_rows' => $post_counter, 'hash' => generate_link_hash('acp_search')]));
+
+							return $this->helper->message($this->language->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $this->language->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
 						}
 					}
 
@@ -433,15 +547,18 @@ class search
 					$this->save_state();
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_CREATED', false, [$name]);
-					trigger_error($this->language->lang('SEARCH_INDEX_CREATED') . adm_back_link($this->u_action) . $this->close_popup_js());
+
+					return $this->helper->message_back($this->language->lang('SEARCH_INDEX_CREATED') . $this->close_popup_js(), 'acp_search_index');
 				break;
 			}
 		}
 
 		$search_types = $this->get_search_types();
 
+		/** @var \phpbb\search\fulltext_mysql $search	@todo Search interface? */
 		$search = null;
 		$error = false;
+
 		foreach ($search_types as $type)
 		{
 			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
@@ -450,14 +567,14 @@ class search
 			}
 
 			$name = $search->get_name();
-
 			$data = [];
+			$statistics = [];
+
 			if (method_exists($search, 'index_stats'))
 			{
 				$data = $search->index_stats();
 			}
 
-			$statistics = [];
 			foreach ($data as $statistic => $value)
 			{
 				$n = count($statistics);
@@ -475,7 +592,7 @@ class search
 				'L_NAME'			=> $name,
 				'NAME'				=> $type,
 
-				'S_ACTIVE'			=> ($type == $this->config['search_type']) ? true : false,
+				'S_ACTIVE'			=> $type == $this->config['search_type'],
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(['search_type' => $type]),
 				'S_INDEXED'			=> (bool) $search->index_created(),
 				'S_STATS'			=> (bool) count($statistics)]
@@ -486,9 +603,9 @@ class search
 				$this->template->assign_block_vars('backend.data', [
 					'STATISTIC_1'	=> $statistic['statistic_1'],
 					'VALUE_1'		=> $statistic['value_1'],
-					'STATISTIC_2'	=> (isset($statistic['statistic_2'])) ? $statistic['statistic_2'] : '',
-					'VALUE_2'		=> (isset($statistic['value_2'])) ? $statistic['value_2'] : '']
-				);
+					'STATISTIC_2'	=> isset($statistic['statistic_2']) ? $statistic['statistic_2'] : '',
+					'VALUE_2'		=> isset($statistic['value_2']) ? $statistic['value_2'] : '',
+				]);
 			}
 		}
 		unset($search);
@@ -496,46 +613,47 @@ class search
 		unset($statistics);
 		unset($data);
 
-		$this->tpl_name = 'acp_search';
-		$this->page_title = 'ACP_SEARCH_INDEX';
-
 		$this->template->assign_vars([
 			'S_INDEX'				=> true,
-			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
-			'U_PROGRESS_BAR'		=> append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
-			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$this->admin_path}index.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
+			'U_ACTION'				=> $this->helper->route('acp_search_index', ['hash' => generate_link_hash('acp_search')]),
+			'U_PROGRESS_BAR'		=> $this->helper->route('acp_search_index', ['action' => 'progress_bar']),
+			'UA_PROGRESS_BAR'		=> addslashes($this->helper->route('acp_search_index', ['action' => 'progress_bar'])),
 		]);
 
 		if (isset($this->state[1]))
 		{
 			$this->template->assign_vars([
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
-				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
-				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $this->language->lang('CONTINUE_INDEXING') : $this->language->lang('CONTINUE_DELETING_INDEX'),
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN')]
-			);
+				'U_CONTINUE_INDEXING'	=> $this->helper->route('acp_search_index', ['action' => $this->state[1], 'hash' => generate_link_hash('acp_search')]),
+				'L_CONTINUE'			=> $this->state[1] === 'create' ? $this->language->lang('CONTINUE_INDEXING') : $this->language->lang('CONTINUE_DELETING_INDEX'),
+				'L_CONTINUE_EXPLAIN'	=> $this->state[1] === 'create' ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN'),
+			]);
 		}
+
+		return $this->helper->render('acp_search.html', $this->language->lang('ACP_SEARCH_INDEX'));
 	}
 
-	function display_progress_bar($type)
+	/**
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	protected function display_progress_bar()
 	{
-		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
+		$type = $this->request->variable('type', '');
 
-		adm_page_header($this->language->lang($l_type));
-
-		$this->template->set_filenames([
-			'body'	=> 'progress_bar.html']
-		);
+		$l_type = $type === 'create' ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
 
 		$this->template->assign_vars([
 			'L_PROGRESS'			=> $this->language->lang($l_type),
-			'L_PROGRESS_EXPLAIN'	=> $this->language->lang($l_type . '_EXPLAIN')]
-		);
+			'L_PROGRESS_EXPLAIN'	=> $this->language->lang($l_type . '_EXPLAIN'),
+		]);
 
-		adm_page_footer();
+		return $this->helper->render('progress_bar.html', $l_type);
 	}
 
-	function close_popup_js()
+	/**
+	 * @return string
+	 */
+	protected function close_popup_js()
 	{
 		return "<script type=\"text/javascript\">\n" .
 			"// <![CDATA[\n" .
@@ -544,9 +662,12 @@ class search
 			"</script>\n";
 	}
 
-	function get_search_types()
+	/**
+	 * @return array
+	 */
+	protected function get_search_types()
 	{
-		$finder = $phpbb_extension_manager->get_finder();
+		$finder = $this->ext_manager->get_finder();
 
 		return $finder
 			->extension_suffix('_backend')
@@ -555,18 +676,25 @@ class search
 			->get_classes();
 	}
 
-	function get_max_post_id()
+	/**
+	 * @return int
+	 */
+	protected function get_max_post_id()
 	{
 		$sql = 'SELECT MAX(post_id) as max_post_id
-			FROM '. POSTS_TABLE;
+			FROM '. $this->tables['posts'];
 		$result = $this->db->sql_query($sql);
-		$max_post_id = (int) $this->db->sql_fetchfield('max_post_id');
+		$max_post_id = $this->db->sql_fetchfield('max_post_id');
 		$this->db->sql_freeresult($result);
 
-		return $max_post_id;
+		return (int) $max_post_id;
 	}
 
-	function save_state($state = false)
+	/**
+	 * @param array|false	$state
+	 * @return void
+	 */
+	protected function save_state($state = false)
 	{
 		if ($state)
 		{
@@ -579,11 +707,14 @@ class search
 	}
 
 	/**
-	 * Initialises a search backend object
+	 * Initialises a search backend object.
 	 *
-	 * @return false if no error occurred else an error message
+	 * @param string						$type		The search time
+	 * @param \phpbb\search\fulltext_mysql	$search		The search object (null at first) @todo Search interface?
+	 * @param string|false					$error		Error message
+	 * @return string|false								false if no error occurred else an error message
 	 */
-	function init_search($type, &$search, &$error)
+	protected function init_search($type, &$search, &$error)
 	{
 		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
@@ -592,7 +723,7 @@ class search
 		}
 
 		$error = false;
-		$search = new $type($error, $this->root_path, $this->php_ext, $auth, $config, $db, $user, $phpbb_dispatcher);
+		$search	= new $type($error, $this->root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user, $this->dispatcher);
 
 		return $error;
 	}

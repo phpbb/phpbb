@@ -542,7 +542,7 @@ class prune
 			$where_sql .= $username ? ' AND username_clean ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), utf8_clean_string($username))) : '';
 			$where_sql .= $email ? ' AND user_email ' . $this->db->sql_like_expression(str_replace('*', $this->db->get_any_char(), $email)) . ' ' : '';
 			$where_sql .= $joined_sql;
-			$where_sql .= $count !== false ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
+			$where_sql .= $count !== false ? ' AND user_posts ' . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// First handle pruning of users who never logged in, last active date is 0000-00-00
 			if (!empty($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
