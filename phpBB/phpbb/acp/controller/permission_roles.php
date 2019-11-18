@@ -15,153 +15,224 @@ namespace phpbb\acp\controller;
 
 class permission_roles
 {
-	var $u_action;
+	/** @var \phpbb\acp\helper\auth_admin */
 	protected $auth_admin;
 
-	public function main($id, $mode)
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\permissions */
+	protected $permissions;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\acp\helper\auth_admin		$auth_admin		Auth admin object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\acp\helper\controller		$helper			ACP Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\permissions				$permissions	Permissions object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\acp\helper\auth_admin $auth_admin,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\permissions $permissions,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext,
+		$tables
+	)
 	{
+		$this->auth_admin	= $auth_admin;
+		$this->db			= $db;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->permissions	= $permissions;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main($mode)
+	{
+		$this->language->add_lang('acp/permissions');
+		add_permission_language();
+
 		if (!function_exists('user_get_id_name'))
 		{
 			include($this->root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		if (!class_exists('auth_admin'))
-		{
-			include($this->root_path . 'includes/acp/auth.' . $this->php_ext);
-		}
-
-		$this->auth_admin = new auth_admin();
-
-		$this->language->add_lang('acp/permissions');
-		add_permission_language();
-
-		$this->tpl_name = 'acp_permission_roles';
-
-		$submit = ($this->request->is_set_post('submit')) ? true : false;
-		$role_id = $this->request->variable('role_id', 0);
 		$action = $this->request->variable('action', '');
-		$action = ($this->request->is_set_post('add')) ? 'add' : $action;
+		$action = $this->request->is_set_post('add') ? 'add' : $action;
+		$submit = $this->request->is_set_post('submit');
+		$role_id = $this->request->variable('role_id', 0);
 
 		$form_key = 'acp_permissions';
 		add_form_key($form_key);
-
-		if (!$role_id && in_array($action, ['remove', 'edit', 'move_up', 'move_down']))
-		{
-			trigger_error($this->language->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
-		}
 
 		switch ($mode)
 		{
 			case 'admin_roles':
 				$permission_type = 'a_';
-				$this->page_title = 'ACP_ADMIN_ROLES';
-			break;
-
-			case 'user_roles':
-				$permission_type = 'u_';
-				$this->page_title = 'ACP_USER_ROLES';
+				$l_mode = 'ACP_ADMIN_ROLES';
+				$u_mode = 'acp_permissions_roles_admin';
 			break;
 
 			case 'mod_roles':
 				$permission_type = 'm_';
-				$this->page_title = 'ACP_MOD_ROLES';
+				$l_mode = 'ACP_MOD_ROLES';
+				$u_mode = 'acp_permissions_roles_mod';
+			break;
+
+			case 'user_roles':
+				$permission_type = 'u_';
+				$l_mode = 'ACP_USER_ROLES';
+				$u_mode = 'acp_permissions_roles_user';
 			break;
 
 			case 'forum_roles':
 				$permission_type = 'f_';
-				$this->page_title = 'ACP_FORUM_ROLES';
+				$l_mode = 'ACP_FORUM_ROLES';
+				$u_mode = 'acp_permissions_roles_forum';
 			break;
 
 			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
+				return trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
 
+		if (!$role_id && in_array($action, ['remove', 'edit', 'move_up', 'move_down']))
+		{
+			return trigger_error($this->language->lang('NO_ROLE_SELECTED') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
+		}
+
 		$this->template->assign_vars([
-			'L_TITLE'		=> $this->language->lang[$this->page_title],
-			'L_EXPLAIN'		=> $this->language->lang[$this->page_title . '_EXPLAIN']]
-		);
+			'L_TITLE'		=> $this->language->lang($l_mode),
+			'L_EXPLAIN'		=> $this->language->lang($l_mode . '_EXPLAIN'),
+		]);
 
 		// Take action... admin submitted something
-		if ($submit || $action == 'remove')
+		if ($submit || $action === 'remove')
 		{
 			switch ($action)
 			{
 				case 'remove':
 
 					$sql = 'SELECT *
-						FROM ' . ACL_ROLES_TABLE . '
-						WHERE role_id = ' . $role_id;
+						FROM ' . $this->tables['acl_roles'] . '
+						WHERE role_id = ' . (int) $role_id;
 					$result = $this->db->sql_query($sql);
 					$role_row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
 
-					if (!$role_row)
+					if ($role_row === false)
 					{
-						trigger_error($this->language->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('NO_ROLE_SELECTED') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
 
 					if (confirm_box(true))
 					{
 						$this->remove_role($role_id, $permission_type);
 
-						$role_name = (!empty($this->language->lang[$role_row['role_name']])) ? $this->language->lang[$role_row['role_name']] : $role_row['role_name'];
-						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, [$role_name]);
-						trigger_error($this->language->lang('ROLE_DELETED') . adm_back_link($this->u_action));
+						$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, [$this->language->lang($role_row['role_name'])]);
+
+						return $this->helper->message_back('ROLE_DELETED', $u_mode);
 					}
 					else
 					{
 						confirm_box(false, 'DELETE_ROLE', build_hidden_fields([
-							'i'			=> $id,
-							'mode'		=> $mode,
 							'role_id'	=> $role_id,
 							'action'	=> $action,
 						]));
-					}
 
+						return redirect($this->helper->route($u_mode));
+					}
 				break;
 
 				case 'edit':
-
 					// Get role we edit
 					$sql = 'SELECT *
-						FROM ' . ACL_ROLES_TABLE . '
-						WHERE role_id = ' . $role_id;
+						FROM ' . $this->tables['acl_roles'] . '
+						WHERE role_id = ' . (int) $role_id;
 					$result = $this->db->sql_query($sql);
 					$role_row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
 
-					if (!$role_row)
+					if ($role_row === false)
 					{
-						trigger_error($this->language->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('NO_ROLE_SELECTED') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
-
 				// no break;
 
 				case 'add':
-
 					if (!check_form_key($form_key))
 					{
-						trigger_error($this->language->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('FORM_INVALID'). $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
 
+					$role_row = !empty($role_row) ? $role_row : [];
 					$role_name = $this->request->variable('role_name', '', true);
 					$role_description = $this->request->variable('role_description', '', true);
 					$auth_settings = $this->request->variable('setting', ['' => 0]);
 
 					if (!$role_name)
 					{
-						trigger_error($this->language->lang('NO_ROLE_NAME_SPECIFIED') . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('NO_ROLE_NAME_SPECIFIED') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
 
 					if (utf8_strlen($role_description) > 4000)
 					{
-						trigger_error($this->language->lang('ROLE_DESCRIPTION_LONG') . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('ROLE_DESCRIPTION_LONG') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
 
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
-						FROM ' . ACL_ROLES_TABLE . "
+						FROM ' . $this->tables['acl_roles'] . "
 						WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'
 							AND role_name = '" . $this->db->sql_escape($role_name) . "'";
 					$result = $this->db->sql_query($sql);
@@ -169,9 +240,9 @@ class permission_roles
 					$this->db->sql_freeresult($result);
 
 					// Make sure we only print out the error if we add the role or change it's name
-					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name'] != $role_name)))
+					if ($row && ($action === 'add' || ($action === 'edit' && $role_row['role_name'] != $role_name)))
 					{
-						trigger_error(sprintf($this->language->lang('ROLE_NAME_ALREADY_EXIST'), $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('ROLE_NAME_ALREADY_EXIST', $role_name) . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 					}
 
 					$sql_ary = [
@@ -180,9 +251,9 @@ class permission_roles
 						'role_type'			=> (string) $permission_type,
 					];
 
-					if ($action == 'edit')
+					if ($action === 'edit')
 					{
-						$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
+						$sql = 'UPDATE ' . $this->tables['acl_roles'] . '
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE role_id = ' . $role_id;
 						$this->db->sql_query($sql);
@@ -191,7 +262,7 @@ class permission_roles
 					{
 						// Get maximum role order for inserting a new role...
 						$sql = 'SELECT MAX(role_order) as max_order
-							FROM ' . ACL_ROLES_TABLE . "
+							FROM ' . $this->tables['acl_roles'] . "
 							WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'";
 						$result = $this->db->sql_query($sql);
 						$max_order = (int) $this->db->sql_fetchfield('max_order');
@@ -199,29 +270,28 @@ class permission_roles
 
 						$sql_ary['role_order'] = $max_order + 1;
 
-						$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+						$sql = 'INSERT INTO ' . $this->tables['acl_roles'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 						$this->db->sql_query($sql);
 
-						$role_id = $this->db->sql_nextid();
+						$role_id = (int) $this->db->sql_nextid();
 					}
 
 					// Now add the auth settings
 					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
-					$role_name = (!empty($this->language->lang($role_name))) ? $this->language->lang($role_name) : $role_name;
-					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, [$role_name]);
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, [$this->language->lang($role_name)]);
 
-					trigger_error($this->language->lang('ROLE_' . strtoupper($action) . '_SUCCESS') . adm_back_link($this->u_action));
-
+					return $this->helper->message_back('ROLE_' . strtoupper($action) . '_SUCCESS', $u_mode);
 				break;
 			}
 		}
+
+		$auth_options = [];
 
 		// Display screens
 		switch ($action)
 		{
 			case 'add':
-
 				$options_from = $this->request->variable('options_from', 0);
 
 				$role_row = [
@@ -233,13 +303,12 @@ class permission_roles
 				if ($options_from)
 				{
 					$sql = 'SELECT p.auth_option_id, p.auth_setting, o.auth_option
-						FROM ' . ACL_ROLES_DATA_TABLE . ' p, ' . ACL_OPTIONS_TABLE . ' o
+						FROM ' . $this->tables['acl_roles_data'] . ' p,
+							' . $this->tables['acl_options'] . ' o
 						WHERE o.auth_option_id = p.auth_option_id
-							AND p.role_id = ' . $options_from . '
+							AND p.role_id = ' . (int) $options_from . '
 						ORDER BY p.auth_option_id';
 					$result = $this->db->sql_query($sql);
-
-					$auth_options = [];
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = $row['auth_setting'];
@@ -249,41 +318,35 @@ class permission_roles
 				else
 				{
 					$sql = 'SELECT auth_option_id, auth_option
-						FROM ' . ACL_OPTIONS_TABLE . "
+						FROM ' . $this->tables['acl_options'] . "
 						WHERE auth_option " . $this->db->sql_like_expression($permission_type . $this->db->get_any_char()) . "
 							AND auth_option <> '{$permission_type}'
 						ORDER BY auth_option_id";
 					$result = $this->db->sql_query($sql);
-
-					$auth_options = [];
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = ACL_NO;
 					}
 					$this->db->sql_freeresult($result);
 				}
-
 			// no break;
 
 			case 'edit':
-
-				if ($action == 'edit')
+				if ($action === 'edit')
 				{
 					$sql = 'SELECT *
-						FROM ' . ACL_ROLES_TABLE . '
-						WHERE role_id = ' . $role_id;
+						FROM ' . $this->tables['acl_roles'] . '
+						WHERE role_id = ' . (int) $role_id;
 					$result = $this->db->sql_query($sql);
 					$role_row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
 
 					$sql = 'SELECT p.auth_option_id, p.auth_setting, o.auth_option
-						FROM ' . ACL_ROLES_DATA_TABLE . ' p, ' . ACL_OPTIONS_TABLE . ' o
+						FROM ' . $this->tables['acl_roles_data'] . ' p, ' . $this->tables['acl_options'] . ' o
 						WHERE o.auth_option_id = p.auth_option_id
-							AND p.role_id = ' . $role_id . '
+							AND p.role_id = ' . (int) $role_id . '
 						ORDER BY p.auth_option_id';
 					$result = $this->db->sql_query($sql);
-
-					$auth_options = [];
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = $row['auth_setting'];
@@ -291,33 +354,29 @@ class permission_roles
 					$this->db->sql_freeresult($result);
 				}
 
-				if (!$role_row)
+				if (empty($role_row))
 				{
-					trigger_error($this->language->lang('NO_ROLE_SELECTED') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('NO_ROLE_SELECTED') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 				}
 
-				/* @var $phpbb_permissions \phpbb\permissions */
-				$phpbb_permissions = $phpbb_container->get('acl.permissions');
-
 				$this->template->assign_vars([
-					'S_EDIT'			=> true,
-
-					'U_ACTION'			=> $this->u_action . "&amp;action={$action}&amp;role_id={$role_id}",
-					'U_BACK'			=> $this->u_action,
-
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
-					'L_ACL_TYPE'		=> $phpbb_permissions->get_type_lang($permission_type),
+					'L_ACL_TYPE'		=> $this->permissions->get_type_lang($permission_type),
+
+					'S_EDIT'			=> true,
+
+					'U_ACTION'			=> $this->helper->route($u_mode, ['action' => $action, 'role_id' => $role_id]),
+					'U_BACK'			=> $this->helper->route($u_mode),
 				]);
 
 				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
-					FROM ' . ACL_OPTIONS_TABLE . "
+					FROM ' . $this->tables['acl_options'] . "
 					WHERE auth_option " . $this->db->sql_like_expression($permission_type . $this->db->get_any_char()) . "
 						AND auth_option <> '{$permission_type}'
 					ORDER BY auth_option_id";
 				$result = $this->db->sql_query($sql);
-
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					if (!isset($auth_options[$row['auth_option']]))
@@ -327,58 +386,56 @@ class permission_roles
 				}
 				$this->db->sql_freeresult($result);
 
-				// Unset 				unset($auth_options[$permission_type]);
+				// Unset global permission option
+				unset($auth_options[$permission_type]);
 
 				// Display auth options
 				$this->display_auth_options($auth_options);
 
 				// Get users/groups/forums using this preset...
-				if ($action == 'edit')
+				if ($action === 'edit')
 				{
 					$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
-					if (count($hold_ary))
+					if (!empty($hold_ary))
 					{
-						$role_name = (!empty($this->language->lang[$role_row['role_name']])) ? $this->language->lang[$role_row['role_name']] : $role_row['role_name'];
-
 						$this->template->assign_vars([
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> sprintf($this->language->lang('ROLE_ASSIGNED_TO'), $role_name)]
-						);
+							'L_ROLE_ASSIGNED_TO'	=> $this->language->lang('ROLE_ASSIGNED_TO', $this->language->lang($role_row['role_name'])),
+						]);
 
 						$this->auth_admin->display_role_mask($hold_ary);
 					}
 				}
 
-				return;
+				return $this->helper->render('acp_permission_roles.html', $this->language->lang($l_mode));
 			break;
 
 			case 'move_up':
 			case 'move_down':
-
 				if (!check_link_hash($this->request->variable('hash', ''), 'acp_permission_roles'))
 				{
-					trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT role_order
-					FROM ' . ACL_ROLES_TABLE . "
-					WHERE role_id = $role_id";
+					FROM ' . $this->tables['acl_roles'] . '
+					WHERE role_id = ' . (int) $role_id;
 				$result = $this->db->sql_query($sql);
 				$order = $this->db->sql_fetchfield('role_order');
 				$this->db->sql_freeresult($result);
 
-				if ($order === false || ($order == 0 && $action == 'move_up'))
+				if ($order === false || ($order == 0 && $action === 'move_up'))
 				{
 					break;
 				}
 				$order = (int) $order;
-				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
+				$order_total = $order * 2 + (($action === 'move_up') ? -1 : 1);
 
-				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
+				$sql = 'UPDATE ' . $this->tables['acl_roles'] . '
 					SET role_order = ' . $order_total . " - role_order
 					WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'
-						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
+						AND role_order IN ($order, " . ($action === 'move_up' ? $order - 1 : $order + 1) . ')';
 				$this->db->sql_query($sql);
 
 				if ($this->request->is_ajax())
@@ -389,16 +446,16 @@ class permission_roles
 					]);
 				}
 
+				return redirect($this->helper->route($u_mode));
 			break;
 		}
 
 		// By default, check that role_order is valid and fix it if necessary
 		$sql = 'SELECT role_id, role_order
-			FROM ' . ACL_ROLES_TABLE . "
+			FROM ' . $this->tables['acl_roles'] . "
 			WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'
 			ORDER BY role_order ASC";
 		$result = $this->db->sql_query($sql);
-
 		if ($row = $this->db->sql_fetchrow($result))
 		{
 			$order = 0;
@@ -407,7 +464,8 @@ class permission_roles
 				$order++;
 				if ($row['role_order'] != $order)
 				{
-					$this->db->sql_query('UPDATE ' . ACL_ROLES_TABLE . " SET role_order = $order WHERE role_id = {$row['role_id']}");
+					$sql = 'UPDATE ' . $this->tables['acl_roles'] . " SET role_order = $order WHERE role_id = {$row['role_id']}";
+					$this->db->sql_query($sql);
 				}
 			}
 			while ($row = $this->db->sql_fetchrow($result));
@@ -417,64 +475,59 @@ class permission_roles
 		// Display assigned items?
 		$display_item = $this->request->variable('display_item', 0);
 
+		$s_role_options = '';
+
 		// Select existing roles
 		$sql = 'SELECT *
-			FROM ' . ACL_ROLES_TABLE . "
+			FROM ' . $this->tables['acl_roles'] . "
 			WHERE role_type = '" . $this->db->sql_escape($permission_type) . "'
 			ORDER BY role_order ASC";
 		$result = $this->db->sql_query($sql);
-
-		$s_role_options = '';
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$role_name = (!empty($this->language->lang[$row['role_name']])) ? $this->language->lang[$row['role_name']] : $row['role_name'];
-
 			$this->template->assign_block_vars('roles', [
-				'ROLE_NAME'				=> $role_name,
-				'ROLE_DESCRIPTION'		=> (!empty($this->language->lang[$row['role_description']])) ? $this->language->lang[$row['role_description']] : nl2br($row['role_description']),
+				'ROLE_NAME'			=> $this->language->lang($row['role_name']),
+				'ROLE_DESCRIPTION'	=> $this->language->is_set($row['role_description']) ? $this->language->lang($row['role_description']) : nl2br($row['role_description']),
 
-				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
-				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
-				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to']
-			);
+				'U_EDIT'			=> $this->helper->route($u_mode, ['action' => 'edit', 'role_id' => $row['role_id']]),
+				'U_REMOVE'			=> $this->helper->route($u_mode, ['action' => 'remove', 'role_id' => $row['role_id']]),
+				'U_MOVE_UP'			=> $this->helper->route($u_mode, ['action' => 'move_up', 'role_id' => $row['role_id'], 'hash' => generate_link_hash('acp_permission_roles')]),
+				'U_MOVE_DOWN'		=> $this->helper->route($u_mode, ['action' => 'move_down', 'role_id' => $row['role_id'], 'hash' => generate_link_hash('acp_permission_roles')]),
+				'U_DISPLAY_ITEMS'	=> $row['role_id'] == $display_item ? '' : $this->helper->route($u_mode, ['display_item' => $row['role_id'], '#' => 'assigned_to']),
+			]);
 
-			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $role_name . '</option>';
+			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $this->language->lang($row['role_name']) . '</option>';
 
 			if ($display_item == $row['role_id'])
 			{
-				$this->template->assign_vars([
-					'L_ROLE_ASSIGNED_TO'	=> sprintf($this->language->lang('ROLE_ASSIGNED_TO'), $role_name)]
-				);
+				$this->template->assign_var('L_ROLE_ASSIGNED_TO', $this->language->lang('ROLE_ASSIGNED_TO', $this->language->lang($row['role_name'])));
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->template->assign_vars([
-			'S_ROLE_OPTIONS'		=> $s_role_options]
-		);
+		$this->template->assign_var('S_ROLE_OPTIONS', $s_role_options);
 
 		if ($display_item)
 		{
-			$this->template->assign_vars([
-				'S_DISPLAY_ROLE_MASK'	=> true]
-			);
+			$this->template->assign_var('S_DISPLAY_ROLE_MASK', true);
 
 			$hold_ary = $this->auth_admin->get_role_mask($display_item);
 			$this->auth_admin->display_role_mask($hold_ary);
 		}
+
+		return $this->helper->render('acp_permission_roles.html', $this->language->lang($l_mode));
 	}
 
 	/**
-	 * Display permission settings able to be set
+	 * Display permission settings able to be set.
+	 *
+	 * @param array		$auth_options
+	 * @return void
 	 */
-	function display_auth_options($auth_options)
+	protected function display_auth_options(array $auth_options)
 	{
-		/* @var $phpbb_permissions \phpbb\permissions */
-		$phpbb_permissions = $phpbb_container->get('acl.permissions');
-
-		$content_array = $categories = [];
+		$categories = [];
+		$content_array = [];
 		$key_sort_array = [0];
 		$auth_options = [0 => $auth_options];
 
@@ -489,39 +542,43 @@ class permission_roles
 		foreach ($content_array as $cat => $cat_array)
 		{
 			$this->template->assign_block_vars('auth', [
-				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
+				'CAT_NAME'	=> $this->permissions->get_category_lang($cat),
 
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
-				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false]
-			);
+				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
+			]);
 
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				$this->template->assign_block_vars('auth.mask', [
-					'S_YES'		=> ($allowed == ACL_YES) ? true : false,
-					'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
-					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
+					'S_YES'		=> $allowed == ACL_YES,
+					'S_NEVER'	=> $allowed == ACL_NEVER,
+					'S_NO'		=> $allowed == ACL_NO,
 
 					'FIELD_NAME'	=> $permission,
-					'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					'PERMISSION'	=> $this->permissions->get_permission_lang($permission),
 				]);
 			}
 		}
 	}
 
 	/**
-	 * Remove role
+	 * Remove role.
+	 *
+	 * @param int		$role_id			The permission role identifier
+	 * @param string	$permission_type	The permission type (a_|m_|u_|f_)
+	 * @return void
 	 */
-	function remove_role($role_id, $permission_type)
+	protected function remove_role($role_id, $permission_type)
 	{
+		$auth_settings = [];
+
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
-			FROM ' . ACL_OPTIONS_TABLE . "
+			FROM ' . $this->tables['acl_options'] . "
 			WHERE auth_option " . $this->db->sql_like_expression($permission_type . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
-
-		$auth_settings = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$auth_settings[$row['auth_option']] = ACL_NO;
@@ -530,11 +587,11 @@ class permission_roles
 
 		// Get the role auth settings we need to re-set...
 		$sql = 'SELECT o.auth_option, r.auth_setting
-			FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
+			FROM ' . $this->tables['acl_roles_data'] . ' r,
+				' . $this->tables['acl_options'] . ' o
 			WHERE o.auth_option_id = r.auth_option_id
-				AND r.role_id = ' . $role_id;
+				AND r.role_id = ' . (int) $role_id;
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$auth_settings[$row['auth_option']] = $row['auth_setting'];
@@ -558,23 +615,27 @@ class permission_roles
 			}
 		}
 
+		$this->db->sql_transaction('begin');
+
 		// Remove role from users and groups just to be sure (happens through acl_set)
-		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-			WHERE auth_role_id = ' . $role_id;
+		$sql = 'DELETE FROM ' . $this->tables['acl_users'] . '
+			WHERE auth_role_id = ' . (int) $role_id;
 		$this->db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-			WHERE auth_role_id = ' . $role_id;
+		$sql = 'DELETE FROM ' . $this->tables['acl_groups'] . '
+			WHERE auth_role_id = ' . (int) $role_id;
 		$this->db->sql_query($sql);
 
 		// Remove role data and role
-		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
-			WHERE role_id = ' . $role_id;
+		$sql = 'DELETE FROM ' . $this->tables['acl_roles_data'] . '
+			WHERE role_id = ' . (int) $role_id;
 		$this->db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . ACL_ROLES_TABLE . '
-			WHERE role_id = ' . $role_id;
+		$sql = 'DELETE FROM ' . $this->tables['acl_roles'] . '
+			WHERE role_id = ' . (int) $role_id;
 		$this->db->sql_query($sql);
+
+		$this->db->sql_transaction('commit');
 
 		$this->auth_admin->acl_clear_prefetch();
 	}
