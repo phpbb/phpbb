@@ -121,7 +121,6 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_password' => '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
 			'user_passchg' => '0',
 			'user_email' => 'example@example.com',
-			'user_email_hash' => '0',
 			'user_birthday' => '',
 			'user_lastvisit' => '0',
 			'user_lastmark' => '0',
