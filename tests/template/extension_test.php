@@ -313,7 +313,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'attributes'	=> [],
 				],
 				[],
-				'<i class="iconify o-icon-svg o-icon" data-icon="fa:phone" data-inline="true"></i>',
+				'<i class="iconify o-icon-src-fa o-icon" data-icon="fa:phone" data-inline="true"></i>',
 			],
 			/** Iconify: all options */
 			[
@@ -324,13 +324,13 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'hidden'		=> true,
 					'classes'		=> 'icon-lg',
 					'attributes'	=> [
-						'data-swap'		=> 'Swap text',
+						'style'			=> 'color: #12a3eb;',
 					],
 				],
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<i class="iconify o-icon-svg o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="mdi:pencil" data-inline="true" data-swap="Swap text"></i>
+				'<i class="iconify o-icon-src-mdi o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="mdi:pencil" data-inline="true" style="color: #12a3eb;"></i>
 				<span class="sr-only">Pencil icon</span>',
 			],
 			/** PNG: default */

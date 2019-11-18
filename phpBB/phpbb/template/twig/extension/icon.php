@@ -69,11 +69,20 @@ class icon extends \Twig\Extension\AbstractExtension
 	{
 		$type = strtolower($type);
 
+		if (empty($icon))
+		{
+			return '';
+		}
+
 		switch ($type)
 		{
 			case 'font':
-			case 'iconify':
 				$source = '';
+			break;
+
+			case 'iconify':
+				$source = explode(':', $icon);
+				$source = $source[0];
 			break;
 
 			case 'png':
