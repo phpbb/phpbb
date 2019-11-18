@@ -15,16 +15,11 @@ namespace phpbb\acp\controller;
 
 class styles
 {
-	public $u_action;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	protected $u_base_action;
-	protected $s_hidden_fields;
-	protected $mode;
-	protected $styles_path;
-	protected $styles_path_absolute = 'styles';
-	protected $default_style = 0;
-	protected $styles_list_cols = 0;
-	protected $reserved_style_names = ['adm', 'admin', 'all'];
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -32,65 +27,135 @@ class styles
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\user */
-	protected $user;
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\request\request */
+	protected $request;
 
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var \phpbb\request\request_interface */
-	protected $request;
-
-	/** @var \phpbb\cache\driver\driver_interface */
-	protected $cache;
-
-	/** @var \phpbb\auth\auth */
-	protected $auth;
-
 	/** @var \phpbb\textformatter\cache_interface */
-	protected $text_formatter_cache;
+	protected $tf_cache;
 
-	/** @var string */
-	protected $this->root_path;
+	/** @var \phpbb\user */
+	protected $user;
 
-	/** @var string */
+	/** @var string phpBB admin path */
+	protected $admin_path;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
 	protected $php_ext;
 
-	/** @var \phpbb\event\dispatcher_interface */
-	protected $dispatcher;
+	/** @var array phpBB tables */
+	protected $tables;
 
-	public function main($id, $mode)
+	/** @var string */
+	protected $mode;
+
+	/** @var string */
+	protected $u_mode;
+
+	/** @var string */
+	protected $styles_path;
+
+	/** @var string */
+	protected $styles_path_absolute = 'styles';
+
+	/** @var int */
+	protected $default_style = 0;
+
+	/** @var int */
+	protected $styles_list_cols = 0;
+
+	/** @var array */
+	protected $reserved_style_names = ['adm', 'admin', 'all'];
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth						$auth			Auth object
+	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
+	 * @param \phpbb\config\config					$config			Config object
+	 * @param \phpbb\db\driver\driver_interface		$db				Database object
+	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
+	 * @param \phpbb\acp\helper\controller			$helper			ACP Controller helper object
+	 * @param \phpbb\language\language				$language		Language object
+	 * @param \phpbb\log\log						$log			Log object
+	 * @param \phpbb\request\request				$request		Request object
+	 * @param \phpbb\template\template				$template		Template object
+	 * @param \phpbb\textformatter\cache_interface	$tf_cache		Textformatter cache object
+	 * @param \phpbb\user							$user			User object
+	 * @param string								$admin_path		phpBB admin path
+	 * @param string								$root_path		phpBB root path
+	 * @param string								$php_ext		php File extension
+	 * @param array									$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\cache\driver\driver_interface $cache,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\textformatter\cache_interface $tf_cache,
+		\phpbb\user $user,
+		$admin_path,
+		$root_path,
+		$php_ext,
+		$tables
+	)
 	{
-		$this->db = $db;
-		$this->user = $user;
-		$this->template = $template;
-		$this->request = $request;
-		$this->cache = $cache;
-		$this->auth = $auth;
-		$this->text_formatter_cache = $phpbb_container->get('text_formatter.cache');
-		$this->config = $config;
-		$this->phpbb_root_path = $this->root_path;
-		$this->php_ext = $this->php_ext;
-		$this->dispatcher = $phpbb_dispatcher;
+		$this->auth			= $auth;
+		$this->cache		= $cache;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->tf_cache		= $tf_cache;
+		$this->user			= $user;
 
-		$this->default_style = $this->config['default_style'];
-		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
+		$this->admin_path	= $admin_path;
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
 
-		$this->u_base_action = append_sid("{$this->admin_path}index.{$this->php_ext}", "i={$id}");
-		$this->s_hidden_fields = [
-			'mode'		=> $mode,
-		];
-
+	public function main($mode)
+	{
 		$this->language->add_lang('acp/styles');
 
-		$this->tpl_name = 'acp_styles';
-		$this->page_title = 'ACP_CAT_STYLES';
+		$this->default_style = $this->config['default_style'];
+		$this->styles_path = $this->root_path . $this->styles_path_absolute . '/';
+
+		$this->u_mode = 'acp_styles_' . $mode;
 		$this->mode = $mode;
 
 		$action = $this->request->variable('action', '');
-		$post_actions = ['install', 'activate', 'deactivate', 'uninstall'];
+		$actions = ['install', 'activate', 'deactivate', 'uninstall'];
 
-		foreach ($post_actions as $key)
+		foreach ($actions as $key)
 		{
 			if ($this->request->is_set_post($key))
 			{
@@ -100,26 +165,27 @@ class styles
 
 		// The uninstall action uses confirm_box() to verify the validity of the request,
 		// so there is no need to check for a valid token here.
-		if (in_array($action, $post_actions) && $action != 'uninstall')
+		if (in_array($action, $actions) && $action != 'uninstall')
 		{
 			$is_valid_request = check_link_hash($this->request->variable('hash', ''), $action) || check_form_key('styles_management');
 
 			if (!$is_valid_request)
 			{
-				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 			}
 		}
 
-		if ($action != '')
+		$s_hidden_fields = ['mode' => $mode];
+
+		if ($action !== '')
 		{
-			$this->s_hidden_fields['action'] = $action;
+			$s_hidden_fields['action'] = $action;
 		}
 
 		$this->template->assign_vars([
-			'U_ACTION'			=> $this->u_base_action,
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields($this->s_hidden_fields),
-			]
-		);
+			'U_ACTION'			=> $this->helper->route($this->u_mode),
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
+		]);
 
 		/**
 		 * Run code before ACP styles action execution
@@ -136,28 +202,21 @@ class styles
 		// Execute actions
 		switch ($action)
 		{
-			case 'install':
-				$this->action_install();
-				return;
-			case 'uninstall':
-				$this->action_uninstall();
-				return;
 			case 'activate':
-				$this->action_activate();
-				return;
 			case 'deactivate':
-				$this->action_deactivate();
-				return;
+			case 'install':
+			case 'uninstall':
 			case 'details':
-				$this->action_details();
-				return;
+				return $this->{'action_' . $action}();
 			default:
-				$this->frontend();
+				return $this->frontend();
 		}
 	}
 
 	/**
-	 * Main page
+	 * Main page.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function frontend()
 	{
@@ -168,18 +227,22 @@ class styles
 		{
 			case 'style':
 				$this->welcome_message('ACP_STYLES', 'ACP_STYLES_EXPLAIN');
-				$this->show_installed();
-				return;
+
+				return $this->show_installed();
 			case 'install':
 				$this->welcome_message('INSTALL_STYLES', 'INSTALL_STYLES_EXPLAIN');
-				$this->show_available();
-				return;
+
+				return $this->show_available();
+
+			default:
+				return trigger_error($this->language->lang('NO_MODE') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
-		trigger_error($this->language->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
 	}
 
 	/**
-	 * Install style(s)
+	 * Install style(s).
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_install()
 	{
@@ -191,17 +254,20 @@ class styles
 
 		// Install each style
 		$messages = [];
-		$installed_names = [];
 		$installed_dirs = [];
+		$installed_names = [];
+
 		foreach ($dirs as $dir)
 		{
 			if (in_array($dir, $this->reserved_style_names))
 			{
 				$messages[] = $this->language->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
+
 				continue;
 			}
 
 			$found = false;
+
 			foreach ($styles as &$style)
 			{
 				// Check if:
@@ -217,34 +283,39 @@ class styles
 					$found = true;
 					$installed_names[] = $style['style_name'];
 					$installed_dirs[] = $style['style_path'];
-					$messages[] = sprintf($this->language->lang('STYLE_INSTALLED'), htmlspecialchars($style['style_name']));
+					$messages[] = $this->language->lang('STYLE_INSTALLED', htmlspecialchars($style['style_name']));
 				}
 			}
+
 			if (!$found)
 			{
-				$messages[] = sprintf($this->language->lang('STYLE_NOT_INSTALLED'), htmlspecialchars($dir));
+				$messages[] = $this->language->lang('STYLE_NOT_INSTALLED', htmlspecialchars($dir));
 			}
 		}
 
 		// Invalidate the text formatter's cache for the new styles to take effect
 		if (!empty($installed_names))
 		{
-			$this->text_formatter_cache->invalidate();
+			$this->tf_cache->invalidate();
 		}
 
 		// Show message
-		if (!count($messages))
+		if (empty($messages))
 		{
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
+
 		$message = implode('<br />', $messages);
-		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=style' . '">&laquo; ' . $this->language->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
-		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=install' . '">&raquo; ' . $this->language->lang('STYLE_INSTALLED_RETURN_UNINSTALLED_STYLES') . '</a>';
-		trigger_error($message, E_USER_NOTICE);
+		$message .= '<br /><br /><a href="' . $this->helper->route('acp_styles_manage') . '">&laquo; ' . $this->language->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
+		$message .= '<br /><br /><a href="' . $this->helper->route('acp_styles_install') . '">&raquo; ' . $this->language->lang('STYLE_INSTALLED_RETURN_UNINSTALLED_STYLES') . '</a>';
+
+		return $this->helper->message($message);
 	}
 
 	/**
-	 * Confirm styles removal
+	 * Confirm styles removal.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_uninstall()
 	{
@@ -253,7 +324,7 @@ class styles
 
 		// Don't remove prosilver, you can still deactivate it.
 		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . "
+			FROM ' . $this->tables['styles'] . "
 			WHERE style_name = '" . $this->db->sql_escape('prosilver') . "'";
 		$result = $this->db->sql_query($sql);
 		$prosilver_id = (int) $this->db->sql_fetchfield('style_id');
@@ -261,95 +332,99 @@ class styles
 
 		if ($prosilver_id && in_array($prosilver_id, $ids))
 		{
-			trigger_error($this->language->lang('UNINSTALL_PROSILVER') . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('UNINSTALL_PROSILVER') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		// Check if confirmation box was submitted
 		if (confirm_box(true))
 		{
 			// Uninstall
-			$this->action_uninstall_confirmed($ids, $this->request->variable('confirm_delete_files', false));
-			return;
+			return $this->action_uninstall_confirmed($ids, $this->request->variable('confirm_delete_files', false));
 		}
 
+		$this->template->assign_var('S_CONFIRM_DELETE', true);
+
 		// Confirm box
-		$s_hidden = build_hidden_fields([
+		confirm_box(false, $this->language->lang('CONFIRM_UNINSTALL_STYLES'), build_hidden_fields([
 			'action'	=> 'uninstall',
 			'ids'		=> $ids,
-		]);
-		$this->template->assign_var('S_CONFIRM_DELETE', true);
-		confirm_box(false, $this->language->lang('CONFIRM_UNINSTALL_STYLES'), $s_hidden, 'acp_styles.html');
+		]), 'acp_styles.html');
 
 		// Canceled - show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
 	 * Uninstall styles(s)
 	 *
-	 * @param array $ids List of style IDs
-	 * @param bool $delete_files If true, script will attempt to remove files for selected styles
+	 * @param array		$ids			List of style IDs
+	 * @param bool		$delete_files	If true, script will attempt to remove files for selected styles
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
 		$default = $this->default_style;
-		$uninstalled = [];
 		$messages = [];
+		$uninstalled = [];
 
 		// Check styles list
 		foreach ($ids as $id)
 		{
 			if (!$id)
 			{
-				trigger_error($this->language->lang('INVALID_STYLE_ID') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('INVALID_STYLE_ID') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 			}
+
 			if ($id == $default)
 			{
-				trigger_error($this->language->lang('UNINSTALL_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('UNINSTALL_DEFAULT') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 			}
+
 			$uninstalled[$id] = false;
 		}
 
 		// Order by reversed style_id, so parent styles would be removed after child styles
 		// This way parent and child styles can be removed in same function call
 		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE . '
-			WHERE style_id IN (' . implode(', ', $ids) . ')
+			FROM ' . $this->tables['styles'] . '
+			WHERE ' . $this->db->sql_in_set('style_id', $ids) . '
 			ORDER BY style_id DESC';
 		$result = $this->db->sql_query($sql);
-
-		$rows = $this->db->sql_fetchrowset($result);
+		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		// Uinstall each style
+		// Uninstall each style
 		$uninstalled = [];
-		foreach ($rows as $style)
+		foreach ($rowset as $style)
 		{
-			$result = $this->uninstall_style($style, $delete_files);
+			$result = $this->uninstall_style($style);
 
 			if (is_string($result))
 			{
 				$messages[] = $result;
 				continue;
 			}
-			$messages[] = sprintf($this->language->lang('STYLE_UNINSTALLED'), $style['style_name']);
+
+			$messages[] = $this->language->lang('STYLE_UNINSTALLED', $style['style_name']);
 			$uninstalled[] = $style['style_name'];
 
 			// Attempt to delete files
 			if ($delete_files)
 			{
-				$messages[] = sprintf($this->language->lang[$this->delete_style_files($style['style_path']) ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED'], $style['style_name']);
+				$s_deleted = $this->delete_style_files($style['style_path']);
+
+				$messages[] = $this->language->lang($s_deleted ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED', $style['style_name']);
 			}
 		}
 
 		if (empty($messages))
 		{
 			// Nothing to uninstall?
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		// Log action
-		if (count($uninstalled))
+		if (!empty($uninstalled))
 		{
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DELETE', false, [implode(', ', $uninstalled)]);
 		}
@@ -358,11 +433,13 @@ class styles
 		$this->cache->purge();
 
 		// Show message
-		trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_NOTICE);
+		return $this->helper->message_back(implode('<br />', $messages), $this->u_mode);
 	}
 
 	/**
-	 * Activate styles
+	 * Activate styles.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_activate()
 	{
@@ -370,20 +447,22 @@ class styles
 		$ids = $this->request_vars('id', 0, true);
 
 		// Activate styles
-		$sql = 'UPDATE ' . STYLES_TABLE . '
+		$sql = 'UPDATE ' . $this->tables['styles'] . '
 			SET style_active = 1
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
-		$this->cache->destroy('sql', STYLES_TABLE);
+		$this->cache->destroy('sql', $this->tables['styles']);
 
 		// Show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
-	 * Deactivate styles
+	 * Deactivate styles.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function action_deactivate()
 	{
@@ -395,27 +474,27 @@ class styles
 		{
 			if ($id == $this->default_style)
 			{
-				trigger_error($this->language->lang('DEACTIVATE_DEFAULT') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('DEACTIVATE_DEFAULT') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 			}
 		}
 
 		// Reset default style for users who use selected styles
-		$sql = 'UPDATE ' . USERS_TABLE . '
+		$sql = 'UPDATE ' . $this->tables['users'] . '
 			SET user_style = ' . (int) $this->default_style . '
-			WHERE user_style IN (' . implode(', ', $ids) . ')';
+			WHERE ' . $this->db->sql_in_set('user_style', $ids);
 		$this->db->sql_query($sql);
 
 		// Deactivate styles
-		$sql = 'UPDATE ' . STYLES_TABLE . '
+		$sql = 'UPDATE ' . $this->tables['styles'] . '
 			SET style_active = 0
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
-		$this->cache->destroy('sql', STYLES_TABLE);
+		$this->cache->destroy('sql', $this->tables['styles']);
 
 		// Show styles list
-		$this->frontend();
+		return $this->frontend();
 	}
 
 	/**
@@ -424,9 +503,10 @@ class styles
 	protected function action_details()
 	{
 		$id = $this->request->variable('id', 0);
+
 		if (!$id)
 		{
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		// Get all styles
@@ -446,7 +526,7 @@ class styles
 
 		if ($style === false)
 		{
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		// Read style configuration file
@@ -464,7 +544,7 @@ class styles
 		{
 			if (!check_form_key($form_key))
 			{
-				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				return trigger_error($this->language->lang('FORM_INVALID') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 			}
 
 			$update = [
@@ -472,20 +552,22 @@ class styles
 				'style_parent_id'	=> $this->request->variable('style_parent', (int) $style['style_parent_id']),
 				'style_active'		=> $this->request->variable('style_active', (int) $style['style_active']),
 			];
-			$update_action = $this->u_action . '&amp;action=details&amp;id=' . $id;
+
+			$update_action = $this->helper->route($this->u_mode, ['action' => 'details', 'id' => $id]);
 
 			// Check style name
 			if ($update['style_name'] != $style['style_name'])
 			{
 				if (!strlen($update['style_name']))
 				{
-					trigger_error($this->language->lang('STYLE_ERR_STYLE_NAME') . adm_back_link($update_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('STYLE_ERR_STYLE_NAME') . adm_back_link($update_action), E_USER_WARNING);
 				}
+
 				foreach ($styles as $row)
 				{
 					if ($row['style_name'] == $update['style_name'])
 					{
-						trigger_error($this->language->lang('STYLE_ERR_NAME_EXIST') . adm_back_link($update_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('STYLE_ERR_NAME_EXIST') . adm_back_link($update_action), E_USER_WARNING);
 					}
 				}
 			}
@@ -509,9 +591,10 @@ class styles
 							break;
 						}
 					}
+
 					if (!$found)
 					{
-						trigger_error($this->language->lang('STYLE_ERR_INVALID_PARENT') . adm_back_link($update_action), E_USER_WARNING);
+						return trigger_error($this->language->lang('STYLE_ERR_INVALID_PARENT') . adm_back_link($update_action), E_USER_WARNING);
 					}
 				}
 				else
@@ -529,7 +612,7 @@ class styles
 			{
 				if (!$update['style_active'] && $this->default_style == $style['style_id'])
 				{
-					trigger_error($this->language->lang('DEACTIVATE_DEFAULT') . adm_back_link($update_action), E_USER_WARNING);
+					return trigger_error($this->language->lang('DEACTIVATE_DEFAULT') . adm_back_link($update_action), E_USER_WARNING);
 				}
 			}
 			else
@@ -538,11 +621,11 @@ class styles
 			}
 
 			// Update data
-			if (count($update))
+			if (!empty($update))
 			{
-				$sql = 'UPDATE ' . STYLES_TABLE . '
-					SET ' . $this->db->sql_build_array('UPDATE', $update) . "
-					WHERE style_id = $id";
+				$sql = 'UPDATE ' . $this->tables['styles'] . '
+					SET ' . $this->db->sql_build_array('UPDATE', $update) . '
+					WHERE style_id = ' . (int) $id;
 				$this->db->sql_query($sql);
 
 				$style = array_merge($style, $update);
@@ -569,13 +652,13 @@ class styles
 				{
 					trigger_error($this->language->lang('STYLE_DEFAULT_CHANGE_INACTIVE') . adm_back_link($update_action), E_USER_WARNING);
 				}
+
 				$this->config->set('default_style', $id);
 				$this->cache->purge();
 			}
 
 			// Show styles list
-			$this->frontend();
-			return;
+			return $this->frontend();
 		}
 
 		// Show page title
@@ -589,13 +672,11 @@ class styles
 				'STYLE_NAME'	=> htmlspecialchars($row['style_name']),
 				'LEVEL'			=> $row['level'],
 				'SPACER'		=> str_repeat('&nbsp; ', $row['level']),
-				]
-			);
+			]);
 		}
 
 		// Show style details
 		$this->template->assign_vars([
-			'S_STYLE_DETAILS'	=> true,
 			'STYLE_ID'			=> $style['style_id'],
 			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
 			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
@@ -603,22 +684,26 @@ class styles
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
-			'S_STYLE_DEFAULT'	=> ($style['style_id'] == $this->default_style),
-			]
-		);
+			'S_STYLE_DEFAULT'	=> $style['style_id'] == $this->default_style,
+			'S_STYLE_DETAILS'	=> true,
+		]);
+
+		return $this->helper->render('acp_styles.html', $this->language->lang('ACP_STYLES_MANAGE'));
 	}
 
 	/**
-	 * List installed styles
+	 * List installed styles.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function show_installed()
 	{
 		// Get all installed styles
 		$styles = $this->get_styles();
 
-		if (!count($styles))
+		if (empty($styles))
 		{
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		usort($styles, [$this, 'sort_styles']);
@@ -645,36 +730,37 @@ class styles
 		{
 			if (empty($style['_shown']))
 			{
-				$style['_note'] = sprintf($this->language->lang('REQUIRES_STYLE'), htmlspecialchars($style['style_parent_tree']));
+				$style['_note'] = $this->language->lang('REQUIRES_STYLE', htmlspecialchars($style['style_parent_tree']));
 				$this->list_style($style, 0);
 			}
 		}
 
 		// Add buttons
 		$this->template->assign_block_vars('extra_actions', [
-				'ACTION_NAME'	=> 'activate',
-				'L_ACTION'		=> $this->language->lang('STYLE_ACTIVATE'),
-			]
-		);
+			'ACTION_NAME'	=> 'activate',
+			'L_ACTION'		=> $this->language->lang('STYLE_ACTIVATE'),
+		]);
 
 		$this->template->assign_block_vars('extra_actions', [
-				'ACTION_NAME'	=> 'deactivate',
-				'L_ACTION'		=> $this->language->lang('STYLE_DEACTIVATE'),
-			]
-		);
+			'ACTION_NAME'	=> 'deactivate',
+			'L_ACTION'		=> $this->language->lang('STYLE_DEACTIVATE'),
+		]);
 
 		if (isset($this->style_counters) && $this->style_counters['total'] > 1)
 		{
 			$this->template->assign_block_vars('extra_actions', [
-					'ACTION_NAME'	=> 'uninstall',
-					'L_ACTION'		=> $this->language->lang('STYLE_UNINSTALL'),
-				]
-			);
+				'ACTION_NAME'	=> 'uninstall',
+				'L_ACTION'		=> $this->language->lang('STYLE_UNINSTALL'),
+			]);
 		}
+
+		return $this->helper->render('acp_styles.html', $this->language->lang('ACP_STYLES_MANAGE'));
 	}
 
 	/**
-	 * Show list of styles that can be installed
+	 * Show list of styles that can be installed.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function show_available()
 	{
@@ -684,17 +770,16 @@ class styles
 		// Show styles
 		if (empty($styles))
 		{
-			trigger_error($this->language->lang('NO_UNINSTALLED_STYLE') . adm_back_link($this->u_base_action), E_USER_NOTICE);
+			return trigger_error($this->language->lang('NO_UNINSTALLED_STYLE') . $this->helper->adm_back_route($this->u_mode), E_USER_NOTICE);
 		}
 
 		usort($styles, [$this, 'sort_styles']);
 
 		$this->styles_list_cols = 3;
 		$this->template->assign_vars([
-			'STYLES_LIST_COLS'	=> $this->styles_list_cols,
+			'STYLES_LIST_COLS'			=> $this->styles_list_cols,
 			'STYLES_LIST_HIDE_COUNT'	=> true,
-			]
-		);
+		]);
 
 		// Show styles
 		foreach ($styles as &$style)
@@ -712,6 +797,7 @@ class styles
 					}
 				}
 			}
+
 			if (!$has_parent)
 			{
 				$this->list_style($style, 0);
@@ -732,26 +818,30 @@ class styles
 		if (isset($this->style_counters) && $this->style_counters['caninstall'] > 0)
 		{
 			$this->template->assign_block_vars('extra_actions', [
-					'ACTION_NAME'	=> 'install',
-					'L_ACTION'		=> $this->language->lang('INSTALL_STYLES'),
-				]
-			);
+				'ACTION_NAME'	=> 'install',
+				'L_ACTION'		=> $this->language->lang('INSTALL_STYLES'),
+			]);
 		}
+
+		return $this->helper->render('acp_styles.html', $this->language->lang('ACP_STYLES_MANAGE'));
 	}
 
 	/**
-	 * Find styles available for installation
+	 * Find styles available for installation.
 	 *
-	 * @param bool $all if true, function will return all installable styles. if false, function will return only styles that can be installed
-	 * @return array List of styles
+	 * @param bool		$all		if true, function will return all installable styles
+	 * 								if false, function will return only styles that can be installed
+	 * @return array				The styles list
 	 */
 	protected function find_available($all)
 	{
 		// Get list of installed styles
 		$installed = $this->get_styles();
 
+		$styles = [];
 		$installed_dirs = [];
 		$installed_names = [];
+
 		foreach ($installed as $style)
 		{
 			$installed_dirs[] = $style['style_path'];
@@ -759,7 +849,7 @@ class styles
 				'path'		=> $style['style_path'],
 				'id'		=> $style['style_id'],
 				'parent'	=> $style['style_parent_id'],
-				'tree'		=> (strlen($style['style_parent_tree']) ? $style['style_parent_tree'] . '/' : '') . $style['style_path'],
+				'tree'		=> strlen($style['style_parent_tree'] ? $style['style_parent_tree'] . '/' : '') . $style['style_path'],
 			];
 		}
 
@@ -767,7 +857,6 @@ class styles
 		$dirs = $this->find_style_dirs();
 
 		// Find styles that can be installed
-		$styles = [];
 		foreach ($dirs as $dir)
 		{
 			if (in_array($dir, $installed_dirs))
@@ -793,6 +882,7 @@ class styles
 				'bbcode_bitfield'	=> $cfg['template_bitfield'],
 				'style_parent_id'	=> 0,
 				'style_parent_tree'	=> '',
+
 				// Extra values for styles list
 				// All extra variable start with _ so they won't be confused with data that can be added to styles table
 				'_inherit_name'			=> $parent,
@@ -814,7 +904,7 @@ class styles
 				{
 					// Parent style is not installed yet
 					$style['_available'] = false;
-					$style['_note'] = sprintf($this->language->lang('REQUIRES_STYLE'), htmlspecialchars($parent));
+					$style['_note'] = $this->language->lang('REQUIRES_STYLE', htmlspecialchars($parent));
 				}
 			}
 
@@ -830,11 +920,12 @@ class styles
 	/**
 	 * Show styles list
 	 *
-	 * @param array $styles styles list
-	 * @param int $parent parent style id
-	 * @param int $level style inheritance level
+	 * @param array		$styles			The styles list
+	 * @param int		$parent			The parent style identifier
+	 * @param int		$level			The style inheritance level
+	 * @return void
 	 */
-	protected function show_styles_list(&$styles, $parent, $level)
+	protected function show_styles_list(array &$styles, $parent, $level)
 	{
 		foreach ($styles as &$style)
 		{
@@ -847,13 +938,14 @@ class styles
 	}
 
 	/**
-	 * Show available styles tree
+	 * Show available styles tree.
 	 *
-	 * @param array $styles Styles list, passed as reference
-	 * @param string $name Name of parent style
-	 * @param int $level Styles tree level
+	 * @param array		$styles			The styles list
+	 * @param string	$name			The parent style name
+	 * @param int		$level			The styles inheritance level
+	 * @return void
 	 */
-	protected function show_available_child_styles(&$styles, $name, $level)
+	protected function show_available_child_styles(array &$styles, $name, $level)
 	{
 		foreach ($styles as &$style)
 		{
@@ -866,18 +958,19 @@ class styles
 	}
 
 	/**
-	 * Update styles tree
+	 * Update styles tree.
 	 *
-	 * @param array $styles Styles list, passed as reference
-	 * @param array|false $style Current style, false if root
-	 * @return bool True if something was updated, false if not
+	 * @param array			$styles		The styles list
+	 * @param array|false	$style		The current style, false if root
+	 * @return bool						True if something was updated, false if not
 	 */
-	protected function update_styles_tree(&$styles, $style = false)
+	protected function update_styles_tree(array &$styles, $style = false)
 	{
-		$parent_id = ($style === false) ? 0 : $style['style_id'];
-		$parent_tree = ($style === false) ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
 		$update = false;
 		$updated = false;
+		$parent_id = $style === false ? 0 : $style['style_id'];
+		$parent_tree = $style === false ? '' : ($style['style_parent_tree'] == '' ? '' : $style['style_parent_tree']) . $style['style_path'];
+
 		foreach ($styles as &$row)
 		{
 			if ($row['style_parent_id'] == $parent_id)
@@ -887,57 +980,65 @@ class styles
 					$row['style_parent_tree'] = $parent_tree;
 					$update = true;
 				}
+
 				$updated |= $this->update_styles_tree($styles, $row);
 			}
 		}
+
 		if ($update)
 		{
-			$sql = 'UPDATE ' . STYLES_TABLE . "
+			$sql = 'UPDATE ' . $this->tables['styles'] . "
 				SET style_parent_tree = '" . $this->db->sql_escape($parent_tree) . "'
-				WHERE style_parent_id = {$parent_id}";
+				WHERE style_parent_id = " . (int) $parent_id;
 			$this->db->sql_query($sql);
+
 			$updated = true;
 		}
+
 		return $updated;
 	}
 
 	/**
-	 * Find all possible parent styles for style
+	 * Find all possible parent styles for style.
 	 *
-	 * @param array $styles list of styles
-	 * @param int $id id of style
-	 * @param int $parent current parent style id
-	 * @param int $level current tree level
-	 * @return array Style ids, names and levels
+	 * @param array		$styles		The styles list
+	 * @param int		$id			The style identifier
+	 * @param int		$parent		The parent style identifier
+	 * @param int		$level		The current tree level
+	 * @return array				The style identifiers, names and levels
 	 */
 	protected function find_possible_parents($styles, $id = -1, $parent = 0, $level = 0)
 	{
 		$results = [];
+
 		foreach ($styles as $style)
 		{
 			if ($style['style_id'] != $id && $style['style_parent_id'] == $parent)
 			{
 				$results[] = [
-					'style_id'		=> $style['style_id'],
-					'style_name'	=> $style['style_name'],
-					'style_path'	=> $style['style_path'],
+					'style_id'			=> $style['style_id'],
+					'style_name'		=> $style['style_name'],
+					'style_path'		=> $style['style_path'],
 					'style_parent_id'	=> $style['style_parent_id'],
 					'style_parent_tree'	=> $style['style_parent_tree'],
-					'level'			=> $level,
+					'level'				=> $level,
 				];
+
 				$results = array_merge($results, $this->find_possible_parents($styles, $id, $style['style_id'], $level + 1));
 			}
 		}
+
 		return $results;
 	}
 
 	/**
 	 * Show item in styles list
 	 *
-	 * @param array $style style row
-	 * @param int $level style inheritance level
+	 * @param array		$style		The style data
+	 * @param int		$level		The style inheritance level
+	 * @return void
 	 */
-	protected function list_style(&$style, $level)
+	protected function list_style(array &$style, $level)
 	{
 		// Mark row as shown
 		if (!empty($style['_shown']))
@@ -951,27 +1052,27 @@ class styles
 		$actions = [];
 		$row = [
 			// Style data
-			'STYLE_ID'		=> $style['style_id'],
-			'STYLE_NAME'	=> htmlspecialchars($style['style_name']),
+			'STYLE_ID'			=> $style['style_id'],
+			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
 			'STYLE_PHPBB_VERSION'	=> $this->read_style_cfg($style['style_path'])['phpbb_version'],
-			'STYLE_PATH'	=> htmlspecialchars($style['style_path']),
+			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
-			'STYLE_ACTIVE'	=> $style['style_active'],
+			'STYLE_ACTIVE'		=> $style['style_active'],
 
 			// Additional data
-			'DEFAULT'		=> ($style['style_id'] && $style['style_id'] == $this->default_style),
-			'USERS'			=> (isset($style['_users'])) ? $style['_users'] : '',
-			'LEVEL'			=> $level,
-			'PADDING'		=> (4 + 16 * $level),
-			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
+			'DEFAULT'			=> ($style['style_id'] && $style['style_id'] == $this->default_style),
+			'USERS'				=> isset($style['_users']) ? $style['_users'] : '',
+			'LEVEL'				=> $level,
+			'PADDING'			=> (4 + 16 * $level),
+			'SHOW_COPYRIGHT'	=> $style['style_id'] ? false : true,
 			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
 
 			// Comment to show below style
-			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',
+			'COMMENT'			=> isset($style['_note']) ? $style['_note'] : '',
 
 			// The following variables should be used by hooks to add custom HTML code
-			'EXTRA'			=> '',
-			'EXTRA_OPTIONS'	=> '',
+			'EXTRA'				=> '',
+			'EXTRA_OPTIONS'		=> '',
 		];
 
 		// Status specific data
@@ -981,37 +1082,31 @@ class styles
 
 			// Details
 			$actions[] = [
-				'U_ACTION'	=> $this->u_action . '&amp;action=details&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->language->lang('DETAILS'),
+				'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'details', 'id' => $style['style_id']]),
 			];
 
-			// Activate/Deactive
+			// Activate/Deactivate
 			$action_name = ($style['style_active'] ? 'de' : '') . 'activate';
 
 			$actions[] = [
-				'U_ACTION'	=> $this->u_action . '&amp;action=' . $action_name . '&amp;hash=' . generate_link_hash($action_name) . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->language->lang['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE'],
+				'L_ACTION'	=> $this->language->lang(['STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE']),
+				'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => $action_name, 'id' => $style['style_id'], 'hash' => generate_link_hash($action_name)]),
 			];
-
-/*			// Export
-			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;hash=' . generate_link_hash('export') . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->language->lang('EXPORT')
-			); */
 
 			if ($style['style_name'] !== 'prosilver')
 			{
 				// Uninstall
 				$actions[] = [
-					'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
 					'L_ACTION'	=> $this->language->lang('STYLE_UNINSTALL'),
+					'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'uninstall', 'id' => $style['style_id'], 'hash' => generate_link_hash('uninstall')]),
 				];
 			}
 
 			// Preview
 			$actions[] = [
-				'U_ACTION'	=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'style=' . $style['style_id']),
 				'L_ACTION'	=> $this->language->lang('PREVIEW'),
+				'U_ACTION'	=> append_sid($this->root_path . 'index.' . $this->php_ext, 'style=' . $style['style_id']),
 			];
 		}
 		else
@@ -1026,56 +1121,59 @@ class styles
 			else
 			{
 				$actions[] = [
-					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
+					'U_ACTION'	=> $this->helper->route($this->u_mode, ['action' => 'install', 'dir' => $style['style_path'], 'hash' => generate_link_hash('install')]),
 					'L_ACTION'	=> $this->language->lang('INSTALL_STYLE'),
 				];
 			}
 		}
 
-		// todo: add hook
+		/** @todo: add hook */
 
 		// Assign template variables
 		$this->template->assign_block_vars('styles_list', $row);
+
 		foreach ($actions as $action)
 		{
 			$this->template->assign_block_vars('styles_list.actions', $action);
 		}
 
 		// Increase counters
-		$counter = ($style['style_id']) ? ($style['style_active'] ? 'active' : 'inactive') : (empty($style['_available']) ? 'cannotinstall' : 'caninstall');
+		$counter = $style['style_id'] ? ($style['style_active'] ? 'active' : 'inactive') : (empty($style['_available']) ? 'cannotinstall' : 'caninstall');
+
 		if (!isset($this->style_counters))
 		{
 			$this->style_counters = [
-				'total'		=> 0,
-				'active'	=> 0,
-				'inactive'	=> 0,
+				'total'			=> 0,
+				'active'		=> 0,
+				'inactive'		=> 0,
 				'caninstall'	=> 0,
 				'cannotinstall'	=> 0,
 			];
 		}
+
 		$this->style_counters[$counter]++;
 		$this->style_counters['total']++;
 	}
 
 	/**
-	 * Show welcome message
+	 * Show welcome message.
 	 *
-	 * @param string $title main title
-	 * @param string $description page description
+	 * @param string	$title			The page title
+	 * @param string	$description	The page description
+	 * @retun void
 	 */
 	protected function welcome_message($title, $description)
 	{
 		$this->template->assign_vars([
 			'L_TITLE'	=> $this->language->lang($title),
-			'L_EXPLAIN'	=> (isset($this->language->lang($description))) ? $this->language->lang($description) : '',
-			]
-		);
+			'L_EXPLAIN'	=> $this->language->lang($description),
+		]);
 	}
 
 	/**
-	 * Find all directories that have styles
+	 * Find all directories that have styles.
 	 *
-	 * @return array Directory names
+	 * @return array					Directory names
 	 */
 	protected function find_style_dirs()
 	{
@@ -1104,7 +1202,11 @@ class styles
 	}
 
 	/**
-	 * Sort styles
+	 * Sort styles.
+	 *
+	 * @param array		$style1
+	 * @param array		$style2
+	 * @return int
 	 */
 	public function sort_styles($style1, $style2)
 	{
@@ -1112,18 +1214,20 @@ class styles
 		{
 			return ($style1['style_active']) ? -1 : 1;
 		}
+
 		if (isset($style1['_available']) && $style1['_available'] != $style2['_available'])
 		{
 			return ($style1['_available']) ? -1 : 1;
 		}
+
 		return strcasecmp(isset($style1['style_name']) ? $style1['style_name'] : $style1['name'], isset($style2['style_name']) ? $style2['style_name'] : $style2['name']);
 	}
 
 	/**
-	 * Read style configuration file
+	 * Read style configuration file.
 	 *
-	 * @param string $dir style directory
-	 * @return array|bool Style data, false on error
+	 * @param string		$dir	The style directory
+	 * @return array|bool			The style data, false on error
 	 */
 	protected function read_style_cfg($dir)
 	{
@@ -1160,10 +1264,10 @@ class styles
 	}
 
 	/**
-	 * Install style
+	 * Install style.
 	 *
-	 * @param array $style style data
-	 * @return int Style id
+	 * @param array		$style		The style data
+	 * @return int					The style identifier
 	 */
 	protected function install_style($style)
 	{
@@ -1180,7 +1284,7 @@ class styles
 		// Add to database
 		$this->db->sql_transaction('begin');
 
-		$sql = 'INSERT INTO ' . STYLES_TABLE . '
+		$sql = 'INSERT INTO ' . $this->tables['styles'] . '
 			' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
 
@@ -1190,42 +1294,41 @@ class styles
 
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_ADD', false, [$sql_ary['style_name']]);
 
-		return $id;
+		return (int) $id;
 	}
 
 	/**
-	 * Lists all styles
+	 * Lists all styles.
 	 *
-	 * @return array Rows with styles data
+	 * @return array				Rows with styles data
 	 */
 	protected function get_styles()
 	{
 		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE;
+			FROM ' . $this->tables['styles'];
 		$result = $this->db->sql_query($sql);
-
-		$rows = $this->db->sql_fetchrowset($result);
+		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		return $rows;
+		return $rowset;
 	}
 
 	/**
-	 * Count users for each style
+	 * Count users for each style.
 	 *
-	 * @return array Styles in following format: [style_id] = number of users
+	 * @return array				Styles in following format: [style_id] = number of users
 	 */
 	protected function get_users()
 	{
+		$style_count = [];
+
 		$sql = 'SELECT user_style, COUNT(user_style) AS style_count
-			FROM ' . USERS_TABLE . '
+			FROM ' . $this->tables['users'] . '
 			GROUP BY user_style';
 		$result = $this->db->sql_query($sql);
-
-		$style_count = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$style_count[$row['user_style']] = $row['style_count'];
+			$style_count[$row['user_style']] = (int) $row['style_count'];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -1233,10 +1336,10 @@ class styles
 	}
 
 	/**
-	 * Uninstall style
+	 * Uninstall style.
 	 *
-	 * @param array $style Style data
-	 * @return bool|string True on success, error message on error
+	 * @param array			$style		The style data
+	 * @return bool|string				True on success, error message on error
 	 */
 	protected function uninstall_style($style)
 	{
@@ -1245,37 +1348,37 @@ class styles
 
 		// Check if style has child styles
 		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . '
-			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
+			FROM ' . $this->tables['styles'] . '
+			WHERE style_parent_id = ' . (int) $id . "
+				OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
 		$result = $this->db->sql_query($sql);
-
 		$conflict = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
 		if ($conflict !== false)
 		{
-			return sprintf($this->language->lang('STYLE_UNINSTALL_DEPENDENT'), $style['style_name']);
+			return $this->language->lang('STYLE_UNINSTALL_DEPENDENT', $style['style_name']);
 		}
 
 		// Change default style for users
-		$sql = 'UPDATE ' . USERS_TABLE . '
+		$sql = 'UPDATE ' . $this->tables['users'] . '
 			SET user_style = ' . (int) $this->default_style . '
 			WHERE user_style = ' . $id;
 		$this->db->sql_query($sql);
 
 		// Uninstall style
-		$sql = 'DELETE FROM ' . STYLES_TABLE . '
+		$sql = 'DELETE FROM ' . $this->tables['styles'] . '
 			WHERE style_id = ' . $id;
 		$this->db->sql_query($sql);
 		return true;
 	}
 
 	/**
-	 * Delete all files in style directory
+	 * Delete all files in style directory.
 	 *
-	 * @param string $path Style directory
-	 * @param string $dir Directory to remove inside style's directory
-	 * @return bool True on success, false on error
+	 * @param string	$path		The style directory
+	 * @param string	$dir		Directory to remove inside the style's directory
+	 * @return bool					True on success, false on error
 	 */
 	protected function delete_style_files($path, $dir = '')
 	{
@@ -1292,7 +1395,9 @@ class styles
 				{
 					continue;
 				}
+
 				$filename = $dirname . '/' . $file;
+
 				if (is_dir($filename))
 				{
 					if (!$this->delete_style_files($path, $dir . '/' . $file))
@@ -1308,8 +1413,10 @@ class styles
 					}
 				}
 			}
+
 			closedir($dp);
 		}
+
 		if (!@rmdir($dirname))
 		{
 			return false;
@@ -1319,19 +1426,19 @@ class styles
 	}
 
 	/**
-	 * Get list of items from posted data
+	 * Get list of items from posted data.
 	 *
-	 * @param string $name Variable name
-	 * @param string|int $default Default value for array
-	 * @param bool $error If true, error will be triggered if list is empty
-	 * @return array Items
+	 * @param string		$name		Variable name
+	 * @param string|int	$default	Default value for array
+	 * @param bool			$error		If true, error will be triggered if list is empty
+	 * @return array					Items
 	 */
 	protected function request_vars($name, $default, $error = false)
 	{
 		$item = $this->request->variable($name, $default);
 		$items = $this->request->variable($name . 's', [$default]);
 
-		if (count($items) == 1 && $items[0] == $default)
+		if (count($items) === 1 && $items[0] == $default)
 		{
 			$items = [];
 		}
@@ -1341,24 +1448,25 @@ class styles
 			$items[] = $item;
 		}
 
-		if ($error && !count($items))
+		if ($error && empty($items))
 		{
-			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($this->language->lang('NO_MATCHING_STYLES_FOUND') . $this->helper->adm_back_route($this->u_mode), E_USER_WARNING);
 		}
 
 		return $items;
 	}
 
 	/**
-	 * Generates default bitfield
+	 * Generates default bitfield.
 	 *
 	 * This bitfield decides which bbcodes are defined in a template.
 	 *
-	 * @return string Bitfield
+	 * @return string			Bitfield
 	 */
 	protected function default_bitfield()
 	{
 		static $value;
+
 		if (isset($value))
 		{
 			return $value;
@@ -1367,7 +1475,7 @@ class styles
 		// Hardcoded template bitfield to add for new templates
 		$default_bitfield = '1111111111111';
 
-		$bitfield = new bitfield();
+		$bitfield = new \bitfield();
 		for ($i = 0; $i < strlen($default_bitfield); $i++)
 		{
 			if ($default_bitfield[$i] == '1')
@@ -1378,5 +1486,4 @@ class styles
 
 		return $bitfield->get_base64();
 	}
-
 }

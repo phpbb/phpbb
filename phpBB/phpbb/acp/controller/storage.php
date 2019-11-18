@@ -15,14 +15,26 @@ namespace phpbb\acp\controller;
 
 class storage
 {
-	/** @var \phpbb\config $config */
+	/** @var \phpbb\config\config $config */
 	protected $config;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\acp\helper\controller */
+	protected $helper;
+
 	/** @var \phpbb\language\language $lang */
-	protected $lang;
+	protected $language;
+
+	/** @var \phpbb\di\service_collection */
+	protected $provider_collection;
 
 	/** @var \phpbb\request\request */
 	protected $request;
+
+	/** @var \phpbb\di\service_collection */
+	protected $storage_collection;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -30,37 +42,46 @@ class storage
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\di\service_collection */
-	protected $provider_collection;
-
-	/** @var \phpbb\di\service_collection */
-	protected $storage_collection;
-
-	/** @var string */
-	public $page_title;
-
-	/** @var string */
-	public $tpl_name;
-
-	/** @var string */
-	public $u_action;
-
 	/**
-	 * @param string $id
-	 * @param string $mode
+	 * Constructor.
+	 *
+	 * @param \phpbb\config\config			$config					Config object
+	 * @param \phpbb\event\dispatcher		$dispatcher				Event dispatcher object
+	 * @param \phpbb\acp\helper\controller	$helper					ACP Controller helper object
+	 * @param \phpbb\language\language		$language				Language object
+	 * @param \phpbb\di\service_collection	$provider_collection	Provider collection object
+	 * @param \phpbb\request\request		$request				Request object
+	 * @param \phpbb\di\service_collection	$storage_collection		Storage collection object
+	 * @param \phpbb\template\template		$template				Template object
+	 * @param \phpbb\user					$user					User object
 	 */
-	public function main($id, $mode)
+	public function __construct(
+		\phpbb\config\config $config,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\acp\helper\controller $helper,
+		\phpbb\language\language $language,
+		\phpbb\di\service_collection $provider_collection,
+		\phpbb\request\request $request,
+		\phpbb\di\service_collection $storage_collection,
+		\phpbb\template\template $template,
+		\phpbb\user $user
+	)
 	{
-		$this->config = $phpbb_container->get('config');
-		$this->lang = $phpbb_container->get('language');
-		$this->request = $phpbb_container->get('request');
-		$this->template = $phpbb_container->get('template');
-		$this->user = $phpbb_container->get('user');
-		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
-		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
+		$this->config				= $config;
+		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
+		$this->language				= $language;
+		$this->provider_collection	= $provider_collection;
+		$this->request				= $request;
+		$this->storage_collection	= $storage_collection;
+		$this->template				= $template;
+		$this->user					= $user;
+	}
 
-		// Add necesary language files
-		$this->lang->add_lang(['acp/storage']);
+	public function main()
+	{
+		// Add necessary language files
+		$this->language->add_lang(['acp/storage']);
 
 		/**
 		 * Add language strings
@@ -70,32 +91,17 @@ class storage
 		 */
 		$this->dispatcher->dispatch('core.acp_storage_load');
 
-		$this->overview($id, $mode);
-	}
-
-	/**
-	 * @param string $id
-	 * @param string $mode
-	 */
-	public function overview($id, $mode)
-	{
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
-
-		// Template from adm/style
-		$this->tpl_name = 'acp_storage';
-
-		// Set page title
-		$this->page_title = 'STORAGE_TITLE';
 
 		if ($this->request->is_set_post('submit'))
 		{
 			$modified_storages = [];
-			$messages = [];
+			$errors = [];
 
 			if (!check_form_key($form_key))
 			{
-				$messages[] = $this->lang->lang('FORM_INVALID');
+				$errors[] = $this->language->lang('FORM_INVALID');
 			}
 
 			foreach ($this->storage_collection as $storage)
@@ -129,29 +135,29 @@ class storage
 				if ($modified)
 				{
 					$modified_storages[] = $storage_name;
-					$this->validate_data($storage_name, $messages);
+					$this->validate_data($storage_name, $errors);
 				}
 			}
 
 			if (!empty($modified_storages))
 			{
-				if (empty($messages))
+				if (empty($errors))
 				{
 					foreach ($modified_storages as $storage_name)
 					{
 						$this->update_storage_config($storage_name);
 					}
 
-					trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action), E_USER_NOTICE);
+					return $this->helper->message_back('STORAGE_UPDATE_SUCCESSFUL', 'acp_settings_storage');
 				}
 				else
 				{
-					trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
+					return trigger_error(implode('<br />', $errors) . $this->helper->adm_back_route('acp_settings_storage'), E_USER_WARNING);
 				}
 			}
 
 			// If there is no changes
-			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
+			return trigger_error($this->language->lang('STORAGE_NO_CHANGES') . $this->helper->adm_back_route('acp_settings_storage'), E_USER_WARNING);
 		}
 
 		$storage_stats = [];
@@ -163,29 +169,31 @@ class storage
 			}
 			catch (\phpbb\storage\exception\exception $e)
 			{
-				$free_space = $this->lang->lang('STORAGE_UNKNOWN');
+				$free_space = $this->language->lang('STORAGE_UNKNOWN');
 			}
 
 			$storage_stats[] = [
-				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
-				'files' => $storage->get_num_files(),
-				'size' => get_formatted_filesize($storage->get_size()),
-				'free_space' => $free_space,
+				'name'			=> $this->language->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
+				'files'			=> $storage->get_num_files(),
+				'size'			=> get_formatted_filesize($storage->get_size()),
+				'free_space'	=> $free_space,
 			];
 		}
 
 		$this->template->assign_vars([
-			'STORAGES' => $this->storage_collection,
-			'STORAGE_STATS' => $storage_stats,
-			'PROVIDERS' => $this->provider_collection,
+			'PROVIDERS'		=> $this->provider_collection,
+			'STORAGES'		=> $this->storage_collection,
+			'STORAGE_STATS'	=> $storage_stats,
 		]);
+
+		return $this->helper->render('acp_storage.html', $this->language->lang('ACP_SETTINGS_STORAGE'));
 	}
 
 	/**
 	 * Get the current provider from config
 	 *
-	 * @param string $storage_name Storage name
-	 * @return string The current provider
+	 * @param string	$storage_name	Storage name
+	 * @return string					The current provider
 	 */
 	protected function get_current_provider($storage_name)
 	{
@@ -195,8 +203,8 @@ class storage
 	/**
 	 * Get the new provider from the request
 	 *
-	 * @param string $storage_name Storage name
-	 * @return string The new provider
+	 * @param string	$storage_name	Storage name
+	 * @return string					The new provider
 	 */
 	protected function get_new_provider($storage_name)
 	{
@@ -206,8 +214,8 @@ class storage
 	/**
 	 * Get adapter definitions from a provider
 	 *
-	 * @param string $provider Provider class
-	 * @return array Adapter definitions
+	 * @param string	$provider		Provider class
+	 * @return array					Adapter definitions
 	 */
 	protected function get_provider_options($provider)
 	{
@@ -217,9 +225,9 @@ class storage
 	/**
 	 * Get the current value of the definition of a storage from config
 	 *
-	 * @param string $storage_name Storage name
-	 * @param string $definition Definition
-	 * @return string Definition value
+	 * @param string	$storage_name	Storage name
+	 * @param string	$definition		Definition
+	 * @return string					Definition value
 	 */
 	protected function get_current_definition($storage_name, $definition)
 	{
@@ -229,9 +237,9 @@ class storage
 	/**
 	 * Get the new value of the definition of a storage from the request
 	 *
-	 * @param string $storage_name Storage name
-	 * @param string $definition Definition
-	 * @return string Definition value
+	 * @param string	$storage_name	Storage name
+	 * @param string	$definition		Definition
+	 * @return string					Definition value
 	 */
 	protected function get_new_definition($storage_name, $definition)
 	{
@@ -241,12 +249,13 @@ class storage
 	/**
 	 * Validates data
 	 *
-	 * @param string $storage_name Storage name
-	 * @param array $messages Reference to messages array
+	 * @param string	$storage_name	Storage name
+	 * @param array		$errors			Reference to messages array
+	 * @return void
 	 */
-	protected function validate_data($storage_name, &$messages)
+	protected function validate_data($storage_name, array &$errors)
 	{
-		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
+		$storage_title = $this->language->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
 
 		// Check if provider exists
 		try
@@ -255,14 +264,14 @@ class storage
 		}
 		catch (\Exception $e)
 		{
-			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_EXISTS', $storage_title);
+			$errors[] = $this->language->lang('STORAGE_PROVIDER_NOT_EXISTS', $storage_title);
 			return;
 		}
 
 		// Check if provider is available
 		if (!$new_provider->is_available())
 		{
-			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_AVAILABLE', $storage_title);
+			$errors[] = $this->language->lang('STORAGE_PROVIDER_NOT_AVAILABLE', $storage_title);
 			return;
 		}
 
@@ -272,7 +281,7 @@ class storage
 		foreach ($new_options as $definition_key => $definition_value)
 		{
 			$provider = $this->provider_collection->get_by_class($this->get_new_provider($storage_name));
-			$definition_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
+			$definition_title = $this->language->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
 
 			$value = $this->get_new_definition($storage_name, $definition_key);
 
@@ -281,23 +290,26 @@ class storage
 				case 'email':
 					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
+						$errors[] = $this->language->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
+				// no break;
+
 				case 'text':
 				case 'password':
 					$maxlength = isset($definition_value['maxlength']) ? $definition_value['maxlength'] : 255;
 					if (strlen($value) > $maxlength)
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
+						$errors[] = $this->language->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
-					break;
+				break;
+
 				case 'radio':
 				case 'select':
 					if (!in_array($value, array_values($definition_value['options'])))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
+						$errors[] = $this->language->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
 					}
-					break;
+				break;
 			}
 		}
 	}
@@ -305,7 +317,8 @@ class storage
 	/**
 	 * Updates an storage with the info provided in the form
 	 *
-	 * @param string $storage_name Storage name
+	 * @param string	$storage_name	Storage name
+	 * @return void
 	 */
 	protected function update_storage_config($storage_name)
 	{

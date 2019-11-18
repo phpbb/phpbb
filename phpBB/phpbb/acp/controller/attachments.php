@@ -343,7 +343,7 @@ class attachments
 					{
 						$this->template->assign_block_vars('options', [
 							'S_LEGEND'		=> true,
-							'LEGEND'		=> $this->language->is_set($vars) ? $this->language->lang($vars) : $vars,
+							'LEGEND'		=> $this->language->lang($vars),
 						]);
 
 						continue;
@@ -354,7 +354,7 @@ class attachments
 					$l_explain = '';
 					if ($vars['explain'] && isset($vars['lang_explain']))
 					{
-						$l_explain = $this->language->is_set($vars['lang_explain']) ? $this->language->lang($vars['lang_explain']) : $vars['lang_explain'];
+						$l_explain = $this->language->lang($vars['lang_explain']);
 					}
 					else if ($vars['explain'])
 					{
