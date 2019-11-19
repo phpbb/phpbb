@@ -19,6 +19,6 @@ class add_display_unapproved_posts_config extends \phpbb\db\migration\migration
 	{
 		return [
 			['config.add', ['display_unapproved_posts', 1]],
-			];
+		];
 	}
 }
