@@ -806,10 +806,10 @@ class users
 									$sql = 'INSERT INTO ' . $this->tables['topics'] . ' ' . $this->db->sql_build_array('INSERT', [
 										'topic_poster'				=> $user_id,
 										'topic_time'				=> time(),
-										'forum_id' 					=> $new_forum_id,
+										'forum_id'					=> $new_forum_id,
 										'icon_id'					=> 0,
 										'topic_visibility'			=> ITEM_APPROVED,
-										'topic_title' 				=> $post_ary['title'],
+										'topic_title'				=> $post_ary['title'],
 										'topic_first_poster_name'	=> $user_row['username'],
 										'topic_type'				=> POST_NORMAL,
 										'topic_time_limit'			=> 0,
@@ -1232,7 +1232,6 @@ class users
 					'U_SHOW_IP'				=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'ip' => ($ip === 'ip' ? 'hostname' : 'ip')]),
 					'U_SWITCH_PERMISSIONS'	=> ($this->auth->acl_get('a_switchperm') && $this->user->data['user_id'] != $user_row['user_id']) ? $this->helper->route('ucp_account', ['mode' => 'permissions_switch', 'u' => $user_row['user_id'], 'hash' => generate_link_hash('switchperm')]) : '',
 					'U_WHOIS'				=> $this->helper->route('acp_users_manage', ['mode' => $mode, 'u' => $user_id, 'action' => 'whois', 'user_ip' => $user_row['user_ip']]),
-
 				]);
 			break;
 
@@ -1424,7 +1423,7 @@ class users
 							$s_hidden_fields['delall'] = 1;
 						}
 
-						if ($delete_all || ($delete_mark && count($marked)))
+						if ($delete_all || ($delete_mark && !empty($marked)))
 						{
 							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields($s_hidden_fields));
 

@@ -1178,7 +1178,6 @@ class auth_admin extends \phpbb\auth\auth
 
 						'U_TRACE'		=> $show_trace ? $this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission]) : '',
 						'UA_TRACE'		=> $show_trace ? addslashes($this->helper->route('acp_permissions', ['mode' => 'trace', 'u' => $ug_id, 'f' => $forum_id, 'auth' => $permission])) : '',
-
 					]);
 				}
 			}

@@ -219,7 +219,7 @@ class attachments
 						'secure_downloads'		=> ['lang' => 'SECURE_DOWNLOADS', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'secure_allow_deny'		=> ['lang' => 'SECURE_ALLOW_DENY', 'validate' => 'int', 'type' => 'custom', 'function' => [$this, 'select_allow_deny'], 'explain' => true],
 						'secure_allow_empty_referer'	=> ['lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-						'check_attachment_content' 		=> ['lang' => 'CHECK_CONTENT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
+						'check_attachment_content'		=> ['lang' => 'CHECK_CONTENT', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> ['lang' => 'DISPLAY_INLINED', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],

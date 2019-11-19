@@ -168,7 +168,7 @@ class main
 				'S_RESTORE_PERMISSIONS'		=> true,
 				'U_RESTORE_PERMISSIONS'		=> $this->helper->route('ucp_account', ['mode' => 'permissions_restore']),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->language->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from,  $this->helper->route('ucp_account', ['mode' => 'permissions_restore'])),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> $this->language->lang('PERMISSIONS_TRANSFERRED_EXPLAIN', $perm_from, $this->helper->route('ucp_account', ['mode' => 'permissions_restore'])),
 			]);
 
 			return $this->helper->render('acp_main.html', $this->language->lang('ACP_INDEX'));

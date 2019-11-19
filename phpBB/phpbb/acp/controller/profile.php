@@ -1298,8 +1298,8 @@ class profile
 					$this->update_insert($this->tables['profile_fields_lang'], $sql, [
 						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
-						'option_id'	=> $option_id]
-					);
+						'option_id'	=> $option_id,
+					]);
 				}
 			}
 		}

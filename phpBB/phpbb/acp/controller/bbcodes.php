@@ -522,7 +522,6 @@ class bbcodes
 			extract($this->dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
 
 			$this->template->assign_block_vars('bbcodes', $bbcodes_array);
-
 		}
 		$this->db->sql_freeresult($result);
 

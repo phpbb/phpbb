@@ -1443,7 +1443,7 @@ class styles
 			$items = [];
 		}
 
-		if ($item != $default && !count($items))
+		if ($item != $default && empty($items))
 		{
 			$items[] = $item;
 		}

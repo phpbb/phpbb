@@ -605,7 +605,7 @@ class prune
 		{
 			$sql = 'SELECT u.user_id, u.username
 				FROM ' . $this->tables['user_group'] . ' ug,
-				 	' . $this->tables['users'] . ' u
+					' . $this->tables['users'] . ' u
 				WHERE ug.group_id = ' . (int) $group_id . '
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '

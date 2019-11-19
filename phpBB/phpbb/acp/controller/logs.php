@@ -106,7 +106,7 @@ class logs
 			{
 				$conditions = [];
 
-				if ($delete_mark && count($marked))
+				if ($delete_mark && !empty($marked))
 				{
 					$conditions['log_id'] = ['IN' => $marked];
 				}

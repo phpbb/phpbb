@@ -595,8 +595,8 @@ class search
 				'S_ACTIVE'			=> $type == $this->config['search_type'],
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(['search_type' => $type]),
 				'S_INDEXED'			=> (bool) $search->index_created(),
-				'S_STATS'			=> (bool) count($statistics)]
-			);
+				'S_STATS'			=> (bool) count($statistics),
+			]);
 
 			foreach ($statistics as $statistic)
 			{

@@ -317,8 +317,8 @@ class extensions
 
 					// Update custom style for admin area
 					$this->template->set_custom_style([[
-						'name' 		=> 'adm',
-						'ext_path' 	=> 'adm/style/',
+						'name'		=> 'adm',
+						'ext_path'	=> 'adm/style/',
 					]], [$this->root_path . 'adm/style']);
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), [$ext_name]);

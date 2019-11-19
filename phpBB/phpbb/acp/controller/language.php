@@ -214,7 +214,7 @@ class language
 						return trigger_error($e->getMessage() . $this->helper->adm_back_route('acp_language_manage'));
 					}
 
-					/** @var  $file_info */
+					/** @var null $file_info */
 					foreach ($iterator as $file_info)
 					{
 						/** @var \RecursiveDirectoryIterator $inner_iterator */
