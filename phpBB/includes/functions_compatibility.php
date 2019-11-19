@@ -659,3 +659,17 @@ function phpbb_inet_pton($address)
 {
 	return inet_pton($address);
 }
+
+/**
+ * Hashes an email address to a big integer
+ *
+ * @param string $email		Email address
+ *
+ * @return string			Unsigned Big Integer
+ *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_email_hash($email)
+{
+	return sprintf('%u', crc32(strtolower($email))) . strlen($email);
+}
