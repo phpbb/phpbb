@@ -295,7 +295,7 @@ class inactive
 							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $this->user->format_date($row['user_regdate'], false, true),
-								'U_ACTIVATE'	=> generate_board_url() . $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $row['user_id'], 'k' => $row['user_actkey']])
+								'U_ACTIVATE'	=> generate_board_url(true) . $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $row['user_id'], 'k' => $row['user_actkey']], false)
 							]);
 
 							$messenger->send($row['user_notify_type']);

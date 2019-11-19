@@ -13,8 +13,6 @@ services:
             - '@template'
             - '@user'
             - '%core.adm_relative_path%'
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '%tables%'
 
     acp.controller.helper:
