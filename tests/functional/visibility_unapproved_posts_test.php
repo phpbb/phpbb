@@ -244,8 +244,8 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
 
-		// revert the configuration
-		$this->config_display_unapproved_posts_state(false);
+		// revert the configuration (if necessary)
+		//$this->config_display_unapproved_posts_state(false);
 	}
 
 	public function test_reset_flood_interval()
