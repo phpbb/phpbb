@@ -13,36 +13,140 @@
 
 namespace phpbb\mcp\controller;
 
+use phpbb\exception\http_exception;
+
 class post
 {
-	/**
-	 * Handling actions in post details screen
-	 */
-	function mcp_post_details($id, $mode, $action)
-	{
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	/** @var \phpbb\pagination */
+	protected $pagination;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\config\config				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\log\log					$log			Log object
+	 * @param \phpbb\pagination					$pagination		Pagination object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param string							$root_path		phpBB root path
+	 * @param string							$php_ext		php File extension
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\log\log $log,
+		\phpbb\pagination $pagination,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->log			= $log;
+		$this->pagination	= $pagination;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main()
+	{
 		$this->language->add_lang('posting');
 
-		$post_id = $this->request->variable('p', 0);
-		$start	= $this->request->variable('start', 0);
+		$action = $this->request->variable('action', '');
+		$post_id	= $this->request->variable('p', 0);
 
 		// Get post data
 		$post_info = phpbb_get_post_data([$post_id], false, true);
 
-		add_form_key('mcp_post_details');
-
-		if (!count($post_info))
+		if (empty($post_info))
 		{
-			trigger_error('POST_NOT_EXIST');
+			$return = '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->helper->route('mcp_index') . '">&laquo; ', '</a>');
+
+			return trigger_error($this->language->lang('POST_NOT_EXIST') . $return, E_USER_WARNING);
 		}
 
 		$post_info = $post_info[$post_id];
-		$url = append_sid("{$this->root_path}mcp.$this->php_ext?" . phpbb_extra_url());
+
+		$forum_id	= (int) $post_info['forum_id'];
+		$topic_id	= (int) $post_info['topic_id'];
+		$post_id	= (int) $post_info['post_id'];
+
+		$route = 'mcp_view_post';
+		$params = ['f' => $forum_id, 't' => $topic_id, 'p' => $post_id];
+		$return = '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->helper->route($route, $params) . '">&laquo; ', '</a>');
+
+		$limit = (int) $this->config['posts_per_page'];
+		$start = $this->request->variable('start', 0);
+
+		$form_key = 'mcp_post_details';
+		add_form_key($form_key);
 
 		switch ($action)
 		{
 			case 'whois':
-
 				if ($this->auth->acl_get('m_info', $post_info['forum_id']))
 				{
 					$ip = $this->request->variable('ip', '');
@@ -52,22 +156,20 @@ class post
 					}
 
 					$this->template->assign_vars([
-						'RETURN_POST'	=> sprintf($this->language->lang('RETURN_POST'), '<a href="' . append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
-						'U_RETURN_POST'	=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;p=$post_id"),
-						'L_RETURN_POST'	=> sprintf($this->language->lang('RETURN_POST'), '', ''),
 						'WHOIS'			=> user_ipwhois($ip),
+						'RETURN_POST'	=> $this->language->lang('RETURN_POST', '<a href="' . $this->helper->route($route, $params) . '">', '</a>'),
+						'L_RETURN_POST'	=> $this->language->lang('RETURN_POST', '', ''),
+						'U_RETURN_POST'	=> $this->helper->route($route, $params),
 					]);
 				}
 
 				// We're done with the whois page so return
-				return;
-
+				return $this->helper->render('mcp_whois.html', $this->language->lang('WHOIS'));
 			break;
 
 			case 'chgposter':
 			case 'chgposter_ip':
-
-				if ($action == 'chgposter')
+				if ($action === 'chgposter')
 				{
 					$username = $this->request->variable('username', '', true);
 					$sql_where = "username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'";
@@ -79,51 +181,47 @@ class post
 				}
 
 				$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $sql_where;
+					FROM ' . $this->tables['users'] . '
+					WHERE ' . $sql_where;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row === false)
 				{
-					trigger_error('NO_USER');
+					return trigger_error($this->language->lang('NO_USER') . $return, E_USER_WARNING);
 				}
 
 				if ($this->auth->acl_get('m_chgposter', $post_info['forum_id']))
 				{
-					if (check_form_key('mcp_post_details'))
+					if (!check_form_key($form_key))
 					{
-						change_poster($post_info, $row);
+						return trigger_error($this->language->lang('FORM_INVALID') . $return, E_USER_WARNING);
 					}
-					else
-					{
-						trigger_error('FORM_INVALID');
-					}
-				}
 
+					$this->change_poster($post_info, $row);
+				}
 			break;
 
 			default:
-
 				/**
 				 * This event allows you to handle custom post moderation options
 				 *
 				 * @event core.mcp_post_additional_options
-				 * @var	string	action		Post moderation action name
-				 * @var	array	post_info	Information on the affected post
+				 * @var string	action		Post moderation action name
+				 * @var array	post_info	Information on the affected post
 				 * @since 3.1.5-RC1
 				 */
 				$vars = ['action', 'post_info'];
 				extract($this->dispatcher->trigger_event('core.mcp_post_additional_options', compact($vars)));
-
 			break;
 		}
 
 		// Set some vars
 		$users_ary = $usernames_ary = [];
 		$attachments = $extensions = [];
-		$post_id = $post_info['post_id'];
+
+		$post_id = (int) $post_info['post_id'];
 
 		// Get topic tracking info
 		if ($this->config['load_db_lastread'])
@@ -146,19 +244,18 @@ class post
 		if ($post_info['post_attachment'] && $this->auth->acl_get('u_download') && $this->auth->acl_get('f_download', $post_info['forum_id']))
 		{
 			$sql = 'SELECT *
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE post_msg_id = ' . $post_id . '
-				AND in_message = 0
-			ORDER BY filetime DESC, post_msg_id ASC';
+				FROM ' . $this->tables['attachments'] . '
+				WHERE post_msg_id = ' . (int) $post_id . '
+					AND in_message = 0
+				ORDER BY filetime DESC, post_msg_id ASC';
 			$result = $this->db->sql_query($sql);
-
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$attachments[] = $row;
 			}
 			$this->db->sql_freeresult($result);
 
-			if (count($attachments))
+			if (!empty($attachments))
 			{
 				$this->language->add_lang('viewtopic');
 				$update_count = [];
@@ -172,9 +269,7 @@ class post
 
 				foreach ($attachments as $attachment)
 				{
-					$this->template->assign_block_vars('attachment', [
-							'DISPLAY_ATTACHMENT'	=> $attachment]
-					);
+					$this->template->assign_block_vars('attachment', ['DISPLAY_ATTACHMENT' => $attachment]);
 				}
 			}
 		}
@@ -190,16 +285,17 @@ class post
 			else
 			{
 				$sql = 'SELECT user_id, username, user_colour
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $post_info['post_delete_user'];
+					FROM ' . $this->tables['users'] . '
+					WHERE user_id = ' . (int) $post_info['post_delete_user'];
 				$result = $this->db->sql_query($sql);
 				$user_delete_row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
+
 				$display_username = get_username_string('full', $post_info['post_delete_user'], $user_delete_row['username'], $user_delete_row['user_colour']);
 			}
 
 			$this->language->add_lang('viewtopic');
-			$l_deleted_by = $this->user->lang('DELETED_INFORMATION', $display_username, $this->user->format_date($post_info['post_delete_time'], false, true));
+			$l_deleted_by = $this->language->lang('DELETED_INFORMATION', $display_username, $this->user->format_date($post_info['post_delete_time'], false, true));
 		}
 		else
 		{
@@ -211,37 +307,38 @@ class post
 		$post_info['user_sig'] = generate_text_for_display($post_info['user_sig'], $post_info['user_sig_bbcode_uid'], $post_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 
 		$mcp_post_template_data = [
-			'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode paramaters
-			'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
-			'U_APPROVE_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
+			'U_MCP_ACTION'			=> $this->helper->route($route, ['quickmod' => true]),
+			'U_POST_ACTION'			=> $this->helper->route($route, $params),
+			'U_APPROVE_ACTION'		=> $this->helper->route('mcp_unapproved_posts', $params),
 
-			'S_CAN_VIEWIP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']),
-			'S_CAN_CHGPOSTER'		=> $this->auth->acl_get('m_chgposter', $post_info['forum_id']),
-			'S_CAN_LOCK_POST'		=> $this->auth->acl_get('m_lock', $post_info['forum_id']),
-			'S_CAN_DELETE_POST'		=> $this->auth->acl_get('m_delete', $post_info['forum_id']),
+			'S_CAN_VIEWIP'			=> (bool) $this->auth->acl_get('m_info', $post_info['forum_id']),
+			'S_CAN_CHGPOSTER'		=> (bool) $this->auth->acl_get('m_chgposter', $post_info['forum_id']),
+			'S_CAN_LOCK_POST'		=> (bool) $this->auth->acl_get('m_lock', $post_info['forum_id']),
+			'S_CAN_DELETE_POST'		=> (bool) $this->auth->acl_get('m_delete', $post_info['forum_id']),
 
-			'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
-			'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE) ? true : false,
-			'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED) ? true : false,
-			'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
+			'S_POST_REPORTED'		=> (bool) $post_info['post_reported'],
+			'S_POST_UNAPPROVED'		=> (bool) ($post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE),
+			'S_POST_DELETED'		=> (bool) $post_info['post_visibility'] == ITEM_DELETED,
+			'S_POST_LOCKED'			=> (bool) $post_info['post_edit_locked'],
 			'S_USER_NOTES'			=> true,
-			'S_CLEAR_ALLOWED'		=> ($this->auth->acl_get('a_clearlogs')) ? true : false,
+			'S_CLEAR_ALLOWED'		=> (bool) $this->auth->acl_get('a_clearlogs'),
+
 			'DELETED_MESSAGE'		=> $l_deleted_by,
 			'DELETE_REASON'			=> $post_info['post_delete_reason'],
 
-			'U_EDIT'				=> ($this->auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$this->root_path}posting.$this->php_ext", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+			'U_EDIT'				=> $this->auth->acl_get('m_edit', $post_info['forum_id']) ? append_sid("{$this->root_path}posting.$this->php_ext", array_merge($params, ['mode' => 'edit'])) : '',
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
-			'U_MCP_APPROVE'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-			'U_MCP_REPORT'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-			'U_MCP_USER_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-			'U_MCP_WARN_USER'		=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-			'U_VIEW_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-			'U_VIEW_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
+			'U_MCP_APPROVE'			=> $this->helper->route('mcp_approve_details', $params),
+			'U_MCP_REPORT'			=> $this->helper->route('mcp_report_details', $params),
+			'U_MCP_USER_NOTES'		=> $this->helper->route('mcp_notes_user', array_merge($params, ['u' => $post_info['user_id']])),
+			'U_MCP_WARN_USER'		=> $this->auth->acl_get('m_warn') ? $this->helper->route('mcp_warn_user', array_merge($params, ['u' => $post_info['user_id']])) : '',
+			'U_VIEW_POST'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", array_merge($params, ['#' => 'p' . $post_id])),
+			'U_VIEW_TOPIC'			=> append_sid("{$this->root_path}viewtopic.$this->php_ext", $params),
 
-			'MINI_POST_IMG'			=> ($post_unread) ? $this->user->img('icon_post_target_unread', 'UNREAD_POST') : $this->user->img('icon_post_target', 'POST'),
+			'MINI_POST_IMG'			=> $post_unread ? $this->user->img('icon_post_target_unread', 'UNREAD_POST') : $this->user->img('icon_post_target', 'POST'),
 
-			'RETURN_TOPIC'			=> sprintf($this->language->lang('RETURN_TOPIC'), '<a href="' . append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
-			'RETURN_FORUM'			=> sprintf($this->language->lang('RETURN_FORUM'), '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
+			'RETURN_TOPIC'			=> $this->language->lang('RETURN_TOPIC', '<a href="' . append_sid("{$this->root_path}viewtopic.$this->php_ext", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
+			'RETURN_FORUM'			=> $this->language->lang('RETURN_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 			'REPORTED_IMG'			=> $this->user->img('icon_topic_reported', $this->language->lang('POST_REPORTED')),
 			'UNAPPROVED_IMG'		=> $this->user->img('icon_topic_unapproved', $this->language->lang('POST_UNAPPROVED')),
 			'DELETED_IMG'			=> $this->user->img('icon_topic_deleted', $this->language->lang('POST_DELETED')),
@@ -261,8 +358,8 @@ class post
 			'POST_ID'				=> $post_info['post_id'],
 			'SIGNATURE'				=> $post_info['user_sig'],
 
-			'U_LOOKUP_IP'			=> ($this->auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
-			'U_WHOIS'				=> ($this->auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+			'U_LOOKUP_IP'			=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? $this->helper->route($route, array_merge($params, ['lookup' => $post_info['poster_ip'], '#' => 'ip'])) : '',
+			'U_WHOIS'				=> $this->auth->acl_get('m_info', $post_info['forum_id']) ? $this->helper->route($route, array_merge($params, ['action' => 'whois', 'ip' => $post_info['poster_ip']])) : '',
 		];
 
 		$s_additional_opts = false;
@@ -271,10 +368,10 @@ class post
 		 * Event to add/modify MCP post template data
 		 *
 		 * @event core.mcp_post_template_data
-		 * @var	array	post_info					Array with the post information
-		 * @var	array	mcp_post_template_data		Array with the MCP post template data
-		 * @var	array	attachments					Array with the post attachments, if any
-		 * @var	bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
+		 * @var array	post_info					Array with the post information
+		 * @var array	mcp_post_template_data		Array with the MCP post template data
+		 * @var array	attachments					Array with the post attachments, if any
+		 * @var bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
 		 * @since 3.1.5-RC1
 		 */
 		$vars = [
@@ -293,7 +390,7 @@ class post
 		// Get User Notes
 		$log_data = [];
 		$log_count = false;
-		view_log('user', $log_data, $log_count, $this->config['posts_per_page'], 0, 0, 0, $post_info['user_id']);
+		view_log('user', $log_data, $log_count, $limit, 0, 0, 0, $post_info['user_id']);
 
 		if (!empty($log_data))
 		{
@@ -302,23 +399,25 @@ class post
 			foreach ($log_data as $row)
 			{
 				$this->template->assign_block_vars('usernotes', [
-						'REPORT_BY'		=> $row['username_full'],
-						'REPORT_AT'		=> $this->user->format_date($row['time']),
-						'ACTION'		=> $row['action'],
-						'ID'			=> $row['id']]
-				);
+					'ACTION'		=> $row['action'],
+					'ID'			=> $row['id'],
+					'REPORT_BY'		=> $row['username_full'],
+					'REPORT_AT'		=> $this->user->format_date($row['time']),
+				]);
 			}
 		}
 
 		// Get Reports
-		if ($this->auth->acl_get('m_report', $post_info['forum_id']))
+		if ($this->auth->acl_get('m_report', (int) $post_info['forum_id']))
 		{
 			$sql = 'SELECT r.*, re.*, u.user_id, u.username
-			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . REPORTS_REASONS_TABLE . " re
-			WHERE r.post_id = $post_id
-				AND r.reason_id = re.reason_id
-				AND u.user_id = r.user_id
-			ORDER BY r.report_time DESC";
+				FROM ' . $this->tables['reports'] . ' r, 
+					' . $this->tables['users'] . ' u, 
+					' . $this->tables['reports_reasons'] . ' re
+				WHERE r.reason_id = re.reason_id
+					AND u.user_id = r.user_id
+					AND r.post_id = ' . (int) $post_id . '
+				ORDER BY r.report_time DESC';
 			$result = $this->db->sql_query($sql);
 
 			if ($row = $this->db->sql_fetchrow($result))
@@ -328,21 +427,24 @@ class post
 				do
 				{
 					// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-					if (isset($this->language->lang('report_reasons')['TITLE'][strtoupper($row['reason_title'])]) && isset($this->language->lang('report_reasons')['DESCRIPTION'][strtoupper($row['reason_title'])]))
+					if (isset($this->language->get_lang_array()['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($this->language->get_lang_array()['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 					{
-						$row['reson_description'] = $this->language->lang('report_reasons')['DESCRIPTION'][strtoupper($row['reason_title'])];
-						$row['reason_title'] = $this->language->lang('report_reasons')['TITLE'][strtoupper($row['reason_title'])];
+						$row['reason_description'] = $this->language->get_lang_array()['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+						$row['reason_title'] = $this->language->get_lang_array()['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 					}
 
 					$this->template->assign_block_vars('reports', [
 						'REPORT_ID'		=> $row['report_id'],
 						'REASON_TITLE'	=> $row['reason_title'],
 						'REASON_DESC'	=> $row['reason_description'],
-						'REPORTER'		=> get_username_string('username', $row['user_id'], $row['username']),
-						'U_REPORTER'	=> get_username_string('profile', $row['user_id'], $row['username']),
-						'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
+
 						'REPORT_TIME'	=> $this->user->format_date($row['report_time']),
 						'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
+
+						'REPORTER'		=> get_username_string('username', $row['user_id'], $row['username']),
+						'U_REPORTER'	=> get_username_string('profile', $row['user_id'], $row['username']),
+
+						'USER_NOTIFY'	=> (bool) $row['user_notify'],
 					]);
 				}
 				while ($row = $this->db->sql_fetchrow($result));
@@ -353,85 +455,77 @@ class post
 		// Get IP
 		if ($this->auth->acl_get('m_info', $post_info['forum_id']))
 		{
-			/** @var \phpbb\pagination $pagination */
-			$pagination = $phpbb_container->get('pagination');
 
 			$rdns_ip_num = $this->request->variable('rdns', '');
 			$start_users = $this->request->variable('start_users', 0);
 
-			if ($rdns_ip_num != 'all')
+			if ($rdns_ip_num !== 'all')
 			{
-				$this->template->assign_vars([
-						'U_LOOKUP_ALL'	=> "$url&amp;i=main&amp;mode=post_details&amp;rdns=all"]
-				);
+				$this->template->assign_var('U_LOOKUP_ALL', $this->helper->route($route, array_merge($params, ['rdns' => 'all'])));
 			}
 
 			$num_users = false;
+
 			if ($start_users)
 			{
-				$num_users = phpbb_get_num_posters_for_ip($db, $post_info['poster_ip']);
-				$start_users = $this->pagination->validate_start($start_users, $this->config['posts_per_page'], $num_users);
+				$num_users = $this->get_num_posters_for_ip($post_info['poster_ip']);
+				$start_users = $this->pagination->validate_start($start_users, $limit, $num_users);
 			}
 
 			// Get other users who've posted under this IP
-			$sql = 'SELECT poster_id, COUNT(poster_id) as postings
-			FROM ' . POSTS_TABLE . "
-			WHERE poster_ip = '" . $this->db->sql_escape($post_info['poster_ip']) . "'
-				AND poster_id <> " . (int) $post_info['poster_id'] . "
-			GROUP BY poster_id
-			ORDER BY postings DESC, poster_id ASC";
-			$result = $this->db->sql_query_limit($sql, $this->config['posts_per_page'], $start_users);
-
 			$page_users = 0;
+
+			$sql = 'SELECT poster_id, COUNT(poster_id) as postings
+				FROM ' . $this->tables['posts'] . "
+				WHERE poster_ip = '" . $this->db->sql_escape($post_info['poster_ip']) . "'
+					AND poster_id <> " . (int) $post_info['poster_id'] . "
+				GROUP BY poster_id
+				ORDER BY postings DESC, poster_id ASC";
+			$result = $this->db->sql_query_limit($sql, $limit, $start_users);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$page_users++;
-				$users_ary[$row['poster_id']] = $row;
+				$users_ary[(int) $row['poster_id']] = $row;
 			}
 			$this->db->sql_freeresult($result);
 
-			if ($page_users == $this->config['posts_per_page'] || $start_users)
+			if ($page_users == $limit || $start_users)
 			{
 				if ($num_users === false)
 				{
-					$num_users = phpbb_get_num_posters_for_ip($db, $post_info['poster_ip']);
+					$num_users = $this->get_num_posters_for_ip($post_info['poster_ip']);
 				}
 
-				$this->pagination->generate_template_pagination(
-					$url . '&amp;i=main&amp;mode=post_details',
-					'pagination',
-					'start_users',
-					$num_users,
-					$this->config['posts_per_page'],
-					$start_users
-				);
+				$this->pagination->generate_template_pagination([
+					'routes' => [$route],
+					'params' => $params,
+				], 'pagination', 'start_users', $num_users, $limit, $start_users);
 			}
 
-			if (count($users_ary))
+			if (!empty($users_ary))
 			{
 				// Get the usernames
 				$sql = 'SELECT user_id, username
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('user_id', array_keys($users_ary));
+					FROM ' . $this->tables['users'] . '
+					WHERE ' . $this->db->sql_in_set('user_id', array_keys($users_ary));
 				$result = $this->db->sql_query($sql);
-
 				while ($row = $this->db->sql_fetchrow($result))
 				{
-					$users_ary[$row['user_id']]['username'] = $row['username'];
-					$usernames_ary[utf8_clean_string($row['username'])] = $users_ary[$row['user_id']];
+					$users_ary[(int) $row['user_id']]['username'] = $row['username'];
+					$usernames_ary[utf8_clean_string($row['username'])] = $users_ary[(int) $row['user_id']];
 				}
 				$this->db->sql_freeresult($result);
 
 				foreach ($users_ary as $user_id => $user_row)
 				{
 					$this->template->assign_block_vars('userrow', [
-							'USERNAME'		=> get_username_string('username', $user_id, $user_row['username']),
-							'NUM_POSTS'		=> $user_row['postings'],
-							'L_POST_S'		=> ($user_row['postings'] == 1) ? $this->language->lang('POST') : $this->language->lang('POSTS'),
+						'USERNAME'		=> get_username_string('username', $user_id, $user_row['username']),
+						'NUM_POSTS'		=> $user_row['postings'],
+						'L_POST_S'		=> $user_row['postings'] == 1 ? $this->language->lang('POST') : $this->language->lang('POSTS'),
 
-							'U_PROFILE'		=> get_username_string('profile', $user_id, $user_row['username']),
-							'U_SEARCHPOSTS' => append_sid("{$this->root_path}search.$this->php_ext", 'author_id=' . $user_id . '&amp;sr=topics')]
-					);
+						'U_PROFILE'		=> get_username_string('profile', $user_id, $user_row['username']),
+						'U_SEARCHPOSTS' => append_sid("{$this->root_path}search.$this->php_ext", 'author_id=' . $user_id . '&amp;sr=topics'),
+					]);
 				}
 			}
 
@@ -445,55 +539,51 @@ class post
 			$num_ips = false;
 			if ($start_ips)
 			{
-				$num_ips = phpbb_get_num_ips_for_poster($db, $post_info['poster_id']);
-				$start_ips = $this->pagination->validate_start($start_ips, $this->config['posts_per_page'], $num_ips);
+				$num_ips = $this->get_num_ips_for_poster($post_info['poster_id']);
+				$start_ips = $this->pagination->validate_start($start_ips, $limit, $num_ips);
 			}
 
-			$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . "
-			GROUP BY poster_ip
-			ORDER BY postings DESC, poster_ip ASC";
-			$result = $this->db->sql_query_limit($sql, $this->config['posts_per_page'], $start_ips);
-
 			$page_ips = 0;
+
+			$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
+				FROM ' . $this->tables['posts'] . '
+				WHERE poster_id = ' . (int) $post_info['poster_id'] . "
+				GROUP BY poster_ip
+				ORDER BY postings DESC, poster_ip ASC";
+			$result = $this->db->sql_query_limit($sql, $limit, $start_ips);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$page_ips++;
 				$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? @gethostbyaddr($row['poster_ip']) : '';
 
 				$this->template->assign_block_vars('iprow', [
-						'IP'			=> $row['poster_ip'],
-						'HOSTNAME'		=> $hostname,
-						'NUM_POSTS'		=> $row['postings'],
-						'L_POST_S'		=> ($row['postings'] == 1) ? $this->language->lang('POST') : $this->language->lang('POSTS'),
+					'IP'			=> $row['poster_ip'],
+					'HOSTNAME'		=> $hostname,
+					'NUM_POSTS'		=> $row['postings'],
+					'L_POST_S'		=> $row['postings'] == 1 ? $this->language->lang('POST') : $this->language->lang('POSTS'),
 
-						'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
-						'U_WHOIS'		=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}")]
-				);
+					'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : $this->helper->route($route, array_merge($params, ['rdns' => $row['poster_ip'], '#' => 'ip'])),
+					'U_WHOIS'		=> $this->helper->route($route, array_merge($params, ['action' => 'whois', 'ip' => $row['poster_ip']])),
+				]);
 			}
 			$this->db->sql_freeresult($result);
 
-			if ($page_ips == $this->config['posts_per_page'] || $start_ips)
+			if ($page_ips == $limit || $start_ips)
 			{
 				if ($num_ips === false)
 				{
-					$num_ips = phpbb_get_num_ips_for_poster($db, $post_info['poster_id']);
+					$num_ips = $this->get_num_ips_for_poster($post_info['poster_id']);
 				}
 
-				$this->pagination->generate_template_pagination(
-					$url . '&amp;i=main&amp;mode=post_details',
-					'pagination_ips',
-					'start_ips',
-					$num_ips,
-					$this->config['posts_per_page'],
-					$start_ips
-				);
+				$this->pagination->generate_template_pagination([
+					'routes' => [$route],
+					'params' => $params,
+				], 'pagination_ips', 'start_ips', $num_ips, $limit, $start_ips);
 			}
 
 			$user_select = '';
 
-			if (count($usernames_ary))
+			if (!empty($usernames_ary))
 			{
 				ksort($usernames_ary);
 
@@ -506,20 +596,20 @@ class post
 			$this->template->assign_var('S_USER_SELECT', $user_select);
 		}
 
+		return $this->helper->render('mcp_post.html', $this->language->lang('MCP_MAIN_POST_DETAILS'));
 	}
 
 	/**
-	 * Get the number of posters for a given ip
+	 * Get the number of posters for a given ip.
 	 *
-	 * @param \phpbb\db\driver\driver_interface $db DBAL interface
-	 * @param string $poster_ip IP
-	 * @return int Number of posters
+	 * @param string	$poster_ip		The poster's ip
+	 * @return int						Number of posters
 	 */
-	function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $poster_ip)
+	protected function get_num_posters_for_ip($poster_ip)
 	{
 		$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users
-		FROM ' . POSTS_TABLE . "
-		WHERE poster_ip = '" . $this->db->sql_escape($poster_ip) . "'";
+			FROM ' . $this->tables['posts'] . "
+			WHERE poster_ip = '" . $this->db->sql_escape($poster_ip) . "'";
 		$result = $this->db->sql_query($sql);
 		$num_users = (int) $this->db->sql_fetchfield('num_users');
 		$this->db->sql_freeresult($result);
@@ -528,17 +618,16 @@ class post
 	}
 
 	/**
-	 * Get the number of ips for a given poster
+	 * Get the number of ips for a given poster.
 	 *
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param int $poster_id Poster user ID
-	 * @return int Number of IPs for given poster
+	 * @param int		$poster_id		The poster's user identifier
+	 * @return int						Number of IPs for given poster
 	 */
-	function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $poster_id)
+	protected function get_num_ips_for_poster($poster_id)
 	{
 		$sql = 'SELECT COUNT(DISTINCT poster_ip) as num_ips
-		FROM ' . POSTS_TABLE . '
-		WHERE poster_id = ' . (int) $poster_id;
+			FROM ' . $this->tables['posts'] . '
+			WHERE poster_id = ' . (int) $poster_id;
 		$result = $this->db->sql_query($sql);
 		$num_ips = (int) $this->db->sql_fetchfield('num_ips');
 		$this->db->sql_freeresult($result);
@@ -547,21 +636,24 @@ class post
 	}
 
 	/**
-	 * Change a post's poster
+	 * Change a post author.
+	 *
+	 * @param array		$post_info		The post information
+	 * @param array		$user_data		The user data
+	 * @return void
 	 */
-	function change_poster(&$post_info, $userdata)
+	protected function change_poster(array &$post_info, array $user_data)
 	{
-
-		if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
+		if (empty($user_data) || $user_data['user_id'] == $post_info['user_id'])
 		{
 			return;
 		}
 
 		$post_id = $post_info['post_id'];
 
-		$sql = 'UPDATE ' . POSTS_TABLE . "
-		SET poster_id = {$userdata['user_id']}
-		WHERE post_id = $post_id";
+		$sql = 'UPDATE ' . $this->tables['posts'] . '
+			SET poster_id = ' . (int) $user_data['user_id'] . '
+			WHERE post_id = ' . (int) $post_id;
 		$this->db->sql_query($sql);
 
 		// Resync topic/forum if needed
@@ -574,37 +666,37 @@ class post
 		// Adjust post counts... only if the post is approved (else, it was not added the users post count anyway)
 		if ($post_info['post_postcount'] && $post_info['post_visibility'] == ITEM_APPROVED)
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_posts = user_posts - 1
-			WHERE user_id = ' . $post_info['user_id'] .'
-			AND user_posts > 0';
+			$sql = 'UPDATE ' . $this->tables['users'] . '
+				SET user_posts = user_posts - 1
+				WHERE user_id = ' . (int) $post_info['user_id'] .'
+				AND user_posts > 0';
 			$this->db->sql_query($sql);
 
-			$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_posts = user_posts + 1
-			WHERE user_id = ' . $userdata['user_id'];
+			$sql = 'UPDATE ' . $this->tables['users'] . '
+				SET user_posts = user_posts + 1
+				WHERE user_id = ' . (int) $user_data['user_id'];
 			$this->db->sql_query($sql);
 		}
 
 		// Add posted to information for this topic for the new user
-		markread('post', $post_info['forum_id'], $post_info['topic_id'], time(), $userdata['user_id']);
+		markread('post', $post_info['forum_id'], $post_info['topic_id'], time(), $user_data['user_id']);
 
 		// Remove the dotted topic option if the old user has no more posts within this topic
 		if ($this->config['load_db_track'] && $post_info['user_id'] != ANONYMOUS)
 		{
 			$sql = 'SELECT topic_id
-			FROM ' . POSTS_TABLE . '
-			WHERE topic_id = ' . $post_info['topic_id'] . '
-				AND poster_id = ' . $post_info['user_id'];
+				FROM ' . $this->tables['posts'] . '
+				WHERE topic_id = ' . (int) $post_info['topic_id'] . '
+					AND poster_id = ' . (int) $post_info['user_id'];
 			$result = $this->db->sql_query_limit($sql, 1);
 			$topic_id = (int) $this->db->sql_fetchfield('topic_id');
 			$this->db->sql_freeresult($result);
 
-			if (!$topic_id)
+			if ($topic_id === 0)
 			{
-				$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
-				WHERE user_id = ' . $post_info['user_id'] . '
-					AND topic_id = ' . $post_info['topic_id'];
+				$sql = 'DELETE FROM ' . $this->tables['topics_posted'] . '
+					WHERE user_id = ' . (int) $post_info['user_id'] . '
+						AND topic_id = ' . (int) $post_info['topic_id'];
 				$this->db->sql_query($sql);
 			}
 		}
@@ -612,11 +704,11 @@ class post
 		// change the poster_id within the attachments table, else the data becomes out of sync and errors displayed because of wrong ownership
 		if ($post_info['post_attachment'])
 		{
-			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-			SET poster_id = ' . $userdata['user_id'] . '
-			WHERE poster_id = ' . $post_info['user_id'] . '
-				AND post_msg_id = ' . $post_info['post_id'] . '
-				AND topic_id = ' . $post_info['topic_id'];
+			$sql = 'UPDATE ' . $this->tables['attachments'] . '
+				SET poster_id = ' . (int) $user_data['user_id'] . '
+				WHERE poster_id = ' . (int) $post_info['user_id'] . '
+					AND post_msg_id = ' . (int) $post_info['post_id'] . '
+					AND topic_id = ' . (int) $post_info['topic_id'];
 			$this->db->sql_query($sql);
 		}
 
@@ -627,23 +719,25 @@ class post
 		{
 			// We do some additional checks in the module to ensure it can actually be utilised
 			$error = false;
-			$search = new $search_type($error, $this->root_path, $this->php_ext, $auth, $config, $db, $user, $phpbb_dispatcher);
+
+			/** @var \phpbb\search\fulltext_mysql $search		@todo Search interface?? */
+			$search = new $search_type($error, $this->root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user, $this->dispatcher);
 
 			if (!$error && method_exists($search, 'destroy_cache'))
 			{
-				$search->destroy_cache([], [$post_info['user_id'], $userdata['user_id']]);
+				$search->destroy_cache([], [$post_info['user_id'], $user_data['user_id']]);
 			}
 		}
 
 		$from_username = $post_info['username'];
-		$to_username = $userdata['username'];
+		$to_username = $user_data['username'];
 
 		/**
 		 * This event allows you to perform additional tasks after changing a post's poster
 		 *
 		 * @event core.mcp_change_poster_after
-		 * @var	array	userdata	Information on a post's new poster
-		 * @var	array	post_info	Information on the affected post
+		 * @var array	userdata	Information on a post's new poster
+		 * @var array	post_info	Information on the affected post
 		 * @since 3.1.6-RC1
 		 * @changed 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
 		 */
@@ -653,21 +747,21 @@ class post
 		// Renew post info
 		$post_info = phpbb_get_post_data([$post_id], false, true);
 
-		if (!count($post_info))
+		if (empty($post_info))
 		{
-			trigger_error('POST_NOT_EXIST');
+			throw new http_exception(404, 'POST_NOT_EXIST');
 		}
 
 		$post_info = $post_info[$post_id];
 
 		// Now add log entry
 		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, 'LOG_MCP_CHANGE_POSTER', false, [
-			'forum_id' => $post_info['forum_id'],
-			'topic_id' => $post_info['topic_id'],
-			'post_id'  => $post_info['post_id'],
+			'forum_id'	=> (int) $post_info['forum_id'],
+			'topic_id'	=> (int) $post_info['topic_id'],
+			'post_id'	=> (int) $post_info['post_id'],
 			$post_info['topic_title'],
 			$from_username,
-			$to_username
+			$to_username,
 		]);
 	}
 }
