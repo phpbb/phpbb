@@ -166,7 +166,7 @@ class logs
 		{
 			if (confirm_box(true))
 			{
-				if ($delete_marked && count($marked))
+				if ($delete_marked && !empty($marked))
 				{
 					$conditions = [
 						'forum_id'	=> ['IN' => $forum_list],

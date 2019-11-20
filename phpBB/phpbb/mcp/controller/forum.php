@@ -213,13 +213,13 @@ class forum
 		 * Get some data in order to execute other actions.
 		 *
 		 * @event core.mcp_forum_view_before
-		 * @var	string	action				The action
-		 * @var	array	forum_info			Array with forum infos
-		 * @var	int		start				Start value
-		 * @var	array	topic_id_list		Array of topics ids
-		 * @var	array	post_id_list		Array of posts ids
-		 * @var	array	source_topic_ids	Array of source topics ids
-		 * @var	int		to_topic_id			Array of destination topics ids
+		 * @var string	action				The action
+		 * @var array	forum_info			Array with forum infos
+		 * @var int		start				Start value
+		 * @var array	topic_id_list		Array of topics ids
+		 * @var array	post_id_list		Array of posts ids
+		 * @var array	source_topic_ids	Array of source topics ids
+		 * @var int		to_topic_id			Array of destination topics ids
 		 * @since 3.1.6-RC1
 		 */
 		$vars = [
@@ -341,12 +341,12 @@ class forum
 		 * Modify SQL query before MCP forum view topic list is queried
 		 *
 		 * @event core.mcp_view_forum_modify_sql
-		 * @var	string	sql					SQL query for forum view topic list
-		 * @var	int		forum_id			ID of the forum
-		 * @var	string	limit_time_sql		SQL query part for limit time
-		 * @var	string	sort_order_sql		SQL query part for sort order
-		 * @var	int		topics_per_page		Number of topics per page
-		 * @var	int		start				Start value
+		 * @var string	sql					SQL query for forum view topic list
+		 * @var int		forum_id			ID of the forum
+		 * @var string	limit_time_sql		SQL query part for limit time
+		 * @var string	sort_order_sql		SQL query part for sort order
+		 * @var int		topics_per_page		Number of topics per page
+		 * @var int		start				Start value
 		 * @since 3.1.2-RC1
 		 */
 		$vars = ['sql', 'forum_id', 'limit_time_sql', 'sort_order_sql', 'topics_per_page', 'start'];
@@ -489,8 +489,8 @@ class forum
 			 * Modify the topic data before it is assigned to the template in MCP
 			 *
 			 * @event core.mcp_view_forum_modify_topicrow
-			 * @var	array	row		Array with topic data
-			 * @var	array	topic_row	Template array with topic data
+			 * @var array	row		Array with topic data
+			 * @var array	topic_row	Template array with topic data
 			 * @since 3.1.0-a1
 			 */
 			$vars = ['row', 'topic_row'];
@@ -685,8 +685,8 @@ class forum
 			 * Perform additional actions after merging topics.
 			 *
 			 * @event core.mcp_forum_merge_topics_after
-			 * @var	array	all_topic_data			The data from all topics involved in the merge
-			 * @var	int		to_topic_id				The ID of the topic into which the rest are merged
+			 * @var array	all_topic_data			The data from all topics involved in the merge
+			 * @var int		to_topic_id				The ID of the topic into which the rest are merged
 			 * @since 3.1.11-RC1
 			 */
 			$vars = ['all_topic_data', 'to_topic_id'];

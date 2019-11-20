@@ -118,8 +118,8 @@ class front
 				 * Allow altering the query to get the number of unapproved posts
 				 *
 				 * @event core.mcp_front_queue_unapproved_total_before
-				 * @var	array	sql_ary			Query array to get the total number of unapproved posts
-				 * @var	array	forum_list		List of forums to look for unapproved posts
+				 * @var array	sql_ary			Query array to get the total number of unapproved posts
+				 * @var array	forum_list		List of forums to look for unapproved posts
 				 * @since 3.1.5-RC1
 				 */
 				$vars = ['sql_ary', 'forum_list'];
@@ -165,10 +165,10 @@ class front
 				 * Alter list of posts and total as required
 				 *
 				 * @event core.mcp_front_view_queue_postid_list_after
-				 * @var	int		total						Number of unapproved posts
-				 * @var	array	post_list					List of unapproved posts
-				 * @var	array	forum_list					List of forums that contain the posts
-				 * @var	array	forum_names					Associative array with forum_id as key and it's corresponding forum_name as value
+				 * @var int		total						Number of unapproved posts
+				 * @var array	post_list					List of unapproved posts
+				 * @var array	forum_list					List of forums that contain the posts
+				 * @var array	forum_names					Associative array with forum_id as key and it's corresponding forum_name as value
 				 * @since 3.1.0-RC3
 				 */
 				$vars = ['total', 'post_list', 'forum_list', 'forum_names'];
@@ -246,8 +246,8 @@ class front
 				 * Alter sql query to count the number of reported posts
 				 *
 				 * @event core.mcp_front_reports_count_query_before
-				 * @var	string	sql				The query string used to get the number of reports that exist
-				 * @var	array	forum_list		List of forums that contain the posts
+				 * @var string	sql				The query string used to get the number of reports that exist
+				 * @var array	forum_list		List of forums that contain the posts
 				 * @since 3.1.5-RC1
 				 */
 				$vars = ['sql', 'forum_list'];
@@ -296,8 +296,8 @@ class front
 					 * Alter sql query to get latest reported posts
 					 *
 					 * @event core.mcp_front_reports_listing_query_before
-					 * @var	array	sql_ary			Associative array with the query to be executed
-					 * @var	array	forum_list		List of forums that contain the posts
+					 * @var array	sql_ary			Associative array with the query to be executed
+					 * @var array	forum_list		List of forums that contain the posts
 					 * @since 3.1.0-RC3
 					 */
 					$vars = ['sql_ary', 'forum_list'];

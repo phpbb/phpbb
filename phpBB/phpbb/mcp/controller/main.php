@@ -13,7 +13,6 @@
 
 namespace phpbb\mcp\controller;
 
-use phpbb\exception\back_exception;
 use phpbb\exception\http_exception;
 
 class main
@@ -37,7 +36,7 @@ class main
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\log\log */
 	protected $log;
@@ -84,7 +83,7 @@ class main
 	 * @param \phpbb\db\driver\driver_interface	$db					Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
 	 * @param \phpbb\controller\helper			$helper				Controller helper object
-	 * @param \phpbb\language\language			$lang				Language object
+	 * @param \phpbb\language\language			$language			Language object
 	 * @param \phpbb\log\log					$log				Log object
 	 * @param \phpbb\mcp\controller\delete		$mcp_delete			MCP Delete controller object
 	 * @param \phpbb\mcp\controller\forum		$mcp_forum			MCP Forum controller object
@@ -104,7 +103,7 @@ class main
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\log\log $log,
 		delete $mcp_delete,
 		forum $mcp_forum,
@@ -124,7 +123,7 @@ class main
 		$this->db					= $db;
 		$this->dispatcher			= $dispatcher;
 		$this->helper				= $helper;
-		$this->lang					= $lang;
+		$this->language				= $language;
 		$this->log					= $log;
 		$this->mcp_delete			= $mcp_delete;
 		$this->mcp_forum			= $mcp_forum;
@@ -150,9 +149,9 @@ class main
 		 * Event to perform additional actions before an MCP action is executed.
 		 *
 		 * @event core.mcp_main_before
-		 * @var	string	action				The action that is about to be performed
-		 * @var	string	mode				The mode in which the MCP is accessed, e.g. front, forum_view, topic_view, post_details, quickmod
-		 * @var	boolean	quickmod			Whether or not the action is performed via QuickMod
+		 * @var string	action				The action that is about to be performed
+		 * @var string	mode				The mode in which the MCP is accessed, e.g. front, forum_view, topic_view, post_details, quickmod
+		 * @var boolean	quickmod			Whether or not the action is performed via QuickMod
 		 * @since 3.2.8-RC1
 		 */
 		$vars = ['action', 'mode', 'quickmod'];
@@ -338,14 +337,15 @@ class main
 	{
 		if (in_array($this->mode, ['forum', 'topic', 'post']))
 		{
-			$u_back = array_filter([
-				"mcp_view_{$this->mode}",
+			$params = array_filter([
 				'f' => $this->request->variable('f', 0),
 				't' => $this->request->variable('t', 0),
 				'p' => $this->request->variable('p', 0),
 			]);
 
-			throw new back_exception($code, $message, $u_back);
+			$return = '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->helper->route("mcp_view_{$this->mode}", $params) . '">&laquo; ', '</a>');
+
+			trigger_error($message . $return, E_USER_WARNING);
 		}
 		else
 		{
@@ -441,11 +441,11 @@ class main
 
 			$success_msg = $l_prefix . (count($ids) === 1 ? '' : 'S') . '_' . ($s_lock ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
 
-			$message = $this->lang->lang($success_msg);
+			$message = $this->language->lang($success_msg);
 
 			if (!$this->request->is_ajax())
 			{
-				$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+				$message .= '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 			}
 
 			meta_refresh(2, $redirect);
@@ -473,7 +473,7 @@ class main
 			$this->throw_exception('NO_TOPIC_SELECTED');
 		}
 
-		$this->lang->add_lang('viewtopic');
+		$this->language->add_lang('viewtopic');
 
 		$to_forum_id = $this->request->variable('to_forum_id', 0);
 		$forum_id = $this->request->variable('f', 0);
@@ -498,11 +498,11 @@ class main
 
 			if (empty($topic_ids))
 			{
-				$additional_msg = $this->lang->lang('NO_TOPIC_SELECTED');
+				$additional_msg = $this->language->lang('NO_TOPIC_SELECTED');
 			}
 			else if (empty($forum_data))
 			{
-				$additional_msg = $this->lang->lang('FORUM_NOT_EXIST');
+				$additional_msg = $this->language->lang('FORUM_NOT_EXIST');
 			}
 			else
 			{
@@ -510,17 +510,17 @@ class main
 
 				if ($forum_data['forum_type'] != FORUM_POST)
 				{
-					$additional_msg = $this->lang->lang('FORUM_NOT_POSTABLE');
+					$additional_msg = $this->language->lang('FORUM_NOT_POSTABLE');
 				}
 				else if (!$this->auth->acl_get('f_post', $to_forum_id))
 				{
-					$additional_msg = $this->lang->lang('USER_CANNOT_POST');
+					$additional_msg = $this->language->lang('USER_CANNOT_POST');
 				}
 			}
 		}
 		else if ($this->request->is_set_post('confirm'))
 		{
-			$additional_msg = $this->lang->lang('FORUM_NOT_EXIST');
+			$additional_msg = $this->language->lang('FORUM_NOT_EXIST');
 		}
 
 		if ($additional_msg)
@@ -876,16 +876,16 @@ class main
 
 			$success_msg	= count($topic_ids) === 1 ? 'TOPIC_FORKED_SUCCESS' : 'TOPICS_FORKED_SUCCESS';
 			$redirect_url	= append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $forum_id);
-			$return_link	= $this->lang->lang('RETURN_FORUM', '<a href="' . $redirect_url . '">', '</a>');
+			$return_link	= $this->language->lang('RETURN_FORUM', '<a href="' . $redirect_url . '">', '</a>');
 
 			if ($forum_id != $to_forum_id)
 			{
-				$return_link .= '<br /><br />' . $this->lang->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $to_forum_id) . '">', '</a>');
+				$return_link .= '<br /><br />' . $this->language->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", 'f=' . $to_forum_id) . '">', '</a>');
 			}
 
 			meta_refresh(3, $redirect_url);
 
-			return $this->helper->message($this->lang->lang($success_msg) . '<br /><br />' . $return_link);
+			return $this->helper->message($this->language->lang($success_msg) . '<br /><br />' . $return_link);
 		}
 		else
 		{
@@ -912,7 +912,7 @@ class main
 	 */
 	public function move_topic(array $topic_ids)
 	{
-		$this->lang->add_lang('viewtopic');
+		$this->language->add_lang('viewtopic');
 
 		// Here we limit the operation to one forum only
 		$forum_id = phpbb_check_ids($topic_ids, $this->tables['topics'], 'topic_id', ['m_move'], true);
@@ -941,7 +941,7 @@ class main
 
 			if (empty($forum_data))
 			{
-				$additional_msg = $this->lang->lang('FORUM_NOT_EXIST');
+				$additional_msg = $this->language->lang('FORUM_NOT_EXIST');
 			}
 			else
 			{
@@ -949,21 +949,21 @@ class main
 
 				if ($forum_data['forum_type'] != FORUM_POST)
 				{
-					$additional_msg = $this->lang->lang('FORUM_NOT_POSTABLE');
+					$additional_msg = $this->language->lang('FORUM_NOT_POSTABLE');
 				}
 				else if (!$this->auth->acl_get('f_post', $to_forum_id) || (!$this->auth->acl_get('m_approve', $to_forum_id) && !$this->auth->acl_get('f_noapprove', $to_forum_id)))
 				{
-					$additional_msg = $this->lang->lang('USER_CANNOT_POST');
+					$additional_msg = $this->language->lang('USER_CANNOT_POST');
 				}
 				else if ($forum_id == $to_forum_id)
 				{
-					$additional_msg = $this->lang->lang('CANNOT_MOVE_SAME_FORUM');
+					$additional_msg = $this->language->lang('CANNOT_MOVE_SAME_FORUM');
 				}
 			}
 		}
 		else if ($this->request->is_set_post('confirm'))
 		{
-			$additional_msg = $this->lang->lang('FORUM_NOT_EXIST');
+			$additional_msg = $this->language->lang('FORUM_NOT_EXIST');
 		}
 
 		if (!$to_forum_id || $additional_msg)
@@ -1150,10 +1150,10 @@ class main
 
 			sync('forum', 'forum_id', [$forum_id, $to_forum_id]);
 
-			$message = $this->lang->lang($success_msg);
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f=$forum_id") . '">', '</a>');
-			$message .= '<br /><br />' . $this->lang->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f=$to_forum_id") . '">', '</a>');
+			$message = $this->language->lang($success_msg);
+			$message .= '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+			$message .= '<br /><br />' . $this->language->lang('RETURN_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f=$forum_id") . '">', '</a>');
+			$message .= '<br /><br />' . $this->language->lang('RETURN_NEW_FORUM', '<a href="' . append_sid("{$this->root_path}viewforum.$this->php_ext", "f=$to_forum_id") . '">', '</a>');
 
 			meta_refresh(3, $redirect);
 
@@ -1233,9 +1233,9 @@ class main
 			 * Perform additional actions before changing topic(s) type
 			 *
 			 * @event core.mcp_change_topic_type_before
-			 * @var	int		new_topic_type		The candidate topic type.
-			 * @var	int		forum_id			The forum ID for the topic ID(s).
-			 * @var	array	topic_ids			Array containing the topic ID(s) that will be changed
+			 * @var int		new_topic_type		The candidate topic type.
+			 * @var int		forum_id			The forum ID for the topic ID(s).
+			 * @var array	topic_ids			Array containing the topic ID(s) that will be changed
 			 * @since 3.2.6-RC1
 			 */
 			$vars = ['new_topic_type', 'forum_id', 'topic_ids'];
@@ -1281,20 +1281,20 @@ class main
 			 * Perform additional actions after changing topic types
 			 *
 			 * @event core.mcp_change_topic_type_after
-			 * @var	int		new_topic_type		The newly changed topic type.
-			 * @var	int		forum_id			The forum ID where the newly changed topic type belongs to.
-			 * @var	array	topic_ids			Array containing the topic IDs that have been changed
+			 * @var int		new_topic_type		The newly changed topic type.
+			 * @var int		forum_id			The forum ID where the newly changed topic type belongs to.
+			 * @var array	topic_ids			Array containing the topic IDs that have been changed
 			 * @since 3.2.6-RC1
 			 */
 			$vars = ['new_topic_type', 'forum_id', 'topic_ids'];
 			extract($this->dispatcher->trigger_event('core.mcp_change_topic_type_after', compact($vars)));
 
 			$message = count($topic_ids) === 1 ? 'TOPIC_TYPE_CHANGED' : 'TOPICS_TYPE_CHANGED';
-			$message = $this->lang->lang($message);
+			$message = $this->language->lang($message);
 
 			if (!$this->request->is_ajax())
 			{
-				$message .= '<br /><br />' . $this->lang->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+				$message .= '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 			}
 
 			meta_refresh(2, $redirect);
@@ -1322,7 +1322,7 @@ class main
 			$this->throw_exception('NO_TOPIC_SELECTED');
 		}
 
-		$this->lang->add_lang('posting');
+		$this->language->add_lang('posting');
 
 		$redirect = $this->request->variable('redirect', build_url(['action', 'quickmod']));
 		$forum_id = $this->request->variable('f', 0);
@@ -1383,11 +1383,11 @@ class main
 		}
 		else
 		{
-			$redirect_message = $this->lang->lang('RETURN_' . $redirect_message, '<a href="' . $redirect . '">', '</a>');
+			$redirect_message = $this->language->lang('RETURN_' . $redirect_message, '<a href="' . $redirect . '">', '</a>');
 
 			meta_refresh(3, $redirect);
 
-			return $this->helper->message($this->lang->lang($success_message) . '<br /><br />' . $redirect_message);
+			return $this->helper->message($this->language->lang($success_message) . '<br /><br />' . $redirect_message);
 		}
 	}
 }
