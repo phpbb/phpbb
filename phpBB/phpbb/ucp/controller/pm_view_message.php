@@ -13,7 +13,7 @@
 
 namespace phpbb\ucp\controller;
 
-class pm_viewmessage
+class pm_view_message
 {
 	/**
 	 * View private message

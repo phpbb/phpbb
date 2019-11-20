@@ -13,7 +13,7 @@
 
 namespace phpbb\ucp\controller;
 
-class pm_viewfolder
+class pm_view_folder
 {
 	/**
 	 * View message folder
