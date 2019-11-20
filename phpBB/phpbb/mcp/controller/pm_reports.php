@@ -1,29 +1,22 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\mcp\controller;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* mcp_reports
-* Handling the reports queue
-*/
-class mcp_pm_reports
+ * Handling the reports queue
+ */
+class pm_reports
 {
 	var $p_master;
 	var $u_action;
@@ -33,17 +26,15 @@ class mcp_pm_reports
 		$this->p_master = $p_master;
 	}
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $request;
-		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
-		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		include_once($this->root_path . 'includes/functions_posting.' . $this->php_ext);
+		include_once($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
-		$start = $request->variable('start', 0);
+		$start = $this->request->variable('start', 0);
 
 		$this->page_title = 'MCP_PM_REPORTS';
 
@@ -51,9 +42,9 @@ class mcp_pm_reports
 		{
 			case 'close':
 			case 'delete':
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 
-				$report_id_list = $request->variable('report_id_list', array(0));
+				$report_id_list = $this->request->variable('report_id_list', [0]);
 
 				if (!count($report_id_list))
 				{
@@ -62,7 +53,7 @@ class mcp_pm_reports
 
 				if (!function_exists('close_report'))
 				{
-					include($phpbb_root_path . 'includes/mcp/mcp_reports.' . $phpEx);
+					include($this->root_path . 'includes/mcp/mcp_reports.' . $this->php_ext);
 				}
 
 				close_report($report_id_list, $mode, $action, true);
@@ -74,9 +65,9 @@ class mcp_pm_reports
 		{
 			case 'pm_report_details':
 
-				$user->add_lang(array('posting', 'viewforum', 'viewtopic', 'ucp'));
+				$this->language->add_lang(['posting', 'viewforum', 'viewtopic', 'ucp']);
 
-				$report_id = $request->variable('r', 0);
+				$report_id = $this->request->variable('r', 0);
 
 				$sql = 'SELECT r.pm_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
@@ -85,9 +76,9 @@ class mcp_pm_reports
 						AND r.user_id = u.user_id
 						AND r.post_id = 0
 					ORDER BY report_closed ASC';
-				$result = $db->sql_query_limit($sql, 1);
-				$report = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = $this->db->sql_query_limit($sql, 1);
+				$report = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
 
 				if (!$report_id || !$report)
 				{
@@ -97,12 +88,12 @@ class mcp_pm_reports
 				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				$phpbb_notifications->mark_notifications_by_parent('report_pm', $report_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_by_parent('report_pm', $report_id, $this->user->data['user_id']);
 
 				$pm_id = $report['pm_id'];
 				$report_id = $report['report_id'];
 
-				$pm_info = phpbb_get_pm_data(array($pm_id));
+				$pm_info = phpbb_get_pm_data([$pm_id]);
 
 				if (!count($pm_info))
 				{
@@ -111,13 +102,13 @@ class mcp_pm_reports
 
 				$pm_info = $pm_info[$pm_id];
 
-				write_pm_addresses(array('to' => $pm_info['to_address'], 'bcc' => $pm_info['bcc_address']), (int) $pm_info['author_id']);
+				write_pm_addresses(['to' => $pm_info['to_address'], 'bcc' => $pm_info['bcc_address']], (int) $pm_info['author_id']);
 
-				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
-				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
+				$reason = ['title' => $report['reason_title'], 'description' => $report['reason_description']];
+				if (isset($this->language->lang('report_reasons')['TITLE'][strtoupper($reason['title'])]) && isset($this->language->lang('report_reasons')['DESCRIPTION'][strtoupper($reason['title'])]))
 				{
-					$reason['description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])];
-					$reason['title'] = $user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])];
+					$reason['description'] = $this->language->lang('report_reasons')['DESCRIPTION'][strtoupper($reason['title'])];
+					$reason['title'] = $this->language->lang('report_reasons')['TITLE'][strtoupper($reason['title'])];
 				}
 
 				// Process message, leave it uncensored
@@ -126,62 +117,62 @@ class mcp_pm_reports
 
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
-				if ($pm_info['message_attachment'] && $auth->acl_get('u_pm_download'))
+				if ($pm_info['message_attachment'] && $this->auth->acl_get('u_pm_download'))
 				{
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $pm_id . '
 							AND in_message = 1
 						ORDER BY filetime DESC';
-					$result = $db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$attachments[] = $row;
 					}
-					$db->sql_freeresult($result);
+					$this->db->sql_freeresult($result);
 
 					if (count($attachments))
 					{
-						$update_count = array();
+						$update_count = [];
 						parse_attachments(0, $message, $attachments, $update_count);
 					}
 
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
 					if (!empty($attachments))
 					{
-						$template->assign_var('S_HAS_ATTACHMENTS', true);
+						$this->template->assign_var('S_HAS_ATTACHMENTS', true);
 
 						foreach ($attachments as $attachment)
 						{
-							$template->assign_block_vars('attachment', array(
-								'DISPLAY_ATTACHMENT'	=> $attachment)
+							$this->template->assign_block_vars('attachment', [
+								'DISPLAY_ATTACHMENT'	=> $attachment]
 							);
 						}
 					}
 				}
 
-				$template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_MCP_REPORT'			=> true,
 					'S_PM'					=> true,
-					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
-					'S_CAN_VIEWIP'			=> $auth->acl_getf_global('m_info'),
+					'S_CLOSE_ACTION'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
+					'S_CAN_VIEWIP'			=> $this->auth->acl_getf_global('m_info'),
 					'S_POST_REPORTED'		=> $pm_info['message_reported'],
 					'S_REPORT_CLOSED'		=> $report['report_closed'],
 					'S_USER_NOTES'			=> true,
 
-					'U_MCP_REPORT'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
-					'U_MCP_REPORTER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
-					'U_MCP_USER_NOTES'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $pm_info['author_id']),
-					'U_MCP_WARN_REPORTER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
-					'U_MCP_WARN_USER'			=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $pm_info['author_id']) : '',
+					'U_MCP_REPORT'				=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
+					'U_MCP_REPORTER_NOTES'		=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
+					'U_MCP_USER_NOTES'			=> append_sid("{$this->root_path}mcp.$this->php_ext", 'i=notes&amp;mode=user_notes&amp;u=' . $pm_info['author_id']),
+					'U_MCP_WARN_REPORTER'		=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
+					'U_MCP_WARN_USER'			=> ($this->auth->acl_get('m_warn')) ? append_sid("{$this->root_path}mcp.$this->php_ext", 'i=warn&amp;mode=warn_user&amp;u=' . $pm_info['author_id']) : '',
 
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
-					'MINI_POST_IMG'			=> $user->img('icon_post_target', 'POST'),
+					'EDIT_IMG'				=> $this->user->img('icon_post_edit', $this->language->lang('EDIT_POST')),
+					'MINI_POST_IMG'			=> $this->user->img('icon_post_target', 'POST'),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports' . (($pm_info['message_reported']) ? '&amp;mode=pm_reports' : '&amp;mode=pm_reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-					'REPORT_DATE'				=> $user->format_date($report['report_time']),
+					'RETURN_REPORTS'			=> sprintf($this->language->lang('RETURN_REPORTS'), '<a href="' . append_sid("{$this->root_path}mcp.$this->php_ext", 'i=pm_reports' . (($pm_info['message_reported']) ? '&amp;mode=pm_reports' : '&amp;mode=pm_reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
+					'REPORTED_IMG'				=> $this->user->img('icon_topic_reported', $this->language->lang('POST_REPORTED')),
+					'REPORT_DATE'				=> $this->user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
@@ -198,14 +189,14 @@ class mcp_pm_reports
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
 					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> ($pm_info['message_subject']) ? $pm_info['message_subject'] : $user->lang['NO_SUBJECT'],
-					'POST_DATE'				=> $user->format_date($pm_info['message_time']),
+					'POST_SUBJECT'			=> ($pm_info['message_subject']) ? $pm_info['message_subject'] : $this->language->lang('NO_SUBJECT'),
+					'POST_DATE'				=> $this->user->format_date($pm_info['message_time']),
 					'POST_IP'				=> $pm_info['author_ip'],
-					'POST_IPADDR'			=> ($auth->acl_getf_global('m_info') && $request->variable('lookup', '')) ? @gethostbyaddr($pm_info['author_ip']) : '',
+					'POST_IPADDR'			=> ($this->auth->acl_getf_global('m_info') && $this->request->variable('lookup', '')) ? @gethostbyaddr($pm_info['author_ip']) : '',
 					'POST_ID'				=> $pm_info['msg_id'],
 
-					'U_LOOKUP_IP'			=> ($auth->acl_getf_global('m_info')) ? $this->u_action . '&amp;r=' . $report_id . '&amp;pm=' . $pm_id . '&amp;lookup=' . $pm_info['author_ip'] . '#ip' : '',
-				));
+					'U_LOOKUP_IP'			=> ($this->auth->acl_getf_global('m_info')) ? $this->u_action . '&amp;r=' . $report_id . '&amp;pm=' . $pm_id . '&amp;lookup=' . $pm_info['author_ip'] . '#ip' : '',
+				]);
 
 				$this->tpl_name = 'mcp_post';
 
@@ -213,11 +204,11 @@ class mcp_pm_reports
 
 			case 'pm_reports':
 			case 'pm_reports_closed':
-				$user->add_lang(array('ucp'));
+				$this->language->add_lang(['ucp']);
 
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
-				$sort_by_sql = $sort_order_sql = array();
+				$sort_by_sql = $sort_order_sql = [];
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total);
 
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -240,35 +231,35 @@ class mcp_pm_reports
 						AND r.post_id = 0
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
-				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+				$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
 
 				$i = 0;
-				$report_ids = array();
-				while ($row = $db->sql_fetchrow($result))
+				$report_ids = [];
+				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$report_ids[] = $row['report_id'];
 					$row_num[$row['report_id']] = $i++;
 				}
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 
 				if (count($report_ids))
 				{
 					$sql = 'SELECT p.*, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
-						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . "
+						WHERE ' . $this->db->sql_in_set('r.report_id', $report_ids) . "
 							AND r.pm_id = p.msg_id
 							AND p.author_id = u.user_id
 							AND ru.user_id = r.user_id
 						ORDER BY $sort_order_sql";
-					$result = $db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 
-					$pm_list = $pm_by_id = array();
-					while ($row = $db->sql_fetchrow($result))
+					$pm_list = $pm_by_id = [];
+					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$pm_by_id[(int) $row['msg_id']] = $row;
 						$pm_list[] = (int) $row['msg_id'];
 					}
-					$db->sql_freeresult($result);
+					$this->db->sql_freeresult($result);
 
 					if (count($pm_list))
 					{
@@ -277,8 +268,8 @@ class mcp_pm_reports
 						foreach ($pm_list as $message_id)
 						{
 							$row = $pm_by_id[$message_id];
-							$template->assign_block_vars('postrow', array(
-								'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=pm_reports&amp;mode=pm_report_details&amp;r={$row['report_id']}"),
+							$this->template->assign_block_vars('postrow', [
+								'U_VIEW_DETAILS'			=> append_sid("{$this->root_path}mcp.$this->php_ext", "i=pm_reports&amp;mode=pm_report_details&amp;r={$row['report_id']}"),
 
 								'PM_AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour']),
 								'PM_AUTHOR_COLOUR'		=> get_username_string('colour', $row['author_id'], $row['username'], $row['user_colour']),
@@ -290,33 +281,33 @@ class mcp_pm_reports
 								'REPORTER'				=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 								'U_REPORTER'			=> get_username_string('profile', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 
-								'PM_SUBJECT'			=> ($row['message_subject']) ? $row['message_subject'] : $user->lang['NO_SUBJECT'],
-								'PM_TIME'				=> $user->format_date($row['message_time']),
+								'PM_SUBJECT'			=> ($row['message_subject']) ? $row['message_subject'] : $this->language->lang('NO_SUBJECT'),
+								'PM_TIME'				=> $this->user->format_date($row['message_time']),
 								'REPORT_ID'				=> $row['report_id'],
-								'REPORT_TIME'			=> $user->format_date($row['report_time']),
+								'REPORT_TIME'			=> $this->user->format_date($row['report_time']),
 
-								'RECIPIENTS'			=> implode($user->lang['COMMA_SEPARATOR'], $address_list[$row['msg_id']]),
-								'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $row['message_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-							));
+								'RECIPIENTS'			=> implode($this->language->lang('COMMA_SEPARATOR'), $address_list[$row['msg_id']]),
+								'ATTACH_ICON_IMG'		=> ($this->auth->acl_get('u_download') && $row['message_attachment']) ? $this->user->img('icon_topic_attach', $this->language->lang('TOTAL_ATTACHMENTS')) : '',
+							]);
 						}
 					}
 				}
 
 				$base_url = $this->u_action . "&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $this->config['topics_per_page'], $start);
 
 				// Now display the page
-				$template->assign_vars(array(
-					'L_EXPLAIN'				=> ($mode == 'pm_reports') ? $user->lang['MCP_PM_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_PM_REPORTS_CLOSED_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'pm_reports') ? $user->lang['MCP_PM_REPORTS_OPEN'] : $user->lang['MCP_PM_REPORTS_CLOSED'],
+				$this->template->assign_vars([
+					'L_EXPLAIN'				=> ($mode == 'pm_reports') ? $this->language->lang('MCP_PM_REPORTS_OPEN_EXPLAIN') : $this->language->lang('MCP_PM_REPORTS_CLOSED_EXPLAIN'),
+					'L_TITLE'				=> ($mode == 'pm_reports') ? $this->language->lang('MCP_PM_REPORTS_OPEN') : $this->language->lang('MCP_PM_REPORTS_CLOSED'),
 
 					'S_PM'					=> true,
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_CLOSED'				=> ($mode == 'pm_reports_closed') ? true : false,
 
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
-					)
+					'TOTAL_REPORTS'			=> $this->user->lang('LIST_REPORTS', (int) $total),
+					]
 				);
 
 				$this->tpl_name = 'mcp_reports';
