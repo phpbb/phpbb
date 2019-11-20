@@ -16,7 +16,7 @@ namespace phpbb\ucp\controller;
 /**
  * Changing user preferences
  */
-class prefs
+class settings
 {
 	var $u_action;
 
