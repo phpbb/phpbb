@@ -99,7 +99,7 @@ class login_link
 			}
 		}
 
-		$tpl_ary = array(
+		$tpl_ary = [
 			// Common template elements
 			'LOGIN_LINK_ERROR'		=> $login_link_error,
 			'PASSWORD_CREDENTIAL'	=> 'login_password',
@@ -112,7 +112,7 @@ class login_link
 			// Login elements
 			'LOGIN_ERROR'		=> $login_error,
 			'LOGIN_USERNAME'	=> $login_username,
-		);
+		];
 
 		/**
 		 * Event to perform additional actions before ucp_login_link is displayed
@@ -126,7 +126,7 @@ class login_link
 		 * @var array							tpl_ary				Template variables
 		 * @since 3.2.4-RC1
 		 */
-		$vars = array('data', 'auth_provider', 'login_link_error', 'login_error', 'login_username', 'tpl_ary');
+		$vars = ['data', 'auth_provider', 'login_link_error', 'login_error', 'login_username', 'tpl_ary'];
 		extract($this->dispatcher->trigger_event('core.ucp_login_link_template_after', compact($vars)));
 
 		$this->template->assign_vars($tpl_ary);
@@ -145,7 +145,7 @@ class login_link
 	 */
 	protected function get_hidden_fields($data)
 	{
-		$fields = array();
+		$fields = [];
 
 		foreach ($data as $key => $value)
 		{
@@ -165,7 +165,7 @@ class login_link
 	{
 
 		$var_names = $this->request->variable_names(\phpbb\request\request_interface::GET);
-		$login_link_data = array();
+		$login_link_data = [];
 		$string_start_length = strlen('login_link_');
 
 		foreach ($var_names as $var_name)
@@ -207,9 +207,9 @@ class login_link
 					$captcha = $phpbb_container->get('captcha.factory')->get_instance($this->config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
-					));
+					]);
 
 					$login_error = $this->language->lang[$result['error_msg']];
 				break;

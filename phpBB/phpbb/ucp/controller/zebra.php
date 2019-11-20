@@ -27,13 +27,13 @@ class zebra
 
 		if ($submit)
 		{
-			$data = $error = array();
+			$data = $error = [];
 			$updated = false;
 
-			$var_ary = array(
-				'usernames'	=> array(0),
+			$var_ary = [
+				'usernames'	=> [0],
 				'add'		=> '',
-			);
+			];
 
 			foreach ($var_ary as $var => $default)
 			{
@@ -57,7 +57,7 @@ class zebra
 						 * @var array	user_ids	User ids we remove
 						 * @since 3.1.0-a1
 						 */
-						$vars = array('mode', 'user_ids');
+						$vars = ['mode', 'user_ids'];
 						extract($this->dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
 
 						$sql = 'DELETE FROM ' . $this->tables['zebra'] . '
@@ -83,7 +83,7 @@ class zebra
 								AND u.user_id = z.zebra_id';
 						$result = $this->db->sql_query($sql);
 
-						$friends = $foes = array();
+						$friends = $foes = [];
 						while ($row = $this->db->sql_fetchrow($result))
 						{
 							if ($row['friend'])
@@ -117,7 +117,7 @@ class zebra
 
 						// remove the user himself from the username array
 						$n = count($data['add']);
-						$data['add'] = array_diff($data['add'], array(utf8_clean_string($this->user->data['username'])));
+						$data['add'] = array_diff($data['add'], [utf8_clean_string($this->user->data['username'])]);
 
 						if (count($data['add']) < $n)
 						{
@@ -134,7 +134,7 @@ class zebra
 									AND user_type <> ' . USER_INACTIVE;
 							$result = $this->db->sql_query($sql);
 
-							$user_id_ary = array();
+							$user_id_ary = [];
 							while ($row = $this->db->sql_fetchrow($result))
 							{
 								if ($row['user_id'] != ANONYMOUS && $row['user_type'] != USER_IGNORE)
@@ -157,8 +157,8 @@ class zebra
 								// Remove users from foe list if they are admins or moderators
 								if ($mode == 'foes')
 								{
-									$perms = array();
-									foreach ($this->auth->acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
+									$perms = [];
+									foreach ($this->auth->acl_get_list($user_id_ary, ['a_', 'm_']) as $forum_id => $forum_ary)
 									{
 										foreach ($forum_ary as $auth_option => $user_ary)
 										{
@@ -182,14 +182,14 @@ class zebra
 								{
 									$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';
 
-									$sql_ary = array();
+									$sql_ary = [];
 									foreach ($user_id_ary as $zebra_id)
 									{
-										$sql_ary[] = array(
+										$sql_ary[] = [
 											'user_id'		=> (int) $this->user->data['user_id'],
 											'zebra_id'		=> (int) $zebra_id,
 											$sql_mode		=> 1
-										);
+										];
 									}
 
 									/**
@@ -202,7 +202,7 @@ class zebra
 									 *							entries we add
 									 * @since 3.1.0-a1
 									 */
-									$vars = array('mode', 'sql_ary');
+									$vars = ['mode', 'sql_ary'];
 									extract($this->dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
 
 									$this->db->sql_multi_insert($this->tables['zebra'], $sql_ary);
@@ -223,16 +223,16 @@ class zebra
 						$message = ($updated) ? $this->language->lang($l_mode . '_UPDATED') : implode('<br />', $error);
 
 						$json_response = new \phpbb\json_response;
-						$json_response->send(array(
+						$json_response->send([
 							'success' => $updated,
 
 							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
-							'REFRESH_DATA'	=> array(
+							'REFRESH_DATA'	=> [
 								'time'	=> 3,
 								'url'		=> $this->u_action
-							)
-						));
+							]
+						]);
 					}
 					else if ($updated)
 					{
@@ -247,11 +247,11 @@ class zebra
 				}
 				else
 				{
-					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 						'mode'		=> $mode,
 						'submit'	=> true,
 						'usernames'	=> $data['usernames'],
-						'add'		=> $data['add']))
+						'add'		=> $data['add']])
 					);
 				}
 			}
@@ -273,14 +273,14 @@ class zebra
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_TITLE'			=> $this->language->lang('UCP_ZEBRA_' . $l_mode),
 
 			'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=ucp&amp;field=add'),
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
-			'S_UCP_ACTION'			=> $this->u_action)
+			'S_UCP_ACTION'			=> $this->u_action]
 		);
 
 		$this->tpl_name = 'ucp_zebra_' . $mode;

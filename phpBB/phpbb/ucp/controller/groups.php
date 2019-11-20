@@ -27,7 +27,7 @@ class groups
 
 		$return_page = '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->u_action . '">', '</a>');
 
-		$mark_ary	= $this->request->variable('mark', array(0));
+		$mark_ary	= $this->request->variable('mark', [0]);
 		$submit		= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 
 		/** @var \phpbb\group\helper $group_helper */
@@ -54,7 +54,7 @@ class groups
 						WHERE group_id IN ($group_id, {$this->user->data['group_id']})";
 					$result = $this->db->sql_query($sql);
 
-					$group_row = array();
+					$group_row = [];
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						$row['group_name'] = $this->group_helper->get_name($row['group_name']);
@@ -92,20 +92,20 @@ class groups
 							{
 								group_user_attributes('default', $group_id, $this->user->data['user_id']);
 
-								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_CHANGE', false, array(
+								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_CHANGE', false, [
 									'reportee_id' => $this->user->data['user_id'],
 									sprintf($this->language->lang('USER_GROUP_CHANGE'), $group_row[$this->user->data['group_id']]['group_name'], $group_row[$group_id]['group_name'])
-								));
+								]);
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($this->language->lang('CHANGED_DEFAULT_GROUP') . $return_page);
 							}
 							else
 							{
-								$s_hidden_fields = array(
+								$s_hidden_fields = [
 									'default'		=> $group_id,
 									'change_default'=> true
-								);
+								];
 
 								confirm_box(false, sprintf($this->language->lang('GROUP_CHANGE_DEFAULT'), $group_row[$group_id]['group_name']), build_hidden_fields($s_hidden_fields));
 							}
@@ -142,21 +142,21 @@ class groups
 							{
 								group_user_del($group_id, $this->user->data['user_id']);
 
-								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_RESIGN', false, array(
+								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_RESIGN', false, [
 									'reportee_id' => $this->user->data['user_id'],
 									$group_row[$group_id]['group_name']
-								));
+								]);
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($this->language->lang[($row['user_pending']) ? 'GROUP_RESIGNED_PENDING' : 'GROUP_RESIGNED_MEMBERSHIP'] . $return_page);
 							}
 							else
 							{
-								$s_hidden_fields = array(
+								$s_hidden_fields = [
 									'selected'		=> $group_id,
 									'action'		=> 'resign',
 									'submit'		=> true
-								);
+								];
 
 								confirm_box(false, ($row['user_pending']) ? 'GROUP_RESIGN_PENDING' : 'GROUP_RESIGN_MEMBERSHIP', build_hidden_fields($s_hidden_fields));
 							}
@@ -201,21 +201,21 @@ class groups
 									group_user_add($group_id, $this->user->data['user_id'], false, false, false, 0, 1);
 								}
 
-								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), false, array(
+								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), false, [
 									'reportee_id' => $this->user->data['user_id'],
 									$group_row[$group_id]['group_name']
-								));
+								]);
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($this->language->lang[($group_row[$group_id]['group_type'] == GROUP_FREE) ? 'GROUP_JOINED' : 'GROUP_JOINED_PENDING'] . $return_page);
 							}
 							else
 							{
-								$s_hidden_fields = array(
+								$s_hidden_fields = [
 									'selected'		=> $group_id,
 									'action'		=> 'join',
 									'submit'		=> true
-								);
+								];
 
 								confirm_box(false, ($group_row[$group_id]['group_type'] == GROUP_FREE) ? 'GROUP_JOIN' : 'GROUP_JOIN_PENDING', build_hidden_fields($s_hidden_fields));
 							}
@@ -239,21 +239,21 @@ class groups
 							{
 								group_user_attributes('demote', $group_id, $this->user->data['user_id']);
 
-								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_DEMOTE', false, array(
+								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_DEMOTE', false, [
 									'reportee_id' => $this->user->data['user_id'],
 									$group_row[$group_id]['group_name']
-								));
+								]);
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($this->language->lang('USER_GROUP_DEMOTED') . $return_page);
 							}
 							else
 							{
-								$s_hidden_fields = array(
+								$s_hidden_fields = [
 									'selected'		=> $group_id,
 									'action'		=> 'demote',
 									'submit'		=> true
-								);
+								];
 
 								confirm_box(false, 'USER_GROUP_DEMOTE', build_hidden_fields($s_hidden_fields));
 							}
@@ -269,7 +269,7 @@ class groups
 					ORDER BY g.group_type DESC, g.group_name';
 				$result = $this->db->sql_query($sql);
 
-				$group_id_ary = array();
+				$group_id_ary = [];
 				$leader_count = $member_count = $pending_count = 0;
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -298,7 +298,7 @@ class groups
 						break;
 					}
 
-					$this->template->assign_block_vars($block, array(
+					$this->template->assign_block_vars($block, [
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> $this->group_helper->get_name($row['group_name']),
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $this->language->lang('GROUP_IS_SPECIAL'),
@@ -309,7 +309,7 @@ class groups
 						'U_VIEW_GROUP'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $this->user->data['group_id']) ? true : false,
-						'S_ROW_COUNT'		=> ${$block . '_count'}++)
+						'S_ROW_COUNT'		=> ${$block . '_count'}++]
 					);
 
 					$group_id_ary[] = (int) $row['group_id'];
@@ -352,7 +352,7 @@ class groups
 						break;
 					}
 
-					$this->template->assign_block_vars('nonmember', array(
+					$this->template->assign_block_vars('nonmember', [
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> $this->group_helper->get_name($row['group_name']),
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : $this->language->lang('GROUP_IS_SPECIAL'),
@@ -364,19 +364,19 @@ class groups
 
 						'U_VIEW_GROUP'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=group&amp;g=' . $row['group_id']),
 
-						'S_ROW_COUNT'	=> $nonmember_count++)
+						'S_ROW_COUNT'	=> $nonmember_count++]
 					);
 				}
 				$this->db->sql_freeresult($result);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_CHANGE_DEFAULT'	=> ($this->auth->acl_get('u_chggrp')) ? true : false,
 					'S_LEADER_COUNT'	=> $leader_count,
 					'S_MEMBER_COUNT'	=> $member_count,
 					'S_PENDING_COUNT'	=> $pending_count,
 					'S_NONMEMBER_COUNT'	=> $nonmember_count,
 
-					'S_UCP_ACTION'			=> $this->u_action)
+					'S_UCP_ACTION'			=> $this->u_action]
 				);
 
 			break;
@@ -421,7 +421,7 @@ class groups
 
 					$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'GROUP_NAME'			=> $this->group_helper->get_name($group_name),
 						'GROUP_INTERNAL_NAME'	=> $group_name,
 						'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
@@ -432,7 +432,7 @@ class groups
 						'AVATAR_IMAGE'			=> (empty($avatar) ? '<img class="avatar" src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 						'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 						'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
-					));
+					]);
 				}
 
 				switch ($action)
@@ -455,17 +455,17 @@ class groups
 							trigger_error($this->language->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
-						$this->language->add_lang(array('acp/groups', 'acp/common'));
+						$this->language->add_lang(['acp/groups', 'acp/common']);
 
 						$update	= ($this->request->is_set_post('update')) ? true : false;
 
-						$error = array();
+						$error = [];
 
 						// Setup avatar data for later
 						$avatars_enabled = false;
 						$avatar_drivers = null;
 						$avatar_data = null;
-						$avatar_error = array();
+						$avatar_error = [];
 
 						/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
 						$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
@@ -491,12 +491,12 @@ class groups
 							}
 							else
 							{
-								confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+								confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
 										'avatar_delete'     => true,
 										'i'                 => $id,
 										'mode'              => $mode,
 										'g'			        => $group_id,
-										'action'            => $action))
+										'action'            => $action])
 								);
 							}
 						}
@@ -512,7 +512,7 @@ class groups
 							$allow_desc_urls	= $this->request->variable('desc_parse_urls', false);
 							$allow_desc_smilies	= $this->request->variable('desc_parse_smilies', false);
 
-							$submit_ary = array(
+							$submit_ary = [
 								'colour'		=> $this->request->variable('group_colour', ''),
 								'rank'			=> $this->request->variable('group_rank', 0),
 								'receive_pm'	=> $this->request->is_set('group_receive_pm') ? 1 : 0,
@@ -520,7 +520,7 @@ class groups
 								'max_recipients'=> $this->request->variable('group_max_recipients', 0),
 								'legend'	=> $group_row['group_legend'],
 								'teampage'	=> $group_row['group_teampage'],
-							);
+							];
 
 							if (!check_form_key('ucp_groups'))
 							{
@@ -550,7 +550,7 @@ class groups
 							}
 
 							// Validate submitted colour value
-							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('hex_colour', true))))
+							if ($colour_error = validate_data($submit_ary, ['colour' => ['hex_colour', true]]))
 							{
 								// Replace "error" string with its real, localised form
 								$error = array_merge($error, $colour_error);
@@ -563,10 +563,10 @@ class groups
 								// were made.
 								// However there are some attributes that need to be set everytime,
 								// otherwise the group gets removed from the feature.
-								$set_attributes = array('legend', 'teampage');
+								$set_attributes = ['legend', 'teampage'];
 
-								$group_attributes = array();
-								$test_variables = array(
+								$group_attributes = [];
+								$test_variables = [
 									'rank'			=> 'int',
 									'colour'		=> 'string',
 									'avatar'		=> 'string',
@@ -578,7 +578,7 @@ class groups
 									'teampage'		=> 'int',
 									'message_limit'	=> 'int',
 									'max_recipients'=> 'int',
-								);
+								];
 
 								foreach ($test_variables as $test => $type)
 								{
@@ -601,25 +601,25 @@ class groups
 
 							if (count($error))
 							{
-								$error = array_map(array(&$user, 'lang'), $error);
+								$error = array_map([&$user, 'lang'], $error);
 								$group_rank = $submit_ary['rank'];
 
-								$group_desc_data = array(
+								$group_desc_data = [
 									'text'			=> $group_desc,
 									'allow_bbcode'	=> $allow_desc_bbcode,
 									'allow_smilies'	=> $allow_desc_smilies,
 									'allow_urls'	=> $allow_desc_urls
-								);
+								];
 							}
 						}
 						else if (!$group_id)
 						{
-							$group_desc_data = array(
+							$group_desc_data = [
 								'text'			=> '',
 								'allow_bbcode'	=> true,
 								'allow_smilies'	=> true,
 								'allow_urls'	=> true
-							);
+							];
 							$group_rank = 0;
 							$group_type = GROUP_OPEN;
 						}
@@ -655,34 +655,34 @@ class groups
 							$selected_driver = $this->avatar_manager->clean_driver_name($this->request->variable('avatar_driver', $avatar_data['avatar_type']));
 
 							// Assign min and max values before generating avatar driver html
-							$this->template->assign_vars(array(
+							$this->template->assign_vars([
 									'AVATAR_MIN_WIDTH'		=> $this->config['avatar_min_width'],
 									'AVATAR_MAX_WIDTH'		=> $this->config['avatar_max_width'],
 									'AVATAR_MIN_HEIGHT'		=> $this->config['avatar_min_height'],
 									'AVATAR_MAX_HEIGHT'		=> $this->config['avatar_max_height'],
-							));
+							]);
 
 							foreach ($avatar_drivers as $current_driver)
 							{
 								$driver = $this->avatar_manager->get_driver($current_driver);
 
 								$avatars_enabled = true;
-								$this->template->set_filenames(array(
+								$this->template->set_filenames([
 									'avatar' => $driver->get_template_name(),
-								));
+								]);
 
 								if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
 								{
 									$driver_name = $this->avatar_manager->prepare_driver_name($current_driver);
 									$driver_upper = strtoupper($driver_name);
-									$this->template->assign_block_vars('avatar_drivers', array(
+									$this->template->assign_block_vars('avatar_drivers', [
 										'L_TITLE' => $this->language->lang($driver_upper . '_TITLE'),
 										'L_EXPLAIN' => $this->language->lang($driver_upper . '_EXPLAIN'),
 
 										'DRIVER' => $driver_name,
 										'SELECTED' => $current_driver == $selected_driver,
 										'OUTPUT' => $this->template->assign_display('avatar'),
-									));
+									]);
 								}
 							}
 						}
@@ -693,7 +693,7 @@ class groups
 							$error = array_merge($error, $this->avatar_manager->localize_errors($user, $avatar_error));
 						}
 
-						$this->template->assign_vars(array(
+						$this->template->assign_vars([
 							'S_EDIT'			=> true,
 							'S_INCLUDE_SWATCH'	=> true,
 							'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
@@ -727,7 +727,7 @@ class groups
 
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
-						));
+						]);
 
 					break;
 
@@ -749,7 +749,7 @@ class groups
 							trigger_error($this->language->lang('NOT_LEADER_OF_GROUP') . $return_page);
 						}
 
-						$this->language->add_lang(array('acp/groups', 'acp/common'));
+						$this->language->add_lang(['acp/groups', 'acp/common']);
 						$start = $this->request->variable('start', 0);
 
 						// Grab the leaders - always, on every page...
@@ -763,7 +763,7 @@ class groups
 
 						while ($row = $this->db->sql_fetchrow($result))
 						{
-							$this->template->assign_block_vars('leader', array(
+							$this->template->assign_block_vars('leader', [
 								'USERNAME'			=> $row['username'],
 								'USERNAME_COLOUR'	=> $row['user_colour'],
 								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -771,7 +771,7 @@ class groups
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? $this->user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
-								'USER_ID'			=> $row['user_id'])
+								'USER_ID'			=> $row['user_id']]
 							);
 						}
 						$this->db->sql_freeresult($result);
@@ -801,8 +801,8 @@ class groups
 						{
 							if ($row['user_pending'] && !$pending)
 							{
-								$this->template->assign_block_vars('member', array(
-									'S_PENDING'		=> true)
+								$this->template->assign_block_vars('member', [
+									'S_PENDING'		=> true]
 								);
 								$this->template->assign_var('S_PENDING_SET', true);
 
@@ -810,15 +810,15 @@ class groups
 							}
 							else if (!$row['user_pending'] && !$approved)
 							{
-								$this->template->assign_block_vars('member', array(
-									'S_APPROVED'		=> true)
+								$this->template->assign_block_vars('member', [
+									'S_APPROVED'		=> true]
 								);
 								$this->template->assign_var('S_APPROVED_SET', true);
 
 								$approved = true;
 							}
 
-							$this->template->assign_block_vars('member', array(
+							$this->template->assign_block_vars('member', [
 								'USERNAME'			=> $row['username'],
 								'USERNAME_COLOUR'	=> $row['user_colour'],
 								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -826,13 +826,13 @@ class groups
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? $this->user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
-								'USER_ID'			=> $row['user_id'])
+								'USER_ID'			=> $row['user_id']]
 							);
 						}
 						$this->db->sql_freeresult($result);
 
 						$s_action_options = '';
-						$options = array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'deleteusers' => 'DELETE');
+						$options = ['default' => 'DEFAULT', 'approve' => 'APPROVE', 'deleteusers' => 'DELETE'];
 
 						foreach ($options as $option => $lang)
 						{
@@ -845,14 +845,14 @@ class groups
 						$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $total_members);
 						$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_members, $this->config['topics_per_page'], $start);
 
-						$this->template->assign_vars(array(
+						$this->template->assign_vars([
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;g=$group_id",
 							'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
-						));
+						]);
 
 					break;
 
@@ -922,7 +922,7 @@ class groups
 										ORDER BY user_id";
 									$result = $this->db->sql_query_limit($sql, 200, $start);
 
-									$mark_ary = array();
+									$mark_ary = [];
 									if ($row = $this->db->sql_fetchrow($result))
 									{
 										do
@@ -956,12 +956,12 @@ class groups
 						{
 							$this->language->add_lang('acp/common');
 
-							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
+							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 								'mark'		=> $mark_ary,
 								'g'			=> $group_id,
 								'i'			=> $id,
 								'mode'		=> $mode,
-								'action'	=> $action))
+								'action'	=> $action])
 							);
 						}
 
@@ -972,7 +972,7 @@ class groups
 
 					case 'deleteusers':
 
-						$this->language->add_lang(array('acp/groups', 'acp/common'));
+						$this->language->add_lang(['acp/groups', 'acp/common']);
 
 						if (!($row = group_memberships($group_id, $this->user->data['user_id'])))
 						{
@@ -1005,12 +1005,12 @@ class groups
 						}
 						else
 						{
-							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
+							confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields([
 								'mark'		=> $mark_ary,
 								'g'			=> $group_id,
 								'i'			=> $id,
 								'mode'		=> $mode,
-								'action'	=> $action))
+								'action'	=> $action])
 							);
 						}
 
@@ -1021,7 +1021,7 @@ class groups
 
 					case 'addusers':
 
-						$this->language->add_lang(array('acp/groups', 'acp/common'));
+						$this->language->add_lang(['acp/groups', 'acp/common']);
 
 						$names = $this->request->variable('usernames', '', true);
 
@@ -1077,14 +1077,14 @@ class groups
 						}
 						else
 						{
-							$s_hidden_fields = array(
+							$s_hidden_fields = [
 								'default'	=> $default,
 								'usernames'	=> $names,
 								'g'			=> $group_id,
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action
-							);
+							];
 
 							confirm_box(false, $this->language->lang('GROUP_CONFIRM_ADD_USERS', count($name_ary), implode($this->language->lang('COMMA_SEPARATOR'), $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
@@ -1106,7 +1106,7 @@ class groups
 
 						while ($value = $this->db->sql_fetchrow($result))
 						{
-							$this->template->assign_block_vars('leader', array(
+							$this->template->assign_block_vars('leader', [
 								'GROUP_NAME'	=> $this->group_helper->get_name($value['group_name']),
 								'GROUP_DESC'	=> generate_text_for_display($value['group_desc'], $value['group_desc_uid'], $value['group_desc_bitfield'], $value['group_desc_options']),
 								'GROUP_TYPE'	=> $value['group_type'],
@@ -1114,7 +1114,7 @@ class groups
 								'GROUP_COLOUR'	=> $value['group_colour'],
 
 								'U_LIST'	=> $this->u_action . "&amp;action=list&amp;g={$value['group_id']}",
-								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}")
+								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}"]
 							);
 						}
 						$this->db->sql_freeresult($result);

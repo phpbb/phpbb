@@ -21,7 +21,7 @@ class pm_view_message
 	function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 
-		$this->language->add_lang(array('viewtopic', 'memberlist'));
+		$this->language->add_lang(['viewtopic', 'memberlist']);
 
 		$msg_id		= (int) $msg_id;
 		$folder_id	= (int) $folder_id;
@@ -55,7 +55,7 @@ class pm_view_message
 		}
 
 		// Assign TO/BCC Addresses to template
-		write_pm_addresses(array('to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']), $author_id);
+		write_pm_addresses(['to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']], $author_id);
 
 		$user_info = get_user_information($author_id, $message_row);
 
@@ -87,7 +87,7 @@ class pm_view_message
 
 		// Pull attachment data
 		$display_notice = false;
-		$attachments = array();
+		$attachments = [];
 
 		if ($message_row['message_attachment'] && $this->config['allow_pm_attach'])
 		{
@@ -124,7 +124,7 @@ class pm_view_message
 		// Assign inline attachments
 		if (!empty($attachments))
 		{
-			$update_count = array();
+			$update_count = [];
 			parse_attachments(false, $message, $attachments, $update_count);
 
 			// Update the attachment download counts
@@ -156,7 +156,7 @@ class pm_view_message
 		$bbcode_status	= ($this->config['allow_bbcode'] && $this->config['auth_bbcode_pm'] && $this->auth->acl_get('u_pm_bbcode')) ? true : false;
 
 		// Get the profile fields template data
-		$cp_row = array();
+		$cp_row = [];
 		if ($this->config['load_cpf_pm'] && isset($profile_fields[$author_id]))
 		{
 			// Filter the fields we don't want to show
@@ -186,7 +186,7 @@ class pm_view_message
 			$u_jabber = append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=contact&amp;action=jabber&amp;u=' . $author_id);
 		}
 
-		$msg_data = array(
+		$msg_data = [
 			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 			'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -224,7 +224,7 @@ class pm_view_message
 
 			'U_DELETE'			=> ($this->auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 			'U_EMAIL'			=> $user_info['email'],
-			'U_REPORT'			=> ($this->config['allow_pm_report']) ? $phpbb_container->get('controller.helper')->route('phpbb_report_pm_controller', array('id' => $message_row['msg_id'])) : '',
+			'U_REPORT'			=> ($this->config['allow_pm_report']) ? $phpbb_container->get('controller.helper')->route('phpbb_report_pm_controller', ['id' => $message_row['msg_id']]) : '',
 			'U_QUOTE'			=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 			'U_EDIT'			=> (($message_row['message_time'] > time() - ($this->config['pm_edit_time'] * 60) || !$this->config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $this->auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -237,14 +237,14 @@ class pm_view_message
 			'S_HAS_ATTACHMENTS'	=> (count($attachments)) ? true : false,
 			'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
-			'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
+			'S_SPECIAL_FOLDER'	=> in_array($folder_id, [PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX]),
 			'S_PM_RECIPIENTS'	=> $num_recipients,
 			'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
 			'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
 			'U_PRINT_PM'		=> ($this->config['print_pm'] && $this->auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 			'U_FORWARD_PM'		=> ($this->config['forward_pm'] && $this->auth->acl_get('u_sendpm') && $this->auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		);
+		];
 
 		/**
 		 * Modify pm and sender data before it is assigned to the template
@@ -264,7 +264,7 @@ class pm_view_message
 		 * @changed 3.2.2-RC1		Deprecated
 		 * @deprecated 4.0.0			Event name is misspelled and is replaced with new event with correct name
 		 */
-		$vars = array(
+		$vars = [
 			'id',
 			'mode',
 			'folder_id',
@@ -274,7 +274,7 @@ class pm_view_message
 			'cp_row',
 			'msg_data',
 			'user_info',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
 
 		/**
@@ -294,7 +294,7 @@ class pm_view_message
 		 * @since 3.2.2-RC1
 		 * @changed 3.2.5-RC1 Added attachments
 		 */
-		$vars = array(
+		$vars = [
 			'id',
 			'mode',
 			'folder_id',
@@ -305,28 +305,28 @@ class pm_view_message
 			'msg_data',
 			'user_info',
 			'attachments',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.ucp_pm_view_message', compact($vars)));
 
 		$this->template->assign_vars($msg_data);
 
-		$contact_fields = array(
-			array(
+		$contact_fields = [
+			[
 				'ID'		=> 'pm',
 				'NAME'		=> $this->language->lang('SEND_PRIVATE_MESSAGE'),
 				'U_CONTACT' => $u_pm,
-			),
-			array(
+			],
+			[
 				'ID'		=> 'email',
 				'NAME'		=> $this->language->lang('SEND_EMAIL'),
 				'U_CONTACT'	=> $user_info['email'],
-			),
-			array(
+			],
+			[
 				'ID'		=> 'jabber',
 				'NAME'		=> $this->language->lang('JABBER'),
 				'U_CONTACT'	=> $u_jabber,
-			),
-		);
+			],
+		];
 
 		foreach ($contact_fields as $field)
 		{
@@ -347,11 +347,11 @@ class pm_view_message
 
 				if ($cp_block_row['S_PROFILE_CONTACT'])
 				{
-					$this->template->assign_block_vars('contact', array(
+					$this->template->assign_block_vars('contact', [
 						'ID'		=> $cp_block_row['PROFILE_FIELD_IDENT'],
 						'NAME'		=> $cp_block_row['PROFILE_FIELD_NAME'],
 						'U_CONTACT'	=> $cp_block_row['PROFILE_FIELD_CONTACT'],
-					));
+					]);
 				}
 			}
 		}
@@ -361,8 +361,8 @@ class pm_view_message
 		{
 			foreach ($attachments as $attachment)
 			{
-				$this->template->assign_block_vars('attachment', array(
-						'DISPLAY_ATTACHMENT'	=> $attachment)
+				$this->template->assign_block_vars('attachment', [
+						'DISPLAY_ATTACHMENT'	=> $attachment]
 				);
 			}
 		}
@@ -385,7 +385,7 @@ class pm_view_message
 
 		if (!$user_id)
 		{
-			return array();
+			return [];
 		}
 
 		if (empty($user_row))

@@ -18,19 +18,106 @@ namespace phpbb\ucp\controller;
  */
 class attachments
 {
-	var $u_action;
+	/** @var \phpbb\attachment\manager */
+	protected $attachment_manager;
 
-	public function main($id, $mode)
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\pagination */
+	protected $pagination;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\attachment\manager			$attachment_manager		Attachment manager object
+	 * @param \phpbb\auth\auth					$auth					Auth object
+	 * @param \phpbb\config\config				$config					Config object
+	 * @param \phpbb\db\driver\driver_interface	$db						Database object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
+	 * @param \phpbb\language\language			$language				Language object
+	 * @param \phpbb\pagination					$pagination				Pagination object
+	 * @param \phpbb\request\request			$request				Request object
+	 * @param \phpbb\template\template			$template				Template object
+	 * @param \phpbb\user						$user					User object
+	 * @param string							$root_path				phpBB root path
+	 * @param string							$php_ext				php File extension
+	 * @param array								$tables					phpBB tables
+	 */
+	public function __construct(
+		\phpbb\attachment\manager $attachment_manager,
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\pagination $pagination,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext,
+		$tables
+	)
 	{
+		$this->attachment_manager	= $attachment_manager;
+		$this->auth					= $auth;
+		$this->config				= $config;
+		$this->db					= $db;
+		$this->helper				= $helper;
+		$this->language				= $language;
+		$this->pagination			= $pagination;
+		$this->request				= $request;
+		$this->template				= $template;
+		$this->user					= $user;
 
-		$start		= $this->request->variable('start', 0);
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
+		$this->tables				= $tables;
+	}
+
+	public function main($page = 1)
+	{
+		$limit		= (int) $this->config['topics_per_page'];
+		$start		= ($page - 1) * $limit;
+
 		$sort_key	= $this->request->variable('sk', 'a');
 		$sort_dir	= $this->request->variable('sd', 'a');
 
-		$delete		= ($this->request->is_set_post('delete')) ? true : false;
-		$delete_ids	= array_keys($this->request->variable('attachment', array(0)));
+		$delete		= $this->request->is_set_post('delete');
+		$delete_ids	= array_keys($this->request->variable('attachment', [0]));
 
-		if ($delete && count($delete_ids))
+		if ($delete && !empty($delete_ids))
 		{
 			// Validate $delete_ids...
 			$sql = 'SELECT a.attach_id, p.post_edit_locked, t.topic_status, f.forum_id, f.forum_status
@@ -41,15 +128,17 @@ class attachments
 					ON (t.topic_id = p.topic_id AND a.in_message = 0)
 				LEFT JOIN ' . $this->tables['forums'] . ' f
 					ON (f.forum_id = t.forum_id AND a.in_message = 0)
-				WHERE a.poster_id = ' . $this->user->data['user_id'] . '
+				WHERE a.poster_id = ' . (int) $this->user->data['user_id'] . '
 					AND a.is_orphan = 0
 					AND ' . $this->db->sql_in_set('a.attach_id', $delete_ids);
 			$result = $this->db->sql_query($sql);
 
-			$delete_ids = array();
+			$delete_ids = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (!$this->auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']))
+				if (!$this->auth->acl_get('m_edit', $row['forum_id'])
+					&& ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'])
+				)
 				{
 					continue;
 				}
@@ -59,11 +148,9 @@ class attachments
 			$this->db->sql_freeresult($result);
 		}
 
-		if ($delete && count($delete_ids))
+		if ($delete && !empty($delete_ids))
 		{
-			$s_hidden_fields = array(
-				'delete'	=> 1
-			);
+			$s_hidden_fields = ['delete' => 1];
 
 			foreach ($delete_ids as $attachment_id)
 			{
@@ -72,26 +159,28 @@ class attachments
 
 			if (confirm_box(true))
 			{
-				/** @var \phpbb\attachment\manager $attachment_manager */
-				$attachment_manager = $phpbb_container->get('attachment.manager');
-				$attachment_manager->delete('attach', $delete_ids);
-				unset($attachment_manager);
+				$this->attachment_manager->delete('attach', $delete_ids);
 
-				meta_refresh(3, $this->u_action);
-				$message = ((count($delete_ids) == 1) ? $this->language->lang('ATTACHMENT_DELETED') : $this->language->lang('ATTACHMENTS_DELETED')) . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
-				trigger_error($message);
+				$route = $this->helper->route('ucp_manage_attachments');
+				$return = $this->language->lang('RETURN_UCP', '<a href="' . $route . '">', '</a>');
+				$message = count($delete_ids) === 1 ? $this->language->lang('ATTACHMENT_DELETED') : $this->language->lang('ATTACHMENTS_DELETED');
+
+				$this->helper->assign_meta_refresh_var(3, $route);
+
+				return $this->helper->message($message . '<br /><br />' . $return);
 			}
 			else
 			{
-				confirm_box(false, (count($delete_ids) == 1) ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', build_hidden_fields($s_hidden_fields));
+				confirm_box(false, count($delete_ids) == 1 ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', build_hidden_fields($s_hidden_fields));
+
+				return redirect($this->helper->route('ucp_manage_attachments'));
 			}
 		}
 
 		// Select box eventually
-		$sort_key_text = array('a' => $this->language->lang('SORT_FILENAME'), 'b' => $this->language->lang('SORT_COMMENT'), 'c' => $this->language->lang('SORT_EXTENSION'), 'd' => $this->language->lang('SORT_SIZE'), 'e' => $this->language->lang('SORT_DOWNLOADS'), 'f' => $this->language->lang('SORT_POST_TIME'), 'g' => $this->language->lang('SORT_TOPIC_TITLE'));
-		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
-
-		$sort_dir_text = array('a' => $this->language->lang('ASCENDING'), 'd' => $this->language->lang('DESCENDING'));
+		$sort_dir_text = ['a' => $this->language->lang('ASCENDING'), 'd' => $this->language->lang('DESCENDING')];
+		$sort_key_text = ['a' => $this->language->lang('SORT_FILENAME'), 'b' => $this->language->lang('SORT_COMMENT'), 'c' => $this->language->lang('SORT_EXTENSION'), 'd' => $this->language->lang('SORT_SIZE'), 'e' => $this->language->lang('SORT_DOWNLOADS'), 'f' => $this->language->lang('SORT_POST_TIME'), 'g' => $this->language->lang('SORT_TOPIC_TITLE')];
+		$sort_key_sql = ['a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title'];
 
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
@@ -112,33 +201,35 @@ class attachments
 			$sort_key = 'a';
 		}
 
-		$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+		$order_by = $sort_key_sql[$sort_key] . ' ' . ($sort_dir === 'a' ? 'ASC' : 'DESC');
 
 		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . $this->tables['attachments'] . '
-			WHERE poster_id = ' . $this->user->data['user_id'] . '
-				AND is_orphan = 0';
+			WHERE is_orphan = 0 
+				AND poster_id = ' . (int) $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
-		$num_attachments = $this->db->sql_fetchfield('num_attachments');
+		$num_attachments = (int) $this->db->sql_fetchfield('num_attachments');
 		$this->db->sql_freeresult($result);
 
 		// Ensure start is a valid value
-		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
-		$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $num_attachments);
+		$start = $this->pagination->validate_start($start, $limit, $num_attachments);
+
+		$row_count = 0;
 
 		$sql = 'SELECT a.*, t.topic_title, pr.message_subject as message_title, p.post_edit_locked, t.topic_status, f.forum_id, f.forum_status
 			FROM ' . $this->tables['attachments'] . ' a
-				LEFT JOIN ' . $this->tables['posts'] . ' p ON (a.post_msg_id = p.post_id AND a.in_message = 0)
-				LEFT JOIN ' . $this->tables['topics'] . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
-				LEFT JOIN ' . $this->tables['forums'] . ' f ON (f.forum_id = t.forum_id AND a.in_message = 0)
-				LEFT JOIN ' . $this->tables['privmsgs'] . ' pr ON (a.post_msg_id = pr.msg_id AND a.in_message = 1)
-			WHERE a.poster_id = ' . $this->user->data['user_id'] . "
+			LEFT JOIN ' . $this->tables['posts'] . ' p
+				ON (a.post_msg_id = p.post_id AND a.in_message = 0)
+			LEFT JOIN ' . $this->tables['topics'] . ' t
+				ON (a.topic_id = t.topic_id AND a.in_message = 0)
+			LEFT JOIN ' . $this->tables['forums'] . ' f
+				ON (f.forum_id = t.forum_id AND a.in_message = 0)
+			LEFT JOIN ' . $this->tables['privmsgs'] . ' pr
+				ON (a.post_msg_id = pr.msg_id AND a.in_message = 1)
+			WHERE a.poster_id = ' . (int) $this->user->data['user_id'] . '
 				AND a.is_orphan = 0
-			ORDER BY $order_by";
-		$result = $this->db->sql_query_limit($sql, $this->config['topics_per_page'], $start);
-
-		$row_count = 0;
+			ORDER BY ' . $order_by;
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 		if ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->template->assign_var('S_ATTACHMENT_ROWS', true);
@@ -147,6 +238,7 @@ class attachments
 			{
 				if ($row['in_message'])
 				{
+					/* @todo pm route */
 					$view_topic = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;p={$row['post_msg_id']}");
 				}
 				else
@@ -154,15 +246,15 @@ class attachments
 					$view_topic = append_sid("{$this->root_path}viewtopic.$this->php_ext", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}";
 				}
 
-				$this->template->assign_block_vars('attachrow', array(
-					'ROW_NUMBER'		=> $row_count + ($start + 1),
-					'FILENAME'			=> $row['real_filename'],
+				$this->template->assign_block_vars('attachrow', [
 					'COMMENT'			=> bbcode_nl2br($row['attach_comment']),
-					'EXTENSION'			=> $row['extension'],
-					'SIZE'				=> get_formatted_filesize($row['filesize']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],
+					'EXTENSION'			=> $row['extension'],
+					'FILENAME'			=> $row['real_filename'],
 					'POST_TIME'			=> $this->user->format_date($row['filetime']),
-					'TOPIC_TITLE'		=> ($row['in_message']) ? $row['message_title'] : $row['topic_title'],
+					'ROW_NUMBER'		=> $row_count + $start + 1,
+					'SIZE'				=> get_formatted_filesize($row['filesize']),
+					'TOPIC_TITLE'		=> $row['in_message'] ? $row['message_title'] : $row['topic_title'],
 
 					'ATTACH_ID'			=> $row['attach_id'],
 					'POST_ID'			=> $row['post_msg_id'],
@@ -172,8 +264,8 @@ class attachments
 					'S_LOCKED'			=> !$row['in_message'] && !$this->auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']),
 
 					'U_VIEW_ATTACHMENT'	=> append_sid("{$this->root_path}download/file.$this->php_ext", 'id=' . $row['attach_id']),
-					'U_VIEW_TOPIC'		=> $view_topic)
-				);
+					'U_VIEW_TOPIC'		=> $view_topic,
+				]);
 
 				$row_count++;
 			}
@@ -181,31 +273,40 @@ class attachments
 		}
 		$this->db->sql_freeresult($result);
 
-		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
-		$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $this->config['topics_per_page'], $start);
+		$this->pagination->generate_template_pagination([
+			'routes' => ['ucp_manage_attachments', 'ucp_manage_attachments_pagination'],
+			'params' => ['sk' => $sort_key, 'sd' => $sort_dir],
+		], 'pagination', 'page', $num_attachments, $limit, $start);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 			'NUM_ATTACHMENTS'		=> $this->language->lang('NUM_ATTACHMENTS', $num_attachments),
 
 			'L_TITLE'				=> $this->language->lang('UCP_ATTACHMENTS'),
 
-			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FILESIZE'		=> $this->u_action . "&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_DOWNLOADS'		=> $this->u_action . "&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_POST_TIME'		=> $this->u_action . "&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_TOPIC_TITLE'	=> $this->u_action . "&amp;sk=g&amp;sd=" . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
-
-			'S_DISPLAY_MARK_ALL'	=> ($num_attachments) ? true : false,
-			'S_DISPLAY_PAGINATION'	=> ($num_attachments) ? true : false,
-			'S_UCP_ACTION'			=> $this->u_action,
+			'S_DISPLAY_MARK_ALL'	=> (bool) $num_attachments,
+			'S_DISPLAY_PAGINATION'	=> (bool) $num_attachments,
+			'S_ORDER_SELECT'		=> $s_sort_dir,
 			'S_SORT_OPTIONS' 		=> $s_sort_key,
-			'S_ORDER_SELECT'		=> $s_sort_dir)
-		);
+			'S_UCP_ACTION'			=> $this->helper->route('ucp_manage_attachments'),
 
-		$this->tpl_name = 'ucp_attachments';
-		$this->page_title = 'UCP_ATTACHMENTS';
+			'U_SORT_FILENAME'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('a', $sort_key, $sort_dir)),
+			'U_SORT_FILE_COMMENT'	=> $this->helper->route('ucp_manage_attachments', $this->get_params('b', $sort_key, $sort_dir)),
+			'U_SORT_EXTENSION'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('c', $sort_key, $sort_dir)),
+			'U_SORT_FILESIZE'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('d', $sort_key, $sort_dir)),
+			'U_SORT_DOWNLOADS'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('e', $sort_key, $sort_dir)),
+			'U_SORT_POST_TIME'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('f', $sort_key, $sort_dir)),
+			'U_SORT_TOPIC_TITLE'	=> $this->helper->route('ucp_manage_attachments', $this->get_params('g', $sort_key, $sort_dir)),
+		]);
+
+		return $this->helper->render('ucp_attachments.html', $this->language->lang('UCP_ATTACHMENTS'));
+	}
+
+	protected function get_params($key, $sort_key, $sort_dir)
+	{
+		return [
+			'sk' => $key,
+			'sd' => ($sort_key === $key && $sort_dir === 'a') ? 'd' : 'a',
+		];
 	}
 }

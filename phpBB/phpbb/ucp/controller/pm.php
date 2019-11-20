@@ -57,7 +57,7 @@ class pm
 		// Folder directly specified?
 		$folder_specified = $this->request->variable('folder', '');
 
-		if (!in_array($folder_specified, array('inbox', 'outbox', 'sentbox')))
+		if (!in_array($folder_specified, ['inbox', 'outbox', 'sentbox']))
 		{
 			$folder_specified = (int) $folder_specified;
 		}
@@ -91,10 +91,10 @@ class pm
 				if ($action != 'delete' && !$this->auth->acl_get('u_sendpm'))
 				{
 					// trigger_error('NO_AUTH_SEND_MESSAGE');
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_NO_AUTH_SEND_MESSAGE'	=> true,
 						'S_COMPOSE_PM_VIEW'			=> true,
-					));
+					]);
 
 					$tpl_file = 'ucp_pm_viewfolder';
 					break;
@@ -195,7 +195,7 @@ class pm
 				$dest_folder	= $this->request->variable('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
-				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
+				if (!in_array($mark_option, ['mark_important', 'delete_marked']) && $submit_mark)
 				{
 					$move_pm = true;
 					$dest_folder = (int) $mark_option;
@@ -210,7 +210,7 @@ class pm
 						trigger_error('FORM_INVALID');
 					}
 
-					$move_msg_ids	= ($this->request->is_set_post('marked_msg_id')) ? $this->request->variable('marked_msg_id', array(0)) : array();
+					$move_msg_ids	= $this->request->is_set_post('marked_msg_id') ? $this->request->variable('marked_msg_id', [0]) : [];
 					$cur_folder_id	= $this->request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($this->user->data['user_id'], $this->user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
@@ -274,18 +274,18 @@ class pm
 					if ($this->request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response();
-						$json_response->send(array(
+						$json_response->send([
 							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'success'		=> true,
-						));
+						]);
 					}
 					$message .= '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 
 					trigger_error($message);
 				}
 
-				$message_row = array();
+				$message_row = [];
 				if ($action == 'view_message' && $msg_id)
 				{
 					// Get Message user want to see
@@ -342,7 +342,7 @@ class pm
 				$s_folder_options = $s_to_folder_options = '';
 				foreach ($folder as $f_id => $folder_ary)
 				{
-					$option = '<option' . ((!in_array($f_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX))) ? ' class="sep"' : '') . ' value="' . $f_id . '"' . (($f_id == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
+					$option = '<option' . ((!in_array($f_id, [PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX])) ? ' class="sep"' : '') . ' value="' . $f_id . '"' . (($f_id == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 
 					$s_to_folder_options .= ($f_id != PRIVMSGS_OUTBOX && $f_id != PRIVMSGS_SENTBOX) ? $option : '';
 					$s_folder_options .= $option;
@@ -352,7 +352,7 @@ class pm
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status ? $folder_status['folder_name'] : false,
 					'NUM_NOT_MOVED'			=> $num_not_moved,
@@ -382,7 +382,7 @@ class pm
 					'FOLDER_CUR_MESSAGES'		=> $folder_status ? $folder_status['cur'] : false,
 					'FOLDER_REMAINING_MESSAGES'	=> $folder_status ? $folder_status['remaining'] : false,
 					'FOLDER_PERCENT'			=> $folder_status ? $folder_status['percent'] : false,
-				));
+				]);
 
 				if ($action == 'view_folder')
 				{
@@ -396,11 +396,11 @@ class pm
 				}
 				else if ($action == 'view_message')
 				{
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_VIEW_MESSAGE'		=> true,
 						'L_RETURN_TO_FOLDER'	=> $this->language->lang('RETURN_TO', $folder_status ? $folder_status['folder_name'] : ''),
 						'MSG_ID'				=> $msg_id,
-					));
+					]);
 
 					if (!$msg_id)
 					{
@@ -423,9 +423,9 @@ class pm
 			break;
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_TITLE'			=> $this->language->lang('UCP_PM_' . strtoupper($mode)),
-			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : ''))
+			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : '')]
 		);
 
 		// Set desired template

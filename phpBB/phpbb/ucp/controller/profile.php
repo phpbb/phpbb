@@ -28,20 +28,20 @@ class profile
 		$this->language->add_lang('posting');
 
 		$submit		= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$error = $data = array();
+		$error = $data = [];
 		$s_hidden_fields = '';
 
 		switch ($mode)
 		{
 			case 'reg_details':
 
-				$data = array(
+				$data = [
 					'username'			=> $this->request->variable('username', $this->user->data['username'], true),
 					'email'				=> strtolower($this->request->variable('email', $this->user->data['user_email'])),
 					'new_password'		=> $this->request->variable('new_password', '', true),
 					'cur_password'		=> $this->request->variable('cur_password', '', true),
 					'password_confirm'	=> $this->request->variable('password_confirm', '', true),
-				);
+				];
 
 				/**
 				 * Modify user registration data on editing account settings in UCP
@@ -51,7 +51,7 @@ class profile
 				 * @var bool	submit		Flag indicating if submit button has been pressed
 				 * @since 3.1.4-RC1
 				 */
-				$vars = array('data', 'submit');
+				$vars = ['data', 'submit'];
 				extract($this->dispatcher->trigger_event('core.ucp_profile_reg_details_data', compact($vars)));
 
 				add_form_key('ucp_reg_details');
@@ -59,22 +59,22 @@ class profile
 				if ($submit)
 				{
 					// Do not check cur_password, it is the old one.
-					$check_ary = array(
-						'new_password'		=> array(
-							array('string', true, $this->config['min_pass_chars'], 0),
-							array('password')),
-						'password_confirm'	=> array('string', true, $this->config['min_pass_chars'], 0),
-						'email'				=> array(
-							array('string', false, 6, 60),
-							array('user_email')),
-					);
+					$check_ary = [
+						'new_password'		=> [
+							['string', true, $this->config['min_pass_chars'], 0],
+							['password']],
+						'password_confirm'	=> ['string', true, $this->config['min_pass_chars'], 0],
+						'email'				=> [
+							['string', false, 6, 60],
+							['user_email']],
+					];
 
 					if ($this->auth->acl_get('u_chgname') && $this->config['allow_namechange'])
 					{
-						$check_ary['username'] = array(
-							array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
-							array('username'),
-						);
+						$check_ary['username'] = [
+							['string', false, $this->config['min_name_chars'], $this->config['max_name_chars']],
+							['username'],
+						];
 					}
 
 					$error = validate_data($data, $check_ary);
@@ -113,25 +113,25 @@ class profile
 					 * @var array	error			Array of any generated errors
 					 * @since 3.1.4-RC1
 					 */
-					$vars = array('data', 'submit', 'error');
+					$vars = ['data', 'submit', 'error'];
 					extract($this->dispatcher->trigger_event('core.ucp_profile_reg_details_validate', compact($vars)));
 
 					if (!count($error))
 					{
-						$sql_ary = array(
+						$sql_ary = [
 							'username'			=> ($this->auth->acl_get('u_chgname') && $this->config['allow_namechange']) ? $data['username'] : $this->user->data['username'],
 							'username_clean'	=> ($this->auth->acl_get('u_chgname') && $this->config['allow_namechange']) ? utf8_clean_string($data['username']) : $this->user->data['username_clean'],
 							'user_email'		=> ($this->auth->acl_get('u_chgemail')) ? $data['email'] : $this->user->data['user_email'],
 							'user_password'		=> ($this->auth->acl_get('u_chgpasswd') && $data['new_password']) ? $this->passwords_manager->hash($data['new_password']) : $this->user->data['user_password'],
-						);
+						];
 
 						if ($this->auth->acl_get('u_chgname') && $this->config['allow_namechange'] && $data['username'] != $this->user->data['username'])
 						{
-							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_UPDATE_NAME', false, array(
+							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_UPDATE_NAME', false, [
 								'reportee_id' => $this->user->data['user_id'],
 								$this->user->data['username'],
 								$data['username']
-							));
+							]);
 						}
 
 						if ($this->auth->acl_get('u_chgpasswd') && $data['new_password'] && !$this->passwords_manager->check($data['new_password'], $this->user->data['user_password']))
@@ -139,20 +139,20 @@ class profile
 							$sql_ary['user_passchg'] = time();
 
 							$this->user->reset_login_keys();
-							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, [
 								'reportee_id' => $this->user->data['user_id'],
 								$this->user->data['username']
-							));
+							]);
 						}
 
 						if ($this->auth->acl_get('u_chgemail') && $data['email'] != $this->user->data['user_email'])
 						{
-							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
+							$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_UPDATE_EMAIL', false, [
 								'reportee_id' => $this->user->data['user_id'],
 								$this->user->data['username'],
 								$this->user->data['user_email'],
 								$data['email']
-							));
+							]);
 						}
 
 						$message = 'PROFILE_UPDATED';
@@ -176,21 +176,21 @@ class profile
 
 							$messenger->anti_abuse_headers($config, $user);
 
-							$messenger->assign_vars(array(
+							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
-								'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u={$this->user->data['user_id']}&k=$user_actkey")
+								'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u={$this->user->data['user_id']}&k=$user_actkey"]
 							);
 
 							$messenger->send(NOTIFY_EMAIL);
 
 							if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
-								$notifications_manager = $phpbb_container->get('notification_manager');
-								$notifications_manager->add_notifications('notification.type.admin_activate_user', array(
+								$notification_manager = $phpbb_container->get('notification_manager');
+								$notification_manager->add_notifications('notification.type.admin_activate_user', [
 									'user_id'		=> $this->user->data['user_id'],
 									'user_actkey'	=> $user_actkey,
 									'user_regdate'	=> time(), // Notification time
-								));
+								]);
 							}
 
 							user_active_flip('deactivate', $this->user->data['user_id'], INACTIVE_PROFILE);
@@ -208,7 +208,7 @@ class profile
 						 * @var array	sql_ary		Array with user registration data to submit to the database
 						 * @since 3.1.4-RC1
 						 */
-						$vars = array('data', 'sql_ary');
+						$vars = ['data', 'sql_ary'];
 						extract($this->dispatcher->trigger_event('core.ucp_profile_reg_details_sql_ary', compact($vars)));
 
 						if (count($sql_ary))
@@ -244,10 +244,10 @@ class profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
+					$error = array_map([$user, 'lang'], $error);
 				}
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'USERNAME'			=> $data['username'],
@@ -262,7 +262,7 @@ class profile
 					'S_FORCE_PASSWORD'	=> ($this->auth->acl_get('u_chgpasswd') && $this->config['chg_passforce'] && $this->user->data['user_passchg'] < time() - ($this->config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => ($this->config['allow_namechange'] && $this->auth->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> ($this->auth->acl_get('u_chgemail')) ? true : false,
-					'S_CHANGE_PASSWORD'	=> ($this->auth->acl_get('u_chgpasswd')) ? true : false)
+					'S_CHANGE_PASSWORD'	=> ($this->auth->acl_get('u_chgpasswd')) ? true : false]
 				);
 			break;
 
@@ -277,11 +277,11 @@ class profile
 				/* @var $cp \phpbb\profilefields\manager */
 				$cp = $phpbb_container->get('profilefields.manager');
 
-				$cp_data = $cp_error = array();
+				$cp_data = $cp_error = [];
 
-				$data = array(
+				$data = [
 					'jabber'		=> $this->request->variable('jabber', $this->user->data['user_jabber'], true),
-				);
+				];
 
 				if ($this->config['allow_birthdays'])
 				{
@@ -306,27 +306,27 @@ class profile
 				 * @var bool	submit		Flag indicating if submit button has been pressed
 				 * @since 3.1.4-RC1
 				 */
-				$vars = array('data', 'submit');
+				$vars = ['data', 'submit'];
 				extract($this->dispatcher->trigger_event('core.ucp_profile_modify_profile_info', compact($vars)));
 
 				add_form_key('ucp_profile_info');
 
 				if ($submit)
 				{
-					$validate_array = array(
-						'jabber'		=> array(
-							array('string', true, 5, 255),
-							array('jabber')),
-					);
+					$validate_array = [
+						'jabber'		=> [
+							['string', true, 5, 255],
+							['jabber']],
+					];
 
 					if ($this->config['allow_birthdays'])
 					{
-						$validate_array = array_merge($validate_array, array(
-							'bday_day'		=> array('num', true, 1, 31),
-							'bday_month'	=> array('num', true, 1, 12),
-							'bday_year'		=> array('num', true, 1901, gmdate('Y', time()) + 50),
-							'user_birthday' => array('date', true),
-						));
+						$validate_array = array_merge($validate_array, [
+							'bday_day'		=> ['num', true, 1, 31],
+							'bday_month'	=> ['num', true, 1, 12],
+							'bday_year'		=> ['num', true, 1901, gmdate('Y', time()) + 50],
+							'user_birthday' => ['date', true],
+						]);
 					}
 
 					$error = validate_data($data, $validate_array);
@@ -353,7 +353,7 @@ class profile
 					 * @var array	error			Array of any generated errors
 					 * @since 3.1.4-RC1
 					 */
-					$vars = array('data', 'submit', 'error');
+					$vars = ['data', 'submit', 'error'];
 					extract($this->dispatcher->trigger_event('core.ucp_profile_validate_profile_info', compact($vars)));
 
 					if (!count($error))
@@ -367,10 +367,10 @@ class profile
 							$data['notify'] = NOTIFY_EMAIL;
 						}
 
-						$sql_ary = array(
+						$sql_ary = [
 							'user_jabber'	=> $data['jabber'],
 							'user_notify_type'	=> $data['notify'],
-						);
+						];
 
 						if ($this->config['allow_birthdays'])
 						{
@@ -386,7 +386,7 @@ class profile
 						 * @var  array	sql_ary		user options data we update
 						 * @since 3.1.4-RC1
 						 */
-						$vars = array('cp_data', 'data', 'sql_ary');
+						$vars = ['cp_data', 'data', 'sql_ary'];
 						extract($this->dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . $this->tables['users'] . '
@@ -403,7 +403,7 @@ class profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
+					$error = array_map([$user, 'lang'], $error);
 				}
 
 				if ($this->config['allow_birthdays'])
@@ -431,19 +431,19 @@ class profile
 					}
 					unset($now);
 
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 						'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 						'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
 						'S_BIRTHDAYS_ENABLED'		=> true,
-					));
+					]);
 				}
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 					'S_JABBER_ENABLED'	=> $this->config['jab_enable'],
 					'JABBER'			=> $data['jabber'],
-				));
+				]);
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
 				$this->user->get_profile_fields($this->user->data['user_id']);
@@ -508,7 +508,7 @@ class profile
 				 * @since 3.1.10-RC1
 				 * @changed 3.2.0-RC2 Removed message parser
 				 */
-				$vars = array(
+				$vars = [
 					'enable_bbcode',
 					'enable_smilies',
 					'enable_urls',
@@ -516,7 +516,7 @@ class profile
 					'error',
 					'submit',
 					'preview',
-				);
+				];
 				extract($this->dispatcher->trigger_event('core.ucp_profile_modify_signature', compact($vars)));
 
 				$bbcode_uid = $bbcode_bitfield = $bbcode_flags = '';
@@ -553,12 +553,12 @@ class profile
 						$this->user->optionset('sig_smilies', $enable_smilies);
 						$this->user->optionset('sig_links', $enable_urls);
 
-						$sql_ary = array(
+						$sql_ary = [
 							'user_sig'					=> $signature,
 							'user_options'				=> $this->user->data['user_options'],
 							'user_sig_bbcode_uid'		=> $bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> $bbcode_bitfield
-						);
+						];
 
 						/**
 						 * Modify user registration data before submitting it to the database
@@ -567,7 +567,7 @@ class profile
 						 * @var array	sql_ary		Array with user signature data to submit to the database
 						 * @since 3.1.10-RC1
 						 */
-						$vars = array('sql_ary');
+						$vars = ['sql_ary'];
 						extract($this->dispatcher->trigger_event('core.ucp_profile_modify_signature_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . $this->tables['users'] . '
@@ -581,7 +581,7 @@ class profile
 				}
 
 				// Replace "error" strings with their real, localised form
-				$error = array_map(array($user, 'lang'), $error);
+				$error = array_map([$user, 'lang'], $error);
 
 				if ($this->request->is_set_post('preview'))
 				{
@@ -591,7 +591,7 @@ class profile
 				/** @var \phpbb\controller\helper $controller_helper */
 				$controller_helper = $phpbb_container->get('controller.helper');
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 					'SIGNATURE'			=> $decoded_message['text'],
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
@@ -613,7 +613,7 @@ class profile
 					'S_SMILIES_ALLOWED'		=> $this->config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($this->config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> ($this->config['allow_sig_flash']) ? true : false,
-					'S_LINKS_ALLOWED'		=> ($this->config['allow_sig_links']) ? true : false)
+					'S_LINKS_ALLOWED'		=> ($this->config['allow_sig_links']) ? true : false]
 				);
 
 				add_form_key('ucp_sig');
@@ -655,12 +655,12 @@ class profile
 								if ($result && empty($error))
 								{
 									// Success! Lets save the result in the database
-									$result = array(
+									$result = [
 										'user_avatar_type' => $driver_name,
 										'user_avatar' => $result['avatar'],
 										'user_avatar_width' => $result['avatar_width'],
 										'user_avatar_height' => $result['avatar_height'],
-									);
+									];
 
 									/**
 									 * Trigger events on successfull avatar change
@@ -669,7 +669,7 @@ class profile
 									 * @var array	result	Array with data to be stored in DB
 									 * @since 3.1.11-RC1
 									 */
-									$vars = array('result');
+									$vars = ['result'];
 									extract($this->dispatcher->trigger_event('core.ucp_profile_avatar_sql', compact($vars)));
 
 									$sql = 'UPDATE ' . $this->tables['users'] . '
@@ -694,10 +694,10 @@ class profile
 					{
 						if (!confirm_box(true))
 						{
-							confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+							confirm_box(false, $this->language->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields([
 									'avatar_delete'     => true,
 									'i'                 => $id,
-									'mode'              => $mode))
+									'mode'              => $mode])
 							);
 						}
 						else
@@ -712,35 +712,35 @@ class profile
 
 					$selected_driver = $this->avatar_manager->clean_driver_name($this->request->variable('avatar_driver', $this->user->data['user_avatar_type']));
 
-					$this->template->assign_vars(array(
+					$this->template->assign_vars([
 						'AVATAR_MIN_WIDTH'	=> $this->config['avatar_min_width'],
 						'AVATAR_MAX_WIDTH'	=> $this->config['avatar_max_width'],
 						'AVATAR_MIN_HEIGHT'	=> $this->config['avatar_min_height'],
 						'AVATAR_MAX_HEIGHT'	=> $this->config['avatar_max_height'],
-					));
+					]);
 
 					foreach ($avatar_drivers as $current_driver)
 					{
 						$driver = $this->avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
-						$this->template->set_filenames(array(
+						$this->template->set_filenames([
 							'avatar' => $driver->get_template_name(),
-						));
+						]);
 
 						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
 						{
 							$driver_name = $this->avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
 
-							$this->template->assign_block_vars('avatar_drivers', array(
+							$this->template->assign_block_vars('avatar_drivers', [
 								'L_TITLE' => $this->language->lang($driver_upper . '_TITLE'),
 								'L_EXPLAIN' => $this->language->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER' => $driver_name,
 								'SELECTED' => $current_driver == $selected_driver,
 								'OUTPUT' => $this->template->assign_display('avatar'),
-							));
+							]);
 						}
 					}
 
@@ -750,7 +750,7 @@ class profile
 
 				$avatar = phpbb_get_user_avatar($this->user->data, 'USER_AVATAR', true);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'ERROR'			=> (count($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> $avatar,
 
@@ -759,7 +759,7 @@ class profile
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 
 					'S_AVATARS_ENABLED'		=> ($this->config['allow_avatar'] && $avatars_enabled),
-				));
+				]);
 
 			break;
 
@@ -769,7 +769,7 @@ class profile
 
 				if ($submit)
 				{
-					$keys = $this->request->variable('keys', array(''));
+					$keys = $this->request->variable('keys', ['']);
 
 					if (!check_form_key('ucp_autologin_keys'))
 					{
@@ -798,7 +798,7 @@ class profile
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
+					$error = array_map([$user, 'lang'], $error);
 				}
 
 				$sql = 'SELECT key_id, last_ip, last_login
@@ -810,11 +810,11 @@ class profile
 
 				while ($row = $this->db->sql_fetchrow($result))
 				{
-					$this->template->assign_block_vars('sessions', array(
+					$this->template->assign_block_vars('sessions', [
 						'KEY' => substr($row['key_id'], 0, 8),
 						'IP' => $row['last_ip'],
 						'LOGIN_TIME' => $this->user->format_date($row['last_login']),
-					));
+					]);
 				}
 
 				$this->db->sql_freeresult($result);
@@ -822,13 +822,13 @@ class profile
 			break;
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ERROR'		=> (count($error)) ? implode('<br />', $error) : '',
 
 			'L_TITLE'	=> $this->language->lang('UCP_PROFILE_' . strtoupper($mode)),
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> $this->u_action)
+			'S_UCP_ACTION'		=> $this->u_action]
 		);
 
 		// Set desired template

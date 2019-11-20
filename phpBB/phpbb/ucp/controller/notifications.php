@@ -35,7 +35,7 @@ class notifications
 		switch ($mode)
 		{
 			case 'notification_options':
-				$subscriptions = $this->notifications_manager->get_global_subscriptions(false);
+				$subscriptions = $this->notification_manager->get_global_subscriptions(false);
 
 				// Add/remove subscriptions
 				if ($this->request->is_set_post('submit'))
@@ -45,9 +45,9 @@ class notifications
 						trigger_error('FORM_INVALID');
 					}
 
-					$notification_methods = $this->notifications_manager->get_subscription_methods();
+					$notification_methods = $this->notification_manager->get_subscription_methods();
 
-					foreach ($this->notifications_manager->get_subscription_types() as $group => $subscription_types)
+					foreach ($this->notification_manager->get_subscription_types() as $group => $subscription_types)
 					{
 						foreach ($subscription_types as $type => $data)
 						{
@@ -55,11 +55,11 @@ class notifications
 							{
 								if ($this->request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
-									$this->notifications_manager->add_subscription($type, 0, $method_data['id']);
+									$this->notification_manager->add_subscription($type, 0, $method_data['id']);
 								}
 								else if (!$this->request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
-									$this->notifications_manager->delete_subscription($type, 0, $method_data['id']);
+									$this->notification_manager->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
 						}
@@ -83,7 +83,7 @@ class notifications
 				// Mark all items read
 				if ($this->request->variable('mark', '') == 'all' && check_link_hash($this->request->variable('token', ''), 'mark_all_notifications_read'))
 				{
-					$this->notifications_manager->mark_notifications(false, false, $this->user->data['user_id'], $form_time);
+					$this->notification_manager->mark_notifications(false, false, $this->user->data['user_id'], $form_time);
 
 					meta_refresh(3, $this->u_action);
 					$message = $this->language->lang('NOTIFICATIONS_MARK_ALL_READ_SUCCESS');
@@ -91,11 +91,11 @@ class notifications
 					if ($this->request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response();
-						$json_response->send(array(
+						$json_response->send([
 							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'success'		=> true,
-						));
+						]);
 					}
 					$message .= '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
 
@@ -110,19 +110,19 @@ class notifications
 						trigger_error('FORM_INVALID');
 					}
 
-					$mark_read = $this->request->variable('mark', array(0));
+					$mark_read = $this->request->variable('mark', [0]);
 
 					if (!empty($mark_read))
 					{
-						$this->notifications_manager->mark_notifications_by_id('notification.method.board', $mark_read, $form_time);
+						$this->notification_manager->mark_notifications_by_id('notification.method.board', $mark_read, $form_time);
 					}
 				}
 
-				$notifications = $this->notifications_manager->load_notifications('notification.method.board', array(
+				$notifications = $this->notification_manager->load_notifications('notification.method.board', [
 					'start'			=> $start,
 					'limit'			=> $this->config['topics_per_page'],
 					'count_total'	=> true,
-				));
+				]);
 
 				foreach ($notifications['notifications'] as $notification)
 				{
@@ -133,24 +133,24 @@ class notifications
 				$start = $this->pagination->validate_start($start, $this->config['topics_per_page'], $notifications['total_count']);
 				$this->pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $this->config['topics_per_page'], $start);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'TOTAL_COUNT'	=> $notifications['total_count'],
 					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
-				));
+				]);
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_LIST';
 			break;
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'TITLE'				=> $this->language->lang($this->page_title),
 			'TITLE_EXPLAIN'		=> $this->language->lang($this->page_title . '_EXPLAIN'),
 
 			'MODE'				=> $mode,
 
 			'FORM_TIME'			=> time(),
-		));
+		]);
 	}
 
 	/**
@@ -164,26 +164,26 @@ class notifications
 	 */
 	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_types')
 	{
-		$notification_methods = $this->notifications_manager->get_subscription_methods();
+		$notification_methods = $this->notification_manager->get_subscription_methods();
 
-		foreach ($this->notifications_manager->get_subscription_types() as $group => $subscription_types)
+		foreach ($this->notification_manager->get_subscription_types() as $group => $subscription_types)
 		{
-			$this->template->assign_block_vars($block, array(
+			$this->template->assign_block_vars($block, [
 				'GROUP_NAME'	=> $this->language->lang($group),
-			));
+			]);
 
 			foreach ($subscription_types as $type => $type_data)
 			{
-				$this->template->assign_block_vars($block, array(
+				$this->template->assign_block_vars($block, [
 					'TYPE'				=> $type,
 
 					'NAME'				=> $this->language->lang($type_data['lang']),
 					'EXPLAIN'			=> (isset($this->language->lang[$type_data['lang'] . '_EXPLAIN'])) ? $this->language->lang($type_data['lang'] . '_EXPLAIN') : '',
-				));
+				]);
 
 				foreach ($notification_methods as $method => $method_data)
 				{
-					$this->template->assign_block_vars($block . '.notification_methods', array(
+					$this->template->assign_block_vars($block . '.notification_methods', [
 						'METHOD'			=> $method_data['id'],
 
 						'NAME'				=> $this->language->lang($method_data['lang']),
@@ -191,14 +191,14 @@ class notifications
 						'AVAILABLE'			=> $method_data['method']->is_available($type_data['type']),
 
 						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type])) ? true : false,
-					));
+					]);
 				}
 			}
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			strtoupper($block) . '_COLS' => count($notification_methods) + 1,
-		));
+		]);
 	}
 
 	/**
@@ -211,15 +211,15 @@ class notifications
 	 */
 	public function output_notification_methods(\phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_methods')
 	{
-		$notification_methods = $this->notifications_manager->get_subscription_methods();
+		$notification_methods = $this->notification_manager->get_subscription_methods();
 
 		foreach ($notification_methods as $method => $method_data)
 		{
-			$this->template->assign_block_vars($block, array(
+			$this->template->assign_block_vars($block, [
 				'METHOD'			=> $method_data['id'],
 
 				'NAME'				=> $this->language->lang($method_data['lang']),
-			));
+			]);
 		}
 	}
 }

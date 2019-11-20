@@ -25,7 +25,7 @@ class register
 
 		//
 		if ($this->config['require_activation'] == USER_ACTIVATION_DISABLE ||
-			(in_array($this->config['require_activation'], array(USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN)) && !$this->config['email_enable']))
+			(in_array($this->config['require_activation'], [USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN]) && !$this->config['email_enable']))
 		{
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
@@ -60,13 +60,13 @@ class register
 		 * @var string	user_lang	User language request
 		 * @since 3.1.11-RC1
 		 */
-		$vars = array(
+		$vars = [
 			'coppa',
 			'agreed',
 			'submit',
 			'change_lang',
 			'user_lang',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.ucp_register_requests_after', compact($vars)));
 
 		add_form_key('ucp_register');
@@ -97,8 +97,8 @@ class register
 		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 
-		$error = $cp_data = $cp_error = array();
-		$s_hidden_fields = array();
+		$error = $cp_data = $cp_error = [];
+		$s_hidden_fields = [];
 
 		// Handle login_link data added to $_hidden_fields
 		$login_link_data = $this->get_login_link_data_array();
@@ -123,20 +123,20 @@ class register
 		{
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
-			$s_hidden_fields = array_merge($s_hidden_fields, array(
+			$s_hidden_fields = array_merge($s_hidden_fields, [
 				'change_lang'	=> '',
-			));
+			]);
 
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
 			{
 				// We do not include the password
-				$s_hidden_fields = array_merge($s_hidden_fields, array(
+				$s_hidden_fields = array_merge($s_hidden_fields, [
 					'username'			=> $this->request->variable('username', '', true),
 					'email'				=> strtolower($this->request->variable('email', '')),
 					'lang'				=> $this->language->lang_name,
 					'tz'				=> $this->request->variable('tz', $this->config['board_timezone']),
-				));
+				]);
 
 			}
 
@@ -145,7 +145,7 @@ class register
 				FROM ' . $this->tables['lang'];
 			$result = $this->db->sql_query($sql);
 
-			$lang_row = array();
+			$lang_row = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$lang_row[] = $row;
@@ -161,7 +161,7 @@ class register
 					->format($this->language->lang('DATE_FORMAT'), true);
 				unset($now);
 
-				$template_vars = array(
+				$template_vars = [
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 
 					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
@@ -173,11 +173,11 @@ class register
 
 					'COOKIE_NAME'		=> $this->config['cookie_name'],
 					'COOKIE_PATH'		=> $this->config['cookie_path'],
-				);
+				];
 			}
 			else
 			{
-				$template_vars = array(
+				$template_vars = [
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($this->language->lang('TERMS_OF_USE_CONTENT'), $this->config['sitename'], generate_board_url()),
 
@@ -188,7 +188,7 @@ class register
 
 					'COOKIE_NAME'		=> $this->config['cookie_name'],
 					'COOKIE_PATH'		=> $this->config['cookie_path'],
-				);
+				];
 			}
 
 			$tpl_name = 'ucp_agreement';
@@ -203,14 +203,14 @@ class register
 			 * @var array	lang_row			Array with available languages, read only
 			 * @since 3.2.2-RC1
 			 */
-			$vars = array('tpl_name', 'template_vars', 's_hidden_fields', 'lang_row');
+			$vars = ['tpl_name', 'template_vars', 's_hidden_fields', 'lang_row'];
 			extract($this->dispatcher->trigger_event('core.ucp_register_agreement_modify_template_data', compact($vars)));
 
 			unset($lang_row);
 
-			$template_vars = array_merge($template_vars, array(
+			$template_vars = array_merge($template_vars, [
 				'S_HIDDEN_FIELDS' => build_hidden_fields($s_hidden_fields),
-			));
+			]);
 
 			$this->template->assign_vars($template_vars);
 
@@ -238,14 +238,14 @@ class register
 
 		$timezone = $this->config['board_timezone'];
 
-		$data = array(
+		$data = [
 			'username'			=> $this->request->variable('username', '', true),
 			'new_password'		=> $this->request->variable('new_password', '', true),
 			'password_confirm'	=> $this->request->variable('password_confirm', '', true),
 			'email'				=> strtolower($this->request->variable('email', '')),
 			'lang'				=> basename($this->request->variable('lang', $this->language->lang_name)),
 			'tz'				=> $this->request->variable('tz', $timezone),
-		);
+		];
 		/**
 		 * Add UCP register data before they are assigned to the template or submitted
 		 *
@@ -257,26 +257,26 @@ class register
 		 * @var array	data		Array with current ucp registration data
 		 * @since 3.1.4-RC1
 		 */
-		$vars = array('submit', 'data');
+		$vars = ['submit', 'data'];
 		extract($this->dispatcher->trigger_event('core.ucp_register_data_before', compact($vars)));
 
 		// Check and initialize some variables if needed
 		if ($submit)
 		{
-			$error = validate_data($data, array(
-				'username'			=> array(
-					array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
-					array('username', '')),
-				'new_password'		=> array(
-					array('string', false, $this->config['min_pass_chars'], 0),
-					array('password')),
-				'password_confirm'	=> array('string', false, $this->config['min_pass_chars'], 0),
-				'email'				=> array(
-					array('string', false, 6, 60),
-					array('user_email')),
-				'tz'				=> array('timezone'),
-				'lang'				=> array('language_iso_name'),
-			));
+			$error = validate_data($data, [
+				'username'			=> [
+					['string', false, $this->config['min_name_chars'], $this->config['max_name_chars']],
+					['username', '']],
+				'new_password'		=> [
+					['string', false, $this->config['min_pass_chars'], 0],
+					['password']],
+				'password_confirm'	=> ['string', false, $this->config['min_pass_chars'], 0],
+				'email'				=> [
+					['string', false, 6, 60],
+					['user_email']],
+				'tz'				=> ['timezone'],
+				'lang'				=> ['language_iso_name'],
+			]);
 
 			if (!check_form_key('ucp_register'))
 			{
@@ -284,7 +284,7 @@ class register
 			}
 
 			// Replace "error" strings with their real, localised form
-			$error = array_map(array($user, 'lang'), $error);
+			$error = array_map([$user, 'lang'], $error);
 
 			if ($this->config['enable_confirm'])
 			{
@@ -330,7 +330,7 @@ class register
 			 * @var array 	error		Array with list of errors
 			 * @since 3.1.4-RC1
 			 */
-			$vars = array('submit', 'data', 'cp_data', 'error');
+			$vars = ['submit', 'data', 'cp_data', 'error'];
 			extract($this->dispatcher->trigger_event('core.ucp_register_data_after', compact($vars)));
 
 			if (!count($error))
@@ -376,7 +376,7 @@ class register
 				/* @var $passwords_manager \phpbb\passwords\manager */
 				$passwords_manager = $phpbb_container->get('passwords.manager');
 
-				$user_row = array(
+				$user_row = [
 					'username'				=> $data['username'],
 					'user_password'			=> $this->passwords_manager->hash($data['new_password']),
 					'user_email'			=> $data['email'],
@@ -389,7 +389,7 @@ class register
 					'user_regdate'			=> time(),
 					'user_inactive_reason'	=> $user_inactive_reason,
 					'user_inactive_time'	=> $user_inactive_time,
-				);
+				];
 
 				if ($this->config['new_member_post_limit'])
 				{
@@ -407,7 +407,7 @@ class register
 				 * @var array	user_row	Array with current ucp registration data
 				 * @since 3.1.4-RC1
 				 */
-				$vars = array('submit', 'cp_data', 'user_row');
+				$vars = ['submit', 'cp_data', 'user_row'];
 				extract($this->dispatcher->trigger_event('core.ucp_register_user_row_after', compact($vars)));
 
 				// Register user...
@@ -461,19 +461,19 @@ class register
 
 					$messenger->anti_abuse_headers($config, $user);
 
-					$messenger->assign_vars(array(
+					$messenger->assign_vars([
 						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($this->language->lang('WELCOME_SUBJECT'), $this->config['sitename'])),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
-						'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u=$user_id&k=$user_actkey")
+						'U_ACTIVATE'	=> "$server_url/ucp.$this->php_ext?mode=activate&u=$user_id&k=$user_actkey"]
 					);
 
 					if ($coppa)
 					{
-						$messenger->assign_vars(array(
+						$messenger->assign_vars([
 							'FAX_INFO'		=> $this->config['coppa_fax'],
 							'MAIL_INFO'		=> $this->config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $data['email'])
+							'EMAIL_ADDRESS'	=> $data['email']]
 						);
 					}
 
@@ -491,7 +491,7 @@ class register
 					 * @var messenger	messenger	phpBB Messenger
 					 * @since 3.2.4-RC1
 					 */
-					$vars = array(
+					$vars = [
 						'user_row',
 						'cp_data',
 						'data',
@@ -500,7 +500,7 @@ class register
 						'user_id',
 						'user_actkey',
 						'messenger',
-					);
+					];
 					extract($this->dispatcher->trigger_event('core.ucp_register_welcome_email_before', compact($vars)));
 
 					$messenger->send(NOTIFY_EMAIL);
@@ -510,11 +510,11 @@ class register
 				{
 					/* @var $phpbb_notifications \phpbb\notification\manager */
 					$phpbb_notifications = $phpbb_container->get('notification_manager');
-					$this->notifications_manager->add_notifications('notification.type.admin_activate_user', array(
+					$this->notification_manager->add_notifications('notification.type.admin_activate_user', [
 						'user_id'		=> $user_id,
 						'user_actkey'	=> $user_row['user_actkey'],
 						'user_regdate'	=> $user_row['user_regdate'],
-					));
+					]);
 				}
 
 				// Perform account linking if necessary
@@ -543,7 +543,7 @@ class register
 				 * @var string		user_actkey	User activation key
 				 * @since 3.2.4-RC1
 				 */
-				$vars = array(
+				$vars = [
 					'user_row',
 					'cp_data',
 					'data',
@@ -551,7 +551,7 @@ class register
 					'server_url',
 					'user_id',
 					'user_actkey',
-				);
+				];
 				extract($this->dispatcher->trigger_event('core.ucp_register_register_after', compact($vars)));
 
 				$message = $message . '<br /><br />' . sprintf($this->language->lang('RETURN_INDEX'), '<a href="' . append_sid("{$this->root_path}index.$this->php_ext") . '">', '</a>');
@@ -559,10 +559,10 @@ class register
 			}
 		}
 
-		$s_hidden_fields = array_merge($s_hidden_fields, array(
+		$s_hidden_fields = array_merge($s_hidden_fields, [
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
-		));
+		]);
 
 		if ($this->config['coppa_enable'])
 		{
@@ -577,9 +577,9 @@ class register
 		// Visual Confirmation - Show images
 		if ($this->config['enable_confirm'])
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
-			));
+			]);
 		}
 
 		//
@@ -615,15 +615,15 @@ class register
 				}
 			}
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
-			));
+			]);
 		}
 
 		// Assign template vars for timezone select
 		phpbb_timezone_select($template, $user, $data['tz'], true);
 
-		$template_vars = array(
+		$template_vars = [
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
 			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
@@ -642,7 +642,7 @@ class register
 
 			'COOKIE_NAME'		=> $this->config['cookie_name'],
 			'COOKIE_PATH'		=> $this->config['cookie_path'],
-		);
+		];
 
 		$tpl_name = 'ucp_register';
 
@@ -657,24 +657,24 @@ class register
 		 * @var string	tpl_name			Template name
 		 * @since 3.2.2-RC1
 		 */
-		$vars = array(
+		$vars = [
 			'template_vars',
 			'data',
 			'error',
 			's_hidden_fields',
 			'tpl_name',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.ucp_register_modify_template_data', compact($vars)));
 
-		$template_vars = array_merge($template_vars, array(
+		$template_vars = array_merge($template_vars, [
 			'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-		));
+		]);
 
 		$this->template->assign_vars($template_vars);
 
 		//
-		$this->user->profile_fields = array();
+		$this->user->profile_fields = [];
 
 		// Generate profile fields -> Template Block Variable profile_fields
 		$cp->generate_profile_fields('register', $this->user->get_iso_lang_id());
@@ -693,7 +693,7 @@ class register
 	{
 
 		$var_names = $this->request->variable_names(\phpbb\request\request_interface::POST);
-		$login_link_data = array();
+		$login_link_data = [];
 		$string_start_length = strlen('login_link_');
 
 		foreach ($var_names as $var_name)
@@ -717,7 +717,7 @@ class register
 	 */
 	protected function get_login_link_data_for_hidden_fields($data)
 	{
-		$new_data = array();
+		$new_data = [];
 
 		foreach ($data as $key => $value)
 		{

@@ -29,7 +29,7 @@ class auth_link
 	public function main($id, $mode)
 	{
 
-		$error = array();
+		$error = [];
 
 		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
@@ -42,7 +42,7 @@ class auth_link
 			$error[] = 'UCP_AUTH_LINK_NOT_SUPPORTED';
 		}
 
-		$s_hidden_fields = array();
+		$s_hidden_fields = [];
 		add_form_key('ucp_auth_link');
 
 		$submit	= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
@@ -86,7 +86,7 @@ class auth_link
 		{
 			// In this case the link data should only be populated with the
 			// link_method as the provider dictates how data is returned to it.
-			$link_data = array('link_method' => 'auth_link');
+			$link_data = ['link_method' => 'auth_link'];
 
 			$error[] = $auth_provider->link_account($link_data);
 
@@ -123,17 +123,17 @@ class auth_link
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		// Replace "error" strings with their real, localised form
-		$error = array_map(array($user, 'lang'), $error);
+		$error = array_map([$user, 'lang'], $error);
 		$error = implode('<br />', $error);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'ERROR'	=> $error,
 
 			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action,
-		));
+		]);
 
 		$this->tpl_name = 'ucp_auth_link';
 		$this->page_title = 'UCP_AUTH_LINK';

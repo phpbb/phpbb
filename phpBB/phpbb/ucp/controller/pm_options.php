@@ -103,9 +103,9 @@ class pm_options
 						trigger_error('MAX_FOLDER_REACHED');
 					}
 
-					$sql = 'INSERT INTO ' . $this->tables['privmsgs_folder'] . ' ' . $this->db->sql_build_array('INSERT', array(
+					$sql = 'INSERT INTO ' . $this->tables['privmsgs_folder'] . ' ' . $this->db->sql_build_array('INSERT', [
 								'user_id'		=> (int) $this->user->data['user_id'],
-								'folder_name'	=> $folder_name)
+								'folder_name'	=> $folder_name]
 						);
 					$this->db->sql_query($sql);
 					$msg = $this->language->lang('FOLDER_ADDED');
@@ -198,12 +198,12 @@ class pm_options
 				trigger_error('CANNOT_REMOVE_FOLDER');
 			}
 
-			$s_hidden_fields = array(
+			$s_hidden_fields = [
 				'remove_folder_id'	=> $remove_folder_id,
 				'remove_action'		=> $remove_action,
 				'move_to'			=> $move_to,
 				'remove_folder'		=> 1
-			);
+			];
 
 			// Do we need to confirm?
 			if (confirm_box(true))
@@ -215,7 +215,7 @@ class pm_options
 					AND folder_id = $remove_folder_id";
 				$result = $this->db->sql_query($sql);
 
-				$msg_ids = array();
+				$msg_ids = [];
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$msg_ids[] = (int) $row['msg_id'];
@@ -306,7 +306,7 @@ class pm_options
 					trigger_error('RULE_NOT_DEFINED');
 				}
 
-				$rule_ary = array(
+				$rule_ary = [
 					'user_id'			=> $this->user->data['user_id'],
 					'rule_check'		=> $check_option,
 					'rule_connection'	=> $rule_option,
@@ -315,7 +315,7 @@ class pm_options
 					'rule_group_id'		=> $rule_group_id,
 					'rule_action'		=> $action,
 					'rule_folder_id'	=> $folder_id
-				);
+				];
 
 				$sql = 'SELECT rule_id
 				FROM ' . $this->tables['privmsgs_rules'] . '
@@ -365,7 +365,7 @@ class pm_options
 		// Remove Rule
 		if ($this->request->is_set_post('delete_rule') && !$this->request->is_set_post('cancel'))
 		{
-			$delete_id = array_keys($this->request->variable('delete_rule', array(0 => 0)));
+			$delete_id = array_keys($this->request->variable('delete_rule', [0 => 0]));
 			$delete_id = (!empty($delete_id[0])) ? $delete_id[0] : 0;
 
 			if (!$delete_id)
@@ -407,11 +407,11 @@ class pm_options
 			}
 			else
 			{
-				confirm_box(false, 'DELETE_RULE', build_hidden_fields(array('delete_rule' => array($delete_id => 1))));
+				confirm_box(false, 'DELETE_RULE', build_hidden_fields(['delete_rule' => [$delete_id => 1]]));
 			}
 		}
 
-		$folder = array();
+		$folder = [];
 
 		$sql = 'SELECT COUNT(msg_id) as num_messages
 		FROM ' . $this->tables['privmsgs_to'] . '
@@ -421,10 +421,10 @@ class pm_options
 		$num_messages = (int) $this->db->sql_fetchfield('num_messages');
 		$this->db->sql_freeresult($result);
 
-		$folder[PRIVMSGS_INBOX] = array(
+		$folder[PRIVMSGS_INBOX] = [
 			'folder_name'		=> $this->language->lang('PM_INBOX'),
 			'message_status'	=> $this->language->lang('FOLDER_MESSAGE_STATUS', $this->language->lang('MESSAGES_COUNT', (int) $this->user->data['message_limit']), $num_messages),
-		);
+		];
 
 		$sql = 'SELECT folder_id, folder_name, pm_count
 		FROM ' . $this->tables['privmsgs_folder'] . '
@@ -435,10 +435,10 @@ class pm_options
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$num_user_folder++;
-			$folder[$row['folder_id']] = array(
+			$folder[$row['folder_id']] = [
 				'folder_name'		=> $row['folder_name'],
 				'message_status'	=> $this->language->lang('FOLDER_MESSAGE_STATUS', $this->language->lang('MESSAGES_COUNT', (int) $this->user->data['message_limit']), (int) $row['pm_count']),
-			);
+			];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -483,7 +483,7 @@ class pm_options
 			}
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'S_FULL_FOLDER_OPTIONS'	=> $s_full_folder_options,
 			'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,
 			'S_FOLDER_OPTIONS'		=> $s_folder_options,
@@ -496,9 +496,9 @@ class pm_options
 			'DEFAULT_ACTION'		=> ($this->config['full_folder_action'] == 1) ? $this->language->lang('DELETE_OLDEST_MESSAGES') : $this->language->lang('HOLD_NEW_MESSAGES'),
 
 			'U_FIND_USERNAME'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=ucp&amp;field=rule_string&amp;select_single=true'),
-		));
+		]);
 
-		$rule_lang = $action_lang = $check_lang = array();
+		$rule_lang = $action_lang = $check_lang = [];
 
 		// Build all three language arrays
 		preg_replace_callback('#^((RULE|ACTION|CHECK)_([A-Z0-9_]+))$#', function ($match) use(&$rule_lang, &$action_lang, &$check_lang, $user) {
@@ -514,7 +514,7 @@ class pm_options
 		$rule_option	= $this->request->variable('rule_option', 0);
 		$cond_option	= $this->request->variable('cond_option', '');
 		$action_option	= $this->request->variable('action_option', '');
-		$back = ($this->request->is_set('back')) ? $this->request->variable('back', array('' => 0)) : array();
+		$back = ($this->request->is_set('back')) ? $this->request->variable('back', ['' => 0]) : [];
 
 		if (count($back))
 		{
@@ -590,12 +590,12 @@ class pm_options
 			}
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'S_CHECK_DEFINED'	=> true,
 				'S_CHECK_SELECT'	=> ($hardcoded) ? false : true,
 				'CHECK_CURRENT'		=> isset($check_lang[$check_option]) ? $check_lang[$check_option] : '',
 				'S_CHECK_OPTIONS'	=> $s_check_options,
-				'CHECK_OPTION'		=> $check_option)
+				'CHECK_OPTION'		=> $check_option]
 		);
 	}
 
@@ -636,12 +636,12 @@ class pm_options
 			}
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'S_ACTION_DEFINED'	=> true,
 				'S_ACTION_SELECT'	=> ($hardcoded) ? false : true,
 				'ACTION_CURRENT'	=> $l_action,
 				'S_ACTION_OPTIONS'	=> $s_action_options,
-				'ACTION_OPTION'		=> $action_option)
+				'ACTION_OPTION'		=> $action_option]
 		);
 	}
 
@@ -651,7 +651,7 @@ class pm_options
 	function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 	{
 
-		$exclude = array();
+		$exclude = [];
 
 		if (!$module->loaded('zebra', 'friends'))
 		{
@@ -676,12 +676,12 @@ class pm_options
 			}
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'S_RULE_DEFINED'	=> true,
 				'S_RULE_SELECT'		=> !$hardcoded,
 				'RULE_CURRENT'		=> isset($rule_lang[$rule_option]) ? $rule_lang[$rule_option] : '',
 				'S_RULE_OPTIONS'	=> $s_rule_options,
-				'RULE_OPTION'		=> $rule_option)
+				'RULE_OPTION'		=> $rule_option]
 		);
 	}
 
@@ -694,17 +694,17 @@ class pm_options
 		/** @var \phpbb\group\helper $group_helper */
 		$group_helper = $phpbb_container->get('group_helper');
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'S_COND_DEFINED'	=> true,
-				'S_COND_SELECT'		=> (!$hardcoded && isset($global_rule_conditions[$rule_option])) ? true : false)
+				'S_COND_SELECT'		=> (!$hardcoded && isset($global_rule_conditions[$rule_option])) ? true : false]
 		);
 
 		// Define COND_OPTION
 		if (!isset($global_rule_conditions[$rule_option]))
 		{
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 					'COND_OPTION'	=> 'none',
-					'COND_CURRENT'	=> false)
+					'COND_CURRENT'	=> false]
 			);
 			return;
 		}
@@ -717,11 +717,11 @@ class pm_options
 			case 'text':
 				$rule_string = $this->request->variable('rule_string', '', true);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 						'S_TEXT_CONDITION'	=> true,
 						'CURRENT_STRING'	=> $rule_string,
 						'CURRENT_USER_ID'	=> 0,
-						'CURRENT_GROUP_ID'	=> 0)
+						'CURRENT_GROUP_ID'	=> 0]
 				);
 
 				$current_value = $rule_string;
@@ -760,11 +760,11 @@ class pm_options
 					}
 				}
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 						'S_USER_CONDITION'	=> true,
 						'CURRENT_STRING'	=> $rule_string,
 						'CURRENT_USER_ID'	=> $rule_user_id,
-						'CURRENT_GROUP_ID'	=> 0)
+						'CURRENT_GROUP_ID'	=> 0]
 				);
 
 				$current_value = $rule_string;
@@ -813,12 +813,12 @@ class pm_options
 				}
 				$this->db->sql_freeresult($result);
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 						'S_GROUP_CONDITION'	=> true,
 						'S_GROUP_OPTIONS'	=> $s_group_options,
 						'CURRENT_STRING'	=> $rule_string,
 						'CURRENT_USER_ID'	=> 0,
-						'CURRENT_GROUP_ID'	=> $rule_group_id)
+						'CURRENT_GROUP_ID'	=> $rule_group_id]
 				);
 
 				$current_value = $rule_string;
@@ -828,9 +828,9 @@ class pm_options
 				return;
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 				'COND_OPTION'	=> $condition,
-				'COND_CURRENT'	=> $current_value)
+				'COND_CURRENT'	=> $current_value]
 		);
 	}
 
@@ -849,14 +849,14 @@ class pm_options
 		$count = 0;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$this->template->assign_block_vars('rule', array(
+			$this->template->assign_block_vars('rule', [
 					'COUNT'		=> ++$count,
 					'RULE_ID'	=> $row['rule_id'],
 					'CHECK'		=> $check_lang[$row['rule_check']],
 					'RULE'		=> $rule_lang[$row['rule_connection']],
 					'STRING'	=> $row['rule_string'],
 					'ACTION'	=> $action_lang[$row['rule_action']],
-					'FOLDER'	=> ($row['rule_action'] == ACTION_PLACE_INTO_FOLDER) ? $folder[$row['rule_folder_id']]['folder_name'] : '')
+					'FOLDER'	=> ($row['rule_action'] == ACTION_PLACE_INTO_FOLDER) ? $folder[$row['rule_folder_id']]['folder_name'] : '']
 			);
 		}
 		$this->db->sql_freeresult($result);

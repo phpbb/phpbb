@@ -89,18 +89,18 @@ class resend
 
 				$messenger->anti_abuse_headers($config, $user);
 
-				$messenger->assign_vars(array(
+				$messenger->assign_vars([
 					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($this->language->lang('WELCOME_SUBJECT'), $this->config['sitename'])),
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
-					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
+					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}"]
 				);
 
 				if ($coppa)
 				{
-					$messenger->assign_vars(array(
+					$messenger->assign_vars([
 						'FAX_INFO'		=> $this->config['coppa_fax'],
 						'MAIL_INFO'		=> $this->config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email'])
+						'EMAIL_ADDRESS'	=> $user_row['user_email']]
 					);
 				}
 
@@ -124,10 +124,10 @@ class resend
 
 					$messenger->anti_abuse_headers($config, $user);
 
-					$messenger->assign_vars(array(
+					$messenger->assign_vars([
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$this->php_ext?mode=viewprofile&u={$user_row['user_id']}",
-						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
+						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$this->php_ext?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}"]
 					);
 
 					$messenger->send($row['user_notify_type']);
@@ -142,10 +142,10 @@ class resend
 			trigger_error($message);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=resend_act'))
+			'S_PROFILE_ACTION'	=> append_sid($this->root_path . 'ucp.' . $this->php_ext, 'mode=resend_act')]
 		);
 
 		$this->tpl_name = 'ucp_resend';

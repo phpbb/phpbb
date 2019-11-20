@@ -19,7 +19,7 @@ class pm_compose
 	 * Compose private message
 	 * Called from ucp_pm with mode == 'compose'
 	 */
-	function compose_pm($id, $mode, $action, $user_folders = array())
+	function compose_pm($id, $mode, $action, $user_folders = [])
 	{
 
 		// Damn php and globals - i know, this is horrible
@@ -55,7 +55,7 @@ class pm_compose
 		// Reply to all triggered (quote/reply)
 		$reply_to_all	= $this->request->variable('reply_to_all', 0);
 
-		$address_list	= $this->request->variable('address_list', array('' => array(0 => '')));
+		$address_list	= $this->request->variable('address_list', ['' => [0 => '']]);
 
 		$preview	= ($this->request->is_set_post('preview')) ? true : false;
 		$save		= ($this->request->is_set_post('save')) ? true : false;
@@ -75,7 +75,7 @@ class pm_compose
 		$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
 		$select_single = ($this->config['allow_mass_pm'] && $this->auth->acl_get('u_masspm')) ? false : true;
 
-		$error = array();
+		$error = [];
 		$current_time = time();
 
 		/** @var \phpbb\group\helper $group_helper */
@@ -109,7 +109,7 @@ class pm_compose
 		 * @var int		reply_to_all			Value of reply_to_all request variable.
 		 * @since 3.1.4-RC1
 		 */
-		$vars = array(
+		$vars = [
 			'msg_id',
 			'to_user_id',
 			'to_group_id',
@@ -118,7 +118,7 @@ class pm_compose
 			'action',
 			'delete',
 			'reply_to_all',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
 
 		// Output PM_TO box if message composing
@@ -155,12 +155,12 @@ class pm_compose
 				$this->db->sql_freeresult($result);
 			}
 
-			$this->template->assign_vars(array(
+			$this->template->assign_vars([
 				'S_SHOW_PM_BOX'		=> true,
 				'S_ALLOW_MASS_PM'	=> ($this->config['allow_mass_pm'] && $this->auth->acl_get('u_masspm')) ? true : false,
 				'S_GROUP_OPTIONS'	=> ($this->config['allow_mass_pm'] && $this->auth->acl_get('u_masspm_group')) ? $group_options : '',
 				'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
-			));
+			]);
 		}
 
 		$sql = '';
@@ -284,7 +284,7 @@ class pm_compose
 			 * @since 3.1.0-RC5
 			 * @changed 3.2.0-a1 Removed undefined variables
 			 */
-			$vars = array(
+			$vars = [
 				'sql',
 				'msg_id',
 				'to_user_id',
@@ -294,7 +294,7 @@ class pm_compose
 				'action',
 				'delete',
 				'reply_to_all',
-			);
+			];
 			extract($this->dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_before', compact($vars)));
 
 			$result = $this->db->sql_query($sql);
@@ -349,7 +349,7 @@ class pm_compose
 				 * @since 3.1.0-RC5
 				 * @changed 3.2.0-a1 Removed undefined variables
 				 */
-				$vars = array(
+				$vars = [
 					'sql',
 					'post',
 					'msg_id',
@@ -360,7 +360,7 @@ class pm_compose
 					'action',
 					'delete',
 					'reply_to_all',
-				);
+				];
 				extract($this->dispatcher->trigger_event('core.ucp_pm_compose_quotepost_query_after', compact($vars)));
 
 				// Passworded forum?
@@ -413,12 +413,12 @@ class pm_compose
 					// Add the original author as the recipient if quoting a post or only replying and not having checked "reply to all"
 					if ($action == 'quotepost' || !$reply_to_all)
 					{
-						$address_list = array('u' => array($post['author_id'] => 'to'));
+						$address_list = ['u' => [$post['author_id'] => 'to']];
 					}
 					else
 					{
 						// We try to include every previously listed member from the TO Header - Reply to all
-						$address_list = rebuild_header(array('to' => $post['to_address']));
+						$address_list = rebuild_header(['to' => $post['to_address']]);
 
 						// Add the author (if he is already listed then this is no shame (it will be overwritten))
 						$address_list['u'][$post['author_id']] = 'to';
@@ -433,7 +433,7 @@ class pm_compose
 				else if ($action == 'edit' && !count($address_list) && !$refresh && !$submit && !$preview)
 				{
 					// Rebuild TO and BCC Header
-					$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
+					$address_list = rebuild_header(['to' => $post['to_address'], 'bcc' => $post['bcc_address']]);
 				}
 
 				if ($action == 'quotepost')
@@ -459,7 +459,7 @@ class pm_compose
 			 * @var string	message_subject	Messate subject
 			 * @since 3.1.11-RC1
 			 */
-			$vars = array('message_text', 'message_subject');
+			$vars = ['message_text', 'message_subject'];
 			extract($this->dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
 
 			if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
@@ -529,11 +529,11 @@ class pm_compose
 			}
 			else
 			{
-				$s_hidden_fields = array(
+				$s_hidden_fields = [
 					'p'			=> $msg_id,
 					'f'			=> $folder_id,
 					'action'	=> 'delete'
-				);
+				];
 
 				// "{$this->root_path}ucp.$this->php_ext?i=pm&amp;mode=compose"
 				confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
@@ -552,10 +552,10 @@ class pm_compose
 		if (($action == 'reply' || $action == 'quote') && $max_recipients && $reply_to_all)
 		{
 			// We try to include every previously listed member from the TO Header
-			$list = rebuild_header(array('to' => $post['to_address']));
+			$list = rebuild_header(['to' => $post['to_address']]);
 
 			// Can be an empty array too ;)
-			$list = (!empty($list['u'])) ? $list['u'] : array();
+			$list = (!empty($list['u'])) ? $list['u'] : [];
 			$list[$post['author_id']] = 'to';
 
 			if (isset($list[$this->user->data['user_id']]))
@@ -574,7 +574,7 @@ class pm_compose
 		// Check mass pm to group permission
 		if ((!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
 		{
-			$address_list = array();
+			$address_list = [];
 			$error[] = $this->language->lang('NO_AUTH_GROUP_MESSAGE');
 		}
 
@@ -610,7 +610,7 @@ class pm_compose
 			$this->db->sql_freeresult($result);
 		}
 
-		if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
+		if (!in_array($action, ['quote', 'edit', 'delete', 'forward']))
 		{
 			$enable_sig		= ($this->config['allow_sig'] && $this->config['allow_sig_pm'] && $this->auth->acl_get('u_sig') && $this->user->optionget('attachsig'));
 			$enable_smilies	= ($this->config['allow_smilies'] && $this->auth->acl_get('u_pm_smilies') && $this->user->optionget('smilies'));
@@ -670,14 +670,14 @@ class pm_compose
 					$message_parser->message = $message;
 					$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
 
-					$sql = 'INSERT INTO ' . $this->tables['drafts'] . ' ' . $this->db->sql_build_array('INSERT', array(
+					$sql = 'INSERT INTO ' . $this->tables['drafts'] . ' ' . $this->db->sql_build_array('INSERT', [
 								'user_id'		=> $this->user->data['user_id'],
 								'topic_id'		=> 0,
 								'forum_id'		=> 0,
 								'save_time'		=> $current_time,
 								'draft_subject'	=> $subject,
 								'draft_message'	=> $message_parser->message,
-							)
+							]
 						);
 					$this->db->sql_query($sql);
 
@@ -690,7 +690,7 @@ class pm_compose
 				}
 				else
 				{
-					$s_hidden_fields = build_hidden_fields(array(
+					$s_hidden_fields = build_hidden_fields([
 							'mode'		=> $mode,
 							'action'	=> $action,
 							'save'		=> true,
@@ -698,7 +698,7 @@ class pm_compose
 							'message'	=> $message,
 							'u'			=> $to_user_id,
 							'g'			=> $to_group_id,
-							'p'			=> $msg_id)
+							'p'			=> $msg_id]
 					);
 					$s_hidden_fields .= build_address_field($address_list);
 
@@ -783,7 +783,7 @@ class pm_compose
 			 * @var array	error				Any error strings
 			 * @since 3.1.10-RC1
 			 */
-			$vars = array(
+			$vars = [
 				'enable_bbcode',
 				'enable_smilies',
 				'enable_urls',
@@ -793,7 +793,7 @@ class pm_compose
 				'submit',
 				'preview',
 				'error',
-			);
+			];
 			extract($this->dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
 
 			// Parse Attachments - before checksum is calculated
@@ -805,7 +805,7 @@ class pm_compose
 			if (count($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 			{
 				$error[] = implode('<br />', $message_parser->warn_msg);
-				$message_parser->warn_msg = array();
+				$message_parser->warn_msg = [];
 			}
 
 			// Parse message
@@ -848,7 +848,7 @@ class pm_compose
 			// Store message, sync counters
 			if (!count($error) && $submit)
 			{
-				$pm_data = array(
+				$pm_data = [
 					'msg_id'				=> (int) $msg_id,
 					'from_user_id'			=> $this->user->data['user_id'],
 					'from_user_ip'			=> $this->user->ip,
@@ -866,7 +866,7 @@ class pm_compose
 					'attachment_data'		=> $message_parser->attachment_data,
 					'filename_data'			=> $message_parser->filename_data,
 					'address_list'			=> $address_list
-				);
+				];
 
 				/**
 				 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
@@ -933,15 +933,15 @@ class pm_compose
 			{
 				$this->template->assign_var('S_HAS_ATTACHMENTS', true);
 
-				$update_count = array();
+				$update_count = [];
 				$attachment_data = $message_parser->attachment_data;
 
 				parse_attachments(false, $preview_message, $attachment_data, $update_count, true);
 
 				foreach ($attachment_data as $i => $attachment)
 				{
-					$this->template->assign_block_vars('attachment', array(
-							'DISPLAY_ATTACHMENT'	=> $attachment)
+					$this->template->assign_block_vars('attachment', [
+							'DISPLAY_ATTACHMENT'	=> $attachment]
 					);
 				}
 				unset($attachment_data);
@@ -951,12 +951,12 @@ class pm_compose
 
 			if (!count($error))
 			{
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 						'PREVIEW_SUBJECT'		=> $preview_subject,
 						'PREVIEW_MESSAGE'		=> $preview_message,
 						'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-						'S_DISPLAY_PREVIEW'		=> true)
+						'S_DISPLAY_PREVIEW'		=> true]
 				);
 			}
 			unset($message_text);
@@ -994,11 +994,11 @@ class pm_compose
 			{
 				$message_link = '';
 			}
-			$quote_attributes = array(
+			$quote_attributes = [
 				'author'  => $quote_username,
 				'time'    => $post['message_time'],
 				'user_id' => $post['author_id'],
-			);
+			];
 			if ($action === 'quotepost')
 			{
 				$quote_attributes['post_id'] = $post['msg_id'];
@@ -1026,13 +1026,13 @@ class pm_compose
 			 * @var string		message_subject		String with the PM subject already censored.
 			 * @since 3.2.8-RC1
 			 */
-			$vars = array('message_subject');
+			$vars = ['message_subject'];
 			extract($this->dispatcher->trigger_event('core.pm_modify_message_subject', compact($vars)));
 		}
 
 		if ($action == 'forward' && !$preview && !$refresh && !$submit)
 		{
-			$fwd_to_field = write_pm_addresses(array('to' => $post['to_address']), 0, true);
+			$fwd_to_field = write_pm_addresses(['to' => $post['to_address']], 0, true);
 
 			if ($this->config['allow_post_links'])
 			{
@@ -1043,7 +1043,7 @@ class pm_compose
 				$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$this->php_ext?mode=viewprofile&amp;u={$post['author_id']})";
 			}
 
-			$forward_text = array();
+			$forward_text = [];
 			$forward_text[] = $this->language->lang('FWD_ORIGINAL_MESSAGE');
 			$forward_text[] = sprintf($this->language->lang('FWD_SUBJECT'), censor_text($message_subject));
 			$forward_text[] = sprintf($this->language->lang('FWD_DATE'), $this->user->format_date($message_time, false, true));
@@ -1052,7 +1052,7 @@ class pm_compose
 
 			$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
 				censor_text($message_parser->message),
-				array('author' => $quote_username)
+				['author' => $quote_username]
 			);
 			$message_parser->message = implode("\n", $forward_text) . "\n\n" . $quote_text;
 			$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
@@ -1082,7 +1082,7 @@ class pm_compose
 		if (count($address_list))
 		{
 			// Get Usernames and Group Names
-			$result = array();
+			$result = [];
 			if (!empty($address_list['u']))
 			{
 				$sql = 'SELECT user_id as id, username as name, user_colour as colour
@@ -1117,8 +1117,8 @@ class pm_compose
 				$result['g'] = $this->db->sql_query($sql);
 			}
 
-			$u = $g = array();
-			$_types = array('u', 'g');
+			$u = $g = [];
+			$_types = ['u', 'g'];
 			foreach ($_types as $type)
 			{
 				if (isset($result[$type]) && $result[$type])
@@ -1130,7 +1130,7 @@ class pm_compose
 							$row['name'] = $this->group_helper->get_name($row['name']);
 						}
 
-						${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
+						${$type}[$row['id']] = ['name' => $row['name'], 'colour' => $row['colour']];
 					}
 					$this->db->sql_freeresult($result[$type]);
 				}
@@ -1151,27 +1151,27 @@ class pm_compose
 					$type = ($type == 'u') ? 'u' : 'g';
 					$id = (int) $id;
 
-					$tpl_ary = array(
+					$tpl_ary = [
 						'IS_GROUP'	=> ($type == 'g') ? true : false,
 						'IS_USER'	=> ($type == 'u') ? true : false,
 						'UG_ID'		=> $id,
 						'NAME'		=> ${$type}[$id]['name'],
 						'COLOUR'	=> (${$type}[$id]['colour']) ? '#' . ${$type}[$id]['colour'] : '',
 						'TYPE'		=> $type,
-					);
+					];
 
 					if ($type == 'u')
 					{
-						$tpl_ary = array_merge($tpl_ary, array(
+						$tpl_ary = array_merge($tpl_ary, [
 							'U_VIEW'		=> get_username_string('profile', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
 							'NAME_FULL'		=> get_username_string('full', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
-						));
+						]);
 					}
 					else
 					{
-						$tpl_ary = array_merge($tpl_ary, array(
+						$tpl_ary = array_merge($tpl_ary, [
 							'U_VIEW'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=group&amp;g=' . $id),
-						));
+						]);
 					}
 
 					$this->template->assign_block_vars($field . '_recipient', $tpl_ary);
@@ -1227,7 +1227,7 @@ class pm_compose
 		$controller_helper = $phpbb_container->get('controller.helper');
 
 		// Start assigning vars for main posting page ...
-		$template_ary = array(
+		$template_ary = [
 			'L_POST_A'					=> $page_title,
 			'L_ICON'					=> $this->language->lang('PM_ICON'),
 			'L_MESSAGE_BODY_EXPLAIN'	=> $this->language->lang('MESSAGE_BODY_EXPLAIN', (int) $this->config['max_post_chars']),
@@ -1272,7 +1272,7 @@ class pm_compose
 			'S_CLOSE_PROGRESS_WINDOW'	=> $this->request->is_set_post('add_file'),
 			'U_PROGRESS_BAR'			=> append_sid("{$this->root_path}posting.$this->php_ext", 'f=0&amp;mode=popup'),
 			'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$this->root_path}posting.$this->php_ext", 'f=0&amp;mode=popup')),
-		);
+		];
 
 		/**
 		 * Modify the default template vars
@@ -1281,7 +1281,7 @@ class pm_compose
 		 * @var array	template_ary	Template variables
 		 * @since 3.2.6-RC1
 		 */
-		$vars = array('template_ary');
+		$vars = ['template_ary'];
 		extract($this->dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
 
 		$this->template->assign_vars($template_ary);
@@ -1304,7 +1304,7 @@ class pm_compose
 		// Message History
 		if ($action == 'reply' || $action == 'quote' || $action == 'forward')
 		{
-			if (message_history($msg_id, $this->user->data['user_id'], $post, array(), true))
+			if (message_history($msg_id, $this->user->data['user_id'], $post, [], true))
 			{
 				$this->template->assign_var('S_DISPLAY_HISTORY', true);
 			}
@@ -1318,9 +1318,9 @@ class pm_compose
 	{
 
 		// Delete User [TO/BCC]
-		if ($remove_u && $this->request->variable('remove_u', array(0 => '')))
+		if ($remove_u && $this->request->variable('remove_u', [0 => '']))
 		{
-			$remove_user_id = array_keys($this->request->variable('remove_u', array(0 => '')));
+			$remove_user_id = array_keys($this->request->variable('remove_u', [0 => '']));
 
 			if (isset($remove_user_id[0]))
 			{
@@ -1329,9 +1329,9 @@ class pm_compose
 		}
 
 		// Delete Group [TO/BCC]
-		if ($remove_g && $this->request->variable('remove_g', array(0 => '')))
+		if ($remove_g && $this->request->variable('remove_g', [0 => '']))
 		{
-			$remove_group_id = array_keys($this->request->variable('remove_g', array(0 => '')));
+			$remove_group_id = array_keys($this->request->variable('remove_g', [0 => '']));
 
 			if (isset($remove_group_id[0]))
 			{
@@ -1340,11 +1340,11 @@ class pm_compose
 		}
 
 		// Add Selected Groups
-		$group_list = $this->request->variable('group_list', array(0));
+		$group_list = $this->request->variable('group_list', [0]);
 
 		// Build usernames to add
 		$usernames = $this->request->variable('username', '', true);
-		$usernames = (empty($usernames)) ? array() : array($usernames);
+		$usernames = (empty($usernames)) ? [] : [$usernames];
 
 		$username_list = $this->request->variable('username_list', '', true);
 		if ($username_list)
@@ -1382,13 +1382,13 @@ class pm_compose
 			}
 
 			// User ID's to add...
-			$user_id_ary = array();
+			$user_id_ary = [];
 
 			// Reveal the correct user_ids
 			if (count($usernames))
 			{
-				$user_id_ary = array();
-				user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
+				$user_id_ary = [];
+				user_get_id_name($user_id_ary, $usernames, [USER_NORMAL, USER_FOUNDER, USER_INACTIVE]);
 
 				// If there are users not existing, we will at least print a notice...
 				if (!count($user_id_ary))
@@ -1398,7 +1398,7 @@ class pm_compose
 			}
 
 			// Add Friends if specified
-			$friend_list = array_keys($this->request->variable('add_' . $type, array(0)));
+			$friend_list = array_keys($this->request->variable('add_' . $type, [0]));
 			$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 			foreach ($user_id_ary as $user_id)
@@ -1467,7 +1467,7 @@ class pm_compose
 
 			// Check if users have permission to read PMs
 			$can_read = $this->auth->acl_get_list(array_keys($address_list['u']), 'u_readpm');
-			$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
+			$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? [] : $can_read[0]['u_readpm'];
 			$cannot_read_list = array_diff(array_keys($address_list['u']), $can_read);
 			if (!empty($cannot_read_list))
 			{
@@ -1504,7 +1504,7 @@ class pm_compose
 		 * @var bool	add_bcc				The variable for adding a user to the [BCC] field
 		 * @since 3.2.4-RC1
 		 */
-		$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
+		$vars = ['address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc'];
 		extract($this->dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 	}
 
@@ -1544,7 +1544,7 @@ class pm_compose
 	 */
 	function get_recipients($address_list, $num_recipients = 1)
 	{
-		$recipient = array();
+		$recipient = [];
 
 		$count = 0;
 		foreach ($address_list as $field => $adr_ary)
