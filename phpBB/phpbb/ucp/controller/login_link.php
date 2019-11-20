@@ -19,20 +19,87 @@ namespace phpbb\ucp\controller;
  */
 class login_link
 {
+	/** @var \phpbb\captcha\factory */
+	protected $captcha_factory;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\auth\provider_collection */
+	protected $provider_collection;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
 	/**
-	 * @var string
+	 * Constructor.
+	 *
+	 * @param \phpbb\captcha\factory			$captcha_factory		Captcha factory object
+	 * @param \phpbb\config\config				$config					Config object
+	 * @param \phpbb\event\dispatcher			$dispatcher				Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
+	 * @param \phpbb\language\language			$language				Language object
+	 * @param \phpbb\auth\provider_collection	$provider_collection	Auth provider collection
+	 * @param \phpbb\request\request			$request				Request object
+	 * @param \phpbb\template\template			$template				Template object
+	 * @param \phpbb\user						$user					User object
+	 * @param string							$root_path				phpBB root path
+	 * @param string							$php_ext				php File extension
 	 */
-	public $u_action;
+	public function __construct(
+		\phpbb\captcha\factory $captcha_factory,
+		\phpbb\config\config $config,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\auth\provider_collection $provider_collection,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext
+	)
+	{
+		$this->captcha_factory		= $captcha_factory;
+		$this->config				= $config;
+		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
+		$this->language				= $language;
+		$this->provider_collection	= $provider_collection;
+		$this->request				= $request;
+		$this->template				= $template;
+		$this->user					= $user;
+
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
+	}
 
 	/**
 	 * Generates the ucp_login_link page and handles login link process
-	 *
-	 * @param	int		$id
-	 * @param	string	$mode
 	 */
-	public function main($id, $mode)
+	public function main()
 	{
-
 		// Initialize necessary variables
 		$login_error = null;
 		$login_link_error = null;
@@ -48,15 +115,14 @@ class login_link
 		}
 
 		// Use the auth_provider requested even if different from configured
-		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
-		$auth_provider = $provider_collection->get_provider($this->request->variable('auth_provider', ''));
+		$auth_provider = $this->provider_collection->get_provider($this->request->variable('auth_provider', ''));
 
 		// Set the link_method to login_link
 		$data['link_method'] = 'login_link';
 
 		// Have the authentication provider check that all necessary data is available
 		$result = $auth_provider->login_link_has_necessary_data($data);
+
 		if ($result !== null)
 		{
 			$login_link_error = $this->language->lang($result);
@@ -93,7 +159,7 @@ class login_link
 						$this->user->session_create($login_result['user_row']['user_id'], false, false, true);
 
 						// Perform a redirect as the account has been linked
-						$this->perform_redirect();
+						return redirect(append_sid($this->root_path . 'index.' . $this->php_ext));
 					}
 				}
 			}
@@ -107,23 +173,23 @@ class login_link
 			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields($data),
 
 			// Registration elements
-			'REGISTER_ACTION'	=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=register'),
+			'REGISTER_ACTION'		=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=register'),
 
 			// Login elements
-			'LOGIN_ERROR'		=> $login_error,
-			'LOGIN_USERNAME'	=> $login_username,
+			'LOGIN_ERROR'			=> $login_error,
+			'LOGIN_USERNAME'		=> $login_username,
 		];
 
 		/**
 		 * Event to perform additional actions before ucp_login_link is displayed
 		 *
 		 * @event core.ucp_login_link_template_after
-		 * @var array							data				Login link data
-		 * @var \phpbb\auth\provider_interface	auth_provider		Auth provider
-		 * @var string							login_link_error	Login link error
-		 * @var string							login_error			Login error
-		 * @var string							login_username		Login username
-		 * @var array							tpl_ary				Template variables
+		 * @var array									data				Login link data
+		 * @var \phpbb\auth\provider\provider_interface	auth_provider		Auth provider
+		 * @var string									login_link_error	Login link error
+		 * @var string									login_error			Login error
+		 * @var string									login_username		Login username
+		 * @var array									tpl_ary				Template variables
 		 * @since 3.2.4-RC1
 		 */
 		$vars = ['data', 'auth_provider', 'login_link_error', 'login_error', 'login_username', 'tpl_ary'];
@@ -131,17 +197,15 @@ class login_link
 
 		$this->template->assign_vars($tpl_ary);
 
-		$this->tpl_name = 'ucp_login_link';
-		$this->page_title = 'UCP_LOGIN_LINK';
+		return $this->helper->render('ucp_login_link.html', $this->language->lang('UCP_LOGIN_LINK'));
 	}
 
 	/**
 	 * Builds the hidden fields string from the data array.
 	 *
-	 * @param	array	$data	This function only includes data in the array
+	 * @param array		$data	This function only includes data in the array
 	 *							that has a key that begins with 'login_link_'
-	 * @return	string	A string of hidden fields that can be included in the
-	 *					template
+	 * @return string			A string of hidden fields that can be included in the template
 	 */
 	protected function get_hidden_fields($data)
 	{
@@ -158,21 +222,21 @@ class login_link
 	/**
 	 * Builds the login_link data array
 	 *
-	 * @return	array	All login_link data. This is all GET data whose names
-	 *					begin with 'login_link_'
+	 * @return array			All login_link data. This is all GET data whose names begin with 'login_link_'
 	 */
 	protected function get_login_link_data_array()
 	{
+		$prefix = 'login_link_';
+		$prefix_length = strlen($prefix);
+		$login_link_data = [];
 
 		$var_names = $this->request->variable_names(\phpbb\request\request_interface::GET);
-		$login_link_data = [];
-		$string_start_length = strlen('login_link_');
 
 		foreach ($var_names as $var_name)
 		{
-			if (strpos($var_name, 'login_link_') === 0)
+			if (strpos($var_name, $prefix) === 0)
 			{
-				$key_name = substr($var_name, $string_start_length);
+				$key_name = substr($var_name, $prefix_length);
 				$login_link_data[$key_name] = $this->request->variable($var_name, '', false, \phpbb\request\request_interface::GET);
 			}
 		}
@@ -182,14 +246,13 @@ class login_link
 
 	/**
 	 * Processes the result array from the login process
-	 * @param	array	$result	The login result array
-	 * @return	string|null	If there was an error in the process, a string is
-	 *						returned. If the login was successful, then null is
-	 *						returned.
+	 *
+	 * @param array		$result		The login result array
+	 * @return string|null			If there was an error in the process, a string is returned.
+	 * 								If the login was successful, then null is returned.
 	 */
 	protected function process_login_result($result)
 	{
-
 		$login_error = null;
 
 		if ($result['status'] != LOGIN_SUCCESS)
@@ -204,23 +267,20 @@ class login_link
 			{
 				case LOGIN_ERROR_ATTEMPTS:
 
-					$captcha = $phpbb_container->get('captcha.factory')->get_instance($this->config['captcha_plugin']);
+					$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 
-					$this->template->assign_vars([
-						'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
-					]);
+					$this->template->assign_vars(['CAPTCHA_TEMPLATE' => $captcha->get_template()]);
 
 					$login_error = $this->language->lang[$result['error_msg']];
 				break;
 
 				case LOGIN_ERROR_PASSWORD_CONVERT:
-					$login_error = sprintf(
-						$this->language->lang[$result['error_msg']],
-						($this->config['email_enable']) ? '<a href="' . append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=sendpassword') . '">' : '',
-						($this->config['email_enable']) ? '</a>' : '',
-						($this->config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
-						($this->config['board_contact']) ? '</a>' : ''
+					$login_error = $this->language->lang($result['error_msg'],
+						$this->config['email_enable'] ? '<a href="' . $this->helper->route('ucp_account', ['mode' => 'send_password']) . '">' : '',
+						$this->config['email_enable'] ? '</a>' : '',
+						$this->config['board_contact'] ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
+						$this->config['board_contact'] ? '</a>' : ''
 					);
 				break;
 
@@ -231,22 +291,14 @@ class login_link
 					// Assign admin contact to some error messages
 					if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 					{
-						$login_error = (!$this->config['board_contact']) ? sprintf($this->language->lang[$result['error_msg']], '', '') : sprintf($this->language->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>');
+						$login_error = !$this->config['board_contact']
+							? $this->language->lang($result['error_msg'], '', '')
+							: $this->language->lang($result['error_msg'], '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">', '</a>');
 					}
-
 				break;
 			}
 		}
 
 		return $login_error;
-	}
-
-	/**
-	 * Performs a post login redirect
-	 */
-	protected function perform_redirect()
-	{
-		$url = append_sid($this->root_path . 'index.' . $this->php_ext);
-		redirect($url);
 	}
 }

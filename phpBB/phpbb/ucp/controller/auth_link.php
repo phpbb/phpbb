@@ -15,64 +15,109 @@ namespace phpbb\ucp\controller;
 
 class auth_link
 {
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\auth\provider_collection */
+	protected $provider_collection;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
 	/**
-	 * @var string
+	 * Constructor.
+	 *
+	 * @param \phpbb\controller\helper			$helper					Controller helper object
+	 * @param \phpbb\language\language			$language				Language object
+	 * @param \phpbb\auth\provider_collection	$provider_collection	Auth provider collection
+	 * @param \phpbb\request\request			$request				Request object
+	 * @param \phpbb\template\template			$template				Template object
+	 * @param \phpbb\user						$user					User object
 	 */
-	public $u_action;
+	public function __construct(
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\auth\provider_collection $provider_collection,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user
+	)
+	{
+		$this->helper				= $helper;
+		$this->language				= $language;
+		$this->provider_collection	= $provider_collection;
+		$this->request				= $request;
+		$this->template				= $template;
+		$this->user					= $user;
+	}
 
 	/**
 	 * Generates the ucp_auth_link page and handles the auth link process
-	 *
-	 * @param	int		$id
-	 * @param	string	$mode
 	 */
-	public function main($id, $mode)
+	public function main()
 	{
-
-		$error = [];
-
-		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
-		$auth_provider = $provider_collection->get_provider();
+		$errors = [];
+		$s_hidden_fields = [];
 
 		// confirm that the auth provider supports this page
+		$auth_provider = $this->provider_collection->get_provider();
 		$provider_data = $auth_provider->get_auth_link_data();
+
 		if ($provider_data === null)
 		{
-			$error[] = 'UCP_AUTH_LINK_NOT_SUPPORTED';
+			$errors[] = $this->language->lang('UCP_AUTH_LINK_NOT_SUPPORTED');
 		}
 
-		$s_hidden_fields = [];
-		add_form_key('ucp_auth_link');
+		$form_key = 'ucp_auth_link';
+		add_form_key($form_key);
 
-		$submit	= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$submit	= $this->request->is_set_post('submit');
 
 		// This path is only for primary actions
-		if (!count($error) && $submit)
+		if ($submit && empty($errors))
 		{
-			if (!check_form_key('ucp_auth_link'))
+			if (!check_form_key($form_key))
 			{
-				$error[] = 'FORM_INVALID';
+				$errors[] = $this->language->lang('FORM_INVALID');
 			}
 
-			if (!count($error))
+			if (empty($errors))
 			{
 				// Any post data could be necessary for auth (un)linking
 				$link_data = $this->request->get_super_global(\phpbb\request\request_interface::POST);
 
 				// The current user_id is also necessary
-				$link_data['user_id'] = $this->user->data['user_id'];
+				$link_data['user_id'] = (int) $this->user->data['user_id'];
 
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
 				if ($this->request->variable('link', 0, false, \phpbb\request\request_interface::POST))
 				{
-					$error[] = $auth_provider->link_account($link_data);
+					$error = $auth_provider->link_account($link_data);
+
+					if ($error)
+					{
+						$errors[] = $this->language->lang($error);
+					}
 				}
 				else
 				{
-					$error[] = $auth_provider->unlink_account($link_data);
+					$error = $auth_provider->unlink_account($link_data);
+
+					if ($error)
+					{
+						$errors[] = $this->language->lang($error);
+					}
 				}
 
 				// Template data may have changed, get new data
@@ -88,7 +133,12 @@ class auth_link
 			// link_method as the provider dictates how data is returned to it.
 			$link_data = ['link_method' => 'auth_link'];
 
-			$error[] = $auth_provider->link_account($link_data);
+			$error = $auth_provider->link_account($link_data);
+
+			if ($error)
+			{
+				$errors[] = $this->language->lang($error);
+			}
 
 			// Template data may have changed, get new data
 			$provider_data = $auth_provider->get_auth_link_data();
@@ -120,22 +170,14 @@ class auth_link
 			}
 		}
 
-		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-
-		// Replace "error" strings with their real, localised form
-		$error = array_map([$user, 'lang'], $error);
-		$error = implode('<br />', $error);
-
 		$this->template->assign_vars([
-			'ERROR'	=> $error,
-
+			'ERROR'						=> implode('<br />', $errors),
 			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
 
-			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> $this->u_action,
+			'S_HIDDEN_FIELDS'			=> build_hidden_fields($s_hidden_fields),
+			'S_UCP_ACTION'				=> $this->helper->route('ucp_manage_oauth'),
 		]);
 
-		$this->tpl_name = 'ucp_auth_link';
-		$this->page_title = 'UCP_AUTH_LINK';
+		return $this->helper->render('ucp_auth_link.html', $this->language->lang('UCP_MANAGE_OAUTH'));
 	}
 }

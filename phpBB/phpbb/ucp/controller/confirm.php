@@ -25,12 +25,36 @@ namespace phpbb\ucp\controller;
  */
 class confirm
 {
-	var $u_action;
+	/** @var \phpbb\captcha\factory */
+	protected $captcha_factory;
 
-	public function main($id, $mode)
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\captcha\factory	$captcha_factory	Captcha factory object
+	 * @param \phpbb\config\config		$config				Config object
+	 * @param \phpbb\request\request	$request			Request object
+	 */
+	public function __construct(
+		\phpbb\captcha\factory $captcha_factory,
+		\phpbb\config\config $config,
+		\phpbb\request\request $request
+	)
 	{
+		$this->captcha_factory	= $captcha_factory;
+		$this->config			= $config;
+		$this->request			= $request;
+	}
 
-		$captcha = $phpbb_container->get('captcha.factory')->get_instance($this->config['captcha_plugin']);
+	public function main()
+	{
+		$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 		$captcha->init($this->request->variable('type', 0));
 		$captcha->execute();
 
