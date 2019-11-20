@@ -320,11 +320,11 @@ class delete
 				'S_SOFTDELETED'						=> (bool) $only_softdeleted,
 			]);
 
-			$s_count = count($post_ids);
-			$l_confirm = $s_count === 1 ? 'DELETE_POST' : 'DELETE_POSTS';
+			$count = count($post_ids);
+			$l_confirm = $count === 1 ? 'DELETE_POST' : 'DELETE_POSTS';
 			if ($only_softdeleted)
 			{
-				$l_confirm .= '_PERMANENTLY';
+				$l_confirm = [$l_confirm . '_PERMANENTLY', $count];
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 			else if (!$this->auth->acl_get('m_softdelete', $forum_id))
@@ -332,7 +332,7 @@ class delete
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			confirm_box(false, [$l_confirm, $s_count], build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
+			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 
 		$redirect = $this->request->variable('redirect', "index.$this->php_ext");
@@ -468,10 +468,11 @@ class delete
 				'S_TOPIC_MODE'						=> true,
 			]);
 
-			$l_confirm = count($topic_ids) === 1 ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
+			$count = count($topic_ids);
+			$l_confirm = $count === 1 ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
 			if ($only_softdeleted)
 			{
-				$l_confirm .= '_PERMANENTLY';
+				$l_confirm = [$l_confirm . '_PERMANENTLY', $count];
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 			else if ($only_shadow || !$this->auth->acl_get('m_softdelete', $forum_id))
