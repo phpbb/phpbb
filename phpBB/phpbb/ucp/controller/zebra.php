@@ -1,33 +1,26 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\ucp\controller;
 
-class ucp_zebra
+class zebra
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
-		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
+		$submit	= ($this->request->is_set_post('submit') || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
 
 		$l_mode = strtoupper($mode);
@@ -44,7 +37,7 @@ class ucp_zebra
 
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = $request->variable($var, $default, true);
+				$data[$var] = $this->request->variable($var, $default, true);
 			}
 
 			if (!empty($data['add']) || count($data['usernames']))
@@ -57,20 +50,20 @@ class ucp_zebra
 						$user_ids = $data['usernames'];
 
 						/**
-						* Remove users from friends/foes
-						*
-						* @event core.ucp_remove_zebra
-						* @var	string	mode		Zebra type: friends|foes
-						* @var	array	user_ids	User ids we remove
-						* @since 3.1.0-a1
-						*/
+						 * Remove users from friends/foes
+						 *
+						 * @event core.ucp_remove_zebra
+						 * @var string	mode		Zebra type: friends|foes
+						 * @var array	user_ids	User ids we remove
+						 * @since 3.1.0-a1
+						 */
 						$vars = array('mode', 'user_ids');
-						extract($phpbb_dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
+						extract($this->dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
 
-						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-							WHERE user_id = ' . $user->data['user_id'] . '
-								AND ' . $db->sql_in_set('zebra_id', $user_ids);
-						$db->sql_query($sql);
+						$sql = 'DELETE FROM ' . $this->tables['zebra'] . '
+							WHERE user_id = ' . $this->user->data['user_id'] . '
+								AND ' . $this->db->sql_in_set('zebra_id', $user_ids);
+						$this->db->sql_query($sql);
 
 						$updated = true;
 					}
@@ -85,13 +78,13 @@ class ucp_zebra
 						// the other (by removing the existing one) ... but I have a feeling this
 						// may lead to complaints
 						$sql = 'SELECT z.*, u.username, u.username_clean
-							FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
-							WHERE z.user_id = ' . $user->data['user_id'] . '
+							FROM ' . $this->tables['zebra'] . ' z, ' . $this->tables['users'] . ' u
+							WHERE z.user_id = ' . $this->user->data['user_id'] . '
 								AND u.user_id = z.zebra_id';
-						$result = $db->sql_query($sql);
+						$result = $this->db->sql_query($sql);
 
 						$friends = $foes = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = $this->db->sql_fetchrow($result))
 						{
 							if ($row['friend'])
 							{
@@ -102,7 +95,7 @@ class ucp_zebra
 								$foes[] = utf8_clean_string($row['username']);
 							}
 						}
-						$db->sql_freeresult($result);
+						$this->db->sql_freeresult($result);
 
 						// remove friends from the username array
 						$n = count($data['add']);
@@ -110,7 +103,7 @@ class ucp_zebra
 
 						if (count($data['add']) < $n && $mode == 'foes')
 						{
-							$error[] = $user->lang['NOT_ADDED_FOES_FRIENDS'];
+							$error[] = $this->language->lang('NOT_ADDED_FOES_FRIENDS');
 						}
 
 						// remove foes from the username array
@@ -119,16 +112,16 @@ class ucp_zebra
 
 						if (count($data['add']) < $n && $mode == 'friends')
 						{
-							$error[] = $user->lang['NOT_ADDED_FRIENDS_FOES'];
+							$error[] = $this->language->lang('NOT_ADDED_FRIENDS_FOES');
 						}
 
 						// remove the user himself from the username array
 						$n = count($data['add']);
-						$data['add'] = array_diff($data['add'], array(utf8_clean_string($user->data['username'])));
+						$data['add'] = array_diff($data['add'], array(utf8_clean_string($this->user->data['username'])));
 
 						if (count($data['add']) < $n)
 						{
-							$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
+							$error[] = $this->language->lang('NOT_ADDED_' . $l_mode . '_SELF');
 						}
 
 						unset($friends, $foes, $n);
@@ -136,13 +129,13 @@ class ucp_zebra
 						if (count($data['add']))
 						{
 							$sql = 'SELECT user_id, user_type
-								FROM ' . USERS_TABLE . '
-								WHERE ' . $db->sql_in_set('username_clean', $data['add']) . '
+								FROM ' . $this->tables['users'] . '
+								WHERE ' . $this->db->sql_in_set('username_clean', $data['add']) . '
 									AND user_type <> ' . USER_INACTIVE;
-							$result = $db->sql_query($sql);
+							$result = $this->db->sql_query($sql);
 
 							$user_id_ary = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = $this->db->sql_fetchrow($result))
 							{
 								if ($row['user_id'] != ANONYMOUS && $row['user_type'] != USER_IGNORE)
 								{
@@ -150,14 +143,14 @@ class ucp_zebra
 								}
 								else if ($row['user_id'] != ANONYMOUS)
 								{
-									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_BOTS'];
+									$error[] = $this->language->lang('NOT_ADDED_' . $l_mode . '_BOTS');
 								}
 								else
 								{
-									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
+									$error[] = $this->language->lang('NOT_ADDED_' . $l_mode . '_ANONYMOUS');
 								}
 							}
-							$db->sql_freeresult($result);
+							$this->db->sql_freeresult($result);
 
 							if (count($user_id_ary))
 							{
@@ -165,7 +158,7 @@ class ucp_zebra
 								if ($mode == 'foes')
 								{
 									$perms = array();
-									foreach ($auth->acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
+									foreach ($this->auth->acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
 									{
 										foreach ($forum_ary as $auth_option => $user_ary)
 										{
@@ -177,7 +170,7 @@ class ucp_zebra
 
 									if (count($perms))
 									{
-										$error[] = $user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
+										$error[] = $this->language->lang('NOT_ADDED_FOES_MOD_ADMIN');
 									}
 
 									// This may not be right ... it may yield true when perms equate to deny
@@ -193,26 +186,26 @@ class ucp_zebra
 									foreach ($user_id_ary as $zebra_id)
 									{
 										$sql_ary[] = array(
-											'user_id'		=> (int) $user->data['user_id'],
+											'user_id'		=> (int) $this->user->data['user_id'],
 											'zebra_id'		=> (int) $zebra_id,
 											$sql_mode		=> 1
 										);
 									}
 
 									/**
-									* Add users to friends/foes
-									*
-									* @event core.ucp_add_zebra
-									* @var	string	mode		Zebra type:
-									*							friends|foes
-									* @var	array	sql_ary		Array of
-									*							entries we add
-									* @since 3.1.0-a1
-									*/
+									 * Add users to friends/foes
+									 *
+									 * @event core.ucp_add_zebra
+									 * @var string	mode		Zebra type:
+									 *							friends|foes
+									 * @var array	sql_ary		Array of
+									 *							entries we add
+									 * @since 3.1.0-a1
+									 */
 									$vars = array('mode', 'sql_ary');
-									extract($phpbb_dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
+									extract($this->dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
 
-									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
+									$this->db->sql_multi_insert($this->tables['zebra'], $sql_ary);
 
 									$updated = true;
 								}
@@ -220,20 +213,20 @@ class ucp_zebra
 							}
 							else if (!count($error))
 							{
-								$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
+								$error[] = $this->language->lang('USER_NOT_FOUND_OR_INACTIVE');
 							}
 						}
 					}
 
-					if ($request->is_ajax())
+					if ($this->request->is_ajax())
 					{
-						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
+						$message = ($updated) ? $this->language->lang($l_mode . '_UPDATED') : implode('<br />', $error);
 
 						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
 							'success' => $updated,
 
-							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'REFRESH_DATA'	=> array(
 								'time'	=> 3,
@@ -244,17 +237,17 @@ class ucp_zebra
 					else if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $this->language->lang($l_mode . '_UPDATED') . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 					else
 					{
-						$template->assign_var('ERROR', implode('<br />', $error));
+						$this->template->assign_var('ERROR', implode('<br />', $error));
 					}
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('CONFIRM_OPERATION'), build_hidden_fields(array(
 						'mode'		=> $mode,
 						'submit'	=> true,
 						'usernames'	=> $data['usernames'],
@@ -266,24 +259,24 @@ class ucp_zebra
 
 		$sql_and = ($mode == 'friends') ? 'z.friend = 1' : 'z.foe = 1';
 		$sql = 'SELECT z.*, u.username, u.username_clean
-			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
-			WHERE z.user_id = ' . $user->data['user_id'] . "
+			FROM ' . $this->tables['zebra'] . ' z, ' . $this->tables['users'] . ' u
+			WHERE z.user_id = ' . $this->user->data['user_id'] . "
 				AND $sql_and
 				AND u.user_id = z.zebra_id
 			ORDER BY u.username_clean ASC";
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
 		$s_username_options = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$s_username_options .= '<option value="' . $row['zebra_id'] . '">' . $row['username'] . '</option>';
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 
-		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
+		$this->template->assign_vars(array(
+			'L_TITLE'			=> $this->language->lang('UCP_ZEBRA_' . $l_mode),
 
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'),
+			'U_FIND_USERNAME'	=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=searchuser&amp;form=ucp&amp;field=add'),
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,

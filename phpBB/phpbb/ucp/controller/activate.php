@@ -1,46 +1,37 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\ucp\controller;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* ucp_activate
-* User activation
-*/
-class ucp_activate
+ * User activation
+ */
+class activate
 {
 	var $u_action;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $auth, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
-		$user_id = $request->variable('u', 0);
-		$key = $request->variable('k', '');
+		$user_id = $this->request->variable('u', 0);
+		$key = $this->request->variable('k', '');
 
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
-			FROM ' . USERS_TABLE . "
+			FROM ' . $this->tables['users'] . "
 			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$user_row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
 		if (!$user_row)
 		{
@@ -49,7 +40,7 @@ class ucp_activate
 
 		if ($user_row['user_type'] <> USER_INACTIVE && !$user_row['user_newpasswd'])
 		{
-			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+			meta_refresh(3, append_sid("{$this->root_path}index.$this->php_ext"));
 			trigger_error('ALREADY_ACTIVATED');
 		}
 
@@ -61,11 +52,11 @@ class ucp_activate
 		// Do not allow activating by non administrators when admin activation is on
 		// Only activation type the user should be able to do is INACTIVE_REMIND
 		// or activate a new password which is not an activation state :@
-		if (!$user_row['user_newpasswd'] && $user_row['user_inactive_reason'] != INACTIVE_REMIND && $config['require_activation'] == USER_ACTIVATION_ADMIN && !$auth->acl_get('a_user'))
+		if (!$user_row['user_newpasswd'] && $user_row['user_inactive_reason'] != INACTIVE_REMIND && $this->config['require_activation'] == USER_ACTIVATION_ADMIN && !$this->auth->acl_get('a_user'))
 		{
-			if (!$user->data['is_registered'])
+			if (!$this->user->data['is_registered'])
 			{
-				login_box('', $user->lang['NO_AUTH_OPERATION']);
+				login_box('', $this->language->lang('NO_AUTH_OPERATION'));
 			}
 			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_OPERATION');
@@ -82,14 +73,14 @@ class ucp_activate
 				'user_login_attempts'	=> 0,
 			);
 
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			$sql = 'UPDATE ' . $this->tables['users'] . '
+				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . $user_row['user_id'];
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$user->reset_login_keys($user_row['user_id']);
+			$this->user->reset_login_keys($user_row['user_id']);
 
-			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+			$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
 				'reportee_id' => $user_row['user_id'],
 				$user_row['username']
 			));
@@ -97,33 +88,33 @@ class ucp_activate
 
 		if (!$update_password)
 		{
-			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include_once($this->root_path . 'includes/functions_user.' . $this->php_ext);
 
 			user_active_flip('activate', $user_row['user_id']);
 
-			$sql = 'UPDATE ' . USERS_TABLE . "
+			$sql = 'UPDATE ' . $this->tables['users'] . "
 				SET user_actkey = ''
 				WHERE user_id = {$user_row['user_id']}";
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
 			// Create the correct logs
-			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+			$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE_USER', false, array(
 				'reportee_id' => $user_row['user_id']
 			));
 
-			if ($auth->acl_get('a_user'))
+			if ($this->auth->acl_get('a_user'))
 			{
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
 			}
 		}
 
-		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
+		if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
 			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
-			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
+			$this->notifications_manager->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include_once($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 
 			$messenger = new messenger(false);
 
@@ -154,17 +145,17 @@ class ucp_activate
 		}
 
 		/**
-		* This event can be used to modify data after user account's activation
-		*
-		* @event core.ucp_activate_after
-		* @var	array	user_row	Array with some user data
-		* @var	string	message		Language string of the message that will be displayed to the user
-		* @since 3.1.6-RC1
-		*/
+		 * This event can be used to modify data after user account's activation
+		 *
+		 * @event core.ucp_activate_after
+		 * @var array	user_row	Array with some user data
+		 * @var string	message		Language string of the message that will be displayed to the user
+		 * @since 3.1.6-RC1
+		 */
 		$vars = array('user_row', 'message');
-		extract($phpbb_dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
 
-		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-		trigger_error($user->lang[$message]);
+		meta_refresh(3, append_sid("{$this->root_path}index.$this->php_ext"));
+		trigger_error($this->language->lang($message));
 	}
 }

@@ -1,40 +1,33 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\ucp\controller;
 
-class ucp_auth_link
+class auth_link
 {
 	/**
-	* @var string
-	*/
+	 * @var string
+	 */
 	public $u_action;
 
 	/**
-	* Generates the ucp_auth_link page and handles the auth link process
-	*
-	* @param	int		$id
-	* @param	string	$mode
-	*/
+	 * Generates the ucp_auth_link page and handles the auth link process
+	 *
+	 * @param	int		$id
+	 * @param	string	$mode
+	 */
 	public function main($id, $mode)
 	{
-		global $request, $template, $phpbb_container, $user;
 
 		$error = array();
 
@@ -52,7 +45,7 @@ class ucp_auth_link
 		$s_hidden_fields = array();
 		add_form_key('ucp_auth_link');
 
-		$submit	= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$submit	= $this->request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 
 		// This path is only for primary actions
 		if (!count($error) && $submit)
@@ -65,15 +58,15 @@ class ucp_auth_link
 			if (!count($error))
 			{
 				// Any post data could be necessary for auth (un)linking
-				$link_data = $request->get_super_global(\phpbb\request\request_interface::POST);
+				$link_data = $this->request->get_super_global(\phpbb\request\request_interface::POST);
 
 				// The current user_id is also necessary
-				$link_data['user_id'] = $user->data['user_id'];
+				$link_data['user_id'] = $this->user->data['user_id'];
 
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
-				if ($request->variable('link', 0, false, \phpbb\request\request_interface::POST))
+				if ($this->request->variable('link', 0, false, \phpbb\request\request_interface::POST))
 				{
 					$error[] = $auth_provider->link_account($link_data);
 				}
@@ -89,7 +82,7 @@ class ucp_auth_link
 
 		// In some cases, a request to an external server may be required. In
 		// these cases, the GET parameter 'link' should exist and should be true
-		if ($request->variable('link', false))
+		if ($this->request->variable('link', false))
 		{
 			// In this case the link data should only be populated with the
 			// link_method as the provider dictates how data is returned to it.
@@ -110,7 +103,7 @@ class ucp_auth_link
 				unset($provider_data['VARS']['HIDDEN_FIELDS']);
 			}
 
-			$template->assign_vars($provider_data['VARS']);
+			$this->template->assign_vars($provider_data['VARS']);
 		}
 
 		if (isset($provider_data['BLOCK_VAR_NAME']))
@@ -123,7 +116,7 @@ class ucp_auth_link
 					$block_vars['HIDDEN_FIELDS'] = build_hidden_fields($block_vars['HIDDEN_FIELDS']);
 				}
 
-				$template->assign_block_vars($provider_data['BLOCK_VAR_NAME'], $block_vars);
+				$this->template->assign_block_vars($provider_data['BLOCK_VAR_NAME'], $block_vars);
 			}
 		}
 
@@ -133,7 +126,7 @@ class ucp_auth_link
 		$error = array_map(array($user, 'lang'), $error);
 		$error = implode('<br />', $error);
 
-		$template->assign_vars(array(
+		$this->template->assign_vars(array(
 			'ERROR'	=> $error,
 
 			'PROVIDER_TEMPLATE_FILE'	=> $provider_data['TEMPLATE_FILE'],
