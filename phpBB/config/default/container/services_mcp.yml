@@ -1,0 +1,237 @@
+services:
+    # --- Controllers --- #
+    mcp.ban:
+        class: phpbb\mcp\controller\ban
+        arguments:
+            - '@acp.ban'
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.delete:
+        class: phpbb\mcp\controller\delete
+        arguments:
+            - '@auth'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.forum:
+        class: phpbb\mcp\controller\forum
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.front:
+        class: phpbb\mcp\controller\front
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.logs:
+        class: phpbb\mcp\controller\logs
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables%'
+
+    mcp.main:
+        class: phpbb\mcp\controller\main
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@mcp.delete'
+            - '@mcp.forum'
+            - '@mcp.post'
+            - '@mcp.topic'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.moderation:
+        class: phpbb\mcp\controller\moderation
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@mcp.delete'
+            - '@notification_manager'
+            - '@pagination'
+            - '@phpbb.report.report_reason_list_provider'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.notes:
+        class: phpbb\mcp\controller\notes
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.pm_reports:
+        class: phpbb\mcp\controller\pm_reports
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@mcp.reports'
+            - '@notification_manager'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.post:
+        class: phpbb\mcp\controller\post
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.reports:
+        class: phpbb\mcp\controller\reports
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.topic:
+        class: phpbb\mcp\controller\topic
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@mcp.forum'
+            - '@mcp.moderation'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
+    mcp.warn:
+        class: phpbb\mcp\controller\warn
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@pagination'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
