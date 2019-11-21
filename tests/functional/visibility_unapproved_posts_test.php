@@ -243,9 +243,6 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
-
-		// revert the configuration (if necessary)
-		//$this->config_display_unapproved_posts_state(false);
 	}
 
 	public function test_reset_flood_interval()
