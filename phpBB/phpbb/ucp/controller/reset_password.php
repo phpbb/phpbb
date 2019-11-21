@@ -173,7 +173,7 @@ class reset_password
 				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
 								. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
 				'FROM'		=> [$this->users_table => 'u'],
-				'WHERE'		=> "user_email_hash = '" . $this->db->sql_escape(phpbb_email_hash($email)) . "'" .
+				'WHERE'		=> "user_email = '" . $this->db->sql_escape($email) . "'" .
 					(!empty($username) ? " AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($username)) . "'" : ''),
 			];
 

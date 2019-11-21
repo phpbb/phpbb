@@ -966,10 +966,7 @@ class acp_users
 
 						if ($update_email !== false)
 						{
-							$sql_ary += array(
-								'user_email'		=> $update_email,
-								'user_email_hash'	=> phpbb_email_hash($update_email),
-							);
+							$sql_ary += ['user_email'		=> $update_email];
 
 							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
 								'reportee_id' => $user_id,
