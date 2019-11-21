@@ -28,7 +28,7 @@ class account
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\request\request */
 	protected $request;
@@ -72,7 +72,7 @@ class account
 	 * @param \phpbb\config\config						$config
 	 * @param \phpbb\event\dispatcher					$dispatcher
 	 * @param \phpbb\controller\helper					$helper
-	 * @param \phpbb\language\language					$lang
+	 * @param \phpbb\language\language					$language
 	 * @param \phpbb\request\request					$request
 	 * @param \phpbb\template\template					$template
 	 * @param \phpbb\user								$user
@@ -90,7 +90,7 @@ class account
 		\phpbb\config\config $config,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\user $user,
@@ -108,7 +108,7 @@ class account
 		$this->config				= $config;
 		$this->dispatcher			= $dispatcher;
 		$this->helper				= $helper;
-		$this->lang					= $lang;
+		$this->language				= $language;
 		$this->request				= $request;
 		$this->template				= $template;
 		$this->user					= $user;
@@ -207,9 +207,9 @@ class account
 		{
 			$this->helper->assign_meta_refresh_var(3, append_sid("{$this->root_path}index.{$this->php_ext}"));
 
-			$return = $this->lang->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a> ');
+			$return = $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a> ');
 
-			return $this->helper->message($this->lang->lang('LOGOUT_FAILED') . '<br /><br />' . $return);
+			return $this->helper->message($this->language->lang('LOGOUT_FAILED') . '<br /><br />' . $return);
 		}
 
 		return redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
@@ -226,7 +226,7 @@ class account
 		$title = $mode === 'terms' ? 'TERMS_USE' : 'PRIVACY';
 		$message = $mode === 'terms' ? 'TERMS_OF_USE_CONTENT' : 'PRIVACY_POLICY';
 
-		if (!$this->lang->is_set($message))
+		if (!$this->language->is_set($message))
 		{
 			if ($this->user->data['is_registered'])
 			{
@@ -239,14 +239,14 @@ class account
 		$this->template->assign_vars([
 			'S_AGREEMENT'		=> true,
 
-			'AGREEMENT_TITLE'	=> $this->lang->lang($title),
-			'AGREEMENT_TEXT'	=> $this->lang->lang($message, $this->config['sitename'], generate_board_url()),
+			'AGREEMENT_TITLE'	=> $this->language->lang($title),
+			'AGREEMENT_TEXT'	=> $this->language->lang($message, $this->config['sitename'], generate_board_url()),
 
-			'L_BACK'			=> $this->lang->lang('BACK_TO_PREV'),
+			'L_BACK'			=> $this->language->lang('BACK_TO_PREV'),
 			'U_BACK'			=> $this->helper->route('ucp_account', ['mode' => 'login']),
 		]);
 
-		return $this->helper->render('ucp_agreement.html', $this->lang->lang($title));
+		return $this->helper->render('ucp_agreement.html', $this->language->lang($title));
 	}
 
 	/**
@@ -307,9 +307,9 @@ class account
 
 			$this->helper->assign_meta_refresh_var(3, append_sid("{$this->root_path}index.{$this->php_ext}"));
 
-			$return = $this->lang->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+			$return = $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
-			return $this->helper->message($this->lang->lang('COOKIES_DELETED') . '<br /><br />' . $return);
+			return $this->helper->message($this->language->lang('COOKIES_DELETED') . '<br /><br />' . $return);
 		}
 		else
 		{

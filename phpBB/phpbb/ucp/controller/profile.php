@@ -762,64 +762,6 @@ class profile
 				]);
 
 			break;
-
-			case 'autologin_keys':
-
-				add_form_key('ucp_autologin_keys');
-
-				if ($submit)
-				{
-					$keys = $this->request->variable('keys', ['']);
-
-					if (!check_form_key('ucp_autologin_keys'))
-					{
-						$error[] = 'FORM_INVALID';
-					}
-
-					if (!count($error))
-					{
-						if (!empty($keys))
-						{
-							foreach ($keys as $key => $id)
-							{
-								$keys[$key] = $this->db->sql_like_expression($id . $this->db->get_any_char());
-							}
-							$sql_where = '(key_id ' . implode(' OR key_id ', $keys) . ')';
-							$sql = 'DELETE FROM ' . $this->tables['sessions_keys'] . '
-								WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-								AND ' . $sql_where ;
-
-							$this->db->sql_query($sql);
-
-							meta_refresh(3, $this->u_action);
-							$message = $this->language->lang('AUTOLOGIN_SESSION_KEYS_DELETED') . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
-							trigger_error($message);
-						}
-					}
-
-					// Replace "error" strings with their real, localised form
-					$error = array_map([$user, 'lang'], $error);
-				}
-
-				$sql = 'SELECT key_id, last_ip, last_login
-					FROM ' . $this->tables['sessions_keys'] . '
-					WHERE user_id = ' . (int) $this->user->data['user_id'] . '
-					ORDER BY last_login ASC';
-
-				$result = $this->db->sql_query($sql);
-
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					$this->template->assign_block_vars('sessions', [
-						'KEY' => substr($row['key_id'], 0, 8),
-						'IP' => $row['last_ip'],
-						'LOGIN_TIME' => $this->user->format_date($row['last_login']),
-					]);
-				}
-
-				$this->db->sql_freeresult($result);
-
-			break;
 		}
 
 		$this->template->assign_vars([

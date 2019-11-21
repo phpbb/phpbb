@@ -31,7 +31,7 @@ class permissions
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\log\log */
 	protected $log;
@@ -59,7 +59,7 @@ class permissions
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\controller\helper			$helper			Controller helper object
-	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\language\language			$language		Language object
 	 * @param \phpbb\log\log					$log			Log object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\user						$user			User object
@@ -73,7 +73,7 @@ class permissions
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\log\log $log,
 		\phpbb\request\request $request,
 		\phpbb\user $user,
@@ -87,7 +87,7 @@ class permissions
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
 		$this->helper			= $helper;
-		$this->lang				= $lang;
+		$this->language			= $language;
 		$this->log				= $log;
 		$this->request			= $request;
 		$this->user				= $user;
@@ -125,7 +125,7 @@ class permissions
 
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACL_TRANSFER_PERMISSIONS', false, [$user_row['username']]);
 
-		$message = $this->lang->lang('PERMISSIONS_TRANSFERRED', $user_row['username']) . '<br /><br />' . $this->lang->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+		$message = $this->language->lang('PERMISSIONS_TRANSFERRED', $user_row['username']) . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
 		/**
 		 * Event to run code after permissions are switched.
@@ -165,7 +165,7 @@ class permissions
 
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_ACL_RESTORE_PERMISSIONS', false, [$username]);
 
-		$message = $this->lang->lang('PERMISSIONS_RESTORED') . '<br /><br />' . $this->lang->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+		$message = $this->language->lang('PERMISSIONS_RESTORED') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
 
 		/**
 		 * Event to run code after permissions are restored
