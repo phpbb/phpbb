@@ -234,8 +234,8 @@ class drafts
 		if (!empty($topic_ids))
 		{
 			$sql = 'SELECT topic_id, forum_id, topic_title
-						FROM ' . $this->tables['topics'] . '
-						WHERE ' . $this->db->sql_in_set('topic_id', array_unique($topic_ids));
+				FROM ' . $this->tables['topics'] . '
+				WHERE ' . $this->db->sql_in_set('topic_id', array_unique($topic_ids));
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{

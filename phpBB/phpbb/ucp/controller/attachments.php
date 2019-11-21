@@ -287,7 +287,7 @@ class attachments
 			'S_DISPLAY_MARK_ALL'	=> (bool) $num_attachments,
 			'S_DISPLAY_PAGINATION'	=> (bool) $num_attachments,
 			'S_ORDER_SELECT'		=> $s_sort_dir,
-			'S_SORT_OPTIONS' 		=> $s_sort_key,
+			'S_SORT_OPTIONS'		=> $s_sort_key,
 			'S_UCP_ACTION'			=> $this->helper->route('ucp_manage_attachments'),
 
 			'U_SORT_FILENAME'		=> $this->helper->route('ucp_manage_attachments', $this->get_params('a', $sort_key, $sort_dir)),

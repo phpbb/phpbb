@@ -251,7 +251,6 @@ class register
 					'lang'		=> $this->language->get_used_language(),
 					'tz'		=> $this->request->variable('tz', $this->config['board_timezone']),
 				]);
-
 			}
 
 			// Checking amount of available languages

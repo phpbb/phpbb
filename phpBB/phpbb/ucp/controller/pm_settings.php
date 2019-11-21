@@ -309,7 +309,7 @@ class pm_settings
 				'remove_folder_id'	=> $remove_folder_id,
 				'remove_action'		=> $remove_action,
 				'move_to'			=> $move_to,
-				'remove_folder'		=> 1
+				'remove_folder'		=> 1,
 			];
 
 			// Do we need to confirm?
@@ -422,7 +422,7 @@ class pm_settings
 					'rule_user_id'		=> $rule_user_id,
 					'rule_group_id'		=> $rule_group_id,
 					'rule_action'		=> $action,
-					'rule_folder_id'	=> $folder_id
+					'rule_folder_id'	=> $folder_id,
 				];
 
 				$sql = 'SELECT rule_id
@@ -693,7 +693,6 @@ class pm_settings
 	 */
 	protected function define_check_option($hardcoded, $check_option, $check_lang)
 	{
-
 		$s_check_options = '';
 		if (!$hardcoded)
 		{

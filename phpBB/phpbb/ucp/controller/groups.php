@@ -330,7 +330,7 @@ class groups
 								confirm_box(false, 'GROUP_JOIN' . $l_pending, build_hidden_fields([
 									'selected'		=> $group_id,
 									'action'		=> 'join',
-									'submit'		=> true
+									'submit'		=> true,
 								]));
 
 								return redirect($this->helper->route('ucp_groups_edit'));
@@ -356,7 +356,7 @@ class groups
 
 								$this->log->add('user', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_GROUP_DEMOTE', false, [
 									'reportee_id' => $this->user->data['user_id'],
-									$group_row[$group_id]['group_name']
+									$group_row[$group_id]['group_name'],
 								]);
 
 								$this->helper->assign_meta_refresh_var(3, $this->helper->route('ucp_groups_edit'));
@@ -675,7 +675,7 @@ class groups
 									'text'			=> $group_desc,
 									'allow_bbcode'	=> $allow_desc_bbcode,
 									'allow_smilies'	=> $allow_desc_smilies,
-									'allow_urls'	=> $allow_desc_urls
+									'allow_urls'	=> $allow_desc_urls,
 								];
 							}
 						}
@@ -687,7 +687,7 @@ class groups
 								'text'			=> '',
 								'allow_bbcode'	=> true,
 								'allow_smilies'	=> true,
-								'allow_urls'	=> true
+								'allow_urls'	=> true,
 							];
 						}
 						else

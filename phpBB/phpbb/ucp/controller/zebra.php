@@ -307,13 +307,13 @@ class zebra
 
 						$json_response = new \phpbb\json_response;
 						$json_response->send([
-							'success' 		=> $updated,
+							'success'		=> $updated,
 
 							'MESSAGE_TITLE'	=> $this->language->lang('INFORMATION'),
 							'MESSAGE_TEXT'	=> $message,
 							'REFRESH_DATA'	=> [
 								'time'	=> 3,
-								'url'	=> $u_mode
+								'url'	=> $u_mode,
 							]
 						]);
 					}

@@ -150,10 +150,10 @@ class front
 			extract($this->dispatcher->trigger_event('core.ucp_main_front_modify_sql', compact($vars)));
 
 			$sql = "SELECT t.* $sql_select
-						FROM $sql_from
-						WHERE t.topic_type = " . POST_GLOBAL . '
-							AND ' . $this->db->sql_in_set('t.forum_id', $forum_ary) . '
-						ORDER BY t.topic_last_post_time DESC, t.topic_last_post_id DESC';
+				FROM $sql_from
+				WHERE t.topic_type = " . POST_GLOBAL . '
+					AND ' . $this->db->sql_in_set('t.forum_id', $forum_ary) . '
+				ORDER BY t.topic_last_post_time DESC, t.topic_last_post_id DESC';
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{

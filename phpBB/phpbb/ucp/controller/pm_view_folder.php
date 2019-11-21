@@ -677,7 +677,7 @@ class pm_view_folder
 						// ISO 8601 date. For PHP4 we are able to hardcode the timezone because $this->user->format_date() does not set it.
 						'date'		=> $this->user->format_date($row['message_time'], 'c', true),
 						'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
-						'message'	=> $message_row['message_text']
+						'message'	=> $message_row['message_text'],
 					];
 				}
 
@@ -986,7 +986,7 @@ class pm_view_folder
 		return [
 			'pm_count'	=> $pm_count,
 			'pm_list'	=> $pm_list,
-			'rowset'	=> $rowset
+			'rowset'	=> $rowset,
 		];
 	}
 }

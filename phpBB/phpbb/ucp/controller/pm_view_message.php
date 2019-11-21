@@ -127,7 +127,7 @@ class pm_view_message
 			$meta_info = $this->helper->route('ucp_pm_view', ['folder' => $folder_id]);
 			$message = $this->language->lang('NO_AUTH_READ_REMOVED_MESSAGE');
 
-			$message .= '<br /><br />' . sprintf($this->language->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . $this->language->lang('RETURN_FOLDER', '<a href="' . $meta_info . '">', '</a>');
 			send_status_line(403, 'Forbidden');
 			trigger_error($message);
 		}
@@ -307,8 +307,8 @@ class pm_view_message
 			'EDITED_MESSAGE'	=> $l_edited_by,
 			'MESSAGE_ID'		=> $message_row['msg_id'],
 
-			'U_PM'			=>  $u_pm,
-			'U_JABBER'		=>  $u_jabber,
+			'U_PM'				=>	$u_pm,
+			'U_JABBER'			=>	$u_jabber,
 
 			'U_DELETE'			=> ($this->auth->acl_get('u_pm_delete')) ? $this->helper->route('ucp_pm_compose', ['action' => 'delete', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
 			'U_EMAIL'			=> $user_info['email'],
@@ -348,7 +348,7 @@ class pm_view_message
 		 * @var array	message_row	Array with message data
 		 * @var array	cp_row		Array with senders custom profile field data
 		 * @var array	msg_data	Template array with message data
-		 * @var 	array	user_info	User data of the sender
+		 * @var array	user_info	User data of the sender
 		 * @since 3.1.0-a1
 		 * @changed 3.1.6-RC1		Added user_info into event
 		 * @changed 3.2.2-RC1		Deprecated
@@ -470,7 +470,6 @@ class pm_view_message
 	 */
 	function get_user_information($user_id, $user_row)
 	{
-
 		if (!$user_id)
 		{
 			return [];

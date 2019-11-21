@@ -664,7 +664,7 @@ class pm_compose
 				$s_hidden_fields = [
 					'p'			=> $msg_id,
 					'f'			=> $folder_id,
-					'action'	=> 'delete'
+					'action'	=> 'delete',
 				];
 
 				// "{$this->root_path}ucp.$this->php_ext?i=pm&amp;mode=compose"
@@ -893,9 +893,9 @@ class pm_compose
 
 			$icon_id			= $this->request->variable('icon', 0);
 
-			$enable_bbcode 		= (!$bbcode_status || $this->request->is_set_post('disable_bbcode')) ? false : true;
+			$enable_bbcode		= (!$bbcode_status || $this->request->is_set_post('disable_bbcode')) ? false : true;
 			$enable_smilies		= (!$smilies_status || $this->request->is_set_post('disable_smilies')) ? false : true;
-			$enable_urls 		= ($this->request->is_set_post('disable_magic_url')) ? 0 : 1;
+			$enable_urls		= ($this->request->is_set_post('disable_magic_url')) ? 0 : 1;
 			$enable_sig			= (!$this->config['allow_sig'] ||!$this->config['allow_sig_pm']) ? false : (($this->request->is_set_post('attach_sig')) ? true : false);
 
 			/**
@@ -995,7 +995,7 @@ class pm_compose
 					'message'				=> $message_parser->message,
 					'attachment_data'		=> $message_parser->attachment_data,
 					'filename_data'			=> $message_parser->filename_data,
-					'address_list'			=> $address_list
+					'address_list'			=> $address_list,
 				];
 
 				/**
@@ -1123,9 +1123,9 @@ class pm_compose
 				$message_link = '';
 			}
 			$quote_attributes = [
-				'author'  => $quote_username,
-				'time'    => $post['message_time'],
-				'user_id' => $post['author_id'],
+				'author'	=> $quote_username,
+				'time'		=> $post['message_time'],
+				'user_id'	=> $post['author_id'],
 			];
 			if ($action === 'quotepost')
 			{
@@ -1439,7 +1439,6 @@ class pm_compose
 	 */
 	protected function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 	{
-
 		// Delete User [TO/BCC]
 		if ($remove_u && $this->request->variable('remove_u', [0 => '']))
 		{
@@ -1479,7 +1478,6 @@ class pm_compose
 		if (!$add_to && !$add_bcc && (count($group_list) || count($usernames)))
 		{
 			$add_to = true;
-
 
 			$refresh = true;
 			$submit = false;
@@ -1542,16 +1540,16 @@ class pm_compose
 
 			// Administrator deactivated users check and we need to check their
 			//		PM status (do they want to receive PM's?)
-			// 		Only check PM status if not a moderator or admin, since they
+			//		Only check PM status if not a moderator or admin, since they
 			//		are allowed to override this user setting
 			$sql = 'SELECT user_id, user_allow_pm
 			FROM ' . $this->tables['users'] . '
 			WHERE ' . $this->db->sql_in_set('user_id', array_keys($address_list['u'])) . '
 				AND (
-						(user_type = ' . USER_INACTIVE . '
-						AND user_inactive_reason = ' . INACTIVE_MANUAL . ')
-						' . ($can_ignore_allow_pm ? '' : ' OR user_allow_pm = 0') . '
-					)';
+					(user_type = ' . USER_INACTIVE . '
+					AND user_inactive_reason = ' . INACTIVE_MANUAL . ')
+					' . ($can_ignore_allow_pm ? '' : ' OR user_allow_pm = 0') . '
+				)';
 
 			$result = $this->db->sql_query($sql);
 

@@ -187,8 +187,8 @@ class resend
 					$messenger->assign_vars([
 						'FAX_INFO'		=> $this->config['coppa_fax'],
 						'MAIL_INFO'		=> $this->config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email']]
-					);
+						'EMAIL_ADDRESS'	=> $user_row['user_email'],
+					]);
 				}
 
 				$messenger->send(NOTIFY_EMAIL);
@@ -213,10 +213,10 @@ class resend
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$this->php_ext?mode=viewprofile&u={$user_row['user_id']}",
 						'U_ACTIVATE'	=> generate_board_url(false) . $this->helper->route('ucp_account', [
-								'mode'	=> 'activate',
-								'u'		=> $user_row['user_id'],
-								'k'		=> $user_row['user_actkey'],
-							]),
+							'mode'	=> 'activate',
+							'u'		=> $user_row['user_id'],
+							'k'		=> $user_row['user_actkey'],
+						]),
 					]);
 
 					$messenger->send($row['user_notify_type']);
