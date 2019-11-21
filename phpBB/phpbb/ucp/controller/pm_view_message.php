@@ -15,12 +15,105 @@ namespace phpbb\ucp\controller;
 
 class pm_view_message
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\profilefields\manager */
+	protected $pf_manager;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth				Auth object
+	 * @param \phpbb\config\config				$config				Config object
+	 * @param \phpbb\db\driver\driver_interface	$db					Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher			Event dispatcher object
+	 * @param \phpbb\group\helper				$group_helper		Group helper object
+	 * @param \phpbb\controller\helper			$helper				Controller helper object
+	 * @param \phpbb\language\language			$language			Language object
+	 * @param \phpbb\profilefields\manager		$pf_manager			Profile field manager object
+	 * @param \phpbb\request\request			$request			Request object
+	 * @param \phpbb\template\template			$template			Template object
+	 * @param \phpbb\user						$user				User object
+	 * @param string							$root_path			phpBB root path
+	 * @param string							$php_ext			php File extensions
+	 * @param array								$tables				phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\group\helper $group_helper,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\profilefields\manager $pf_manager,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->pf_manager	= $pf_manager;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
 	/**
 	 * View private message
 	 */
-	function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
+	function view_message($folder_id, $msg_id, $folder, $message_row)
 	{
-
 		$this->language->add_lang(['viewtopic', 'memberlist']);
 
 		$msg_id		= (int) $msg_id;
@@ -31,7 +124,7 @@ class pm_view_message
 		// Not able to view message, it was deleted by the sender
 		if ($message_row['pm_deleted'])
 		{
-			$meta_info = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;folder=$folder_id");
+			$meta_info = $this->helper->route('ucp_pm_view', ['folder' => $folder_id]);
 			$message = $this->language->lang('NO_AUTH_READ_REMOVED_MESSAGE');
 
 			$message .= '<br /><br />' . sprintf($this->language->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
@@ -48,10 +141,7 @@ class pm_view_message
 		// Load the custom profile fields
 		if ($this->config['load_cpf_pm'])
 		{
-			/* @var $cp \phpbb\profilefields\manager */
-			$cp = $phpbb_container->get('profilefields.manager');
-
-			$profile_fields = $cp->grab_profile_fields_data($author_id);
+			$profile_fields = $this->pf_manager->grab_profile_fields_data($author_id);
 		}
 
 		// Assign TO/BCC Addresses to template
@@ -148,8 +238,6 @@ class pm_view_message
 			$signature = generate_text_for_display($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
-		$url = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm');
-
 		// Number of "to" recipients
 		$num_recipients = (int) preg_match_all('/:?(u|g)_([0-9]+):?/', $message_row['to_address'], $match);
 
@@ -170,7 +258,7 @@ class pm_view_message
 
 			if (isset($profile_fields[$author_id]))
 			{
-				$cp_row = $cp->generate_profile_fields_template_data($profile_fields[$author_id]);
+				$cp_row = $this->pf_manager->generate_profile_fields_template_data($profile_fields[$author_id]);
 			}
 		}
 
@@ -178,7 +266,7 @@ class pm_view_message
 
 		if ($this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_')))
 		{
-			$u_pm = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;mode=compose&amp;u=' . $author_id);
+			$u_pm = $this->helper->route('ucp_pm_compose', ['u' => $author_id]);
 		}
 
 		if ($this->config['jab_enable'] && $user_info['user_jabber'] && $this->auth->acl_get('u_sendim'))
@@ -222,17 +310,17 @@ class pm_view_message
 			'U_PM'			=>  $u_pm,
 			'U_JABBER'		=>  $u_jabber,
 
-			'U_DELETE'			=> ($this->auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+			'U_DELETE'			=> ($this->auth->acl_get('u_pm_delete')) ? $this->helper->route('ucp_pm_compose', ['action' => 'delete', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
 			'U_EMAIL'			=> $user_info['email'],
-			'U_REPORT'			=> ($this->config['allow_pm_report']) ? $phpbb_container->get('controller.helper')->route('phpbb_report_pm_controller', ['id' => $message_row['msg_id']]) : '',
-			'U_QUOTE'			=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-			'U_EDIT'			=> (($message_row['message_time'] > time() - ($this->config['pm_edit_time'] * 60) || !$this->config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $this->auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-			'U_POST_REPLY_ALL'	=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;reply_to_all=1&amp;p=" . $message_row['msg_id'] : '',
-			'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
-			'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
+			'U_REPORT'			=> ($this->config['allow_pm_report']) ? $this->helper->route('phpbb_report_pm_controller', ['id' => $message_row['msg_id']]) : '',
+			'U_QUOTE'			=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? $this->helper->route('ucp_pm_compose', ['action' => 'quote', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
+			'U_EDIT'			=> (($message_row['message_time'] > time() - ($this->config['pm_edit_time'] * 60) || !$this->config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $this->auth->acl_get('u_pm_edit')) ? $this->helper->route('ucp_pm_compose', ['action' => 'edit', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
+			'U_POST_REPLY_PM'	=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? $this->helper->route('ucp_pm_compose', ['action' => 'reply', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
+			'U_POST_REPLY_ALL'	=> ($this->auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? $this->helper->route('ucp_pm_compose', ['action' => 'quote', 'reply_to_all' => true, 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
+			'U_PREVIOUS_PM'		=> $this->helper->route('ucp_pm_view', ['folder' => $folder_id, 'p' => $message_row['msg_id'], 'view' => 'previous']),
+			'U_NEXT_PM'			=> $this->helper->route('ucp_pm_view', ['folder' => $folder_id, 'p' => $message_row['msg_id'], 'view' => 'next']),
 
-			'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
+			'U_PM_ACTION'		=> $this->helper->route('ucp_pm_compose', ['f' => $folder_id, 'p' => $message_row['msg_id']]),
 
 			'S_HAS_ATTACHMENTS'	=> (count($attachments)) ? true : false,
 			'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
@@ -242,8 +330,10 @@ class pm_view_message
 			'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
 			'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
-			'U_PRINT_PM'		=> ($this->config['print_pm'] && $this->auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-			'U_FORWARD_PM'		=> ($this->config['forward_pm'] && $this->auth->acl_get('u_sendpm') && $this->auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+			'U_PRINT_PM'		=> ($this->config['print_pm'] && $this->auth->acl_get('u_pm_printpm')) ?
+				$this->helper->route('ucp_pm_view', ['folder' => $folder_id, 'p' => $message_row['msg_id'], 'view' => 'print']) : '',
+			'U_FORWARD_PM'		=> ($this->config['forward_pm'] && $this->auth->acl_get('u_sendpm') && $this->auth->acl_get('u_pm_forward')) ?
+				$this->helper->route('ucp_pm_compose', ['action' => 'forward', 'f' => $folder_id, 'p' => $message_row['msg_id']]) : '',
 		];
 
 		/**
@@ -361,9 +451,7 @@ class pm_view_message
 		{
 			foreach ($attachments as $attachment)
 			{
-				$this->template->assign_block_vars('attachment', [
-						'DISPLAY_ATTACHMENT'	=> $attachment]
-				);
+				$this->template->assign_block_vars('attachment', ['DISPLAY_ATTACHMENT' => $attachment]);
 			}
 		}
 

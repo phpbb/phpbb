@@ -13,17 +13,136 @@
 
 namespace phpbb\ucp\controller;
 
+use phpbb\exception\http_exception;
+
 class pm_compose
 {
-	/**
-	 * Compose private message
-	 * Called from ucp_pm with mode == 'compose'
-	 */
-	function compose_pm($id, $mode, $action, $user_folders = [])
-	{
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-		// Damn php and globals - i know, this is horrible
-		// Needed for handle_message_list_actions()
+	/** @var \phpbb\cache\service */
+	protected $cache;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\plupload\plupload */
+	protected $plupload;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbb\textformatter\utils_interface */
+	protected $utils;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth						$auth				Auth object
+	 * @param \phpbb\cache\service					$cache				Cache object
+	 * @param \phpbb\config\config					$config				Config object
+	 * @param \phpbb\db\driver\driver_interface		$db					Database object
+	 * @param \phpbb\event\dispatcher				$dispatcher			Event dispatcher object
+	 * @param \phpbb\group\helper					$group_helper		Group helper object
+	 * @param \phpbb\controller\helper				$helper				Controller helper object
+	 * @param \phpbb\language\language				$language			Language object
+	 * @param \phpbb\plupload\plupload				$plupload			Plupload object
+	 * @param \phpbb\request\request				$request			Request object
+	 * @param \phpbb\template\template				$template			Template object
+	 * @param \phpbb\user							$user				User object
+	 * @param \phpbb\textformatter\utils_interface	$utils				Textformatter utilities object
+	 * @param string								$root_path			phpBB root path
+	 * @param string								$php_ext			php File extensions
+	 * @param array									$tables				phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\cache\service $cache,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\group\helper $group_helper,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\plupload\plupload $plupload,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		\phpbb\textformatter\utils_interface $utils,
+		$root_path,
+		$php_ext,
+		$tables
+	)
+	{
+		$this->auth			= $auth;
+		$this->cache		= $cache;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->group_helper	= $group_helper;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->plupload		= $plupload;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+		$this->utils		= $utils;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
+		$this->tables		= $tables;
+	}
+
+	public function main($action)
+	{
+		if (!$this->user->data['is_registered'])
+		{
+			throw new http_exception(400, 'NO_MESSAGE');
+		}
+
+		// Is PM disabled?
+		if (!$this->config['allow_privmsg'])
+		{
+			throw new http_exception(400, 'PM_DISABLED');
+		}
+
+		$this->language->add_lang('posting');
+		$this->template->assign_var('S_PRIVMSGS', true);
+
+		if (!function_exists('get_folder'))
+		{
+			include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
+		}
 
 		if (!function_exists('generate_smilies'))
 		{
@@ -40,10 +159,18 @@ class pm_compose
 			include($this->root_path . 'includes/message_parser.' . $this->php_ext);
 		}
 
-		if (!$action)
+		$user_folders = get_folder($this->user->data['user_id']);
+
+		if ($action !== 'delete' && !$this->auth->acl_get('u_sendpm'))
 		{
-			$action = 'post';
+			$this->template->assign_vars([
+				'S_NO_AUTH_SEND_MESSAGE'	=> true,
+				'S_COMPOSE_PM_VIEW'			=> true,
+			]);
+
+			return $this->helper->render('ucp_pm_viewfolder.html', $this->language->lang('UCP_PM_VIEW'));
 		}
+
 		add_form_key('ucp_pm_compose');
 
 		// Grab only parameters needed here
@@ -78,17 +205,14 @@ class pm_compose
 		$error = [];
 		$current_time = time();
 
-		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
-
 		// Was cancel pressed? If so then redirect to the appropriate page
 		if ($cancel)
 		{
 			if ($msg_id)
 			{
-				redirect(append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+				redirect($this->helper->route('ucp_pm_view', ['folder' => 'inbox', 'action' => 'view_message', 'p' => $msg_id]));
 			}
-			redirect(append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm'));
+			redirect($this->helper->route('ucp_pm_view', ['folder' => 'inbox']));
 		}
 
 		// Since viewtopic.php language entries are used in several modes,
@@ -174,7 +298,7 @@ class pm_compose
 				if (!$this->auth->acl_get('u_sendpm'))
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_SEND_MESSAGE');
+					trigger_error('NO_AUTH_SEND_MESSAGE', E_USER_WARNING);
 				}
 			break;
 
@@ -184,13 +308,13 @@ class pm_compose
 			case 'quotepost':
 				if (!$msg_id)
 				{
-					trigger_error('NO_MESSAGE');
+					trigger_error('NO_MESSAGE', E_USER_WARNING);
 				}
 
 				if (!$this->auth->acl_get('u_sendpm'))
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_SEND_MESSAGE');
+					trigger_error('NO_AUTH_SEND_MESSAGE', E_USER_WARNING);
 				}
 
 				if ($action == 'quotepost')
@@ -215,7 +339,7 @@ class pm_compose
 			case 'edit':
 				if (!$msg_id)
 				{
-					trigger_error('NO_MESSAGE');
+					trigger_error('NO_MESSAGE', E_USER_WARNING);
 				}
 
 				// check for outbox (not read) status, we do not allow editing if one user already having the message
@@ -231,12 +355,12 @@ class pm_compose
 				if (!$this->auth->acl_get('u_pm_delete'))
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error('NO_AUTH_DELETE_MESSAGE');
+					trigger_error('NO_AUTH_DELETE_MESSAGE', E_USER_WARNING);
 				}
 
 				if (!$msg_id)
 				{
-					trigger_error('NO_MESSAGE');
+					trigger_error('NO_MESSAGE', E_USER_WARNING);
 				}
 
 				$sql = 'SELECT msg_id, pm_unread, pm_new, author_id, folder_id
@@ -257,13 +381,13 @@ class pm_compose
 		if ($action == 'forward' && (!$this->config['forward_pm'] || !$this->auth->acl_get('u_pm_forward')))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error('NO_AUTH_FORWARD_MESSAGE');
+			trigger_error('NO_AUTH_FORWARD_MESSAGE', E_USER_WARNING);
 		}
 
 		if ($action == 'edit' && !$this->auth->acl_get('u_pm_edit'))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error('NO_AUTH_EDIT_MESSAGE');
+			trigger_error('NO_AUTH_EDIT_MESSAGE', E_USER_WARNING);
 		}
 
 		if ($sql)
@@ -317,7 +441,7 @@ class pm_compose
 
 					if ($post)
 					{
-						trigger_error('NO_EDIT_READ_MESSAGE');
+						trigger_error('NO_EDIT_READ_MESSAGE', E_USER_WARNING);
 					}
 				}
 
@@ -329,7 +453,7 @@ class pm_compose
 				if (($post['forum_id'] && !$this->auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$this->auth->acl_getf_global('f_read')))
 				{
 					send_status_line(403, 'Forbidden');
-					trigger_error('NOT_AUTHORISED');
+					trigger_error('NOT_AUTHORISED', E_USER_WARNING);
 				}
 
 				/**
@@ -386,7 +510,7 @@ class pm_compose
 
 			if ((!$post['author_id'] || ($post['author_id'] == ANONYMOUS && $action != 'delete')) && $msg_id)
 			{
-				trigger_error('NO_AUTHOR');
+				trigger_error('NO_AUTHOR', E_USER_WARNING);
 			}
 
 			if ($action == 'quotepost')
@@ -476,14 +600,14 @@ class pm_compose
 		if (($to_group_id || isset($address_list['g'])) && (!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm_group')))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error('NO_AUTH_GROUP_MESSAGE');
+			trigger_error('NO_AUTH_GROUP_MESSAGE', E_USER_WARNING);
 		}
 
 		if ($action == 'edit' && !$refresh && !$preview && !$submit)
 		{
 			if (!($message_time > time() - ($this->config['pm_edit_time'] * 60) || !$this->config['pm_edit_time']))
 			{
-				trigger_error('CANNOT_EDIT_MESSAGE_TIME');
+				trigger_error('CANNOT_EDIT_MESSAGE_TIME', E_USER_WARNING);
 			}
 		}
 
@@ -497,16 +621,24 @@ class pm_compose
 			$icon_id = 0;
 		}
 
-		/* @var $plupload \phpbb\plupload\plupload */
-		$plupload = $phpbb_container->get('plupload');
-		$message_parser = new parse_message();
-		$message_parser->set_plupload($plupload);
+		$message_parser = new \parse_message();
+		$message_parser->set_plupload($this->plupload);
 
 		$message_parser->message = ($action == 'reply') ? '' : $message_text;
 		unset($message_text);
 
-		$s_action = append_sid("{$this->root_path}ucp.$this->php_ext", "i=$id&amp;mode=$mode&amp;action=$action", true, $this->user->session_id);
-		$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
+		$params = ['action' => $action];
+		if ($folder_id)
+		{
+			$params['folder'] = $folder_id;
+		}
+
+		if ($msg_id)
+		{
+			$params['p'] = $msg_id;
+		}
+
+		$s_action = $this->helper->route('ucp_pm_compose', $params, true, $this->user->session_id);
 
 		// Delete triggered ?
 		if ($action == 'delete')
@@ -520,11 +652,11 @@ class pm_compose
 				delete_pm($this->user->data['user_id'], $msg_id, $folder_id);
 
 				// jump to next message in "history"? nope, not for the moment. But able to be included later.
-				$meta_info = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;folder=$folder_id");
+				$meta_info = $this->helper->route('ucp_pm_view', ['folder' => $folder_id]);
 				$message = $this->language->lang('MESSAGE_DELETED');
 
 				meta_refresh(3, $meta_info);
-				$message .= '<br /><br />' . sprintf($this->language->lang('RETURN_FOLDER'), '<a href="' . $meta_info . '">', '</a>');
+				$message .= '<br /><br />' . $this->language->lang('RETURN_FOLDER', '<a href="' . $meta_info . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -539,11 +671,11 @@ class pm_compose
 				confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 			}
 
-			redirect(append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+			redirect($this->helper->route('ucp_pm_view', ['folder' => 'inbox', 'action' => 'view_message', 'p' => $msg_id]));
 		}
 
 		// Get maximum number of allowed recipients
-		$max_recipients = phpbb_get_max_setting_from_group($db, $this->user->data['user_id'], 'max_recipients');
+		$max_recipients = phpbb_get_max_setting_from_group($this->db, $this->user->data['user_id'], 'max_recipients');
 
 		// If it is 0, there is no limit set and we use the maximum value within the config.
 		$max_recipients = (!$max_recipients) ? $this->config['pm_max_recipients'] : $max_recipients;
@@ -569,7 +701,7 @@ class pm_compose
 		}
 
 		// Handle User/Group adding/removing
-		handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
+		$this->handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
 		// Check mass pm to group permission
 		if ((!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
@@ -579,16 +711,16 @@ class pm_compose
 		}
 
 		// Check mass pm to users permission
-		if ((!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
+		if ((!$this->config['allow_mass_pm'] || !$this->auth->acl_get('u_masspm')) && $this->num_recipients($address_list) > 1)
 		{
-			$address_list = get_recipients($address_list, 1);
+			$address_list = $this->get_recipients($address_list, 1);
 			$error[] = $this->language->lang('TOO_MANY_RECIPIENTS', 1);
 		}
 
 		// Check for too many recipients
 		if (!empty($address_list['u']) && $max_recipients && count($address_list['u']) > $max_recipients)
 		{
-			$address_list = get_recipients($address_list, $max_recipients);
+			$address_list = $this->get_recipients($address_list, $max_recipients);
 			$error[] = $this->language->lang('TOO_MANY_RECIPIENTS', $max_recipients);
 		}
 
@@ -671,36 +803,34 @@ class pm_compose
 					$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
 
 					$sql = 'INSERT INTO ' . $this->tables['drafts'] . ' ' . $this->db->sql_build_array('INSERT', [
-								'user_id'		=> $this->user->data['user_id'],
-								'topic_id'		=> 0,
-								'forum_id'		=> 0,
-								'save_time'		=> $current_time,
-								'draft_subject'	=> $subject,
-								'draft_message'	=> $message_parser->message,
-							]
-						);
+						'user_id'		=> $this->user->data['user_id'],
+						'topic_id'		=> 0,
+						'forum_id'		=> 0,
+						'save_time'		=> $current_time,
+						'draft_subject'	=> $subject,
+						'draft_message'	=> $message_parser->message,
+					]);
 					$this->db->sql_query($sql);
 
-					$redirect_url = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;mode=$mode");
+					$redirect_url = $this->helper->route('ucp_pm_compose');
 
 					meta_refresh(3, $redirect_url);
-					$message = $this->language->lang('DRAFT_SAVED') . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $redirect_url . '">', '</a>');
+					$message = $this->language->lang('DRAFT_SAVED') . '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $redirect_url . '">', '</a>');
 
 					trigger_error($message);
 				}
 				else
 				{
 					$s_hidden_fields = build_hidden_fields([
-							'mode'		=> $mode,
-							'action'	=> $action,
-							'save'		=> true,
-							'subject'	=> $subject,
-							'message'	=> $message,
-							'u'			=> $to_user_id,
-							'g'			=> $to_group_id,
-							'p'			=> $msg_id]
-					);
-					$s_hidden_fields .= build_address_field($address_list);
+						'action'	=> $action,
+						'save'		=> true,
+						'subject'	=> $subject,
+						'message'	=> $message,
+						'u'			=> $to_user_id,
+						'g'			=> $to_group_id,
+						'p'			=> $msg_id,
+					]);
+					$s_hidden_fields .= $this->build_address_field($address_list);
 
 					confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 				}
@@ -749,7 +879,7 @@ class pm_compose
 		// Load Drafts
 		if ($load && $drafts)
 		{
-			load_drafts(0, 0, $id, $action, $msg_id);
+			load_drafts(0, 0, '', $action, $msg_id);
 		}
 
 		if ($submit || $preview || $refresh)
@@ -797,7 +927,7 @@ class pm_compose
 			extract($this->dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
 
 			// Parse Attachments - before checksum is calculated
-			if ($message_parser->check_attachment_form_token($language, $request, 'ucp_pm_compose'))
+			if ($message_parser->check_attachment_form_token($this->language, $this->request, 'ucp_pm_compose'))
 			{
 				$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 			}
@@ -877,14 +1007,14 @@ class pm_compose
 				// ((!$message_subject) ? $subject : $message_subject)
 				$msg_id = submit_pm($action, $subject, $pm_data);
 
-				$return_message_url = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
-				$inbox_folder_url = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;folder=inbox');
-				$outbox_folder_url = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;folder=outbox');
+				$return_message_url = $this->helper->route('ucp_pm_view', ['folder' => 'inbox', 'p' => $msg_id]);
+				$inbox_folder_url = $this->helper->route('ucp_pm_view', ['folder' => 'inbox']);
+				$outbox_folder_url = $this->helper->route('ucp_pm_view', ['folder' => 'outbox']);
 
 				$folder_url = '';
 				if (($folder_id > 0) && isset($user_folders[$folder_id]))
 				{
-					$folder_url = append_sid("{$this->root_path}ucp.$this->php_ext", 'i=pm&amp;folder=' . $folder_id);
+					$folder_url = $this->helper->route('ucp_pm_view', ['folder' => $folder_id]);
 				}
 
 				$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
@@ -896,10 +1026,10 @@ class pm_compose
 				$last_click_type = 'CLICK_RETURN_FOLDER';
 				if ($folder_url)
 				{
-					$message .= '<br /><br />' . sprintf($this->language->lang('CLICK_RETURN_FOLDER'), '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
+					$message .= '<br /><br />' . $this->language->lang('CLICK_RETURN_FOLDER', '<a href="' . $folder_url . '">', '</a>', $user_folders[$folder_id]['folder_name']);
 					$last_click_type = 'CLICK_GOTO_FOLDER';
 				}
-				$message .= '<br /><br />' . sprintf($this->language->lang($last_click_type), '<a href="' . $return_box_url . '">', '</a>', $this->language->lang($return_box_lang));
+				$message .= '<br /><br />' . $this->language->lang($last_click_type, '<a href="' . $return_box_url . '">', '</a>', $this->language->lang($return_box_lang));
 
 				meta_refresh(3, $return_message_url);
 				trigger_error($message);
@@ -940,9 +1070,7 @@ class pm_compose
 
 				foreach ($attachment_data as $i => $attachment)
 				{
-					$this->template->assign_block_vars('attachment', [
-							'DISPLAY_ATTACHMENT'	=> $attachment]
-					);
+					$this->template->assign_block_vars('attachment', ['DISPLAY_ATTACHMENT' => $attachment]);
 				}
 				unset($attachment_data);
 			}
@@ -952,12 +1080,12 @@ class pm_compose
 			if (!count($error))
 			{
 				$this->template->assign_vars([
-						'PREVIEW_SUBJECT'		=> $preview_subject,
-						'PREVIEW_MESSAGE'		=> $preview_message,
-						'PREVIEW_SIGNATURE'		=> $preview_signature,
+					'PREVIEW_SUBJECT'		=> $preview_subject,
+					'PREVIEW_MESSAGE'		=> $preview_message,
+					'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-						'S_DISPLAY_PREVIEW'		=> true]
-				);
+					'S_DISPLAY_PREVIEW'		=> true,
+				]);
 			}
 			unset($message_text);
 		}
@@ -1008,11 +1136,7 @@ class pm_compose
 				$quote_attributes['msg_id'] = $post['msg_id'];
 			}
 
-			/** @var \phpbb\language\language $language */
-			$language = $phpbb_container->get('language');
-			/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */
-			$text_formatter_utils = $phpbb_container->get('text_formatter.utils');
-			phpbb_format_quote($language, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
+			phpbb_format_quote($this->language, $message_parser, $this->utils, $bbcode_status, $quote_attributes, $message_link);
 		}
 
 		if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
@@ -1045,12 +1169,12 @@ class pm_compose
 
 			$forward_text = [];
 			$forward_text[] = $this->language->lang('FWD_ORIGINAL_MESSAGE');
-			$forward_text[] = sprintf($this->language->lang('FWD_SUBJECT'), censor_text($message_subject));
-			$forward_text[] = sprintf($this->language->lang('FWD_DATE'), $this->user->format_date($message_time, false, true));
-			$forward_text[] = sprintf($this->language->lang('FWD_FROM'), $quote_username_text);
-			$forward_text[] = sprintf($this->language->lang('FWD_TO'), implode($this->language->lang('COMMA_SEPARATOR'), $fwd_to_field['to']));
+			$forward_text[] = $this->language->lang('FWD_SUBJECT', censor_text($message_subject));
+			$forward_text[] = $this->language->lang('FWD_DATE', $this->user->format_date($message_time, false, true));
+			$forward_text[] = $this->language->lang('FWD_FROM', $quote_username_text);
+			$forward_text[] = $this->language->lang('FWD_TO', implode($this->language->lang('COMMA_SEPARATOR'), $fwd_to_field['to']));
 
-			$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
+			$quote_text = $this->utils->generate_quote(
 				censor_text($message_parser->message),
 				['author' => $quote_username]
 			);
@@ -1170,7 +1294,7 @@ class pm_compose
 					else
 					{
 						$tpl_ary = array_merge($tpl_ary, [
-							'U_VIEW'		=> append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=group&amp;g=' . $id),
+							'U_VIEW' => append_sid("{$this->root_path}memberlist.$this->php_ext", 'mode=group&amp;g=' . $id),
 						]);
 					}
 
@@ -1180,7 +1304,7 @@ class pm_compose
 		}
 
 		// Build hidden address list
-		$s_hidden_address_field = build_address_field($address_list);
+		$s_hidden_address_field = $this->build_address_field($address_list);
 
 		$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($this->config['allow_bbcode'] && $this->auth->acl_get('u_pm_bbcode')) ? !$this->user->optionget('bbcode') : 1);
 		$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($this->config['allow_smilies'] && $this->auth->acl_get('u_pm_smilies')) ? !$this->user->optionget('smilies') : 1);
@@ -1223,9 +1347,6 @@ class pm_compose
 
 		$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$this->config['allow_pm_attach'] || !$this->auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
-		/** @var \phpbb\controller\helper $controller_helper */
-		$controller_helper = $phpbb_container->get('controller.helper');
-
 		// Start assigning vars for main posting page ...
 		$template_ary = [
 			'L_POST_A'					=> $page_title,
@@ -1234,7 +1355,7 @@ class pm_compose
 
 			'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 			'MESSAGE'				=> $message_text,
-			'BBCODE_STATUS'			=> $this->language->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $this->controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
+			'BBCODE_STATUS'			=> $this->language->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $this->helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 			'IMG_STATUS'			=> ($img_status) ? $this->language->lang('IMAGES_ARE_ON') : $this->language->lang('IMAGES_ARE_OFF'),
 			'FLASH_STATUS'			=> ($flash_status) ? $this->language->lang('FLASH_IS_ON') : $this->language->lang('FLASH_IS_OFF'),
 			'SMILIES_STATUS'		=> ($smilies_status) ? $this->language->lang('SMILIES_ARE_ON') : $this->language->lang('SMILIES_ARE_OFF'),
@@ -1295,7 +1416,7 @@ class pm_compose
 		if ($allowed)
 		{
 			$max_files = ($this->auth->acl_gets('a_', 'm_')) ? 0 : (int) $this->config['max_attachments_pm'];
-			$plupload->configure($cache, $template, $s_action, false, $max_files);
+			$this->plupload->configure($this->cache, $this->template, $s_action, false, $max_files);
 		}
 
 		// Attachment entry
@@ -1309,12 +1430,14 @@ class pm_compose
 				$this->template->assign_var('S_DISPLAY_HISTORY', true);
 			}
 		}
+
+		return $this->helper->render('posting_body.html', $this->language->lang('UCP_PM_COMPOSE'));
 	}
 
 	/**
 	 * For composing messages, handle list actions
 	 */
-	function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
+	protected function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 	{
 
 		// Delete User [TO/BCC]
@@ -1511,7 +1634,7 @@ class pm_compose
 	/**
 	 * Build the hidden field for the recipients. Needed, as the variable is not read via $this->request->variable().
 	 */
-	function build_address_field($address_list)
+	protected function build_address_field($address_list)
 	{
 		$s_hidden_address_field = '';
 		foreach ($address_list as $type => $adr_ary)
@@ -1527,7 +1650,7 @@ class pm_compose
 	/**
 	 * Return number of private message recipients
 	 */
-	function num_recipients($address_list)
+	protected function num_recipients($address_list)
 	{
 		$num_recipients = 0;
 
@@ -1542,7 +1665,7 @@ class pm_compose
 	/**
 	 * Get number of 'num_recipients' recipients from first position
 	 */
-	function get_recipients($address_list, $num_recipients = 1)
+	protected function get_recipients($address_list, $num_recipients = 1)
 	{
 		$recipient = [];
 

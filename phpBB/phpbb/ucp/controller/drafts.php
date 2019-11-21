@@ -1,4 +1,17 @@
 <?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\ucp\controller;
 
 class drafts
 {
@@ -99,9 +112,18 @@ class drafts
 		$draft_message = '';
 
 		include($this->root_path . 'includes/message_parser.' . $this->php_ext);
-		$message_parser = new parse_message();
+		$message_parser = new \parse_message();
 
-		/** @todo goldy */
+		if ($pm_drafts)
+		{
+			if (!function_exists('get_folder'))
+			{
+				include($this->root_path . 'includes/functions_privmsgs.' . $this->php_ext);
+			}
+
+			get_folder($this->user->data['user_id']);
+		}
+
 		$route = $pm_drafts ? 'ucp_pm_drafts' : 'ucp_manage_drafts';
 		$return = '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $this->helper->route($route) . '">', '</a>');
 
