@@ -207,16 +207,6 @@ function get_group_id($group_name)
 }
 
 /**
-* Generate the email hash stored in the users table
-*
-* Note: Deprecated, calls should directly go to phpbb_email_hash()
-*/
-function gen_email_hash($email)
-{
-	return phpbb_email_hash($email);
-}
-
-/**
 * Convert a boolean into the appropriate phpBB constant indicating whether the topic is locked
 */
 function is_topic_locked($bool)

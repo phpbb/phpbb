@@ -47,7 +47,7 @@ class ucp_resend
 
 			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
 				FROM ' . USERS_TABLE . "
-				WHERE user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
+				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
