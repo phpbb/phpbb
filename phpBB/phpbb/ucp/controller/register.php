@@ -556,8 +556,6 @@ class register
 						include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 					}
 
-					include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-
 					$messenger = new \messenger(false);
 
 					$messenger->template($email_template, $data['lang']);

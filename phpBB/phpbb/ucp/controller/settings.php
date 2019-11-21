@@ -18,24 +18,102 @@ namespace phpbb\ucp\controller;
  */
 class settings
 {
-	var $u_action;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	public function main($id, $mode)
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var array phpBB tables */
+	protected $tables;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth			Auth object
+	 * @param \phpbb\config\config				$config			Config object
+	 * @param \phpbb\db\driver\driver_interface	$db				Database object
+	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
+	 * @param \phpbb\controller\helper			$helper			Controller helper object
+	 * @param \phpbb\language\language			$language		Language object
+	 * @param \phpbb\request\request			$request		Request object
+	 * @param \phpbb\template\template			$template		Template object
+	 * @param \phpbb\user						$user			User object
+	 * @param array								$tables			phpBB tables
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\event\dispatcher $dispatcher,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$tables
+	)
 	{
+		$this->auth			= $auth;
+		$this->config		= $config;
+		$this->db			= $db;
+		$this->dispatcher	= $dispatcher;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
 
-		$submit = ($this->request->is_set_post('submit')) ? true : false;
-		$error = $data = [];
+		$this->tables		= $tables;
+	}
+
+	/**
+	 * Handle various modes for the UCPs "Settings" category.
+	 *
+	 * @param string	$mode		The mode (global|display|post)
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function main($mode)
+	{
+		$submit = $this->request->is_set_post('submit');
+		$error = [];
 		$s_hidden_fields = '';
+
+		$u_mode = $this->helper->route('ucp_settings_' . $mode);
+		$return = '<br /><br />' . $this->language->lang('RETURN_UCP', '<a href="' . $u_mode . '">', '</a>');
 
 		switch ($mode)
 		{
-			case 'personal':
-				add_form_key('ucp_prefs_personal');
+			case 'global':
+				$form_key = 'ucp_prefs_personal';
+				add_form_key($form_key);
+
 				$data = [
 					'notifymethod'	=> $this->request->variable('notifymethod', $this->user->data['user_notify_type']),
 					'dateformat'	=> $this->request->variable('dateformat', $this->user->data['user_dateformat'], true),
 					'lang'			=> basename($this->request->variable('lang', $this->user->data['user_lang'])),
-					'user_style'		=> $this->request->variable('user_style', (int) $this->user->data['user_style']),
+					'user_style'	=> $this->request->variable('user_style', (int) $this->user->data['user_style']),
 					'tz'			=> $this->request->variable('tz', $this->user->data['user_timezone']),
 
 					'viewemail'		=> $this->request->variable('viewemail', (bool) $this->user->data['user_allow_viewemail']),
@@ -56,8 +134,7 @@ class settings
 				 * To assign data to the template, use $this->template->assign_vars()
 				 *
 				 * @event core.ucp_prefs_personal_data
-				 * @var bool	submit		Do we display the form only
-				 *							or did the user press submit
+				 * @var bool	submit		Do we display the form only or did the user press submit
 				 * @var array	data		Array with current ucp options data
 				 * @var array	error		Array with list of errors
 				 * @since 3.1.0-a1
@@ -68,6 +145,11 @@ class settings
 
 				if ($submit)
 				{
+					if (!check_form_key($form_key))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
 					if ($this->config['override_user_style'])
 					{
 						$data['user_style'] = (int) $this->config['default_style'];
@@ -83,18 +165,13 @@ class settings
 						'tz'			=> ['timezone'],
 					]), $error);
 
-					if (!check_form_key('ucp_prefs_personal'))
-					{
-						$error[] = 'FORM_INVALID';
-					}
-
-					if (!count($error))
+					if (empty($error))
 					{
 						$sql_ary = [
 							'user_allow_pm'			=> $data['allowpm'],
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
-							'user_allow_viewonline'	=> ($this->auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $this->user->data['user_allow_viewonline'],
+							'user_allow_viewonline'	=> $this->auth->acl_get('u_hideonline') ? !$data['hideonline'] : $this->user->data['user_allow_viewonline'],
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_options'			=> $this->user->data['user_options'],
 
@@ -117,78 +194,56 @@ class settings
 
 						$sql = 'UPDATE ' . $this->tables['users'] . '
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $this->user->data['user_id'];
+							WHERE user_id = ' . (int) $this->user->data['user_id'];
 						$this->db->sql_query($sql);
 
-						meta_refresh(3, $this->u_action);
-						$message = $this->language->lang('PREFERENCES_UPDATED') . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						$this->helper->assign_meta_refresh_var(3, $u_mode);
+
+						return $this->helper->message($this->language->lang('PREFERENCES_UPDATED') . $return);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map([$user, 'lang'], $error);
+					$error = array_map([$this->language, 'lang'], $error);
 				}
 
 				$dateformat_options = '';
+				$s_custom = false;
 
-				foreach ($this->language->lang('dateformats') as $format => $null)
+				foreach ($this->language->get_lang_array()['dateformats'] as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->language->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '');
+					$dateformat_options .= $this->user->format_date(time(), $format, false);
+					$dateformat_options .= strpos($format, '|') !== false ? $this->language->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '';
 					$dateformat_options .= '</option>';
 				}
 
-				$s_custom = false;
-
 				$dateformat_options .= '<option value="custom"';
-				if (!isset($this->language->lang('dateformats')[$data['dateformat']]))
+				if (!isset($this->language->get_lang_array()['dateformats']))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
 				}
 				$dateformat_options .= '>' . $this->language->lang('CUSTOM_DATEFORMAT') . '</option>';
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				phpbb_timezone_select($this->template, $this->user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT COUNT(lang_id) as languages_count
-								FROM ' . $this->tables['lang'];
+					FROM ' . $this->tables['lang'];
 				$result = $this->db->sql_query($sql);
-				if ($this->db->sql_fetchfield('languages_count') > 1)
-				{
-					$s_more_languages = true;
-				}
-				else
-				{
-					$s_more_languages = false;
-				}
+				$s_more_languages = $this->db->sql_fetchfield('languages_count') > 1;
 				$this->db->sql_freeresult($result);
 
 				// check if there are any user-selectable styles
 				$sql = 'SELECT COUNT(style_id) as styles_count
-								FROM ' . $this->tables['styles'] . '
-								WHERE style_active = 1';
+					FROM ' . $this->tables['styles'] . '
+					WHERE style_active = 1';
 				$result = $this->db->sql_query($sql);
-				if ($this->db->sql_fetchfield('styles_count') > 1)
-				{
-					$s_more_styles = true;
-				}
-				else
-				{
-					$s_more_styles = false;
-				}
+				$s_more_styles = $this->db->sql_fetchfield('styles_count') > 1;
 				$this->db->sql_freeresult($result);
 
 				$this->template->assign_vars([
-					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
-
-					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
-					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
-					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
-					'S_VIEW_EMAIL'		=> $data['viewemail'],
-					'S_MASS_EMAIL'		=> $data['massemail'],
-					'S_ALLOW_PM'		=> $data['allowpm'],
-					'S_HIDE_ONLINE'		=> $data['hideonline'],
+					'ERROR'					=> !empty($error) ? implode('<br />', $error) : '',
 
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),
@@ -197,29 +252,36 @@ class settings
 					'DEFAULT_DATEFORMAT'	=> $this->config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($this->config['default_dateformat']),
 
-					'S_MORE_LANGUAGES'	=> $s_more_languages,
+					'S_NOTIFY_EMAIL'		=> $data['notifymethod'] == NOTIFY_EMAIL,
+					'S_NOTIFY_IM'			=> $data['notifymethod'] == NOTIFY_IM,
+					'S_NOTIFY_BOTH'			=> $data['notifymethod'] == NOTIFY_BOTH,
+					'S_VIEW_EMAIL'			=> $data['viewemail'],
+					'S_MASS_EMAIL'			=> $data['massemail'],
+					'S_ALLOW_PM'			=> $data['allowpm'],
+					'S_HIDE_ONLINE'			=> $data['hideonline'],
+
+					'S_MORE_LANGUAGES'		=> $s_more_languages,
 					'S_MORE_STYLES'			=> $s_more_styles,
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'		=> ($this->config['override_user_style']) ? '' : style_select($data['user_style']),
-					'S_CAN_HIDE_ONLINE'		=> ($this->auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> ($this->config['jab_enable'] && $this->user->data['user_jabber'] && @extension_loaded('xml')) ? true : false]
-				);
-
+					'S_STYLE_OPTIONS'		=> $this->config['override_user_style'] ? '' : style_select($data['user_style']),
+					'S_CAN_HIDE_ONLINE'		=> $this->auth->acl_get('u_hideonline'),
+					'S_SELECT_NOTIFY'		=> $this->config['jab_enable'] && $this->user->data['user_jabber'] && @extension_loaded('xml'),
+				]);
 			break;
 
-			case 'view':
-
-				add_form_key('ucp_prefs_view');
+			case 'display':
+				$form_key = 'ucp_prefs_view';
+				add_form_key($form_key);
 
 				$data = [
-					'topic_sk'		=> $this->request->variable('topic_sk', (!empty($this->user->data['user_topic_sortby_type'])) ? $this->user->data['user_topic_sortby_type'] : 't'),
-					'topic_sd'		=> $this->request->variable('topic_sd', (!empty($this->user->data['user_topic_sortby_dir'])) ? $this->user->data['user_topic_sortby_dir'] : 'd'),
-					'topic_st'		=> $this->request->variable('topic_st', (!empty($this->user->data['user_topic_show_days'])) ? (int) $this->user->data['user_topic_show_days'] : 0),
+					'topic_sk'		=> $this->request->variable('topic_sk', !empty($this->user->data['user_topic_sortby_type']) ? $this->user->data['user_topic_sortby_type'] : 't'),
+					'topic_sd'		=> $this->request->variable('topic_sd', !empty($this->user->data['user_topic_sortby_dir']) ? $this->user->data['user_topic_sortby_dir'] : 'd'),
+					'topic_st'		=> $this->request->variable('topic_st', !empty($this->user->data['user_topic_show_days']) ? (int) $this->user->data['user_topic_show_days'] : 0),
 
-					'post_sk'		=> $this->request->variable('post_sk', (!empty($this->user->data['user_post_sortby_type'])) ? $this->user->data['user_post_sortby_type'] : 't'),
-					'post_sd'		=> $this->request->variable('post_sd', (!empty($this->user->data['user_post_sortby_dir'])) ? $this->user->data['user_post_sortby_dir'] : 'a'),
-					'post_st'		=> $this->request->variable('post_st', (!empty($this->user->data['user_post_show_days'])) ? (int) $this->user->data['user_post_show_days'] : 0),
+					'post_sk'		=> $this->request->variable('post_sk', !empty($this->user->data['user_post_sortby_type']) ? $this->user->data['user_post_sortby_type'] : 't'),
+					'post_sd'		=> $this->request->variable('post_sd', !empty($this->user->data['user_post_sortby_dir']) ? $this->user->data['user_post_sortby_dir'] : 'a'),
+					'post_st'		=> $this->request->variable('post_st', !empty($this->user->data['user_post_show_days']) ? (int) $this->user->data['user_post_show_days'] : 0),
 
 					'images'		=> $this->request->variable('images', (bool) $this->user->optionget('viewimg')),
 					'flash'			=> $this->request->variable('flash', (bool) $this->user->optionget('viewflash')),
@@ -235,8 +297,7 @@ class settings
 				 * To assign data to the template, use $this->template->assign_vars()
 				 *
 				 * @event core.ucp_prefs_view_data
-				 * @var bool	submit		Do we display the form only
-				 *							or did the user press submit
+				 * @var bool	submit		Do we display the form only or did the user press submit
 				 * @var array	data		Array with current ucp options data
 				 * @since 3.1.0-a1
 				 */
@@ -245,6 +306,11 @@ class settings
 
 				if ($submit)
 				{
+					if (!check_form_key($form_key))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
 					$error = validate_data($data, [
 						'topic_sk'	=> [
 							['string', false, 1, 1],
@@ -264,12 +330,7 @@ class settings
 						],
 					]);
 
-					if (!check_form_key('ucp_prefs_view'))
-					{
-						$error[] = 'FORM_INVALID';
-					}
-
-					if (!count($error))
+					if (empty($error))
 					{
 						$this->user->optionset('viewimg', $data['images']);
 						$this->user->optionset('viewflash', $data['flash']);
@@ -289,8 +350,8 @@ class settings
 							'user_topic_sortby_dir'		=> $data['topic_sd'],
 							'user_post_sortby_dir'		=> $data['post_sd'],
 
-							'user_topic_show_days'	=> $data['topic_st'],
-							'user_post_show_days'	=> $data['post_st'],
+							'user_topic_show_days'		=> $data['topic_st'],
+							'user_post_show_days'		=> $data['post_st'],
 						];
 
 						/**
@@ -306,16 +367,16 @@ class settings
 
 						$sql = 'UPDATE ' . $this->tables['users'] . '
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $this->user->data['user_id'];
+							WHERE user_id = ' . (int) $this->user->data['user_id'];
 						$this->db->sql_query($sql);
 
-						meta_refresh(3, $this->u_action);
-						$message = $this->language->lang('PREFERENCES_UPDATED') . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						$this->helper->assign_meta_refresh_var(3, $u_mode);
+
+						return $this->helper->message($this->language->lang('PREFERENCES_UPDATED') . $return);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = array_map([$user, 'lang'], $error);
+					$error = array_map([$this->language, 'lang'], $error);
 				}
 
 				$sort_dir_text = ['a' => $this->language->lang('ASCENDING'), 'd' => $this->language->lang('DESCENDING')];
@@ -332,13 +393,15 @@ class settings
 				$sort_by_post_text = ['a' => $this->language->lang('AUTHOR'), 't' => $this->language->lang('POST_TIME'), 's' => $this->language->lang('SUBJECT')];
 				$sort_by_post_sql = ['a' => 'u.username_clean', 't' => 'p.post_id', 's' => 'p.post_subject'];
 
-				$_options = ['topic', 'post'];
-				foreach ($_options as $sort_option)
+				$s_limit_topic_days = $s_sort_topic_key = $s_sort_topic_dir = '';
+				$s_limit_post_days = $s_sort_post_key = $s_sort_post_dir = '';
+
+				foreach (['topic', 'post'] as $sort_option)
 				{
 					${'s_limit_' . $sort_option . '_days'} = '<select name="' . $sort_option . '_st">';
 					foreach (${'limit_' . $sort_option . '_days'} as $day => $text)
 					{
-						$selected = ($data[$sort_option . '_st'] == $day) ? ' selected="selected"' : '';
+						$selected = $data[$sort_option . '_st'] == $day ? ' selected="selected"' : '';
 						${'s_limit_' . $sort_option . '_days'} .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_limit_' . $sort_option . '_days'} .= '</select>';
@@ -346,7 +409,7 @@ class settings
 					${'s_sort_' . $sort_option . '_key'} = '<select name="' . $sort_option . '_sk">';
 					foreach (${'sort_by_' . $sort_option . '_text'} as $key => $text)
 					{
-						$selected = ($data[$sort_option . '_sk'] == $key) ? ' selected="selected"' : '';
+						$selected = $data[$sort_option . '_sk'] == $key ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_key'} .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_key'} .= '</select>';
@@ -354,7 +417,7 @@ class settings
 					${'s_sort_' . $sort_option . '_dir'} = '<select name="' . $sort_option . '_sd">';
 					foreach ($sort_dir_text as $key => $value)
 					{
-						$selected = ($data[$sort_option . '_sd'] == $key) ? ' selected="selected"' : '';
+						$selected = $data[$sort_option . '_sd'] == $key ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_dir'} .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
@@ -364,8 +427,7 @@ class settings
 				 * Run code before view form is displayed
 				 *
 				 * @event core.ucp_prefs_view_after
-				 * @var bool	submit				Do we display the form only
-				 *									or did the user press submit
+				 * @var bool	submit				Do we display the form only or did the user press submit
 				 * @var array	data				Array with current ucp options data
 				 * @var array	sort_dir_text		Array with sort dir language strings
 				 * @var array	limit_topic_days	Topic ordering options
@@ -403,29 +465,34 @@ class settings
 				];
 				extract($this->dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
 
+				unset($limit_topic_days, $sort_by_topic_text, $sort_by_topic_sql);
+				unset($limit_post_days, $sort_by_post_text, $sort_by_post_sql);
+
 				$this->template->assign_vars([
-					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
+					'ERROR'					=> !empty($error) ? implode('<br />', $error) : '',
 
-					'S_IMAGES'			=> $data['images'],
-					'S_FLASH'			=> $data['flash'],
-					'S_SMILIES'			=> $data['smilies'],
-					'S_SIGS'			=> $data['sigs'],
-					'S_AVATARS'			=> $data['avatars'],
-					'S_DISABLE_CENSORS'	=> $data['wordcensor'],
+					'S_IMAGES'				=> $data['images'],
+					'S_FLASH'				=> $data['flash'],
+					'S_SMILIES'				=> $data['smilies'],
+					'S_SIGS'				=> $data['sigs'],
+					'S_AVATARS'				=> $data['avatars'],
+					'S_DISABLE_CENSORS'		=> $data['wordcensor'],
 
-					'S_CHANGE_CENSORS'		=> ($this->auth->acl_get('u_chgcensors') && $this->config['allow_nocensors']) ? true : false,
+					'S_CHANGE_CENSORS'		=> $this->auth->acl_get('u_chgcensors') && $this->config['allow_nocensors'],
 
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
 					'S_TOPIC_SORT_DIR'		=> $s_sort_topic_dir,
 					'S_POST_SORT_DAYS'		=> $s_limit_post_days,
 					'S_POST_SORT_KEY'		=> $s_sort_post_key,
-					'S_POST_SORT_DIR'		=> $s_sort_post_dir]
-				);
+					'S_POST_SORT_DIR'		=> $s_sort_post_dir,
+				]);
 
 			break;
 
 			case 'post':
+				$form_key = 'ucp_prefs_post';
+				add_form_key($form_key);
 
 				$data = [
 					'bbcode'	=> $this->request->variable('bbcode', $this->user->optionget('bbcode')),
@@ -433,7 +500,6 @@ class settings
 					'sig'		=> $this->request->variable('sig', $this->user->optionget('attachsig')),
 					'notify'	=> $this->request->variable('notify', (bool) $this->user->data['user_notify']),
 				];
-				add_form_key('ucp_prefs_post');
 
 				/**
 				 * Add UCP edit posting defaults data before they are assigned to the template or submitted
@@ -441,8 +507,7 @@ class settings
 				 * To assign data to the template, use $this->template->assign_vars()
 				 *
 				 * @event core.ucp_prefs_post_data
-				 * @var bool	submit		Do we display the form only
-				 *							or did the user press submit
+				 * @var bool	submit		Do we display the form only or did the user press submit
 				 * @var array	data		Array with current ucp options data
 				 * @since 3.1.0-a1
 				 */
@@ -451,50 +516,47 @@ class settings
 
 				if ($submit)
 				{
-					if (check_form_key('ucp_prefs_post'))
+					if (!check_form_key($form_key))
 					{
-						$this->user->optionset('bbcode', $data['bbcode']);
-						$this->user->optionset('smilies', $data['smilies']);
-						$this->user->optionset('attachsig', $data['sig']);
-
-						$sql_ary = [
-							'user_options'	=> $this->user->data['user_options'],
-							'user_notify'	=> $data['notify'],
-						];
-
-						/**
-						 * Update UCP edit posting defaults data on form submit
-						 *
-						 * @event core.ucp_prefs_post_update_data
-						 * @var array	data		Submitted display options data
-						 * @var array	sql_ary		Display options data we update
-						 * @since 3.1.0-a1
-						 */
-						$vars = ['data', 'sql_ary'];
-						extract($this->dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
-
-						$sql = 'UPDATE ' . $this->tables['users'] . '
-							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $this->user->data['user_id'];
-						$this->db->sql_query($sql);
-
-						$msg = $this->language->lang('PREFERENCES_UPDATED');
+						return trigger_error($this->language->lang('FORM_INVALID') . $return, E_USER_WARNING);
 					}
-					else
-					{
-						$msg = $this->language->lang('FORM_INVALID');
-					}
-					meta_refresh(3, $this->u_action);
-					$message = $msg . '<br /><br />' . sprintf($this->language->lang('RETURN_UCP'), '<a href="' . $this->u_action . '">', '</a>');
-					trigger_error($message);
+
+					$this->user->optionset('bbcode', $data['bbcode']);
+					$this->user->optionset('smilies', $data['smilies']);
+					$this->user->optionset('attachsig', $data['sig']);
+
+					$sql_ary = [
+						'user_options'	=> $this->user->data['user_options'],
+						'user_notify'	=> $data['notify'],
+					];
+
+					/**
+					 * Update UCP edit posting defaults data on form submit
+					 *
+					 * @event core.ucp_prefs_post_update_data
+					 * @var array	data		Submitted display options data
+					 * @var array	sql_ary		Display options data we update
+					 * @since 3.1.0-a1
+					 */
+					$vars = ['data', 'sql_ary'];
+					extract($this->dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
+
+					$sql = 'UPDATE ' . $this->tables['users'] . '
+						SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . $this->user->data['user_id'];
+					$this->db->sql_query($sql);
+
+					$this->helper->assign_meta_refresh_var(3, $u_mode);
+
+					return $this->helper->message($this->language->lang('PREFERENCES_UPDATED') . $return);
 				}
 
 				$this->template->assign_vars([
 					'S_BBCODE'	=> $data['bbcode'],
 					'S_SMILIES'	=> $data['smilies'],
 					'S_SIG'		=> $data['sig'],
-					'S_NOTIFY'	=> $data['notify']]
-				);
+					'S_NOTIFY'	=> $data['notify'],
+				]);
 			break;
 		}
 
@@ -516,14 +578,16 @@ class settings
 		];
 		extract($this->dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
 
+		$l_mode = $this->language->lang('UCP_SETTINGS_' . utf8_strtoupper($mode));
+		$t_mode = $mode === 'global' ? 'ucp_prefs_personal.html' : ($mode === 'display' ? 'ucp_prefs_view.html' : 'ucp_prefs_post.html');
+
 		$this->template->assign_vars([
-			'L_TITLE'			=> $this->language->lang('UCP_PREFS_' . strtoupper($mode)),
+			'L_TITLE'			=> $l_mode,
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> $this->u_action]
-		);
+			'S_UCP_ACTION'		=> $u_mode,
+		]);
 
-		$this->tpl_name = 'ucp_prefs_' . $mode;
-		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);
+		return $this->helper->render($t_mode, $l_mode);
 	}
 }

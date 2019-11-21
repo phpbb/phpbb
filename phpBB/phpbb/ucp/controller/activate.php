@@ -210,8 +210,6 @@ class activate
 				include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 			}
 
-			include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-
 			$messenger = new \messenger(false);
 
 			$messenger->template('admin_welcome_activated', $user_row['user_lang']);

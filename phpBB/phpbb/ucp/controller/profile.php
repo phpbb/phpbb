@@ -278,8 +278,6 @@ class profile
 								include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
 							}
 
-							include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-
 							$user_act_key = gen_rand_string(mt_rand(6, 10));
 
 							$messenger = new \messenger(false);
