@@ -253,6 +253,11 @@ class login_link
 	 */
 	protected function process_login_result($result)
 	{
+		if ($this->user->data['is_registered'])
+		{
+			return redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+		}
+
 		$login_error = null;
 
 		if ($result['status'] != LOGIN_SUCCESS)
