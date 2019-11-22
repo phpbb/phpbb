@@ -1651,7 +1651,7 @@ function submit_pm($mode, $subject, &$data_ary, $local_box = PRIVMSGS_OUTBOX)
 	// Recipient Information
 	$recipients = $to = $bcc = array();
 
-//	if ($mode != 'edit')
+	if ($mode != 'edit')
 	{
 		// Build Recipient List
 		// u|g => array($user_id => 'to'|'bcc')
@@ -1712,7 +1712,7 @@ function submit_pm($mode, $subject, &$data_ary, $local_box = PRIVMSGS_OUTBOX)
 	// First of all make sure the subject are having the correct length.
 	$subject = truncate_string($subject);
 
-    if (($local_box == PRIVMSGS_DRAFTBOX) && ($subject == ''))
+	if (($local_box == PRIVMSGS_DRAFTBOX) && ($subject == ''))
 	{
 		trigger_error('NO_SUBJECT');
 	}
@@ -1842,7 +1842,7 @@ function submit_pm($mode, $subject, &$data_ary, $local_box = PRIVMSGS_OUTBOX)
 				'pm_replied'	=> ($mode == 'reply') ? 1 : 0))
 			);
 		}
-        else
+		else
 		{
 			$sql_ary = array();
 			foreach ($recipients as $user_id => $type)
@@ -1970,7 +1970,7 @@ function submit_pm($mode, $subject, &$data_ary, $local_box = PRIVMSGS_OUTBOX)
 	}
 
 	// Delete draft if post was submitted...
-    if ($mode == 'submit_draft')
+	if ($mode == 'submit_draft')
 	{
 		$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
 			WHERE folder_id = ' . PRIVMSGS_DRAFTBOX . '

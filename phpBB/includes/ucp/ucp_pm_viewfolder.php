@@ -134,7 +134,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				// Generate all URIs ...
 				$can_delete_message = ($folder_id == PRIVMSGS_DRAFTBOX) || ($auth->acl_get('u_pm_delete'));
 				$can_edit_message = ($folder_id == PRIVMSGS_DRAFTBOX) ||
-                    ($row['folder_id'] == PRIVMSGS_OUTBOX) && $auth->acl_get('u_pm_edit');
+					($row['folder_id'] == PRIVMSGS_OUTBOX) && $auth->acl_get('u_pm_edit');
 
 				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
 				$edit_message_url = $can_edit_message ? append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=$message_id") : '';
