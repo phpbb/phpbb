@@ -59,7 +59,7 @@ then
 fi
 
 # Disable xdebug on travis
-phpenv config-rm xdebug.ini
+phpenv config-rm xdebug.ini || true
 
 # redis
 # Disabled redis for now as it causes travis to fail
