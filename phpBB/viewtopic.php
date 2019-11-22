@@ -2092,6 +2092,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && count($attachments[$row['post_id']]) > 1,
 		'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE) ? true : false,
+		'S_CAN_APPROVE'		=> $auth->acl_get('m_approve', $forum_id),
 		'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 		'L_POST_DELETED_MESSAGE'	=> $l_deleted_message,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,

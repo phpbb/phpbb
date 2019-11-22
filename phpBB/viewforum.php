@@ -899,6 +899,11 @@ if (count($topic_list))
 
 		// Replies
 		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $topic_forum_id) - 1;
+		// Correction for case of unapproved topic visible to poster
+		if ($replies < 0)
+		{
+			$replies = 0;
+		}
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
