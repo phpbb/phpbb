@@ -606,7 +606,6 @@ $lang = array_merge($lang, array(
 	'POST_DELETED_BY'		=> '<strong>%2$s</strong> deleted the post by <strong>%1$s</strong> on %3$s.',
 	'POST_DELETED_BY_REASON'=> '<strong>%2$s</strong> deleted the post by <strong>%1$s</strong> on %3$s for the following reason: %4$s',
 	'POST_DETAILS'			=> 'Post details',
-//	'POST_DRAFT'			=> 'Draft Post',
 	'POST_NEW_TOPIC'		=> 'Post new topic',
 	'POST_PCT'				=> '%.2f%% of all posts',
 	'POST_PCT_ACTIVE'		=> '%.2f%% of user’s posts',

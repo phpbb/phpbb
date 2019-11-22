@@ -1090,14 +1090,14 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 	// Specify our post mode
 	$post_mode = 'delete';
-    if ($data['post_visibility'] == ITEM_DRAFT)
+	if ($data['post_visibility'] == ITEM_DRAFT)
 	{
 		if ($data['topic_first_post_id'] == $post_id)
 		{
 			$post_mode = 'delete_topic';
 		}
 	}
-    else
+	else
 	{
 		if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && ($data['topic_posts_approved'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1))
 		{
@@ -1457,11 +1457,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$sql_data = $topic_row = array();
 	$poster_id = ($mode == 'edit') ? $data_ary['poster_id'] : (int) $user->data['user_id'];
 
-    if ($data_ary['post_visibility'] == ITEM_DRAFT)
+	if ($data_ary['post_visibility'] == ITEM_DRAFT)
 	{
 		$post_visibility = ITEM_DRAFT;
 	}
-    else
+	else
 	{
 		// Retrieve some additional information if not present
 		if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
@@ -1474,7 +1474,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$topic_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-            if ($topic_row['post_visibility'] != ITEM_DRAFT)
+			if ($topic_row['post_visibility'] != ITEM_DRAFT)
 			{
 				$data_ary['topic_visibility'] = $topic_row['topic_visibility'];
 				$data_ary['post_visibility'] = $topic_row['post_visibility'];
@@ -1709,7 +1709,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				(($post_visibility == ITEM_DELETED) ? ', topic_posts_softdeleted = topic_posts_softdeleted + 1' : '') .
 				((!empty($data_ary['attachment_data']) || (isset($data_ary['topic_attachment']) && $data_ary['topic_attachment'])) ? ', topic_attachment = 1' : '');
 
-            if ($post_visibility != ITEM_DRAFT)
+			if ($post_visibility != ITEM_DRAFT)
 			{
 				$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data_ary['forum_id']) && $post_visibility == ITEM_APPROVED) ? ', user_posts = user_posts + 1' : '');
 			}
@@ -2123,7 +2123,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	// Committing the transaction before updating search index
 	$db->sql_transaction('commit');
 
-    if ($data_ary['post_visibility'] != ITEM_DRAFT)
+	if ($data_ary['post_visibility'] != ITEM_DRAFT)
 	{
 		// Index message contents
 		if ($update_search_index && $data_ary['enable_indexing'])
@@ -2224,7 +2224,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		* @event core.modify_submit_notification_data
 		* @var	array	notification_data	The notification data to be inserted in to the database
 		* @var	array	data_ary			The data array with a lot of the post submission data
-		* @var 	string	mode				The posting mode
+		* @var  string	mode				The posting mode
 		* @var	int		poster_id			The poster id
 		* @since 3.2.4-RC1
 		*/
@@ -2345,7 +2345,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		$url = "{$phpbb_root_path}posting.$phpEx";
 		$url = append_sid($url, 'f=' . $data_ary['forum_id'] . '&amp;p=' . $data_ary['post_id'] . '&amp;mode=edit');
 	}
-    else
+	else
 	{
 		$params = $add_anchor = '';
 
@@ -2597,12 +2597,12 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 	extract($phpbb_dispatcher->trigger_event('core.handle_post_delete_conditions', compact($vars)));
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($force_delete_allowed || 
-		($is_soft && $force_softdelete_allowed) || 
-		$auth->acl_get("m_$perm_check", $forum_id) || 
-		($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) ||
-		($post_data['post_visibility'] == ITEM_DRAFT && $post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && !$post_data['post_edit_locked']) 
-		)
+	if ($force_delete_allowed ||
+		 ($is_soft && $force_softdelete_allowed) ||
+		 $auth->acl_get("m_$perm_check", $forum_id) ||
+		 ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time()	-	($config['delete_time']	*	60)	||	!$config['delete_time']))	||
+		 ($post_data['post_visibility'] == ITEM_DRAFT && $post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && !$post_data['post_edit_locked'])
+	   )
 	{
 		$s_hidden_fields = array(
 			'p'		=> $post_id,
@@ -2675,11 +2675,11 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 			global $template;
 
 			$can_delete = $force_delete_allowed || ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id)));
-            if ($post_data['post_visibility'] == ITEM_DRAFT)
+			if ($post_data['post_visibility'] == ITEM_DRAFT)
 			{
 				$can_softdelete = false;
 			}
-            else
+			else
 			{
 				$can_softdelete = $force_softdelete_allowed || ($auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id)));
 			}

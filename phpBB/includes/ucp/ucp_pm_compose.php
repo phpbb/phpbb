@@ -128,47 +128,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
 
 	// Output PM_TO box if message composing
-//	if ($action != 'edit')  //made unconditional for now but could be moved to just above 	if (!$post) below (if action != edit || folder not draftbox)
-	{
-		// Add groups to PM box
-		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
-		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
-				FROM ' . GROUPS_TABLE . ' g';
-
-			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-			{
-				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-					ON (
-						g.group_id = ug.group_id
-						AND ug.user_id = ' . $user->data['user_id'] . '
-						AND ug.user_pending = 0
-					)
-					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
-			}
-
-			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
-
-			$sql .= 'g.group_receive_pm = 1
-				ORDER BY g.group_type DESC, g.group_name ASC';
-			$result = $db->sql_query($sql);
-
-			$group_options = '';
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
-			}
-			$db->sql_freeresult($result);
-		}
-
-		$template->assign_vars(array(
-			'S_SHOW_PM_BOX'		=> true,
-			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
-		));
-	}
-
 	$sql = '';
 	$folder_id = 0;
 
@@ -306,6 +265,47 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$result = $db->sql_query($sql);
 		$post = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if ($action != 'edit')
+		{
+			// Add groups to PM box
+			if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
+			{
+				$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
+					FROM ' . GROUPS_TABLE . ' g';
+
+				if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+				{
+					$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+						ON (
+							g.group_id = ug.group_id
+							AND ug.user_id = ' . $user->data['user_id'] . '
+							AND ug.user_pending = 0
+						)
+						WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+				}
+
+				$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+				$sql .= 'g.group_receive_pm = 1
+					ORDER BY g.group_type DESC, g.group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$group_options = '';
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name'])	.	'</option>';
+				}
+				$db->sql_freeresult($result);
+			}
+
+			$template->assign_vars(array(
+				'S_SHOW_PM_BOX'		=> true,
+				'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
+				'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
+				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
+			));
+		}
 
 		if (!$post)
 		{

@@ -159,13 +159,13 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 
 	$available_units = array(
 		'tb' => array(
-			'min' 		=> 1099511627776, // pow(2, 40)
+			'min'   	=> 1099511627776, // pow(2, 40)
 			'index'		=> 4,
 			'si_unit'	=> 'TB',
 			'iec_unit'	=> 'TIB',
 		),
 		'gb' => array(
-			'min' 		=> 1073741824, // pow(2, 30)
+			'min'   	=> 1073741824, // pow(2, 30)
 			'index'		=> 3,
 			'si_unit'	=> 'GB',
 			'iec_unit'	=> 'GIB',
@@ -1169,7 +1169,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 		 *
 		 * @event core.get_unread_topics_modify_sql
 		 * @var array     sql_array    Fully assembled SQL query with keys SELECT, FROM, LEFT_JOIN, WHERE
-		 * @var int       last_mark    User's last_mark time
+		 * @var int 	  last_mark    User's last_mark time
 		 * @var string    sql_extra    Extra WHERE SQL statement
 		 * @var string    sql_sort     ORDER BY SQL sorting statement
 		 * @since 3.1.4-RC1
@@ -2114,8 +2114,8 @@ function check_form_key($form_name, $timespan = false)
 *		message text is _CONFIRM appended to title.
 *		If title cannot be found in user->lang a default one is displayed
 *		If title_CONFIRM cannot be found in user->lang the text given is used.
-*       If title is an array, the first array value is used as explained per above,
-*       all other array values are sent as parameters to the language function.
+*   	If title is an array, the first array value is used as explained per above,
+*   	all other array values are sent as parameters to the language function.
 * @param string $hidden Hidden variables
 * @param string $html_body Template used for confirm box
 * @param string $u_action Custom form action
@@ -2338,7 +2338,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$username	= $request->variable('username', '', true);
 		$autologin	= $request->is_set_post('autologin');
 		$viewonline = (int) !$request->is_set_post('viewonline');
-		$admin 		= ($admin) ? 1 : 0;
+		$admin  	= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
@@ -2462,10 +2462,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		 * This event allows an extension to process when a user fails a login attempt
 		 *
 		 * @event core.login_box_failed
-		 * @var array   result      Login result data
-		 * @var string  username    User name used to login
-		 * @var string  password    Password used to login
-		 * @var string  err         Error message
+		 * @var array   result  	Login result data
+		 * @var string  username	User name used to login
+		 * @var string  password	Password used to login
+		 * @var string  err 		Error message
 		 * @since 3.1.3-RC1
 		 */
 		$vars = array('result', 'username', 'password', 'err');
@@ -2523,14 +2523,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? $controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
+		'U_SEND_PASSWORD'   	=> ($config['email_enable']) ? $controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
 		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
+		'S_HIDDEN_FIELDS'   	=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
 		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
@@ -3130,12 +3130,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
-			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
+			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size:	62.5%;	margin:	0;	}	';
 			echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
 			echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
 			echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
 			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } ';
-			echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
+			echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%;	text-align:	left;	}	';
 			echo "\n" . '/* ]]> */' . "\n";
 			echo '</style>';
 			echo '</head>';

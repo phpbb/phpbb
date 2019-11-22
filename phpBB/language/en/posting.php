@@ -113,7 +113,6 @@ $lang = array_merge($lang, array(
 	'DISABLE_SMILIES'			=> 'Disable smilies',
 	'DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed.',
-//	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMPTY_FILEUPLOAD'			=> 'The uploaded file is empty.',
@@ -209,7 +208,6 @@ $lang = array_merge($lang, array(
 	'POST_CONFIRMATION'			=> 'Confirmation of post',
 	'POST_CONFIRM_EXPLAIN'		=> 'To prevent automated posts the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
 	'POST_DELETED'				=> 'This post has been deleted successfully.',
-	//'POST_DRAFT_SAVED'			=> 'The draft post has been saved successfully.',
 	'POST_EDITED'				=> 'This post has been edited successfully.',
 	'POST_EDITED_MOD'			=> 'This post has been edited successfully, but it will need to be approved by a moderator before it is publicly viewable.',
 	'POST_GLOBAL'				=> 'Global',

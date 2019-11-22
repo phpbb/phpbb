@@ -64,27 +64,27 @@ class ucp_pm
 		// Folder directly specified?
 		$folder_specified = $request->variable('folder', '');
 
-        switch ($folder_specified)
+		switch ($folder_specified)
 		{
 			case 'inbox';
 				$folder_specified = PRIVMSGS_INBOX;
-                break;
+				break;
 
 			case 'outbox';
 				$folder_specified = PRIVMSGS_OUTBOX;
-                break;
+				break;
 
 			case 'sentbox';
 				$folder_specified = PRIVMSGS_SENTBOX;
-                break;
+				break;
 
 			case 'draftbox';
 				$folder_specified = PRIVMSGS_DRAFTBOX;
-                break;
+				break;
 
 			default:
 				$folder_specified = (int) $folder_specified;
-                break;
+				break;
 		}
 
 		if (!$folder_specified)

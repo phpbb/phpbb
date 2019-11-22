@@ -173,7 +173,6 @@ $lang = array_merge($lang, array(
 	'DELETE_MESSAGE'			=> 'Delete message',
 	'DELETE_MESSAGE_CONFIRM'	=> 'Are you sure you want to delete this private message?',
 	'DELETE_MESSAGES_IN_FOLDER'	=> 'Delete all messages within removed folder',
-	'DELETE_PM'					=> 'Delete message',
 	'DELETE_RULE'				=> 'Delete rule',
 	'DELETE_RULE_CONFIRM'		=> 'Are you sure you want to delete this rule?',
 	'DEMOTE_SELECTED'			=> 'Demote selected',
