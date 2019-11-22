@@ -48,9 +48,6 @@ then
 	echo 'Enabling APC PHP extension'
 	printf "\n" | pecl install apc
 	echo 'apc.enable_cli=1' >> "$php_ini_file"
-else
-	echo 'Disabling Opcache'
-	echo 'opcache.enable=0' >> "$php_ini_file"
 fi
 
 # APCu
