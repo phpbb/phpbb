@@ -120,9 +120,6 @@ class pm_settings
 		$this->language->add_lang('posting');
 		$this->template->assign_var('S_PRIVMSGS', true);
 
-		// Global variables defined in functions_privmsgs.php
-		global $global_privmsgs_rules, $global_rule_conditions;
-
 		set_user_message_limit();
 		get_folder($this->user->data['user_id']);
 
@@ -684,6 +681,11 @@ class pm_settings
 		}
 
 		$this->show_defined_rules($this->user->data['user_id'], $check_lang, $rule_lang, $action_lang, $folder);
+
+		$this->template->assign_vars([
+			'L_TITLE'		=> $this->language->lang('UCP_PM_SETTINGS'),
+			'S_UCP_ACTION'	=> $this->helper->route('ucp_pm_settings', ['action' => $action]),
+		]);
 
 		return $this->helper->render('ucp_pm_options.html', $this->language->lang('UCP_PM_OPTIONS'));
 	}

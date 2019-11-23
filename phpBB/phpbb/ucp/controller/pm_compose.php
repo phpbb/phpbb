@@ -1431,6 +1431,11 @@ class pm_compose
 			}
 		}
 
+		$this->template->assign_vars([
+			'L_TITLE'		=> $this->language->lang('UCP_PM_COMPOSE'),
+			'S_UCP_ACTION'	=> $this->helper->route('ucp_pm_compose', ['action' => $action]),
+		]);
+
 		return $this->helper->render('posting_body.html', $this->language->lang('UCP_PM_COMPOSE'));
 	}
 

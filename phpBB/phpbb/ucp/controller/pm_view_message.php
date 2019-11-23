@@ -147,7 +147,7 @@ class pm_view_message
 		// Assign TO/BCC Addresses to template
 		write_pm_addresses(['to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']], $author_id);
 
-		$user_info = get_user_information($author_id, $message_row);
+		$user_info = $this->get_user_information($author_id, $message_row);
 
 		// Parse the message and subject
 		$parse_flags = ($message_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
@@ -165,7 +165,7 @@ class pm_view_message
 			}
 			else
 			{
-				$edit_user_info = get_user_information($message_row['message_edit_user'], false);
+				$edit_user_info = $this->get_user_information($message_row['message_edit_user'], false);
 				$display_username = get_username_string('full', $message_row['message_edit_user'], $edit_user_info['username'], $edit_user_info['user_colour']);
 			}
 			$l_edited_by = '<br /><br />' . $this->language->lang('EDITED_TIMES_TOTAL', (int) $message_row['message_edit_count'], $display_username, $this->user->format_date($message_row['message_edit_time'], false, true));
@@ -468,7 +468,7 @@ class pm_view_message
 	/**
 	 * Get user information (only for message display)
 	 */
-	function get_user_information($user_id, $user_row)
+	protected function get_user_information($user_id, $user_row)
 	{
 		if (!$user_id)
 		{
