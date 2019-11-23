@@ -143,14 +143,6 @@ if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload
 	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 }
 
-/* @var $phpbb_hook_finder \phpbb\hook\finder */
-$phpbb_hook_finder = $phpbb_container->get('hook_finder');
-
-foreach ($phpbb_hook_finder->find() as $hook)
-{
-	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
-}
-
 /**
 * Main event which is triggered on every page
 *
