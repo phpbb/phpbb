@@ -1,0 +1,239 @@
+parameters:
+    ucp.ucp_account:
+        display: false
+        route:
+            path: /{mode}
+            defaults:
+                _controller: ucp.account:main
+                mode: ''
+            requirements:
+                mode: "activate|resend_activation|reset_password|forgot_password|register|confirm|login_link|login|logout|terms|privacy|permissions_switch|permissions_restore|delete_cookies"
+
+    # --- UCP > Overview -- #
+    ucp.ucp_cat_overview:
+        route: 'ucp_index'
+
+    ucp.ucp_index:
+        parent: 'ucp_cat_overview'
+        route:
+            path: /index
+            defaults:
+                _controller: ucp.front:main
+
+    # --- UCP > Manage --- #
+    ucp.ucp_cat_manage:
+        route: 'ucp_manage_subscriptions'
+
+    ucp.ucp_manage_subscriptions:
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/subscriptions
+            defaults:
+                _controller: ucp.manage:main
+                mode: 'subscriptions'
+
+    ucp.ucp_manage_bookmarks:
+        auth: 'cfg_allow_bookmarks'
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/bookmarks
+            defaults:
+                _controller: ucp.manage:main
+                mode: 'bookmarks'
+                page: 1
+
+    ucp.ucp_manage_notifications:
+        auth: 'cfg_allow_board_notifications'
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/notifications
+            defaults:
+                _controller: ucp.notifications:main
+                mode: 'manage'
+                page: 1
+
+    ucp.ucp_manage_drafts:
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/drafts
+            defaults:
+                _controller: ucp.drafts:main
+                mode: 'post'
+
+    ucp.ucp_manage_attachments:
+        auth: 'acl_u_attach'
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/attachments
+            defaults:
+                _controller: ucp.attachments:main
+                page: 1
+
+    ucp.ucp_manage_remember_me:
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/remember_me
+            defaults:
+                _controller: ucp.manage:main
+                mode: 'remember_me'
+
+    ucp.ucp_manage_oauth:
+        auth: 'authmethod_oauth'
+        parent: 'ucp_cat_manage'
+        route:
+            path: /manage/oauth
+            defaults:
+                _controller: ucp.auth_link:main
+
+    # --- UCP > Profile --- #
+    ucp.ucp_cat_profile:
+        route: 'ucp_profile_account'
+
+    ucp.ucp_profile_account:
+        parent: 'ucp_cat_profile'
+        route:
+            path: /profile/account
+            defaults:
+                _controller: ucp.profile:main
+                mode: 'account'
+
+    ucp.ucp_profile_profile:
+        auth: 'acl_u_chgprofileinfo'
+        parent: 'ucp_cat_profile'
+        route:
+            path: /profile
+            defaults:
+                _controller: ucp.profile:main
+                mode: 'profile'
+
+    ucp.ucp_profile_avatar:
+        auth: 'cfg_allow_avatar'
+        parent: 'ucp_cat_profile'
+        route:
+            path: /profile/avatar
+            defaults:
+                _controller: ucp.profile:main
+                mode: 'avatar'
+
+    ucp.ucp_profile_signature:
+        auth: 'acl_u_sig'
+        parent: 'ucp_cat_profile'
+        route:
+            path: /profile/signature
+            defaults:
+                _controller: ucp.profile:main
+                mode: 'signature'
+
+    # --- UCP > Settings --- #
+    ucp.ucp_cat_settings:
+        route: 'ucp_settings_global'
+
+    ucp.ucp_settings_global:
+        parent: 'ucp_cat_settings'
+        route:
+            path: /settings/global
+            defaults:
+                _controller: ucp.settings:main
+                mode: 'global'
+
+    ucp.ucp_settings_post:
+        parent: 'ucp_cat_settings'
+        route:
+            path: /settings/post
+            defaults:
+                _controller: ucp.settings:main
+                mode: 'post'
+
+    ucp.ucp_settings_display:
+        parent: 'ucp_cat_settings'
+        route:
+            path: /settings/display
+            defaults:
+                _controller: ucp.settings:main
+                mode: 'display'
+
+    ucp.ucp_settings_notifications:
+        parent: 'ucp_cat_settings'
+        route:
+            path: /settings/notifications
+            defaults:
+                _controller: ucp.notifications:main
+                mode: 'settings'
+
+    # --- UCP > Private Messages --- #
+    ucp.ucp_cat_pm:
+        route: 'ucp_pm_view'
+
+    ucp.ucp_pm_compose:
+        parent: 'ucp_cat_pm'
+        route:
+            path: /pm/compose/{action}
+            defaults:
+                _controller: ucp.pm_compose:main
+                action: 'post'
+
+    ucp.ucp_pm_drafts:
+        parent: 'ucp_cat_pm'
+        route:
+            path: /pm/drafts
+            defaults:
+                _controller: ucp.drafts:main
+                mode: 'pm'
+
+    ucp.ucp_pm_view:
+        parent: 'ucp_cat_pm'
+        route:
+            path: /pm/folder/{folder}
+            defaults:
+                _controller: ucp.pm_view_folder:main
+                folder: 'inbox'
+
+    ucp.ucp_pm_settings:
+        parent: 'ucp_cat_pm'
+        route:
+            path: /pm/settings
+            defaults:
+                _controller: ucp.pm_settings:main
+
+    # --- UCP > Groups --- #
+    ucp.ucp_cat_groups:
+        route: 'ucp_groups_edit'
+
+    ucp.ucp_groups_edit:
+        parent: 'ucp_cat_groups'
+        route:
+            path: /groups/edit
+            defaults:
+                _controller: ucp.groups:main
+                mode: 'membership'
+
+    ucp.ucp_groups_manage:
+        parent: 'ucp_cat_groups'
+        route:
+            path: /groups/manage/{action}/{g}
+            defaults:
+                _controller: ucp.groups:main
+                mode: 'manage'
+                page: 1
+                action: ''
+                g: 0
+
+    # --- UCP > Zebra --- #
+    ucp.ucp_cat_zebra:
+        route: 'ucp_zebra_friends'
+
+    ucp.ucp_zebra_friends:
+        parent: 'ucp_cat_zebra'
+        route:
+            path: /friends
+            defaults:
+                _controller: ucp.zebra:main
+                mode: 'friends'
+
+    ucp.ucp_zebra_foes:
+        parent: 'ucp_cat_zebra'
+        route:
+            path: /foes
+            defaults:
+                _controller: ucp.zebra:main
+                mode: 'foes'

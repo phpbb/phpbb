@@ -26,6 +26,9 @@ class functions
 	/** @var ContainerInterface */
 	protected $container;
 
+	/** @var \phpbb\cp\menu */
+	protected $cp_menu;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -65,6 +68,7 @@ class functions
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\config\config				$config			Config object
 	 * @param ContainerInterface				$container		Container object
+	 * @param \phpbb\cp\menu					$cp_menu		CP Menu object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\controller\helper			$helper			Controller helper object
@@ -81,6 +85,7 @@ class functions
 		\phpbb\auth\auth $auth,
 		\phpbb\config\config $config,
 		ContainerInterface $container,
+		\phpbb\cp\menu $cp_menu,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\controller\helper $helper,
@@ -97,6 +102,7 @@ class functions
 		$this->auth			= $auth;
 		$this->config		= $config;
 		$this->container	= $container;
+		$this->cp_menu		= $cp_menu;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
 		$this->helper		= $helper;
@@ -146,6 +152,8 @@ class functions
 		}
 
 		$this->user->update_session_infos();
+
+		$this->cp_menu->build('acp');
 
 		// gzip_compression
 		if ($this->config['gzip_compress'])

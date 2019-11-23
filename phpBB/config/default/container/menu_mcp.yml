@@ -1,0 +1,269 @@
+parameters:
+    # --- MCP > Main --- #
+    mcp.mcp_cat_main:
+        route: 'mcp_index'
+
+    mcp.mcp_index:
+        parent: 'mcp_cat_main'
+        route:
+            path: /index
+            defaults:
+                _controller: mcp.front:main
+
+    mcp.mcp_view_forum:
+        auth: '(forum_id || topic_id || post_id) && acl_m_,forum_id'
+        parent: 'mcp_cat_main'
+        route:
+            path: /forum
+            defaults:
+                _controller: mcp.main:main
+                mode: 'forum'
+                page: 1
+
+    mcp.mcp_view_topic:
+        auth: '(topic_id || post_id) && acl_m_,forum_id'
+        parent: 'mcp_cat_main'
+        route:
+            path: /topic
+            defaults:
+                _controller: mcp.main:main
+                mode: 'topic'
+                page: 1
+
+    mcp.mcp_view_post:
+        auth: 'post_id && (acl_m_,forum_id || (!forum_id && aclf_m_))'
+        parent: 'mcp_cat_main'
+        route:
+            path: /post
+            defaults:
+                _controller: mcp.main:main
+                mode: 'post'
+
+    # --- MCP > Moderation --- #
+    mcp.mcp_cat_moderation:
+        route: 'mcp_unapproved_topics'
+
+    mcp.mcp_unapproved_topics:
+        auth: 'aclf_m_approve'
+        parent: 'mcp_cat_moderation'
+        route:
+            path: /unapproved/topics
+            defaults:
+                _controller: mcp.moderation:main
+                mode: 'unapproved_topics'
+
+    mcp.mcp_unapproved_posts:
+        auth: 'aclf_m_approve'
+        parent: 'mcp_cat_moderation'
+        route:
+            path: /unapproved/posts
+            defaults:
+                _controller: mcp.moderation:main
+                mode: 'unapproved_posts'
+
+    mcp.mcp_approve_details:
+        auth: 'aclf_m_approve'
+        parent: 'mcp_cat_moderation'
+        display: false
+        route:
+            path: unapproved/details
+            defaults:
+                _controller: mcp.moderation:main
+                mode: 'approve_details'
+
+    mcp.mcp_deleted_topics:
+        auth: 'aclf_m_approve'
+        parent: 'mcp_cat_moderation'
+        route:
+            path: /deleted/topics
+            defaults:
+                _controller: mcp.moderation:main
+                mode: 'deleted_topics'
+
+    mcp.mcp_deleted_posts:
+        auth: 'aclf_m_approve'
+        parent: 'mcp_cat_moderation'
+        route:
+            path: /deleted/posts
+            defaults:
+                _controller: mcp.moderation:main
+                mode: 'deleted_posts'
+
+    # --- MCP > Reports --- #
+    mcp.mcp_cat_reports:
+        route: 'mcp_reports_open'
+
+    mcp.mcp_reports_open:
+        auth: 'aclf_m_report'
+        parent: 'mcp_cat_reports'
+        route:
+            path: /report/post/open
+            defaults:
+                _controller: mcp.reports:main
+                mode: 'open'
+                page: 1
+
+    mcp.mcp_reports_closed:
+        auth: 'aclf_m_report'
+        parent: 'mcp_cat_reports'
+        route:
+            path: /report/post/closed
+            defaults:
+                _controller: mcp.reports:main
+                mode: 'closed'
+                page: 1
+
+    mcp.mcp_report_details:
+        auth: 'aclf_m_report'
+        parent: 'mcp_cat_reports'
+        display: false
+        route:
+            path: /report/post/details
+            defaults:
+                _controller: mcp.reports:main
+                mode: 'details'
+
+    mcp.mcp_pm_reports_open:
+        auth: 'acl_m_pm_report'
+        parent: 'mcp_cat_reports'
+        route:
+            path: /report/pm/open
+            defaults:
+                _controller: mcp.pm_reports:main
+                page: 1
+                mode: 'open'
+
+    mcp.mcp_pm_reports_closed:
+        auth: 'acl_m_pm_report'
+        parent: 'mcp_cat_reports'
+        route:
+            path: /report/pm/closed
+            defaults:
+                _controller: mcp.pm_reports:main
+                page: 1
+                mode: 'closed'
+
+    mcp.mcp_pm_report_details:
+        auth: 'aclf_m_report'
+        parent: 'mcp_cat_reports'
+        display: false
+        route:
+            path: /report/pm/details
+            defaults:
+                _controller: mcp.pm_reports:main
+                mode: 'details'
+
+    # --- MCP > Warnings --- #
+    mcp.mcp_cat_warnings:
+        route: 'mcp_warn_overview'
+
+    mcp.mcp_warn_overview:
+        auth: 'aclf_m_warn'
+        parent: 'mcp_cat_warnings'
+        route:
+            path: /warn
+            defaults:
+                _controller: mcp.warn:warn_overview
+
+    mcp.mcp_warn_list:
+        auth: 'aclf_m_warn'
+        parent: 'mcp_cat_warnings'
+        route:
+            path: /warn/list
+            defaults:
+                _controller: mcp.warn:warn_list
+                page: 1
+
+    mcp.mcp_warn_user:
+        auth: 'aclf_m_warn'
+        parent: 'mcp_cat_warnings'
+        route:
+            path: /warn/user/{u}
+            defaults:
+                _controller: mcp.warn:warn_user
+                u: 0
+
+    mcp.mcp_warn_post:
+        auth: 'acl_m_warn && acl_f_read,forum_id && post_id'
+        parent: 'mcp_cat_warnings'
+        route:
+            path: /warn/post
+            defaults:
+                _controller: mcp.warn:warn_post
+
+    # --- MCP > Notes --- #
+    mcp.mcp_cat_notes:
+        route: 'mcp_notes_user'
+
+    mcp.mcp_notes_user:
+        parent: 'mcp_cat_notes'
+        route:
+            path: /notes/{u}
+            defaults:
+                _controller: mcp.notes:main
+                u: 0
+
+    # --- MCP > Logs --- #
+    mcp.mcp_cat_logs:
+        route: 'mcp_logs_overview'
+
+    mcp.mcp_logs_overview:
+        auth: 'acl_m_ || aclf_m_'
+        parent: 'mcp_cat_logs'
+        route:
+            path: /logs
+            defaults:
+                _controller: mcp.logs:main
+                mode: 'overview'
+                page: 1
+
+    mcp.mcp_logs_forum:
+        auth: 'acl_m_,forum_id && (forum_id || topic_id)'
+        parent: 'mcp_cat_logs'
+        route:
+            path: /logs/forum
+            defaults:
+                _controller: mcp.logs:main
+                mode: 'forum'
+                page: 1
+
+    mcp.mcp_logs_topic:
+        auth: 'acl_m_,forum_id && topic_id'
+        parent: 'mcp_cat_logs'
+        route:
+            path: /logs/topic
+            defaults:
+                _controller: mcp.logs:main
+                mode: 'topic'
+                page: 1
+
+    # --- MCP > Bans ---- #
+    mcp.mcp_cat_bans:
+        route: 'mcp_ban_email'
+
+    mcp.mcp_ban_email:
+        auth: 'acl_m_ban'
+        parent: 'mcp_cat_bans'
+        route:
+            path: /ban/email
+            defaults:
+                _controller: mcp.ban:main
+                mode: 'email'
+
+    mcp.mcp_ban_user:
+        auth: 'acl_m_ban'
+        parent: 'mcp_cat_bans'
+        route:
+            path: /ban/user
+            defaults:
+                _controller: mcp.ban:main
+                mode: 'user'
+
+    mcp.mcp_ban_ip:
+        auth: 'acl_m_ban'
+        parent: 'mcp_cat_bans'
+        route:
+            path: /ban/ip
+            defaults:
+                _controller: mcp.ban:main
+                mode: 'ip'

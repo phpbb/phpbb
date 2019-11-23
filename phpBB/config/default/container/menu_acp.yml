@@ -1,0 +1,850 @@
+parameters:
+    # --- ACP > Configuration --- #
+    acp.acp_cat_configuration:
+        route: 'acp_index'
+
+    acp.acp_index:
+        auth: 'acl_a_board'
+        parent: 'acp_cat_configuration'
+        route:
+            path: /index
+            defaults:
+                _controller: acp.main:main
+
+    # --- ACP > Configuration > Board configuration --- #
+    acp.acp_configuration_board:
+        auth: 'acl_a_board'
+        parent: 'acp_cat_configuration'
+        route: 'acp_settings_board'
+
+    acp.acp_settings_board:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/board
+            defaults:
+                _controller: acp.board:main
+                mode: 'board'
+
+    acp.acp_settings_features:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/features
+            defaults:
+                _controller: acp.board:main
+                mode: 'features'
+
+    acp.acp_settings_attachment:
+        auth: 'acl_a_attach'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/attachments
+            defaults:
+                _controller: acp.attachments:main
+                mode: 'attach'
+
+    acp.acp_settings_avatar:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/avatars
+            defaults:
+                _controller: acp.board:main
+                mode: 'avatar'
+
+    acp.acp_settings_signature:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/signature
+            defaults:
+                _controller: acp.board:main
+                mode: 'signature'
+
+    acp.acp_settings_post:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/post
+            defaults:
+                _controller: acp.board:main
+                mode: 'post'
+
+    acp.acp_settings_pm:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/pm
+            defaults:
+                _controller: acp.board:main
+                mode: 'pm'
+
+    acp.acp_settings_registration:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/registration
+            defaults:
+                _controller: acp.board:main
+                mode: 'registration'
+
+    acp.acp_settings_captcha:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/captcha
+            defaults:
+                _controller: acp.captcha:main
+
+    acp.acp_settings_contact:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/contact
+            defaults:
+                _controller: acp.contact:main
+
+    acp.acp_settings_feed:
+        auth: 'acl_a_board'
+        parent: 'acp_configuration_board'
+        route:
+            path: /settings/feed
+            defaults:
+                _controller: acp.board:main
+                mode: 'feed'
+
+    # --- ACP > Configuration > Server configuration --- #
+    acp.acp_configuration_server:
+        auth: 'acl_a_server'
+        parent: 'acp_cat_configuration'
+        route: 'acp_settings_server'
+
+    acp.acp_settings_server:
+        auth: 'acl_a_server'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/server
+            defaults:
+                _controller: acp.board:main
+                mode: 'server'
+
+    acp.acp_settings_cookie:
+        auth: 'acl_a_server'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/cookie
+            defaults:
+                _controller: acp.board:main
+                mode: 'cookie'
+
+    acp.acp_settings_load:
+        auth: 'acl_a_server'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/load
+            defaults:
+                _controller: acp.board:main
+                mode: 'load'
+
+    acp.acp_settings_security:
+        auth: 'acl_a_server'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/security
+            defaults:
+                _controller: acp.board:main
+                mode: 'security'
+
+    acp.acp_settings_search:
+        auth: 'acl_a_search'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/search
+            defaults:
+                _controller: acp.search:main
+                mode: 'settings'
+
+    acp.acp_settings_storage:
+        auth: 'acl_a_storage'
+        parent: 'acp_configuration_server'
+        route:
+            path: /settings/storage
+            defaults:
+                _controller: acp.storage:main
+
+    # --- ACP > Configuration > Client communication --- #
+    acp.acp_client_communication:
+        auth: 'acl_a_server'
+        parent: 'acp_cat_configuration'
+        route: 'acp_settings_auth'
+
+    acp.acp_settings_auth:
+        auth: 'acl_a_server'
+        parent: 'acp_client_communication'
+        route:
+            path: /settings/authentication
+            defaults:
+                _controller: acp.board:main
+                mode: 'auth'
+
+    acp.acp_settings_email:
+        auth: 'acl_a_server'
+        parent: 'acp_client_communication'
+        route:
+            path: /settings/email
+            defaults:
+                _controller: acp.board:main
+                mode: 'email'
+
+    acp.acp_settings_jabber:
+        auth: 'acl_a_jabber'
+        parent: 'acp_client_communication'
+        route:
+            path: /settings/jabber
+            defaults:
+                _controller: acp.jabber:main
+
+    # --- ACP > Management --- #
+    acp.acp_cat_management:
+        route: 'acp_users_manage'
+
+    # --- ACP > Management > User management --- #
+    acp.acp_management_users:
+        parent: 'acp_cat_management'
+        route: 'acp_users_manage'
+
+    acp.acp_users_manage:
+        auth: 'acl_a_user'
+        parent: 'acp_management_users'
+        route:
+            path: /users/manage/{mode}/{u}
+            defaults:
+                _controller: acp.users:main
+                mode: 'overview'
+                u: 0
+
+    acp.acp_users_inactive:
+        auth: 'acl_a_user'
+        parent: 'acp_management_users'
+        route:
+            path: /users/inactive
+            defaults:
+                _controller: acp.inactive:main
+                page: 1
+
+    acp.acp_users_prune:
+        auth: 'acl_a_userdel'
+        parent: 'acp_management_users'
+        route:
+            path: /users/prune
+            defaults:
+                _controller: acp.prune:main
+                mode: 'users'
+
+    # --- ACP > Management > Groups management
+    acp.acp_management_groups:
+        parent: 'acp_cat_management'
+        route: 'acp_groups_manage'
+
+    acp.acp_groups_manage:
+        auth: 'acl_a_group'
+        parent: 'acp_management_groups'
+        route:
+            path: /groups/manage/{action}/{g}
+            defaults:
+                _controller: acp.groups:main
+                mode: 'manage'
+                action: ''
+                g: 0
+                page: 1
+
+    acp.acp_groups_positions:
+        auth: 'acl_a_group'
+        parent: 'acp_management_groups'
+        route:
+            path: /groups/position
+            defaults:
+                _controller: acp.groups:main
+                mode: 'position'
+
+    # --- ACP > Management > Forum management --- #
+    acp.acp_management_forums:
+        parent: 'acp_cat_management'
+        route: 'acp_forums_manage'
+
+    acp.acp_forums_manage:
+        auth: 'acl_a_forum'
+        parent: 'acp_management_forums'
+        route:
+            path: /forums/manage/{p}/{action}/{f}
+            defaults:
+                _controller: acp.forums:main
+                action: ''
+                p: 0
+                f: 0
+
+    acp.acp_forums_prune:
+        auth: 'acl_a_prune'
+        parent: 'acp_management_forums'
+        route:
+            path: /forums/prune
+            defaults:
+                _controller: acp.prune:main
+                mode: 'forums'
+
+    # --- ACP > Management > Ban management --- #
+    acp.acp_management_ban:
+        parent: 'acp_cat_management'
+        route: 'acp_ban_emails'
+
+    acp.acp_ban_emails:
+        auth: 'acl_a_ban'
+        parent: 'acp_management_ban'
+        route:
+            path: /ban/emails
+            defaults:
+                _controller: acp.ban:main
+                mode: 'email'
+
+    acp.acp_ban_users:
+        auth: 'acl_a_ban'
+        parent: 'acp_management_ban'
+        route:
+            path: /ban/users
+            defaults:
+                _controller: acp.ban:main
+                mode: 'user'
+
+    acp.acp_ban_ips:
+        auth: 'acl_a_ban'
+        parent: 'acp_management_ban'
+        route:
+            path: /ban/ips
+            defaults:
+                _controller: acp.ban:main
+                mode: 'ip'
+
+    # --- ACP > Management > Attachment management --- #
+    acp.acp_management_attachments:
+        auth: 'acl_a_attach'
+        parent: 'acp_cat_management'
+        route: 'acp_attachments_manage'
+
+    acp.acp_attachments_manage:
+        auth: 'acl_a_attach'
+        parent: 'acp_management_attachments'
+        route:
+            path: /attachments/manage
+            defaults:
+                _controller: acp.attachments:main
+                mode: 'manage'
+                page: 1
+
+    acp.acp_attachments_extensions:
+        auth: 'acl_a_attach'
+        parent: 'acp_management_attachments'
+        route:
+            path: /attachments/extensions
+            defaults:
+                _controller: acp.attachments:main
+                mode: 'extensions'
+
+    acp.acp_attachments_ext_groups:
+        auth: 'acl_a_attach'
+        parent: 'acp_management_attachments'
+        route:
+            path: /attachments/extension_groups
+            defaults:
+                _controller: acp.attachments:main
+                mode: 'ext_groups'
+
+    acp.acp_attachments_orphaned:
+        auth: 'acl_a_attach'
+        parent: 'acp_management_attachments'
+        route:
+            path: /attachments/orphaned
+            defaults:
+                _controller: acp.attachments:main
+                mode: 'orphan'
+                page: 1
+
+    # --- ACP > Permissions --- #
+    acp.acp_cat_permissions:
+        route: 'acp_permissions'
+
+    acp.acp_permissions:
+        auth: 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth'
+        parent: 'acp_cat_permissions'
+        route:
+            path: /permissions/{mode}
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'intro'
+            requirements:
+                mode: "intro|trace"
+
+    # --- ACP > Permissions > Global permissions --- #
+    acp.acp_permissions_global:
+        parent: 'acp_cat_permissions'
+        route: 'acp_permissions_global_user'
+
+    acp.acp_permissions_global_user:
+        auth: 'acl_a_authusers && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'
+        parent: 'acp_permissions_global'
+        route:
+            path: /permissions/global/user
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_user_global'
+
+    acp.acp_permissions_global_group:
+        auth: 'acl_a_authgroups && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'
+        parent: 'acp_permissions_global'
+        route:
+            path: /permissions/global/group
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_group_global'
+
+    acp.acp_permissions_global_mods:
+        auth: 'acl_a_mauth && (acl_a_authusers || acl_a_authgroups)'
+        parent: 'acp_permissions_global'
+        route:
+            path: /permissions/global/mod
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_mod_global'
+
+    acp.acp_permissions_global_admins:
+        auth: 'acl_a_aauth && (acl_a_authusers || acl_a_authgroups)'
+        parent: 'acp_permissions_global'
+        route:
+            path: /permissions/global/admin
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_admin_global'
+
+    # --- ACP > Permissions > Forum permissions --- #
+    acp.acp_permissions_forums:
+        parent: 'acp_cat_permissions'
+        route: 'acp_permissions_forum'
+
+    acp.acp_permissions_forum:
+        auth: 'acl_a_fauth && (acl_a_authusers || acl_a_authgroups)'
+        parent: 'acp_permissions_forums'
+        route:
+            path: /permissions/forum
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_forum_local'
+
+    acp.acp_permissions_forum_copy:
+        auth: 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth'
+        parent: 'acp_permissions_forums'
+        route:
+            path: /permissions/forum/copy
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_forum_copy'
+
+    acp.acp_permissions_forum_user:
+        auth: 'acl_a_authusers && (acl_a_mauth || acl_a_fauth)'
+        parent: 'acp_permissions_forums'
+        route:
+            path: /permissions/forum/user
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_user_local'
+
+    acp.acp_permissions_forum_group:
+        auth: 'acl_a_authgroups && (acl_a_mauth || acl_a_fauth)'
+        parent: 'acp_permissions_forums'
+        route:
+            path: /permissions/forum/group
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_group_local'
+
+    acp.acp_permissions_forum_mods:
+        auth: 'acl_a_mauth && (acl_a_authusers || acl_a_authgroups)'
+        parent: 'acp_permissions_forums'
+        route:
+            path: /permissions/forum/mod
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'setting_mod_local'
+
+    # --- ACP > Permissions > Permission roles --- #
+    acp.acp_permissions_roles:
+        parent: 'acp_cat_permissions'
+        route: 'acp_permissions_roles_user'
+
+    acp.acp_permissions_roles_user:
+        auth: 'acl_a_roles && acl_a_uauth'
+        parent: 'acp_permissions_roles'
+        route:
+            path: /permissions/roles/user
+            defaults:
+                _controller: acp.permission_roles:main
+                mode: 'user_roles'
+
+    acp.acp_permissions_roles_mod:
+        auth: 'acl_a_roles && acl_a_mauth'
+        parent: 'acp_permissions_roles'
+        route:
+            path: /permissions/roles/mod
+            defaults:
+                _controller: acp.permission_roles:main
+                mode: 'mod_roles'
+
+    acp.acp_permissions_roles_admin:
+        auth: 'acl_a_roles && acl_a_aauth'
+        parent: 'acp_permissions_roles'
+        route:
+            path: /permissions/roles/admin
+            defaults:
+                _controller: acp.permission_roles:main
+                mode: 'admin_roles'
+
+    acp.acp_permissions_roles_forum:
+        auth: 'acl_a_roles && acl_a_fauth'
+        parent: 'acp_permissions_roles'
+        route:
+            path: /permissions/roles/forum
+            defaults:
+                _controller: acp.permission_roles:main
+                mode: 'forum_roles'
+
+    # --- ACP > Permissions > Permission masks --- #
+    acp.acp_permissions_masks:
+        parent: 'acp_cat_permissions'
+        route: 'acp_permissions_masks_user'
+
+    acp.acp_permissions_masks_user:
+        auth: 'acl_a_viewauth'
+        parent: 'acp_permissions_masks'
+        route:
+            path: /permissions/masks/user
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'view_user_global'
+
+    acp.acp_permissions_masks_mod_global:
+        auth: 'acl_a_viewauth'
+        parent: 'acp_permissions_masks'
+        route:
+            path: /permissions/masks/mod/global
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'view_mod_global'
+
+    acp.acp_permissions_masks_mod_forum:
+        auth: 'acl_a_viewauth'
+        parent: 'acp_permissions_masks'
+        route:
+            path: /permissions/masks/mod/forum
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'view_mod_local'
+
+    acp.acp_permissions_masks_admin:
+        auth: 'acl_a_viewauth'
+        parent: 'acp_permissions_masks'
+        route:
+            path: /permissions/masks/admin
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'view_admin_global'
+
+    acp.acp_permissions_masks_forum:
+        auth: 'acl_a_viewauth'
+        parent: 'acp_permissions_masks'
+        route:
+            path: /permissions/masks/forum
+            defaults:
+                _controller: acp.permissions:main
+                mode: 'view_forum_local'
+
+    # --- ACP > Content --- #
+    acp.acp_cat_content:
+        route: 'acp_bbcodes'
+
+    # --- ACP > Content > Posting --- #
+    acp.acp_posting:
+        parent: 'acp_cat_content'
+        route: 'acp_bbcodes'
+
+    acp.acp_bbcodes:
+        auth: 'acl_a_bbcode'
+        parent: 'acp_posting'
+        route:
+            path: /bbcodes
+            defaults:
+                _controller: acp.bbcodes:main
+                page: 1
+
+    acp.acp_smilies:
+        auth: 'acl_a_icons'
+        parent: 'acp_posting'
+        route:
+            path: /smilies
+            defaults:
+                _controller: acp.icons:main
+                mode: 'smilies'
+                page: 1
+
+    acp.acp_topic_icons:
+        auth: 'acl_a_icons'
+        parent: 'acp_posting'
+        route:
+            path: /topic_icons
+            defaults:
+                _controller: acp.icons:main
+                mode: 'icons'
+
+    acp.acp_words:
+        auth: 'acl_a_words'
+        parent: 'acp_posting'
+        route:
+            path: /disallow/words
+            defaults:
+                _controller: acp.words:main
+
+    # --- ACP > Content > Users -- #
+    acp.acp_profiles:
+        parent: 'acp_cat_content'
+        route: 'acp_cpf'
+
+    acp.acp_cpf:
+        auth: 'acl_a_profile'
+        parent: 'acp_profiles'
+        route:
+            path: /cpf
+            defaults:
+                _controller: acp.profile:main
+
+    acp.acp_disallow_usernames:
+        auth: 'acl_a_names'
+        parent: 'acp_profiles'
+        route:
+            path: /disallow/usernames
+            defaults:
+                _controller: acp.disallow:main
+
+    acp.acp_ranks:
+        auth: 'acl_a_ranks'
+        parent: 'acp_profiles'
+        route:
+            path: /ranks
+            defaults:
+                _controller: acp.ranks:main
+
+    # --- ACP > Content > General tasks --- #
+    acp.acp_general_tasks:
+        parent: 'acp_cat_content'
+        route: 'acp_mass_email'
+
+    acp.acp_mass_email:
+        auth: 'acl_a_email && cfg_email_enable'
+        parent: 'acp_general_tasks'
+        route:
+            path: /mass_email
+            defaults:
+                _controller: acp.email:main
+
+    acp.acp_reasons:
+        auth: 'acl_a_reasons'
+        parent: 'acp_general_tasks'
+        route:
+            path: /reasons
+            defaults:
+                _controller: acp.reasons:main
+
+    acp.acp_bots:
+        auth: 'acl_a_bots'
+        parent: 'acp_general_tasks'
+        route:
+            path: /robots
+            defaults:
+                _controller: acp.bots:main
+
+    # --- ACP > Customise --- #
+    acp.acp_cat_customise:
+        route: 'acp_extensions_manage'
+
+    # --- ACP > Customise > Extensions management --- #
+    acp.acp_extensions_management:
+        parent: 'acp_cat_customise'
+        route: 'acp_extensions_manage'
+
+    acp.acp_extensions_manage:
+        auth: 'acl_a_extensions'
+        parent: 'acp_extensions_management'
+        route:
+            path: /extensions/manage/{action}/{ext}
+            defaults:
+                _controller: acp.extensions:manage
+                action: 'list'
+                ext: ''
+            requirements:
+                ext: "[^?]+"
+
+    acp.acp_extensions_catalog:
+        auth: 'acl_a_extensions'
+        parent: 'acp_extensions_management'
+        route:
+            path: /extensions/catalog/{action}
+            defaults:
+                _controller: acp.extensions:catalog
+                action: 'list'
+                page: 1
+
+    # --- ACP > Customise > Style management --- #
+    acp.acp_styles_management:
+        parent: 'acp_cat_customise'
+        route: 'acp_styles_manage'
+
+    acp.acp_styles_manage:
+        auth: 'acl_a_styles'
+        parent: 'acp_styles_management'
+        route:
+            path: /styles/manage
+            defaults:
+                _controller: acp.styles:main
+                mode: 'manage'
+
+    acp.acp_styles_install:
+        auth: 'acl_a_styles'
+        parent: 'acp_styles_management'
+        route:
+            path: /styles/install
+            defaults:
+                _controller: acp.styles:main
+                mode: 'install'
+
+    # --- ACP > Customise > Language management --- #
+    acp.acp_language_management:
+        parent: 'acp_cat_customise'
+        route: 'acp_language_manage'
+
+    acp.acp_language_manage:
+        auth: 'acl_a_language'
+        parent: 'acp_language_management'
+        route:
+            path: /language
+            defaults:
+                _controller: acp.language:main
+
+    # -- ACP > Maintenance --- #
+    acp.acp_cat_maintenance:
+        route: 'acp_logs_admin'
+
+    # --- ACP > Maintenance > Logs --- #
+    acp.acp_logs:
+        parent: 'acp_cat_maintenance'
+        route: 'acp_logs_admin'
+
+    acp.acp_logs_admin:
+        auth: 'acl_a_viewlogs'
+        parent: 'acp_logs'
+        route:
+            path: /logs/admin
+            defaults:
+                _controller: acp.logs:main
+                mode: 'admin'
+                page: 1
+
+    acp.acp_logs_mod:
+        auth: 'acl_a_viewlogs'
+        parent: 'acp_logs'
+        route:
+            path: /logs/mod
+            defaults:
+                _controller: acp.logs:main
+                mode: 'mod'
+                page: 1
+
+    acp.acp_logs_user:
+        auth: 'acl_a_viewlogs'
+        parent: 'acp_logs'
+        route:
+            path: /logs/user
+            defaults:
+                _controller: acp.logs:main
+                mode: 'user'
+                page: 1
+
+    acp.acp_logs_error:
+        auth: 'acl_a_viewlogs'
+        parent: 'acp_logs'
+        route:
+            path: /logs/error
+            defaults:
+                _controller: acp.logs:main
+                mode: 'critical'
+                page: 1
+
+    # --- ACP > Maintenance > Database --- #
+    acp.acp_database:
+        parent: 'acp_cat_maintenance'
+        route: 'acp_backup'
+
+    acp.acp_backup:
+        auth: 'acl_a_backup'
+        parent: 'acp_database'
+        route:
+            path: /database/backup
+            defaults:
+                _controller: acp.database:main
+                mode: 'backup'
+
+    acp.acp_restore:
+        auth: 'acl_a_backup'
+        parent: 'acp_database'
+        route:
+            path: /database/restore
+            defaults:
+                _controller: acp.database:main
+                mode: 'restore'
+
+    acp.acp_search_index:
+        auth: 'acl_a_search'
+        parent: 'acp_database'
+        route:
+            path: /database/search
+            defaults:
+                _controller: acp.search:main
+                mode: 'index'
+
+    # --- ACP > Maintenance > phpBB --- #
+    acp.acp_phpbb:
+        parent: 'acp_cat_maintenance'
+        route: 'acp_update'
+
+    acp.acp_update:
+        auth: 'acl_a_board'
+        parent: 'acp_phpbb'
+        route:
+            path: /phpbb/update
+            defaults:
+                _controller: acp.update:main
+
+    acp.acp_php_info:
+        auth: 'acl_a_phpinfo'
+        parent: 'acp_phpbb'
+        route:
+            path: /php
+            defaults:
+                _controller: acp.php_info:main
+
+    acp.acp_help_phpbb:
+        parent: 'acp_phpbb'
+        route:
+            path: /phpbb/help
+            defaults:
+                _controller: acp.help_phpbb:main
+
+    # --- ACP > Extensions --- #
+    acp.acp_cat_extensions:
+        route: ''

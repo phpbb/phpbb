@@ -8,6 +8,10 @@
 # instantiate the 'foo_service' service and call the 'method' method.
 #
 
+phpbb_cp_routing:
+    resource: .
+    type: phpbb_cp_route
+
 phpbb_cron_routing:
     resource: cron.yml
     prefix: /cron
@@ -26,7 +30,3 @@ phpbb_help_routing:
 
 phpbb_report_routing:
     resource: report.yml
-
-phpbb_ucp_routing:
-    resource: ucp.yml
-    prefix: /user

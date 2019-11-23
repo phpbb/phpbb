@@ -9,7 +9,16 @@ services:
         arguments:
             - '@template'
             - '@language'
+            - '@acp.functions.controller'
             - '%debug.exceptions%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_request_subscriber:
+        class: phpbb\event\kernel_request_subscriber
+        arguments:
+            - '@?cp.manager'
+            - '@?cp.constructor'
         tags:
             - { name: kernel.event_subscriber }
 

@@ -167,6 +167,8 @@ class container_builder
 					$this->load_extensions();
 				}
 
+				// Add control panels extension
+				$this->container_extensions[] = new extension\control_panels();
 				// Add tables extension after all extensions
 				$this->container_extensions[] = new extension\tables();
 

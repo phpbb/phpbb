@@ -28,6 +28,7 @@ services:
             - '@auth'
             - '@config'
             - '@service_container'
+            - '@cp.menu'
             - '@dbal.conn'
             - '@dispatcher'
             - '@controller.helper'
