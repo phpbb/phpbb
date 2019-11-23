@@ -25,6 +25,7 @@ parameters:
         route: 'ucp_manage_subscriptions'
 
     ucp.ucp_manage_subscriptions:
+        auth: 'cfg_allow_topic_notify || cfg_allow_forum_notify'
         parent: 'ucp_cat_manage'
         route:
             path: /manage/subscriptions

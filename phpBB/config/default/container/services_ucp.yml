@@ -1,4 +1,20 @@
 services:
+    # --- Helpers --- #
+    ucp.constructor:
+        class: phpbb\ucp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@language'
+            - '@symfony_request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables%'
+
     # --- Controllers --- #
     ucp.account:
         class: phpbb\ucp\controller\account

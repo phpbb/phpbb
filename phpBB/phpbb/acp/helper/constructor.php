@@ -92,8 +92,8 @@ class constructor implements \phpbb\cp\constructor_interface
 		$this->language->add_lang('acp/common');
 
 		// Include files
-		require($this->root_path . 'includes/functions_acp.' . $this->php_ext);
-		require($this->root_path . 'includes/functions_admin.' . $this->php_ext);
+		include($this->root_path . 'includes/functions_acp.' . $this->php_ext);
+		include($this->root_path . 'includes/functions_admin.' . $this->php_ext);
 
 		// Have they authenticated (again) as an admin for this session?
 		if (!isset($this->user->data['session_admin']) || !$this->user->data['session_admin'])

@@ -133,6 +133,11 @@ class account
 	 */
 	function main($mode)
 	{
+		if (in_array($mode, ['activate', 'confirm', 'login', 'login_link', 'logout', 'reset_password', 'forgot_password']))
+		{
+			define('IN_LOGIN', true);
+		}
+
 		switch ($mode)
 		{
 			case 'activate':
@@ -258,6 +263,9 @@ class account
 	 */
 	protected function delete_cookies()
 	{
+		define('SKIP_CHECK_BAN', true);
+		define('SKIP_CHECK_DISABLED', true);
+
 		if (confirm_box(true))
 		{
 			$set_time = time() - 31536000;
