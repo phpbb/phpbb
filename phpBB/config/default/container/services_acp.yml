@@ -15,6 +15,19 @@ services:
             - '%core.adm_relative_path%'
             - '%tables%'
 
+    acp.constructor:
+        class: phpbb\acp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@controller.helper'
+            - '@language'
+            - '@path_helper'
+            - '@template'
+            - '@user'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     acp.controller.helper:
         class: phpbb\acp\helper\controller
         parent: controller.helper
