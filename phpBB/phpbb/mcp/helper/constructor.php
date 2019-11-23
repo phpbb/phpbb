@@ -11,321 +11,154 @@
 *
 */
 
-/**
-* @ignore
-*/
-define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_mcp.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+namespace phpbb\mcp\helper;
 
-// Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('mcp');
+use phpbb\exception\http_exception;
 
-$module = new p_master();
-
-// Setting a variable to let the style designer know where he is...
-$template->assign_var('S_IN_MCP', true);
-
-// Basic parameter data
-$id = $request->variable('i', '');
-
-$mode = $request->variable('mode', array(''));
-$mode = count($mode) ? array_shift($mode) : $request->variable('mode', '');
-
-// Only Moderators can go beyond this point
-if (!$user->data['is_registered'])
+class constructor implements \phpbb\cp\constructor_interface
 {
-	if ($user->data['is_bot'])
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\cp\helper\identifiers */
+	protected $cp_ids;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
+	protected $php_ext;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \phpbb\auth\auth					$auth		Auth object
+	 * @param \phpbb\cp\helper\identifiers		$cp_ids		Control panel identifiers object
+	 * @param \phpbb\controller\helper			$helper		Controller helper object
+	 * @param \phpbb\language\language			$language	Language object
+	 * @param \phpbb\request\request			$request	Request object
+	 * @param \phpbb\template\template			$template	Template object
+	 * @param \phpbb\user						$user		User object
+	 * @param string							$root_path	phpBB root path
+	 * @param string							$php_ext	php File extension
+	 */
+	public function __construct(
+		\phpbb\auth\auth $auth,
+		\phpbb\cp\helper\identifiers $cp_ids,
+		\phpbb\controller\helper $helper,
+		\phpbb\language\language $language,
+		\phpbb\request\request $request,
+		\phpbb\template\template $template,
+		\phpbb\user $user,
+		$root_path,
+		$php_ext
+	)
 	{
-		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		$this->auth 		= $auth;
+		$this->cp_ids		= $cp_ids;
+		$this->helper		= $helper;
+		$this->language		= $language;
+		$this->request		= $request;
+		$this->template		= $template;
+		$this->user			= $user;
+
+		$this->root_path	= $root_path;
+		$this->php_ext		= $php_ext;
 	}
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
-}
-
-$quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
-$action = $request->variable('action', '');
-$action_ary = $request->variable('action', array('' => 0));
-
-$forum_action = $request->variable('forum_action', '');
-if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\request\request_interface::POST))
-{
-	$action = $forum_action;
-}
-
-if (count($action_ary))
-{
-	$action = key($action_ary);
-}
-unset($action_ary);
-
-if ($mode == 'topic_logs')
-{
-	$id = 'logs';
-	$quickmod = false;
-}
-
-$post_id = $request->variable('p', 0);
-$topic_id = $request->variable('t', 0);
-$forum_id = $request->variable('f', 0);
-$report_id = $request->variable('r', 0);
-$user_id = $request->variable('u', 0);
-$username = $request->variable('username', '', true);
-
-if ($post_id)
-{
-	// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
-	$sql = 'SELECT topic_id, forum_id
-		FROM ' . POSTS_TABLE . "
-		WHERE post_id = $post_id";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$topic_id = (int) $row['topic_id'];
-	$forum_id = (int) $row['forum_id'];
-}
-else if ($topic_id)
-{
-	$sql = 'SELECT forum_id
-		FROM ' . TOPICS_TABLE . "
-		WHERE topic_id = $topic_id";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	$forum_id = (int) $row['forum_id'];
-}
-
-// If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
-if (!$auth->acl_getf_global('m_'))
-{
-	// Except he is using one of the quickmod tools for users
-	$user_quickmod_actions = array(
-		'lock'			=> 'f_user_lock',
-		'make_sticky'	=> 'f_sticky',
-		'make_announce'	=> 'f_announce',
-		'make_global'	=> 'f_announce_global',
-		'make_normal'	=> array('f_announce', 'f_announce_global', 'f_sticky')
-	);
-
-	$allow_user = false;
-	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setup()
 	{
-		$topic_info = phpbb_get_topic_data(array($topic_id));
-		if ($topic_info[$topic_id]['topic_poster'] == $user->data['user_id'])
+		include($this->root_path . 'includes/functions_admin.' . $this->php_ext);
+		include($this->root_path . 'includes/functions_mcp.' . $this->php_ext);
+
+		$this->language->add_lang('mcp');
+
+		// Setting a variable to let the style designer know where he is...
+		$this->template->assign_var('S_IN_MCP', true);
+
+		// Only Moderators can go beyond this point
+		if (!$this->user->data['is_registered'])
 		{
-			$allow_user = true;
+			if ($this->user->data['is_bot'])
+			{
+				redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+			}
+
+			login_box('', $this->language->lang('LOGIN_EXPLAIN_MCP'));
 		}
-	}
 
-	if (!$allow_user)
-	{
-		send_status_line(403, 'Forbidden');
-		trigger_error('NOT_AUTHORISED');
-	}
-}
+		// Get all identifiers
+		$this->cp_ids->get_identifiers('mcp');
+		$forum_id	= $this->cp_ids->get_forum_id();
+		$topic_id	= $this->cp_ids->get_topic_id();
+		$post_id	= $this->cp_ids->get_post_id();
 
-// if the user cannot read the forum he tries to access then we won't allow mcp access either
-if ($forum_id && !$auth->acl_get('f_read', $forum_id))
-{
-	send_status_line(403, 'Forbidden');
-	trigger_error('NOT_AUTHORISED');
-}
+		// If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
+		if (!$this->auth->acl_getf_global('m_'))
+		{
+			$allow_user = false;
 
-/**
-* Allow applying additional permissions to MCP access besides f_read
-*
-* @event core.mcp_global_f_read_auth_after
-* @var	string		action			The action the user tried to execute
-* @var	int			forum_id		The forum the user tried to access
-* @var	string		mode			The MCP module the user is trying to access
-* @var	p_master	module			Module system class
-* @var	bool		quickmod		True if the user is accessing using quickmod tools
-* @var	int			topic_id		The topic the user tried to access
-* @since 3.1.3-RC1
-*/
-$vars = array(
-	'action',
-	'forum_id',
-	'mode',
-	'module',
-	'quickmod',
-	'topic_id',
-);
-extract($phpbb_dispatcher->trigger_event('core.mcp_global_f_read_auth_after', compact($vars)));
-
-if ($forum_id)
-{
-	$module->acl_forum_id = $forum_id;
-}
-
-// Instantiate module system and generate list of available modules
-$module->list_modules('mcp');
-
-if ($quickmod)
-{
-	$mode = 'quickmod';
-
-	switch ($action)
-	{
-		case 'lock':
-		case 'unlock':
-		case 'lock_post':
-		case 'unlock_post':
-		case 'make_sticky':
-		case 'make_announce':
-		case 'make_global':
-		case 'make_normal':
-		case 'fork':
-		case 'move':
-		case 'delete_post':
-		case 'delete_topic':
-		case 'restore_topic':
-			$module->load('mcp', 'main', 'quickmod');
-			return;
-		break;
-
-		case 'topic_logs':
-			// Reset start parameter if we jumped from the quickmod dropdown
-			if ($request->variable('start', 0))
+			// Except if the user is using one of the quickmod tools for users
+			if ($this->request->is_set('quickmod'))
 			{
-				$request->overwrite('start', 0);
+				$action = $this->request->variable('action', ['' => '']);
+				$action = is_array($action) && !empty($action) ? key($action) : $this->request->variable('action', '');
+
+				$action_auth = [
+					'lock'			=> 'f_user_lock',
+					'make_sticky'	=> 'f_sticky',
+					'make_announce'	=> 'f_announce',
+					'make_global'	=> 'f_announce_global',
+					'make_normal'	=> ['f_announce', 'f_announce_global', 'f_sticky'],
+				];
+
+				if (isset($action_auth[$action]) && $this->user->data['is_registered'] && $this->auth->acl_gets($action_auth[$action], $forum_id))
+				{
+					$topic_info = phpbb_get_topic_data([$topic_id]);
+
+					if (!empty($topic_info[$topic_id]) && $topic_info[$topic_id]['topic_poster'] == $this->user->data['user_id'])
+					{
+						$allow_user = true;
+					}
+				}
 			}
 
-			$module->set_active('logs', 'topic_logs');
-		break;
-
-		case 'merge_topic':
-			$module->set_active('main', 'forum_view');
-		break;
-
-		case 'split':
-		case 'merge':
-			$module->set_active('main', 'topic_view');
-		break;
-
-		default:
-			// If needed, the flag can be set to true within event listener
-			// to indicate that the action was handled properly
-			// and to pass by the trigger_error() call below
-			$is_valid_action = false;
-
-			/**
-			* This event allows you to add custom quickmod options
-			*
-			* @event core.modify_quickmod_options
-			* @var	object	module			Instance of module system class
-			* @var	string	action			Quickmod option
-			* @var	bool	is_valid_action	Flag indicating if the action was handled properly
-			* @since 3.1.0-a4
-			*/
-			$vars = array('module', 'action', 'is_valid_action');
-			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
-
-			if (!$is_valid_action)
+			if (!$allow_user)
 			{
-				trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
+				throw new http_exception(403, 'NOT_AUTHORISED');
 			}
-		break;
+		}
+
+		// if the user cannot read the forum he tries to access then we won't allow mcp access either
+		if ($forum_id && !$this->auth->acl_get('f_read', $forum_id))
+		{
+			throw new http_exception(403, 'NOT_AUTHORISED');
+		}
+
+		// Generate urls for letting the moderation control panel being accessed in different modes
+		$this->template->assign_vars([
+			'U_MCP'			=> $this->helper->route('mcp_index'),
+			'U_MCP_FORUM'	=> ($forum_id) ? $this->helper->route('mcp_view_forum', ['f' => $forum_id]) : '',
+			'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? $this->helper->route('mcp_view_topic', ['f' => $forum_id, 't' => $topic_id]) : '',
+			'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? $this->helper->route('mcp_view_post', ['f' => $forum_id, 't' => $topic_id, 'p' => $post_id]) : '',
+		]);
 	}
 }
-else
-{
-	// Select the active module
-	$module->set_active($id, $mode);
-}
-
-// Hide some of the options if we don't have the relevant information to use them
-if (!$post_id)
-{
-	$module->set_display('main', 'post_details', false);
-	$module->set_display('warn', 'warn_post', false);
-}
-
-if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts' || $mode == 'deleted_topics' || $mode == 'deleted_posts')
-{
-	$module->set_display('queue', 'approve_details', false);
-}
-
-if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'pm_report_details')
-{
-	$module->set_display('reports', 'report_details', false);
-}
-
-if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'report_details')
-{
-	$module->set_display('pm_reports', 'pm_report_details', false);
-}
-
-if (!$topic_id)
-{
-	$module->set_display('main', 'topic_view', false);
-	$module->set_display('logs', 'topic_logs', false);
-}
-
-if (!$forum_id)
-{
-	$module->set_display('main', 'forum_view', false);
-	$module->set_display('logs', 'forum_logs', false);
-}
-
-if (!$user_id && $username == '')
-{
-	$module->set_display('notes', 'user_notes', false);
-	$module->set_display('warn', 'warn_user', false);
-}
-
-/**
-* This event allows you to set display option for custom MCP modules
-*
-* @event core.modify_mcp_modules_display_option
-* @var	p_master	module			Module system class
-* @var	string		mode			MCP mode
-* @var	int			user_id			User id
-* @var	int			forum_id		Forum id
-* @var	int			topic_id		Topic id
-* @var	int			post_id			Post id
-* @var	string		username		User name
-* @var	int			id				Parent module id
-* @since 3.1.0-b2
-*/
-$vars = array(
-	'module',
-	'mode',
-	'user_id',
-	'forum_id',
-	'topic_id',
-	'post_id',
-	'username',
-	'id',
-);
-extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
-
-$template->assign_block_vars('navlinks', array(
-	'BREADCRUMB_NAME'	=> $user->lang('MCP'),
-	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
-));
-
-// Load and execute the relevant module
-$module->load_active();
-
-// Assign data to the template engine for the list of modules
-$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
-
-// Generate urls for letting the moderation control panel being accessed in different modes
-$template->assign_vars(array(
-	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
-	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
-	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
-	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
-));
-
-// Generate the page, do not display/query online list
-$module->display($module->get_page_title());

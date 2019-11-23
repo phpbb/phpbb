@@ -1,4 +1,18 @@
 services:
+    # --- Helpers --- #
+    mcp.constructor:
+        class: phpbb\mcp\helper\constructor
+        arguments:
+            - '@auth'
+            - '@cp.identifiers'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     # --- Controllers --- #
     mcp.ban:
         class: phpbb\mcp\controller\ban
