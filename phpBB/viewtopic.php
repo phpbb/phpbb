@@ -48,7 +48,10 @@ $sort_dir	= $request->variable('sd', $default_sort_dir);
 
 $update		= $request->variable('update', false);
 
-/* @var $pagination \phpbb\pagination */
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
+/* @var \phpbb\pagination $pagination */
 $pagination = $phpbb_container->get('pagination');
 
 $s_can_vote = false;
@@ -637,36 +640,32 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 // Quick mod tools
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
-$s_quickmod_action = append_sid(
-	"{$phpbb_root_path}mcp.$phpEx",
-	array(
-		'f'	=> $forum_id,
-		't'	=> $topic_id,
-		'start'		=> $start,
-		'quickmod'	=> 1,
-		'redirect'	=> urlencode(str_replace('&amp;', '&', $viewtopic_url)),
-	),
-	true,
-	$user->session_id
-);
+$s_quickmod_params = [
+	'f'			=> $forum_id,
+	't'			=> $topic_id,
+	'start'		=> $start,
+	'quickmod'	=> true,
+	'redirect'	=> str_replace('&amp;', '&', $viewtopic_url),
+];
+$s_quickmod_action = $controller_helper->route('mcp_view_topic', $s_quickmod_params, true, $user->session_id);
 
 $quickmod_array = array(
-//	'key'			=> array('LANG_KEY', $userHasPermissions),
+//	'action'			=> array('LANG_KEY', $userHasPermissions, 'optionalRoute'),
 
-	'lock'					=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster']))),
-	'unlock'				=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id))),
+	'lock'				=> array('LOCK_TOPIC', ($topic_data['topic_status'] == ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster']))),
+	'unlock'			=> array('UNLOCK_TOPIC', ($topic_data['topic_status'] != ITEM_UNLOCKED) && ($auth->acl_get('m_lock', $forum_id))),
 	'delete_topic'		=> array('DELETE_TOPIC', ($auth->acl_get('m_delete', $forum_id) || (($topic_data['topic_visibility'] != ITEM_DELETED) && $auth->acl_get('m_softdelete', $forum_id)))),
 	'restore_topic'		=> array('RESTORE_TOPIC', (($topic_data['topic_visibility'] == ITEM_DELETED) && $auth->acl_get('m_approve', $forum_id))),
-	'move'					=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
-	'split'					=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
-	'merge'					=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
-	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id)),
-	'fork'					=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
+	'move'				=> array('MOVE_TOPIC', $auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED),
+	'split'				=> array('SPLIT_TOPIC', $auth->acl_get('m_split', $forum_id)),
+	'merge'				=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
+	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id), 'mcp_view_forum'),
+	'fork'				=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
 	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
 	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
-	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
+	'make_announce'		=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
 	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
-	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
+	'topic_logs'		=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id), 'mcp_logs_topic'),
 );
 
 /**
@@ -700,7 +699,9 @@ foreach ($quickmod_array as $option => $qm_ary)
 {
 	if (!empty($qm_ary[1]))
 	{
-		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
+		$quickmod_action = !empty($qm_ary[2]) ? $controller_helper->route($qm_ary[2], $s_quickmod_params, true, $user->session_id) : $s_quickmod_action;
+
+		phpbb_add_quickmod_option($quickmod_action, $option, $qm_ary[0]);
 	}
 }
 
@@ -777,6 +778,12 @@ extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_be
 
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
+parse_str(html_entity_decode($u_sort_param), $mcp_params);
+
+$mcp_page = $pagination->get_on_page($config['posts_per_page'], $start);
+$mcp_params = array_merge(['f' => $forum_id, 't' => $topic_id, 'page' => $mcp_page], $mcp_params);
+$u_mcp = $controller_helper->route('mcp_view_topic' . ($mcp_page > 1 ? '_pagination' : ''), $mcp_params, true, $user->session_id);
+
 // Send vars to template
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
@@ -791,7 +798,7 @@ $template->assign_vars(array(
 	'TOPIC_AUTHOR'			=> get_username_string('username', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 
 	'TOTAL_POSTS'	=> $user->lang('VIEW_TOPIC_POSTS', (int) $total_posts),
-	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
+	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? $u_mcp : '',
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && count($forum_moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($topic_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', 'FORUM_LOCKED') : $user->img('button_topic_new', 'POST_NEW_TOPIC'),
@@ -2023,10 +2030,11 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 	if ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm)
 	{
-		$u_pm = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']);
+		$u_pm = $controller_helper->route('ucp_pm_compose', ['action' => 'quotepost', 'p' => $row['post_id']]);
 	}
 
-	//
+	$row_params = ['f' => $forum_id, 't' => $topic_id, 'p' => (int) $row['post_id']];
+
 	$post_row = array(
 		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'POST_AUTHOR_COLOUR'	=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_colour'] : get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -2064,7 +2072,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 		'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($quote_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
-		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
+		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? $controller_helper->route('mcp_view_post', $row_params) : '',
 		'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=' . (($softdelete_allowed) ? 'soft_delete' : 'delete') . "&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
@@ -2072,16 +2080,16 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
-		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $phpbb_container->get('controller.helper')->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
-		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_data['topic_visibility'] != ITEM_DELETED) ? 'deleted_posts' : 'deleted_topics') . '&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+		'U_APPROVE_ACTION'	=> $controller_helper->route('mcp_unapproved_posts', array_merge($row_params, ['redirect' => str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id'])])),
+		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $controller_helper->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
+		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? $controller_helper->route('mcp_report_details', $row_params, true, $user->session_id) : '',
+		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? $controller_helper->route('mcp_approve_details', $row_params, true, $user->session_id) : '',
+		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? $controller_helper->route((($topic_data['topic_visibility'] != ITEM_DELETED) ? 'mcp_deleted_posts' : 'mcp_deleted_topics'), $row_params, true, $user->session_id) : '',
 		'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
-		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
-		'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? $controller_helper->route('mcp_notes_user', array_merge($row_params, ['u' => $poster_id]), true, $user->session_id) : '',
+		'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? $controller_helper->route('mcp_warn_post', $row_params, true, $user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
 		'POST_NUMBER'		=> $i + $start + 1,

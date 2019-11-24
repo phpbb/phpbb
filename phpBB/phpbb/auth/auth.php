@@ -985,11 +985,12 @@ class auth
 			// If the auth provider wants us to link an empty account do so and redirect
 			if ($login['status'] == LOGIN_SUCCESS_LINK_PROFILE)
 			{
+				/** @var \phpbb\controller\helper $controller_helper */
+				$controller_helper = $phpbb_container->get('controller.helper');
+
 				// If this status exists a fourth field is in the $login array called 'redirect_data'
 				// This data is passed along as GET data to the next page allow the account to be linked
-
-				$params = array('mode' => 'login_link');
-				$url = append_sid($phpbb_root_path . 'ucp.' . $phpEx, array_merge($params, $login['redirect_data']));
+				$url = $controller_helper->route('ucp_account', array_merge($login['redirect_data'], ['mode' => 'login_link']));
 
 				redirect($url);
 			}

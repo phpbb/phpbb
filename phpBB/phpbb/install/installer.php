@@ -257,7 +257,8 @@ class installer
 
 				$phpbb_root_path = $this->container_factory->get_parameter('core.root_path');
 
-				$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+				// Can not use the helper->route() here yet as the "acp_help_phpbb" route is not created in the installer
+				$acp_url = append_sid($phpbb_root_path . 'app.php/admin/phpbb/help', false, true, $user->session_id);
 				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
 					'ACP_LINK',
 					$acp_url,

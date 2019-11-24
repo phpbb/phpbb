@@ -225,10 +225,10 @@ class oauth extends base
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			$redirect_data = array(
+			$redirect_data = [
 				'auth_provider'				=> 'oauth',
 				'login_link_oauth_service'	=> $provider,
-			);
+			];
 
 			/**
 			 * Event is triggered before check if provider is already associated with an account
@@ -348,8 +348,12 @@ class oauth extends base
 
 			if ($credentials['key'] && $credentials['secret'])
 			{
+				global $phpbb_container;
+
+				$controller_helper = $phpbb_container->get('controller.helper');
+
 				$provider = $this->get_provider($service_name);
-				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $provider;
+				$redirect_url = generate_board_url(false) . $controller_helper->route('ucp_account', ['mode' => 'login', 'login' => 'external', 'oauth_service' => $provider], false);
 
 				$login_data['BLOCK_VARS'][$service_name] = [
 					'REDIRECT_URL'	=> redirect($redirect_url, true),

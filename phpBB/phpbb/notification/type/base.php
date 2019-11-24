@@ -24,6 +24,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\language\language */
 	protected $language;
 
@@ -77,6 +80,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 * Notification Type Base Constructor
 	 *
 	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\controller\helper			$helper
 	 * @param \phpbb\language\language          $language
 	 * @param \phpbb\user                       $user
 	 * @param \phpbb\auth\auth                  $auth
@@ -84,9 +88,10 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 * @param string                            $php_ext
 	 * @param string                            $user_notifications_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
 	{
 		$this->db = $db;
+		$this->helper = $helper;
 		$this->language = $language;
 		$this->user = $user;
 		$this->auth = $auth;

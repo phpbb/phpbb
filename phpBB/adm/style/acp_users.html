@@ -68,8 +68,16 @@
 	<form id="mode_select" method="post" action="{U_MODE_SELECT}">
 
 	<fieldset class="quick">
-		{L_SELECT_FORM}{L_COLON} <select name="mode" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_FORM_OPTIONS}</select> <input class="button2" type="submit" value="{L_GO}" />
-		{S_FORM_TOKEN}
+		<label for="user_mode">{{ lang('SELECT_FORM') ~ lang('COLON') }}</label>
+		<select id="user_mode" name="mode" onchange="if (this.options[this.selectedIndex].value !== '') this.form.action = '{{ U_MODE_BASE }}/' + this.value + '/{{ MANAGED_USER_ID }}'; this.form.submit();">
+			{% for mode in user_modes %}
+				<option value="{{ mode.VALUE }}"{% if mode.S_SELECTED %} selected{% endif %}>
+					{{ mode.TITLE }}
+				</option>
+			{% endfor %}
+		</select>
+		<input class="button2" type="submit" value="{{ lang('GO') }}" />
+		{{ S_FORM_TOKEN }}
 	</fieldset>
 	</form>
 

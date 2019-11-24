@@ -21,6 +21,9 @@ use phpbb\notification\type\type_interface;
 */
 abstract class messenger_base extends \phpbb\notification\method\base
 {
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
@@ -33,12 +36,14 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	/**
 	 * Notification Method Board Constructor
 	 *
+	 * @param \phpbb\controller\helper $helper
 	 * @param \phpbb\user_loader $user_loader
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
+		$this->helper = $helper;
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -119,7 +124,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			$messenger->assign_vars(array_merge(array(
 				'USERNAME'						=> $user['username'],
 
-				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
+				'U_NOTIFICATION_SETTINGS'		=> generate_board_url(false) . $this->helper->route('ucp_settings_notifications', [], false),
 			), $notification->get_email_template_variables()));
 
 			$messenger->send($notify_method);

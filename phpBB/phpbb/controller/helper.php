@@ -215,6 +215,7 @@ class helper
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message_text,
 			'MESSAGE_TITLE'	=> $message_title,
+			'S_USER_NOTICE'	=> $code === 200,
 		));
 
 		return $this->render('message_body.html', $message_title, $code);
@@ -260,7 +261,7 @@ class helper
 				'TRANSLATION_INFO'		=> $this->language->is_set('TRANSLATION_INFO') ? $this->language->lang('TRANSLATION_INFO') : '',
 				'CREDIT_LINE'			=> $this->language->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
-				'U_ACP'					=> ($this->auth->acl_get('a_') && !empty($this->user->data['is_registered'])) ? append_sid("{$this->admin_path}index.{$this->php_ext}", false, true, $this->user->session_id) : '',
+				'U_ACP'					=> ($this->auth->acl_get('a_') && !empty($this->user->data['is_registered'])) ? $this->route('acp_index', [], true, $this->user->session_id) : '',
 		]);
 
 		if ($run_cron)

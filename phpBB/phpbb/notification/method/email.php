@@ -31,15 +31,16 @@ class email extends \phpbb\notification\method\messenger_base
 	/**
 	 * Notification Method email Constructor
 	 *
+	 * @param \phpbb\controller\helper $helper
 	 * @param \phpbb\user_loader $user_loader
 	 * @param \phpbb\user $user
 	 * @param \phpbb\config\config $config
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+		parent::__construct($helper, $user_loader, $phpbb_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;

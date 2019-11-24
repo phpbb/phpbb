@@ -33,10 +33,8 @@ class nogd extends captcha_abstract
 		return '\\phpbb\\captcha\\non_gd';
 	}
 
-	function acp_page($id, $module)
+	function acp_page()
 	{
-		global $user;
-
-		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
+		throw new \phpbb\exception\http_exception(400, 'CAPTCHA_NO_OPTIONS');
 	}
 }

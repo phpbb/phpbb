@@ -4,9 +4,9 @@
 
 <div id="tabs" class="tabs">
 	<ul>
-		<!-- BEGIN t_block1 -->
-		<li class="tab<!-- IF t_block1.S_SELECTED --> activetab<!-- ENDIF -->"><a href="{t_block1.U_TITLE}">{t_block1.L_TITLE}</a></li>
-		<!-- END t_block1 -->
+		{% for category in ucp_menu %}
+			<li class="tab{% if category.S_ACTIVE %} activetab{% endif %}"><a href="{{ category.U_VIEW }}">{{ category.TITLE }}</a></li>
+		{% endfor %}
 	</ul>
 </div>
 
@@ -21,20 +21,19 @@
 
 	<div id="cp-menu" class="cp-menu">
 		<div id="navigation" class="navigation" role="navigation">
+			<ul>
+				{% for item in ucp_menu_active.ITEMS %}
+					{% if not item.S_PM_VIEW %}
+						<li{% if item.S_ACTIVE %} id="active-subsection" class="active-subsection"{% endif %}>
+							<a href="{{ item.U_VIEW }}">
+								<span>{{ item.TITLE }}</span>
+							</a>
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
 
 		<!-- IF S_PRIVMSGS -->
-			<!-- BEGIN t_block2 -->
-				<!-- IF S_PRIVMSGS and not t_block2.S_LAST_ROW -->
-				<ul>
-					<!-- IF t_block2.S_SELECTED -->
-						<li id="active-subsection" class="active-subsection"><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
-					<!-- ELSE -->
-						<li><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
-					<!-- ENDIF -->
-				</ul>
-				<!-- ENDIF -->
-			<!-- END t_block2 -->
-
 			<hr />
 			<!-- BEGIN folder -->
 				<!-- IF folder.S_FIRST_ROW --><ul><!-- ENDIF -->
@@ -47,18 +46,6 @@
 			<!-- END folder -->
 			<hr />
 		<!-- ENDIF -->
-
-			<ul>
-		<!-- BEGIN t_block2 -->
-			<!-- IF (S_PRIVMSGS and t_block2.S_LAST_ROW) or not S_PRIVMSGS -->
-				<!-- IF t_block2.S_SELECTED -->
-					<li id="active-subsection" class="active-subsection"><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
-				<!-- ELSE -->
-					<li><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
-				<!-- ENDIF -->
-			<!-- ENDIF -->
-		<!-- END t_block2 -->
-			</ul>
 		</div>
 
 		<!-- IF .friends_online or .friends_offline -->

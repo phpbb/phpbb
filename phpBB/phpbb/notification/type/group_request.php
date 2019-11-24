@@ -136,7 +136,7 @@ class group_request extends \phpbb\notification\type\base
 			'GROUP_NAME'		   		=> htmlspecialchars_decode($this->get_data('group_name')),
 			'REQUEST_USERNAME' 	   		=> htmlspecialchars_decode($user_data['username']),
 
-			'U_PENDING'			  		=> generate_board_url() . "/ucp.{$this->php_ext}?i=groups&mode=manage&action=list&g={$this->item_parent_id}",
+			'U_PENDING'			  		=> generate_board_url(false) . $this->helper->route('ucp_groups_manage', ['action' => 'list', 'g' => $this->item_parent_id], false),
 			'U_GROUP'					=> generate_board_url() . "/memberlist.{$this->php_ext}?mode=group&g={$this->item_parent_id}",
 		);
 	}
@@ -146,7 +146,7 @@ class group_request extends \phpbb\notification\type\base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=groups&mode=manage&action=list&g={$this->item_parent_id}");
+		return $this->helper->route('ucp_groups_manage', ['action' => 'list', 'g' => $this->item_parent_id]);
 	}
 
 	/**

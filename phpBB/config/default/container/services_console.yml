@@ -302,6 +302,7 @@ services:
             - '@user'
             - '@dbal.conn'
             - '@config'
+            - '@controller.helper'
             - '@language'
             - '@passwords.manager'
             - '%core.root_path%'

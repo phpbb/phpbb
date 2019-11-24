@@ -86,7 +86,7 @@ abstract class captcha_abstract
 
 	function get_template()
 	{
-		global $config, $user, $template, $phpEx, $phpbb_root_path;
+		global $config, $user, $template, $phpbb_container, $phpEx, $phpbb_root_path;
 
 		if ($this->is_solved())
 		{
@@ -94,7 +94,10 @@ abstract class captcha_abstract
 		}
 		else
 		{
-			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
+			/** @var \phpbb\controller\helper $controller_helper */
+			$controller_helper = $phpbb_container->get('controller.helper');
+
+			$link = $controller_helper->route('ucp_account', ['mode' => 'confirm', 'confirm_id' => $this->confirm_code, 'type' => $this->type]);
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
@@ -113,23 +116,28 @@ abstract class captcha_abstract
 		}
 	}
 
-	function get_demo_template($id)
+	function get_demo_template()
 	{
-		global $config, $template, $request, $phpbb_admin_path, $phpEx;
+		global $config, $template, $request, $phpbb_container;
 
-		$variables = '';
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+
+		$variables = [];
 
 		if (is_array($this->captcha_vars))
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . $request->variable($captcha_var, (int) $config[$captcha_var]);
+				$variables[$captcha_var] = $request->variable($captcha_var, (int) $config[$captcha_var]);
 			}
 		}
 
+		$params = array_merge(['captcha_demo' => true, 'select_captcha' => $this->get_service_name()], $variables);
+
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
+			'CONFIRM_IMAGE'		=> $controller_helper->route('acp_settings_captcha', $params),
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 

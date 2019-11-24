@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\runtime_exception;
+use phpbb\controller\helper;
 use phpbb\language\language;
 use phpbb\passwords\manager;
 use phpbb\user;
@@ -36,6 +37,9 @@ class add extends command
 
 	/** @var config */
 	protected $config;
+
+	/** @var helper */
+	protected $helper;
 
 	/** @var language */
 	protected $language;
@@ -68,10 +72,11 @@ class add extends command
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, helper $helper, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
+		$this->helper = $helper;
 		$this->language = $language;
 		$this->password_manager = $password_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -315,8 +320,8 @@ class add extends command
 			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
 			'USERNAME'    => htmlspecialchars_decode($this->data['username']),
 			'PASSWORD'    => htmlspecialchars_decode($this->data['new_password']),
-			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
-		);
+			'U_ACTIVATE'  => generate_board_url(false) . $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_id, 'k' => $user_actkey], false),
+		));
 
 		$messenger->send(NOTIFY_EMAIL);
 	}

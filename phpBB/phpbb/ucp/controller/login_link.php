@@ -281,7 +281,7 @@ class login_link
 
 				case LOGIN_ERROR_PASSWORD_CONVERT:
 					$login_error = $this->language->lang($result['error_msg'],
-						$this->config['email_enable'] ? '<a href="' . $this->helper->route('ucp_account', ['mode' => 'send_password']) . '">' : '',
+						$this->config['email_enable'] ? '<a href="' . $this->helper->route('ucp_account', ['mode' => 'forgot_password']) . '">' : '',
 						$this->config['email_enable'] ? '</a>' : '',
 						$this->config['board_contact'] ? '<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">' : '',
 						$this->config['board_contact'] ? '</a>' : ''

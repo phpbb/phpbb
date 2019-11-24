@@ -338,7 +338,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 */
 function posting_gen_topic_icons($mode, $icon_id)
 {
-	global $phpbb_root_path, $config, $template, $cache;
+	global $phpbb_root_path, $phpbb_path_helper, $config, $template, $cache;
 
 	// Grab icons
 	$icons = $cache->obtain_icons();
@@ -350,7 +350,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (count($icons))
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->update_web_root_path($phpbb_root_path);
 
 		foreach ($icons as $id => $data)
 		{
@@ -1065,6 +1065,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	);
 	extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_post_list', compact($vars)));
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	{
 		// A non-existing rowset only happens if there was no user present for the entered poster_id
@@ -1151,7 +1154,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_TIME'			=> $row['post_time'],
 			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? $controller_helper->route('mcp_view_post', ['f' => $forum_id, 't' => $topic_id, 'p' => $row['post_id']], true, $user->session_id) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		);
 

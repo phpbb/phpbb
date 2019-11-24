@@ -74,6 +74,9 @@ class log implements \phpbb\log\log_interface
 	*/
 	protected $dispatcher;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
 	/**
 	* phpBB root path
 	* @var string
@@ -99,17 +102,19 @@ class log implements \phpbb\log\log_interface
 	* @param	\phpbb\user		$user	User object
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher
+	* @param	\phpbb\controller\helper	$helper		Controller helper object
 	* @param	string		$phpbb_root_path		Root path
 	* @param	string		$relative_admin_path	Relative admin root path
 	* @param	string		$php_ext			PHP Extension
 	* @param	string		$log_table		Name of the table we use to store our logs
 	*/
-	public function __construct($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $relative_admin_path, $php_ext, $log_table)
+	public function __construct($db, $user, $auth, $phpbb_dispatcher, $helper, $phpbb_root_path, $relative_admin_path, $php_ext, $log_table)
 	{
 		$this->db = $db;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->dispatcher = $phpbb_dispatcher;
+		$this->helper = $helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpbb_admin_path = $this->phpbb_root_path . $relative_admin_path;
 		$this->php_ext = $php_ext;
@@ -422,7 +427,7 @@ class log implements \phpbb\log\log_interface
 
 		$topic_id_list = $reportee_id_list = array();
 
-		$profile_url = ($this->get_is_admin() && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
+		$profile_url = ($this->get_is_admin() && $this->phpbb_admin_path) ? $this->helper->route('acp_users_manage', ['mode' => 'overview']) : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
 
 		switch ($mode)
 		{
@@ -748,7 +753,7 @@ class log implements \phpbb\log\log_interface
 			{
 				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
 				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']) : false;
-				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
+				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? $this->helper->route('mcp_logs_topic', ['t' => $row['topic_id']], true, $this->user->session_id) : false;
 			}
 		}
 

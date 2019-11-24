@@ -119,7 +119,7 @@ $global_rule_conditions = array(
 */
 function get_folder($user_id, $folder_id = false)
 {
-	global $db, $user, $template;
+	global $db, $user, $template, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
 
 	$folder = array();
@@ -193,6 +193,9 @@ function get_folder($user_id, $folder_id = false)
 		'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
 	);
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	// Define Folder Array for template designers (and for making custom folders usable by the template too)
 	foreach ($folder as $f_id => $folder_ary)
 	{
@@ -204,7 +207,7 @@ function get_folder($user_id, $folder_id = false)
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
 			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
 
-			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id_name),
+			'U_FOLDER'			=> $controller_helper->route('ucp_pm_view', ['folder' => ($f_id > 0 ? $f_id : $folder_id_name)]),
 
 			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
@@ -775,8 +778,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 */
 function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id)
 {
-	global $db, $user;
+	global $db, $user, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	$num_moved = 0;
 
@@ -808,7 +814,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			if ($message_limit && $row['pm_count'] + count($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $row['folder_name']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $controller_helper->route('ucp_pm_view', ['folder' => $row['folder_id']]) . '">', '</a>', $row['folder_name']);
 				trigger_error($message);
 			}
 		}
@@ -825,7 +831,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			if ($message_limit && $num_messages + count($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $controller_helper->route('ucp_pm_view', ['folder' => 'inbox']) . '">', '</a>', $user->lang['PM_INBOX']);
 				trigger_error($message);
 			}
 		}
@@ -944,7 +950,7 @@ function mark_folder_read($user_id, $folder_id)
 */
 function handle_mark_actions($user_id, $mark_action)
 {
-	global $db, $user, $phpbb_root_path, $phpEx, $request;
+	global $db, $user, $phpbb_container, $phpbb_root_path, $phpEx, $request;
 
 	$msg_ids		= $request->variable('marked_msg_id', array(0));
 	$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
@@ -986,8 +992,11 @@ function handle_mark_actions($user_id, $mark_action)
 			{
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
 
+				/** @var \phpbb\controller\helper $controller_helper */
+				$controller_helper = $phpbb_container->get('controller.helper');
+
 				$success_msg = (count($msg_ids) == 1) ? 'MESSAGE_DELETED' : 'MESSAGES_DELETED';
-				$redirect = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $cur_folder_id);
+				$redirect = $controller_helper->route('ucp_pm_view', ['folder' => $cur_folder_id]);
 
 				meta_refresh(3, $redirect);
 				trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $redirect . '">', '</a>'));
@@ -1954,7 +1963,10 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth, $phpbb_dispatcher;
+	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth, $phpbb_dispatcher, $phpbb_container;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// Select all receipts and the author from the pm we currently view, to only display their pm-history
 	$sql = 'SELECT author_id, user_id
@@ -2028,17 +2040,17 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	$title = $row['message_subject'];
 
 	$rowset = array();
-	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
 	do
 	{
 		$folder_id = (int) $row['folder_id'];
+		$folder_url = $controller_helper->route('ucp_pm_view', ['folder' => $folder_id]);
 
-		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
 
 		if (isset($rowset[$row['msg_id']]))
 		{
-			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
 		}
 		else
 		{
@@ -2055,7 +2067,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 	$title = censor_text($title);
 
-	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 	$next_history_pm = $previous_history_pm = $prev_id = 0;
 
 	// Re-order rowset to be able to get the next/prev message rows...
@@ -2117,9 +2128,9 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'MSG_ID'			=> $row['msg_id'],
 			'MESSAGE_TIME'		=> $row['message_time'],
 			'USER_ID'			=> $row['user_id'],
-			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : ''
+			'U_VIEW_MESSAGE'	=> $controller_helper->route('ucp_pm_view', ['folder' => $folder_id, 'p' => $row['msg_id']]),
+			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? $controller_helper->route('ucp_pm_compose', ['action' => 'quote', 'f' => $folder_id, 'p' => $row['msg_id']]) : '',
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? $controller_helper->route('ucp_pm_compose', ['action' => 'reply', 'f' => $folder_id, 'p' => $row['msg_id']]) : '',
 		);
 
 		/**
@@ -2146,8 +2157,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
 		'HISTORY_TITLE'		=> $title,
 
-		'U_VIEW_NEXT_HISTORY'		=> ($next_history_pm) ? "$url&amp;p=" . $next_history_pm : '',
-		'U_VIEW_PREVIOUS_HISTORY'	=> ($previous_history_pm) ? "$url&amp;p=" . $previous_history_pm : '',
+		'U_VIEW_NEXT_HISTORY'		=> $next_history_pm ? $controller_helper->route('ucp_pm_view', ['folder' => 0, 'p' => $next_history_pm]) : '',
+		'U_VIEW_PREVIOUS_HISTORY'	=> $previous_history_pm ? $controller_helper->route('ucp_pm_view', ['folder' => 0, 'p' => $previous_history_pm]) : '',
 	));
 
 	return true;

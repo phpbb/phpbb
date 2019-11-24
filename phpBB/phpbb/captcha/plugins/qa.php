@@ -637,32 +637,36 @@ class qa
 	/**
 	*  API function - The ACP backend, this marks the end of the easy methods
 	*/
-	function acp_page($id, $module)
+	function acp_page()
 	{
-		global $config, $request, $phpbb_log, $template, $user;
+		global $config, $request, $phpbb_log, $template, $user, $phpbb_container;
 
-		$user->add_lang('acp/board');
-		$user->add_lang('captcha_qa');
+		/** @var \phpbb\language\language $language */
+		$language = $phpbb_container->get('language');
+
+		$language->add_lang(['acp/board', 'captcha_qa']);
 
 		if (!self::is_installed())
 		{
 			$this->install();
 		}
 
-		$module->tpl_name = 'captcha_qa_acp';
-		$module->page_title = 'ACP_VC_SETTINGS';
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
+
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
+		$action = $request->variable('action', '');
 		$submit = $request->variable('submit', false);
 		$question_id = $request->variable('question_id', 0);
-		$action = $request->variable('action', '');
 
 		// we have two pages, so users might want to navigate from one to the other
-		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_service_name();
+		$route = 'acp_settings_captcha';
+		$params = ['configure' => true, 'select_captcha' => $this->get_service_name()];
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $module->u_action,
+			'U_ACTION'		=> $acp_controller_helper->route($route),
 			'QUESTION_ID'	=> $question_id ,
 			'CLASS'			=> $this->get_service_name(),
 		));
@@ -670,7 +674,7 @@ class qa
 		// show the list?
 		if (!$question_id && $action != 'add')
 		{
-			$this->acp_question_list($module);
+			$this->acp_question_list();
 		}
 		else if ($question_id && $action == 'delete')
 		{
@@ -680,7 +684,7 @@ class qa
 				{
 					$this->acp_delete_question($question_id);
 
-					trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+					return $acp_controller_helper->message_back('QUESTION_DELETED', $route, $params);
 				}
 				else
 				{
@@ -691,11 +695,13 @@ class qa
 						'select_captcha'	=> $this->get_service_name(),
 						))
 					);
+
+					return redirect($acp_controller_helper->route($route));
 				}
 			}
 			else
 			{
-				trigger_error($user->lang['QA_LAST_QUESTION'] . adm_back_link($list_url), E_USER_WARNING);
+				throw new \phpbb\exception\http_exception(400, 'QA_LAST_QUESTION');
 			}
 		}
 		else
@@ -713,7 +719,7 @@ class qa
 			}
 
 			$template->assign_vars(array(
-				'U_LIST' => $list_url,
+				'U_LIST' => $acp_controller_helper->route($route, $params),
 			));
 
 			if ($question_id)
@@ -729,7 +735,7 @@ class qa
 				}
 				else
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
+					throw new \phpbb\exception\http_exception(400, 'FORM_INVALID');
 				}
 			}
 			else
@@ -762,22 +768,28 @@ class qa
 					}
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($list_url));
+
+					return $acp_controller_helper->message_back('CONFIG_UPDATED', $route, $params);
 				}
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url), E_USER_WARNING);
+				throw new \phpbb\exception\http_exception(400, 'FORM_INVALID');
 			}
 		}
+
+		return $acp_controller_helper->render('captcha_gd_acp.html', $language->lang('ACP_VC_SETTINGS'));
 	}
 
 	/**
 	*  This handles the list overview
 	*/
-	function acp_question_list($module)
+	function acp_question_list()
 	{
-		global $db, $template;
+		global $db, $template, $phpbb_container;
+
+		/** @var \phpbb\acp\helper\controller $acp_controller_helper */
+		$acp_controller_helper = $phpbb_container->get('acp.controller.helper');
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_captcha_questions;
@@ -789,14 +801,14 @@ class qa
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$url = $module->u_action . "&amp;question_id={$row['question_id']}&amp;configure=1&amp;select_captcha=" . $this->get_service_name() . '&amp;';
+			$params = ['question_id' => $row['question_id'], 'configure' => true, 'select_captcha' => $this->get_service_name()];
 
 			$template->assign_block_vars('questions', array(
 				'QUESTION_TEXT'		=> $row['question_text'],
 				'QUESTION_ID'		=> $row['question_id'],
 				'QUESTION_LANG'		=> $row['lang_iso'],
-				'U_DELETE'			=> "{$url}action=delete",
-				'U_EDIT'			=> "{$url}action=edit",
+				'U_DELETE'			=> $acp_controller_helper->route('acp_settings_captcha', array_merge(['action' => 'delete'], $params)),
+				'U_EDIT'			=> $acp_controller_helper->route('acp_settings_captcha', array_merge(['action' => 'edit'], $params)),
 			));
 		}
 		$db->sql_freeresult($result);
