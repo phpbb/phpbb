@@ -684,7 +684,7 @@ class pm_settings
 
 		$this->template->assign_vars([
 			'L_TITLE'		=> $this->language->lang('UCP_PM_SETTINGS'),
-			'S_UCP_ACTION'	=> $this->helper->route('ucp_pm_settings', ['action' => $action]),
+			'S_UCP_ACTION'	=> $this->helper->route('ucp_pm_settings'),
 		]);
 
 		return $this->helper->render('ucp_pm_options.html', $this->language->lang('UCP_PM_OPTIONS'));
