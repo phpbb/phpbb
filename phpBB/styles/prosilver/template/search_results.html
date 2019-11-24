@@ -102,7 +102,17 @@
 								<a href="{searchresults.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
 									<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
 								</a>
+							<!-- ENDIF -->    		
+							<!-- IF not S_IS_BOT and searchresults.U_VIEW_TOPIC -->			
+								<ul class="post-buttons">
+									<li>
+										<a href="{searchresults.U_VIEW_TOPIC}" title="{L_JUMP_TO_TOPIC}" class="button button-icon-only">
+											<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
+										</a>
+									</li>
+								</ul>
 							<!-- ENDIF -->
+
 							<br />
 							<!-- EVENT topiclist_row_topic_title_after -->
 
@@ -199,33 +209,30 @@
 
 		<div class="postbody">
 			<h3><a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->>{searchresults.POST_SUBJECT}</a></h3>
-    		<!-- DEFINE $SHOW_POST_BUTTONS = (searchresults.U_EDIT or searchresults.U_DELETE) -->
-    		<!-- IF not S_IS_BOT -->
-    			<!-- IF $SHOW_POST_BUTTONS -->
-    				<ul class="post-buttons">
-    					<!-- IF searchresults.U_VIEW_POST -->
-    						<li>
-    							<a href="{searchresults.U_VIEW_POST}" title="{L_VIEW_POST}" class="button button-icon-only">
-    								<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
-    							</a>
-    						</li>
-    					<!-- ENDIF -->
-    					<!-- IF searchresults.U_EDIT -->
-    						<li>
-    							<a href="{searchresults.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
-    								<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
-    							</a>
-    						</li>
-    					<!-- ENDIF -->
-    					<!-- IF searchresults.U_DELETE -->
-    						<li>
-    							<a href="{searchresults.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
-    								<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
-    							</a>
-    						</li>
-    					<!-- ENDIF -->
-    				</ul>
-    			<!-- ENDIF -->
+    		<!-- IF not S_IS_BOT and (searchresults.U_VIEW_POST or searchresults.U_EDIT or searchresults.U_DELETE) -->			
+				<ul class="post-buttons">
+				<!-- IF searchresults.U_VIEW_POST -->
+					<li>
+						<a href="{searchresults.U_VIEW_POST}" title="{L_JUMP_TO_POST}" class="button button-icon-only">
+							<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF searchresults.U_EDIT -->
+					<li>
+						<a href="{searchresults.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
+							<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF searchresults.U_DELETE -->
+					<li>
+						<a href="{searchresults.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
+							<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				</ul>
     		<!-- ENDIF -->
 			<div class="content">{searchresults.MESSAGE}</div>
 			<!-- EVENT search_results_content_after -->

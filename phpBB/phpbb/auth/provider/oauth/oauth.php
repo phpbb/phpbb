@@ -1,169 +1,137 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\auth\provider\oauth;
 
+use OAuth\Common\Http\Exception\TokenResponseException;
+use OAuth\ServiceFactory;
 use OAuth\Common\Consumer\Credentials;
+use OAuth\Common\Service\ServiceInterface;
+use OAuth\OAuth1\Service\AbstractService as OAuth1Service;
+use OAuth\OAuth2\Service\AbstractService as OAuth2Service;
+use phpbb\auth\provider\base;
+use phpbb\auth\provider\db;
+use phpbb\auth\provider\oauth\service\exception;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\request\request_interface;
+use phpbb\user;
 
 /**
-* OAuth authentication provider for phpBB3
-*/
-class oauth extends \phpbb\auth\provider\base
+ * OAuth authentication provider for phpBB3
+ */
+class oauth extends base
 {
-	/**
-	* Database driver
-	*
-	* @var \phpbb\db\driver\driver_interface
-	*/
-	protected $db;
-
-	/**
-	* phpBB config
-	*
-	* @var \phpbb\config\config
-	*/
+	/** @var config */
 	protected $config;
 
-	/**
-	* phpBB passwords manager
-	*
-	* @var \phpbb\passwords\manager
-	*/
-	protected $passwords_manager;
+	/** @var driver_interface */
+	protected $db;
 
-	/**
-	* phpBB request object
-	*
-	* @var \phpbb\request\request_interface
-	*/
-	protected $request;
+	/** @var db */
+	protected $db_auth;
 
-	/**
-	* phpBB user
-	*
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
-	* OAuth token table
-	*
-	* @var string
-	*/
-	protected $auth_provider_oauth_token_storage_table;
-
-	/**
-	* OAuth state table
-	*
-	* @var string
-	*/
-	protected $auth_provider_oauth_state_table;
-
-	/**
-	* OAuth account association table
-	*
-	* @var string
-	*/
-	protected $auth_provider_oauth_token_account_assoc;
-
-	/**
-	* All OAuth service providers
-	*
-	* @var \phpbb\di\service_collection Contains \phpbb\auth\provider\oauth\service_interface
-	*/
-	protected $service_providers;
-
-	/**
-	* Users table
-	*
-	* @var string
-	*/
-	protected $users_table;
-
-	/**
-	* Cached current uri object
-	*
-	* @var \OAuth\Common\Http\Uri\UriInterface|null
-	*/
-	protected $current_uri;
-
-	/**
-	* DI container
-	*
-	* @var \Symfony\Component\DependencyInjection\ContainerInterface
-	*/
-	protected $phpbb_container;
-
-	/**
-	* phpBB event dispatcher
-	*
-	* @var \phpbb\event\dispatcher_interface
-	*/
+	/** @var dispatcher */
 	protected $dispatcher;
 
-	/**
-	* phpBB root path
-	*
-	* @var string
-	*/
-	protected $phpbb_root_path;
+	/** @var language */
+	protected $language;
 
-	/**
-	* PHP file extension
-	*
-	* @var string
-	*/
+	/** @var request_interface */
+	protected $request;
+
+	/** @var service_collection */
+	protected $service_providers;
+
+	/** @var user */
+	protected $user;
+
+	/** @var string OAuth table: token storage */
+	protected $oauth_token_table;
+
+	/** @var string OAuth table: state */
+	protected $oauth_state_table;
+
+	/** @var string OAuth table: account association */
+	protected $oauth_account_table;
+
+	/** @var string Users table */
+	protected $users_table;
+
+	/** @var string phpBB root path */
+	protected $root_path;
+
+	/** @var string php File extension */
 	protected $php_ext;
 
 	/**
-	* OAuth Authentication Constructor
-	*
-	* @param	\phpbb\db\driver\driver_interface	$db
-	* @param	\phpbb\config\config	$config
-	* @param	\phpbb\passwords\manager	$passwords_manager
-	* @param	\phpbb\request\request_interface	$request
-	* @param	\phpbb\user		$user
-	* @param	string			$auth_provider_oauth_token_storage_table
-	* @param	string			$auth_provider_oauth_state_table
-	* @param	string			$auth_provider_oauth_token_account_assoc
-	* @param	\phpbb\di\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
-	* @param	string			$users_table
-	* @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
-	* @param	\phpbb\event\dispatcher_interface $dispatcher phpBB event dispatcher
-	* @param	string			$phpbb_root_path
-	* @param	string			$php_ext
-	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_state_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, \phpbb\event\dispatcher_interface $dispatcher, $phpbb_root_path, $php_ext)
+	 * Constructor.
+	 *
+	 * @param config				$config					Config object
+	 * @param driver_interface	$db						Database object
+	 * @param db			$db_auth				DB auth provider
+	 * @param dispatcher			$dispatcher				Event dispatcher object
+	 * @param language			$language				Language object
+	 * @param request_interface	$request				Request object
+	 * @param service_collection		$service_providers		OAuth providers service collection
+	 * @param user						$user					User object
+	 * @param string							$oauth_token_table		OAuth table: token storage
+	 * @param string							$oauth_state_table		OAuth table: state
+	 * @param string							$oauth_account_table	OAuth table: account association
+	 * @param string							$users_table			User table
+	 * @param string							$root_path				phpBB root path
+	 * @param string							$php_ext				php File extension
+	 */
+	public function __construct(
+		config $config,
+		driver_interface $db,
+		db $db_auth,
+		dispatcher $dispatcher,
+		language $language,
+		request_interface $request,
+		service_collection $service_providers,
+		user $user,
+		$oauth_token_table,
+		$oauth_state_table,
+		$oauth_account_table,
+		$users_table,
+		$root_path,
+		$php_ext
+	)
 	{
-		$this->db = $db;
-		$this->config = $config;
-		$this->passwords_manager = $passwords_manager;
-		$this->request = $request;
-		$this->user = $user;
-		$this->auth_provider_oauth_token_storage_table = $auth_provider_oauth_token_storage_table;
-		$this->auth_provider_oauth_state_table = $auth_provider_oauth_state_table;
-		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
-		$this->service_providers = $service_providers;
-		$this->users_table = $users_table;
-		$this->phpbb_container = $phpbb_container;
-		$this->dispatcher = $dispatcher;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->config				= $config;
+		$this->db					= $db;
+		$this->db_auth				= $db_auth;
+		$this->dispatcher			= $dispatcher;
+		$this->language				= $language;
+		$this->service_providers	= $service_providers;
+		$this->request				= $request;
+		$this->user					= $user;
+
+		$this->oauth_token_table	= $oauth_token_table;
+		$this->oauth_state_table	= $oauth_state_table;
+		$this->oauth_account_table	= $oauth_account_table;
+		$this->users_table			= $users_table;
+		$this->root_path			= $root_path;
+		$this->php_ext				= $php_ext;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function init()
 	{
 		// This does not test whether or not the key and secret provided are valid.
@@ -173,61 +141,85 @@ class oauth extends \phpbb\auth\provider\base
 
 			if (($credentials['key'] && !$credentials['secret']) || (!$credentials['key'] && $credentials['secret']))
 			{
-				return $this->user->lang['AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'];
+				return $this->language->lang('AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING');
 			}
 		}
+
 		return false;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function login($username, $password)
 	{
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			$provider = new \phpbb\auth\provider\db($this->db, $this->config, $this->passwords_manager, $this->request, $this->user, $this->phpbb_container, $this->phpbb_root_path, $this->php_ext);
-			return $provider->login($username, $password);
+			return $this->db_auth->login($username, $password);
 		}
 
 		// Request the name of the OAuth service
-		$service_name_original = $this->request->variable('oauth_service', '', false);
-		$service_name = 'auth.provider.oauth.service.' . strtolower($service_name_original);
-		if ($service_name_original === '' || !array_key_exists($service_name, $this->service_providers))
+		$provider = $this->request->variable('oauth_service', '', false);
+		$service_name = $this->get_service_name($provider);
+
+		if ($provider === '' || !array_key_exists($service_name, $this->service_providers))
 		{
-			return array(
+			return [
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
 				'error_msg'		=> 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST',
-				'user_row'		=> array('user_id' => ANONYMOUS),
-			);
+				'user_row'		=> ['user_id' => ANONYMOUS],
+			];
 		}
 
 		// Get the service credentials for the given service
-		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
+		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
+		$query = 'mode=login&login=external&oauth_service=' . $provider;
 
-		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
-		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
-		$service = $this->get_service($service_name_original, $storage, $service_credentials, $query, $this->service_providers[$service_name]->get_auth_scope());
+		try
+		{
+			/** @var OAuth1Service|OAuth2Service $service */
+			$service = $this->get_service($provider, $storage, $query);
+		}
+		catch (\Exception $e)
+		{
+			return [
+				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg'		=> $e->getMessage(),
+				'user_row'		=> ['user_id' => ANONYMOUS],
+			];
+		}
 
-		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
-			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
+		if ($this->is_set_code($service))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
-			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+
+			try
+			{
+				$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+			}
+			catch (exception $e)
+			{
+				return [
+					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+					'error_msg'		=> $e->getMessage(),
+					'user_row'		=> ['user_id' => ANONYMOUS],
+				];
+			}
 
 			/**
 			 * Check to see if this provider is already associated with an account.
 			 *
-			 * Enforcing a data type to make data contains strings and not integers,
+			 * Enforcing a data type to make sure it are strings and not integers,
 			 * so values are quoted in the SQL WHERE statement.
 			 */
-			$data = array(
-				'provider'			=> (string) $service_name_original,
+			$data = [
+				'provider'			=> (string) utf8_strtolower($provider),
 				'oauth_provider_id'	=> (string) $unique_id
-			);
+			];
 
-			$sql = 'SELECT user_id FROM ' . $this->auth_provider_oauth_token_account_assoc . '
+			$sql = 'SELECT user_id 
+				FROM ' . $this->oauth_account_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $data);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -235,204 +227,134 @@ class oauth extends \phpbb\auth\provider\base
 
 			$redirect_data = array(
 				'auth_provider'				=> 'oauth',
-				'login_link_oauth_service'	=> $service_name_original,
+				'login_link_oauth_service'	=> $provider,
 			);
 
 			/**
-			* Event is triggered before check if provider is already associated with an account
-			*
-			* @event core.oauth_login_after_check_if_provider_id_has_match
-			* @var	array									row				User row
-			* @var	array									data			Provider data
-			* @var	array									redirect_data	Data to be appended to the redirect url
-			* @var	\OAuth\Common\Service\ServiceInterface	service			OAuth service
-			* @since 3.2.3-RC1
-			* @changed 3.2.6-RC1 Added redirect_data
-			*/
-			$vars = array(
+			 * Event is triggered before check if provider is already associated with an account
+			 *
+			 * @event core.oauth_login_after_check_if_provider_id_has_match
+			 * @var array				row				User row
+			 * @var array				data			Provider data
+			 * @var	array				redirect_data	Data to be appended to the redirect url
+			 * @var ServiceInterface	service			OAuth service
+			 * @since 3.2.3-RC1
+			 * @changed 3.2.6-RC1						Added redirect_data
+			 */
+			$vars = [
 				'row',
 				'data',
 				'redirect_data',
 				'service',
-			);
+			];
 			extract($this->dispatcher->trigger_event('core.oauth_login_after_check_if_provider_id_has_match', compact($vars)));
 
 			if (!$row)
 			{
 				// The user does not yet exist, ask to link or create profile
-				return array(
+				return [
 					'status'		=> LOGIN_SUCCESS_LINK_PROFILE,
 					'error_msg'		=> 'LOGIN_OAUTH_ACCOUNT_NOT_LINKED',
-					'user_row'		=> array(),
+					'user_row'		=> [],
 					'redirect_data'	=> $redirect_data,
-				);
+				];
 			}
 
 			// Retrieve the user's account
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_ip, user_type, user_login_attempts
 				FROM ' . $this->users_table . '
-					WHERE user_id = ' . (int) $row['user_id'];
+				WHERE user_id = ' . (int) $row['user_id'];
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
 			if (!$row)
 			{
-				throw new \Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY');
+				return [
+					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+					'error_msg'		=> 'AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY',
+					'user_row'		=> ['user_id' => ANONYMOUS],
+				];
 			}
 
 			/**
 			 * Check if the user is banned.
-			 * The fourth parameter, return, has to be true,
-			 * otherwise the OAuth login is still called and
-			 * an uncaught exception is thrown as there is no
-			 * token stored in the database.
+			 * The fourth parameter (return) has to be true, otherwise the OAuth login is still called and
+			 * an uncaught exception is thrown as there is no token stored in the database.
 			 */
 			$ban = $this->user->check_ban($row['user_id'], $row['user_ip'], $row['user_email'], true);
+
 			if (!empty($ban))
 			{
 				$till_date = !empty($ban['ban_end']) ? $this->user->format_date($ban['ban_end']) : '';
 				$message = !empty($ban['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
-				$contact_link = phpbb_get_board_contact_link($this->config, $this->phpbb_root_path, $this->php_ext);
-				$message = $this->user->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
-				$message .= !empty($ban['ban_give_reason']) ? '<br /><br />' . $this->user->lang('BOARD_BAN_REASON', $ban['ban_give_reason']) : '';
-				$message .= !empty($ban['ban_triggered_by']) ? '<br /><br /><em>' . $this->user->lang('BAN_TRIGGERED_BY_' . strtoupper($ban['ban_triggered_by'])) . '</em>' : '';
+				$contact_link = phpbb_get_board_contact_link($this->config, $this->root_path, $this->php_ext);
 
-				return array(
+				$message = $this->language->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
+				$message .= !empty($ban['ban_give_reason']) ? '<br /><br />' . $this->language->lang('BOARD_BAN_REASON', $ban['ban_give_reason']) : '';
+				$message .= !empty($ban['ban_triggered_by']) ? '<br /><br /><em>' . $this->language->lang('BAN_TRIGGERED_BY_' . utf8_strtoupper($ban['ban_triggered_by'])) . '</em>' : '';
+
+				return [
 					'status'	=> LOGIN_BREAK,
 					'error_msg'	=> $message,
 					'user_row'	=> $row,
-				);
+				];
 			}
 
 			// Update token storage to store the user_id
 			$storage->set_user_id($row['user_id']);
 
 			/**
-			* Event is triggered after user is successfully logged in via OAuth.
-			*
-			* @event core.auth_oauth_login_after
-			* @var    array    row    User row
-			* @since 3.1.11-RC1
-			*/
-			$vars = array(
+			 * Event is triggered after user is successfully logged in via OAuth.
+			 *
+			 * @event core.auth_oauth_login_after
+			 * @var array	row		User row
+			 * @since 3.1.11-RC1
+			 */
+			$vars = [
 				'row',
-			);
+			];
 			extract($this->dispatcher->trigger_event('core.auth_oauth_login_after', compact($vars)));
 
 			// The user is now authenticated and can be logged in
-			return array(
+			return [
 				'status'		=> LOGIN_SUCCESS,
 				'error_msg'		=> false,
 				'user_row'		=> $row,
-			);
+			];
 		}
 		else
 		{
-			if ($service::OAUTH_VERSION === 1)
-			{
-				$token = $service->requestRequestToken();
-				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
-			}
-			else
-			{
-				$url = $service->getAuthorizationUri();
-			}
-			header('Location: ' . $url);
+			return $this->set_redirect($service);
 		}
 	}
 
 	/**
-	* Returns the cached current_uri object or creates and caches it if it is
-	* not already created. In each case the query string is updated based on
-	* the $query parameter.
-	*
-	* @param	string	$service_name	The name of the service
-	* @param	string	$query			The query string of the current_uri
-	*									used in redirects
-	* @return	\OAuth\Common\Http\Uri\UriInterface
-	*/
-	protected function get_current_uri($service_name, $query)
-	{
-		if ($this->current_uri)
-		{
-			$this->current_uri->setQuery($query);
-			return $this->current_uri;
-		}
-
-		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
-		$super_globals = $this->request->get_super_global(\phpbb\request\request_interface::SERVER);
-		if (!empty($super_globals['HTTP_X_FORWARDED_PROTO']) && $super_globals['HTTP_X_FORWARDED_PROTO'] === 'https')
-		{
-			$super_globals['HTTPS'] = 'on';
-			$super_globals['SERVER_PORT'] = 443;
-		}
-		$current_uri = $uri_factory->createFromSuperGlobalArray($super_globals);
-		$current_uri->setQuery($query);
-
-		$this->current_uri = $current_uri;
-		return $current_uri;
-	}
-
-	/**
-	* Returns a new service object
-	*
-	* @param	string	$service_name			The name of the service
-	* @param	\phpbb\auth\provider\oauth\token_storage $storage
-	* @param	array	$service_credentials	{@see \phpbb\auth\provider\oauth\oauth::get_service_credentials}
-	* @param	string	$query					The query string of the
-	*											current_uri used in redirection
-	* @param	array	$scopes					The scope of the request against
-	*											the api.
-	* @return	\OAuth\Common\Service\ServiceInterface
-	* @throws	\Exception
-	*/
-	protected function get_service($service_name, \phpbb\auth\provider\oauth\token_storage $storage, array $service_credentials, $query, array $scopes = array())
-	{
-		$current_uri = $this->get_current_uri($service_name, $query);
-
-		// Setup the credentials for the requests
-		$credentials = new Credentials(
-			$service_credentials['key'],
-			$service_credentials['secret'],
-			$current_uri->getAbsoluteUri()
-		);
-
-		$service_factory = new \OAuth\ServiceFactory();
-		$service = $service_factory->createService($service_name, $credentials, $storage, $scopes);
-
-		if (!$service)
-		{
-			throw new \Exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
-		}
-
-		return $service;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function get_login_data()
 	{
-		$login_data = array(
+		$login_data = [
 			'TEMPLATE_FILE'		=> 'login_body_oauth.html',
 			'BLOCK_VAR_NAME'	=> 'oauth',
-			'BLOCK_VARS'		=> array(),
-		);
+			'BLOCK_VARS'		=> [],
+		];
 
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
 			// Only include data if the credentials are set
 			$credentials = $service_provider->get_service_credentials();
+
 			if ($credentials['key'] && $credentials['secret'])
 			{
-				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $actual_name;
-				$login_data['BLOCK_VARS'][$service_name] = array(
+				$provider = $this->get_provider($service_name);
+				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $provider;
+
+				$login_data['BLOCK_VARS'][$service_name] = [
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
-					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
-				);
+					'SERVICE_NAME'	=> $this->get_provider_title($provider),
+				];
 			}
 		}
 
@@ -440,51 +362,55 @@ class oauth extends \phpbb\auth\provider\base
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function acp()
 	{
-		$ret = array();
+		$ret = [];
 
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
-			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-			$ret[] = 'auth_oauth_' . $actual_name . '_key';
-			$ret[] = 'auth_oauth_' . $actual_name . '_secret';
+			$provider = $this->get_provider($service_name);
+
+			$provider = utf8_strtolower($provider);
+
+			$ret[] = 'auth_oauth_' . $provider . '_key';
+			$ret[] = 'auth_oauth_' . $provider . '_secret';
 		}
 
 		return $ret;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function get_acp_template($new_config)
 	{
-		$ret = array(
+		$ret = [
 			'BLOCK_VAR_NAME'	=> 'oauth_services',
-			'BLOCK_VARS'		=> array(),
+			'BLOCK_VARS'		=> [],
 			'TEMPLATE_FILE'		=> 'auth_provider_oauth.html',
-			'TEMPLATE_VARS'		=> array(),
-		);
+			'TEMPLATE_VARS'		=> [],
+		];
 
 		foreach ($this->service_providers as $service_name => $service_provider)
 		{
-			$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-			$ret['BLOCK_VARS'][$actual_name] = array(
-				'ACTUAL_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
-				'KEY'			=> $new_config['auth_oauth_' . $actual_name . '_key'],
-				'NAME'			=> $actual_name,
-				'SECRET'		=> $new_config['auth_oauth_' . $actual_name . '_secret'],
-			);
+			$provider = $this->get_provider($service_name);
+
+			$ret['BLOCK_VARS'][$provider] = [
+				'NAME'			=> $provider,
+				'ACTUAL_NAME'	=> $this->get_provider_title($provider),
+				'KEY'			=> $new_config['auth_oauth_' . utf8_strtolower($provider) . '_key'],
+				'SECRET'		=> $new_config['auth_oauth_' . utf8_strtolower($provider) . '_secret'],
+			];
 		}
 
 		return $ret;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function login_link_has_necessary_data($login_link_data)
 	{
 		if (empty($login_link_data))
@@ -502,16 +428,13 @@ class oauth extends \phpbb\auth\provider\base
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function link_account(array $link_data)
 	{
 		// Check for a valid link method (auth_link or login_link)
 		if (!array_key_exists('link_method', $link_data) ||
-			!in_array($link_data['link_method'], array(
-				'auth_link',
-				'login_link',
-			)))
+			!in_array($link_data['link_method'], ['auth_link', 'login_link']))
 		{
 			return 'LOGIN_LINK_MISSING_DATA';
 		}
@@ -527,7 +450,8 @@ class oauth extends \phpbb\auth\provider\base
 			}
 		}
 
-		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
+		$service_name = $this->get_service_name($link_data['oauth_service']);
+
 		if (!array_key_exists($service_name, $this->service_providers))
 		{
 			return 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST';
@@ -539,21 +463,109 @@ class oauth extends \phpbb\auth\provider\base
 				return $this->link_account_auth_link($link_data, $service_name);
 			case 'login_link':
 				return $this->link_account_login_link($link_data, $service_name);
+			default:
+				return 'LOGIN_LINK_MISSING_DATA';
 		}
 	}
 
 	/**
-	* Performs the account linking for login_link
-	*
-	* @param	array	$link_data		The same variable given to {@see \phpbb\auth\provider\provider_interface::link_account}
-	* @param	string	$service_name	The name of the service being used in
-	*									linking.
-	* @return	string|null	Returns a language constant (string) if an error is
-	*						encountered, or null on success.
-	*/
+	 * {@inheritdoc}
+	 */
+	public function logout($data, $new_session)
+	{
+		// Clear all tokens belonging to the user
+		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
+		$storage->clearAllTokens();
+
+		return;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_auth_link_data($user_id = 0)
+	{
+		$user_ids	= [];
+		$block_vars	= [];
+
+		$sql = 'SELECT oauth_provider_id, provider
+ 			FROM ' . $this->oauth_account_table . '
+			WHERE user_id = ' . ($user_id > 0 ? (int) $user_id : (int) $this->user->data['user_id']);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$user_ids[$row['provider']] = $row['oauth_provider_id'];
+		}
+		$this->db->sql_freeresult($result);
+
+		foreach ($this->service_providers as $service_name => $service_provider)
+		{
+			// Only include data if the credentials are set
+			$credentials = $service_provider->get_service_credentials();
+
+			if ($credentials['key'] && $credentials['secret'])
+			{
+				$provider = $this->get_provider($service_name);
+
+				$block_vars[$service_name] = [
+					'SERVICE_NAME'	=> $this->get_provider_title($provider),
+					'UNIQUE_ID'		=> isset($user_ids[$provider]) ? $user_ids[$provider] : null,
+					'HIDDEN_FIELDS'	=> [
+						'link'			=> !isset($user_ids[$provider]),
+						'oauth_service' => $provider,
+					],
+				];
+			}
+		}
+
+		return [
+			'BLOCK_VAR_NAME'	=> 'oauth',
+			'BLOCK_VARS'		=> $block_vars,
+
+			'TEMPLATE_FILE'		=> 'ucp_auth_link_oauth.html',
+		];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function unlink_account(array $link_data)
+	{
+		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
+		{
+			return 'LOGIN_LINK_MISSING_DATA';
+		}
+
+		// Remove user specified in $link_data if possible
+		$user_id = isset($link_data['user_id']) ? $link_data['user_id'] : $this->user->data['user_id'];
+
+		// Remove the link
+		$sql = 'DELETE FROM ' . $this->oauth_account_table . "
+			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
+				AND user_id = " . (int) $user_id;
+		$this->db->sql_query($sql);
+
+		$service_name = $this->get_service_name($link_data['oauth_service']);
+
+		// Clear all tokens belonging to the user on this service
+		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
+		$storage->clearToken($service_name);
+
+		return false;
+	}
+
+	/**
+	 * Performs the account linking for login_link.
+	 *
+	 * @param array		$link_data		The same variable given to
+	 * 									{@see \phpbb\auth\provider\provider_interface::link_account}
+	 * @param string	$service_name	The name of the service being used in linking.
+	 * @return string|false				Returns a language key (string) if an error is encountered,
+	 * 									or false on success.
+	 */
 	protected function link_account_login_link(array $link_data, $service_name)
 	{
-		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
+		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
 
 		// Check for an access token, they should have one
 		if (!$storage->has_access_token_by_session($service_name))
@@ -561,87 +573,109 @@ class oauth extends \phpbb\auth\provider\base
 			return 'LOGIN_LINK_ERROR_OAUTH_NO_ACCESS_TOKEN';
 		}
 
-		// Prepare the query string
-		$query = 'mode=login_link&login_link_oauth_service=' . strtolower($link_data['oauth_service']);
-
 		// Prepare for an authentication request
-		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
-		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
+		$query = 'mode=login_link&login_link_oauth_service=' . $link_data['oauth_service'];
+
+		try
+		{
+			$service = $this->get_service($link_data['oauth_service'], $storage, $query);
+		}
+		catch (\Exception $e)
+		{
+			return $e->getMessage();
+		}
+
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
-		// The user has already authenticated successfully, request to authenticate again
-		$unique_id = $this->service_providers[$service_name]->perform_token_auth();
+		try
+		{
+			// The user has already authenticated successfully, request to authenticate again
+			$unique_id = $this->service_providers[$service_name]->perform_token_auth();
+		}
+		catch (exception $e)
+		{
+			return $e->getMessage();
+		}
 
 		// Insert into table, they will be able to log in after this
-		$data = array(
+		$data = [
 			'user_id'			=> $link_data['user_id'],
-			'provider'			=> strtolower($link_data['oauth_service']),
+			'provider'			=> utf8_strtolower($link_data['oauth_service']),
 			'oauth_provider_id'	=> $unique_id,
-		);
+		];
 
 		$this->link_account_perform_link($data);
+
 		// Update token storage to store the user_id
 		$storage->set_user_id($link_data['user_id']);
+
+		return false;
 	}
 
 	/**
-	* Performs the account linking for auth_link
-	*
-	* @param	array	$link_data		The same variable given to {@see \phpbb\auth\provider\provider_interface::link_account}
-	* @param	string	$service_name	The name of the service being used in
-	*									linking.
-	* @return	string|null	Returns a language constant (string) if an error is
-	*						encountered, or null on success.
-	*/
+	 * Performs the account linking for auth_link.
+	 *
+	 * @param array		$link_data		The same variable given to
+	 * 									{@see \phpbb\auth\provider\provider_interface::link_account}
+	 * @param string	$service_name	The name of the service being used in linking.
+	 * @return string|false				Returns a language constant (string) if an error is encountered,
+	 * 									or false on success.
+	 */
 	protected function link_account_auth_link(array $link_data, $service_name)
 	{
-		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
-		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . strtolower($link_data['oauth_service']);
-		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
-		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
+		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
+		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . $link_data['oauth_service'];
 
-		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
-			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
+		try
+		{
+			/** @var OAuth1Service|OAuth2Service $service */
+			$service = $this->get_service($link_data['oauth_service'], $storage, $query);
+		}
+		catch (\Exception $e)
+		{
+			return $e->getMessage();
+		}
+
+		if ($this->is_set_code($service))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
-			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+
+			try
+			{
+				$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+			}
+			catch (exception $e)
+			{
+				return $e->getMessage();
+			}
 
 			// Insert into table, they will be able to log in after this
-			$data = array(
+			$data = [
 				'user_id'			=> $this->user->data['user_id'],
-				'provider'			=> strtolower($link_data['oauth_service']),
+				'provider'			=> utf8_strtolower($link_data['oauth_service']),
 				'oauth_provider_id'	=> $unique_id,
-			);
+			];
 
 			$this->link_account_perform_link($data);
+
+			return false;
 		}
 		else
 		{
-			if ($service::OAUTH_VERSION === 1)
-			{
-				$token = $service->requestRequestToken();
-				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
-			}
-			else
-			{
-				$url = $service->getAuthorizationUri();
-			}
-			header('Location: ' . $url);
+			return $this->set_redirect($service);
 		}
 	}
 
 	/**
-	* Performs the query that inserts an account link
-	*
-	* @param	array	$data	This array is passed to db->sql_build_array
-	*/
+	 * Performs the query that inserts an account link
+	 *
+	 * @param	array	$data	This array is passed to db->sql_build_array
+	 */
 	protected function link_account_perform_link(array $data)
 	{
 		// Check if the external account is already associated with other user
 		$sql = 'SELECT user_id
-			FROM ' . $this->auth_provider_oauth_token_account_assoc . "
+			FROM ' . $this->oauth_account_table . "
 			WHERE provider = '" . $this->db->sql_escape($data['provider']) . "'
 				AND oauth_provider_id = '" . $this->db->sql_escape($data['oauth_provider_id']) . "'";
 		$result = $this->db->sql_query($sql);
@@ -654,114 +688,172 @@ class oauth extends \phpbb\auth\provider\base
 		}
 
 		// Link account
-		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
-			' . $this->db->sql_build_array('INSERT', $data);
+		$sql = 'INSERT INTO ' . $this->oauth_account_table . ' ' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
 
 		/**
 		 * Event is triggered after user links account.
 		 *
 		 * @event core.auth_oauth_link_after
-		 * @var    array    data    User row
+		 * @var array	data	User row
 		 * @since 3.1.11-RC1
 		 */
-		$vars = array(
+		$vars = [
 			'data',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.auth_oauth_link_after', compact($vars)));
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
-	public function logout($data, $new_session)
+	 * Returns a new service object.
+	 *
+	 * @param string			$provider		The name of the provider
+	 * @param token_storage		$storage		Token storage object
+	 * @param string			$query			The query string used for the redirect uri
+	 * @return ServiceInterface
+	 * @throws exception						When OAuth service was not created
+	 */
+	protected function get_service($provider, token_storage $storage, $query)
 	{
-		// Clear all tokens belonging to the user
-		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
-		$storage->clearAllTokens();
+		$service_name = $this->get_service_name($provider);
 
-		return;
-	}
+		/** @see \phpbb\auth\provider\oauth\service\service_interface::get_service_credentials */
+		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_auth_link_data($user_id = 0)
-	{
-		$block_vars = array();
+		/** @see \phpbb\auth\provider\oauth\service\service_interface::get_auth_scope */
+		$scopes = $this->service_providers[$service_name]->get_auth_scope();
 
-		// Get all external accounts tied to the current user
-		$data = array(
-			'user_id' => ($user_id <= 0) ? (int) $this->user->data['user_id'] : (int) $user_id,
+		$callback = generate_board_url() . "/ucp.{$this->php_ext}?{$query}";
+
+		// Setup the credentials for the requests
+		$credentials = new Credentials(
+			$service_credentials['key'],
+			$service_credentials['secret'],
+			$callback
 		);
-		$sql = 'SELECT oauth_provider_id, provider FROM ' . $this->auth_provider_oauth_token_account_assoc . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
 
-		$oauth_user_ids = array();
+		$service_factory = new ServiceFactory;
 
-		if ($rows !== false && count($rows))
+		// Allow providers to register a custom class or override the provider name
+		if ($class = $this->service_providers[$service_name]->get_external_service_class())
 		{
-			foreach ($rows as $row)
+			if (class_exists($class))
 			{
-				$oauth_user_ids[$row['provider']] = $row['oauth_provider_id'];
+				try
+				{
+					$service_factory->registerService($provider, $class);
+				}
+				catch (\OAuth\Common\Exception\Exception $e)
+				{
+					throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+				}
 			}
-		}
-		unset($rows);
-
-		foreach ($this->service_providers as $service_name => $service_provider)
-		{
-			// Only include data if the credentials are set
-			$credentials = $service_provider->get_service_credentials();
-			if ($credentials['key'] && $credentials['secret'])
+			else
 			{
-				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-
-				$block_vars[$service_name] = array(
-					'HIDDEN_FIELDS'	=> array(
-						'link'			=> (!isset($oauth_user_ids[$actual_name])),
-						'oauth_service' => $actual_name,
-					),
-
-					'SERVICE_ID'	=> $actual_name,
-					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
-					'UNIQUE_ID'		=> (isset($oauth_user_ids[$actual_name])) ? $oauth_user_ids[$actual_name] : null,
-				);
+				$provider = $class;
 			}
 		}
 
-		return array(
-			'BLOCK_VAR_NAME'	=> 'oauth',
-			'BLOCK_VARS'		=> $block_vars,
+		$service = $service_factory->createService($provider, $credentials, $storage, $scopes);
 
-			'TEMPLATE_FILE'	=> 'ucp_auth_link_oauth.html',
-		);
+		if (!$service)
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
+		}
+
+		return $service;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
-	public function unlink_account(array $link_data)
+	 * Returns the service name for an OAuth provider name.
+	 *
+	 * @param string	$provider		The OAuth provider name
+	 * @return string					The service name
+	 */
+	protected function get_service_name($provider)
 	{
-		if (!array_key_exists('oauth_service', $link_data) || !$link_data['oauth_service'])
+		if (strpos($provider, 'auth.provider.oauth.service.') !== 0)
 		{
-			return 'LOGIN_LINK_MISSING_DATA';
+			$provider = 'auth.provider.oauth.service.' . utf8_strtolower($provider);
 		}
 
-		// Remove user specified in $link_data if possible
-		$user_id = isset($link_data['user_id']) ? $link_data['user_id'] : $this->user->data['user_id'];
+		return $provider;
+	}
 
-		// Remove the link
-		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_account_assoc . "
-			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
-				AND user_id = " . (int) $user_id;
-		$this->db->sql_query($sql);
+	/**
+	 * Returns the OAuth provider name from a service name.
+	 *
+	 * @param string	$service_name	The service name
+	 * @return string					The OAuth provider name
+	 */
+	protected function get_provider($service_name)
+	{
+		return str_replace('auth.provider.oauth.service.', '', $service_name);
+	}
 
-		// Clear all tokens belonging to the user on this service
-		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
-		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table, $this->auth_provider_oauth_state_table);
-		$storage->clearToken($service_name);
+	/**
+	 * Returns the localized title for the OAuth provider.
+	 *
+	 * @param string	$provider		The OAuth provider name
+	 * @return string					The OAuth provider title
+	 */
+	protected function get_provider_title($provider)
+	{
+		return $this->language->lang('AUTH_PROVIDER_OAUTH_SERVICE_' . utf8_strtoupper($provider));
+	}
+
+	/**
+	 * Returns whether or not the authorization code is set.
+	 *
+	 * @param OAuth1Service|OAuth2Service	$service	The external OAuth service
+	 * @return bool										Whether or not the authorization code is set in the URL
+	 *                       							for the respective OAuth service's version
+	 */
+	protected function is_set_code($service)
+	{
+		switch ($service::OAUTH_VERSION)
+		{
+			case 1:
+				return $this->request->is_set('oauth_token', request_interface::GET);
+
+			case 2:
+				return $this->request->is_set('code', request_interface::GET);
+
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Sets a redirect to the authorization uri.
+	 *
+	 * @param OAuth1Service|OAuth2Service $service		The external OAuth service
+	 * @return array|false								Array if an error occurred,
+	 *                            						false on success
+	 */
+	protected function set_redirect($service)
+	{
+		$parameters = [];
+
+		if ($service::OAUTH_VERSION === 1)
+		{
+			try
+			{
+				$token		= $service->requestRequestToken();
+				$parameters	= ['oauth_token' => $token->getRequestToken()];
+			}
+			catch (TokenResponseException $e)
+			{
+				return [
+					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+					'error_msg'		=> $e->getMessage(),
+					'user_row'		=> ['user_id' => ANONYMOUS],
+				];
+			}
+		}
+
+		redirect($service->getAuthorizationUri($parameters), false, true);
+
+		return false;
 	}
 }

@@ -245,7 +245,6 @@ class add_config_settings extends \phpbb\install\task_base
 					user_lang = '" . $this->db->sql_escape($this->install_config->get('user_language', 'en')) . "',
 					user_email='" . $this->db->sql_escape($this->install_config->get('board_email')) . "',
 					user_dateformat='" . $this->db->sql_escape($this->language->lang('default_dateformat')) . "',
-					user_email_hash = " . $this->db->sql_escape(phpbb_email_hash($this->install_config->get('board_email'))) . ",
 					username_clean = '" . $this->db->sql_escape(utf8_clean_string($this->install_config->get('admin_name'))) . "'
 				WHERE username = 'Admin'",
 

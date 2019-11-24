@@ -21,7 +21,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 	public function get_global_visibility_sql_data()
 	{
 		return array(
-			// data set 0: moderator, can see all topics
+			// data set 0: moderator, can see all topics except draft
 			array(
 				'phpbb_topics',
 				'topic', 1, array(), '',
@@ -40,7 +40,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 9),
 				),
 			),
-			// data set 1: moderator, can see ??? topics, 
+			// data set 1: moderator, can see all topics, except draft
 			array(
 				'phpbb_topics',
 				'topic', 1, array(3), '',
@@ -56,7 +56,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 6),
 				),
 			),
-			// data set 2: moderator, can see ??? topics
+			// data set 2: moderator, can see all topics, except draft
 			array(
 				'phpbb_topics',
 				'topic', 1, array(), '',
@@ -71,7 +71,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('topic_id' => 8),
 				),
 			),
-			// data set 3: moderator, can see all posts
+			// data set 3: moderator, can see all posts except draft
 			array(
 				'phpbb_posts',
 				'post', 1, array(), '',
@@ -88,9 +88,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 7),
 					array('post_id' => 8),
 					array('post_id' => 9),
+					array('post_id' => 12),
 				),
 			),
-			// data set 4: moderator, can see ??? posts
+			// data set 4: moderator, can see all posts except draft
 			array(
 				'phpbb_posts',
 				'post', 1, array(3), '',
@@ -104,9 +105,10 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 4),
 					array('post_id' => 5),
 					array('post_id' => 6),
+					array('post_id' => 12),
 				),
 			),
-			// data set 3: moderator, can see ??? posts
+			// data set 5: moderator, can see all posts except draft
 			array(
 				'phpbb_posts',
 				'post', 1, array(), '',
@@ -121,7 +123,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('post_id' => 8),
 				),
 			),
-			// data set 3: moderator, can see ??? posts and drafts
+			// data set 6: moderator, can see only own draft posts
 			array(
 				'phpbb_posts',
 				'post', 4, array(), '',
@@ -129,16 +131,11 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('m_approve', true, array(2 => true)),
 				),
 				array(
-					array('post_id' => 2),
-					array('post_id' => 4),
-					array('post_id' => 5),
-					array('post_id' => 6),
-					array('post_id' => 8),
 					array('post_id' => 10),
 					array('post_id' => 11),
 				),
 			),
-			// data set 0: moderator, can see all topics and own drafts
+			// data set 7: moderator, can see only own draft topics
 			array(
 				'phpbb_topics',
 				'topic', 4, array(), '',
@@ -146,15 +143,54 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 					array('m_approve', true, array(1 => true, 2 => true, 3 => true)),
 				),
 				array(
-					array('topic_id' => 1),
+					array('topic_id' => 10),
+				),
+			),
+			// data set 8: normal user, can see all approved topics
+			array(
+				'phpbb_topics',
+				'topic', 1, array(), '',
+				array(
+					array('m_approve', true, array()),
+				),
+				array(
 					array('topic_id' => 2),
-					array('topic_id' => 3),
-					array('topic_id' => 4),
 					array('topic_id' => 5),
-					array('topic_id' => 6),
-					array('topic_id' => 7),
 					array('topic_id' => 8),
-					array('topic_id' => 9),
+				),
+			),
+			// data set 9: normal user, can see all approved posts except forum 3
+			array(
+				'phpbb_posts',
+				'post', 1, array(3), '',
+				array(
+					array('m_approve', true, array()),
+				),
+				array(
+					array('post_id' => 2),
+					array('post_id' => 5),
+				),
+			),
+			// data set 10: normal user, can see only own draft posts
+			array(
+				'phpbb_posts',
+				'post', 4, array(), '',
+				array(
+					array('m_approve', true, array()),
+				),
+				array(
+					array('post_id' => 10),
+					array('post_id' => 11),
+				),
+			),
+			// data set 15: normal user, can see only own draft topics
+			array(
+				'phpbb_topics',
+				'topic', 4, array(), '',
+				array(
+					array('m_approve', true, array()),
+				),
+				array(
 					array('topic_id' => 10),
 				),
 			),

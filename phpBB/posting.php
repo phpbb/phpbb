@@ -181,7 +181,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.', true);
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 	break;
 
 	case 'smilies':

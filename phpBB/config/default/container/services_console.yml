@@ -158,14 +158,6 @@ services:
         tags:
             - { name: console.command }
 
-    console.command.fixup.recalculate_email_hash:
-        class: phpbb\console\command\fixup\recalculate_email_hash
-        arguments:
-            - '@user'
-            - '@dbal.conn'
-        tags:
-            - { name: console.command }
-
     console.command.fixup.update_hashes:
         class: phpbb\console\command\fixup\update_hashes
         arguments:

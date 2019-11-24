@@ -57,6 +57,7 @@ $lang = array_merge($lang, array(
 	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored because they are too common words: <strong>%s</strong>.',
 
 	'JUMP_TO_POST'			=> 'Jump to post',
+	'JUMP_TO_TOPIC'			=> 'Jump to topic',
 
 	'LOGIN_EXPLAIN_EGOSEARCH'	=> 'The board requires you to be registered and logged in to view your own posts.',
 	'LOGIN_EXPLAIN_UNREADSEARCH'=> 'The board requires you to be registered and logged in to view your unread posts.',
