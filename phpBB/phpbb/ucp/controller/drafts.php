@@ -270,7 +270,6 @@ class drafts
 			else if ($pm_drafts)
 			{
 				$link_pm = true;
-				/** @todo goldy */
 				$insert_url = $this->helper->route('ucp_pm_compose', ['d' => $draft['draft_id']]);
 			}
 

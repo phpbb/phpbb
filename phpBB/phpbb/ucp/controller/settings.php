@@ -487,7 +487,6 @@ class settings
 					'S_POST_SORT_KEY'		=> $s_sort_post_key,
 					'S_POST_SORT_DIR'		=> $s_sort_post_dir,
 				]);
-
 			break;
 
 			case 'post':

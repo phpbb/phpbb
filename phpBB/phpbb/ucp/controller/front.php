@@ -166,7 +166,6 @@ class front
 		$topic_forum_list = [];
 		foreach ($rowset as $t_id => $row)
 		{
-			// @todo variable never defined?
 			if (isset($forum_tracking_info[$row['forum_id']]))
 			{
 				$row['forum_mark_time'] = $forum_tracking_info[$row['forum_id']];

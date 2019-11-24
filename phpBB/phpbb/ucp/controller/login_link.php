@@ -173,7 +173,7 @@ class login_link
 			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields($data),
 
 			// Registration elements
-			'REGISTER_ACTION'		=> append_sid("{$this->root_path}ucp.$this->php_ext", 'mode=register'),
+			'REGISTER_ACTION'		=> $this->helper->route('ucp_account', ['mode' => 'register']),
 
 			// Login elements
 			'LOGIN_ERROR'			=> $login_error,
@@ -271,7 +271,6 @@ class login_link
 			switch ($result['status'])
 			{
 				case LOGIN_ERROR_ATTEMPTS:
-
 					$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 

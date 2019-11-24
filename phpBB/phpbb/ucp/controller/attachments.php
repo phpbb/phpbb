@@ -238,8 +238,7 @@ class attachments
 			{
 				if ($row['in_message'])
 				{
-					/* @todo pm route */
-					$view_topic = append_sid("{$this->root_path}ucp.$this->php_ext", "i=pm&amp;p={$row['post_msg_id']}");
+					$view_topic = $this->helper->route('ucp_pm_view', ['folder' => 'inbox', 'p' => $row['post_msg_id']]);
 				}
 				else
 				{

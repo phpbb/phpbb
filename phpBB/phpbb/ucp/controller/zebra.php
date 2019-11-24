@@ -314,7 +314,7 @@ class zebra
 							'REFRESH_DATA'	=> [
 								'time'	=> 3,
 								'url'	=> $u_mode,
-							]
+							],
 						]);
 					}
 					else if ($updated)
