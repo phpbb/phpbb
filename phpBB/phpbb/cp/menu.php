@@ -281,8 +281,9 @@ class menu
 
 		return [
 			'TITLE'		=> $this->lang->lang(utf8_strtoupper($name)),
-			'S_CAT'		=> $s_category,
 			'S_ACTIVE'	=> in_array($name, $this->actives),
+			'S_CAT'		=> $s_category,
+			'S_PM_VIEW'	=> $name === 'ucp_pm_view',
 			'U_VIEW'	=> $u_view,
 		];
 	}
