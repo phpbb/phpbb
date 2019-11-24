@@ -42,10 +42,6 @@ function install_php_extension
 
 php_ini_file=$(find_php_ini)
 
-# Disable opcache for testing
-echo 'Disabling Opcache'
-echo 'opcache.enable=0' >> "$php_ini_file"
-
 # APCu
 if [ `php -r "echo (int) (version_compare(PHP_VERSION, '7.0.0-dev', '>=') && version_compare(PHP_VERSION, '7.3.0-dev', '<'));"` == "1" ]
 then
@@ -58,6 +54,8 @@ then
 	fi
 fi
 
+# Disable xdebug on travis
+phpenv config-rm xdebug.ini || true
 
 # redis
 # Disabled redis for now as it causes travis to fail
