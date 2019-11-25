@@ -275,6 +275,22 @@ class phpbb_textformatter_s9e_bbcode_merger_test extends phpbb_test_case
 				</table>
 				<p> </p>'
 			],
+			[
+				// https://www.phpbb.com/community/viewtopic.php?f=438&t=2530451
+				'[issue]{NUMBER}[/issue]',
+				'<a href="/default/issues/{NUMBER}"> Issue #{NUMBER}</a>',
+
+				'[issue={SIMPLETEXT}]{NUMBER}[/issue]',
+				'<a href="/{SIMPLETEXT}/issues/{NUMBER}"> Issue #{NUMBER} ({SIMPLETEXT})</a>',
+
+				'[issue={SIMPLETEXT?}]{NUMBER}[/issue]',
+				'<a>
+					<xsl:choose>
+						<xsl:when test="@issue"><xsl:attribute name="href">/<xsl:value-of select="@issue"/>/issues/<xsl:value-of select="@content"/></xsl:attribute> Issue #<xsl:value-of select="@content"/> (<xsl:value-of select="@issue"/>)</xsl:when>
+						<xsl:otherwise><xsl:attribute name="href">/default/issues/<xsl:value-of select="@content"/></xsl:attribute> Issue #<xsl:value-of select="@content"/></xsl:otherwise>
+					</xsl:choose>
+				</a>'
+			],
 		];
 	}
 }
