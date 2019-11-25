@@ -96,11 +96,10 @@ class controller extends \phpbb\controller\helper
 
 			return new JsonResponse([
 				'MESSAGE_TITLE'		=> $message_title,
-				'MESSAGE_TEXT'		=> $message_text,
-				'MESSAGE_BACK'		=> $message_back,
+				'MESSAGE_TEXT'		=> $message_text . '<br><br>' . $message_back,
 				'S_USER_WARNING'	=> false,
-				'S_USER_NOTICE'		=> false,
-				'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null,
+				'S_USER_NOTICE'		=> $code === 200,
+				'REFRESH_DATA'		=> !empty($refresh_data) ? $refresh_data : null,
 			], $code);
 		}
 

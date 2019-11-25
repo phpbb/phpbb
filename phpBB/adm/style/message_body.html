@@ -3,6 +3,7 @@
 <div <!-- IF S_USER_NOTICE -->class="successbox"<!-- ELSE -->class="errorbox"<!-- ENDIF -->>
 	<h3>{MESSAGE_TITLE}</h3>
 	<p>{MESSAGE_TEXT}</p>
+	{% if MESSAGE_BACK %}<p>{{ MESSAGE_BACK }}</p>{% endif %}
 </div>
 
 <!-- INCLUDE overall_footer.html -->
