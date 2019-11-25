@@ -173,6 +173,16 @@ class phpbb_test_case_helpers
 			{
 				$config['fulltext_sphinx_id'] = $fulltext_sphinx_id;
 			}
+
+			if (isset($phpbb_memcached_host))
+			{
+				$config['memcached_host'] = $phpbb_memcached_host;
+			}
+
+			if (isset($phpbb_memcached_port))
+			{
+				$config['memcached_port'] = $phpbb_memcached_port;
+			}
 		}
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
@@ -203,6 +213,16 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_REDIS_PORT']))
 		{
 			$config['redis_port'] = $_SERVER['PHPBB_TEST_REDIS_PORT'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_MEMCACHED_HOST']))
+		{
+			$config['memcached_host'] = $_SERVER['PHPBB_TEST_MEMCACHED_HOST'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_MEMCACHED_PORT']))
+		{
+			$config['memcached_port'] = $_SERVER['PHPBB_TEST_MEMCACHED_PORT'];
 		}
 
 		return $config;

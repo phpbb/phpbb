@@ -56,6 +56,15 @@ class memcached extends \phpbb\cache\driver\memory
 		// Call the parent constructor
 		parent::__construct();
 
+		$memcached_servers = PHPBB_ACM_MEMCACHED;
+
+		// Allow overwriting PHPBB_ACM_MEMCACHED via constructor arguments
+		$args = func_get_args();
+		if (count($args) >= 2)
+		{
+			$memcached_servers = $args[0] . '/' . $args[1];
+		}
+
 		$this->memcached = new \Memcached();
 		$this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
 		// Memcached defaults to using compression, disable if we don't want
@@ -65,10 +74,20 @@ class memcached extends \phpbb\cache\driver\memory
 			$this->memcached->setOption(\Memcached::OPT_COMPRESSION, false);
 		}
 
-		foreach (explode(',', PHPBB_ACM_MEMCACHED) as $u)
+		$server_list = [];
+		foreach (explode(',', $memcached_servers) as $u)
 		{
-			preg_match('#(.*)/(\d+)#', $u, $parts);
-			$this->memcached->addServer(trim($parts[1]), (int) trim($parts[2]));
+			if (preg_match('#(.*)/(\d+)#', $u, $parts))
+			{
+				$server_list[] = [trim($parts[1]), (int) trim($parts[2])];
+			}
+		}
+
+		$this->memcached->addServers($server_list);
+
+		if (empty($server_list) || empty($this->memcached->getStats()))
+		{
+			trigger_error('Could not connect to memcached server(s).');
 		}
 	}
 
