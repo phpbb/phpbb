@@ -507,7 +507,6 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
 
-	'UCP'						=> 'User Control Panel',
 	'UCP_ACTIVATE'				=> 'Activate account',
 	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will receive an email at the address you specified.',
 	'UCP_ATTACHMENTS'			=> 'Attachments',
@@ -526,11 +525,7 @@ $lang = array_merge($lang, array(
 	'UCP_LOGIN_LINK'			=> 'Set up an external account association',
 
 	'UCP_MAIN'					=> 'Overview',
-	'UCP_MAIN_ATTACHMENTS'		=> 'Manage attachments',
-	'UCP_MAIN_BOOKMARKS'		=> 'Manage bookmarks',
-	'UCP_MAIN_DRAFTS'			=> 'Manage drafts',
 	'UCP_MAIN_FRONT'			=> 'Front page',
-	'UCP_MAIN_SUBSCRIBED'		=> 'Manage subscriptions',
 
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files.',
 
@@ -545,17 +540,12 @@ $lang = array_merge($lang, array(
 	'UCP_PREFS_VIEW'			=> 'Edit display options',
 
 	'UCP_PM'					=> 'Private messages',
-	'UCP_PM_COMPOSE'			=> 'Compose message',
-	'UCP_PM_DRAFTS'				=> 'Manage PM drafts',
 	'UCP_PM_OPTIONS'			=> 'Rules, folders &amp; settings',
 	'UCP_PM_UNREAD'				=> 'Unread messages',
-	'UCP_PM_VIEW'				=> 'View messages',
 
 	'UCP_PROFILE'				=> 'Profile',
-	'UCP_PROFILE_AVATAR'		=> 'Edit avatar',
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
-	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
 	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Manage “Remember Me” login keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
@@ -566,9 +556,6 @@ $lang = array_merge($lang, array(
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_RESEND'					=> 'Send activation email',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
-	'UCP_ZEBRA'						=> 'Friends &amp; Foes',
-	'UCP_ZEBRA_FOES'				=> 'Manage foes',
-	'UCP_ZEBRA_FRIENDS'				=> 'Manage friends',
 	'UNDISCLOSED_RECIPIENT'			=> 'Undisclosed Recipient',
 	'UNKNOWN_FOLDER'				=> 'Unknown folder',
 	'UNWATCH_MARKED'				=> 'Unwatch marked',

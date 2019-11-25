@@ -180,22 +180,15 @@ $lang = array_merge($lang, array(
 
 	'MCP_NOTES'						=> 'User notes',
 	'MCP_NOTES_FRONT'				=> 'Front page',
-	'MCP_NOTES_USER'				=> 'User details',
 
 	'MCP_POST_REPORTS'				=> 'Reports issued on this post',
 
 	'MCP_PM_REPORTS'				=> 'Reported PMs',
-	'MCP_PM_REPORT_DETAILS'			=> 'PM Report details',
-	'MCP_PM_REPORTS_CLOSED'			=> 'Closed PM reports',
 	'MCP_PM_REPORTS_CLOSED_EXPLAIN'	=> 'This is a list of all reports about private messages which have previously been resolved.',
-	'MCP_PM_REPORTS_OPEN'			=> 'Open PM reports',
 	'MCP_PM_REPORTS_OPEN_EXPLAIN'	=> 'This is a list of all reported private messages which are still to be handled.',
 
 	'MCP_REPORTS'					=> 'Reported messages',
-	'MCP_REPORT_DETAILS'			=> 'Report details',
-	'MCP_REPORTS_CLOSED'			=> 'Closed reports',
 	'MCP_REPORTS_CLOSED_EXPLAIN'	=> 'This is a list of all reports about posts which have previously been resolved.',
-	'MCP_REPORTS_OPEN'				=> 'Open reports',
 	'MCP_REPORTS_OPEN_EXPLAIN'		=> 'This is a list of all reported posts which are still to be handled.',
 
 	'MCP_QUEUE'								=> 'Moderation queue',
@@ -213,9 +206,6 @@ $lang = array_merge($lang, array(
 
 	'MCP_WARN'				=> 'Warnings',
 	'MCP_WARN_FRONT'		=> 'Front page',
-	'MCP_WARN_LIST'			=> 'List warnings',
-	'MCP_WARN_POST'			=> 'Warn for specific post',
-	'MCP_WARN_USER'			=> 'Warn user',
 
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to move the selected posts?',
 	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can move selected posts into another topic. The posts will be split from this topic and merged into the other topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',

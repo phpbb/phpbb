@@ -40,6 +40,97 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
+// MCP menu items
+$lang = array_merge($lang, array(
+	'MCP'					=> 'Moderator Control Panel',
+	'MCP_SHORT'				=> 'MCP',
+
+	'MCP_CAT_MAIN'			=> 'Main',
+	'MCP_INDEX'				=> 'MCP Index',
+	'MCP_VIEW_FORUM'		=> 'View forum',
+	'MCP_VIEW_TOPIC'		=> 'View topic',
+	'MCP_VIEW_POST'			=> 'View post',
+
+	'MCP_CAT_MODERATION'	=> 'Moderation',
+	'MCP_UNAPPROVED_TOPICS'	=> 'Unapproved topics',
+	'MCP_UNAPPROVED_POSTS'	=> 'Unapproved posts',
+	'MCP_APPROVE_DETAILS'	=> 'Approve details',
+	'MCP_DELETED_TOPICS'	=> 'Deleted topics',
+	'MCP_DELETED_POSTS'		=> 'Deleted posts',
+
+	'MCP_CAT_REPORTS'		=> 'Reports',
+	'MCP_REPORTS_OPEN'		=> 'Open reports',
+	'MCP_REPORTS_CLOSED'	=> 'Closed reports',
+	'MCP_REPORT_DETAILS'	=> 'Report details',
+
+	'MCP_PM_REPORTS_OPEN'	=> 'Open PM reports',
+	'MCP_PM_REPORTS_CLOSED'	=> 'Closed PM reports',
+	'MCP_PM_REPORT_DETAILS'	=> 'PM Report details',
+
+	'MCP_CAT_WARNINGS'		=> 'Warnings',
+	'MCP_WARN_OVERVIEW'		=> 'Warnings overview',
+	'MCP_WARN_LIST'			=> 'List warnings',
+	'MCP_WARN_USER'			=> 'Warn user',
+	'MCP_WARN_POST'			=> 'Warn post',
+
+	'MCP_CAT_NOTES'			=> 'Notes',
+	'MCP_NOTES_USER'		=> 'User notes',
+
+	'MCP_CAT_LOGS'			=> 'Logs',
+	'MCP_LOGS_OVERVIEW'		=> 'Logs overview',
+	'MCP_LOGS_FORUM'		=> 'Forum logs',
+	'MCP_LOGS_TOPIC'		=> 'Topic logs',
+
+	'MCP_CAT_BANS'			=> 'Bans',
+	'MCP_BAN_EMAIL'			=> 'Ban email',
+	'MCP_BAN_USER'			=> 'Ban user',
+	'MCP_BAN_IP'			=> 'Ban IP',
+));
+
+// UCP menu items
+$lang = array_merge($lang, array(
+	'UCP'						=> 'User Control Panel',
+	'UCP_SHORT'					=> 'UCP',
+
+	'UCP_CAT_OVERVIEW'			=> 'Overview',
+	'UCP_INDEX'					=> 'Index',
+
+	'UCP_CAT_MANAGE'			=> 'Manage',
+	'UCP_MANAGE_SUBSCRIPTIONS'	=> 'Manage subscriptions',
+	'UCP_MANAGE_BOOKMARKS'		=> 'Manage bookmarks',
+	'UCP_MANAGE_NOTIFICATIONS'	=> 'Manage notifications',
+	'UCP_MANAGE_DRAFTS'			=> 'Manage drafts',
+	'UCP_MANAGE_ATTACHMENTS'	=> 'Manage attachments',
+	'UCP_MANAGE_REMEMBER_ME'	=> 'Manage “Remember Me” keys',
+	'UCP_MANAGE_OAUTH'			=> 'Manage OAuth connections',
+
+	'UCP_CAT_PROFILE'			=> 'Profile',
+	'UCP_PROFILE_ACCOUNT'		=> 'Edit account',
+	'UCP_PROFILE_PROFILE'		=> 'Edit profile',
+	'UCP_PROFILE_AVATAR'		=> 'Edit avatar',
+	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
+
+	'UCP_CAT_SETTINGS'			=> 'Settings',
+	'UCP_SETTINGS_GLOBAL'		=> 'Edit global settings',
+	'UCP_SETTINGS_POST'			=> 'Edit post settings',
+	'UCP_SETTINGS_DISPLAY'		=> 'Edit display settings',
+	'UCP_SETTINGS_NOTIFICATIONS'	=> 'Edit notification settings',
+
+	'UCP_CAT_PM'				=> 'Private message',
+	'UCP_PM_COMPOSE'			=> 'Compose message',
+	'UCP_PM_DRAFTS'				=> 'Manage PM drafts',
+	'UCP_PM_VIEW'				=> 'View messages',
+	'UCP_PM_SETTINGS'			=> 'Rules, folders &amp; settings',
+
+	'UCP_CAT_GROUPS'			=> 'Groups',
+	'UCP_GROUPS_EDIT'			=> 'Edit memberships',
+	'UCP_GROUPS_MANAGE'			=> 'Manage groups',
+
+	'UCP_CAT_ZEBRA'				=> 'Friends &amp; Foes',
+	'UCP_ZEBRA_FRIENDS'			=> 'Manage friends',
+	'UCP_ZEBRA_FOES'			=> 'Manage foes',
+));
+
 $lang = array_merge($lang, array(
 	'TRANSLATION_INFO'	=> '',
 	'DIRECTION'			=> 'ltr',
@@ -420,8 +511,6 @@ $lang = array_merge($lang, array(
 	'MARK_SUBFORUMS_READ'	=> 'Mark subforums read',
 	'MB'					=> 'MB',
 	'MIB'					=> 'MiB',
-	'MCP'					=> 'Moderator Control Panel',
-	'MCP_SHORT'				=> 'MCP',
 	'MEMBERLIST'			=> 'Members',
 	'MEMBERLIST_EXPLAIN'	=> 'View complete list of members',
 	'MERGE'					=> 'Merge',
