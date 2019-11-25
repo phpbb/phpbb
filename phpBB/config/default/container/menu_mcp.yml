@@ -51,6 +51,7 @@ parameters:
             defaults:
                 _controller: mcp.moderation:main
                 mode: 'unapproved_topics'
+                page: 1
 
     mcp.mcp_unapproved_posts:
         auth: 'aclf_m_approve'
@@ -60,6 +61,7 @@ parameters:
             defaults:
                 _controller: mcp.moderation:main
                 mode: 'unapproved_posts'
+                page: 1
 
     mcp.mcp_approve_details:
         auth: 'aclf_m_approve'
@@ -79,6 +81,7 @@ parameters:
             defaults:
                 _controller: mcp.moderation:main
                 mode: 'deleted_topics'
+                page: 1
 
     mcp.mcp_deleted_posts:
         auth: 'aclf_m_approve'
@@ -88,6 +91,7 @@ parameters:
             defaults:
                 _controller: mcp.moderation:main
                 mode: 'deleted_posts'
+                page: 1
 
     # --- MCP > Reports --- #
     mcp.mcp_cat_reports:
