@@ -36,6 +36,139 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
+// Menu items
+$lang = array_merge($lang, array(
+	'ACP_CAT_CONFIGURATION'			=> 'Configuration',
+	'ACP_CAT_CONTENT'				=> 'Content',
+	'ACP_CAT_CUSTOMISE'				=> 'Customise',
+	'ACP_CAT_EXTENSIONS'			=> 'Extensions',
+	'ACP_CAT_MANAGEMENT'			=> 'Management',
+	'ACP_CAT_MAINTENANCE'			=> 'Maintenance',
+	'ACP_CAT_PERMISSIONS'			=> 'Permissions',
+
+	'ACP_INDEX'						=> 'ACP index',
+
+	'ACP_CONFIGURATION_BOARD'		=> 'Board configuration',
+	'ACP_SETTINGS_BOARD'			=> 'Board settings',
+	'ACP_SETTINGS_FEATURES'			=> 'Board features',
+	'ACP_SETTINGS_ATTACHMENT'		=> 'Attachment settings',
+	'ACP_SETTINGS_AVATAR'			=> 'Avatar settings',
+	'ACP_SETTINGS_SIGNATURE'		=> 'Signature settings',
+	'ACP_SETTINGS_POST'				=> 'Post settings',
+	'ACP_SETTINGS_PM'				=> 'Private message settings',
+	'ACP_SETTINGS_REGISTRATION'		=> 'User registration settings',
+	'ACP_SETTINGS_CAPTCHA'			=> 'Spambot countermeasures',
+	'ACP_SETTINGS_CONTACT'			=> 'Contact page settings',
+	'ACP_SETTINGS_FEED'				=> 'Feed settings',
+
+	'ACP_CONFIGURATION_SERVER'		=> 'Server configuration',
+	'ACP_SETTINGS_SERVER'			=> 'Server settings',
+	'ACP_SETTINGS_COOKIE'			=> 'Cookie settings',
+	'ACP_SETTINGS_LOAD'				=> 'Load settings',
+	'ACP_SETTINGS_SECURITY'			=> 'Security settings',
+	'ACP_SETTINGS_SEARCH'			=> 'Search settings',
+	'ACP_SETTINGS_STORAGE'			=> 'Storage settings',
+
+	'ACP_CLIENT_COMMUNICATION'		=> 'Client communication',
+	'ACP_SETTINGS_AUTH'				=> 'Authentication settings',
+	'ACP_SETTINGS_EMAIL'			=> 'Email settings',
+	'ACP_SETTINGS_JABBER'			=> 'Jabber settings',
+
+	'ACP_MANAGEMENT_USERS'			=> 'Users management',
+	'ACP_USERS_MANAGE'				=> 'Manage users',
+	'ACP_USERS_INACTIVE'			=> 'Manage inactive users',
+	'ACP_USERS_PRUNE'				=> 'Prune users',
+
+	'ACP_MANAGEMENT_GROUPS'			=> 'Groups management',
+	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
+	'ACP_GROUPS_POSITIONS'			=> 'Manage group positions',
+
+	'ACP_MANAGEMENT_FORUMS'			=> 'Forums management',
+	'ACP_FORUMS_MANAGE'				=> 'Manage forums',
+	'ACP_FORUMS_PRUNE'				=> 'Prune forums',
+
+	'ACP_MANAGEMENT_BAN'			=> 'Ban management',
+	'ACP_BAN_EMAILS'				=> 'Ban emails',
+	'ACP_BAN_USERS'					=> 'Ban users',
+	'ACP_BAN_IPS'					=> 'Ban IPs',
+
+	'ACP_MANAGEMENT_ATTACHMENTS'	=> 'Attachments management',
+	'ACP_ATTACHMENTS_MANAGE'		=> 'Manage attachments',
+	'ACP_ATTACHMENTS_EXTENSIONS'	=> 'Manage attachment extensions',
+	'ACP_ATTACHMENTS_EXT_GROUPS'	=> 'Manage attachment extension groups',
+	'ACP_ATTACHMENTS_ORPHANED'		=> 'Manage orphaned attachments',
+
+	'ACP_PERMISSIONS'				=> 'Permissions',
+	'ACP_PERMISSIONS_INTRO'			=> 'Permissions intro',
+
+	'ACP_PERMISSIONS_GLOBAL'		=> 'Global permissions',
+	'ACP_PERMISSIONS_GLOBAL_USER'	=> 'User permissions',
+	'ACP_PERMISSIONS_GLOBAL_GROUP'	=> 'Group permissions',
+	'ACP_PERMISSIONS_GLOBAL_MODS'	=> 'Global moderators',
+	'ACP_PERMISSIONS_GLOBAL_ADMINS'	=> 'Administrators',
+
+	'ACP_PERMISSIONS_FORUMS'		=> 'Forums permissions',
+	'ACP_PERMISSIONS_FORUM'			=> 'Forum permissions',
+	'ACP_PERMISSIONS_FORUM_COPY'	=> 'Copy forum permissions',
+	'ACP_PERMISSIONS_FORUM_USER'	=> 'User forum permissions',
+	'ACP_PERMISSIONS_FORUM_GROUP'	=> 'Group forum permissions',
+	'ACP_PERMISSIONS_FORUM_MODS'	=> 'Forum moderators',
+
+	'ACP_PERMISSIONS_ROLES'			=> 'Permission roles',
+	'ACP_PERMISSIONS_ROLES_USER'	=> 'User roles',
+	'ACP_PERMISSIONS_ROLES_MOD'		=> 'Moderator roles',
+	'ACP_PERMISSIONS_ROLES_ADMIN'	=> 'Administrator roles',
+	'ACP_PERMISSIONS_ROLES_FORUM'	=> 'Forum roles',
+
+	'ACP_PERMISSIONS_MASKS'				=> 'Permission masks',
+	'ACP_PERMISSIONS_MASKS_USER'		=> 'View user permissions',
+	'ACP_PERMISSIONS_MASKS_MOD_GLOBAL'	=> 'View global moderator permissions',
+	'ACP_PERMISSIONS_MASKS_MOD_FORUM'	=> 'View forum moderator permissions',
+	'ACP_PERMISSIONS_MASKS_ADMIN'		=> 'View administrator permissions',
+	'ACP_PERMISSIONS_MASKS_FORUM'		=> 'View forum permissions',
+
+	'ACP_POSTING'					=> 'Posting',
+	'ACP_BBCODES'					=> 'BBCodes',
+	'ACP_SMILIES'					=> 'Smilies',
+	'ACP_TOPIC_ICONS'				=> 'Topic icons',
+	'ACP_WORDS'						=> 'Word censoring',
+
+	'ACP_PROFILES'					=> 'Profiles',
+	'ACP_CPF'						=> 'Custom profile fields',
+	'ACP_DISALLOW_USERNAMES'		=> 'Disallow usernames',
+	'ACP_RANKS'						=> 'Ranks',
+
+	'ACP_GENERAL_TASKS'				=> 'General tasks',
+	'ACP_MASS_EMAIL'				=> 'Mass email',
+	'ACP_MANAGE_REASONS'			=> 'Manage report/denial reasons',
+	'ACP_BOTS'						=> 'Robots/Spiders',
+
+	'ACP_EXTENSIONS_MANAGEMENT'		=> 'Extensions management',
+	'ACP_EXTENSIONS_MANAGE'			=> 'Manage extensions',
+	'ACP_EXTENSIONS_CATALOG'		=> 'Extensions catalog',
+	'ACP_STYLES_MANAGEMENT'			=> 'Styles management',
+	'ACP_STYLES_MANAGE'				=> 'Manage styles',
+	'ACP_STYLES_INSTALL'			=> 'Install Styles',
+	'ACP_LANGUAGE_MANAGEMENT'		=> 'Languages management',
+	'ACP_LANGUAGE_MANAGE'			=> 'Manage languages',
+
+	'ACP_LOGS'						=> 'Logs',
+	'ACP_LOGS_ADMIN'				=> 'Admin log',
+	'ACP_LOGS_MOD'					=> 'Moderator log',
+	'ACP_LOGS_USER'					=> 'User log',
+	'ACP_LOGS_ERROR'				=> 'Error log',
+
+	'ACP_DATABASE'					=> 'Database management',
+	'ACP_BACKUP'					=> 'Backup',
+	'ACP_RESTORE'					=> 'Restore',
+	'ACP_SEARCH_INDEX'				=> 'Search index',
+
+	'ACP_PHPBB'						=> 'phpBB',
+	'ACP_UPDATE'					=> 'Updating',
+	'ACP_PHP_INFO'					=> 'PHP information',
+	'ACP_HELP_PHPBB'				=> 'Help support phpBB',
+));
+
 // Common
 $lang = array_merge($lang, array(
 	'ACP_ADMINISTRATORS'		=> 'Administrators',
@@ -47,52 +180,37 @@ $lang = array_merge($lang, array(
 	'ACP_AUTOMATION'			=> 'Automation',
 	'ACP_AVATAR_SETTINGS'		=> 'Avatar settings',
 
-	'ACP_BACKUP'				=> 'Backup',
 	'ACP_BAN'					=> 'Banning',
-	'ACP_BAN_EMAILS'			=> 'Ban emails',
-	'ACP_BAN_IPS'				=> 'Ban IPs',
-	'ACP_BAN_USERNAMES'			=> 'Ban users',
-	'ACP_BBCODES'				=> 'BBCodes',
 	'ACP_BOARD_CONFIGURATION'	=> 'Board configuration',
 	'ACP_BOARD_FEATURES'		=> 'Board features',
 	'ACP_BOARD_MANAGEMENT'		=> 'Board management',
 	'ACP_BOARD_SETTINGS'		=> 'Board settings',
-	'ACP_BOTS'					=> 'Spiders/Robots',
 
 	'ACP_CAPTCHA'				=> 'CAPTCHA',
 
-	'ACP_CAT_CUSTOMISE'			=> 'Customise',
 	'ACP_CAT_DATABASE'			=> 'Database',
-	'ACP_CAT_DOT_MODS'			=> 'Extensions',
 	'ACP_CAT_FORUMS'			=> 'Forums',
 	'ACP_CAT_GENERAL'			=> 'General',
-	'ACP_CAT_MAINTENANCE'		=> 'Maintenance',
-	'ACP_CAT_PERMISSIONS'		=> 'Permissions',
 	'ACP_CAT_POSTING'			=> 'Posting',
 	'ACP_CAT_STYLES'			=> 'Styles',
 	'ACP_CAT_SYSTEM'			=> 'System',
 	'ACP_CAT_USERGROUP'			=> 'Users and Groups',
 	'ACP_CAT_USERS'				=> 'Users',
-	'ACP_CLIENT_COMMUNICATION'	=> 'Client communication',
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie settings',
 	'ACP_CONTACT'				=> 'Contact page',
 	'ACP_CONTACT_SETTINGS'		=> 'Contact page settings',
 	'ACP_CRITICAL_LOGS'			=> 'Error log',
 	'ACP_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 
-	'ACP_DATABASE'				=> 'Database management',
 	'ACP_DISALLOW'				=> 'Disallow',
-	'ACP_DISALLOW_USERNAMES'	=> 'Disallow usernames',
 
 	'ACP_EMAIL_SETTINGS'		=> 'Email settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage attachment extension groups',
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Manage extensions',
-	'ACP_EXTENSIONS_CATALOG'	=> 'Extensions catalog',
 	'ACP_EXTENSIONS_INSTALL'	=> 'Install extensions',
 	'ACP_EXTENSIONS_REMOVE'		=> 'Remove extensions',
 	'ACP_EXTENSIONS_UPDATE'		=> 'Update extensions',
-	'ACP_EXTENSIONS_MANAGE'		=> 'Manage extension automatically',
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
@@ -103,22 +221,17 @@ $lang = array_merge($lang, array(
 	'ACP_FORUM_ROLES'				=> 'Forum roles',
 
 	'ACP_GENERAL_CONFIGURATION'		=> 'General configuration',
-	'ACP_GENERAL_TASKS'				=> 'General tasks',
 	'ACP_GLOBAL_MODERATORS'			=> 'Global moderators',
 	'ACP_GLOBAL_PERMISSIONS'		=> 'Global permissions',
 	'ACP_GROUPS'					=> 'Groups',
 	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Group forum permissions',
-	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
 	'ACP_GROUPS_MANAGEMENT'			=> 'Group management',
 	'ACP_GROUPS_PERMISSIONS'		=> 'Group permissions',
 	'ACP_GROUPS_POSITION'			=> 'Manage group positions',
 
-	'ACP_HELP_PHPBB'			=> 'Help support phpBB',
-
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
-	'ACP_INDEX'					=> 'ACP index',
 
 	'ACP_JABBER_SETTINGS'		=> 'Jabber settings',
 
@@ -126,33 +239,15 @@ $lang = array_merge($lang, array(
 	'ACP_LANGUAGE_PACKS'		=> 'Language packs',
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
 	'ACP_LOGGING'				=> 'Logging',
-
-	'ACP_MAIN'					=> 'ACP index',
-
-	'ACP_MANAGE_ATTACHMENTS'			=> 'Manage attachments',
-	'ACP_MANAGE_ATTACHMENTS_EXPLAIN'	=> 'Here you can list and delete files attached to posts and private messages.',
-
-	'ACP_MANAGE_EXTENSIONS'		=> 'Manage attachment extensions',
-	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
+	
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
-	'ACP_MANAGE_REASONS'		=> 'Manage report/denial reasons',
-	'ACP_MANAGE_USERS'			=> 'Manage users',
-	'ACP_MASS_EMAIL'			=> 'Mass email',
 	'ACP_MESSAGES'				=> 'Messages',
-	'ACP_MESSAGE_SETTINGS'		=> 'Private message settings',
-	'ACP_MODULE_MANAGEMENT'		=> 'Module management',
 	'ACP_MOD_LOGS'				=> 'Moderator log',
 	'ACP_MOD_ROLES'				=> 'Moderator roles',
 
 	'ACP_NO_ITEMS'				=> 'There are no items yet.',
 
-	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphaned attachments',
-
-	'ACP_PERMISSIONS'			=> 'Permissions',
-	'ACP_PERMISSION_MASKS'		=> 'Permission masks',
-	'ACP_PERMISSION_ROLES'		=> 'Permission roles',
 	'ACP_PERMISSION_TRACE'		=> 'Permission trace',
-	'ACP_PHP_INFO'				=> 'PHP information',
 	'ACP_POST_SETTINGS'			=> 'Post settings',
 	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
 	'ACP_PRUNE_USERS'			=> 'Prune users',
@@ -160,38 +255,30 @@ $lang = array_merge($lang, array(
 
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
 
-	'ACP_RANKS'					=> 'Ranks',
 	'ACP_REASONS'				=> 'Report/denial reasons',
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
-	'ACP_RESTORE'				=> 'Restore',
-
 	'ACP_FEED'					=> 'Feed management',
-	'ACP_FEED_SETTINGS'			=> 'Feed settings',
 
 	'ACP_SEARCH'				=> 'Search configuration',
-	'ACP_SEARCH_INDEX'			=> 'Search index',
 	'ACP_SEARCH_SETTINGS'		=> 'Search settings',
 
 	'ACP_SECURITY_SETTINGS'		=> 'Security settings',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
-	'ACP_SMILIES'				=> 'Smilies',
 
 	'ACP_STORAGE_SETTINGS'		=> 'Storage settings',
 
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
 	'ACP_STYLES_CACHE'			=> 'Purge Cache',
-	'ACP_STYLES_INSTALL'		=> 'Install Styles',
 
 	'ACP_SUBMIT_CHANGES'		=> 'Submit changes',
 
 	'ACP_TEMPLATES'				=> 'Templates',
 	'ACP_THEMES'				=> 'Themes',
 
-	'ACP_UPDATE'					=> 'Updating',
 	'ACP_USERS_FORUM_PERMISSIONS'	=> 'User forum permissions',
 	'ACP_USERS_LOGS'				=> 'User logs',
 	'ACP_USERS_PERMISSIONS'			=> 'User permissions',
@@ -219,7 +306,6 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 
-	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',
 	'ACTIONS'				=> 'Actions',
