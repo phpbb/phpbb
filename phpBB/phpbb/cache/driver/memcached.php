@@ -50,20 +50,15 @@ class memcached extends \phpbb\cache\driver\memory
 
 	/**
 	 * Memcached constructor
+	 *
+	 * @param string $memcached_servers Memcached servers string (optional)
 	 */
-	public function __construct()
+	public function __construct($memcached_servers = '')
 	{
 		// Call the parent constructor
 		parent::__construct();
 
-		$memcached_servers = PHPBB_ACM_MEMCACHED;
-
-		// Allow overwriting PHPBB_ACM_MEMCACHED via constructor arguments
-		$args = func_get_args();
-		if (count($args) >= 2)
-		{
-			$memcached_servers = $args[0] . '/' . $args[1];
-		}
+		$memcached_servers = $memcached_servers ?: PHPBB_ACM_MEMCACHED;
 
 		$this->memcached = new \Memcached();
 		$this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);

@@ -59,7 +59,7 @@ class phpbb_cache_memcached_driver_test extends \phpbb_cache_common_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
-		$this->driver = new \phpbb\cache\driver\memcached(self::$config['host'], self::$config['port']);
+		$this->driver = new \phpbb\cache\driver\memcached(self::$config['host'] . '/' . self::$config['port']);
 		$this->driver->purge();
 	}
 }
