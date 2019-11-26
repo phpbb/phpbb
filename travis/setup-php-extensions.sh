@@ -62,7 +62,7 @@ fi
 phpenv config-rm xdebug.ini || true
 
 # memcached
-echo "extension = memcached.so" >> "$php_ini_file"
+register_php_extension memcached "$php_ini_file"
 
 # redis
 # Disabled redis for now as it causes travis to fail
