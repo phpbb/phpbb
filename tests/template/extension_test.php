@@ -40,7 +40,15 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$auth->method('acl_get')
 			->willReturn(true);
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
+		$filesystem->expects($this->any())
+			->method('exists')
+			->with($this->stringContains('theme/icons/png/'))
+			->will($this->returnValueMap([
+				['phpBB/styles/chameleon/theme/icons/png/phone.png', true],
+				['phpBB/styles/chameleon/theme/icons/png/pencil.png', true],
+				['phpBB/styles/chameleon/theme/icons/png/user.png', false],
+			]));
 		$request = new phpbb_mock_request;
 		$symfony_request = new \phpbb\symfony_request(
 			$request
@@ -365,6 +373,21 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				],
 				'<img class="o-icon o-icon-png png-pencil my-class" src="phpBB/styles/chameleon/theme/icons/png/pencil.png" alt="Pencil icon" data-url="my-test-url/test-page.php?u=2" />',
 			],
+			/** PNG: Not found */
+			[
+				[
+					'type'			=> 'png',
+					'icon'			=> 'user',
+					'title'			=> 'ICON_USER',
+					'hidden'		=> false,
+					'classes'		=> 'my-class',
+					'attributes'	=> [],
+				],
+				[
+					'ICON_USER'		=> 'User icon',
+				],
+				'<img class="o-icon o-icon-png png-404 my-class" src="phpBB/styles/chameleon/theme/icons/png/404.png" alt="User icon" />',
+			],
 			/** SVG: default */
 			[
 				[
@@ -404,6 +427,19 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
 					<path d="M0 0h24v24H0z" fill="none"></path>
 				</svg>',
+			],
+			/** SVG: Not found */
+			[
+				[
+					'type'			=> 'svg',
+					'icon'			=> 'not-existent',
+					'title'			=> 'Just a title',
+					'hidden'		=> false,
+					'classes'		=> '',
+					'attributes'	=> [],
+				],
+				[],
+				'<img class="o-icon o-icon-png png-404" src="phpBB/styles/chameleon/theme/icons/png/404.png" alt="Just a title" />',
 			],
 			/** SVG: Sanitization */
 			[

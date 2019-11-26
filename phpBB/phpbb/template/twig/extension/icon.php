@@ -74,10 +74,13 @@ class icon extends \Twig\Extension\AbstractExtension
 			return '';
 		}
 
+		$not_found = false;
+		$source = '';
+
 		switch ($type)
 		{
 			case 'font':
-				$source = '';
+				// Nothing to do here..
 			break;
 
 			case 'iconify':
@@ -86,18 +89,38 @@ class icon extends \Twig\Extension\AbstractExtension
 			break;
 
 			case 'png':
-				$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-				$web_path	= $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
-				$style_path	= $this->user->style['style_path'];
+				$filesystem	= $environment->get_filesystem();
+				$root_path	= $environment->get_web_root_path();
 
-				$source = "{$web_path}styles/{$style_path}/theme/icons/png/{$icon}.png";
+				$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
+				$base_path	= $board_url ? generate_board_url() . '/' : $root_path;
+
+				// Iterate over the user's styles and check for icon existance
+				foreach ($this->get_style_list() as $style_path)
+				{
+					if ($filesystem->exists("{$root_path}styles/{$style_path}/theme/icons/png/{$icon}.png"))
+					{
+						$source = "{$base_path}styles/{$style_path}/theme/icons/png/{$icon}.png";
+
+						break;
+					}
+				}
+
+				// Check if the icon was found or not
+				$not_found = empty($source);
 			break;
 
 			case 'svg':
 				try
 				{
+					// Try to load and prepare the SVG icon
 					$file	= $environment->load('icons/svg/' . $icon . '.svg');
 					$source	= $this->prepare_svg($file);
+				}
+				catch (\Twig\Error\LoaderError $e)
+				{
+					// Icon was not found
+					$not_found = true;
 				}
 				catch (\Twig\Error\Error $e)
 				{
@@ -108,6 +131,20 @@ class icon extends \Twig\Extension\AbstractExtension
 			default:
 				return '';
 			break;
+		}
+
+		// If no PNG or SVG icon was found, display a default 404 PNG icon.
+		if ($not_found)
+		{
+			if (empty($base_path))
+			{
+				$board_url = defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
+				$base_path = $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
+			}
+
+			$source = "{$base_path}styles/chameleon/theme/icons/png/404.png";
+			$type = 'png';
+			$icon = '404';
 		}
 
 		try
@@ -130,8 +167,11 @@ class icon extends \Twig\Extension\AbstractExtension
 	/**
 	 * Prepare an SVG for usage in the template icon.
 	 *
+	 * This removes any <?xml ?> and <!DOCTYPE> elements,
+	 * aswell as any <svg> and <title> elements.
+	 *
 	 * @param \Twig\TemplateWrapper	$file	The SVG file loaded from the environment
-	 * @return string
+	 * @return string						The cleaned SVG
 	 */
 	protected function prepare_svg(\Twig\TemplateWrapper $file)
 	{
@@ -194,5 +234,22 @@ class icon extends \Twig\Extension\AbstractExtension
 		}
 
 		return $string;
+	}
+
+	/**
+	 * Get the style tree of the style preferred by the current user.
+	 *
+	 * @return array					Style tree, most specific first
+	 */
+	protected function get_style_list()
+	{
+		$style_list = [$this->user->style['style_path']];
+
+		if ($this->user->style['style_parent_id'])
+		{
+			$style_list = array_merge($style_list, array_reverse(explode('/', $this->user->style['style_parent_tree'])));
+		}
+
+		return $style_list;
 	}
 }
