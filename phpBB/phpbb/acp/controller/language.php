@@ -278,10 +278,10 @@ class language
 					$this->db->sql_query($sql);
 
 					// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
-					$sql = 'DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE lang_id = ' . (int) $lang_id;
+					$sql = 'DELETE FROM ' . $this->tables['profile_fields_language'] . ' WHERE lang_id = ' . (int) $lang_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE lang_id = ' . (int) $lang_id;
+					$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . ' WHERE lang_id = ' . (int) $lang_id;
 					$this->db->sql_query($sql);
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, [$row['lang_english_name']]);
@@ -389,14 +389,14 @@ class language
 				 */
 
 				$sql = 'SELECT field_id, lang_name, lang_explain, lang_default_value
-					FROM ' . $this->tables['profile_lang'] . '
+					FROM ' . $this->tables['profile_fields_language'] . '
 					WHERE lang_id = ' . $default_lang_id;
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$row['lang_id'] = $lang_id;
 
-					$sql = 'INSERT INTO ' . $this->tables['profile_lang'] . ' ' . $this->db->sql_build_array('INSERT', $row);
+					$sql = 'INSERT INTO ' . $this->tables['profile_fields_language'] . ' ' . $this->db->sql_build_array('INSERT', $row);
 					$this->db->sql_query($sql);
 
 					$notify_cpf_update = true;
@@ -404,14 +404,14 @@ class language
 				$this->db->sql_freeresult($result);
 
 				$sql = 'SELECT field_id, option_id, field_type, lang_value
-					FROM ' . $this->tables['profile_fields_lang'] . '
+					FROM ' . $this->tables['profile_fields_options_language'] . '
 					WHERE lang_id = ' . $default_lang_id;
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$row['lang_id'] = $lang_id;
 
-					$sql = 'INSERT INTO ' . $this->tables['profile_fields_lang'] . ' ' . $this->db->sql_build_array('INSERT', $row);
+					$sql = 'INSERT INTO ' . $this->tables['profile_fields_options_language'] . ' ' . $this->db->sql_build_array('INSERT', $row);
 					$this->db->sql_query($sql);
 
 					$notify_cpf_update = true;

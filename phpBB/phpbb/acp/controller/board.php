@@ -240,7 +240,7 @@ class board
 				}
 			break;
 
-			case 'pmg':
+			case 'pm':
 				$display_vars = [
 					'lang'	=> 'ucp',
 					'vars'	=> [

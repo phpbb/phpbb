@@ -36,7 +36,7 @@ class functions
 	protected $helper;
 
 	/** @var \phpbb\language\language */
-	protected $lang;
+	protected $language;
 
 	/** @var \phpbb\request\request */
 	protected $request;
@@ -68,7 +68,7 @@ class functions
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
 	 * @param \phpbb\controller\helper			$helper			Controller helper object
-	 * @param \phpbb\language\language			$lang			Language object
+	 * @param \phpbb\language\language			$language		Language object
 	 * @param \phpbb\path_helper				$path_helper	Path helper object
 	 * @param \phpbb\request\request			$request		Request object
 	 * @param \phpbb\template\template			$template		Template object
@@ -84,7 +84,7 @@ class functions
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
 		\phpbb\controller\helper $helper,
-		\phpbb\language\language $lang,
+		\phpbb\language\language $language,
 		\phpbb\path_helper $path_helper,
 		\phpbb\request\request $request,
 		\phpbb\template\template $template,
@@ -100,7 +100,7 @@ class functions
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
 		$this->helper		= $helper;
-		$this->lang			= $lang;
+		$this->language		= $language;
 		$this->request		= $request;
 		$this->template		= $template;
 		$this->user			= $user;
@@ -133,7 +133,7 @@ class functions
 		 * Execute code and/or overwrite adm_page_header()
 		 *
 		 * @event core.adm_page_header
-		 * @var string	page_title					The page title
+		 * @var string	page_title					Page title
 		 * @var bool	adm_page_header_override	Shall we return instead of running the rest of adm_page_header()
 		 * @since 3.1.0-a1
 		 */
@@ -160,70 +160,71 @@ class functions
 		$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 		$this->template->assign_vars([
-			'PAGE_TITLE'				=> $this->lang->lang($page_title),
-			'USERNAME'					=> $this->user->data['username'],
+			'PAGE_TITLE'			=> $page_title,
+			'USERNAME'				=> $this->user->data['username'],
 
-			'ADMIN_ROOT_PATH'			=> $this->web_path . $this->admin_path,
-			'ROOT_PATH'					=> $this->web_path,
-			'SESSION_ID'				=> $this->user->session_id,
-			'PHPBB_MAJOR'				=> $phpbb_major,
-			'PHPBB_VERSION'				=> PHPBB_VERSION,
+			'ADMIN_ROOT_PATH'		=> $this->web_path . $this->admin_path,
+			'ROOT_PATH'				=> $this->web_path,
+			'PHPBB_MAJOR'			=> $phpbb_major,
+			'PHPBB_VERSION'			=> PHPBB_VERSION,
+			'SESSION_ID'			=> $this->user->session_id,
 
-			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_up.gif" alt="' . $this->lang->lang('MOVE_UP') . '" title="' . $this->lang->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_up_disabled.gif" alt="' . $this->lang->lang('MOVE_UP') . '" title="' . $this->lang->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_down.gif" alt="' . $this->lang->lang('MOVE_DOWN') . '" title="' . $this->lang->lang('MOVE_DOWN') . '" />',
-			'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_down_disabled.gif" alt="' . $this->lang->lang('MOVE_DOWN') . '" title="' . $this->lang->lang('MOVE_DOWN') . '" />',
-			'ICON_EDIT'					=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_edit.gif" alt="' . $this->lang->lang('EDIT') . '" title="' . $this->lang->lang('EDIT') . '" />',
-			'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_edit_disabled.gif" alt="' . $this->lang->lang('EDIT') . '" title="' . $this->lang->lang('EDIT') . '" />',
-			'ICON_DELETE'				=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_delete.gif" alt="' . $this->lang->lang('DELETE') . '" title="' . $this->lang->lang('DELETE') . '" />',
-			'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_delete_disabled.gif" alt="' . $this->lang->lang('DELETE') . '" title="' . $this->lang->lang('DELETE') . '" />',
-			'ICON_SYNC'					=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_sync.gif" alt="' . $this->lang->lang('RESYNC') . '" title="' . $this->lang->lang('RESYNC') . '" />',
-			'ICON_SYNC_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_sync_disabled.gif" alt="' . $this->lang->lang('RESYNC') . '" title="' . $this->lang->lang('RESYNC') . '" />',
+			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
+			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
+			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
+			'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_down_disabled.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
+			'ICON_EDIT'					=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_edit.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
+			'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_edit_disabled.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
+			'ICON_DELETE'				=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_delete.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
+			'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_delete_disabled.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
+			'ICON_SYNC'					=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_sync.gif" alt="' . $this->language->lang('RESYNC') . '" title="' . $this->language->lang('RESYNC') . '" />',
+			'ICON_SYNC_DISABLED'		=> '<img src="' . htmlspecialchars($this->web_path . $this->admin_path) . 'images/icon_sync_disabled.gif" alt="' . $this->language->lang('RESYNC') . '" title="' . $this->language->lang('RESYNC') . '" />',
 
-			'S_USER_LANG'				=> $this->lang->lang('USER_LANG'),
-			'S_CONTENT_DIRECTION'		=> $this->lang->lang('DIRECTION'),
-			'S_CONTENT_ENCODING'		=> 'UTF-8',
-			'S_CONTENT_FLOW_BEGIN'		=> $this->lang->lang('DIRECTION') === 'ltr' ? 'left' : 'right',
-			'S_CONTENT_FLOW_END'		=> $this->lang->lang('DIRECTION') === 'ltr' ? 'right' : 'left',
+			'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
+			'S_CONTENT_DIRECTION'	=> $this->language->lang('DIRECTION'),
+			'S_CONTENT_ENCODING'	=> 'UTF-8',
+			'S_CONTENT_FLOW_BEGIN'	=> $this->language->lang('DIRECTION') === 'ltr' ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> $this->language->lang('DIRECTION') === 'ltr' ? 'right' : 'left',
 
-			'T_ASSETS_VERSION'			=> $this->config['assets_version'],
-			'T_IMAGES_PATH'				=> "{$this->web_path}images/",
-			'T_AVATAR_GALLERY_PATH'		=> "{$this->web_path}{$this->config['avatar_gallery_path']}/",
-			'T_ICONS_PATH'				=> "{$this->web_path}{$this->config['icons_path']}/",
-			'T_RANKS_PATH'				=> "{$this->web_path}{$this->config['ranks_path']}/",
-			'T_SMILIES_PATH'			=> "{$this->web_path}{$this->config['smilies_path']}/",
-			'T_FONT_AWESOME_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->web_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
+			'T_ASSETS_VERSION'		=> $this->config['assets_version'],
+			'T_IMAGES_PATH'			=> "{$this->web_path}images/",
+			'T_AVATAR_GALLERY_PATH'	=> "{$this->web_path}{$this->config['avatar_gallery_path']}/",
+			'T_ICONS_PATH'			=> "{$this->web_path}{$this->config['icons_path']}/",
+			'T_RANKS_PATH'			=> "{$this->web_path}{$this->config['ranks_path']}/",
+			'T_SMILIES_PATH'		=> "{$this->web_path}{$this->config['smilies_path']}/",
+			'T_FONT_AWESOME_LINK'	=> !empty($this->config['allow_cdn']) && !empty($this->config['load_font_awesome_url']) ? $this->config['load_font_awesome_url'] : "{$this->web_path}assets/css/font-awesome.min.css?assets_version=" . $this->config['assets_version'],
 
-			'U_LOGOUT'					=> $this->helper->route('ucp_account', ['mode' => 'logout']),
-			'U_ADM_LOGOUT'				=> $this->helper->route('acp_index', ['action' => 'admlogout']),
-			'U_ADM_INDEX'				=> $this->helper->route('acp_index'),
-			'U_INDEX'					=> append_sid("{$this->web_path}index.$this->php_ext"),
+			'U_LOGOUT'				=> $this->helper->route('ucp_account', ['mode' => 'logout']),
+			'U_ADM_LOGOUT'			=> $this->helper->route('acp_index', ['action' => 'admlogout']),
+			'U_ADM_INDEX'			=> $this->helper->route('acp_index'),
+			'U_INDEX'				=> append_sid("{$this->web_path}index.$this->php_ext"),
 
-			'CONTAINER_EXCEPTION'		=> $this->container->hasParameter('container_exception') ? $this->container->getParameter('container_exception') : false,
+			'CONTAINER_EXCEPTION'	=> $this->container->hasParameter('container_exception') ? $this->container->getParameter('container_exception') : false,
 		]);
 
-		// An array of http headers that phpbb will set. The following event may override these.
+		// An array of http headers that phpBB will set. The following event may override these.
 		$http_headers = [
 			// application/xhtml+xml not used because of IE
-			'Content-type'	=> 'text/html; charset=UTF-8',
-			'Cache-Control'	=> 'private, no-cache="set-cookie"',
-			'Expires'		=> gmdate('D, d M Y H:i:s', time()) . ' GMT',
+			'Content-type'		=> 'text/html; charset=UTF-8',
+			'Cache-Control'		=> 'private, no-cache="set-cookie"',
+			'Expires'			=> gmdate('D, d M Y H:i:s', time()) . ' GMT',
+			'Referrer-Policy'	=> 'strict-origin-when-cross-origin',
 		];
 
 		/**
 		 * Execute code and/or overwrite _common_ template variables after they have been assigned.
 		 *
 		 * @event core.adm_page_header_after
-		 * @var string	page_title		The page title
-		 * @var array	http_headers	HTTP headers that should be set by phpbb
+		 * @var	string	page_title			Page title
+		 * @var	array	http_headers		HTTP headers that should be set by phpbb
 		 * @since 3.1.0-RC3
 		 */
 		$vars = ['page_title', 'http_headers'];
 		extract($this->dispatcher->trigger_event('core.adm_page_header_after', compact($vars)));
 
-		foreach ($http_headers as $header_name => $header_val)
+		foreach ($http_headers as $header_name => $header_value)
 		{
-			header((string) $header_name . ': ' . (string) $header_val);
+			header((string) $header_name . ': ' . (string) $header_value);
 		}
 
 		return;
@@ -259,15 +260,15 @@ class functions
 		phpbb_check_and_display_sql_report($this->request, $this->auth, $this->db);
 
 		$this->template->assign_vars([
-			'CREDIT_LINE'		=> $this->lang->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
+			'CREDIT_LINE'		=> $this->language->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 			'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($this->db, $this->config, $this->auth, $this->user, $this->dispatcher),
-			'TRANSLATION_INFO'	=> $this->lang->lang('TRANSLATION_INFO'),
+			'TRANSLATION_INFO'	=> $this->language->lang('TRANSLATION_INFO'),
 			'VERSION'			=> $this->config['version'],
 
-			'T_JQUERY_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_jquery_url']) ? $this->config['load_jquery_url'] : "{$this->web_path}assets/javascript/jquery.min.js",
-
-			'S_ALLOW_CDN'		=> !empty($this->config['allow_cdn']),
 			'S_COPYRIGHT_HTML'	=> $copyright_html,
+			'S_ALLOW_CDN'		=> !empty($this->config['allow_cdn']),
+
+			'T_JQUERY_LINK'		=> !empty($this->config['allow_cdn']) && !empty($this->config['load_jquery_url']) ? $this->config['load_jquery_url'] : "{$this->web_path}assets/javascript/jquery-3.4.1.min.js",
 		]);
 
 		$this->template->display('body');
@@ -284,6 +285,6 @@ class functions
 	 */
 	public function adm_back_link($link)
 	{
-		return '<br /><br /><a href="' . $link . '">&laquo; ' . $this->lang->lang('BACK_TO_PREV') . '</a>';
+		return '<br /><br /><a href="' . $link . '">&laquo; ' . $this->language->lang('BACK_TO_PREV') . '</a>';
 	}
 }

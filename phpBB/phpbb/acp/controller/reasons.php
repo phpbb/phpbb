@@ -82,7 +82,7 @@ class reasons
 		$submit = $this->request->is_set_post('submit');
 		$reason_id = $this->request->variable('id', 0);
 
-		$reasons_lang = $this->lang->get_lang_array()['report_reasons'];
+		$reasons_lang = $this->language->get_lang_array()['report_reasons'];
 
 		$form_key = 'acp_reason';
 		add_form_key('acp_reason');

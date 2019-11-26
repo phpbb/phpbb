@@ -225,7 +225,7 @@ class styles
 		// Check mode
 		switch ($this->mode)
 		{
-			case 'style':
+			case 'manage':
 				$this->welcome_message('ACP_STYLES', 'ACP_STYLES_EXPLAIN');
 
 				return $this->show_installed();

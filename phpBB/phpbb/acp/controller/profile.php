@@ -166,7 +166,7 @@ class profile
 		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT field_id, lang_id
-			FROM ' . $this->tables['profile_lang'] . '
+			FROM ' . $this->tables['profile_fields_language'] . '
 			ORDER BY lang_id';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -203,10 +203,10 @@ class profile
 					$sql = 'DELETE FROM ' . $this->tables['profile_fields'] . ' WHERE field_id = ' . (int) $field_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . ' WHERE field_id = ' . (int) $field_id;
+					$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . ' WHERE field_id = ' . (int) $field_id;
 					$this->db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . $this->tables['profile_lang'] . ' WHERE field_id = ' . (int) $field_id;
+					$sql = 'DELETE FROM ' . $this->tables['profile_fields_language'] . ' WHERE field_id = ' . (int) $field_id;
 					$this->db->sql_query($sql);
 
 					$this->db_tools->sql_column_remove($this->tables['profile_fields_data'], 'pf_' . $field_ident);
@@ -371,7 +371,7 @@ class profile
 				if ($action === 'edit')
 				{
 					$sql = 'SELECT l.*, f.*
-						FROM ' . $this->tables['profile_lang'] . ' l,
+						FROM ' . $this->tables['profile_fields_language'] . ' l,
 							' . $this->tables['profile_fields'] . ' f
 						WHERE l.lang_id = ' . (int) $this->edit_lang_id . '
 							AND l.field_id = f.field_id
@@ -384,7 +384,7 @@ class profile
 					{
 						// Some admin changed the default language?
 						$sql = 'SELECT l.*, f.*
-							FROM ' . $this->tables['profile_lang'] . ' l,
+							FROM ' . $this->tables['profile_fields_language'] . ' l,
 								' . $this->tables['profile_fields'] . ' f
 							WHERE l.lang_id <> ' . (int) $this->edit_lang_id . '
 								AND l.field_id = f.field_id
@@ -408,7 +408,7 @@ class profile
 					$lang_options = [];
 
 					$sql = 'SELECT *
-						FROM ' . $this->tables['profile_fields_lang'] . '
+						FROM ' . $this->tables['profile_fields_options_language'] . '
 						WHERE lang_id = ' . (int) $this->edit_lang_id . '
 							AND field_id = ' . (int) $field_id . '
 						ORDER BY option_id ASC';
@@ -561,7 +561,7 @@ class profile
 
 					// Get language entries
 					$sql = 'SELECT *
-						FROM ' . $this->tables['profile_fields_lang'] . '
+						FROM ' . $this->tables['profile_fields_options_language'] . '
 						WHERE lang_id <> ' . (int) $this->edit_lang_id . '
 							AND field_id = ' . (int) $field_id . '
 						ORDER BY option_id ASC';
@@ -573,7 +573,7 @@ class profile
 					$this->db->sql_freeresult($result);
 
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
-						FROM ' . $this->tables['profile_lang'] . '
+						FROM ' . $this->tables['profile_fields_language'] . '
 						WHERE lang_id <> ' . (int) $this->edit_lang_id . '
 							AND field_id = ' . (int) $field_id . '
 						ORDER BY lang_id ASC';
@@ -1135,11 +1135,11 @@ class profile
 			$sql_ary['field_id'] = $field_id;
 			$sql_ary['lang_id'] = $default_lang_id;
 
-			$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+			$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		}
 		else
 		{
-			$this->update_insert($this->tables['profile_lang'], $sql_ary, ['field_id' => $field_id, 'lang_id' => $default_lang_id]);
+			$this->update_insert($this->tables['profile_fields_language'], $sql_ary, ['field_id' => $field_id, 'lang_id' => $default_lang_id]);
 		}
 
 		if (is_array($this->pf_manager->vars['l_lang_name']) && !empty($this->pf_manager->vars['l_lang_name']))
@@ -1168,7 +1168,7 @@ class profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_lang'] . '
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_language'] . '
 					WHERE field_id = '. (int) $field_id . '
 					AND lang_id = ' . (int) $lang_id;
 				$this->db->sql_query($sql);
@@ -1186,7 +1186,7 @@ class profile
 
 			if ($action !== 'create')
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . '
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . '
 					WHERE field_id = ' . (int) $field_id . '
 						AND lang_id = ' . (int) $default_lang_id;
 				$this->db->sql_query($sql);
@@ -1205,11 +1205,11 @@ class profile
 					$sql_ary['lang_id'] = $default_lang_id;
 					$sql_ary['option_id'] = (int) $option_id;
 
-					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_options_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 				}
 				else
 				{
-					$this->update_insert($this->tables['profile_fields_lang'], $sql_ary, [
+					$this->update_insert($this->tables['profile_fields_options_language'], $sql_ary, [
 						'field_id'	=> $field_id,
 						'lang_id'	=> (int) $default_lang_id,
 						'option_id'	=> (int) $option_id,
@@ -1238,7 +1238,7 @@ class profile
 				{
 					if ($action !== 'create')
 					{
-						$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . '
+						$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . '
 							WHERE field_id = ' . (int) $field_id . '
 							AND lang_id = ' . (int) $lang_id;
 						$this->db->sql_query($sql);
@@ -1259,7 +1259,7 @@ class profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . $this->tables['profile_fields_lang'] . '
+				$sql = 'DELETE FROM ' . $this->tables['profile_fields_options_language'] . '
 					WHERE field_id = ' . (int) $field_id . '
 					AND lang_id = ' . (int) $lang_id;
 				$this->db->sql_query($sql);
@@ -1270,14 +1270,14 @@ class profile
 		{
 			if ($action === 'create')
 			{
-				$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
+				$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
 			}
 			else
 			{
 				$lang_id = $sql['lang_id'];
 				unset($sql['lang_id'], $sql['field_id']);
 
-				$this->update_insert($this->tables['profile_lang'], $sql, ['lang_id' => (int) $lang_id, 'field_id' => $field_id]);
+				$this->update_insert($this->tables['profile_fields_language'], $sql, ['lang_id' => (int) $lang_id, 'field_id' => $field_id]);
 			}
 		}
 
@@ -1287,7 +1287,7 @@ class profile
 			{
 				if ($action === 'create')
 				{
-					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_lang'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
+					$profile_sql[] = 'INSERT INTO ' . $this->tables['profile_fields_options_language'] . ' ' . $this->db->sql_build_array('INSERT', $sql);
 				}
 				else
 				{
@@ -1295,7 +1295,7 @@ class profile
 					$option_id = $sql['option_id'];
 					unset($sql['lang_id'], $sql['field_id'], $sql['option_id']);
 
-					$this->update_insert($this->tables['profile_fields_lang'], $sql, [
+					$this->update_insert($this->tables['profile_fields_options_language'], $sql, [
 						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
 						'option_id'	=> $option_id,
