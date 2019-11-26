@@ -184,7 +184,7 @@ parameters:
     ucp.ucp_pm_view:
         parent: 'ucp_cat_pm'
         route:
-            path: /pm/folder/{folder}
+            path: /pm/view/{folder}
             defaults:
                 _controller: ucp.pm_view_folder:main
                 folder: 'inbox'

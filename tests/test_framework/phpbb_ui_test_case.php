@@ -336,9 +336,9 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->visit('app.php/admin/extensions/manage/enable_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
 
 		$this->find_element('cssSelector', "input[value='Yes']")->submit();
@@ -371,9 +371,9 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->visit('app.php/admin/extensions/manage/disable_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
 
 		$this->find_element('cssSelector', "input[value='Yes']")->submit();
@@ -406,9 +406,9 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->login();
 		$this->admin_login();
 
-		$ext_path = str_replace('/', '%2F', $extension);
+		$ext_path = str_replace('%2F', '/', $extension);
 
-		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->visit('app.php/admin/extensions/manage/delete_data_pre/' . $ext_path . '?sid=' . $this->sid);
 		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
 
 		$this->find_element('cssSelector', "input[value='Yes']")->submit();
@@ -421,7 +421,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			// Wait for extension to be fully enabled
 			while (count($meta_refresh))
 			{
-				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				preg_match('#url=.+/(app+\.php/admin.+)#', $meta_refresh->getAttribute('content'), $match);
 				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
 				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
 			}
@@ -531,7 +531,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			return;
 		}
 
-		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->visit('app.php/user/logout?sid=' . $this->sid);
 		$this->assertContains($this->lang('REGISTER'), $this->getDriver()->getPageSource());
 		unset($this->sid);
 
@@ -554,7 +554,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$this->getDriver()->manage()->deleteAllCookies();
 
-		$this->visit('adm/index.php?sid=' . $this->sid);
+		$this->visit('app.php/admin/index?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $this->getDriver()->getPageSource());
 
 		$this->find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
@@ -669,7 +669,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$this->getDriver()->manage()->deleteAllCookies();
 
-		$this->visit('ucp.php');
+		$this->visit('app.php/user/index');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $this->getDriver()->getPageSource());
 
 		$this->getDriver()->manage()->deleteAllCookies();

@@ -98,6 +98,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');

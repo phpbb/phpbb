@@ -22,7 +22,7 @@ class phpbb_functional_acp_smilies_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		// Create the BBCode
-		$crawler = self::request('GET', 'adm/index.php?i=acp_icons&sid=' . $this->sid . '&mode=smilies&action=edit&id=1');
+		$crawler = self::request('GET', 'app.php/admin/smilies?action=edit&id=1&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form(array(
 			'code[icon_e_biggrin.gif]'    => '>:D',
 			'emotion[icon_e_biggrin.gif]' => '>:D'

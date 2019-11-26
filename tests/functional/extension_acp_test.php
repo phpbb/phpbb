@@ -81,9 +81,17 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->add_lang('acp/extensions');
 	}
 
+	protected function get_url($action = '', $extension_name = '')
+	{
+		$action = $action ? "/$action" : '';
+		$extension_name = $extension_name ? "/$extension_name" : '';
+
+		return "app.php/admin/extensions/manage{$action}{$extension_name}?sid={$this->sid}";
+	}
+
 	public function test_list()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url());
 
 		$this->assertCount(1, $crawler->filter('.ext_enabled'));
 		$this->assertCount(7, $crawler->filter('.ext_disabled'));
@@ -113,7 +121,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_details()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('details', 'vendor2/foo'));
 
 		$validation = array(
 			'DISPLAY_NAME'		=> 'phpBB Foo Extension',
@@ -157,20 +165,20 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_enable_pre()
 	{
 		// Foo is already enabled (redirect to list)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'vendor2/foo'));
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'vendor/moo'));
 		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('#main')->text());
 
 		// Correctly submit the enable form, default not enableable message
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor3%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'vendor3/foo'));
 		$this->assertContainsLang('EXTENSION_NOT_ENABLEABLE', $crawler->filter('.errorbox')->text());
 
 		// Custom reason messages returned by not enableable extension
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor5%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'vendor5/foo'));
 		$this->assertContains('Reason 1', $crawler->filter('.errorbox')->text());
 		$this->assertContains('Reason 2', $crawler->filter('.errorbox')->text());
 	}
@@ -178,65 +186,65 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_disable_pre()
 	{
 		// Moo is not enabled (redirect to list)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('disable_pre', 'vendor/moo'));
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('disable_pre', 'vendor2/foo'));
 		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('#main')->text());
 	}
 
 	public function test_delete_data_pre()
 	{
 		// test2 is not available (error)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=test2&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('delete_data_pre', 'test2'));
 		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('.errorbox')->text());
 
 		// foo is not disabled (redirect to list)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('delete_data_pre', 'vendor2/foo'));
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('delete_data_pre', 'vendor/moo'));
 		$this->assertContains('Are you sure that you wish to delete the data associated with “phpBB Moo Extension”?', $crawler->filter('#main')->text());
 	}
 
 	public function test_actions()
 	{
 		// Access enable page without hash
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable', 'vendor/moo'));
 		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
 
 		// Correctly submit the enable form
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'vendor/moo'));
 		$form = $crawler->selectButton('confirm')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
 		// Access disable page without hash
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('disable', 'vendor/moo'));
 		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
 
 		// Correctly submit the disable form
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('disable_pre', 'vendor/moo'));
 		$form = $crawler->selectButton('confirm')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
 		// Access delete_data page without hash
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('delete_data', 'vendor/moo'));
 		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
 
 		// Correctly submit the delete data form
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('delete_data_pre', 'vendor/moo'));
 		$form = $crawler->selectButton('confirm')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
 
 		// Attempt to enable invalid extension
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=barfoo&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url('enable_pre', 'barfoo'));
 		$this->assertContainsLang('EXTENSION_DIR_INVALID', $crawler->filter('.errorbox')->text());
 
 		// Test installing/uninstalling extension altogether

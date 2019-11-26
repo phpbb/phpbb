@@ -46,7 +46,7 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?i=permissions&icat=12&mode=setting_group_local&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/permissions/forum/group?sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 		$values["group_id[0]"] = 1;
@@ -66,6 +66,6 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$form->setValues($values);
 		$crawler = self::submit($form);
 
-		$crawler = self::request('GET', 'ucp.php?mode=logout&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/logout?sid=' . $this->sid);
 	}
 }

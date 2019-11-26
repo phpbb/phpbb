@@ -21,7 +21,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=board&mode=message");
+		$crawler = self::request('GET', 'app.php/admin/settings/pm?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
@@ -40,12 +40,12 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', array(2));
 
-		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
+		$crawler = self::request('GET', 'app.php/user/pm/view/inbox?p=' . $message_id . '&sid=' . $this->sid);
 		$this->assertContains($this->lang('UCP_PM_VIEW'), $crawler->filter('html')->text());
 
 		$message_id = $this->create_private_message('Test private message #2', 'This is a test private message sent by the testing framework.', array(2));
 
-		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
+		$crawler = self::request('GET', 'app.php/user/pm/view/inbox?p=' . $message_id . '&sid=' . $this->sid);
 		$this->assertContains($this->lang('NO_AUTH_READ_HOLD_MESSAGE'), $crawler->filter('html')->text());
 	}
 
@@ -54,7 +54,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=board&mode=message");
+		$crawler = self::request('GET', 'app.php/admin/settings/pm?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
@@ -77,7 +77,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 
 		$expected = '(\\[quote=admin post_id=' . $post['post_id'] . ' time=\\d+ user_id=2\\]' . $text . '\\[/quote\\])';
 
-		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quotepost&p=' . $post['post_id'] . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/pm/compose/quotepost?p=' . $post['post_id'] . '&sid=' . $this->sid);
 
 		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
 	}
@@ -90,7 +90,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$message_id = $this->create_private_message('Test', $text, array(2));
 
-		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quote&p=' . $message_id . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/pm/compose/quote?p=' . $message_id . '&sid=' . $this->sid);
 
 		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
 	}
@@ -103,7 +103,8 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->login();
 		$message_id = $this->create_private_message('Test', $text, array(2));
 
-		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/pm/compose/forward?f=0&p=' . $message_id . '&sid=' . $this->sid);
+
 
 		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
 	}

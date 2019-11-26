@@ -492,7 +492,7 @@ class bbcodes
 		 * @var array	sql_ary			The SQL array to get custom bbcode data
 		 * @var array	template_data	Array with form template data
 		 * @since 3.1.0-a3
-		 * @changed 4.0.0
+		 * @changed 4.0.0				Removed u_action
 		 */
 		$vars = ['action', 'sql_ary', 'template_data'];
 		extract($this->dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
@@ -516,7 +516,7 @@ class bbcodes
 			 * @var array	row				Array with current bbcode data
 			 * @var array	bbcodes_array	Array of bbcodes template data
 			 * @since 3.1.0-a3
-			 * @changed 4.0.0
+			 * @changed 4.0.0				Removed u_action
 			 */
 			$vars = ['bbcodes_array', 'row'];
 			extract($this->dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));

@@ -22,7 +22,7 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_common_groups_te
 
 	protected function get_url()
 	{
-		return 'adm/index.php?i=groups&mode=manage&action=edit';
+		return 'app.php/admin/groups/manage/edit';
 	}
 
 	public function acp_group_test_data()

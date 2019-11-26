@@ -605,7 +605,7 @@ class post
 	 * @param string	$poster_ip		The poster's ip
 	 * @return int						Number of posters
 	 */
-	protected function get_num_posters_for_ip($poster_ip)
+	public function get_num_posters_for_ip($poster_ip)
 	{
 		$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users
 			FROM ' . $this->tables['posts'] . "
@@ -623,7 +623,7 @@ class post
 	 * @param int		$poster_id		The poster's user identifier
 	 * @return int						Number of IPs for given poster
 	 */
-	protected function get_num_ips_for_poster($poster_id)
+	public function get_num_ips_for_poster($poster_id)
 	{
 		$sql = 'SELECT COUNT(DISTINCT poster_ip) as num_ips
 			FROM ' . $this->tables['posts'] . '

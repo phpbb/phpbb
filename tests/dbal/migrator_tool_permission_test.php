@@ -27,15 +27,40 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 	public function setUp(): void
 	{
 		// Global $db and $cache are needed in acp/auth.php constructor
-		global $phpbb_root_path, $phpEx, $db, $cache;
+		// And global $phpbb_dispatcher which in turn is used in auth/auth.php
+		global $phpbb_admin_path, $phpbb_root_path, $phpEx, $db, $cache, $phpbb_dispatcher;
 
 		parent::setup();
 
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$db = $this->db = $this->new_dbal();
 		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
-		$this->auth = new \phpbb\auth\auth();
+		$auth = $this->auth = new \phpbb\auth\auth();
 
-		$this->tool = new \phpbb\db\migration\tool\permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);
+		$auth_admin = new \phpbb\acp\helper\auth_admin(
+			$auth,
+			$cache->get_driver(),
+			$db,
+			$this->createMock('phpbb\group\helper'),
+			$this->createMock('phpbb\acp\helper\controller'),
+			$this->createMock('phpbb\language\language'),
+			$this->createMock('phpbb\permissions'),
+			$this->createMock('phpbb\template\template'),
+			$this->createMock('phpbb\user'),
+			$phpbb_admin_path,
+			[
+				'acl_options'		=> 'phpbb_acl_options',
+				'acl_roles'			=> 'phpbb_acl_roles',
+				'acl_roles_data'	=> 'phpbb_acl_roles_data',
+				'acl_groups'		=> 'phpbb_acl_groups',
+				'acl_users'			=> 'phpbb_acl_users',
+				'forums'			=> 'phpbb_forums',
+				'groups'			=> 'phpbb_groups',
+				'users'				=> 'phpbb_users',
+			]
+		);
+
+		$this->tool = new \phpbb\db\migration\tool\permission($db, $cache, $auth, $auth_admin, $phpbb_root_path, $phpEx);
 	}
 
 	public function exists_data()

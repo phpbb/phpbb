@@ -25,12 +25,13 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$auth = $this->createMock('\phpbb\auth\auth');
 
-		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$this->assertTrue($log->is_enabled(), 'Initialise failed');
 
@@ -56,12 +57,13 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$auth = $this->createMock('\phpbb\auth\auth');
 
-		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;

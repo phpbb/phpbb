@@ -29,7 +29,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('ucp');
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
+		$crawler = self::request('GET', 'app.php/admin/settings/security?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
@@ -50,7 +50,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
+		$crawler = self::request('GET', 'app.php/admin/settings/security?sid=' . $this->sid);
 
 		// Enable allow_password_reset again after test
 		$form = $crawler->selectButton('Submit')->form(array(

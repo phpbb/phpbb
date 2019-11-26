@@ -10,6 +10,16 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    foo_bar.controller.admin:
+        class: foo\bar\controller\admin_controller
+        arguments:
+            - '@acp.controller.helper'
+
+    foo_bar.controller.user:
+        class: foo\bar\controller\user_controller
+        arguments:
+            - '@controller.helper'
+
     foo_bar.listener.permission:
         class: foo\bar\event\permission
         tags:
@@ -18,3 +28,29 @@ services:
         class: foo\bar\event\user_setup
         tags:
             - { name: event.listener }
+
+parameters:
+    acp.acp_foo_bar_cat:
+        auth: 'ext_foo/bar'
+        parent: 'acp_cat_extensions'
+        route: 'acp_foo_bar_mode'
+
+    acp.acp_foo_bar_mode:
+        auth: 'ext_foo/bar'
+        parent: 'acp_foo_bar_cat'
+        route:
+            path: /foo/bar
+            defaults:
+                _controller: foo_bar.controller.admin:main
+
+    ucp.ucp_foo_bar_cat:
+        auth: 'ext_foo/bar'
+        route: 'ucp_foo_bar_mode'
+
+    ucp.ucp_foo_bar_mode:
+        auth: 'ext_foo/bar'
+        parent: 'ucp_foo_bar_cat'
+        route:
+            path: /foo/bar
+            defaults:
+                _controller: foo_bar.controller.user:main

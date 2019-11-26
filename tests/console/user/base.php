@@ -15,6 +15,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 {
 	protected $db;
 	protected $config;
+	protected $helper;
 	protected $user;
 	protected $language;
 	protected $log;
@@ -55,6 +56,8 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		));
 
 		$db = $this->db = $this->new_dbal();
+
+		$this->helper = $this->createMock('\phpbb\controller\helper');
 
 		$this->language = $this->getMockBuilder('\phpbb\language\language')
 			->disableOriginalConstructor()

@@ -135,6 +135,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_clear_prefetch');
@@ -145,7 +146,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 			->method('get')
 			->with('cache.driver')
 			->will($this->returnValue($cache_driver));
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		group_user_attributes('default', $group_id, array($user_id), false, 'group_name', $group_row);
 

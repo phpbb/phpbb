@@ -297,7 +297,7 @@ class register
 				];
 			}
 
-			$tpl_name = 'ucp_agreement';
+			$tpl_name = 'ucp_agreement.html';
 
 			/**
 			 * Allows to modify the agreements.
@@ -745,7 +745,7 @@ class register
 			'S_UCP_ACTION'			=> $this->helper->route('ucp_account', ['mode' => 'register']),
 		];
 
-		$tpl_name = 'ucp_register';
+		$tpl_name = 'ucp_register.html';
 
 		/**
 		 * Modify template data on the registration page

@@ -155,7 +155,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> append_sid("phpBB/viewtopic.$phpEx", 'f=23&amp;t=56'),
 				'viewpost'			=> '',
-				'viewlogs'			=> append_sid("phpBB/mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=56'),
+				'viewlogs'			=> 'phpBB/mod/logs/topic?t=56',
 			),
 			7 => array(
 				'id'				=> 7,
@@ -376,6 +376,13 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
+		$controller_helper->expects($this->any())
+			->method('route')
+			->will($this->returnCallback(function($route, $params)
+			{
+				return 'phpBB/mod/logs/' . str_replace('mcp_logs_', '', $route) . '?' . http_build_query($params);
+			}));
 
 		// Create auth mock
 		$auth = $this->createMock('\phpbb\auth\auth');
@@ -414,7 +421,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$user->session_id = false;
 		$user->data['user_id'] = 10;
 
-		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $controller_helper, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$log = array();
 		$this->assertEquals($expected_returned, view_log($mode, $log, $log_count, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords));

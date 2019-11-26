@@ -63,8 +63,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	public function get_urls()
 	{
 		return array(
-			array('posting.php?mode=reply&f=2&t=1'),
-			array('ucp.php?i=pm&mode=compose'),
+			array('posting.php?mode=reply&f=2&t=1&sid='),
+			array('app.php/user/pm/compose/post?sid='),
 		);
 	}
 
@@ -73,12 +73,14 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	 */
 	public function test_chunked_upload($url)
 	{
+		$url .= $this->sid;
+
 		$chunk_size = ceil(filesize($this->path . 'valid.jpg') / self::CHUNKS);
 		$handle = fopen($this->path . 'valid.jpg', 'rb');
 
-		$crawler = self::$client->request('POST', $url . '&sid=' . $this->sid);
+		$crawler = self::$client->request('POST', self::$root_url . $url);
 
-		$file_form_data = $this->get_hidden_fields($crawler, $url);
+		$file_form_data = $this->get_hidden_fields($crawler, self::$root_url . $url);
 
 		for ($i = 0; $i < self::CHUNKS; $i++)
 		{
@@ -97,7 +99,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			$crawler = self::$client->request(
 				'POST',
-				$url . '&sid=' . $this->sid,
+				self::$root_url . $url,
 				array_merge(array(
 					'chunk' => $i,
 					'chunks' => self::CHUNKS,
@@ -130,6 +132,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	 */
 	public function test_normal_upload($url)
 	{
+		$url .= $this->sid;
+		
 		$file = array(
 			'tmp_name' => $this->path . 'valid.jpg',
 			'name' => 'valid.jpg',
@@ -138,12 +142,12 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		);
 
-		$file_form_data = $this->get_hidden_fields(null, $url);
+		$file_form_data = $this->get_hidden_fields(null, self::$root_url . $url);
 
 		self::$client->setServerParameter('HTTP_X_PHPBB_USING_PLUPLOAD', '1');
 		self::$client->request(
 			'POST',
-			$url . '&sid=' . $this->sid,
+			self::$root_url . $url,
 			array_merge(array(
 				'chunk' => '0',
 				'chunks' => '1',

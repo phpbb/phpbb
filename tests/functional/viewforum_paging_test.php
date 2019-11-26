@@ -23,7 +23,7 @@ class viewforum_paging_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Viewforum Pagination Test #1',
 		));
@@ -33,7 +33,7 @@ class viewforum_paging_test extends phpbb_functional_test_case
 		));
 		self::submit($form);
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Viewforum Pagination Test #2',
 		));
@@ -182,7 +182,7 @@ class viewforum_paging_test extends phpbb_functional_test_case
 	 */
 	protected function set_post_settings($settings)
 	{
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
+		$crawler = self::request('GET', 'app.php/admin/settings/post?sid=' . $this->sid);
 
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();

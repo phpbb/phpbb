@@ -11,12 +11,10 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/mcp/mcp_post.php';
-
 class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 {
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
+	/** @var \phpbb\mcp\controller\post */
+	protected $mcp_post;
 
 	public function getDataSet()
 	{
@@ -27,7 +25,22 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->db = $this->new_dbal();
+		$this->mcp_post = new \phpbb\mcp\controller\post(
+			$this->createMock('\phpbb\auth\auth'),
+			$this->createMock('\phpbb\config\config'),
+			$this->new_dbal(),
+			$this->createMock('\phpbb\event\dispatcher'),
+			$this->createMock('\phpbb\controller\helper'),
+			$this->createMock('\phpbb\language\language'),
+			$this->createMock('\phpbb\log\log'),
+			$this->createMock('\phpbb\pagination'),
+			$this->createMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\template\template'),
+			$this->createMock('\phpbb\user'),
+			'',
+			'',
+			['posts' => 'phpbb_posts']
+		);
 	}
 
 	public function data_get_num_ips()
@@ -44,7 +57,7 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 	 */
 	public function test_get_num_ips($expected, $poster_id)
 	{
-		$this->assertSame($expected, phpbb_get_num_ips_for_poster($this->db, $poster_id));
+		$this->assertSame($expected, $this->mcp_post->get_num_ips_for_poster($poster_id));
 	}
 
 	public function data_get_num_posters()
@@ -62,6 +75,6 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 	 */
 	public function test_get_num_posters($expected, $ip)
 	{
-		$this->assertSame($expected, phpbb_get_num_posters_for_ip($this->db, $ip));
+		$this->assertSame($expected, $this->mcp_post->get_num_posters_for_ip($ip));
 	}
 }

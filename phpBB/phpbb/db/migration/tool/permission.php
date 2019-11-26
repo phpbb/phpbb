@@ -21,6 +21,9 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\acp\helper\auth_admin */
+	protected $auth_admin;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -39,14 +42,16 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\auth\auth $auth
+	* @param \phpbb\acp\helper\auth_admin $auth_admin,
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\auth\auth $auth, \phpbb\acp\helper\auth_admin $auth_admin, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->auth = $auth;
+		$this->auth_admin = $auth_admin;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -118,12 +123,6 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		// We've added permissions, so set to true to notify the user.
 		$this->permissions_added = true;
 
-		if (!class_exists('auth_admin'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);
-		}
-		$auth_admin = new \auth_admin();
-
 		// We have to add a check to see if the !$global (if global, local, and if local, global) permission already exists.  If it does, acl_add_option currently has a bug which would break the ACL system, so we are having a work-around here.
 		if ($this->exists($auth_option, !$global))
 		{
@@ -140,19 +139,19 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		{
 			if ($global)
 			{
-				$auth_admin->acl_add_option(array('global' => array($auth_option)));
+				$this->auth_admin->acl_add_option(array('global' => array($auth_option)));
 			}
 			else
 			{
-				$auth_admin->acl_add_option(array('local' => array($auth_option)));
+				$this->auth_admin->acl_add_option(array('local' => array($auth_option)));
 			}
 		}
 
 		// The permission has been added, now we can copy it if needed
-		if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+		if ($copy_from && isset($this->auth_admin->acl_options['id'][$copy_from]))
 		{
-			$old_id = $auth_admin->acl_options['id'][$copy_from];
-			$new_id = $auth_admin->acl_options['id'][$auth_option];
+			$old_id = $this->auth_admin->acl_options['id'][$copy_from];
+			$new_id = $this->auth_admin->acl_options['id'][$auth_option];
 
 			$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
 
@@ -177,7 +176,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 				}
 			}
 
-			$auth_admin->acl_clear_prefetch();
+			$this->auth_admin->acl_clear_prefetch();
 		}
 	}
 

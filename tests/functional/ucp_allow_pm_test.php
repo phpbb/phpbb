@@ -34,7 +34,7 @@ class phpbb_functional_ucp_allow_pm_test extends phpbb_functional_test_case
 		$this->create_user('test_ucp_allow_pm_sender');
 		$this->login('test_ucp_allow_pm_sender');
 		self::$data['recipient_id'] = $this->create_user('test_ucp_allow_pm_recipient');
-		self::$data['pm_url'] = "ucp.php?i=pm&mode=compose&u=" . (int) self::$data['recipient_id'] . "&sid={$this->sid}";
+		self::$data['pm_url'] = 'app.php/user/pm/compose/post?u=' . (int) self::$data['recipient_id'] . "&sid={$this->sid}";
 
 		// the actual test
 		$this->set_user_allow_pm(self::$data['recipient_id'], 1);

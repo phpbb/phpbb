@@ -458,7 +458,7 @@ class search
 					if (method_exists($this->search, 'create_index'))
 					{
 						// pass a reference to acp_search so the $search object can make use of save_state() and attributes
-						$error = $this->search->delete_index($this, $this->helper->route('acp_search_index', ['action' => 'create', 'hash' => generate_link_hash('acp_search')]));
+						$error = $this->search->create_index($this, $this->helper->route('acp_search_index', ['action' => 'create', 'hash' => generate_link_hash('acp_search')]));
 
 						if ($error)
 						{

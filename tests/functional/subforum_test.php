@@ -22,7 +22,7 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 		$this->admin_login();
 
 		$forum_name = 'Subforum Test #1';
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> $forum_name,
 		]);
@@ -35,7 +35,7 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 
 		// 'Feeds #1.1' is a sub-forum of 'Feeds #1'
 		$forum_name = 'Subforum Test #1.1';
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=6&mode=manage&parent_id={$forum_id}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage/' . $forum_id . '?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> $forum_name,
 		]);
@@ -47,7 +47,7 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 		$forum_id = self::get_forum_id('Subforum Test #1.1');
 
 		// 'Feeds #news' will be used for feed.php?mode=news
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=6&mode=manage&parent_id={$forum_id}");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage/' . $forum_id . '?sid=' . $this->sid);
 		$form = $crawler->selectButton('addforum')->form([
 			'forum_name'	=> 'Subforum Test #1.1.1',
 		]);
@@ -78,7 +78,7 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 
 		// Disable listing subforums
 		$forum_id = $this->get_forum_id('Subforum Test #1');
-		$crawler = self::request('GET', "adm/index.php?i=acp_forums&sid={$this->sid}&icat=7&mode=manage&parent_id=0&f={$forum_id}&action=edit");
+		$crawler = self::request('GET', 'app.php/admin/forums/manage/0/edit/' . $forum_id . '?sid=' . $this->sid);
 		$form = $crawler->selectButton('submit')->form([
 			'display_subforum_limit' => 1,
 		]);

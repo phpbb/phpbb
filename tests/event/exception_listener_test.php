@@ -82,7 +82,7 @@ class exception_listener extends phpbb_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 
-		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $lang);
+		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $lang, $this->createMock('\phpbb\acp\helper\functions'));
 
 		$event = new \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent($this->createMock('Symfony\Component\HttpKernel\HttpKernelInterface'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $exception);
 		$exception_listener->on_kernel_exception($event);

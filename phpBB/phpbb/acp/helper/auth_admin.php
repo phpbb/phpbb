@@ -780,6 +780,123 @@ class auth_admin extends \phpbb\auth\auth
 	}
 
 	/**
+	 * NOTE: this function is in use by the migration permission tool
+	 * Add a new option to the list ...
+	 * $options = array(
+	 *	'local'		=> array('option1', 'option2', ...),
+	 *	'global'	=> array('optionA', 'optionB', ...)
+	 * );
+	 *
+	 * @param array		$options
+	 * @return bool
+	 */
+	function acl_add_option($options)
+	{
+		if (!is_array($options))
+		{
+			return false;
+		}
+
+		$cur_options = [];
+
+		// Determine current options
+		$sql = 'SELECT auth_option, is_global, is_local
+			FROM ' . $this->tables['acl_options'] . '
+			ORDER BY auth_option_id';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$cur_options[$row['auth_option']] = $row['is_global'] && $row['is_local'] ? 'both' : ($row['is_global'] ? 'global' : 'local');
+		}
+		$this->db->sql_freeresult($result);
+
+		/**
+		 * Here we need to insert new options...
+		 * This requires discovering whether an option is global, local or both
+		 * and whether or not we need to add a permission set flag (x_)
+		 */
+		$new_options = ['local' => [], 'global' => []];
+
+		foreach ($options as $type => $option_ary)
+		{
+			$option_ary = array_unique($option_ary);
+
+			foreach ($option_ary as $option_value)
+			{
+				$new_options[$type][] = $option_value;
+
+				$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
+
+				if (!in_array($flag, $new_options[$type]))
+				{
+					$new_options[$type][] = $flag;
+				}
+			}
+		}
+		unset($options);
+
+		$options = [];
+		$options['local'] = array_diff($new_options['local'], $new_options['global']);
+		$options['global'] = array_diff($new_options['global'], $new_options['local']);
+		$options['both'] = array_intersect($new_options['local'], $new_options['global']);
+
+		// Now check which options to add/update
+		$add_options = $update_options = [];
+
+		// First local ones...
+		foreach ($options as $type => $option_ary)
+		{
+			foreach ($option_ary as $option)
+			{
+				if (!isset($cur_options[$option]))
+				{
+					$add_options[] = [
+						'auth_option'	=> (string) $option,
+						'is_global'		=> ($type == 'global' || $type == 'both') ? 1 : 0,
+						'is_local'		=> ($type == 'local' || $type == 'both') ? 1 : 0
+					];
+
+					continue;
+				}
+
+				// Else, update existing entry if it is changed...
+				if ($type === $cur_options[$option])
+				{
+					continue;
+				}
+
+				// New type is always both:
+				// If is now both, we set both.
+				// If it was global the new one is local and we need to set it to both
+				// If it was local the new one is global and we need to set it to both
+				$update_options[] = $option;
+			}
+		}
+
+		if (!empty($add_options))
+		{
+			$this->db->sql_multi_insert($this->tables['acl_options'], $add_options);
+		}
+
+		if (!empty($update_options))
+		{
+			$sql = 'UPDATE ' . $this->tables['acl_options'] . '
+				SET is_global = 1, is_local = 1
+				WHERE ' . $this->db->sql_in_set('auth_option', $update_options);
+			$this->db->sql_query($sql);
+		}
+
+		$this->cache->destroy('_acl_options');
+		$this->acl_clear_prefetch();
+
+		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.
+		$this->acl_options = [];
+		$this->init();
+
+		return true;
+	}
+
+	/**
 	 * Set a user or group ACL record
 	 *
 	 * @param string		$ug_type			The type (user|group)

@@ -59,6 +59,7 @@ services:
             - '@dbal.conn'
             - '@cache'
             - '@auth'
+            - '@acp.auth_admin'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:

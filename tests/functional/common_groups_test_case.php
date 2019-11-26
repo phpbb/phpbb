@@ -25,7 +25,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 	protected function get_group_manage_form($group_id = 5)
 	{
 		// Manage Administrators group
-		$crawler = self::request('GET', $this->get_url() . "&g=$group_id&sid=" . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . "/$group_id?sid=" . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		return $form;
 	}
@@ -45,7 +45,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 	{
 		$this->add_lang('acp/board');
 
-		$crawler = self::request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/settings/avatars?sid' . $this->sid);
 		// Check the default entries we should have
 		$this->assertContains($this->lang('ALLOW_REMOTE_UPLOAD'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_AVATARS'), $crawler->text());
@@ -107,7 +107,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 		$this->add_lang(array('ucp', 'acp/groups'));
 		$this->enable_all_avatars();
 
-		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
+		$crawler = self::request('GET', $this->get_url() . '/5?sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['avatar_driver']->setValue($avatar_type);
 		$form[$form_name]->setValue($input);

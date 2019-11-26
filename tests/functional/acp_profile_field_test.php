@@ -52,19 +52,19 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 	public function test_add_profile_field($type, $page1_settings)
 	{
 		// Custom profile fields page
-		$crawler = self::request('GET', 'adm/index.php?i=acp_profile&mode=profile&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/cpf?sid=' . $this->sid);
 		// these language strings are html
-		$form = $crawler->selectButton('Create new field')->form(array(
+		$form = $crawler->selectButton($this->lang('CREATE_NEW_FIELD'))->form(array(
 			'field_type'	=> $type,
 		));
 		$crawler = self::submit($form);
 
 		// Fill form for profile field options
-		$form = $crawler->selectButton('Profile type specific options')->form($page1_settings);
+		$form = $crawler->selectButton($this->lang('PROFILE_TYPE_OPTIONS'))->form($page1_settings);
 		$crawler = self::submit($form);
 
 		// Fill form for profile field specific options
-		$form = $crawler->selectButton('Save')->form();
+		$form = $crawler->selectButton($this->lang('SAVE'))->form();
 		$crawler= self::submit($form);
 
 		$this->assertContainsLang('ADDED_PROFILE_FIELD', $crawler->text());
