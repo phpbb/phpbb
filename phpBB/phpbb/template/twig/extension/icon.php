@@ -142,7 +142,7 @@ class icon extends \Twig\Extension\AbstractExtension
 				$base_path = $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
 			}
 
-			$source = "{$base_path}styles/chameleon/theme/icons/png/404.png";
+			$source = "{$base_path}styles/all/imgs/icons/png/404.png";
 			$type = 'png';
 			$icon = '404';
 		}

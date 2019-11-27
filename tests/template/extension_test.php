@@ -386,7 +386,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_USER'		=> 'User icon',
 				],
-				'<img class="o-icon o-icon-png png-404 my-class" src="phpBB/styles/chameleon/theme/icons/png/404.png" alt="User icon" />',
+				'<img class="o-icon o-icon-png png-404 my-class" src="phpBB/styles/all/imgs/icons/png/404.png" alt="User icon" />',
 			],
 			/** SVG: default */
 			[
@@ -439,7 +439,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'attributes'	=> [],
 				],
 				[],
-				'<img class="o-icon o-icon-png png-404" src="phpBB/styles/chameleon/theme/icons/png/404.png" alt="Just a title" />',
+				'<img class="o-icon o-icon-png png-404" src="phpBB/styles/all/imgs/icons/png/404.png" alt="Just a title" />',
 			],
 			/** SVG: Sanitization */
 			[
