@@ -205,7 +205,7 @@ class extensions
 						'force_unstable'	=> $force_unstable,
 					]);
 
-					confirm_box(false, $this->language->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+					confirm_box(false, $this->language->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields, 'confirm_body.html', $this->helper->get_current_url());
 
 					return redirect($this->helper->route('acp_extensions_manage'));
 				}
@@ -276,7 +276,7 @@ class extensions
 					confirm_box(false, $this->language->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'action'	=> $action,
 						'ext_name'	=> $ext_name,
-					]));
+					]), 'confirm_body.html', $this->helper->get_current_url());
 
 					return redirect($this->helper->route('acp_extensions_manage'));
 				}
@@ -362,7 +362,7 @@ class extensions
 					confirm_box(false, $this->language->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'action'	=> $action,
 						'ext_name'	=> $ext_name,
-					]));
+					]), 'confirm_body.html', $this->helper->get_current_url());
 
 					return redirect($this->helper->route('acp_extensions_manage'));
 				}
@@ -426,7 +426,7 @@ class extensions
 					confirm_box(false, $this->language->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields([
 						'action'	=> $action,
 						'ext_name'	=> $ext_name,
-					]));
+					]), 'confirm_body.html', $this->helper->get_current_url());
 
 					return redirect($this->helper->route('acp_extensions_manage'));
 				}
@@ -662,7 +662,7 @@ class extensions
 							'enable_packagist'	=> $enable_packagist,
 						]);
 
-						confirm_box(false, $this->language->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields);
+						confirm_box(false, $this->language->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields, 'confirm_body.html', $this->helper->get_current_url());
 
 						return redirect($this->helper->route('acp_extensions_catalog'));
 					}
