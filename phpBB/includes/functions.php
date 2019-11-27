@@ -2472,7 +2472,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
 		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? $controller_helper->route('ucp_account', ['mode' => 'forgot_password']) : '',
-		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
+		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? $controller_helper->route('ucp_account', ['mode' => 'resend_activation']) : '',
 		'U_TERMS_USE'			=> $controller_helper->route('ucp_account', ['mode' => 'terms']),
 		'U_PRIVACY'				=> $controller_helper->route('ucp_account', ['mode' => 'privacy']),
 		'UA_PRIVACY'			=> addslashes($controller_helper->route('ucp_account', ['mode' => 'privacy'])),

@@ -792,7 +792,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $msg_id = 0)
 {
 	global $user, $db, $template, $auth;
-	global $phpbb_root_path, $phpbb_dispatcher, $phpEx;
+	global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 	$topic_ids = $forum_ids = $draft_rows = array();
 
@@ -894,9 +894,20 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 		}
 		else
 		{
+			/** @var \phpbb\controller\helper $controller_helper */
+			$controller_helper = $phpbb_container->get('controller.helper');
+
 			// Either display as PM draft if forum_id and topic_id are empty or if access to the forums has been denied afterwards...
 			$link_pm = true;
-			$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d={$draft['draft_id']}" . (($pm_action) ? "&amp;action=$pm_action" : '') . (($msg_id) ? "&amp;p=$msg_id" : ''));
+
+			$pm_params = ['action' => $pm_action, 'd' => $draft['draft_id']];
+
+			if ($msg_id)
+			{
+				$pm_params['p'] = $msg_id;
+			}
+
+			$insert_url = $controller_helper->route('ucp_pm_compose', $pm_params);
 		}
 
 		$template->assign_block_vars('draftrow', array(

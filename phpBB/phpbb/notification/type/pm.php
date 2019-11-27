@@ -167,7 +167,7 @@ class pm extends \phpbb\notification\type\base
 			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
 			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_MESSAGE'			=> generate_board_url() . '/ucp.' . $this->php_ext . "?i=pm&mode=view&p={$this->item_id}",
+			'U_VIEW_MESSAGE'			=> generate_board_url(false) . $this->helper->route('ucp_pm_view', ['p' => $this->item_id], false),
 		);
 	}
 
@@ -178,7 +178,7 @@ class pm extends \phpbb\notification\type\base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'ucp.' . $this->php_ext, "i=pm&amp;mode=view&amp;p={$this->item_id}");
+		return $this->helper->route('ucp_pm_view', ['p' => $this->item_id]);
 	}
 
 	/**
