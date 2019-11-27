@@ -423,7 +423,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/enable_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/enable_pre?ext=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -453,7 +453,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/disable_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/disable_pre?ext=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();
@@ -483,7 +483,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$ext_path = str_replace('%2F', '/', $extension);
 
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/delete_data_pre/' . $ext_path . '?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/delete_data_pre?ext=' . $ext_path . '&sid=' . $this->sid);
 		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
 
 		$form = $crawler->selectButton('confirm')->form();

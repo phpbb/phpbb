@@ -129,14 +129,13 @@ class extensions
 	 * Manage extensions.
 	 *
 	 * @param string	$action		The action
-	 * @param string	$ext		The extension name
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function manage($action = 'list', $ext = '')
+	public function manage($action = 'list')
 	{
 		$this->language->add_lang(['install', 'acp/extensions', 'migrator']);
 
-		$ext_name = $ext;
+		$ext_name = $this->request->variable('ext', '', true);
 		$tpl_name = '';
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.

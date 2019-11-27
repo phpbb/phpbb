@@ -682,13 +682,10 @@ parameters:
         auth: 'acl_a_extensions'
         parent: 'acp_extensions_management'
         route:
-            path: /extensions/manage/{action}/{ext}
+            path: /extensions/manage/{action}
             defaults:
                 _controller: acp.extensions:manage
                 action: 'list'
-                ext: ''
-            requirements:
-                ext: "[^?]+"
 
     acp.acp_extensions_catalog:
         auth: 'acl_a_extensions'

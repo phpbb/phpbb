@@ -70,7 +70,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	public function test_extensions_details()
 	{
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details/foo/bar?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details?ext=foo/bar&sid=' . $this->sid);
 
 		// Test whether the details are displayed
 		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#main')->text());
@@ -86,7 +86,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	public function test_extensions_details_notexists()
 	{
-		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details/not/exists?sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/extensions/manage/details?ext=not/exist&sid=' . $this->sid);
 
 		// Error message because the files do not exist
 		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('#main')->text());

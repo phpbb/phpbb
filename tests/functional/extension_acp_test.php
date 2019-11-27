@@ -84,9 +84,9 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	protected function get_url($action = '', $extension_name = '')
 	{
 		$action = $action ? "/$action" : '';
-		$extension_name = $extension_name ? "/$extension_name" : '';
+		$extension_name = $extension_name ? "ext=$extension_name&" : '';
 
-		return "app.php/admin/extensions/manage{$action}{$extension_name}?sid={$this->sid}";
+		return "app.php/admin/extensions/manage{$action}?{$extension_name}sid={$this->sid}";
 	}
 
 	public function test_list()
