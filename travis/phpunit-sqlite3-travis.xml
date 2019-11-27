@@ -38,6 +38,7 @@
 		<!--server name="PHPBB_TEST_DBUSER" value="" /-->
 		<!--server name="PHPBB_TEST_DBPASSWD" value="" /-->
 		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
+		<server name="PHPBB_TEST_MEMCACHED_HOST" value="localhost" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>

@@ -109,6 +109,21 @@ Or via environment variables as follows:
 
     $ PHPBB_TEST_REDIS_HOST=localhost PHPBB_TEST_REDIS_PORT=6379 phpunit
 
+Memcached
+---------
+
+In order to run tests for the memcached cache driver, at least one of memcached
+host or port must be specified in the test configuration. This can be done via
+test_config.php as follows:
+
+    <?php
+    $phpbb_memcached_host = 'localhost';
+    $phpbb_memcached_port = '11211';
+
+Or via environment variables as follows:
+
+    $ PHPBB_TEST_MEMCACHED_HOST=localhost PHPBB_TEST_MEMCACHED_PORT=11211 phpunit
+
 Running
 =======
 

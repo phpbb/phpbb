@@ -57,6 +57,9 @@ fi
 # Disable xdebug on travis
 phpenv config-rm xdebug.ini || true
 
+# memcached
+register_php_extension memcached "$php_ini_file"
+
 # redis
 # Disabled redis for now as it causes travis to fail
 # git clone git://github.com/nicolasff/phpredis.git redis
