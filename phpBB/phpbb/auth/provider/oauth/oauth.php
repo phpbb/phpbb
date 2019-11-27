@@ -26,6 +26,7 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
 use phpbb\event\dispatcher;
+use phpbb\controller\helper;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\user;
@@ -46,6 +47,9 @@ class oauth extends base
 
 	/** @var dispatcher */
 	protected $dispatcher;
+
+	/** @var helper */
+	protected $helper;
 
 	/** @var language */
 	protected $language;
@@ -81,25 +85,27 @@ class oauth extends base
 	 * Constructor.
 	 *
 	 * @param config				$config					Config object
-	 * @param driver_interface	$db						Database object
-	 * @param db			$db_auth				DB auth provider
+	 * @param driver_interface		$db						Database object
+	 * @param db					$db_auth				DB auth provider
 	 * @param dispatcher			$dispatcher				Event dispatcher object
-	 * @param language			$language				Language object
-	 * @param request_interface	$request				Request object
-	 * @param service_collection		$service_providers		OAuth providers service collection
-	 * @param user						$user					User object
-	 * @param string							$oauth_token_table		OAuth table: token storage
-	 * @param string							$oauth_state_table		OAuth table: state
-	 * @param string							$oauth_account_table	OAuth table: account association
-	 * @param string							$users_table			User table
-	 * @param string							$root_path				phpBB root path
-	 * @param string							$php_ext				php File extension
+	 * @param helper				$helper					Controller helper object
+	 * @param language				$language				Language object
+	 * @param request_interface		$request				Request object
+	 * @param service_collection	$service_providers		OAuth providers service collection
+	 * @param user					$user					User object
+	 * @param string				$oauth_token_table		OAuth table: token storage
+	 * @param string				$oauth_state_table		OAuth table: state
+	 * @param string				$oauth_account_table	OAuth table: account association
+	 * @param string				$users_table			User table
+	 * @param string				$root_path				phpBB root path
+	 * @param string				$php_ext				php File extension
 	 */
 	public function __construct(
 		config $config,
 		driver_interface $db,
 		db $db_auth,
 		dispatcher $dispatcher,
+		helper $helper,
 		language $language,
 		request_interface $request,
 		service_collection $service_providers,
@@ -116,6 +122,7 @@ class oauth extends base
 		$this->db					= $db;
 		$this->db_auth				= $db_auth;
 		$this->dispatcher			= $dispatcher;
+		$this->helper				= $helper;
 		$this->language				= $language;
 		$this->service_providers	= $service_providers;
 		$this->request				= $request;
@@ -348,12 +355,8 @@ class oauth extends base
 
 			if ($credentials['key'] && $credentials['secret'])
 			{
-				global $phpbb_container;
-
-				$controller_helper = $phpbb_container->get('controller.helper');
-
 				$provider = $this->get_provider($service_name);
-				$redirect_url = generate_board_url(false) . $controller_helper->route('ucp_account', ['mode' => 'login', 'login' => 'external', 'oauth_service' => $provider], false);
+				$redirect_url = generate_board_url(false) . $this->helper->route('ucp_account', ['mode' => 'login', 'login' => 'external', 'oauth_service' => $provider], false);
 
 				$login_data['BLOCK_VARS'][$service_name] = [
 					'REDIRECT_URL'	=> redirect($redirect_url, true),
