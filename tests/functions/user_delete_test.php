@@ -34,6 +34,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
 		$phpbb_container = new phpbb_mock_container_builder();
 		$config = new \phpbb\config\config(array(
 			'auth_method' => 'oauth',
@@ -87,6 +88,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$db,
 			$db_auth_provider,
 			$phpbb_dispatcher,
+			$controller_helper,
 			$lang,
 			$request,
 			$oauth_provider_collection,
