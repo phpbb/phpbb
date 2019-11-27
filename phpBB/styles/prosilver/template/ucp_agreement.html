@@ -43,7 +43,8 @@
 		<div class="inner">
 		<fieldset class="submit-buttons">
 			<!-- IF S_SHOW_COPPA -->
-			<strong><a href="{U_COPPA_NO}" class="button1">{L_COPPA_NO}</a></strong>&nbsp; <a href="{U_COPPA_YES}" class="button2">{L_COPPA_YES}</a>
+			<input type="submit" name="coppa_no" id="coppa_no" value="{{ L_COPPA_NO }}" class="button1" />
+			<input type="submit" name="coppa_yes" id="coppa_yes" value="{{ L_COPPA_YES }}" class="button2" />
 			<!-- ELSE -->
 			<input type="submit" name="agreed" id="agreed" value="{L_AGREE}" class="button1" />&nbsp;
 			<input type="submit" name="not_agreed" value="{L_NOT_AGREE}" class="button2" />

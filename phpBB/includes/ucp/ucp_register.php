@@ -39,8 +39,8 @@ class ucp_register
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
 
-		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
-		$token			= $request->variable('hash', '');
+		$coppa			= $request->is_set('coppa_yes') ? 1 : ($request->is_set('coppa_no') ? 0 : false);
+		$coppa			= $request->is_set('coppa') ? $request->variable('coppa', 0) : $coppa;
 		$agreed			= $request->variable('agreed', false);
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= $request->variable('change_lang', '');
@@ -51,7 +51,7 @@ class ucp_register
 			$agreed = false;
 		}
 
-		if ($coppa !== false && !check_link_hash($token, 'coppa') && !check_form_key('ucp_register'))
+		if ($coppa !== false && !check_form_key('ucp_register'))
 		{
 			$coppa = false;
 		}
@@ -170,15 +170,10 @@ class ucp_register
 					->format($user->lang['DATE_FORMAT'], true);
 				unset($now);
 
-				$coppa_link_hash = '&amp;hash=' . generate_link_hash('coppa');
-
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
-					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
-
-					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0' . $coppa_link_hash),
-					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $coppa_link_hash),
+					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
+					'L_COPPA_YES'		=> $user->lang('UCP_COPPA_ON_AFTER', $coppa_birthday),
 
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
