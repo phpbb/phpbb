@@ -91,9 +91,8 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?mode=register&coppa=1');
 		$this->assertContainsLang('COPPA_BIRTHDAY', $crawler->html());
 
-		$agreement_url = $crawler->filter('#agreement')->filter('a')->links()[0]->getUri();
-		preg_match('/(&hash=\w+)/', $agreement_url, $matches);
-		$crawler = self::request('GET', 'ucp.php?mode=register&coppa=1' . $matches[1]);
+		$form = $crawler->selectButton('coppa_yes')->form();
+		$crawler = self::submit($form);
 
 		$this->assertContainsLang('REGISTRATION', $crawler->filter('div.content h2')->text());
 
