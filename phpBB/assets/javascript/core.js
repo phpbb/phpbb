@@ -736,6 +736,8 @@ phpbb.search.closeResults = function($input, $container) {
 phpbb.search.navigateResults = function($input, $container, $resultContainer) {
 	// Add a namespace to the event (.phpbb.search),
 	// so it can be unbound specifically later on.
+	// Rebind it, to ensure the event is 'dynamic'.
+	$input.off('.phpbb.search');
 	$input.on('keydown.phpbb.search', function(event) {
 		var key = event.keyCode || event.which,
 			$active = $resultContainer.children('.active');
