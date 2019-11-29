@@ -183,7 +183,7 @@ class content_visibility
 	* @param $allow_drafts	boolean Allow users to see their own draft posts
 	* @return string	The appropriate combination SQL logic for topic/post_visibility
 	*/
-	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
+	public function get_visibility_sql($mode, $forum_id, $table_alias = '', $allow_drafts=false)
 	{
 		$where_sql = '';
 
@@ -216,19 +216,28 @@ class content_visibility
 			return $get_visibility_sql_overwrite;
 		}
 
+		$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id' ;
+		$visibility_query = $table_alias . $mode . '_visibility';
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
-			$where_sql = '(' . $table_alias . $mode . '_visibility != ' . ITEM_DRAFT . ')';
+			$where_sql = '(' . $visibility_query . ' != ' . ITEM_DRAFT . ')';
+			if ($allow_drafts)
+			{
+				$where_sql .= ' OR (' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']) .')';
+			}
 		}
 		else
 		{
-			$visibility_query = $table_alias . $mode . '_visibility = ';
-
-			$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id' ;
-			$where_sql = '(' . $visibility_query . ITEM_APPROVED . ')';
+			$where_sql = '(' . $visibility_query . ' = ' . ITEM_APPROVED . ')';
+            if ($allow_drafts && $this->user->data['user_id'] != ANONYMOUS)
+			{
+				$where_sql .= 'OR (';
+				$where_sql .= $visibility_query . ' = ' . ITEM_DRAFT . ' AND ' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']);
+				$where_sql .= ')';
+			}
 			if ($this->config['display_unapproved_posts'] && ($this->user->data['user_id'] != ANONYMOUS))
 			{
-				$where_sql .= ' OR ((' . $visibility_query . ITEM_UNAPPROVED . ' OR ' . $visibility_query . ITEM_REAPPROVE .')';
+				$where_sql .= ' OR ((' . $visibility_query . ' = ' . ITEM_UNAPPROVED . ' OR ' . $visibility_query . ' = ' . ITEM_REAPPROVE .')';
 				$where_sql .= ' AND ' . $table_alias . $poster_key . ' = ' . ((int) $this->user->data['user_id']) . ')';
 			}
 		}

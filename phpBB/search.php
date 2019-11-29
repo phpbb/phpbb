@@ -340,22 +340,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		// if it is an author search we want to show topics by default
 		$show_results = ($topic_id) ? 'posts' : $request->variable('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
-
-   /*     if ($topic_id)
-		{
-			$show_results = 'posts';
-		}
-        else if ($request->variable('sr', ($search_id == 'egosearch') )
-		{
-			$show_results = 'topics';
-		}
-        else
-		{
-			$show_results = 'posts';
-		}
-		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
-*/
-
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
