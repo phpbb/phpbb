@@ -2264,6 +2264,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$err = '';
 	$form_name = 'login';
+	$username = $autologin = false;
 
 	// Make sure user->setup() has been called
 	if (!$user->is_setup())

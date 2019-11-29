@@ -1893,14 +1893,21 @@ function mail_encode($str, $eol = "\r\n")
 }
 
 /**
-* Wrapper for sending out emails with the PHP's mail function
-*/
+ * Wrapper for sending out emails with the PHP's mail function
+ */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
 	global $config, $phpbb_root_path, $phpEx;
 
-	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
-	// Reference: http://bugs.php.net/bug.php?id=15841
+	// Convert Numeric Character References to UTF-8 chars (ie. Emojis)
+	$subject = utf8_decode_ncr($subject);
+	$msg = utf8_decode_ncr($msg);
+
+	/**
+	 * We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings.
+	 * On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+	 * Reference: http://bugs.php.net/bug.php?id=15841
+	 */
 	$headers = implode($eol, $headers);
 
 	if (!class_exists('\phpbb\error_collector'))
@@ -1911,10 +1918,14 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	$collector = new \phpbb\error_collector;
 	$collector->install();
 
-	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
-	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
-	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
+	/**
+	 * On some PHP Versions mail() *may* fail if there are newlines within the subject.
+	 * Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
+	 * Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space
+	 * (Use '' as parameter to mail_encode() results in SPACE used)
+	 */
 	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
+
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	$collector->uninstall();

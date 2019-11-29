@@ -50,11 +50,15 @@ class memcached extends \phpbb\cache\driver\memory
 
 	/**
 	 * Memcached constructor
+	 *
+	 * @param string $memcached_servers Memcached servers string (optional)
 	 */
-	public function __construct()
+	public function __construct($memcached_servers = '')
 	{
 		// Call the parent constructor
 		parent::__construct();
+
+		$memcached_servers = $memcached_servers ?: PHPBB_ACM_MEMCACHED;
 
 		$this->memcached = new \Memcached();
 		$this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
@@ -65,10 +69,20 @@ class memcached extends \phpbb\cache\driver\memory
 			$this->memcached->setOption(\Memcached::OPT_COMPRESSION, false);
 		}
 
-		foreach (explode(',', PHPBB_ACM_MEMCACHED) as $u)
+		$server_list = [];
+		foreach (explode(',', $memcached_servers) as $u)
 		{
-			preg_match('#(.*)/(\d+)#', $u, $parts);
-			$this->memcached->addServer(trim($parts[1]), (int) trim($parts[2]));
+			if (preg_match('#(.*)/(\d+)#', $u, $parts))
+			{
+				$server_list[] = [trim($parts[1]), (int) trim($parts[2])];
+			}
+		}
+
+		$this->memcached->addServers($server_list);
+
+		if (empty($server_list) || empty($this->memcached->getStats()))
+		{
+			trigger_error('Could not connect to memcached server(s).');
 		}
 	}
 

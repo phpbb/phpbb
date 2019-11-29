@@ -50,7 +50,7 @@ class bbcode_merger
 		$with    = $this->create_bbcode($with);
 
 		// Select the appropriate strategy for merging this BBCode
-		if ($this->is_content_bbcode($without, $with))
+		if (!$this->is_optional_bbcode($without, $with) && $this->is_content_bbcode($without, $with))
 		{
 			$merged = $this->merge_content_bbcode($without, $with);
 		}
@@ -107,12 +107,12 @@ class bbcode_merger
 	/**
 	* Test whether the two definitions form a "content"-style BBCode
 	*
-	* Such BBCodes include the [URL] BBCode, which uses its text content as
+	* Such BBCodes include the [url] BBCode, which uses its text content as
 	* attribute if none is provided
 	*
 	* @param  array $without BBCode definition without an attribute
 	* @param  array $with    BBCode definition with an attribute
-	* @return array          Merged definition
+	* @return bool
 	*/
 	protected function is_content_bbcode(array $without, array $with)
 	{
@@ -120,6 +120,22 @@ class bbcode_merger
 		// as between ">" and "<" in the template
 		return (preg_match('(\\]\\s*(\\{(?!TEXT)[^}]+\\})\\s*\\[)', $without['usage'], $m)
 			&& preg_match('(>[^<]*?' . preg_quote($m[1]) . '[^>]*?<)s', $without['template']));
+	}
+
+	/**
+	* Test whether the two definitions form BBCode with an optional attribute
+	*
+	* @param  array $without BBCode definition without an attribute
+	* @param  array $with    BBCode definition with an attribute
+	* @return bool
+	*/
+	protected function is_optional_bbcode(array $without, array $with)
+	{
+		// Remove the default attribute from the definition
+		$with['usage'] = preg_replace('(=[^\\]]++)', '', $with['usage']);
+
+		// Test whether both definitions are the same, regardless of case
+		return strcasecmp($without['usage'], $with['usage']) === 0;
 	}
 
 	/**
@@ -131,7 +147,7 @@ class bbcode_merger
 	*/
 	protected function merge_content_bbcode(array $without, array $with)
 	{
-		// Convert [X={X}] into [X={X;useContent}]
+		// Convert [x={X}] into [x={X;useContent}]
 		$usage = preg_replace('(\\})', ';useContent}', $with['usage'], 1);
 
 		// Use the template from the definition that uses an attribute
@@ -143,7 +159,7 @@ class bbcode_merger
 	/**
 	* Merge the two BBCode definitions of a BBCode with an optional argument
 	*
-	* Such BBCodes include the [QUOTE] BBCode, which takes an optional argument
+	* Such BBCodes include the [quote] BBCode, which takes an optional argument
 	* but otherwise does not behave differently
 	*
 	* @param  array $without BBCode definition without an attribute
