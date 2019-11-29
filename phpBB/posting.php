@@ -104,7 +104,7 @@ extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compa
 if ($cancel)
 {
 	$f = ($forum_id) ? 'f=' . $forum_id . '&amp;' : '';
-	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx",	'f='	.	$forum_id)	:	append_sid("{$phpbb_root_path}index.$phpEx")));
+	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
 	redirect($redirect);
 }
 
@@ -382,7 +382,7 @@ switch ($mode)
 * @var	array	post_data	All post data from database
 * @since 3.1.3-RC1
 * @changed 3.1.10-RC1 Added post_data
-* @changed 3.2.4-RC1		Remove unused 'lastclick' var
+* @changed 3.2.4-RC1 		Remove unused 'lastclick' var
 */
 $vars = array(
 	'post_id',
@@ -621,7 +621,7 @@ if (isset($post_data['post_text']))
 }
 
 // Set some default variables
-$uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' =>	0);
+$uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
 
 /**
 * This event allows you to modify the default variables for post_data, and unset them in post_data if needed
@@ -783,7 +783,7 @@ if ($submit || $preview || $refresh || $save)
 
 			$topic_sql = array(
 				'poll_title'		=> '',
-				'poll_start'		=> 0,
+				'poll_start' 		=> 0,
 				'poll_length'		=> 0,
 				'poll_last_vote'	=> 0,
 				'poll_max_options'	=> 0,
@@ -1258,8 +1258,6 @@ if ($submit || $preview || $refresh || $save)
 		if (!$save && $post_data['post_visibility'] == ITEM_DRAFT)
 		{
 			$post_data['post_visibility'] = false;
-			//	$data_ary['post_time']
-			//	$mode = 'post';
 		}
 
 		$data = array(
@@ -1747,7 +1745,7 @@ $page_data = array(
 	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time']	>	time()	-	($config['delete_time']	*	60)	||	!$config['delete_time']))	||	$auth->acl_get('m_delete',	$forum_id)))	?	true	:	false,
+	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> ($bbcode_status) ? 1 : 0,
 	'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'			=> $smilies_status,
@@ -1756,7 +1754,7 @@ $page_data = array(
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify'] || !$config['email_enable']) ? false : true,
 	'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote' || $mode == 'post') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster'])	&&	$user->data['user_id']	==	$post_data['topic_poster']	&&	$post_data['topic_status']	==	ITEM_UNLOCKED)))	?	true	:	false,
+	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote' || $mode == 'post') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
