@@ -68,6 +68,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	public function icon(environment $environment, $type, $icon, $title = '', $hidden = false, $classes = '', array $attributes = [])
 	{
 		$type = strtolower($type);
+		$icon = is_array($icon) ? $this->get_first_icon($icon) : $icon;
 
 		if (empty($icon))
 		{
@@ -142,8 +143,15 @@ class icon extends \Twig\Extension\AbstractExtension
 		// If no PNG or SVG icon was found, display a default 404 SVG icon.
 		if ($not_found)
 		{
-			$file	= $environment->load('svg/404.svg');
-			$source	= $this->prepare_svg($file, $view_box);
+			try
+			{
+				$file	= $environment->load('svg/404.svg');
+				$source	= $this->prepare_svg($file, $view_box);
+			}
+			catch (\Twig\Error\Error $e)
+			{
+				return '';
+			}
 
 			$type = 'svg';
 			$icon = '404';
@@ -236,6 +244,44 @@ class icon extends \Twig\Extension\AbstractExtension
 		$string = preg_replace('/\s+/', ' ', $string);
 
 		return $string;
+	}
+
+	/**
+	 * Finds the first icon that has a "true" value and returns it.
+	 *
+	 * This allows sending an array to the Icon() function,
+	 * where the keys are the icon names and the values are their checks.
+	 *
+	 * {{ Icon('font', {
+	 * 		'bullhorn': topicrow.S_POST_GLOBAL or topicrow.S_POST_ANNOUNCE,
+	 * 		'star': topicrow.S_POST_STICKY,
+	 * 		'lock': topicrow.S_TOPIC_LOCKED,
+	 * 		'fire': topicrow.S_TOPIC_HOT,
+	 * 		'file': true,
+	 * }, 'MY_TITLE', true) }}
+	 *
+	 * @param array		$icons			Array of icons and their booleans
+	 * @return string					The first 'true' icon
+	 */
+	protected function get_first_icon(array $icons)
+	{
+		foreach ($icons as $icon => $boolean)
+		{
+			// In case the key is not a string,
+			// this icon does not have a check
+			// so instantly return it
+			if (!is_string($icon))
+			{
+				return $boolean;
+			}
+
+			if ($boolean)
+			{
+				return $icon;
+			}
+		}
+
+		return '';
 	}
 
 	/**
