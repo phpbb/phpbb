@@ -1208,7 +1208,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$edit_allowed = ($user->data['is_registered'] && 
 								 $auth->acl_get('m_edit', $forum_id) || 
-								 (($user->data['user_id'] == $poster_id) && 
+								 (($user->data['user_id'] == $row['poster_id']) && 
 								  (($row['post_visibility'] == ITEM_DRAFT) ||
                                    $s_can_edit_own_post)));
 
@@ -1222,7 +1222,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$delete_allowed = ($user->data['is_registered'] && 
 								   ($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) ||
-                                   (($user->data['user_id'] == $poster_id) && 
+                                   (($user->data['user_id'] == $row['poster_id']) && 
 									($row['post_visibility'] == ITEM_DRAFT) ||
                                     $s_can_delete_own_post));
 

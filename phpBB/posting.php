@@ -178,11 +178,7 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND f.forum_id = t.forum_id
-<<<<<<< HEAD
-				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.', true);
-=======
 				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.', $allow_drafts);
->>>>>>> 7a32cc1... [ticket/16193] Re-implement drafts
 	break;
 
 	case 'smilies':

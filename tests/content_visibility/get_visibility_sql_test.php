@@ -51,7 +51,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 2),
 				),
 			),
-			// data set 2: allow_drafts=0, moderator, can see all topics except draft
+			// data set 2: display_unapproved_posts=false, moderator, can see all topics except draft
 			array(
 				'phpbb_topics',
 				0,
@@ -132,7 +132,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 			),
 			// data set 8: allow_drafts=true, normal user, can see own draft posts
 			array(
-				'phpbb_topics',
+				'phpbb_posts',
 				0,
                 true,
 				false,
@@ -153,22 +153,21 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 				'post', 1, '',
 				array(),
 				array(
-					array('topic_id' => 2),
-					array('topic_id' => 5),
+					array('post_id' => 1),
+					array('post_id' => 2),
 				),
 			),
 			// data set 10: allow_drafts=0, display_unapproved_posts=true, normal user, can see own unapproved posts topic
 			array(
-				'phpbb_posts',
+				'phpbb_topics',
 				0,
 				false,
 				true,
 				'topic', 1, '',
 				array(),
 				array(
-					array('post_id' => 2),
-					array('post_id' => 5),
-					array('post_id' => 6),
+					array('topic_id' => 1),
+					array('topic_id' => 2),
 				),
 			),
 			// data set 11: allow_drafts=true, moderator, can see own draft topic
@@ -231,7 +230,9 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = $user_id;
-		$config = new phpbb\config\config(array());
+		$config = $this->config = new \phpbb\config\config(array(
+			'display_unapproved_posts'			=> $display_unapproved,
+		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
