@@ -191,8 +191,8 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'inline' && $display_link)
 	{
 		$template->assign_vars(array(
-			'S_SHOW_SMILEY_LINK' 	=> true,
-			'U_MORE_SMILIES' 		=> $base_url,
+			'S_SHOW_SMILEY_LINK'	=> true,
+			'U_MORE_SMILIES'		=> $base_url,
 		));
 	}
 
@@ -1009,7 +1009,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}',	1);	return	false;\">",	'</a>')	:	'',
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 			'L_DELETE_POST'		=> $l_deleted_message,
 
@@ -1100,17 +1100,17 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	else
 	{
 		if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && ($data['topic_posts_approved'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1))
-    	{
-    		$post_mode = 'delete_topic';
-    	}
-    	else if ($data['topic_first_post_id'] == $post_id)
-    	{
-    		$post_mode = 'delete_first_post';
-    	}
-    	else if ($data['topic_last_post_id'] == $post_id)
-    	{
-    		$post_mode = 'delete_last_post';
-    	}
+		{
+			$post_mode = 'delete_topic';
+		}
+		else if ($data['topic_first_post_id'] == $post_id)
+		{
+			$post_mode = 'delete_first_post';
+		}
+		else if ($data['topic_last_post_id'] == $post_id)
+		{
+			$post_mode = 'delete_last_post';
+		}
 	}
 	$sql_data = array();
 	$next_post_id = false;
@@ -1445,7 +1445,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	}
 	else if ($mode == 'edit')
 	{
-		$post_mode = ($data_ary['topic_posts_approved'] + $data_ary['topic_posts_unapproved'] + $data_ary['topic_posts_softdeleted'] == 1) ? 'edit_topic' : (($data_ary['topic_first_post_id'] == $data_ary['post_id']) ? 'edit_first_post' : (($data_ary['topic_last_post_id'] == $data_ary['post_id']) ? 'edit_last_post' : 'edit'));
+		$post_mode = ($data_ary['topic_posts_approved'] + $data_ary['topic_posts_unapproved'] + $data_ary['topic_posts_softdeleted'] == 1) ? 'edit_topic' : (($data_ary['topic_first_post_id'] == $data_ary['post_id']) ? 'edit_first_post' : (($data_ary['topic_last_post_id']	==	$data_ary['post_id'])	?	'edit_last_post'	:	'edit'));
 	}
 
 	// First of all make sure the subject and topic title are having the correct length.
@@ -2599,7 +2599,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 	// If moderator removing post or user itself removing post, present a confirmation screen
 	if ($force_delete_allowed ||
 		 ($is_soft && $force_softdelete_allowed) || $auth->acl_get("m_$perm_check", $forum_id) ||
-		 ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time()	-	($config['delete_time']	* 60)	|| !$config['delete_time']))	||
+		 ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time()	-	($config['delete_time']	*	60)	||	!$config['delete_time']))	||
 		 ($post_data['post_visibility'] == ITEM_DRAFT && $post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && !$post_data['post_edit_locked'])
 	   )
 	{
