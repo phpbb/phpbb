@@ -89,7 +89,7 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 		);
 	}
 
-    public function insert_draft_post($row)
+	public function insert_draft_post($row)
 	{
 		$forum_id = 0;
 
@@ -156,7 +156,7 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 			// Submit new post
 			$sql_data_post = [
 				'forum_id'			=> $forum_id,
-				'topic_id' 			=> $topic_id,
+				'topic_id'  		=> $topic_id,
 				'poster_id'			=> (int) $row['user_id'],
 				'post_time'			=> (int) $row['save_time'],
 				'icon_id'			=> 0,

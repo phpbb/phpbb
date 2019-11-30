@@ -1464,22 +1464,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	else
 	{
 		// Retrieve some additional information if not present
-	if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
-	{
-		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
-			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-				WHERE t.topic_id = p.topic_id
-					AND p.post_id = ' . $data_ary['post_id'];
-		$result = $db->sql_query($sql);
-		$topic_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($topic_row['post_visibility'] != ITEM_DRAFT)
+		if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
 		{
-			$data_ary['topic_visibility'] = $topic_row['topic_visibility'];
-			$data_ary['post_visibility'] = $topic_row['post_visibility'];
+			$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+					WHERE t.topic_id = p.topic_id
+						AND p.post_id = ' . $data_ary['post_id'];
+			$result = $db->sql_query($sql);
+			$topic_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($topic_row['post_visibility'] != ITEM_DRAFT)
+			{
+				$data_ary['topic_visibility'] = $topic_row['topic_visibility'];
+				$data_ary['post_visibility'] = $topic_row['post_visibility'];
+			}
 		}
-	}
 
 	// This variable indicates if the user is able to post or put into the queue
 	$post_visibility = ITEM_APPROVED;
@@ -2103,21 +2103,21 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	if ($post_visibility != ITEM_DRAFT)
 	{
 		foreach ($sql_data as $table => $update_ary)
-	{
-		if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
 		{
-			$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
+			if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
+			{
+				$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
+				$db->sql_query($sql);
+			}
+		}
+
+		// Delete topic shadows (if any exist). We do not need a shadow topic for an global announcement
+		if ($topic_type == POST_GLOBAL)
+		{
+			$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE topic_moved_id = ' . $data_ary['topic_id'];
 			$db->sql_query($sql);
 		}
-	}
-
-	// Delete topic shadows (if any exist). We do not need a shadow topic for an global announcement
-	if ($topic_type == POST_GLOBAL)
-	{
-		$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-				WHERE topic_moved_id = ' . $data_ary['topic_id'];
-		$db->sql_query($sql);
-	}
 	}
 
 	// Committing the transaction before updating search index
@@ -2125,114 +2125,114 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	if ($data_ary['post_visibility'] != ITEM_DRAFT)
 	{
 		// Index message contents
-	if ($update_search_index && $data_ary['enable_indexing'])
-	{
-		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = $config['search_type'];
-
-		if (!class_exists($search_type))
+		if ($update_search_index && $data_ary['enable_indexing'])
 		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
+			// Select the search method and do some additional checks to ensure it can actually be utilised
+			$search_type = $config['search_type'];
+
+			if (!class_exists($search_type))
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
+
+			$error = false;
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+
+			if ($error)
+			{
+				trigger_error($error);
+			}
+
+			$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
 		}
 
-		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
+		// Topic Notification, do not change if moderator is changing other users posts...
+		if ($user->data['user_id'] == $poster_id)
 		{
-			trigger_error($error);
+			if (!$data_ary['notify_set'] && $data_ary['notify'])
+			{
+				$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
+					VALUES (' . $user->data['user_id'] . ', ' . $data_ary['topic_id'] . ')';
+				$db->sql_query($sql);
+			}
+			else if (($config['email_enable'] || $config['jab_enable']) && $data_ary['notify_set'] && !$data_ary['notify'])
+			{
+				$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'] . '
+							AND topic_id = ' . $data_ary['topic_id'];
+				$db->sql_query($sql);
+			}
 		}
 
-		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
-	}
-
-	// Topic Notification, do not change if moderator is changing other users posts...
-	if ($user->data['user_id'] == $poster_id)
-	{
-		if (!$data_ary['notify_set'] && $data_ary['notify'])
+		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 		{
-			$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
-				VALUES (' . $user->data['user_id'] . ', ' . $data_ary['topic_id'] . ')';
-			$db->sql_query($sql);
+			// Mark this topic as posted to
+			markread('post', $data_ary['forum_id'], $data_ary['topic_id']);
 		}
-		else if (($config['email_enable'] || $config['jab_enable']) && $data_ary['notify_set'] && !$data_ary['notify'])
+
+		// Mark this topic as read
+		// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
+		markread('topic', $data_ary['forum_id'], $data_ary['topic_id'], time());
+
+		//
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+			$sql = 'SELECT mark_time
+				FROM ' . FORUMS_TRACK_TABLE . '
 					WHERE user_id = ' . $user->data['user_id'] . '
-						AND topic_id = ' . $data_ary['topic_id'];
-			$db->sql_query($sql);
+						AND forum_id = ' . $data_ary['forum_id'];
+			$result = $db->sql_query($sql);
+			$f_mark_time = (int) $db->sql_fetchfield('mark_time');
+			$db->sql_freeresult($result);
 		}
-	}
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			$f_mark_time = false;
+		}
 
-	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
-	{
-		// Mark this topic as posted to
-		markread('post', $data_ary['forum_id'], $data_ary['topic_id']);
-	}
+		if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			// Update forum info
+			$sql = 'SELECT forum_last_post_time
+				FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $data_ary['forum_id'];
+			$result = $db->sql_query($sql);
+			$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
+			$db->sql_freeresult($result);
 
-	// Mark this topic as read
-	// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
-	markread('topic', $data_ary['forum_id'], $data_ary['topic_id'], time());
+			update_forum_tracking_info($data_ary['forum_id'], $forum_last_post_time, $f_mark_time, false);
+		}
 
-	//
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
-	{
-		$sql = 'SELECT mark_time
-			FROM ' . FORUMS_TRACK_TABLE . '
-				WHERE user_id = ' . $user->data['user_id'] . '
-					AND forum_id = ' . $data_ary['forum_id'];
-		$result = $db->sql_query($sql);
-		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
-		$db->sql_freeresult($result);
-	}
-	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
-	{
-		$f_mark_time = false;
-	}
+		// If a username was supplied or the poster is a guest, we will use the supplied username.
+		// Doing it this way we can use "...post by guest-username..." in notifications when
+		// "guest-username" is supplied or ommit the username if it is not.
+		$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
 
-	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
-	{
-		// Update forum info
-		$sql = 'SELECT forum_last_post_time
-			FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $data_ary['forum_id'];
-		$result = $db->sql_query($sql);
-		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
-		$db->sql_freeresult($result);
+		// Send Notifications
+		$notification_data = array_merge($data_ary, array(
+			'topic_title'		=> (isset($data_ary['topic_title'])) ? $data_ary['topic_title'] : $subject,
+			'post_username'		=> $username,
+			'poster_id'			=> $poster_id,
+			'post_text'			=> $data_ary['message'],
+			'post_time'			=> $current_time,
+			'post_subject'		=> $subject,
+		));
 
-		update_forum_tracking_info($data_ary['forum_id'], $forum_last_post_time, $f_mark_time, false);
-	}
+		/**
+			* This event allows you to modify the notification data upon submission
+			*
+			* @event core.modify_submit_notification_data
+			* @var	array	notification_data	The notification data to be inserted in to the database
+		* @var	array	data_ary			The data array with a lot of the post submission data
+		* @var  string	mode				The posting mode
+			* @var	int		poster_id			The poster id
+		* @since 3.2.4-RC1
+		*/
+		$vars = array('notification_data', 'data_ary', 'mode', 'poster_id');
+		extract($phpbb_dispatcher->trigger_event('core.modify_submit_notification_data', compact($vars)));
 
-	// If a username was supplied or the poster is a guest, we will use the supplied username.
-	// Doing it this way we can use "...post by guest-username..." in notifications when
-	// "guest-username" is supplied or ommit the username if it is not.
-	$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
-
-	// Send Notifications
-	$notification_data = array_merge($data_ary, array(
-		'topic_title'		=> (isset($data_ary['topic_title'])) ? $data_ary['topic_title'] : $subject,
-		'post_username'		=> $username,
-		'poster_id'			=> $poster_id,
-		'post_text'			=> $data_ary['message'],
-		'post_time'			=> $current_time,
-		'post_subject'		=> $subject,
-	));
-
-	/**
-		* This event allows you to modify the notification data upon submission
-		*
-		* @event core.modify_submit_notification_data
-		* @var	array	notification_data	The notification data to be inserted in to the database
-	* @var	array	data_ary			The data array with a lot of the post submission data
-	* @var  string	mode				The posting mode
-		* @var	int		poster_id			The poster id
-	* @since 3.2.4-RC1
-	*/
-	$vars = array('notification_data', 'data_ary', 'mode', 'poster_id');
-	extract($phpbb_dispatcher->trigger_event('core.modify_submit_notification_data', compact($vars)));
-
-	/* @var $phpbb_notifications \phpbb\notification\manager */
-	$phpbb_notifications = $phpbb_container->get('notification_manager');
+		/* @var $phpbb_notifications \phpbb\notification\manager */
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
 	}
 
 	if ($post_visibility == ITEM_APPROVED)
