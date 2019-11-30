@@ -96,6 +96,7 @@ define('ITEM_UNAPPROVED', 0); // => has not yet been approved
 define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
 define('ITEM_DELETED', 2); // => has been soft deleted
 define('ITEM_REAPPROVE', 3); // => has been edited and needs to be re-approved
+define('ITEM_DRAFT', 4); // => draft not yet submited
 
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
@@ -146,6 +147,7 @@ define('LOG_CRITICAL', 2);
 define('LOG_USERS', 3);
 
 // Private messaging - Do NOT change these values
+define('PRIVMSGS_DRAFTBOX', -5);
 define('PRIVMSGS_HOLD_BOX', -4);
 define('PRIVMSGS_NO_BOX', -3);
 define('PRIVMSGS_OUTBOX', -2);
@@ -251,7 +253,6 @@ define('BOTS_TABLE',				$table_prefix . 'bots');
 define('CONFIG_TEXT_TABLE',			$table_prefix . 'config_text');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
-define('DRAFTS_TABLE',				$table_prefix . 'drafts');
 define('EXT_TABLE',					$table_prefix . 'ext');
 define('EXTENSIONS_TABLE',			$table_prefix . 'extensions');
 define('EXTENSION_GROUPS_TABLE',	$table_prefix . 'extension_groups');

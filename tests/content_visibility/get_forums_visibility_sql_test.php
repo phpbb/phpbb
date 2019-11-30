@@ -21,6 +21,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 	public function get_forums_visibility_sql_data()
 	{
 		return array(
+			// data set 0:
 			array(
 				'phpbb_topics',
 				'topic', array(1, 2, 3), '',
@@ -39,6 +40,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 					array('topic_id' => 9),
 				),
 			),
+			// data set 1:
 			array(
 				'phpbb_topics',
 				'topic', array(1, 2), '',
@@ -54,6 +56,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 					array('topic_id' => 6),
 				),
 			),
+			// data set 2:
 			array(
 				'phpbb_topics',
 				'topic', array(1, 2, 3), '',
@@ -68,6 +71,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 					array('topic_id' => 8),
 				),
 			),
+			// data set 3:
 			array(
 				'phpbb_posts',
 				'post', array(1, 2, 3), '',
@@ -84,8 +88,10 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 					array('post_id' => 7),
 					array('post_id' => 8),
 					array('post_id' => 9),
+					array('post_id' => 12),
 				),
 			),
+			// data set 4:
 			array(
 				'phpbb_posts',
 				'post', array(1, 2), '',
@@ -99,8 +105,10 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 					array('post_id' => 4),
 					array('post_id' => 5),
 					array('post_id' => 6),
+					array('post_id' => 12),
 				),
 			),
+			// data set 5:
 			array(
 				'phpbb_posts',
 				'post', array(1, 2, 3), '',

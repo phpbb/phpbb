@@ -11,28 +11,42 @@
 			<value>1</value>
 			<value>0</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>Unapproved topic</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>1</value>
 			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved topic</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>1</value>
-			<value>2</value>
 			<value>0</value>
-			<value>Softdeleted</value>
+			<value>2</value>
+			<value>Softdeleted topic</value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>Unapproved topic</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft topic</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>1</value>
+			<value>2</value>
+			<value>4</value>
+			<value>Draft topic other user</value>
 		</row>
 	</table>
 	<table name="phpbb_posts">
@@ -48,7 +62,7 @@
 			<value>1</value>
 			<value>0</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>Unapproved post</value>
 		</row>
 		<row>
 			<value>2</value>
@@ -56,7 +70,7 @@
 			<value>1</value>
 			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved post</value>
 		</row>
 		<row>
 			<value>3</value>
@@ -64,7 +78,7 @@
 			<value>1</value>
 			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted post</value>
 		</row>
 		<row>
 			<value>4</value>
@@ -72,7 +86,39 @@
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>Unapproved post</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>2</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post approved topic</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>5</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post new topic</value>
+		</row>
+		<row>
+			<value>7</value>
+			<value>2</value>
+			<value>1</value>
+			<value>2</value>
+			<value>4</value>
+			<value>Draft post approved topic other user</value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>6</value>
+			<value>1</value>
+			<value>2</value>
+			<value>4</value>
+			<value>Draft post new topic other user</value>
 		</row>
 	</table>
 </dataset>
