@@ -74,8 +74,9 @@ class icon extends \Twig\Extension\AbstractExtension
 			return '';
 		}
 
-		$not_found = false;
-		$source = '';
+		$not_found	= false;
+		$source		= '';
+		$view_box	= '';
 
 		switch ($type)
 		{
@@ -115,7 +116,12 @@ class icon extends \Twig\Extension\AbstractExtension
 				{
 					// Try to load and prepare the SVG icon
 					$file	= $environment->load('svg/' . $icon . '.svg');
-					$source	= $this->prepare_svg($file);
+					$source	= $this->prepare_svg($file, $view_box);
+
+					if (empty($view_box))
+					{
+						return '';
+					}
 				}
 				catch (\Twig\Error\LoaderError $e)
 				{
@@ -133,17 +139,13 @@ class icon extends \Twig\Extension\AbstractExtension
 			break;
 		}
 
-		// If no PNG or SVG icon was found, display a default 404 PNG icon.
+		// If no PNG or SVG icon was found, display a default 404 SVG icon.
 		if ($not_found)
 		{
-			if (empty($base_path))
-			{
-				$board_url = defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-				$base_path = $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
-			}
+			$file	= $environment->load('svg/404.svg');
+			$source	= $this->prepare_svg($file, $view_box);
 
-			$source = "{$base_path}styles/all/imgs/png/404.png";
-			$type = 'png';
+			$type = 'svg';
 			$icon = '404';
 		}
 
@@ -155,6 +157,7 @@ class icon extends \Twig\Extension\AbstractExtension
 				'ICON'			=> (string) $icon,
 				'SOURCE'		=> (string) $source,
 				'TITLE'			=> (string) $title,
+				'VIEW_BOX'		=> (string) $view_box,
 				'S_HIDDEN'		=> (bool) $hidden,
 			]);
 		}
@@ -168,12 +171,13 @@ class icon extends \Twig\Extension\AbstractExtension
 	 * Prepare an SVG for usage in the template icon.
 	 *
 	 * This removes any <?xml ?> and <!DOCTYPE> elements,
-	 * aswell as any <svg> and <title> elements.
+	 * aswell as the root <svg> and any <title> elements.
 	 *
-	 * @param \Twig\TemplateWrapper	$file	The SVG file loaded from the environment
-	 * @return string						The cleaned SVG
+	 * @param \Twig\TemplateWrapper	$file		The SVG file loaded from the environment
+	 * @param string				$view_box	The viewBox attribute value
+	 * @return string							The cleaned SVG
 	 */
-	protected function prepare_svg(\Twig\TemplateWrapper $file)
+	protected function prepare_svg(\Twig\TemplateWrapper $file, &$view_box = '')
 	{
 		$code = $file->render();
 		$code = preg_replace( "/<\?xml.+?\?>/", '', $code);
@@ -198,11 +202,27 @@ class icon extends \Twig\Extension\AbstractExtension
 
 		$xpath = new \DOMXPath($doc);
 
-		// Remove all <svg> and <title> elements
-		foreach ($xpath->query('//svg | //title') as $element)
+		/**
+		 * Remove the root <svg> element
+		 * and all <title> elements.
+		 *
+		 * @var \DOMElement $element
+		 */
+		foreach ($xpath->query('/svg | //title') as $element)
 		{
 			if ($element->nodeName === 'svg')
 			{
+				// Return the viewBox attribute value of the root SVG element by reference
+				$view_box = $element->getAttribute('viewbox');
+
+				$width = $element->getAttribute('width');
+				$height = $element->getAttribute('height');
+
+				if (empty($view_box) && $width && $height)
+				{
+					$view_box = "0 0 {$width} {$height}";
+				}
+
 				while (isset($element->firstChild))
 				{
 					$element->parentNode->insertBefore($element->firstChild, $element);
