@@ -47,7 +47,7 @@ class remove_drafts_table extends \phpbb\db\migration\migration
 					'PRIMARY_KEY'		=> array('draft_id'),
 					'KEYS'				=> array(
 						'save_time'		=> array('INDEX', array('item_type', 'item_id')),
-                    ),
+					),
 				),
 			),
 		);

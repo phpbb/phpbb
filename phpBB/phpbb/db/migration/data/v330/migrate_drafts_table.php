@@ -30,12 +30,12 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 
 	public function move_drafts()
 	{
-        define('MAX_ITEMS_PER_ITERATION', 100);
+		define('MAX_ITEMS_PER_ITERATION', 100);
 
 		$draft_id = 0;
-        $more = true;
+		$more = true;
 
-        while ($more)
+		while ($more)
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->table_prefix . "drafts d WHERE d.draft_id > $draft_id LIMIT " . MAX_ITEMS_PER_ITERATION;
@@ -63,14 +63,14 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 		}
 	}
 
-    public function insert_draft_pm($row)
+	public function insert_draft_pm($row)
 	{
 
 		$pm_data = [
 			'author_id'				=> (int) $row['user_id'],
 			'message_time'			=> (int) $row['save_time'],
 			'icon_id'				=> 0,
-            'message_subject'		=> $row['draft_subject'],
+			'message_subject'		=> $row['draft_subject'],
 			'message_text'			=> $row['draft_message'],
 			'to_address'			=> '',
 			'bcc_address'			=> '',
@@ -91,7 +91,7 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 
     public function insert_draft_post($row)
 	{
-        $forum_id = 0;
+		$forum_id = 0;
 
 		if ($row['topic_id'])
 		{
@@ -106,12 +106,12 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 			if (!empty($topic_forum_id))
 			{
 				// use this forum_id, in case the topic was moved
-                $forum_id = (int) $topic_forum_id;
+				$forum_id = (int) $topic_forum_id;
 			}
 		}
 
 		// if topic not found, assume new topic, but check that the given forum exists
-        if (!$forum_id && $row['forum_id'])
+		if (!$forum_id && $row['forum_id'])
 		{
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
@@ -122,7 +122,7 @@ class migrate_drafts_table extends \phpbb\db\migration\migration
 
 			if (!empty($src_forum_name))
 			{
-                $forum_id = (int) $row['forum_id'];
+				$forum_id = (int) $row['forum_id'];
 			}
 		}
 

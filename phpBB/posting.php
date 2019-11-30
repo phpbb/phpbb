@@ -499,7 +499,7 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 	if ($mode == 'soft_delete' && $post_data['post_visibility'] == ITEM_DRAFT)
 	{
 		// no soft delete for draft posts
-        $mode == 'delete';
+		$mode == 'delete';
 	}
 
 	$delete_reason = $request->variable('delete_reason', '', true);
@@ -1403,7 +1403,7 @@ if ($submit || $preview || $refresh || $save)
 			return;
 		}
 
-		   if ($save)
+		if ($save)
 		{
 			meta_refresh(3, $redirect_url);
 			$message = $user->lang['POST_DRAFT_SAVED'];

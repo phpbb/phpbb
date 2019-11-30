@@ -2099,7 +2099,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		USERS_TABLE		=> 'user_id = ' . $poster_id
 	);
 
-
 	if ($post_visibility != ITEM_DRAFT)
 	{
 		foreach ($sql_data as $table => $update_ary)
@@ -2165,7 +2164,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			}
 		}
 		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
-
 		{
 			// Mark this topic as posted to
 			markread('post', $data_ary['forum_id'], $data_ary['topic_id']);
