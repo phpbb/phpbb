@@ -473,7 +473,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array());
 		$db = $this->get_db();
-		$db_tools = new \phpbb\db\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($this->db);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
