@@ -43,11 +43,11 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
 		$filesystem->expects($this->any())
 			->method('exists')
-			->with($this->stringContains('theme/icons/png/'))
+			->with($this->stringContains('theme/png/'))
 			->will($this->returnValueMap([
-				['phpBB/styles/chameleon/theme/icons/png/phone.png', true],
-				['phpBB/styles/chameleon/theme/icons/png/pencil.png', true],
-				['phpBB/styles/chameleon/theme/icons/png/user.png', false],
+				['phpBB/styles/chameleon/theme/png/phone.png', true],
+				['phpBB/styles/chameleon/theme/png/pencil.png', true],
+				['phpBB/styles/chameleon/theme/png/user.png', false],
 			]));
 		$request = new phpbb_mock_request;
 		$symfony_request = new \phpbb\symfony_request(
@@ -117,7 +117,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 
 		$this->template->set_custom_style('tests', [
 			$this->template_path,
-			$phpbb_root_path . 'styles/all/templates',
+			$phpbb_root_path . 'styles/all/template',
 		]);
 	}
 
@@ -354,7 +354,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PHONE'	=> 'Phone icon',
 				],
-				'<img class="o-icon o-icon-png png-phone" src="phpBB/styles/chameleon/theme/icons/png/phone.png" alt="Phone icon" />',
+				'<img class="o-icon o-icon-png png-phone" src="phpBB/styles/chameleon/theme/png/phone.png" alt="Phone icon" />',
 			],
 			/** PNG: all options */
 			[
@@ -371,7 +371,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<img class="o-icon o-icon-png png-pencil my-class" src="phpBB/styles/chameleon/theme/icons/png/pencil.png" alt="Pencil icon" data-url="my-test-url/test-page.php?u=2" />',
+				'<img class="o-icon o-icon-png png-pencil my-class" src="phpBB/styles/chameleon/theme/png/pencil.png" alt="Pencil icon" data-url="my-test-url/test-page.php?u=2" />',
 			],
 			/** PNG: Not found */
 			[
@@ -386,7 +386,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_USER'		=> 'User icon',
 				],
-				'<img class="o-icon o-icon-png png-404 my-class" src="phpBB/styles/all/imgs/icons/png/404.png" alt="User icon" />',
+				'<img class="o-icon o-icon-png png-404 my-class" src="phpBB/styles/all/imgs/png/404.png" alt="User icon" />',
 			],
 			/** SVG: default */
 			[
@@ -439,7 +439,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'attributes'	=> [],
 				],
 				[],
-				'<img class="o-icon o-icon-png png-404" src="phpBB/styles/all/imgs/icons/png/404.png" alt="Just a title" />',
+				'<img class="o-icon o-icon-png png-404" src="phpBB/styles/all/imgs/png/404.png" alt="Just a title" />',
 			],
 			/** SVG: Sanitization */
 			[

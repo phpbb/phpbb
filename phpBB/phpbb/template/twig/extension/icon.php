@@ -98,9 +98,9 @@ class icon extends \Twig\Extension\AbstractExtension
 				// Iterate over the user's styles and check for icon existance
 				foreach ($this->get_style_list() as $style_path)
 				{
-					if ($filesystem->exists("{$root_path}styles/{$style_path}/theme/icons/png/{$icon}.png"))
+					if ($filesystem->exists("{$root_path}styles/{$style_path}/theme/png/{$icon}.png"))
 					{
-						$source = "{$base_path}styles/{$style_path}/theme/icons/png/{$icon}.png";
+						$source = "{$base_path}styles/{$style_path}/theme/png/{$icon}.png";
 
 						break;
 					}
@@ -114,7 +114,7 @@ class icon extends \Twig\Extension\AbstractExtension
 				try
 				{
 					// Try to load and prepare the SVG icon
-					$file	= $environment->load('icons/svg/' . $icon . '.svg');
+					$file	= $environment->load('svg/' . $icon . '.svg');
 					$source	= $this->prepare_svg($file);
 				}
 				catch (\Twig\Error\LoaderError $e)
@@ -142,14 +142,14 @@ class icon extends \Twig\Extension\AbstractExtension
 				$base_path = $board_url ? generate_board_url() . '/' : $environment->get_web_root_path();
 			}
 
-			$source = "{$base_path}styles/all/imgs/icons/png/404.png";
+			$source = "{$base_path}styles/all/imgs/png/404.png";
 			$type = 'png';
 			$icon = '404';
 		}
 
 		try
 		{
-			return $environment->render("macros/icons/{$type}.html", [
+			return $environment->render("macros/icons/{$type}.twig", [
 				'ATTRIBUTES'	=> (string) $this->implode_attributes($attributes),
 				'CLASSES'		=> (string) $classes,
 				'ICON'			=> (string) $icon,
