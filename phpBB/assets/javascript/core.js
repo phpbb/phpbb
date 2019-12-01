@@ -1583,7 +1583,7 @@ phpbb.colorPalette = function(dir, width, height) {
 * @param {jQuery} el jQuery object for the palette container.
 */
 phpbb.registerPalette = function(el) {
-	var	orientation	= el.attr('data-color-palette'),
+	var	orientation	= el.attr('data-color-palette') || el.attr('data-orientation'), // data-orientation kept for backwards compat.
 		height		= el.attr('data-height'),
 		width		= el.attr('data-width'),
 		target		= el.attr('data-target'),
@@ -1797,7 +1797,7 @@ $(function() {
 
 	phpbb.registerPageDropdowns();
 
-	$('[data-color-palette]').each(function() {
+	$('[data-color-palette], [data-orientation]').each(function() {
 		phpbb.registerPalette($(this));
 	});
 
