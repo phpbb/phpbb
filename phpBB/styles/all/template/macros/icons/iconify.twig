@@ -1,0 +1,4 @@
+{% spaceless %}
+	<i class="iconify o-icon-src-{{ SOURCE }} o-icon{{ CLASSES ? ' ' ~ CLASSES }}"{% if S_HIDDEN %}{% if TITLE %} title="{{ lang(TITLE) }}"{% endif %} aria-hidden="true"{% endif %} data-icon="{{ ICON }}" data-inline="true"{{ ATTRIBUTES }}></i>
+	{% if TITLE %}<span{% if S_HIDDEN %} class="sr-only"{% endif %}>{{ lang(TITLE) }}</span>{% endif %}
+{% endspaceless %}
