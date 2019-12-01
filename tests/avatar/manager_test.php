@@ -35,7 +35,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->method('get')
 			->will($this->returnArgument(0));
 
-		$storage = $this->createMock('\phpbb\storage\storage');
+		$filesystem = new \phpbb\filesystem\filesystem();
 
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
@@ -44,6 +44,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			$filesystem,
 			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -82,8 +83,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		$files_factory = new \phpbb\files\factory($phpbb_container);
 
-		$php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
-
 		foreach ($this->avatar_drivers() as $driver)
 		{
 			if ($driver !== 'upload')
@@ -97,7 +96,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 				->setMethods(array('get_name'))
-				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $php_ini))
+				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache))
 				->getMock();
 			}
 			$cur_avatar->expects($this->any())

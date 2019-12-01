@@ -60,7 +60,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 		$setup_extensions = static::setup_extensions();
 
-		$finder = new \phpbb\finder($phpbb_root_path, null, $phpEx);
+		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
 		$finder->core_path('phpbb/db/migration/data/');
 		if (!empty($setup_extensions))
 		{

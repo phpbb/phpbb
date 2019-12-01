@@ -204,7 +204,6 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		'username_clean'	=> $username_clean,
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
 		'user_email'		=> strtolower($user_row['user_email']),
-		'user_email_hash'	=> phpbb_email_hash($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
 		'user_type'			=> $user_row['user_type'],
 	);
@@ -1455,12 +1454,7 @@ function user_unban($mode, $ban)
 */
 function user_ipwhois($ip)
 {
-	if (empty($ip))
-	{
-		return '';
-	}
-
-	if (!preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+	if (!filter_var($ip, FILTER_VALIDATE_IP))
 	{
 		return '';
 	}
@@ -1910,7 +1904,7 @@ function phpbb_validate_email($email, $config = null)
 	{
 		list(, $domain) = explode('@', $email);
 
-		if (phpbb_checkdnsrr($domain, 'A') === false && phpbb_checkdnsrr($domain, 'MX') === false)
+		if (checkdnsrr($domain, 'A') === false && checkdnsrr($domain, 'MX') === false)
 		{
 			return 'DOMAIN_NO_MX_RECORD';
 		}
@@ -1945,16 +1939,17 @@ function validate_user_email($email, $allowed_email = false)
 		return $validate_email;
 	}
 
-	if (($ban = $user->check_ban(false, false, $email, true)) !== false)
+	$ban = $user->check_ban(false, false, $email, true);
+	if (!empty($ban))
 	{
-		return ($ban === true) ? 'EMAIL_BANNED' : (!empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : $ban);
+		return !empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : 'EMAIL_BANNED';
 	}
 
 	if (!$config['allow_emailreuse'])
 	{
-		$sql = 'SELECT user_email_hash
+		$sql = 'SELECT user_email
 			FROM ' . USERS_TABLE . "
-			WHERE user_email_hash = " . $db->sql_escape(phpbb_email_hash($email));
+			WHERE user_email = '" . $db->sql_escape($email) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -2220,9 +2215,7 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $config, $phpbb_container;
-
-	$storage = $phpbb_container->get('storage.avatar');
+	global $phpbb_root_path, $config;
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
@@ -2239,15 +2232,10 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
 
-	try
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
-		$storage->delete($filename);
-
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
 		return true;
-	}
-	catch (\phpbb\storage\exception\exception $e)
-	{
-		// Fail is covered by return statement below
 	}
 
 	return false;
@@ -2568,9 +2556,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_correct_avatar($group_id, $old_entry)
 {
-	global $config, $db, $phpbb_container;
-
-	$storage = $phpbb_container->get('storage.avatar');
+	global $config, $db, $phpbb_root_path;
 
 	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
@@ -2578,18 +2564,13 @@ function group_correct_avatar($group_id, $old_entry)
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
 	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
 
-	try
+	$avatar_path = $phpbb_root_path . $config['avatar_path'];
+	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
 	{
-		$this->storage->rename($old_filename, $new_filename);
-
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
-	}
-	catch (\phpbb\storage\exception\exception $e)
-	{
-		// If rename fail, dont execute the query
 	}
 }
 

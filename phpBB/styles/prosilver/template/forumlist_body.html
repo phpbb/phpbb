@@ -48,21 +48,17 @@
 							<!-- EVENT forumlist_body_forum_image_after -->
 						<!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a>
-						<!-- IF forumrow.FORUM_DESC --><span class="forum-desc">{forumrow.FORUM_DESC}</span><!-- ENDIF -->
+						<!-- IF forumrow.FORUM_DESC --><br />{forumrow.FORUM_DESC}<!-- ENDIF -->
 						<!-- IF forumrow.MODERATORS -->
-							<span class="forum-mods"><strong>{forumrow.L_MODERATOR_STR}{L_COLON}</strong> {forumrow.MODERATORS}</span>
+							<br /><strong>{forumrow.L_MODERATOR_STR}{L_COLON}</strong> {forumrow.MODERATORS}
 						<!-- ENDIF -->
 						<!-- IF .forumrow.subforum and forumrow.S_LIST_SUBFORUMS -->
 							<!-- EVENT forumlist_body_subforums_before -->
-							<span class="forum-subs">
-								<strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
+							<br /><strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
-								<!-- EVENT forumlist_body_subforum_link_prepend -->
-								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">
-									<i class="icon <!-- IF forumrow.subforum.IS_LINK -->fa-external-link<!-- ELSE -->fa-file-o<!-- ENDIF --> fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md" aria-hidden="true"></i>{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
-								<!-- EVENT forumlist_body_subforum_link_append -->
+								<!-- EVENT forumlist_body_subforum_link_prepend --><a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">
+									<i class="icon <!-- IF forumrow.subforum.IS_LINK -->fa-external-link<!-- ELSE -->fa-file-o<!-- ENDIF --> fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md" aria-hidden="true"></i>{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF --><!-- EVENT forumlist_body_subforum_link_append -->
 							<!-- END subforum -->
-							</span>
 							<!-- EVENT forumlist_body_subforums_after -->
 						<!-- ENDIF -->
 
@@ -105,7 +101,7 @@
 										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{L_VIEW_LATEST_POST}</span>
 									</a>
 								<!-- ENDIF -->
-								<br />{forumrow.LAST_POST_TIME}
+								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>
 							<!-- ELSE -->
 							{% if forumrow.U_UNAPPROVED_TOPICS %}
 								{{ lang('TOPIC_UNAPPROVED_FORUM', forumrow.TOPICS) }}

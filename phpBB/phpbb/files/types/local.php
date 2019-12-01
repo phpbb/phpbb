@@ -24,8 +24,17 @@ class local extends base
 	/** @var factory Files factory */
 	protected $factory;
 
+	/** @var language */
+	protected $language;
+
+	/** @var IniGetWrapper */
+	protected $php_ini;
+
 	/** @var request_interface */
 	protected $request;
+
+	/** @var \phpbb\files\upload */
+	protected $upload;
 
 	/**
 	 * Construct a form upload type

@@ -86,7 +86,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
 		$this->assertCount(1, $crawler->filter('.ext_enabled'));
-		$this->assertCount(6, $crawler->filter('.ext_disabled'));
+		$this->assertCount(7, $crawler->filter('.ext_disabled'));
 
 		$this->assertContains('phpBB Foo Extension', $crawler->filter('.ext_enabled')->eq(0)->text());
 		$this->assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
@@ -165,9 +165,14 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
 		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('#main')->text());
 
-		// Correctly submit the enable form
+		// Correctly submit the enable form, default not enableable message
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor3%2Ffoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_NOT_ENABLEABLE', $crawler->filter('.errorbox')->text());
+
+		// Custom reason messages returned by not enableable extension
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor5%2Ffoo&sid=' . $this->sid);
+		$this->assertContains('Reason 1', $crawler->filter('.errorbox')->text());
+		$this->assertContains('Reason 2', $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_disable_pre()

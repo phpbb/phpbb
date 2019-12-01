@@ -79,14 +79,7 @@ class mysql_extractor extends base_extractor
 			throw new extractor_not_initialized_exception();
 		}
 
-		if ($this->db->get_sql_layer() === 'mysqli')
-		{
-			$this->write_data_mysqli($table_name);
-		}
-		else
-		{
-			$this->write_data_mysql($table_name);
-		}
+		$this->write_data_mysqli($table_name);
 	}
 
 	/**
@@ -170,101 +163,6 @@ class mysql_extractor extends base_extractor
 				}
 			}
 			mysqli_free_result($result);
-
-			// check to make sure we have nothing left to flush
-			if (!$first_set && $query)
-			{
-				$this->flush($query . ";\n\n");
-			}
-		}
-	}
-
-	/**
-	* Extracts data from database table (for MySQL driver)
-	*
-	* @param	string	$table_name	name of the database table
-	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
-	*/
-	protected function write_data_mysql($table_name)
-	{
-		if (!$this->is_initialized)
-		{
-			throw new extractor_not_initialized_exception();
-		}
-
-		$sql = "SELECT *
-			FROM $table_name";
-		$result = mysql_unbuffered_query($sql, $this->db->get_db_connect_id());
-
-		if ($result != false)
-		{
-			$fields_cnt = mysql_num_fields($result);
-
-			// Get field information
-			$field = array();
-			for ($i = 0; $i < $fields_cnt; $i++)
-			{
-				$field[] = mysql_fetch_field($result, $i);
-			}
-			$field_set = array();
-
-			for ($j = 0; $j < $fields_cnt; $j++)
-			{
-				$field_set[] = $field[$j]->name;
-			}
-
-			$search			= array("\\", "'", "\x00", "\x0a", "\x0d", "\x1a", '"');
-			$replace		= array("\\\\", "\\'", '\0', '\n', '\r', '\Z', '\\"');
-			$fields			= implode(', ', $field_set);
-			$sql_data		= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES ';
-			$first_set		= true;
-			$query_len		= 0;
-			$max_len		= get_usable_memory();
-
-			while ($row = mysql_fetch_row($result))
-			{
-				$values = array();
-				if ($first_set)
-				{
-					$query = $sql_data . '(';
-				}
-				else
-				{
-					$query  .= ',(';
-				}
-
-				for ($j = 0; $j < $fields_cnt; $j++)
-				{
-					if (!isset($row[$j]) || is_null($row[$j]))
-					{
-						$values[$j] = 'NULL';
-					}
-					else if ($field[$j]->numeric && ($field[$j]->type !== 'timestamp'))
-					{
-						$values[$j] = $row[$j];
-					}
-					else
-					{
-						$values[$j] = "'" . str_replace($search, $replace, $row[$j]) . "'";
-					}
-				}
-				$query .= implode(', ', $values) . ')';
-
-				$query_len += strlen($query);
-				if ($query_len > $max_len)
-				{
-					$this->flush($query . ";\n\n");
-					$query = '';
-					$query_len = 0;
-					$first_set = true;
-				}
-				else
-				{
-					$first_set = false;
-				}
-			}
-			mysql_free_result($result);
 
 			// check to make sure we have nothing left to flush
 			if (!$first_set && $query)

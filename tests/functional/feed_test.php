@@ -337,7 +337,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Feeds #news'], $post['topic_id'], 'Re: Feeds #news - Topic #2', 'This is a test post posted by the testing framework.');
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		self::assertContains('Re: Feeds #news - Topic #2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #news - Topic #2'] = (int) $post2['post_id'];
@@ -493,7 +493,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Feeds #1'], $post['topic_id'], 'Re: Feeds #1 - Topic #2', 'This is a test post posted by the testing framework.');
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		self::assertContains('Re: Feeds #1 - Topic #2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #1 - Topic #2'] = (int) $post2['post_id'];
@@ -1222,7 +1222,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		// Test creating a reply with 1 missing attachment
 		$post2 = $this->create_post($this->data['forums']['Feeds #1'], $this->data['topics']['Feeds #1 - Topic #3'], 'Re: Feeds #1 - Topic #3-1', 'This is a test post posted by the testing framework. [attachment=0]Attachment #0[/attachment]');
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
 		self::assertContains('Re: Feeds #1 - Topic #3-1', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #1 - Topic #3-1'] = (int) $post2['post_id'];

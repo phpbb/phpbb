@@ -129,14 +129,7 @@ class create_schema extends \phpbb\install\task_base
 
 		if ($dbms === 'mysql')
 		{
-			if (version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
-			{
-				$schema_name .= '_41';
-			}
-			else
-			{
-				$schema_name .= '_40';
-			}
+			$schema_name .= '_41';
 		}
 
 		$db_schema_path = $this->phpbb_root_path . 'install/schemas/' . $schema_name . '_schema.sql';
@@ -183,7 +176,7 @@ class create_schema extends \phpbb\install\task_base
 				include ($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 			}
 
-			$finder = new \phpbb\finder($this->phpbb_root_path, null, $this->php_ext);
+			$finder = new \phpbb\finder($this->filesystem, $this->phpbb_root_path, null, $this->php_ext);
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db, true);

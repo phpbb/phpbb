@@ -39,6 +39,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
+			$filesystem,
 			$request,
 			$phpbb_root_path,
 			$phpEx
@@ -72,7 +73,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			$phpbb_path_helper,
 			$cache_path,
 			null,
-			new \phpbb\template\twig\loader(''),
+			new \phpbb\template\twig\loader($filesystem, ''),
 			new \phpbb\event\dispatcher($phpbb_container),
 			array(
 				'cache'			=> false,

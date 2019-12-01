@@ -13,8 +13,6 @@
 
 namespace phpbb;
 
-use phpbb\filesystem\helper as filesystem_helper;
-
 /**
 * Session class
 */
@@ -40,7 +38,7 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request;
+		global $request, $symfony_request, $phpbb_filesystem;
 
 		$page_array = array();
 
@@ -87,7 +85,7 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
-		$symfony_request_path = filesystem_helper::clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
@@ -101,8 +99,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
@@ -252,8 +250,7 @@ class session
 			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
-				// check IPv4 first, the IPv6 is hopefully only going to be used very seldom
-				if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
+				if (!filter_var($ip, FILTER_VALIDATE_IP))
 				{
 					// contains invalid data, don't use the forwarded for header
 					$this->forwarded_for = '';
@@ -313,49 +310,17 @@ class session
 
 		foreach ($ips as $ip)
 		{
-			if (function_exists('phpbb_ip_normalise'))
+			// Normalise IP address
+			$ip = phpbb_ip_normalise($ip);
+
+			if ($ip === false)
 			{
-				// Normalise IP address
-				$ip = phpbb_ip_normalise($ip);
-
-				if (empty($ip))
-				{
-					// IP address is invalid.
-					break;
-				}
-
-				// IP address is valid.
-				$this->ip = $ip;
-
-				// Skip legacy code.
-				continue;
-			}
-
-			if (preg_match(get_preg_expression('ipv4'), $ip))
-			{
-				$this->ip = $ip;
-			}
-			else if (preg_match(get_preg_expression('ipv6'), $ip))
-			{
-				// Quick check for IPv4-mapped address in IPv6
-				if (stripos($ip, '::ffff:') === 0)
-				{
-					$ipv4 = substr($ip, 7);
-
-					if (preg_match(get_preg_expression('ipv4'), $ipv4))
-					{
-						$ip = $ipv4;
-					}
-				}
-
-				$this->ip = $ip;
-			}
-			else
-			{
-				// We want to use the last valid address in the chain
-				// Leave foreach loop when address is invalid
+				// IP address is invalid.
 				break;
 			}
+
+			// IP address is valid.
+			$this->ip = $ip;
 		}
 
 		$this->load = false;
@@ -1079,10 +1044,36 @@ class session
 	*/
 	function set_cookie($name, $cookiedata, $cookietime, $httponly = true)
 	{
-		global $config;
+		global $config, $phpbb_dispatcher;
 
 		// If headers are already set, we just return
 		if (headers_sent())
+		{
+			return;
+		}
+
+		$disable_cookie = false;
+		/**
+		* Event to modify or disable setting cookies
+		*
+		* @event core.set_cookie
+		* @var	bool		disable_cookie	Set to true to disable setting this cookie
+		* @var	string		name			Name of the cookie
+		* @var	string		cookiedata		The data to hold within the cookie
+		* @var	int			cookietime		The expiration time as UNIX timestamp
+		* @var	bool		httponly		Use HttpOnly?
+		* @since 3.2.9-RC1
+		*/
+		$vars = array(
+			'disable_cookie',
+			'name',
+			'cookiedata',
+			'cookietime',
+			'httponly',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.set_cookie', compact($vars)));
+
+		if ($disable_cookie)
 		{
 			return;
 		}
@@ -1376,7 +1367,7 @@ class session
 
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
-				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
 				{
 					$info = array($dnsbl, $lookup . $ip);
 				}
@@ -1420,7 +1411,7 @@ class session
 		{
 			// One problem here... the return parameter for the "windows" method is different from what
 			// we expect... this may render this check useless...
-			if (phpbb_checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
+			if (checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
 			{
 				return true;
 			}

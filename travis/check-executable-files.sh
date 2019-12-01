@@ -48,13 +48,13 @@ then
 						'('							\
 							${executable_files}		\
 						')' -a						\
-						-not -perm +100				\
+						-not -perm /100				\
 					')' -o							\
 					'('								\
 						-not '('					\
 							${executable_files}		\
 						')' -a						\
-						-perm +111					\
+						-perm /111					\
 					')'								\
 				')'									\
 			')'										\

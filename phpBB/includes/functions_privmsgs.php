@@ -1614,8 +1614,6 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 {
 	global $db, $auth, $config, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
 
-	$attachment_storage = $phpbb_container->get('storage.attachment');
-
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
 	{
@@ -1883,7 +1881,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			else
 			{
 				// insert attachment into db
-				if (!$attachment_storage->exists(utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}

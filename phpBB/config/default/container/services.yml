@@ -8,7 +8,6 @@ imports:
     - { resource: services_cron.yml }
     - { resource: services_db.yml }
     - { resource: services_event.yml }
-    - { resource: services_extensions.yml }
     - { resource: services_feed.yml }
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
@@ -25,10 +24,10 @@ imports:
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
-    - { resource: services_storage.yml }
     - { resource: services_text_formatter.yml }
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
+    - { resource: services_ucp.yml }
     - { resource: services_user.yml }
 
     - { resource: tables.yml }
@@ -100,12 +99,25 @@ services:
             - '%core.root_path%'
             - '@template'
 
+    ext.manager:
+        class: phpbb\extension\manager
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@config'
+            - '@filesystem'
+            - '%tables.ext%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@cache'
+
     file_downloader:
         class: phpbb\file_downloader
 
     file_locator:
         class: phpbb\routing\file_locator
         arguments:
+            - '@filesystem'
             - '%core.root_path%'
 
     group_helper:
@@ -135,6 +147,7 @@ services:
         class: phpbb\path_helper
         arguments:
             - '@symfony_request'
+            - '@filesystem'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'

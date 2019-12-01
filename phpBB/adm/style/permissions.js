@@ -279,6 +279,10 @@ function reset_role(id) {
 	}
 
 	t.options[0].selected = true;
+
+	var parent = t.parentNode;
+	parent.querySelector('span.dropdown-trigger').innerText = no_role_assigned;
+	parent.querySelector('input[data-name^=role]').value = '0';
 }
 
 /**

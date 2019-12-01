@@ -172,6 +172,18 @@ acp_group_options_before
 * Since: 3.1.0-b4
 * Purpose: Add additional options to group settings (before GROUP_FOUNDER_MANAGE)
 
+acp_group_types_append
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.2.9-RC1
+* Purpose: Add additional group type options to group settings (append the list)
+
+acp_group_types_prepend
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.2.9-RC1
+* Purpose: Add additional group type options to group settings (prepend the list)
+
 acp_groups_find_username_append
 ===
 * Location: adm/style/acp_groups.html
@@ -2633,6 +2645,13 @@ ucp_profile_profile_info_before
     + styles/prosilver/template/ucp_profile_profile_info.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before jabber field.
+
+ucp_profile_profile_info_birthday_label_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_profile_info.html
+* Since: 3.2.9-RC1
+* Purpose: Add more text to birthday label, such as required asterisk
 
 ucp_profile_register_details_after
 ===

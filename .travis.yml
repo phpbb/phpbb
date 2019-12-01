@@ -1,5 +1,5 @@
 language: php
-dist: trusty
+dist: xenial
 
 matrix:
   include:
@@ -27,19 +27,18 @@ matrix:
     - php: nightly
   fast_finish: true
 
-addons:
-  apt:
-    sources:
-      - node
-
 services:
   - redis-server
+  - postgresql
+  - mysql
+  - memcached
 
 install:
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
 
 before_script:
   - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/setup-ldap.sh $SLOWTESTS
   - phantomjs --webdriver=8910 > /dev/null &
 
 script:
@@ -47,7 +46,6 @@ script:
   - travis/check-sami-parse-errors.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION $NOTESTS ./
-  - travis/check-stylesheet.sh $NOTESTS
   - sh -c "if [ '$SLOWTESTS' != '1' -a '$DB' = 'mysqli' ]; then phpBB/vendor/bin/phpunit tests/lint_test.php; fi"
   - sh -c "if [ '$NOTESTS' != '1' -a '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --verbose --stop-on-error; fi"
   - sh -c "if [ '$SLOWTESTS' = '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow; fi"

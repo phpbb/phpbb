@@ -23,6 +23,7 @@ services:
             - '@router'
             - '@symfony_request'
             - '@request'
+            - '@filesystem'
             - '%core.root_path%'
             - '%core.php_ext%'
 

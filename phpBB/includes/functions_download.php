@@ -25,27 +25,30 @@ if (!defined('IN_PHPBB'))
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config, $phpbb_container;
-
-	$storage = $phpbb_container->get('storage.avatar');
+	global $config, $phpbb_root_path;
 
 	$prefix = $config['avatar_salt'] . '_';
-	$file_path = $prefix . $file;
+	$image_dir = $config['avatar_path'];
 
-	if ($storage->exists($file_path) && !headers_sent())
+	// Adjust image_dir path (no trailing slash)
+	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
 	{
-		$file_info = $storage->file_info($file_path);
+		$image_dir = substr($image_dir, 0, -1) . '/';
+	}
+	$image_dir = str_replace(array('../', '..\\', './', '.\\'), '', $image_dir);
 
+	if ($image_dir && ($image_dir[0] == '/' || $image_dir[0] == '\\'))
+	{
+		$image_dir = '';
+	}
+	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
+
+	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
+	{
 		header('Cache-Control: public');
 
-		try
-		{
-			header('Content-Type: ' . $file_info->mimetype);
-		}
-		catch (\phpbb\storage\exception\exception $e)
-		{
-			// Just don't send this header
-		}
+		$image_data = @getimagesize($file_path);
+		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
@@ -66,26 +69,24 @@ function send_avatar_to_browser($file, $browser)
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
-		try
+		$size = @filesize($file_path);
+		if ($size)
 		{
-			header('Content-Length: ' . $file_info->size);
-		}
-		catch (\phpbb\storage\exception\exception $e)
-		{
-			// Just don't send this header
+			header("Content-Length: $size");
 		}
 
-		try
+		if (@readfile($file_path) == false)
 		{
-			$fp = $storage->read_stream($file_path);
-			$output = fopen('php://output', 'w+b');
-			stream_copy_to_stream($fp, $output);
-			fclose($fp);
-			fclose($output);
-		}
-		catch (\Exception $e)
-		{
-			// Send nothing
+			$fp = @fopen($file_path, 'rb');
+
+			if ($fp !== false)
+			{
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
+				fclose($fp);
+			}
 		}
 
 		flush();
@@ -121,15 +122,13 @@ function wrap_img_in_html($src, $title)
 /**
 * Send file to browser
 */
-function send_file_to_browser($attachment, $category)
+function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $phpbb_dispatcher, $request, $phpbb_container;
+	global $user, $db, $phpbb_dispatcher, $phpbb_root_path, $request;
 
-	$storage = $phpbb_container->get('storage.attachment');
+	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
-	$filename = $attachment['physical_filename'];
-
-	if (!$storage->exists($filename))
+	if (!@file_exists($filename))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');
@@ -148,21 +147,14 @@ function send_file_to_browser($attachment, $category)
 	}
 
 	// Now send the File Contents to the Browser
-	try
-	{
-		$file_info = $storage->file_info($filename);
-		$size = $file_info->size;
-	}
-	catch (\Exception $e)
-	{
-		$size = 0;
-	}
+	$size = @filesize($filename);
 
 	/**
 	* Event to alter attachment before it is sent to browser.
 	*
 	* @event core.send_file_to_browser_before
 	* @var	array	attachment	Attachment data
+	* @var	string	upload_dir	Relative path of upload directory
 	* @var	int		category	Attachment category
 	* @var	string	filename	Path to file, including filename
 	* @var	int		size		File size
@@ -170,6 +162,7 @@ function send_file_to_browser($attachment, $category)
 	*/
 	$vars = array(
 		'attachment',
+		'upload_dir',
 		'category',
 		'filename',
 		'size',
@@ -179,8 +172,15 @@ function send_file_to_browser($attachment, $category)
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 
 	// Check if headers already sent or not able to get the file contents.
-	if (headers_sent())
+	if (headers_sent() || !@file_exists($filename) || !@is_readable($filename))
 	{
+		// PHP track_errors setting On?
+		if (!empty($php_errormsg))
+		{
+			send_status_line(500, 'Internal Server Error');
+			trigger_error($user->lang['UNABLE_TO_DELIVER_FILE'] . '<br />' . sprintf($user->lang['TRACKED_PHP_ERROR'], $php_errormsg));
+		}
+
 		send_status_line(500, 'Internal Server Error');
 		trigger_error('UNABLE_TO_DELIVER_FILE');
 	}
@@ -223,8 +223,29 @@ function send_file_to_browser($attachment, $category)
 		}
 	}
 
+	// Close the db connection before sending the file etc.
+	file_gc(false);
+
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
+		// We make sure those have to be enabled manually by defining a constant
+		// because of the potential disclosure of full attachment path
+		// in case support for features is absent in the webserver software.
+		if (defined('PHPBB_ENABLE_X_ACCEL_REDIRECT') && PHPBB_ENABLE_X_ACCEL_REDIRECT)
+		{
+			// X-Accel-Redirect - http://wiki.nginx.org/XSendfile
+			header('X-Accel-Redirect: ' . $user->page['root_script_path'] . $upload_dir . '/' . $attachment['physical_filename']);
+			exit;
+		}
+		else if (defined('PHPBB_ENABLE_X_SENDFILE') && PHPBB_ENABLE_X_SENDFILE && !phpbb_http_byte_range($size))
+		{
+			// X-Sendfile - http://blog.lighttpd.net/articles/2006/07/02/x-sendfile
+			// Lighttpd's X-Sendfile does not support range requests as of 1.4.26
+			// and always requires an absolute path.
+			header('X-Sendfile: ' . dirname(__FILE__) . "/../$upload_dir/{$attachment['physical_filename']}");
+			exit;
+		}
+
 		if ($size)
 		{
 			header("Content-Length: $size");
@@ -233,16 +254,39 @@ function send_file_to_browser($attachment, $category)
 		// Try to deliver in chunks
 		@set_time_limit(0);
 
-		$fp = $storage->read_stream($filename);
-
-		// Close the db connection before sending the file etc.
-		file_gc(false);
+		$fp = @fopen($filename, 'rb');
 
 		if ($fp !== false)
 		{
-			$output = fopen('php://output', 'w+b');
-			stream_copy_to_stream($fp, $output);
+			// Deliver file partially if requested
+			if ($range = phpbb_http_byte_range($size))
+			{
+				fseek($fp, $range['byte_pos_start']);
+
+				send_status_line(206, 'Partial Content');
+				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
+				header('Content-Length: ' . $range['bytes_requested']);
+
+				// First read chunks
+				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				{
+					echo fread($fp, 8192);
+				}
+				// Then, read the remainder
+				echo fread($fp, $range['bytes_requested'] % 8192);
+			}
+			else
+			{
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
+			}
 			fclose($fp);
+		}
+		else
+		{
+			@readfile($filename);
 		}
 
 		flush();

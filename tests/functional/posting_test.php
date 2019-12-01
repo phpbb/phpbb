@@ -29,7 +29,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		// Test creating a reply with bbcode
 		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test [b]post[/b] posted by the testing framework.');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test quoting a message
@@ -41,15 +41,10 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	{
 		$this->login();
 
-		$this->add_lang('posting');
-
-		self::create_post(2,
-			1,
-			"Unsupported: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
-			'This is a test with emoji characters in the topic title.',
-			array(),
-			'Your subject contains the following unsupported characters'
-		);
+		$post = $this->create_topic(2, "Test Topic \xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", 'This is a test with emoji character in the topic title.');
+		$this->create_post(2, $post['topic_id'], "Re: Test Topic 1 \xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", 'This is a test with emoji characters in the topic title.');
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertContains("\xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", $crawler->text());
 	}
 
 	public function test_supported_unicode_characters()
@@ -161,7 +156,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		{
 			$this->set_quote_depth($quote_depth);
 
-			$post = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
+			$post = $this->create_post(2, $topic['topic_id'], "Re: Test Topic 1#$quote_depth", $text);
 			$url  = "viewtopic.php?p={$post['post_id']}&sid={$this->sid}";
 
 			$crawler = self::request('GET', $url);

@@ -28,41 +28,14 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$this->request = $this->createMock('\phpbb\request\request');
-		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
-		$driver_helper = new \phpbb\passwords\driver\helper($config);
-		$passwords_drivers = array(
-			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
-			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
-			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
-			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
-		);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
 
-		$passwords_helper = new \phpbb\passwords\helper;
-		// Set up passwords manager
-		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
-
-		if (version_compare(PHP_VERSION, '5.3.7', '<'))
-		{
-			$this->password_hash = '$2a$10$e01Syh9PbJjUkio66eFuUu4FhCE2nRgG7QPc1JACalsPXcIuG2bbi';
-		}
-		else
-		{
-			$this->password_hash = '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i';
-		}
-
-		$this->provider = new \phpbb\auth\provider\apache($db, $config, $passwords_manager, $this->request, $this->user, $phpbb_root_path, $phpEx);
+		$this->provider = new \phpbb\auth\provider\apache($config, $db, $lang, $this->request, $this->user, $phpbb_root_path, $phpEx);
 	}
 
 	public function getDataSet()
 	{
-		if ((version_compare(PHP_VERSION, '5.3.7', '<')))
-		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user_533.xml');
-		}
-		else
-		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
-		}
+		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
 	}
 
 	/**
@@ -109,7 +82,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_row'		=> array(
 				'user_id' 				=> '1',
 				'username' 				=> 'foobar',
-				'user_password'			=> $this->password_hash,
+				'user_password'			=> '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
 				'user_passchg' 			=> '0',
 				'user_email' 			=> 'example@example.com',
 				'user_type' 			=> '0',
@@ -145,10 +118,9 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_regdate' => '0',
 			'username' => 'foobar',
 			'username_clean' => 'foobar',
-			'user_password' => $this->password_hash,
+			'user_password' => '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
 			'user_passchg' => '0',
 			'user_email' => 'example@example.com',
-			'user_email_hash' => '0',
 			'user_birthday' => '',
 			'user_lastvisit' => '0',
 			'user_lastmark' => '0',
@@ -202,6 +174,8 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_new' => '1',
 			'user_reminded' => '0',
 			'user_reminded_time' => '0',
+			'reset_token' => '',
+			'reset_token_expiration' => '0',
 		);
 
 		$this->assertEquals($expected, $this->provider->autologin());

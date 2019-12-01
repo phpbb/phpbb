@@ -41,7 +41,7 @@ $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || $save |
 $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
-// There are bad people out there, so we need to choose which of the url parameters we trust and ignore the others
+// We need to choose which of the url parameters we must trust and ignore the others
 	$forum_id = 0;
 	$topic_id = 0;
 	$post_id = 0;
@@ -285,11 +285,6 @@ if ($mode == 'popup')
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
-{
-	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
-}
 
 // Need to login to passworded forum first?
 if ($post_data['forum_password'])
@@ -449,6 +444,12 @@ if (!$is_authed || !empty($error))
 	}
 
 	login_box('', $message);
+}
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
 }
 
 // Is the user able to post within this forum?
@@ -998,7 +999,10 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse Attachments - before checksum is calculated
-	$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
+	if ($message_parser->check_attachment_form_token($language, $request, 'posting'))
+	{
+		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
+	}
 
 	/**
 	* This event allows you to modify message text before parsing
@@ -1202,11 +1206,23 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
 
-	// Check for out-of-bounds characters that are currently
-	// not supported by utf8_bin in MySQL
+	/**
+	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 */
+	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
+
+	/**
+	 * This should never happen again.
+	 * Leaving the fallback here just in case there will be the need of it.
+	 *
+	 * Check for out-of-bounds characters that are currently
+	 * not supported by utf8_bin in MySQL
+	 */
 	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
 	{
-		$character_list = implode('<br />', $matches[0]);
+		$character_list = implode('<br>', $matches[0]);
+
 		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
 	}
 

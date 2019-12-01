@@ -22,7 +22,8 @@ interface extension_interface
 	/**
 	* Indicate whether or not the extension can be enabled.
 	*
-	* @return bool
+	* @return bool|array	True if extension is enableable, array of reasons
+	*						if not, false for generic reason.
 	*/
 	public function is_enableable();
 

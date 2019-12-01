@@ -46,9 +46,11 @@ class enable extends command
 
 		$extension = $this->manager->get_extension($name);
 
-		if (!$extension->is_enableable())
+		if (($enableable = $extension->is_enableable()) !== true)
 		{
-			$io->error($this->user->lang('CLI_EXTENSION_NOT_ENABLEABLE', $name));
+			$message = !empty($enableable) ? $enableable : $this->user->lang('CLI_EXTENSION_NOT_ENABLEABLE', $name);
+			$message = is_array($message) ? implode(PHP_EOL, $message) : $message;
+			$io->error($message);
 			return 1;
 		}
 

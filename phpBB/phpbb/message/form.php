@@ -136,7 +136,7 @@ abstract class form
 	{
 		if (!check_form_key('memberlist_email'))
 		{
-			$this->errors[] = 'FORM_INVALID';
+			$this->errors[] = $this->user->lang('FORM_INVALID');
 		}
 
 		if (!count($this->errors))

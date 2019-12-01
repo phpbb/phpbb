@@ -97,6 +97,7 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
+			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);

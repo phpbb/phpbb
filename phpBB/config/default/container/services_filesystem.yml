@@ -1,12 +1,3 @@
-parameters:
-    core.filesystem.cache_temp_dir: '%core.cache_dir%tmp/'
-
 services:
     filesystem:
         class: phpbb\filesystem\filesystem
-
-    filesystem.temp:
-        class: phpbb\filesystem\temp
-        arguments:
-            - '@filesystem'
-            - '%core.filesystem.cache_temp_dir%'

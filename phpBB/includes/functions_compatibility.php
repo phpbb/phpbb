@@ -87,7 +87,7 @@ function phpbb_check_hash($password, $hash)
 /**
 * Eliminates useless . and .. components from specified path.
 *
-* Deprecated, use storage helper class instead
+* Deprecated, use filesystem class instead
 *
 * @param string $path Path to clean
 * @return string Cleaned path
@@ -96,7 +96,36 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	return \phpbb\filesystem\helper::clean_path($path);
+	global $phpbb_path_helper, $phpbb_container;
+
+	if (!$phpbb_path_helper && $phpbb_container)
+	{
+		/* @var $phpbb_path_helper \phpbb\path_helper */
+		$phpbb_path_helper = $phpbb_container->get('path_helper');
+	}
+	else if (!$phpbb_path_helper)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('\phpbb\path_helper'))
+		{
+			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
+		}
+
+		$request = new phpbb\request\request();
+		$phpbb_path_helper = new phpbb\path_helper(
+			new phpbb\symfony_request(
+				$request
+			),
+			new phpbb\filesystem\filesystem(),
+			$request,
+			$phpbb_root_path,
+			$phpEx
+		);
+	}
+
+	return $phpbb_path_helper->clean_path($path);
 }
 
 /**
@@ -434,21 +463,25 @@ function phpbb_is_writable($file)
  * @param string $path Path to check absoluteness of
  * @return boolean
  *
- * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::is_absolute_path() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::is_absolute_path() instead
  */
 function phpbb_is_absolute($path)
 {
-	return \phpbb\filesystem\helper::is_absolute_path($path);
+	global $phpbb_filesystem;
+
+	return $phpbb_filesystem->is_absolute_path($path);
 }
 
 /**
  * A wrapper for realpath
  *
- * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::realpath() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::realpath() instead
  */
 function phpbb_realpath($path)
 {
-	return \phpbb\filesystem\helper::realpath($path);
+	global $phpbb_filesystem;
+
+	return $phpbb_filesystem->realpath($path);
 }
 
 /**
@@ -567,4 +600,76 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	unset($attachment_manager);
 
 	return $file;
+}
+
+/**
+* Wrapper for php's checkdnsrr function.
+*
+* @param string $host	Fully-Qualified Domain Name
+* @param string $type	Resource record type to lookup
+*						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
+*						Other types may work or may not work
+*
+* @return mixed		true if entry found,
+*					false if entry not found,
+*					null if this function is not supported by this environment
+*
+* Since null can also be returned, you probably want to compare the result
+* with === true or === false,
+*
+* @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+*/
+function phpbb_checkdnsrr($host, $type = 'MX')
+{
+	return checkdnsrr($host, $type);
+}
+
+/*
+ * Wrapper for inet_ntop()
+ *
+ * Converts a packed internet address to a human readable representation
+ * inet_ntop() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $in_addr	A 32bit IPv4, or 128bit IPv6 address.
+ *
+ * @return mixed		false on failure,
+ *					string otherwise
+  *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_inet_ntop($in_addr)
+{
+	return inet_ntop($in_addr);
+}
+
+/**
+ * Wrapper for inet_pton()
+ *
+ * Converts a human readable IP address to its packed in_addr representation
+ * inet_pton() is supported by PHP since 5.1.0, since 5.3.0 also on Windows.
+ *
+ * @param string $address	A human readable IPv4 or IPv6 address.
+ *
+ * @return mixed		false if address is invalid,
+ *					in_addr representation of the given address otherwise (string)
+ *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_inet_pton($address)
+{
+	return inet_pton($address);
+}
+
+/**
+ * Hashes an email address to a big integer
+ *
+ * @param string $email		Email address
+ *
+ * @return string			Unsigned Big Integer
+ *
+ * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
+ */
+function phpbb_email_hash($email)
+{
+	return sprintf('%u', crc32(strtolower($email))) . strlen($email);
 }

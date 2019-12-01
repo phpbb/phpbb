@@ -1,0 +1,17 @@
+services:
+    phpbb.ucp.controller.reset_password:
+        class: phpbb\ucp\controller\reset_password
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@passwords.manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.users%'
+            - '%core.root_path%'
+            - '%core.php_ext%'

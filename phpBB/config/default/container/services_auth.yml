@@ -15,12 +15,12 @@ services:
     auth.provider.db:
         class: phpbb\auth\provider\db
         arguments:
-            - '@dbal.conn'
+            - '@captcha.factory'
             - '@config'
+            - '@dbal.conn'
             - '@passwords.manager'
             - '@request'
             - '@user'
-            - '@service_container'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
@@ -29,9 +29,9 @@ services:
     auth.provider.apache:
         class: phpbb\auth\provider\apache
         arguments:
-            - '@dbal.conn'
             - '@config'
-            - '@passwords.manager'
+            - '@dbal.conn'
+            - '@language'
             - '@request'
             - '@user'
             - '%core.root_path%'
@@ -42,9 +42,9 @@ services:
     auth.provider.ldap:
         class: phpbb\auth\provider\ldap
         arguments:
-            - '@dbal.conn'
             - '@config'
-            - '@passwords.manager'
+            - '@dbal.conn'
+            - '@language'
             - '@user'
         tags:
             - { name: auth.provider }
@@ -52,18 +52,18 @@ services:
     auth.provider.oauth:
         class: phpbb\auth\provider\oauth\oauth
         arguments:
-            - '@dbal.conn'
             - '@config'
-            - '@passwords.manager'
+            - '@dbal.conn'
+            - '@auth.provider.db'
+            - '@dispatcher'
+            - '@language'
             - '@request'
+            - '@auth.provider.oauth.service_collection'
             - '@user'
             - '%tables.auth_provider_oauth_token_storage%'
             - '%tables.auth_provider_oauth_states%'
             - '%tables.auth_provider_oauth_account_assoc%'
-            - '@auth.provider.oauth.service_collection'
             - '%tables.users%'
-            - '@service_container'
-            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:

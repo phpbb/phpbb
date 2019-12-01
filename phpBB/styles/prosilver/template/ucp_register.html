@@ -12,16 +12,16 @@
 	}
 </script>
 
-<div class="panel">
-	<div class="inner">
+{% if PROVIDER_TEMPLATE_FILE %}
+	<div class="panel">
+		<div class="inner">
 
-		<h2>{{ SITENAME }} - {{ lang('OAUTH_REGISTRATION') }}</h2>
+			<h2>{{ SITENAME }} - {{ lang('OAUTH_REGISTRATION') }}</h2>
 
-		{% if PROVIDER_TEMPLATE_FILE %}
 			{% include PROVIDER_TEMPLATE_FILE %}
-		{% endif %}
+		</div>
 	</div>
-</div>
+{% endif %}
 
 <form id="register" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
@@ -105,8 +105,8 @@
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
-		<input type="reset" value="{L_RESET}" name="reset" class="button1 button button-form-bold" />&nbsp;
-		<input type="submit" tabindex="9" name="submit" id="submit" value="{L_SUBMIT}" class="button1 button button-form default-submit-action" />
+		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+		<input type="submit" tabindex="9" name="submit" id="submit" value="{L_SUBMIT}" class="button1 default-submit-action" />
 		{S_FORM_TOKEN}
 	</fieldset>
 

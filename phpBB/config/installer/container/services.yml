@@ -31,6 +31,7 @@ services:
     file_locator:
         class: phpbb\routing\file_locator
         arguments:
+            - '@filesystem'
             - '%core.root_path%'
 
     kernel_exception_subscriber:
@@ -49,6 +50,7 @@ services:
         class: phpbb\path_helper
         arguments:
             - '@symfony_request'
+            - '@filesystem'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'

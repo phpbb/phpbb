@@ -21,17 +21,19 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\filesystem\filesystem */
+	protected $filesystem;
+
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
 
 	/** @var \phpbb\attachment\resync */
 	protected $resync;
 
-	/** @var \phpbb\storage\storage */
-	protected $storage;
-
 	/** @var \phpbb\attachment\delete */
 	protected $attachment_delete;
+
+	protected $phpbb_root_path;
 
 	public function getDataSet()
 	{
@@ -40,17 +42,24 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 
 	public function setUp(): void
 	{
+		global $phpbb_root_path;
+
 		parent::setUp();
 
 		$this->config = new \phpbb\config\config(array());
 		$this->db = $this->new_dbal();
+		$db = $this->db;
 		$this->resync = new \phpbb\attachment\resync($this->db);
-		$this->storage = $this->createMock('\phpbb\storage\storage');
-		$this->storage->expects($this->any())
+		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
+		$this->filesystem->expects($this->any())
+			->method('remove')
+			->willReturn(false);
+		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn(true);
+		$this->phpbb_root_path = $phpbb_root_path;
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $phpbb_root_path);
 	}
 
 	public function data_attachment_delete()
@@ -97,24 +106,25 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
 	{
-		$this->storage = $this->createMock('\phpbb\storage\storage', array('delete', 'exists'));
+		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
 		if ($throw_exception)
 		{
-			$this->storage->expects($this->any())
-				->method('delete')
-				->willThrowException(new \phpbb\storage\exception\exception);
+			$this->filesystem->expects($this->any())
+				->method('remove')
+				->willThrowException(new \phpbb\filesystem\exception\filesystem_exception);;
 		}
 		else
 		{
-			$this->storage->expects($this->any())
-				->method('delete')
+			$this->filesystem->expects($this->any())
+				->method('remove')
 				->willReturn($remove_success);
 		}
-		$this->storage->expects($this->any())
+
+		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn($exists_success);
 
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $this->phpbb_root_path);
 		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}
 }

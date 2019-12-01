@@ -148,16 +148,6 @@ class convertor
 				$convert->src_truncate_statement = 'DELETE FROM ';
 				break;
 
-			// Thanks MySQL, for silently converting...
-			case 'mysql':
-			case 'mysql4':
-				if (version_compare($src_db->sql_server_info(true, false), '4.1.3', '>='))
-				{
-					$convert->mysql_convert = true;
-				}
-				$convert->src_truncate_statement = 'TRUNCATE TABLE ';
-				break;
-
 			case 'mysqli':
 				$convert->mysql_convert = true;
 				$convert->src_truncate_statement = 'TRUNCATE TABLE ';
@@ -281,7 +271,7 @@ class convertor
 				$bad_folders = array();
 
 				$local_paths = array(
-					'avatar_path'			=> path($config['storage\\avatar\\config\\path']),
+					'avatar_path'			=> path($config['avatar_path']),
 					'avatar_gallery_path'	=> path($config['avatar_gallery_path']),
 					'icons_path'			=> path($config['icons_path']),
 					'ranks_path'			=> path($config['ranks_path']),
@@ -748,8 +738,6 @@ class convertor
 						switch ($db->get_sql_layer())
 						{
 							// If MySQL, we'll wait to have num_wait_rows rows to submit at once
-							case 'mysql':
-							case 'mysql4':
 							case 'mysqli':
 								$waiting_rows[] = '(' . implode(', ', $insert_values) . ')';
 
@@ -1258,9 +1246,7 @@ class convertor
 		global $db, $user;
 		global $convert;
 
-		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->get_sql_layer(), 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
-		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
+		$insert_query = 'INSERT INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();
 

@@ -99,11 +99,6 @@ if (isset($_GET['avatar']))
 	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
-	if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
-	{
-		require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
-	}
-
 	$filename = $request->variable('avatar', '');
 	$avatar_group = false;
 	$exit = false;
@@ -254,12 +249,38 @@ else
 		}
 	}
 
+	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 	$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 	if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
 	{
 		$display_cat = ATTACHMENT_CATEGORY_NONE;
 	}
+
+	/**
+	* Event to modify data before sending file to browser
+	*
+	* @event core.download_file_send_to_browser_before
+	* @var	int		attach_id			The attachment ID
+	* @var	array	attachment			Array with attachment data
+	* @var	int		display_cat			Attachment category
+	* @var	int		download_mode		File extension specific download mode
+	* @var	array	extensions			Array with file extensions data
+	* @var	string	mode				Download mode
+	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
+	* @since 3.1.6-RC1
+	* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
+	*/
+	$vars = array(
+		'attach_id',
+		'attachment',
+		'display_cat',
+		'download_mode',
+		'extensions',
+		'mode',
+		'thumbnail',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
 	if ($thumbnail)
 	{
@@ -271,34 +292,6 @@ else
 		phpbb_increment_downloads($db, $attachment['attach_id']);
 	}
 
-	$redirect = '';
-
-	/**
-	* Event to modify data before sending file to browser
-	*
-	* @event core.download_file_send_to_browser_before
-	* @var	int		attach_id			The attachment ID
-	* @var	array	attachment			Array with attachment data
-	* @var	int		display_cat			Attachment category
-	* @var	array	extensions			Array with file extensions data
-	* @var	string	mode				Download mode
-	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
-	* @var	string	redirect			Do a redirection instead of reading the file
-	* @since 3.1.6-RC1
-	* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
-	* @changed 3.3.0-a1		Add redirect variable
-	*/
-	$vars = array(
-		'attach_id',
-		'attachment',
-		'display_cat',
-		'extensions',
-		'mode',
-		'thumbnail',
-		'redirect',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
-
 	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
 	{
 		wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
@@ -306,15 +299,23 @@ else
 	}
 	else
 	{
-		if (!empty($redirect))
+		// Determine the 'presenting'-method
+		if ($download_mode == PHYSICAL_LINK)
 		{
-			redirect($redirect, false, true);
+			// This presenting method should no longer be used
+			if (!@is_dir($phpbb_root_path . $config['upload_path']))
+			{
+				send_status_line(500, 'Internal Server Error');
+				trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
+			}
+
+			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+			file_gc();
 		}
 		else
 		{
-			send_file_to_browser($attachment, $display_cat);
+			send_file_to_browser($attachment, $config['upload_path'], $display_cat);
+			file_gc();
 		}
-
-		file_gc();
 	}
 }

@@ -13,6 +13,7 @@
 
 namespace phpbb\di;
 
+use phpbb\filesystem\filesystem;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -24,7 +25,6 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
-use phpbb\filesystem\helper as filesystem_helper;
 
 class container_builder
 {
@@ -192,7 +192,8 @@ class container_builder
 					$this->register_ext_compiler_pass();
 				}
 
-				$loader     = new YamlFileLoader($this->container, new FileLocator(filesystem_helper::realpath($this->get_config_path())));
+				$filesystem = new filesystem();
+				$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
 				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 				$this->inject_custom_parameters();
@@ -425,12 +426,6 @@ class container_builder
 
 			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
-
-			$config = $ext_container->get('config');
-			if (@is_file($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
-			{
-				require_once($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
-			}
 
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
 

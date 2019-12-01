@@ -342,7 +342,7 @@ class parser implements \phpbb\textformatter\parser_interface
 			return false;
 		}
 
-		if ($size < 1)
+		if ($size < 1 || !is_numeric($size))
 		{
 			return false;
 		}

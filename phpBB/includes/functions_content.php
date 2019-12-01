@@ -1086,9 +1086,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 	global $template, $cache, $user, $phpbb_dispatcher;
 	global $extensions, $config, $phpbb_root_path, $phpEx;
-	global $phpbb_container;
-
-	$storage_attachment = $phpbb_container->get('storage.attachment');
 
 	//
 	$compiled_attachments = array();
@@ -1166,7 +1163,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = utf8_basename($attachment['physical_filename']);
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -1222,15 +1219,16 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							try
-							{
-								$file_info = $storage_attachment->file_info($filename);
+							$dimension = @getimagesize($filename);
 
-								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
-							}
-							catch (\Exception $e)
+							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
+							if ($dimension === false || empty($dimension[0]) || empty($dimension[1]))
 							{
 								$display_cat = ATTACHMENT_CATEGORY_NONE;
+							}
+							else
+							{
+								$display_cat = ($dimension[0] <= $config['img_link_width'] && $dimension[1] <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
 							}
 						}
 					}

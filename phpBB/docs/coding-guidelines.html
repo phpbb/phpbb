@@ -234,9 +234,9 @@ PHPBB_USE_BOARD_URL_PATH   (use generate_board_url() for image paths instead of 
 PHPBB_DISABLE_ACP_EDITOR   (disable ACP style editor for templates)
 PHPBB_DISABLE_CONFIG_CHECK (disable ACP config.php writeable check)
 
-PHPBB_ACM_MEMCACHE_PORT     (overwrite memcached port, default is 11211)
-PHPBB_ACM_MEMCACHE_COMPRESS (overwrite memcached compress setting, default is disabled)
-PHPBB_ACM_MEMCACHE_HOST     (overwrite memcached host name, default is localhost)
+PHPBB_ACM_MEMCACHED_PORT     (overwrite memcached port, default is 11211)
+PHPBB_ACM_MEMCACHED_COMPRESS (overwrite memcached compress setting, default is disabled)
+PHPBB_ACM_MEMCACHED_HOST     (overwrite memcached host name, default is localhost)
 
 PHPBB_ACM_REDIS_HOST        (overwrite redis host name, default is localhost)
 PHPBB_ACM_REDIS_PORT        (overwrite redis port, default is 6379)
@@ -264,6 +264,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>
 	<li>{T_IMAGES_PATH} - images/</li>
 	<li>{T_SMILIES_PATH} - $config['smilies_path']/</li>
+	<li>{T_AVATAR_PATH} - $config['avatar_path']/</li>
 	<li>{T_AVATAR_GALLERY_PATH} - $config['avatar_gallery_path']/</li>
 	<li>{T_ICONS_PATH} - $config['icons_path']/</li>
 	<li>{T_RANKS_PATH} - $config['ranks_path']/</li>
@@ -737,7 +738,7 @@ static private function f()</pre>
 	<a name="sql"></a><h3>2.iii. SQL/SQL Layout</h3>
 
 	<h4>Common SQL Guidelines: </h4>
-	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL3/4/5, MSSQL (7.0 and 2000), PostgreSQL (8.3+), SQLite, Oracle8, ODBC (generalised if possible)).</p>
+	<p>All SQL should be cross-DB compatible, if DB specific SQL is used alternatives must be provided which work on all supported DB's (MySQL4/5, MSSQL (7.0 and 2000), PostgreSQL (8.3+), SQLite, Oracle8, ODBC (generalised if possible)).</p>
 	<p>All SQL commands should utilise the DataBase Abstraction Layer (DBAL)</p>
 
 	<h4>SQL code layout:</h4>

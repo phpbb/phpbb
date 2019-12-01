@@ -207,16 +207,6 @@ function get_group_id($group_name)
 }
 
 /**
-* Generate the email hash stored in the users table
-*
-* Note: Deprecated, calls should directly go to phpbb_email_hash()
-*/
-function gen_email_hash($email)
-{
-	return phpbb_email_hash($email);
-}
-
-/**
 * Convert a boolean into the appropriate phpBB constant indicating whether the topic is locked
 */
 function is_topic_locked($bool)
@@ -496,7 +486,7 @@ function import_attachment_files($category_name = '')
 
 	$sql = 'SELECT config_value AS upload_path
 		FROM ' . CONFIG_TABLE . "
-		WHERE config_name = 'storage\\attachment\\config\\path'";
+		WHERE config_name = 'upload_path'";
 	$result = $db->sql_query($sql);
 	$config['upload_path'] = $db->sql_fetchfield('upload_path');
 	$db->sql_freeresult($result);
@@ -1647,11 +1637,6 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 			case 'insert':
 				switch ($db->get_sql_layer())
 				{
-					case 'mysql':
-					case 'mysql4':
-						$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
-					break;
-
 					case 'sqlite3':
 					case 'mssqlnative':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));

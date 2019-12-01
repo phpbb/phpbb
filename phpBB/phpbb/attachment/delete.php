@@ -16,7 +16,7 @@ namespace phpbb\attachment;
 use \phpbb\config\config;
 use \phpbb\db\driver\driver_interface;
 use \phpbb\event\dispatcher;
-use \phpbb\storage\storage;
+use \phpbb\filesystem\filesystem;
 
 /**
  * Attachment delete class
@@ -32,11 +32,14 @@ class delete
 	/** @var dispatcher */
 	protected $dispatcher;
 
+	/** @var filesystem  */
+	protected $filesystem;
+
 	/** @var resync */
 	protected $resync;
 
-	/** @var storage */
-	protected $storage;
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
 
 	/** @var array Attachement IDs */
 	protected $ids;
@@ -68,16 +71,18 @@ class delete
 	 * @param config $config
 	 * @param driver_interface $db
 	 * @param dispatcher $dispatcher
+	 * @param filesystem $filesystem
 	 * @param resync $resync
-	 * @param storage $storage
+	 * @param string $phpbb_root_path
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, resync $resync, storage $storage)
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, filesystem $filesystem, resync $resync, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->filesystem = $filesystem;
 		$this->resync = $resync;
-		$this->storage = $storage;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -176,8 +181,8 @@ class delete
 			return 0;
 		}
 
-		// Delete attachments from storage
-		$this->remove_from_storage($mode, $ids, $resync);
+		// Delete attachments from filesystem
+		$this->remove_from_filesystem($mode, $ids, $resync);
 
 		// If we do not resync, we do not need to adjust any message, post, topic or user entries
 		if (!$resync)
@@ -355,9 +360,9 @@ class delete
 	}
 
 	/**
-	 * Delete attachments from storage
+	 * Delete attachments from filesystem
 	 */
-	protected function remove_from_storage($mode, $ids, $resync)
+	protected function remove_from_filesystem($mode, $ids, $resync)
 	{
 		$space_removed = $files_removed = 0;
 
@@ -431,7 +436,7 @@ class delete
 	}
 
 	/**
-	 * Delete attachment from storage
+	 * Delete attachment from filesystem
 	 *
 	 * @param string $filename Filename of attachment
 	 * @param string $mode Delete mode
@@ -455,16 +460,17 @@ class delete
 		}
 
 		$filename = ($mode == 'thumbnail') ? 'thumb_' . utf8_basename($filename) : utf8_basename($filename);
+		$filepath = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $filename;
 
 		try
 		{
-			if ($this->storage->exists($filename))
+			if ($this->filesystem->exists($filepath))
 			{
-				$this->storage->delete($filename);
+				$this->filesystem->remove($this->phpbb_root_path . $this->config['upload_path'] . '/' . $filename);
 				return true;
 			}
 		}
-		catch (\phpbb\storage\exception\exception $exception)
+		catch (\phpbb\filesystem\exception\filesystem_exception $exception)
 		{
 			// Fail is covered by return statement below
 		}

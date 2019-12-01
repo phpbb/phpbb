@@ -15,7 +15,6 @@ services:
             - []
         calls:
             - [setLexer, ['@template.twig.lexer']]
-            - [addGlobal, ['config', '@config']]
 
     template.twig.lexer:
         class: phpbb\template\twig\lexer
@@ -25,6 +24,8 @@ services:
 
     template.twig.loader:
         class: phpbb\template\twig\loader
+        arguments:
+            - '@filesystem'
 
     template.twig.extensions.collection:
         class: phpbb\di\service_collection
@@ -42,10 +43,27 @@ services:
         tags:
             - { name: twig.extension }
 
+    template.twig.extensions.avatar:
+        class: phpbb\template\twig\extension\avatar
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.config:
+        class: phpbb\template\twig\extension\config
+        arguments:
+            - '@config'
+        tags:
+            - { name: twig.extension }
+
     template.twig.extensions.routing:
         class: phpbb\template\twig\extension\routing
         arguments:
             - '@routing.helper'
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.username:
+        class: phpbb\template\twig\extension\username
         tags:
             - { name: twig.extension }
 

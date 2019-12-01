@@ -131,11 +131,12 @@ class acp_forums
 						'forum_rules_link'		=> $request->variable('forum_rules_link', ''),
 						'forum_image'			=> $request->variable('forum_image', ''),
 						'forum_style'			=> $request->variable('forum_style', 0),
-						'display_subforum_list'	=> $request->variable('display_subforum_list', false),
-						'display_on_index'		=> $request->variable('display_on_index', false),
+						'display_subforum_list'	=> $request->variable('display_subforum_list', true),
+						'display_subforum_limit'=> $request->variable('display_subforum_limit', false),
+						'display_on_index'		=> $request->variable('display_on_index', true),
 						'forum_topics_per_page'	=> $request->variable('topics_per_page', 0),
 						'enable_indexing'		=> $request->variable('enable_indexing', true),
-						'enable_icons'			=> $request->variable('enable_icons', false),
+						'enable_icons'			=> $request->variable('enable_icons', true),
 						'enable_prune'			=> $request->variable('enable_prune', false),
 						'enable_post_review'	=> $request->variable('enable_post_review', true),
 						'enable_quick_reply'	=> $request->variable('enable_quick_reply', false),
@@ -454,10 +455,11 @@ class acp_forums
 							'forum_image'			=> '',
 							'forum_style'			=> 0,
 							'display_subforum_list'	=> true,
-							'display_on_index'		=> false,
+							'display_subforum_limit'	=> false,
+							'display_on_index'		=> true,
 							'forum_topics_per_page'	=> 0,
 							'enable_indexing'		=> true,
-							'enable_icons'			=> false,
+							'enable_icons'			=> true,
 							'enable_prune'			=> false,
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
@@ -676,6 +678,7 @@ class acp_forums
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
 					'S_DISPLAY_SUBFORUM_LIST'	=> ($forum_data['display_subforum_list']) ? true : false,
+					'S_DISPLAY_SUBFORUM_LIMIT'	=> ($forum_data['display_subforum_limit']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
 					'S_PRUNE_SHADOW_ENABLE'			=> ($forum_data['enable_shadow_prune']) ? true : false,
@@ -986,10 +989,20 @@ class acp_forums
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
-		// No Emojis
+		/**
+		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySql to UCR / NCR.
+		 * Using their Numeric Character Reference's Hexadecimal notation.
+		 */
+		$forum_data_ary['forum_name'] = utf8_encode_ucr($forum_data_ary['forum_name']);
+
+		/**
+		 * This should never happen again.
+		 * Leaving the fallback here just in case there will be the need of it.
+		 */
 		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $forum_data_ary['forum_name'], $matches))
 		{
 			$character_list = implode('<br>', $matches[0]);
+
 			$errors[] = $user->lang('FORUM_NAME_EMOJI', $character_list);
 		}
 
@@ -1423,8 +1436,8 @@ class acp_forums
 		* This event may be triggered, when a forum is deleted
 		*
 		* @event core.acp_manage_forums_move_children
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
@@ -1529,8 +1542,8 @@ class acp_forums
 		* Event when we move content from one forum to another
 		*
 		* @event core.acp_manage_forums_move_content
-		* @var	int		from_id		If of the current parent forum
-		* @var	int		to_id		If of the new parent forum
+		* @var	int		from_id		Id of the current parent forum
+		* @var	int		to_id		Id of the new parent forum
 		* @var	bool	sync		Shall we sync the "to"-forum's data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key. If this array is not empty,
@@ -1575,6 +1588,19 @@ class acp_forums
 				WHERE forum_id = $from_id";
 			$db->sql_query($sql);
 		}
+
+		/**
+		 * Event when content has been moved from one forum to another
+		 *
+		 * @event core.acp_manage_forums_move_content_after
+		 * @var	int		from_id		Id of the current parent forum
+		 * @var	int		to_id		Id of the new parent forum
+		 * @var	bool	sync		Shall we sync the "to"-forum's data
+		 *
+		 * @since 3.2.9-RC1
+		 */
+		$vars = array('from_id', 'to_id', 'sync');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content_after', compact($vars)));
 
 		if ($sync)
 		{
@@ -1878,7 +1904,6 @@ class acp_forums
 
 		switch ($db->get_sql_layer())
 		{
-			case 'mysql4':
 			case 'mysqli':
 
 				// Delete everything else and thank MySQL for offering multi-table deletion
