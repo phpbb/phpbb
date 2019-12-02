@@ -107,7 +107,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		));
 		$this->add_lang('posting');
 
-		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Download #1']}&p={$this->data['posts']['Re: Download Topic #1-#2']}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=delete&p={$this->data['posts']['Re: Download Topic #1-#2']}&sid={$this->sid}");
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();

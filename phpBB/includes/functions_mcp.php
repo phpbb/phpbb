@@ -51,8 +51,18 @@ function phpbb_module_warn_url($mode, $module_row)
 	{
 		global $forum_id, $post_id;
 
-		$url_extra = ($forum_id) ? "&amp;f=$forum_id" : '';
-		$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+		if ($post_id)
+		{
+			$url_extra = "&amp;p=$post_id";
+		}
+		else if ($forum_id)
+		{
+			$url_extra = "&amp;f=$forum_id";
+		}
+		else
+		{
+			$url_extra = '';
+		}
 
 		return $url_extra;
 	}
@@ -93,10 +103,22 @@ function phpbb_extra_url()
 {
 	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
-	$url_extra = '';
-	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
-	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
-	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+	if ($post_id)
+	{
+		$url_extra = "&amp;p=$post_id";
+	}
+	else if ($topic_id)
+	{
+		$url_extra = "&amp;t=$topic_id";
+	}
+	else if ($forum_id)
+	{
+		$url_extra = "&amp;f=$forum_id";
+	}
+	else
+	{
+		$url_extra = '';
+	}
 	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
 	$url_extra .= ($report_id) ? "&amp;r=$report_id" : '';
 

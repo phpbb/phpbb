@@ -1140,12 +1140,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
-		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
+		$posting_url = "posting.php?mode=reply&t={$topic_id}&sid={$this->sid}";
 
 		$form_data = array_merge(array(
 			'subject'		=> $subject,
 			'message'		=> $message,
 			'post'			=> true,
+            'topic_id'		=> $topic_id,
 		), $additional_form_data);
 
 		return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
@@ -1181,8 +1182,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
+        $topic_id = $this->get_parameter_from_link($url, 't');
+        if (!$topic_id)
+		{
+			$topic_id = $form_data['topic_id'];
+		}
+
 		return array(
-			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'topic_id'	=> $topic_id,
 			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
 		);
 	}
@@ -1303,7 +1310,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	public function delete_post($forum_id, $post_id)
 	{
 		$this->add_lang('posting');
-		$crawler = self::request('GET', "posting.php?mode=delete&f={$forum_id}&p={$post_id}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=delete&p={$post_id}&sid={$this->sid}");
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();
