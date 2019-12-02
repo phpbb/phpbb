@@ -175,7 +175,7 @@ class resend
 				$messenger->assign_vars([
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'WELCOME_MSG'	=> htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-					'U_ACTIVATE'	=> generate_board_url(false) . $this->helper->route('ucp_account', [
+					'U_ACTIVATE'	=> generate_board_url(true) . $this->helper->route('ucp_account', [
 						'mode'	=> 'activate',
 						'u'		=> $user_row['user_id'],
 						'k'		=> $user_row['user_actkey'],
@@ -212,7 +212,7 @@ class resend
 					$messenger->assign_vars([
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$this->php_ext?mode=viewprofile&u={$user_row['user_id']}",
-						'U_ACTIVATE'	=> generate_board_url(false) . $this->helper->route('ucp_account', [
+						'U_ACTIVATE'		=> generate_board_url(true) . $this->helper->route('ucp_account', [
 							'mode'	=> 'activate',
 							'u'		=> $user_row['user_id'],
 							'k'		=> $user_row['user_actkey'],

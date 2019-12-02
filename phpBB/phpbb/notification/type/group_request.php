@@ -136,7 +136,7 @@ class group_request extends \phpbb\notification\type\base
 			'GROUP_NAME'		   		=> htmlspecialchars_decode($this->get_data('group_name')),
 			'REQUEST_USERNAME' 	   		=> htmlspecialchars_decode($user_data['username']),
 
-			'U_PENDING'			  		=> generate_board_url(false) . $this->helper->route('ucp_groups_manage', ['action' => 'list', 'g' => $this->item_parent_id], false),
+			'U_PENDING'			  		=> generate_board_url(true) . $this->helper->route('ucp_groups_manage', ['action' => 'list', 'g' => $this->item_parent_id], false),
 			'U_GROUP'					=> generate_board_url() . "/memberlist.{$this->php_ext}?mode=group&g={$this->item_parent_id}",
 		);
 	}

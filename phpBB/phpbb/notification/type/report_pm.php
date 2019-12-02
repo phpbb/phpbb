@@ -151,7 +151,7 @@ class report_pm extends \phpbb\notification\type\pm
 			/** @deprecated	3.2.6-RC1	(to be removed in 4.0.0) use {SUBJECT} instead in report_pm.txt */
 			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_REPORT'	=> generate_board_url(false) . $this->helper->route('mcp_pm_report_details', ['r' => $this->item_parent_id], false),
+			'U_VIEW_REPORT'	=> generate_board_url(true) . $this->helper->route('mcp_pm_report_details', ['r' => $this->item_parent_id], false),
 		);
 	}
 

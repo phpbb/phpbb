@@ -113,7 +113,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
 
-			'U_VIEW_REPORT'				=> generate_board_url(false) . $this->helper->route('mcp_report_details', ['f' => $this->get_data('forum_id'), 'p' => $this->item_id, '#' => 'reports'], false),
+			'U_VIEW_REPORT'				=> generate_board_url(true) . $this->helper->route('mcp_report_details', ['f' => $this->get_data('forum_id'), 'p' => $this->item_id, '#' => 'reports'], false),
 			'U_VIEW_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
 			'U_NEWEST_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&view=unread#unread",
 			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",

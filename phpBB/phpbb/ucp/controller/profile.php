@@ -289,7 +289,7 @@ class profile
 							$messenger->anti_abuse_headers($this->config, $this->user);
 							$messenger->assign_vars([
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
-								'U_ACTIVATE'	=> generate_board_url(false) . $this->helper->route('ucp_account', [
+								'U_ACTIVATE'	=> generate_board_url(true) . $this->helper->route('ucp_account', [
 									'mode'	=> 'activate',
 									'u'		=> $this->user->data['user_id'],
 									'k'		=> $user_act_key,

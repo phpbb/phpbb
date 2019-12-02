@@ -1127,8 +1127,6 @@ class styles
 			}
 		}
 
-		/** @todo: add hook */
-
 		// Assign template variables
 		$this->template->assign_block_vars('styles_list', $row);
 

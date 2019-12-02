@@ -167,7 +167,7 @@ class pm extends \phpbb\notification\type\base
 			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
 			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_MESSAGE'			=> generate_board_url(false) . $this->helper->route('ucp_pm_view', ['p' => $this->item_id], false),
+			'U_VIEW_MESSAGE'			=> generate_board_url(true) . $this->helper->route('ucp_pm_view', ['p' => $this->item_id], false),
 		);
 	}
 

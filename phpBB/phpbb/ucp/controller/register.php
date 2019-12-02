@@ -565,7 +565,7 @@ class register
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'WELCOME_MSG'	=> htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-						'U_ACTIVATE'	=> generate_board_url(false) . $this->helper->route('ucp_account', [
+						'U_ACTIVATE'	=> generate_board_url(true) . $this->helper->route('ucp_account', [
 							'mode'	=> 'activate',
 							'u'		=> $user_id,
 							'k'		=> $user_actkey,

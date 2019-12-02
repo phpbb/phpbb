@@ -320,7 +320,7 @@ class add extends command
 			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
 			'USERNAME'    => htmlspecialchars_decode($this->data['username']),
 			'PASSWORD'    => htmlspecialchars_decode($this->data['new_password']),
-			'U_ACTIVATE'  => generate_board_url(false) . $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_id, 'k' => $user_actkey], false),
+			'U_ACTIVATE'  => generate_board_url(true) . $this->helper->route('ucp_account', ['mode' => 'activate', 'u' => $user_id, 'k' => $user_actkey], false),
 		));
 
 		$messenger->send(NOTIFY_EMAIL);

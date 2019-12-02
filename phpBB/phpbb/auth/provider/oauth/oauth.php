@@ -356,7 +356,7 @@ class oauth extends base
 			if ($credentials['key'] && $credentials['secret'])
 			{
 				$provider = $this->get_provider($service_name);
-				$redirect_url = generate_board_url(false) . $this->helper->route('ucp_account', ['mode' => 'login', 'login' => 'external', 'oauth_service' => $provider], false);
+				$redirect_url = generate_board_url(true) . $this->helper->route('ucp_account', ['mode' => 'login', 'login' => 'external', 'oauth_service' => $provider], false);
 
 				$login_data['BLOCK_VARS'][$service_name] = [
 					'REDIRECT_URL'	=> redirect($redirect_url, true),

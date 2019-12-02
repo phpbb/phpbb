@@ -23,7 +23,7 @@
 		<div id="navigation" class="navigation" role="navigation">
 			<ul>
 				{% for item in ucp_menu_active.ITEMS %}
-					{% if not item.S_PM_VIEW %}
+					{% if item.ID != 'ucp_pm_view' %}
 						<li{% if item.S_ACTIVE %} id="active-subsection" class="active-subsection"{% endif %}>
 							<a href="{{ item.U_VIEW }}">
 								<span>{{ item.TITLE }}</span>

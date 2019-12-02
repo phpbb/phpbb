@@ -124,7 +124,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			$messenger->assign_vars(array_merge(array(
 				'USERNAME'						=> $user['username'],
 
-				'U_NOTIFICATION_SETTINGS'		=> generate_board_url(false) . $this->helper->route('ucp_settings_notifications', [], false),
+				'U_NOTIFICATION_SETTINGS'		=> generate_board_url(true) . $this->helper->route('ucp_settings_notifications', [], false),
 			), $notification->get_email_template_variables()));
 
 			$messenger->send($notify_method);
