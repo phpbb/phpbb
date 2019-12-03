@@ -8,7 +8,7 @@
 {% for listitem in loops.listitem %}<li>{% endfor %}
 {% for listitem_close in loops.listitem_close %}</li>{% endfor %}
 
-{% for quote_username_open in loops.quote_username_open %}<blockquote><div><cite>{{ USERNAME }} {{ lang('WROTE') }}{{ lang('COLON') }}</cite>{% endfor %}
+{% for quote_username_open in loops.quote_username_open %}<blockquote><div><cite>{{ USERNAME }} {{ Lang('WROTE') ~ Lang('COLON') }}</cite>{% endfor %}
 {% for quote_open in loops.quote_open %}<blockquote class="uncited"><div>{% endfor %}
 {% for quote_close in loops.quote_close %}</div></blockquote>{% endfor %}
 {% for quote_extended in loops.quote_extended %}
@@ -47,7 +47,7 @@
 </blockquote>
 {% endfor %}
 
-{% for code_open in loops.code_open %}<div class="codebox"><p>{{ lang('CODE') }}{{ lang('COLON') }} <a href="#" onclick="selectCode(this); return false;">{{ lang('SELECT_ALL_CODE') }}</a></p><pre><code>{% endfor %}
+{% for code_open in loops.code_open %}<div class="codebox"><p>{{ Lang('CODE') ~ Lang('COLON') }} <a href="#" onclick="selectCode(this); return false;">{{ Lang('SELECT_ALL_CODE') }}</a></p><pre><code>{% endfor %}
 {% for code_close in loops.code_close %}</code></pre></div>{% endfor %}
 
 {% for inline_attachment_open in loops.inline_attachment_open %}<div class="inline-attachment">{% endfor %}
@@ -66,7 +66,7 @@
 
 {% for size in loops.size %}<span style="font-size: {{ SIZE }}%; line-height: 116%;">{{ TEXT }}</span>{% endfor %}
 
-{% for img in loops.img %}<img src="{{ URL }}" class="postimage" alt="{{ lang('IMAGE') }}" />{% endfor %}
+{% for img in loops.img %}<img src="{{ URL }}" class="postimage" alt="{{ Lang('IMAGE') }}" />{% endfor %}
 
 {% for url in loops.url %}<a href="{{ URL }}" class="postlink">{{ DESCRIPTION }}</a>{% endfor %}
 
