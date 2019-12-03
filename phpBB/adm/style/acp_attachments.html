@@ -424,18 +424,18 @@
 	{% for attachments in attachments %}
 		<tr>
 			<td>
-				{{ lang('EXTENSION_GROUP') ~ lang('COLON') }} <strong>{{ attachments.EXT_GROUP_NAME }}</strong>
+				{{ Lang('EXTENSION_GROUP') ~ Lang('COLON') }} <strong>{{ attachments.EXT_GROUP_NAME }}</strong>
 				{% if attachments.S_IN_MESSAGE %}
 					<br>{{ attachments.L_DOWNLOAD_COUNT }}
-					<br>{{ lang('IN') }} {{ lang('PRIVATE_MESSAGE') }}
+					<br>{{ Lang('IN') }} {{ Lang('PRIVATE_MESSAGE') }}
 				{% else %}
 					<br><a href="{{ attachments.U_FILE }}"><strong>{{ attachments.REAL_FILENAME }}</strong></a>
 					{% if attachments.COMMENT %}<br>{{ attachments.COMMENT }}{% endif %}
 					<br>{{ attachments.L_DOWNLOAD_COUNT }}
-					<br>{{ lang('TOPIC') ~ lang('COLON') }} <a href="{{ attachments.U_VIEW_TOPIC }}">{{ attachments.TOPIC_TITLE }}</a>
+					<br>{{ Lang('TOPIC') ~ Lang('COLON') }} <a href="{{ attachments.U_VIEW_TOPIC }}">{{ attachments.TOPIC_TITLE }}</a>
 				{% endif %}
 			</td>
-			<td>{{ attachments.FILETIME }}<br>{{ lang('POST_BY_AUTHOR') }} {{ attachments.ATTACHMENT_POSTER }}</td>
+			<td>{{ attachments.FILETIME }}<br>{{ Lang('POST_BY_AUTHOR') }} {{ attachments.ATTACHMENT_POSTER }}</td>
 			<td class="centered-text">{{ attachments.FILESIZE }}</td>
 			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{{ attachments.ATTACH_ID }}]" /></td>
 		</tr>

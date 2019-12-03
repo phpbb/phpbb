@@ -88,9 +88,9 @@ class extension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('lang', array($this, 'lang')),
-			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
-			new \Twig_SimpleFunction('get_class', 'get_class'),
+			new \Twig_SimpleFunction('Lang', array($this, 'lang')),
+			new \Twig_SimpleFunction('LangDefined', array($this, 'lang_defined')),
+			new \Twig_SimpleFunction('GetClass', 'get_class'),
 		);
 	}
 

@@ -30,7 +30,7 @@
 		{% endif %}
 
 		<content type="html" xml:base="{{ row.link }}"><![CDATA[
-{{ row.description }}{% if not row.statistics is empty %}<p>{{ lang('STATISTICS') }}: {{ row.statistics }}</p>{% endif %}<hr />
+{{ row.description }}{% if not row.statistics is empty %}<p>{{ Lang('STATISTICS') }}: {{ row.statistics }}</p>{% endif %}<hr />
 ]]></content>
 	</entry>
 	{% endfor %}

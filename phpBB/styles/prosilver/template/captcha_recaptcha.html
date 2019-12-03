@@ -2,7 +2,7 @@
 	<noscript>
 		<div>{L_RECAPTCHA_NOSCRIPT}</div>
 	</noscript>
-	{% INCLUDEJS RECAPTCHA_SERVER ~ '.js?onload=phpbbRecaptchaOnLoad&hl=' ~ lang('RECAPTCHA_LANG') %}
+	{% INCLUDEJS RECAPTCHA_SERVER ~ '.js?onload=phpbbRecaptchaOnLoad&hl=' ~ Lang('RECAPTCHA_LANG') %}
 	<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-callback="phpbbRecaptchaOnSubmit" data-size="invisible" data-tabindex="<!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->"></div>
 <!-- ELSE -->
 {L_RECAPTCHA_NOT_AVAILABLE}
