@@ -999,7 +999,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-
+		if ($action === 'quote')
+		{
+			$quote_attributes['msg_id'] = $post['msg_id'];
+		}
 		/** @var \phpbb\language\language $language */
 		$language = $phpbb_container->get('language');
 		/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */

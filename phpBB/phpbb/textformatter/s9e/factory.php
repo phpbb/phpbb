@@ -90,6 +90,8 @@ class factory implements \phpbb\textformatter\cache_interface
 				post_id={UINT;optional}
 				post_url={URL;optional;postFilter=#false}
 				profile_url={URL;optional;postFilter=#false}
+				msg_id={UINT;optional}
+				msg_url={URL;optional;postFilter=#false}
 				time={UINT;optional}
 				url={URL;optional}
 				user_id={UINT;optional}

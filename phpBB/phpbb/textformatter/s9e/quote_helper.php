@@ -40,6 +40,7 @@ class quote_helper
 	public function __construct(\phpbb\user $user, $root_path, $php_ext)
 	{
 		$this->post_url = append_sid($root_path . 'viewtopic.' . $php_ext, 'p={POST_ID}#p{POST_ID}', false);
+		$this->msg_url = append_sid($root_path . 'ucp.' . $php_ext, 'i=pm&mode=view&p={MSG_ID}', false);
 		$this->profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={USER_ID}', false);
 		$this->user = $user;
 	}
@@ -53,6 +54,7 @@ class quote_helper
 	public function inject_metadata($xml)
 	{
 		$post_url = $this->post_url;
+		$msg_url = $this->msg_url;
 		$profile_url = $this->profile_url;
 		$user = $this->user;
 
@@ -64,6 +66,10 @@ class quote_helper
 				if (isset($attributes['post_id']))
 				{
 					$attributes['post_url'] = str_replace('{POST_ID}', $attributes['post_id'], $post_url);
+				}
+				if (isset($attributes['msg_id']))
+				{
+					$attributes['msg_url'] = str_replace('{MSG_ID}', $attributes['msg_id'], $msg_url);
 				}
 				if (isset($attributes['time']))
 				{
