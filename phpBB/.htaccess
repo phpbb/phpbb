@@ -36,6 +36,13 @@ RewriteRule ^(.*)$ app.php [QSA,L]
 #Options +FollowSymLinks
 </IfModule>
 
+# Apache content negotation tries to interpret non-existent paths as files if
+# MultiViews is enabled. This will however cause issues with paths containg
+# dots, e.g. for the cron tasks
+<IfModule mod_negotiation.c>
+	Options -MultiViews
+</IfModule>
+
 # With Apache 2.4 the "Order, Deny" syntax has been deprecated and moved from
 # module mod_authz_host to a new module called mod_access_compat (which may be
 # disabled) and a new "Require" syntax has been introduced to mod_authz_host.
