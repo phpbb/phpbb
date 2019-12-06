@@ -77,7 +77,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=registration&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/settings/registration?sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$form['config[coppa_enable]']->setValue('1');
 		$crawler = self::submit($form);
@@ -88,7 +88,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$this->add_lang('ucp');
 
 		// Check that we can't skip
-		$crawler = self::request('GET', 'ucp.php?mode=register&coppa=1');
+		$crawler = self::request('GET', 'app.php/user/register?coppa=1');
 		$this->assertContainsLang('COPPA_BIRTHDAY', $crawler->html());
 
 		$form = $crawler->selectButton('coppa_yes')->form();
@@ -113,7 +113,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=registration&sid={$this->sid}");
+		$crawler = self::request('GET', 'app.php/admin/settings/registration?sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$form['config[coppa_enable]']->setValue('0');
 		$crawler = self::submit($form);
