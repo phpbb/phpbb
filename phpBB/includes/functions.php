@@ -1493,7 +1493,6 @@ function tracking_unserialize($string, $max_depth = 3)
 
 /**
 * Append session id to url.
-* This function supports hooks.
 *
 * @param string $url The url the session id needs to be appended to (can have params)
 * @param mixed $params String or array of additional url parameters
@@ -4528,7 +4527,6 @@ function garbage_collection()
 
 /**
 * Handler for exit calls in phpBB.
-* This function supports hooks.
 *
 * Note: This function is called after the template has been outputted.
  *
