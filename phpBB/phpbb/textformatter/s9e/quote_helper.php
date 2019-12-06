@@ -21,6 +21,11 @@ class quote_helper
 	protected $post_url;
 
 	/**
+	* @var string Base URL for a private message link, uses {MSG_ID} as placeholder
+	*/
+	protected $msg_url;
+
+	/**
 	* @var string Base URL for a profile link, uses {USER_ID} as placeholder
 	*/
 	protected $profile_url;
@@ -40,6 +45,7 @@ class quote_helper
 	public function __construct(\phpbb\user $user, $root_path, $php_ext)
 	{
 		$this->post_url = append_sid($root_path . 'viewtopic.' . $php_ext, 'p={POST_ID}#p{POST_ID}', false);
+		$this->msg_url = append_sid($root_path . 'ucp.' . $php_ext, 'i=pm&mode=view&p={MSG_ID}', false);
 		$this->profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={USER_ID}', false);
 		$this->user = $user;
 	}
@@ -52,26 +58,26 @@ class quote_helper
 	*/
 	public function inject_metadata($xml)
 	{
-		$post_url = $this->post_url;
-		$profile_url = $this->profile_url;
-		$user = $this->user;
-
 		return \s9e\TextFormatter\Utils::replaceAttributes(
 			$xml,
 			'QUOTE',
-			function ($attributes) use ($post_url, $profile_url, $user)
+			function ($attributes)
 			{
 				if (isset($attributes['post_id']))
 				{
-					$attributes['post_url'] = str_replace('{POST_ID}', $attributes['post_id'], $post_url);
+					$attributes['post_url'] = str_replace('{POST_ID}', $attributes['post_id'], $this->post_url);
+				}
+				if (isset($attributes['msg_id']))
+				{
+					$attributes['msg_url'] = str_replace('{MSG_ID}', $attributes['msg_id'], $this->msg_url);
 				}
 				if (isset($attributes['time']))
 				{
-					$attributes['date'] = $user->format_date($attributes['time']);
+					$attributes['date'] = $this->user->format_date($attributes['time']);
 				}
 				if (isset($attributes['user_id']))
 				{
-					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $profile_url);
+					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $this->profile_url);
 				}
 
 				return $attributes;
