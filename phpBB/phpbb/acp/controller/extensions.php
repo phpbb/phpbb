@@ -698,7 +698,7 @@ class extensions
 						'repositories'		=> json_decode($this->config['exts_composer_repositories'], true),
 					],
 
-					'U_ACTION'				=> $this->helper->route('acp_extensions_catalog'),
+					'U_ACTION'				=> $this->helper->route('acp_extensions_catalog', [], true, $this->user->session_id),
 				]);
 
 				return $this->helper->render('acp_ext_catalog.html', $this->language->lang('ACP_EXTENSIONS_CATALOG'));

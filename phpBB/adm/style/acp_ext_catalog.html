@@ -110,9 +110,9 @@
 				<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
 			{% elseif extension.name in installed_extensions -%}
 				<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span>
-				(<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
+				(<a href="{{ path('acp_extensions_catalog', {'action': 'manage', 'extension': extension.composer_name|url_encode}) }}">{{ lang('MANAGE') }}</a>)
 			{% elseif not enabled -%}
-				<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
+				<a href="{{ path('acp_extensions_catalog', {'action': 'install', 'extension': extension.composer_name|url_encode}) }}">{{ lang('INSTALL') }}</a>
 			{%- endif -%}
 		</td>
 	</tr>
