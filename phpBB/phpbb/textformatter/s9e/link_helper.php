@@ -61,7 +61,7 @@ class link_helper
 		$text   = substr($parser->getText(), $start, $length);
 
 		// Create a tag that consumes the link's text and make it depends on this tag
-		$link_text_tag = $parser->addSelfClosingTag('LINK_TEXT', $start, $length);
+		$link_text_tag = $parser->addSelfClosingTag('LINK_TEXT', $start, $length, 10);
 		$link_text_tag->setAttribute('text', $text);
 		$tag->cascadeInvalidationTo($link_text_tag);
 	}
