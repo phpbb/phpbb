@@ -15,6 +15,7 @@ namespace phpbb\textformatter\s9e;
 
 use s9e\TextFormatter\Parser\AttributeFilters\UrlFilter;
 use s9e\TextFormatter\Parser\Logger;
+use s9e\TextFormatter\Parser\Tag;
 
 /**
 * s9e\TextFormatter\Parser adapter
@@ -219,7 +220,7 @@ class parser implements \phpbb\textformatter\parser_interface
 			{
 				$errors[] = array($msg, $context['max_' . strtolower($m[1])]);
 			}
-			else if ($msg === 'Tag is disabled')
+			else if ($msg === 'Tag is disabled' && $this->is_a_bbcode($context['tag']))
 			{
 				$name = strtolower($context['tag']->getName());
 				$errors[] = array('UNAUTHORISED_BBCODE', '[' . $name . ']');
@@ -395,5 +396,22 @@ class parser implements \phpbb\textformatter\parser_interface
 		}
 
 		return $url;
+	}
+
+	/**
+	* Test whether given tag consumes text that looks like BBCode-styled markup
+	*
+	* @param  Tag  $tag Original tag
+	* @return bool
+	*/
+	protected function is_a_bbcode(Tag $tag)
+	{
+		if ($tag->getLen() < 3)
+		{
+			return false;
+		}
+		$markup = substr($this->parser->getText(), $tag->getPos(), $tag->getLen());
+
+		return (bool) preg_match('(^\\[\\w++.*?\\]$)s', $markup);
 	}
 }
