@@ -22,7 +22,6 @@ then
 		-s															\
 		--extensions=php											\
 		--standard=build/code_sniffer/ruleset-php-extensions.xml	\
-		"--ignore=phpBB/ext/$EXTNAME/tests/*"						\
-		"--ignore=phpBB/ext/$EXTNAME/vendor/*"						\
-		"phpBB/ext/$EXTNAME"
+		--ignore=*/"$EXTNAME"/tests/*,*/"$EXTNAME"/vendor/*			\
+		phpBB/ext/"$EXTNAME"
 fi
