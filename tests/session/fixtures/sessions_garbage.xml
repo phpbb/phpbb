@@ -5,11 +5,23 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
+		<column>user_lastpage</column>
+		<column>user_lastvisit</column>
 		<row>
 			<value>4</value>
 			<value>bar</value>
 			<value></value>
 			<value></value>
+			<value>oldpage_user_bar.php</value>
+			<value>1400000000</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>foo</value>
+			<value></value>
+			<value></value>
+			<value>oldpage_user_foo.php</value>
+			<value>1400000000</value>
 		</row>
 	</table>
 	<table name="phpbb_sessions">
@@ -18,12 +30,16 @@
 		<column>session_ip</column>
 		<column>session_browser</column>
 		<column>session_admin</column>
+		<column>session_page</column>
+		<column>session_time</column>
 		<row>
 			<value>anon_session00000000000000000000</value>
 			<value>1</value>
 			<value>127.0.0.1</value>
 			<value>anonymous user agent</value>
 			<value>0</value>
+			<value></value>
+			<value>1500000005</value>
 		</row>
 		<row>
 			<value>bar_session000000000000000000000</value>
@@ -31,6 +47,35 @@
 			<value>127.0.0.1</value>
 			<value>user agent</value>
 			<value>1</value>
+			<value>newpage_user_bar.php</value>
+			<value>1500000000</value>
+		</row>
+		<row>
+			<value>bar_session000000000000000000002</value>
+			<value>4</value>
+			<value>127.0.0.1</value>
+			<value>user agent</value>
+			<value>1</value>
+			<value>oldpage_user_bar.php</value>
+			<value>1400000000</value>
+		</row>
+		<row>
+			<value>foo_session000000000000000000000</value>
+			<value>5</value>
+			<value>127.0.0.1</value>
+			<value>user agent</value>
+			<value>0</value>
+			<value>newpage_user_foo.php</value>
+			<value>1500000000</value>
+		</row>
+		<row>
+			<value>foo_session000000000000000000002</value>
+			<value>5</value>
+			<value>127.0.0.1</value>
+			<value>user agent</value>
+			<value>0</value>
+			<value>oldpage_user_foo.php</value>
+			<value>1400000000</value>
 		</row>
 	</table>
 	<table name="phpbb_login_attempts">

@@ -46,11 +46,33 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 			new phpbb_session_testable_facade($this->db, $this->session_factory);
 	}
 
+	protected function check_user_session_data($expected_session_data, $message)
+	{
+		$sql= 'SELECT username_clean, user_lastvisit, user_lastpage
+			FROM ' . USERS_TABLE . '
+			ORDER BY user_id';
+
+		$this->assertSqlResultEquals($expected_session_data, $sql, $message);
+	}
+
+	protected function check_expired_sessions_recent($expected_sessions, $message)
+	{
+		global $config;
+		$time_now = time();
+		$sql = 'SELECT session_user_id, MAX(session_time) AS recent_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($time_now - (int) $config['session_length']) . '
+				AND session_user_id <> ' . ANONYMOUS . '
+			GROUP BY session_user_id';
+
+		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
+	}
+
 	protected function check_sessions_equals($expected_sessions, $message)
 	{
 		$sql = 'SELECT session_id, session_user_id
 				FROM phpbb_sessions
-				ORDER BY session_user_id';
+				ORDER BY session_user_id, session_id';
 
 		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
 	}

@@ -956,72 +956,96 @@ class session
 	{
 		global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
-		$batch_size = 10;
-
 		if (!$this->time_now)
 		{
 			$this->time_now = time();
 		}
 
-		// Firstly, delete guest sessions
+		/**
+		 * Get expired sessions for registered users, only most recent for each user
+		 * Inner SELECT gets most recent expired sessions for unique session_user_id
+		 * Outer SELECT gets data for them
+		 */
+		$sql_select = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
+			FROM ' . SESSIONS_TABLE . ' AS s1
+			INNER JOIN (
+				SELECT session_user_id, MAX(session_time) AS recent_time
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time < ' . ($this->time_now - (int) $config['session_length']) . '
+					AND session_user_id <> ' . ANONYMOUS . '
+				GROUP BY session_user_id
+			) AS s2
+			ON s1.session_user_id = s2.session_user_id
+				AND s1.session_time = s2.recent_time';
+
+		switch ($db->get_sql_layer())
+		{
+			case 'sqlite3':
+				if (phpbb_version_compare($db->sql_server_info(true), '3.8.3', '>='))
+				{
+					// For SQLite versions 3.8.3+ which support Common Table Expressions (CTE)
+					$sql = "WITH s3 (session_page, session_user_id, session_time) AS ($sql_select)
+						UPDATE " . USERS_TABLE . '
+						SET (user_lastpage, user_lastvisit) = (SELECT session_page, session_time FROM s3 WHERE session_user_id = user_id)
+						WHERE EXISTS (SELECT session_user_id FROM s3 WHERE session_user_id = user_id)';
+					$db->sql_query($sql);
+
+					break;
+				}
+
+			// No break, for SQLite versions prior to 3.8.3 and Oracle
+			case 'oracle':
+				$result = $db->sql_query($sql_select);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+						WHERE user_id = " . (int) $row['session_user_id'];
+					$db->sql_query($sql);
+				}
+				$db->sql_freeresult($result);
+			break;
+
+			case 'mysqli':
+				$sql = 'UPDATE ' . USERS_TABLE . " u,
+					($sql_select) s3
+					SET u.user_lastvisit = s3.recent_time, u.user_lastpage = s3.session_page
+					WHERE u.user_id = s3.session_user_id";
+				$db->sql_query($sql);
+			break;
+
+			default:
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_lastvisit = s3.recent_time, user_lastpage = s3.session_page
+					FROM ($sql_select) s3
+					WHERE user_id = s3.session_user_id";
+				$db->sql_query($sql);
+			break;
+		}
+
+		// Delete all expired sessions
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-			WHERE session_user_id = ' . ANONYMOUS . '
-				AND session_time < ' . (int) ($this->time_now - $config['session_length']);
+			WHERE session_time < ' . ($this->time_now - (int) $config['session_length']);
 		$db->sql_query($sql);
 
-		// Get expired sessions, only most recent for each user
-		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
-			GROUP BY session_user_id, session_page';
-		$result = $db->sql_query_limit($sql, $batch_size);
+		// Update gc timer
+		$config->set('session_last_gc', $this->time_now, false);
 
-		$del_user_id = array();
-		$del_sessions = 0;
-
-		while ($row = $db->sql_fetchrow($result))
+		if ($config['max_autologin_time'])
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-				WHERE user_id = " . (int) $row['session_user_id'];
-			$db->sql_query($sql);
-
-			$del_user_id[] = (int) $row['session_user_id'];
-			$del_sessions++;
-		}
-		$db->sql_freeresult($result);
-
-		if (count($del_user_id))
-		{
-			// Delete expired sessions
-			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
-					AND session_time < ' . ($this->time_now - $config['session_length']);
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
 			$db->sql_query($sql);
 		}
 
-		if ($del_sessions < $batch_size)
-		{
-			// Less than 10 users, update gc timer ... else we want gc
-			// called again to delete other sessions
-			$config->set('session_last_gc', $this->time_now, false);
+		// only called from CRON; should be a safe workaround until the infrastructure gets going
+		/* @var \phpbb\captcha\factory $captcha_factory */
+		$captcha_factory = $phpbb_container->get('captcha.factory');
+		$captcha_factory->garbage_collect($config['captcha_plugin']);
 
-			if ($config['max_autologin_time'])
-			{
-				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-				$db->sql_query($sql);
-			}
-
-			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			/* @var $captcha_factory \phpbb\captcha\factory */
-			$captcha_factory = $phpbb_container->get('captcha.factory');
-			$captcha_factory->garbage_collect($config['captcha_plugin']);
-
-			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
-				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
-			$db->sql_query($sql);
-		}
+		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
+			WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
+		$db->sql_query($sql);
 
 		/**
 		* Event to trigger extension on session_gc
