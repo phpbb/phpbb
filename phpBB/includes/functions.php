@@ -4114,7 +4114,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	/**
 	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
-	 * @deprecated 3.2.7 (To be removed: 3.3.0-a1)
+	 * @deprecated 3.2.7 (To be removed: 4.0.0-a1)
 	 */
 	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
 	if (!empty($form_token_login))
