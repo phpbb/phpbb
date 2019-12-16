@@ -37,7 +37,7 @@ class acp_utils implements acp_utils_interface
 	public function analyse_bbcode(string $definition, string $template): array
 	{
 		$configurator = $this->factory->get_configurator();
-		$return       = ['status' => 'safe'];
+		$return       = ['status' => self::BBCODE_STATUS_SAFE];
 
 		// Capture and normalize the BBCode name manually because there's no easy way to retrieve
 		// it in TextFormatter <= 2.x
@@ -52,13 +52,13 @@ class acp_utils implements acp_utils_interface
 		}
 		catch (UnsafeTemplateException $e)
 		{
-			$return['status']     = 'unsafe';
+			$return['status']     = self::BBCODE_STATUS_UNSAFE;
 			$return['error_text'] = $e->getMessage();
 			$return['error_html'] = $e->highlightNode('<span class="highlight">');
 		}
 		catch (\Exception $e)
 		{
-			$return['status']     = (preg_match('(xml|xpath|xsl)i', $e->getMessage())) ? 'invalid_template' : 'invalid_definition';
+			$return['status']     = (preg_match('(xml|xpath|xsl)i', $e->getMessage())) ? self::BBCODE_STATUS_INVALID_TEMPLATE : self::BBCODE_STATUS_INVALID_DEFINITION;
 			$return['error_text'] = $e->getMessage();
 		}
 

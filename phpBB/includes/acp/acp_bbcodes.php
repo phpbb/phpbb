@@ -174,15 +174,15 @@ class acp_bbcodes
 
 				$acp_utils   = $phpbb_container->get('text_formatter.acp_utils');
 				$bbcode_info = $acp_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
-				$warn_unsafe = ($bbcode_info['status'] === 'unsafe');
+				$warn_unsafe = ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE);
 
-				if ($bbcode_info['status'] === 'invalid_definition')
-				{
-					trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-				if ($bbcode_info['status'] === 'invalid_template')
+				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_TEMPLATE)
 				{
 					trigger_error($user->lang['BBCODE_INVALID_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_DEFINITION)
+				{
+					trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$warn_unsafe && !check_form_key($form_key))
