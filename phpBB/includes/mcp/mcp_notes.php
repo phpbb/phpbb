@@ -192,7 +192,11 @@ class mcp_notes
 
 		// Generate the appropriate user information for the user we are looking at
 		$rank_data = phpbb_get_user_rank($userrow, $userrow['user_posts']);
-		$avatar_img = phpbb_get_user_avatar($userrow);
+
+		/** @var \phpbb\avatar\helper $avatar_helper */
+		$avatar_helper = $phpbb_container->get('avatar.helper');
+
+		$avatar = $avatar_helper->get_user_avatar($userrow);
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
@@ -252,10 +256,15 @@ class mcp_notes
 			'USERNAME'			=> get_username_string('username', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 			'U_PROFILE'			=> get_username_string('profile', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 
-			'AVATAR_IMG'		=> $avatar_img,
+			'AVATAR_IMG'		=> $avatar['html'],
+			'AVATAR_LAZY'		=> $avatar['lazy'],
+			'AVATAR_SOURCE'		=> $avatar['src'],
+			'AVATAR_TITLE'		=> $avatar['title'],
+			'AVATAR_TYPE'		=> $avatar['type'],
+			'AVATAR_WIDTH'		=> $avatar['width'],
+			'AVATAR_HEIGHT'		=> $avatar['height'],
 			'RANK_IMG'			=> $rank_data['img'],
 			'RANK_TITLE'		=> $rank_data['title'],
 		));
 	}
-
 }

@@ -1179,6 +1179,9 @@ if (!empty($topic_data['poll_start']))
 	unset($poll_end, $poll_info, $poll_options_template_data, $poll_template_data, $voted_id);
 }
 
+/** @var \phpbb\avatar\helper $avatar_helper */
+$avatar_helper = $phpbb_container->get('avatar.helper');
+
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = false;
 $sql_limit = $config['posts_per_page'];
@@ -1417,7 +1420,7 @@ while ($row = $db->sql_fetchrow($result))
 				'sig_bbcode_bitfield'	=> '',
 
 				'online'			=> false,
-				'avatar'			=> ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : '',
+				'avatar'			=> ($user->optionget('viewavatars')) ? $avatar_helper->get_user_avatar($row) : [],
 				'rank_title'		=> '',
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
@@ -1481,7 +1484,7 @@ while ($row = $db->sql_fetchrow($result))
 				'viewonline'	=> $row['user_allow_viewonline'],
 				'allow_pm'		=> $row['user_allow_pm'],
 
-				'avatar'		=> ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($row) : '',
+				'avatar'		=> ($user->optionget('viewavatars')) ? $this->get_user_avatar($row) : [],
 				'age'			=> '',
 
 				'rank_title'		=> '',
@@ -2026,7 +2029,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		$u_pm = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']);
 	}
 
-	//
 	$post_row = array(
 		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'POST_AUTHOR_COLOUR'	=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_colour'] : get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -2038,7 +2040,13 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'RANK_IMG_SRC'		=> $user_cache[$poster_id]['rank_image_src'],
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
-		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'],
+		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['html'] : '',
+		'POSTER_AVATAR_LAZY'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['lazy'] : false,
+		'POSTER_AVATAR_SOURCE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['src'] : '',
+		'POSTER_AVATAR_TITLE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['title'] : '',
+		'POSTER_AVATAR_TYPE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['type'] : '',
+		'POSTER_AVATAR_WIDTH'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['width'] : 0,
+		'POSTER_AVATAR_HEIGHT'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['height'] : 0,
 		'POSTER_WARNINGS'	=> $auth->acl_get('m_warn') ? $user_cache[$poster_id]['warnings'] : '',
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 		'CONTACT_USER'		=> $user_cache[$poster_id]['contact_user'],

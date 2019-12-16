@@ -721,7 +721,7 @@ class acp_groups
 					}
 				}
 
-				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
+				$group_avatar = $group_helper->get_avatar($group_row, 'GROUP_AVATAR', true);
 
 				if (isset($phpbb_avatar_manager) && !$update)
 				{
@@ -771,10 +771,14 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-					'AVATAR'				=> empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
+					'AVATAR'				=> empty($group_avatar['html']) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $group_avatar['html'],
+					'AVATAR_LAZY'			=> $group_avatar['lazy'],
+					'AVATAR_SRC'			=> $group_avatar['src'],
+					'AVATAR_TITLE'			=> $group_avatar['title'],
+					'AVATAR_TYPE'			=> $group_avatar['type'],
+					'AVATAR_WIDTH'			=> $group_avatar['width'],
+					'AVATAR_HEIGHT'			=> $group_avatar['height'],
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,

@@ -14,6 +14,7 @@ services:
     user_loader:
         class: phpbb\user_loader
         arguments:
+            - '@avatar.helper'
             - '@dbal.conn'
             - '%core.root_path%'
             - '%core.php_ext%'

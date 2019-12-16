@@ -431,7 +431,7 @@ class ucp_groups
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
-					$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
+					$group_avatar = $group_helper->get_avatar($group_row, 'GROUP_AVATAR', true);
 
 					$template->assign_vars(array(
 						'GROUP_NAME'			=> $group_helper->get_name($group_name),
@@ -440,10 +440,14 @@ class ucp_groups
 						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 						'GROUP_TYPE'			=> $group_row['group_type'],
 
-						'AVATAR'				=> !empty($avatar) ? $avatar : '',
-						'AVATAR_IMAGE'			=> !empty($avatar) ? $avatar : '',
-						'AVATAR_WIDTH'			=> isset($group_row['group_avatar_width']) ? $group_row['group_avatar_width'] : '',
-						'AVATAR_HEIGHT'			=> isset($group_row['group_avatar_height']) ? $group_row['group_avatar_height'] : '',
+						'AVATAR'				=> empty($group_avatar['html']) ? '<img class="avatar" src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $group_avatar['html'],
+						'AVATAR_IMAGE'			=> empty($group_avatar['html']) ? '<img class="avatar" src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $group_avatar['html'],
+						'AVATAR_LAZY'			=> $group_avatar['lazy'],
+						'AVATAR_SRC'			=> $group_avatar['src'],
+						'AVATAR_TITLE'			=> $group_avatar['title'],
+						'AVATAR_TYPE'			=> $group_avatar['type'],
+						'AVATAR_WIDTH'			=> $group_avatar['width'],
+						'AVATAR_HEIGHT'			=> $group_avatar['height'],
 					));
 				}
 

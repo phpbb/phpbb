@@ -757,11 +757,20 @@ class ucp_profile
 					$error = $phpbb_avatar_manager->localize_errors($user, $error);
 				}
 
-				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
-					'ERROR'			=> (count($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> $avatar,
+					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
+					'AVATAR'			=> $avatar['html'],
+					'AVATAR_LAZY'		=> $avatar['lazy'],
+					'AVATAR_SOURCE'		=> $avatar['src'],
+					'AVATAR_TITLE'		=> $avatar['title'],
+					'AVATAR_TYPE'		=> $avatar['type'],
+					'AVATAR_WIDTH'		=> $avatar['width'],
+					'AVATAR_HEIGHT'		=> $avatar['height'],
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 

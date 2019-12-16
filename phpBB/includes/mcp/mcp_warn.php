@@ -190,7 +190,7 @@ class mcp_warn
 	function mcp_warn_post_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $request;
-		global $template, $db, $user, $phpbb_dispatcher;
+		global $template, $db, $user, $phpbb_dispatcher, $phpbb_container;
 
 		$post_id = $request->variable('p', 0);
 		$forum_id = $request->variable('f', 0);
@@ -342,7 +342,11 @@ class mcp_warn
 		}
 
 		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
-		$avatar_img = phpbb_get_user_avatar($user_row);
+
+		/** @var \phpbb\avatar\helper $avatar_helper */
+		$avatar_helper = $phpbb_container->get('avatar.helper');
+
+		$avatar = $avatar_helper->get_user_avatar($user_row);
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
@@ -355,7 +359,13 @@ class mcp_warn
 			'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 			'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
 
-			'AVATAR_IMG'		=> $avatar_img,
+			'AVATAR_IMG'		=> $avatar['html'],
+			'AVATAR_LAZY'		=> $avatar['lazy'],
+			'AVATAR_SOURCE'		=> $avatar['src'],
+			'AVATAR_TITLE'		=> $avatar['title'],
+			'AVATAR_TYPE'		=> $avatar['type'],
+			'AVATAR_WIDTH'		=> $avatar['width'],
+			'AVATAR_HEIGHT'		=> $avatar['height'],
 			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
@@ -370,7 +380,7 @@ class mcp_warn
 	function mcp_warn_user_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $request;
-		global $template, $db, $user, $phpbb_dispatcher;
+		global $template, $db, $user, $phpbb_dispatcher, $phpbb_container;
 
 		$user_id = $request->variable('u', 0);
 		$username = $request->variable('username', '', true);
@@ -491,7 +501,11 @@ class mcp_warn
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
-		$avatar_img = phpbb_get_user_avatar($user_row);
+
+		/** @var \phpbb\avatar\helper $avatar_helper */
+		$avatar_helper = $phpbb_container->get('avatar.helper');
+
+		$avatar = $avatar_helper->get_user_avatar($user_row);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
@@ -507,7 +521,13 @@ class mcp_warn
 			'USERNAME'			=> get_username_string('username', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 			'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 
-			'AVATAR_IMG'		=> $avatar_img,
+			'AVATAR_IMG'		=> $avatar['html'],
+			'AVATAR_LAZY'		=> $avatar['lazy'],
+			'AVATAR_SOURCE'		=> $avatar['src'],
+			'AVATAR_TITLE'		=> $avatar['title'],
+			'AVATAR_TYPE'		=> $avatar['type'],
+			'AVATAR_WIDTH'		=> $avatar['width'],
+			'AVATAR_HEIGHT'		=> $avatar['height'],
 			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,

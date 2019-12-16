@@ -221,7 +221,13 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'RANK_TITLE'		=> $user_info['rank_title'],
 		'RANK_IMG'			=> $user_info['rank_image'],
-		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
+		'AUTHOR_AVATAR'			=> !empty($user_info['avatar']) ? $user_info['avatar']['html'] : '',
+		'AUTHOR_AVATAR_LAZY'	=> !empty($user_info['avatar']) ? $user_info['avatar']['lazy'] : false,
+		'AUTHOR_AVATAR_SOURCE'	=> !empty($user_info['avatar']) ? $user_info['avatar']['src'] : '',
+		'AUTHOR_AVATAR_TITLE'	=> !empty($user_info['avatar']) ? $user_info['avatar']['title'] : '',
+		'AUTHOR_AVATAR_TYPE'	=> !empty($user_info['avatar']) ? $user_info['avatar']['type'] : '',
+		'AUTHOR_AVATAR_WIDTH'	=> !empty($user_info['avatar']) ? $user_info['avatar']['width'] : 0,
+		'AUTHOR_AVATAR_HEIGHT'	=> !empty($user_info['avatar']) ? $user_info['avatar']['height'] : 0,
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
 		'U_AUTHOR_POSTS'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$author_id&amp;sr=posts") : '',
@@ -409,7 +415,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user;
+	global $db, $auth, $user, $phpbb_container;
 	global $phpbb_root_path, $phpEx, $config;
 
 	if (!$user_id)
@@ -449,7 +455,10 @@ function get_user_information($user_id, $user_row)
 		}
 	}
 
-	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
+	/** @var \phpbb\avatar\helper $avatar_helper */
+	$avatar_helper = $phpbb_container->get('avatar.helper');
+
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? $avatar_helper->get_user_avatar($user_row) : [];
 
 	if (!function_exists('phpbb_get_user_rank'))
 	{

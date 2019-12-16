@@ -1290,7 +1290,7 @@ switch ($mode)
 				break;
 			}
 
-			$avatar_img = phpbb_get_group_avatar($group_row);
+			$avatar = $group_helper->get_avatar($group_row);
 
 			// ... same for group rank
 			$group_rank_data = array(
@@ -1338,7 +1338,14 @@ switch ($mode)
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $group_rank_data['title'],
 
-				'AVATAR_IMG'	=> $avatar_img,
+				'AVATAR_IMG'	=> $avatar['html'],
+				'AVATAR_LAZY'	=> $avatar['lazy'],
+				'AVATAR_SRC'	=> $avatar['src'],
+				'AVATAR_TITLE'	=> $avatar['title'],
+				'AVATAR_TYPE'	=> $avatar['type'],
+				'AVATAR_WIDTH'	=> $avatar['width'],
+				'AVATAR_HEIGHT'	=> $avatar['height'],
+
 				'RANK_IMG'		=> $group_rank_data['img'],
 				'RANK_IMG_SRC'	=> $group_rank_data['img_src'],
 
