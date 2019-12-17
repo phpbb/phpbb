@@ -105,7 +105,15 @@ class helper
 	{
 		if (!$this->config['allow_avatar'] && !$ignore_config)
 		{
-			return [];
+			return [
+				'html'		=> '',
+				'lazy'		=> false,
+				'src'		=> '',
+				'title'		=> '',
+				'type'		=> '',
+				'width'		=> 0,
+				'height'	=> 0,
+			];
 		}
 
 		$data = [
