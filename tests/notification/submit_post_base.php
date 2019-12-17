@@ -112,8 +112,12 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$type_cast_helper = $this->createMock('\phpbb\request\type_cast_helper_interface');
 		$request = $this->createMock('\phpbb\request\request');
 
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
+
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$user_loader = new \phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Container
 		$phpbb_container = new ContainerBuilder();

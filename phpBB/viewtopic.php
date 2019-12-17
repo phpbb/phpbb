@@ -1484,7 +1484,7 @@ while ($row = $db->sql_fetchrow($result))
 				'viewonline'	=> $row['user_allow_viewonline'],
 				'allow_pm'		=> $row['user_allow_pm'],
 
-				'avatar'		=> ($user->optionget('viewavatars')) ? $this->get_user_avatar($row) : [],
+				'avatar'		=> ($user->optionget('viewavatars')) ? $avatar_helper->get_user_avatar($row) : [],
 				'age'			=> '',
 
 				'rank_title'		=> '',

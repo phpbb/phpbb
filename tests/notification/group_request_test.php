@@ -48,6 +48,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		));
 		$this->container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
+			$this->getMockBuilder('\phpbb\avatar\helper')->disableOriginalConstructor()->getMock(),
 			$this->cache,
 			$this->config,
 			new \phpbb\language\language(

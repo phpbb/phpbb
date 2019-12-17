@@ -180,7 +180,7 @@ class helper
 	 * Created for Backwards Compatibility (BC).
 	 * Styles should generate their own HTML element instead.
 	 *
-	 * @deprecated 4.0.0
+	 * @deprecated 4.1.0				After admin style is reworked aswell
 	 *
 	 * @param array		$data			The avatar data array
 	 * @return string					The avatar's HTML <img> element

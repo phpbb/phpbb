@@ -57,7 +57,11 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		];
 		$lang->add_lang('common');
 
-		$user_loader = new phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$user_loader = new phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
 		$user_loader->load_users(array(2, 3, 4, 5, 6));
 
 		$this->notification = new phpbb_mock_notification_type_post(

@@ -113,7 +113,11 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = ANONYMOUS;
 
-		$this->group_helper = new \phpbb\group\helper($auth, $cache_service, $config, $lang, $phpbb_dispatcher, $path_helper, $user);
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->group_helper = new \phpbb\group\helper($auth, $avatar_helper, $cache_service, $config, $lang, $phpbb_dispatcher, $path_helper, $user);
 	}
 
 	protected function setUp(): void

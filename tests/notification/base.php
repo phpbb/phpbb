@@ -63,6 +63,9 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 		global $db, $config, $user, $auth, $cache, $phpbb_container;
 
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array(
 			'allow_privmsg'			=> true,
@@ -77,7 +80,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$user->data['user_id'] = 0;
 		$user->data['user_type'] = USER_NORMAL;
 		$this->user = $user;
-		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
+		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
