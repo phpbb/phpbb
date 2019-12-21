@@ -157,7 +157,7 @@ class acp_bbcodes
 				* @var	string	bbcode_tpl			The bbcode HTML replacement string
 				* @var	string	bbcode_helpline		The bbcode help line string
 				* @var	array	hidden_fields		Array of hidden fields for use when
-				*									submitting form when $warn_text is true
+				*									submitting form when $warn_unsafe is true
 				* @since 3.1.0-a3
 				*/
 				$vars = array(
@@ -172,14 +172,25 @@ class acp_bbcodes
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
-				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
+				$acp_utils   = $phpbb_container->get('text_formatter.acp_utils');
+				$bbcode_info = $acp_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
+				$warn_unsafe = ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE);
 
-				if (!$warn_text && !check_form_key($form_key))
+				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_TEMPLATE)
+				{
+					trigger_error($user->lang['BBCODE_INVALID_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_DEFINITION)
+				{
+					trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				if (!$warn_unsafe && !check_form_key($form_key))
 				{
 					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if (!$warn_text || confirm_box(true))
+				if (!$warn_unsafe || confirm_box(true))
 				{
 					$data = $this->build_regexp($bbcode_match, $bbcode_tpl);
 
