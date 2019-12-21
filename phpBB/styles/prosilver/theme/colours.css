@@ -709,7 +709,7 @@ dd.profile-warnings {
 }
 
 /*  icon images */
-.site_logo { background-image: url("./images/site_logo.gif"); }
+.site_logo { background-image: url("./images/site_logo.svg"); }
 .contact-icon { background-image: url("./images/icons_contact.png"); }
 
 /* profile icons */

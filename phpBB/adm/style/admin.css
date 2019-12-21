@@ -217,14 +217,14 @@ li {
 #page-header {
 	font-size: 0.85em;
 	text-align: right;
-	background: url("../images/phpbb_logo.png") top left no-repeat;
+	background: url("../images/phpbb_logo.svg") top left no-repeat;
 	height: 54px;
 	margin-bottom: 10px;
 }
 
 .rtl #page-header {
 	text-align: left;
-	background: url("../images/phpbb_logo.png") top right no-repeat;
+	background: url("../images/phpbb_logo.svg") top right no-repeat;
 }
 
 #page-header h1 {
