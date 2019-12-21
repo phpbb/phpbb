@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes.',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
-	'BBCODE_DANGER'				=> 'The BBCode you are trying to add seems to use a {TEXT} token inside a HTML attribute. This is a possible XSS security issue. Try using the more restrictive {SIMPLETEXT} or {INTTEXT} types instead. Only proceed if you understand the risks involved and you consider the use of {TEXT} absolutely unavoidable.',
+	'BBCODE_DANGER'				=> 'The BBCode you are trying to add seems unsafe. If the BBCode uses a {TEXT} token in a sensitive context, try using a more restrictive type instead. Only proceed if you understand the risks involved.',
 	'BBCODE_DANGER_PROCEED'		=> 'Proceed', //'I understand the risk',
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully.',
@@ -56,6 +56,7 @@ $lang = array_merge($lang, array(
 
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_INVALID'			=> 'Your BBCode is constructed in an invalid form.',
+	'BBCODE_INVALID_TEMPLATE'	=> 'Your BBCode’s template is invalid.',
 	'BBCODE_TAG'				=> 'Tag',
 	'BBCODE_TAG_TOO_LONG'		=> 'The tag name you selected is too long.',
 	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
