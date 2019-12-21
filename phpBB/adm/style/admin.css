@@ -191,7 +191,7 @@ li {
 
 #page-header {
 	text-align: right;
-	background: url("../images/phpbb_logo.png") top left no-repeat;
+	background: url("../images/phpbb_logo.svg") top left no-repeat;
 	height: 54px;
 	font-size: 0.85em;
 	margin-bottom: 10px;
@@ -199,7 +199,7 @@ li {
 
 .rtl #page-header {
 	text-align: left;
-	background: url("../images/phpbb_logo.png") top right no-repeat;
+	background: url("../images/phpbb_logo.svg") top right no-repeat;
 }
 
 #page-header h1 {
