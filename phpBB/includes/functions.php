@@ -4112,18 +4112,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');
 
-	/**
-	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
-	 * @deprecated 3.2.7 (To be removed: 4.0.0-a1)
-	 */
-	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
-	if (!empty($form_token_login))
-	{
-		$s_login_redirect .= $form_token_login;
-		// Remove S_FORM_TOKEN_LOGIN as it's already appended to S_LOGIN_REDIRECT
-		$template->assign_var('S_FORM_TOKEN_LOGIN', '');
-	}
-
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
