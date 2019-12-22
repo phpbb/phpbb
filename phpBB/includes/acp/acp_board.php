@@ -530,17 +530,14 @@ class acp_board
 
 			if ($submit)
 			{
-				if (isset($data['type']))
+				if (isset($data['type']) && strpos($data['type'], 'password') === 0 && $config_value === '********')
 				{
-					if (strpos($data['type'], 'password') === 0 && $config_value === '********')
-					{
-						/**
-						 * Do not update password fields if the content is ********,
-						 * because that is the password replacement we use to not
-						 * send the password to the output
-						 */
-						continue;
-					}
+					/**
+					 * Do not update password fields if the content is ********,
+					 * because that is the password replacement we use to not
+					 * send the password to the output
+					 */
+					continue;
 				}
 
 				$config->set($config_name, $config_value);
