@@ -530,15 +530,19 @@ class acp_board
 
 			if ($submit)
 			{
-				if (strpos(isset($data['type']) ? $data['type'] : '', 'password') === 0 && $config_value === '********')
+				if (isset($data['type']))
 				{
-					/**
-					 * Do not update password fields if the content is ********,
-					 * because that is the password replacement we use to not
-					 * send the password to the output
-					 */
-					continue;
+					if (strpos($data['type'], 'password') === 0 && $config_value === '********')
+					{
+						/**
+						 * Do not update password fields if the content is ********,
+						 * because that is the password replacement we use to not
+						 * send the password to the output
+						 */
+						continue;
+					}
 				}
+
 				$config->set($config_name, $config_value);
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
