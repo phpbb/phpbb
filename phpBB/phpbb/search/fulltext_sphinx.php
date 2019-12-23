@@ -644,7 +644,7 @@ class fulltext_sphinx
 
 		$this->sphinx->SetFilter('deleted', array(0));
 
-		$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
+		$this->sphinx->SetLimits((int) $start, (int) $per_page, max(SPHINX_MAX_MATCHES, (int) $start + $per_page));
 		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
