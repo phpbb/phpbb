@@ -15,6 +15,11 @@ namespace phpbb\db\migration\data\v330;
 
 class remove_email_hash extends \phpbb\db\migration\migration
 {
+	static public function depends_on()
+	{
+		return ['\phpbb\db\migration\data\v30x\release_3_0_0'];
+	}
+
 	public function update_schema()
 	{
 		return [
