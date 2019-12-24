@@ -193,6 +193,8 @@ class ucp_pm
 					trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
 				}
 
+				add_form_key('ucp_pm_view');
+
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
 				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
@@ -210,6 +212,11 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
+					if (!check_form_key('ucp_pm_view'))
+					{
+						trigger_error('FORM_INVALID');
+					}
+
 					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
 					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 
