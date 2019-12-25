@@ -94,7 +94,7 @@ class remote extends \phpbb\avatar\driver\driver
 		 * @var	string	width	Image width
 		 * @var	string	height	Image height
 		 * @var	array	error	Error message array
-		 * @since 3.2.6-RC1
+		 * @since 3.2.9-RC1
 		 */
 		$vars = array('url', 'width', 'height', 'error');
 		extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_upload_validation', compact($vars)));
