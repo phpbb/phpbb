@@ -49,6 +49,8 @@ class remote extends \phpbb\avatar\driver\driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
+		global $phpbb_dispatcher;
+
 		$url = $request->variable('avatar_remote_url', '');
 		$width = $request->variable('avatar_remote_width', 0);
 		$height = $request->variable('avatar_remote_height', 0);
@@ -78,6 +80,24 @@ class remote extends \phpbb\avatar\driver\driver
 		);
 
 		$error = array_merge($error, $validate_array);
+
+		if (!empty($error))
+		{
+			return false;
+		}
+
+		/**
+		 * Event to make custom validation of avatar upload
+		 *
+		 * @event core.ucp_profile_avatar_upload_validation
+		 * @var	string	url		Image url
+		 * @var	string	width	Image width
+		 * @var	string	height	Image height
+		 * @var	array	error	Error message array
+		 * @since 3.2.9-RC1
+		 */
+		$vars = array('url', 'width', 'height', 'error');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_upload_validation', compact($vars)));
 
 		if (!empty($error))
 		{
