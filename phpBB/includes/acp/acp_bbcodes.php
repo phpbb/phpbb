@@ -207,8 +207,7 @@ class acp_bbcodes
 						$db->sql_freeresult($result);
 
 						// Grab the end, interrogate the last closing tag
-						if (
-							isset($info['test']) && $info['test'] === '1'
+						if (isset($info['test']) && $info['test'] === '1'
 							|| in_array(strtolower($data['bbcode_tag']), $hard_coded)
 							|| (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded))
 						)
