@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v328">Changes since 3.2.8</a></li>
 		<li><a href="#v328rc1">Changes since 3.2.8-RC1</a></li>
 		<li><a href="#v327">Changes since 3.2.7</a></li>
 		<li><a href="#v326">Changes since 3.2.6</a></li>
@@ -140,6 +141,61 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v328"></a><h3>Changes since 3.2.8</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14815">PHPBB3-14815</a>] - The facebook page link is not displayed properly in memberlist.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15643">PHPBB3-15643</a>] - $phpbb_filesystem-&gt;resolve_path() may trigger open_basedir restriction</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15902">PHPBB3-15902</a>] - Out of range error with Sphinx search</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16056">PHPBB3-16056</a>] - JPEG dimensions undetectable for some kind of jpeg files</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16076">PHPBB3-16076</a>] - Limit attachment size by extension group</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16141">PHPBB3-16141</a>] - plupload chunk_size calculation incorrect when one or more settings are 'unlimited'</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16150">PHPBB3-16150</a>] - Post title link urls not reliable when shared</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16156">PHPBB3-16156</a>] - Bots see both register and logout links in the navbar</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16157">PHPBB3-16157</a>] - Incorrect FORM_INVALID error message while sending email form</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16181">PHPBB3-16181</a>] - OAuth provider id needs to be quoted</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16184">PHPBB3-16184</a>] - Mark read button only works once</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16199">PHPBB3-16199</a>] - Guest posting CAPTCHA is being generated with no guest posting auth</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16209">PHPBB3-16209</a>] - Nginx example configuration file blocks an image in the ACP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16210">PHPBB3-16210</a>] - Terms of use should not be skippable</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16211">PHPBB3-16211</a>] - COPPA should not be skippable</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16216">PHPBB3-16216</a>] - Disable xdebug in travis builds</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16217">PHPBB3-16217</a>] - Enable opcache in travis CI builds</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16228">PHPBB3-16228</a>] - BBCode definitions with an optional attribute and a non-TEXT content are not merged correctly</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16242">PHPBB3-16242</a>] - Redirect loop when install folder doesn't exist</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16252">PHPBB3-16252</a>] - Ignore non-BBCodes when looking for unauthorized markup</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16257">PHPBB3-16257</a>] - Typo in Email Settings section</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16258">PHPBB3-16258</a>] - Sample Sphinx configuration file causes delta index to only include the most recent post</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16084">PHPBB3-16084</a>] - Pointless radio button for database backup in 3.2.7 </li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16139">PHPBB3-16139</a>] - Add core.viewtopic_modify_quick_reply_template_vars</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16140">PHPBB3-16140</a>] - Add new event to UCP Edit Profile Page</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16143">PHPBB3-16143</a>] - Add core events for move topics</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16144">PHPBB3-16144</a>] - NO_STYLE_DATA - Provide extra fallback to board's default style for $user.</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16146">PHPBB3-16146</a>] - Add core event for after move the forum</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16148">PHPBB3-16148</a>] - Add template events to acp_groups.html</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16151">PHPBB3-16151</a>] - Enable Emojis and rich text in forum name</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16153">PHPBB3-16153</a>] - Enable Emojis and rich text in topic title</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16159">PHPBB3-16159</a>] - Wrap post times in html time tag</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16174">PHPBB3-16174</a>] - Event for disabling cookie creation</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16182">PHPBB3-16182</a>] - Add core.generate_smilies_modify_rowset</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16183">PHPBB3-16183</a>] - Add core.generate_smilies_count_sql_before</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16203">PHPBB3-16203</a>] - Enable Emojis and rich text in sent Emails</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16247">PHPBB3-16247</a>] - Quote PM has no identifier</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16251">PHPBB3-16251</a>] - Shortened link text shouldn't override custom plugins</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15422">PHPBB3-15422</a>] - Remove the unnecessary helpline function and help_line variable</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16147">PHPBB3-16147</a>] - Updated tokens legend in BBCodes ACP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16160">PHPBB3-16160</a>] - Add script for generating package json file</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16172">PHPBB3-16172</a>] - Add &quot;Rank:&quot; or &quot;Group rank:&quot; in the memberlist</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16224">PHPBB3-16224</a>] - Update composer dependencies</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16246">PHPBB3-16246</a>] - Prettify and update README Automated Testing section</li>
+			</ul>
+
 			<a name="v328rc1"></a><h3>Changes since 3.2.8-RC1</h3>
 			<h4>Bug</h4>
 			<ul>
