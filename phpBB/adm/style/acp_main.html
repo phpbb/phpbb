@@ -201,64 +201,67 @@
 				</tbody>
 			</table>
 		</div>
-	<!-- IF S_ACTION_OPTIONS -->
+
+	{% if S_ACTION_OPTIONS %}
 		<fieldset>
-			<legend>{L_STATISTIC_RESYNC_OPTIONS}</legend>
+			<legend>{{ lang('STATISTIC_RESYNC_OPTIONS') }}</legend>
 
-			<form id="action_online_form" method="post" action="{U_ACTION}" data-ajax="true">
-				<dl>
-					<dt><label for="action_online">{L_RESET_ONLINE}</label><br /><span>&nbsp;</span></dt>
-					<dd><input type="hidden" name="action" value="online" /><input class="button2" type="submit" id="action_online" name="action_online" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+			<div class="stats-container">
+				<div>
+					<form id="action_online_form" method="post" action="{{ U_ACTION }}" data-ajax="true">
+						<label for="action_online"><strong>{{ lang('RESET_ONLINE') }}</strong></label><br><p>&nbsp;</p>
+						<input type="hidden" name="action" value="online" /><input class="button2" type="submit" id="action_online" name="action_online" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<form id="action_date_form" method="post" action="{U_ACTION}" data-ajax="true">
-				<dl>
-					<dt><label for="action_date">{L_RESET_DATE}</label><br /><span>&nbsp;</span></dt>
-					<dd><input type="hidden" name="action" value="date" /><input class="button2" type="submit" id="action_date" name="action_date" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+				<div>
+					<form id="action_date_form" method="post" action="{{ U_ACTION }}" data-ajax="true">
+						<label for="action_date"><strong>{{ lang('RESET_DATE') }}</strong></label><br><p>&nbsp;</p>
+						<input type="hidden" name="action" value="date" /><input class="button2" type="submit" id="action_date" name="action_date" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<form id="action_stats_form" method="post" action="{U_ACTION}">
-				<dl>
-					<dt><label for="action_stats">{L_RESYNC_STATS}</label><br /><span>{L_RESYNC_STATS_EXPLAIN}</span></dt>
-					<dd><input type="hidden" name="action" value="stats" /><input class="button2" type="submit" id="action_stats" name="action_stats" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+				<div>
+					<form id="action_stats_form" method="post" action="{{ U_ACTION }}">
+						<label for="action_stats"><strong>{{ lang('RESYNC_STATS') }}</strong></label><br><p>{{ lang('RESYNC_STATS_EXPLAIN') }}</p>
+						<input type="hidden" name="action" value="stats" /><input class="button2" type="submit" id="action_stats" name="action_stats" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<form id="action_user_form" method="post" action="{U_ACTION}">
-				<dl>
-					<dt><label for="action_user">{L_RESYNC_POSTCOUNTS}</label><br /><span>{L_RESYNC_POSTCOUNTS_EXPLAIN}</span></dt>
-					<dd><input type="hidden" name="action" value="user" /><input class="button2" type="submit" id="action_user" name="action_user" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+				<div>
+					<form id="action_user_form" method="post" action="{{ U_ACTION }}">
+						<label for="action_user"><strong>{{ lang('RESYNC_POSTCOUNTS') }}</strong></label><br><p>{{ lang('RESYNC_POSTCOUNTS_EXPLAIN') }}</p>
+						<input type="hidden" name="action" value="user" /><input class="button2" type="submit" id="action_user" name="action_user" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<form id="action_db_track_form" method="post" action="{U_ACTION}">
-				<dl>
-					<dt><label for="action_db_track">{L_RESYNC_POST_MARKING}</label><br /><span>{L_RESYNC_POST_MARKING_EXPLAIN}</span></dt>
-					<dd><input type="hidden" name="action" value="db_track" /><input class="button2" type="submit" id="action_db_track" name="action_db_track" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+				<div>
+					<form id="action_db_track_form" method="post" action="{{ U_ACTION }}">
+						<label for="action_db_track"><strong>{{ lang('RESYNC_POST_MARKING') }}</strong></label><br><p>{{ lang('RESYNC_POST_MARKING_EXPLAIN') }}</p>
+						<input type="hidden" name="action" value="db_track" /><input class="button2" type="submit" id="action_db_track" name="action_db_track" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<!-- IF S_FOUNDER -->
-			<form id="action_purge_sessions_form" method="post" action="{U_ACTION}" data-ajax="true">
-				<dl>
-					<dt><label for="action_purge_sessions">{L_PURGE_SESSIONS}</label><br /><span>{L_PURGE_SESSIONS_EXPLAIN}</span></dt>
-					<dd><input type="hidden" name="action" value="purge_sessions" /><input class="button2" type="submit" id="action_purge_sessions" name="action_purge_sessions" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
-			<!-- ENDIF -->
+				{% if S_FOUNDER %}
+					<div>
+						<form id="action_purge_sessions_form" method="post" action="{{ U_ACTION }}" data-ajax="true">
+							<label for="action_purge_sessions"><strong>{{ lang('PURGE_SESSIONS') }}</strong></label><br><p>{{ lang('PURGE_SESSIONS_EXPLAIN') }}</p>
+							<input type="hidden" name="action" value="purge_sessions" /><input class="button2" type="submit" id="action_purge_sessions" name="action_purge_sessions" value="{{ lang('RUN') }}" />
+						</form>
+					</div>
+				{% endif %}
 
-			<form id="action_purge_cache_form" method="post" action="{U_ACTION}" data-ajax="true">
-				<dl>
-					<dt><label for="action_purge_cache">{L_PURGE_CACHE}</label><br /><span>{L_PURGE_CACHE_EXPLAIN}</span></dt>
-					<dd><input type="hidden" name="action" value="purge_cache" /><input class="button2" type="submit" id="action_purge_cache" name="action_purge_cache" value="{L_RUN}" /></dd>
-				</dl>
-			</form>
+				<div>
+					<form id="action_purge_cache_form" method="post" action="{{ U_ACTION }}" data-ajax="true">
+						<label for="action_purge_cache"><strong>{{ lang('PURGE_CACHE') }}</strong></label><br><p>{{ lang('PURGE_CACHE_EXPLAIN') }}</p>
+						<input type="hidden" name="action" value="purge_cache" /><input class="button2" type="submit" id="action_purge_cache" name="action_purge_cache" value="{{ lang('RUN') }}" />
+					</form>
+				</div>
 
-			<!-- EVENT acp_main_actions_append -->
-  		</fieldset>
-	<!-- ENDIF -->
+				{% EVENT acp_main_actions_append %}
+			</div>
+		</fieldset>
+	{% endif %}
 
 	<!-- IF .log -->
 		<h2>{L_ADMIN_LOG}</h2>

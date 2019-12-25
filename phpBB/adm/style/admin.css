@@ -732,6 +732,21 @@ td {
 	width: 25%;
 }
 
+.stats-container {
+	display: flex;
+	flex-wrap: wrap;	
+	width: 100%;
+}
+
+.stats-container > div {
+	text-align: center;
+	border: 1px solid #327aa5;
+	border-radius: 5px;
+	flex: 1 1 auto;
+	width: 300px;
+	padding: 4px;
+}
+
 dt#color_palette_placeholder table {
 	margin-right: 5px;
 	width: 80px;
