@@ -242,7 +242,7 @@ function mcp_topic_view($id, $mode, $action)
 	);
 	extract($phpbb_dispatcher->trigger_event('core.mcp_topic_modify_post_data', compact($vars)));
 
-	foreach ($rowset as $i => $row)
+	foreach ($rowset as $current_row_number => $row)
 	{
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
@@ -336,7 +336,7 @@ function mcp_topic_view($id, $mode, $action)
 			}
 		}
 
-		unset($rowset[$i]);
+		unset($rowset[$current_row_number]);
 	}
 
 	// Display topic icons for split topic
