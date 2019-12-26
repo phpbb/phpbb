@@ -37,10 +37,21 @@ class argon2i extends base_native
 	{
 		parent::__construct($config, $helper);
 
-		// Don't allow cost factors to be below default settings
-		$this->memory_cost = max($memory_cost, 1024);
-		$this->threads     = max($threads,     2);
-		$this->time_cost   = max($time_cost,   2);
+		if ($this->is_sodium())
+		{
+			// For Sodium implementation, set special cost factor values (since PHP 7.4)
+			// See https://wiki.php.net/rfc/sodium.argon.hash and PHPBB3-16266
+			$this->memory_cost = max($memory_cost, 256*1024);
+			$this->threads     = 1;
+			$this->time_cost   = max($time_cost,   3);
+		}
+		else
+		{
+			// Otherwise don't allow cost factors to be below default settings
+			$this->memory_cost = max($memory_cost, 1024);
+			$this->threads     = max($threads,     2);
+			$this->time_cost   = max($time_cost,   2);
+		}
 	}
 
 	/**

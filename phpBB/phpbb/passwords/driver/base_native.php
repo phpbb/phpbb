@@ -58,6 +58,18 @@ abstract class base_native extends base
 	}
 
 	/**
+	* Check if Sodium implementation for argon2 algorithm is being used
+	*
+	* @link https://wiki.php.net/rfc/sodium.argon.hash
+	*
+	* @return bool
+	*/
+	public function is_sodium()
+	{
+		return defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium';
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function is_supported()
