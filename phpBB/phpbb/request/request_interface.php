@@ -104,7 +104,7 @@ interface request_interface
 	*
 	* @return	mixed	The header value.
 	*/
-	public function header($var_name, $default = '');
+	public function header($header_name, $default = '');
 
 	/**
 	* Checks whether a certain variable was sent via POST.

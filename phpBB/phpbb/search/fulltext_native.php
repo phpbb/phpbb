@@ -109,6 +109,12 @@ class fulltext_native extends \phpbb\search\base
 	* Initialises the fulltext_native search backend with min/max word length
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
+	* @param	string	$phpbb_root_path	phpBB root path
+	* @param	string	$phpEx	PHP file extension
+	* @param	\phpbb\auth\auth	$auth	Auth object
+	* @param	\phpbb\config\config	$config	Config object
+	* @param	\phpbb\db\driver\driver_interface	$db	Database object
+	* @param	\phpbb\user	$user	User object
 	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
