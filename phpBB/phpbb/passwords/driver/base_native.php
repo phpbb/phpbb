@@ -68,7 +68,7 @@ abstract class base_native extends base
 	{
 		static $is_sodium;
 
-		if (empty($is_sodium))
+		if (!isset($is_sodium))
 		{
 			$is_sodium = defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium';
 		}
