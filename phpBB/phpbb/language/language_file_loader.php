@@ -151,6 +151,7 @@ class language_file_loader
 	 *
 	 * @param string	$path		Path to language directory
 	 * @param string	$filename	Filename to load language strings from
+	 * @param array		$locales	Array containing language fallback options
 	 *
 	 * @return string	Relative path to language file
 	 *

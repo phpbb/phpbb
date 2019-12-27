@@ -44,7 +44,7 @@ class bbcode
 	/**
 	* Init bbcode cache entries if bitfield is specified
 	*
-	* @param	string	$bbcode_bitfield	The bbcode bitfield
+	* @param	string	$bitfield	The bbcode bitfield
 	*/
 	function bbcode_set_bitfield($bitfield = '')
 	{
