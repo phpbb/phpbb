@@ -66,7 +66,14 @@ abstract class base_native extends base
 	*/
 	public function is_sodium()
 	{
-		return defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium';
+		static $is_sodium;
+
+		if (empty($is_sodium))
+		{
+			$is_sodium = defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium';
+		}
+
+		return $is_sodium;
 	}
 
 	/**
