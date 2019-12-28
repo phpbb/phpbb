@@ -255,6 +255,7 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 		$symfony_request = new \phpbb\symfony_request($request);
 
 		$bbcode = new bbcode_firstpass();
+		$bbcode->mode = 'post';
 		$bbcode->message = $message;
 		$bbcode->bbcode_init(false);
 		$bbcode->parse_bbcode();
