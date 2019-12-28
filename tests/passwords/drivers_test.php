@@ -44,8 +44,8 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function data_helper_encode64()
 	{
 		return array(
-			array('foobar', 6, 'axqPW3aQ'),
-			array('foobar', 7, 'axqPW3aQ..'),
+			array('foobars', 6, 'axqPW3aQ'),
+			array('foobarss', 7, 'axqPW3aQn/'),
 			array('foobar', 5, 'axqPW34'),
 		);
 	}

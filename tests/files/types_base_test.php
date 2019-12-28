@@ -79,6 +79,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 		$php_ini->expects($this->any())
 			->method('getString')
 			->willReturn($max_filesize);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $php_ini, $this->request);
 		$type_form = new \phpbb\files\types\local($this->factory, $this->language, $php_ini, $this->request);
 		$file = $this->getMockBuilder('\phpbb\files\filespec')
 			->disableOriginalConstructor()
@@ -86,6 +87,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 		$file->expects($this->any())
 			->method('get')
 			->willReturn($filename);
+		$type_form->set_upload($upload);
 		$type_form->check_upload_size($file);
 
 		$this->assertSame($expected, $file->error);
