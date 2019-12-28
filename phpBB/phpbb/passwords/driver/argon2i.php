@@ -38,13 +38,14 @@ class argon2i extends base_native
 		parent::__construct($config, $helper);
 
 		/**
-		 * For Sodium implementation of argon2 algorithm, set special cost factor values (since PHP 7.4)
+		 * For Sodium implementation of argon2 algorithm (since PHP 7.4), set special value of 1 for "threads" cost factor
 		 * See https://wiki.php.net/rfc/sodium.argon.hash and PHPBB3-16266
 		 * Don't allow cost factors to be below default settings where possible
 		 */
-		$this->memory_cost = $this->is_sodium() ? max($memory_cost, 256 * 1024)	: max($memory_cost, 1024);
-		$this->threads     = $this->is_sodium() ? 1								: max($threads, 2);
-		$this->time_cost   = $this->is_sodium() ? max($time_cost, 3)			: max($time_cost, 2);
+		$this->memory_cost = max($memory_cost, PASSWORD_ARGON2_DEFAULT_MEMORY_COST);
+		$this->time_cost   = max($time_cost, PASSWORD_ARGON2_DEFAULT_TIME_COST);
+		$this->threads     = (defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium') ?
+									PASSWORD_ARGON2_DEFAULT_THREADS : max($threads, PASSWORD_ARGON2_DEFAULT_THREADS);
 	}
 
 	/**
