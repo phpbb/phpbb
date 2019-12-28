@@ -268,7 +268,7 @@ class request implements \phpbb\request\request_interface
 	* whatever).
 	*
 	* @param	string|array	$var_name		See \phpbb\request\request_interface::variable
-	* @param	mixed			$Default		See \phpbb\request\request_interface::variable
+	* @param	mixed			$default		See \phpbb\request\request_interface::variable
 	*
 	* @return	mixed	The server variable value.
 	*/

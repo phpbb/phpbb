@@ -223,6 +223,7 @@ class check extends \phpbb\console\command\command
 	* Check if all the available extensions are up to date
 	*
 	* @param SymfonyStyle	$io			IO handler, for formatted and unified IO
+	* @param string			$stability	Stability specifier string
 	* @param bool			$recheck	Disallow the use of the cache
 	* @return int
 	*/

@@ -656,8 +656,8 @@ switch ($mode)
 
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
-		$foe = ($row['foe']) ? true : false;
-		$friend = ($row['friend']) ? true : false;
+		$foe = (bool) $row['foe'] ?? false;
+		$friend = (bool) $row['friend'] ?? false;
 		$db->sql_freeresult($result);
 
 		if ($config['load_onlinetrack'])
@@ -670,7 +670,7 @@ switch ($mode)
 			$db->sql_freeresult($result);
 
 			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
-			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
+			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
 			unset($row);
 		}
 

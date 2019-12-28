@@ -73,8 +73,6 @@ interface service_interface
 
 	/**
 	 * Returns the external library service provider once it has been set
-	 *
-	 * @param \OAuth\Common\Service\ServiceInterface|null
 	 */
 	public function get_external_service_provider();
 

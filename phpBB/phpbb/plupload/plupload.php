@@ -325,6 +325,8 @@ class plupload
 	* by PHP and actually exists, if not, it generates an error
 	*
 	* @param string $form_name The name of the file in the form data
+	* @param int $chunk Chunk number
+	* @param string $file_path File path
 	*
 	* @return null
 	*/
