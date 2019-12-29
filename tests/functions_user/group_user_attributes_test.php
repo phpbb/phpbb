@@ -131,6 +131,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 
 		$user = new phpbb_mock_user;
 		$user->ip = '';
+		$user->data['user_id'] = $user_id;
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();

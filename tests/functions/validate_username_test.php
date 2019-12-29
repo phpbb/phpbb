@@ -130,11 +130,13 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 	*/
 	public function test_validate_username($allow_name_chars, $expected)
 	{
-		global $cache, $config, $db;
+		global $cache, $config, $db, $user;
 
 		$db = $this->db;
 		$cache = $this->cache;
 		$cache->put('_disallowed_usernames', array('barfoo'));
+		$user = new phpbb_mock_user();
+		$user->data['username_clean'] = 'username';
 
 		$config['allow_name_chars'] = $allow_name_chars;
 

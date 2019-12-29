@@ -22,7 +22,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher, $auth;
+		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher, $auth, $user;
 
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();

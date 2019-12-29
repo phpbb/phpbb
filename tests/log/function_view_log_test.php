@@ -411,6 +411,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				2	=> 'plural (%d)',
 			),
 		);
+		$user->session_id = false;
+		$user->data['user_id'] = 10;
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 

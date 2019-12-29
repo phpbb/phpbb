@@ -74,7 +74,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 
 	protected function generate_route_objects()
 	{
-		global $request;
+		global $request, $phpbb_root_path, $phpEx;
 
 		$this->request = new phpbb_mock_request();
 		$this->request->overwrite('SCRIPT_NAME', $this->get_uri(), \phpbb\request\request_interface::SERVER);

@@ -26,6 +26,8 @@ class schema_generator_test extends phpbb_test_case
 
 	public function setUp(): void
 	{
+		global $phpbb_root_path, $phpEx;
+
 		parent::setUp();
 
 		$this->config = new \phpbb\config\config(array());
@@ -33,6 +35,8 @@ class schema_generator_test extends phpbb_test_case
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->db);
 		$this->table_prefix = 'phpbb_';
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 	}
 
 	protected function get_schema_generator(array $class_names)
