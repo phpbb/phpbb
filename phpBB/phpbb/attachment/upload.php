@@ -84,6 +84,7 @@ class upload
 	 * @param guesser $mimetype_guesser
 	 * @param dispatcher $phpbb_dispatcher
 	 * @param plupload $plupload
+	 * @param storage $storage
 	 * @param temp $temp
 	 * @param user $user
 	 */
