@@ -192,7 +192,7 @@ class acp_storage
 	/**
 	 * Get the current provider from config
 	 *
-	 * @param string $key Storage name
+	 * @param string $storage_name Storage name
 	 * @return string The current provider
 	 */
 	protected function get_current_provider($storage_name)
@@ -203,7 +203,7 @@ class acp_storage
 	/**
 	 * Get the new provider from the request
 	 *
-	 * @param string $key Storage name
+	 * @param string $storage_name Storage name
 	 * @return string The new provider
 	 */
 	protected function get_new_provider($storage_name)

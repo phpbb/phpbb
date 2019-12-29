@@ -382,6 +382,7 @@ class filespec_storage
 	/**
 	 * Move file to destination folder
 	 *
+	 * @param \phpbb\storage\storage $storage
 	 * @param bool $overwrite If set to true, an already existing file will be overwritten
 	 * @param bool $skip_image_check If set to true, the check for the file to be a valid image is skipped
 	 *
