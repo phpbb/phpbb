@@ -61,7 +61,7 @@ if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\requ
 
 if (count($action_ary))
 {
-	list($action, ) = each($action_ary);
+	$action = key($action_ary);
 }
 unset($action_ary);
 

@@ -694,8 +694,8 @@ class acp_permissions
 		}
 
 		// We loop through the auth settings defined in our submit
-		list($ug_id, ) = each($psubmit);
-		list($forum_id, ) = each($psubmit[$ug_id]);
+		$ug_id = key($psubmit);
+		$forum_id = key($psubmit[$ug_id]);
 
 		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
 		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))

@@ -285,7 +285,7 @@ class diff_engine
 				$matches = $ymatches[$line];
 
 				reset($matches);
-				while (list(, $y) = each($matches))
+				while ($y = current($matches))
 				{
 					if (empty($this->in_seq[$y]))
 					{
@@ -296,7 +296,7 @@ class diff_engine
 				}
 
 				// no reset() here
-				while (list(, $y) = each($matches))
+				while ($y = current($matches))
 				{
 					if ($y > $this->seq[$k - 1])
 					{
