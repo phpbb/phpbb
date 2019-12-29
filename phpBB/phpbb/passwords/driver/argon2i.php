@@ -37,6 +37,14 @@ class argon2i extends base_native
 	{
 		parent::__construct($config, $helper);
 
+		// Workaround to prevent "Use of undefined constant" warning on some unsupported PHP installations
+		if (!defined('PASSWORD_ARGON2I'))
+		{
+			define('PASSWORD_ARGON2_DEFAULT_MEMORY_COST', 1024);
+			define('PASSWORD_ARGON2_DEFAULT_TIME_COST', 2);
+			define('PASSWORD_ARGON2_DEFAULT_THREADS', 1);
+		}
+
 		/**
 		 * For Sodium implementation of argon2 algorithm (since PHP 7.4), set special value of 1 for "threads" cost factor
 		 * See https://wiki.php.net/rfc/sodium.argon.hash and PHPBB3-16266
