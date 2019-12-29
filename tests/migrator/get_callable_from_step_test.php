@@ -15,7 +15,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 {
 	public function setUp(): void
 	{
-		global $phpbb_root_path, $php_ext, $table_prefix, $phpbb_log;
+		global $phpbb_root_path, $php_ext, $table_prefix, $phpbb_log, $user;
 
 		parent::setUp();
 
@@ -24,6 +24,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 		$factory = new \phpbb\db\tools\factory();
 		$cache_service = $this->getMockBuilder('\phpbb\cache\service')->disableOriginalConstructor()->getMock();
 		$user = $this->getMockBuilder('\phpbb\user')->disableOriginalConstructor()->getMock();
+		$user->ip = '127.0.0.1';
 		$module_manager = new \phpbb\module\module_manager(
 			$this->getMockBuilder('\phpbb\cache\driver\dummy')->disableOriginalConstructor()->getMock(),
 			$db,

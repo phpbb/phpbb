@@ -112,7 +112,8 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return $row['user_id'];
+		$user_id = $row ? $row['user_id'] : null;
+		return $user_id;
 	}
 
 	public function getInputStream($input)

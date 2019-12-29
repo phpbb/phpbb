@@ -445,7 +445,7 @@ class p_master
 				break;
 
 				default:
-					if (!preg_match('#(?:' . implode(array_keys($valid_tokens), ')|(?:') . ')#', $token))
+					if (!preg_match('#(?:' . implode(')|(?:', array_keys($valid_tokens)) . ')#', $token))
 					{
 						$token = '';
 					}
