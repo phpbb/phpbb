@@ -21,10 +21,15 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
 		$phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
 		$php_ext = 'php';
+		
+		// Initialize argon2 default options
+		$this->argon2_default_cost_options = [
+			'memory_cost' => 1024,
+			'time_cost'   => 2,
+			'threads'     => 2
+		];
 
 		$this->passwords_drivers = array(
-			'passwords.driver.argon2i'	=> new \phpbb\passwords\driver\argon2i($config, $this->driver_helper),
-			'passwords.driver.argon2id'	=> new \phpbb\passwords\driver\argon2id($config, $this->driver_helper),
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
 			'passwords.driver.bcrypt'	=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper, 10),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
@@ -39,6 +44,19 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		);
 		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $this->driver_helper, $phpbb_root_path, $php_ext);
 		$this->passwords_drivers['passwords.driver.bcrypt_wcf2'] = new \phpbb\passwords\driver\bcrypt_wcf2($this->passwords_drivers['passwords.driver.bcrypt'], $this->driver_helper);
+
+		$pwhash_supported = function_exists('password_hash') && function_exists('password_needs_rehash') && function_exists('password_verify');
+		if (defined('PASSWORD_ARGON2I') && $pwhash_supported)
+		{
+			$this->passwords_drivers['passwords.driver.argon2i'] = new \phpbb\passwords\driver\argon2i($config, $this->driver_helper);
+			$this->argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2i']->get_options();
+		}
+
+		if (defined('PASSWORD_ARGON2ID') && $pwhash_supported)
+		{
+			$this->passwords_drivers['passwords.driver.argon2id'] = new \phpbb\passwords\driver\argon2id($config, $this->driver_helper);
+			$this->argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2id']->get_options();
+		}
 	}
 
 	public function data_helper_encode64()
@@ -418,20 +436,34 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 
 	public function data_needs_rehash()
 	{
-		return array(
+		$data_array = [
 			array('passwords.driver.bcrypt_2y', '$2y$10$somerandomhash', false),
 			array('passwords.driver.bcrypt', '$2a$10$somerandomhash', false),
 			array('passwords.driver.salted_md5', 'foobar', false),
 			array('passwords.driver.bcrypt_2y', '$2y$9$somerandomhash', true),
 			array('passwords.driver.bcrypt', '$2a$04$somerandomhash', true),
-			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=2$NEF0S1JSN04yNGQ1UVRKdA$KYGNI9CbjoKh1UEu1PpdlqbuLbveGwkMcwcT2Un9pPM', false),
-			array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
-			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
-			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
-			array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=2,p=2$MXB4OW5sczE5TnFPYkEuYQ$2bxaMIp8+9x37O6v8zkqpBU72ohCibUrtgVZw7vyr5Q', false),
-			array('passwords.driver.argon2id', '$argon2id$v=19$m=128,t=2,p=2$RWV2VFAuWXk5bTVjbktOLg$Nt7Z7koa25SVRSKr3RKqjwKz26FENDuU+aL1DfMcWRo', true),
-			array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=1,p=2$Rmw5M21IUFZDVEltYU0uTA$GIObGbHV6sOw5OQEtF8z+2ESztT96OWhCk17sUlwLAY', true),
-		);
+		];
+
+		if (isset($this->passwords_drivers['passwords.driver.argon2i']))
+		{
+			$data_array = array_merge($data_array, [
+				array('passwords.driver.argon2i', '$argon2i$v=19$m=' . $this->argon2_default_cost_options['memory_cost'] . ',t=' . $this->argon2_default_cost_options['time_cost'] . ',p=' . $this->argon2_default_cost_options['threads'] . '$NEF0S1JSN04yNGQ1UVRKdA$KYGNI9CbjoKh1UEu1PpdlqbuLbveGwkMcwcT2Un9pPM', false),
+				array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
+				array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
+				array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
+			]);
+		}
+
+		if (isset($this->passwords_drivers['passwords.driver.argon2id']))
+		{
+			$data_array = array_merge($data_array, [
+				array('passwords.driver.argon2id', '$argon2id$v=19$m=' . $this->argon2_default_cost_options['memory_cost'] . ',t=' . $this->argon2_default_cost_options['time_cost'] . ',p=' . $this->argon2_default_cost_options['threads'] . '$MXB4OW5sczE5TnFPYkEuYQ$2bxaMIp8+9x37O6v8zkqpBU72ohCibUrtgVZw7vyr5Q', false),
+				array('passwords.driver.argon2id', '$argon2id$v=19$m=128,t=2,p=2$RWV2VFAuWXk5bTVjbktOLg$Nt7Z7koa25SVRSKr3RKqjwKz26FENDuU+aL1DfMcWRo', true),
+				array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=1,p=2$Rmw5M21IUFZDVEltYU0uTA$GIObGbHV6sOw5OQEtF8z+2ESztT96OWhCk17sUlwLAY', true),
+			]);
+		}
+
+		return $data_array;
 	}
 
 	/**
