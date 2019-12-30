@@ -1184,21 +1184,24 @@ if ($submit || $preview || $refresh)
 	/**
 	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
 	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 * Check the permissions for posting Emojis first.
 	 */
-	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
-
-	/**
-	 * This should never happen again.
-	 * Leaving the fallback here just in case there will be the need of it.
-	 *
-	 * Check for out-of-bounds characters that are currently
-	 * not supported by utf8_bin in MySQL
-	 */
-	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+	if ($auth->acl_get('u_emoji'))
 	{
-		$character_list = implode('<br>', $matches[0]);
+		$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
+	}
+	else
+	{
+		/**
+		 * Check for out-of-bounds characters that are currently
+		 * not supported by utf8_bin in MySQL
+		 */
+		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+		{
+			$character_list = implode('<br>', $matches[0]);
 
-		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
+			$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
+		}
 	}
 
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
