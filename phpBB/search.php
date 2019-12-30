@@ -1214,6 +1214,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
 			));
 
+			$folder_img = $folder_alt = $u_mcp_queue = '';
+			$topic_type = $posts_unapproved = 0;
+			$unread_topic = $topic_unapproved = $topic_deleted = false;
+
 			/**
 			* Modify the topic data before it is assigned to the template
 			*
