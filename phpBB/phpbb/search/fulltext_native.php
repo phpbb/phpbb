@@ -788,6 +788,8 @@ class fulltext_native extends \phpbb\search\base
 		$must_not_contain_ids = $this->must_not_contain_ids;
 		$must_contain_ids = $this->must_contain_ids;
 
+		$sql_sort_table = $sql_sort_join = $sql_match = $sql_match_where = $sql_sort = '';
+
 		/**
 		* Allow changing the query used for counting for posts using fulltext_native
 		*
