@@ -308,14 +308,13 @@ class feed
 			 * Event to modify the feed row
 			 *
 			 * @event core.feed_modify_feed_row
-			 * @var	int		forum_id	Forum ID
-			 * @var	string	mode		Feeds mode (forums|topics|topics_new|topics_active|news)
+			 * @var	feed_interface feed Feed instance
 			 * @var	array	row			Array with feed data
-			 * @var	int		topic_id	Topic ID
 			 *
 			 * @since 3.1.10-RC1
+			 * @changed 3.3.0 Replace forum_id, mode, topic_id with feed instance
 			 */
-			$vars = array('forum_id', 'mode', 'row', 'topic_id');
+			$vars = array('feed', 'row');
 			extract($this->phpbb_dispatcher->trigger_event('core.feed_modify_feed_row', compact($vars)));
 
 			// BBCode options to correctly disable urls, smilies, bbcode...
