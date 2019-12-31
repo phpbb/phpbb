@@ -243,10 +243,10 @@ class acp_extensions
 						'DISABLE'	=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($ext_name),
 					]);
 
-					$data = array(
+					$data = [
 						'EXT_ENABLE_SUCCESS'	=> true,
 						'ACTIONS'				=> $actions,
-					);
+					];
 
 					$data['REFRESH_DATA'] = [
 						'url'  => '',
