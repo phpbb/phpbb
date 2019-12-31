@@ -379,7 +379,7 @@ class acp_extensions
 
 					$data = [
 						'EXT_DELETE_DATA_SUCCESS'	=> true,
-						'ACTIONS'				=> $actions,
+						'ACTIONS'					=> $actions,
 					];
 
 					$data['REFRESH_DATA'] = [
