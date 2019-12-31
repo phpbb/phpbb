@@ -246,11 +246,10 @@ class acp_extensions
 					$data = [
 						'EXT_ENABLE_SUCCESS'	=> true,
 						'ACTIONS'				=> $actions,
-					];
-
-					$data['REFRESH_DATA'] = [
-						'url'  => '',
-						'time' => 0,
+						'REFRESH_DATA'			=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
 					];
 
 					$json_response = new \phpbb\json_response;
@@ -310,11 +309,10 @@ class acp_extensions
 					$data = [
 						'EXT_DISABLE_SUCCESS'	=> true,
 						'ACTIONS'				=> $actions,
-					];
-
-					$data['REFRESH_DATA'] = [
-						'url'  => '',
-						'time' => 0,
+						'REFRESH_DATA'			=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
 					];
 
 					$json_response = new \phpbb\json_response;
@@ -380,11 +378,10 @@ class acp_extensions
 					$data = [
 						'EXT_DELETE_DATA_SUCCESS'	=> true,
 						'ACTIONS'					=> $actions,
-					];
-
-					$data['REFRESH_DATA'] = [
-						'url'  => '',
-						'time' => 0,
+						'REFRESH_DATA'				=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
 					];
 
 					$json_response = new \phpbb\json_response;
