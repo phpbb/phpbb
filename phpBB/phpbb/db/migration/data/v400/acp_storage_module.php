@@ -20,7 +20,7 @@ class acp_storage_module extends migration
 	public function effectively_installed()
 	{
 		$sql = 'SELECT module_id
-			FROM ' . MODULES_TABLE . "
+			FROM ' . $this->tables['modules'] . "
 			WHERE module_class = 'acp'
 				AND module_langname = 'ACP_STORAGE_SETTINGS'";
 		$result = $this->db->sql_query($sql);
