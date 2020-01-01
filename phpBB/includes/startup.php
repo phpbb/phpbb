@@ -25,7 +25,7 @@ error_reporting($level);
 /**
 * Minimum Requirement: PHP 7.1.3
 */
-if (version_compare(PHP_VERSION, '7.1.3') < 0)
+if (version_compare(PHP_VERSION, '7.1.3', '<'))
 {
 	die('You are running an unsupported PHP version. Please upgrade to PHP 7.1.3 or higher before trying to install or update to phpBB 3.3');
 }
