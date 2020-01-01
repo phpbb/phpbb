@@ -405,7 +405,7 @@ class fulltext_native extends \phpbb\search\base
 				}
 
 				// a group of words of which at least one word should be in every resulting post
-				if ($word[0] == '(')
+				if (isset($word[0]) && $word[0] == '(')
 				{
 					$word = array_unique(explode('|', substr($word, 1, -1)));
 				}

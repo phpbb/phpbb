@@ -691,7 +691,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function remove_user_group($group_name, $usernames)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $user, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
@@ -733,7 +733,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function add_user_group($group_name, $usernames, $default = false, $leader = false)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $user, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
@@ -860,6 +860,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			{
 				$this->add_lang($file);
 			}
+
+			return;
 		}
 
 		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";

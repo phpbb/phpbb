@@ -23,6 +23,12 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>13</value>
+			<value>bot</value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_sessions">
 		<column>session_id</column>

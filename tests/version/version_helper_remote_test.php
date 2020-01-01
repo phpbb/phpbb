@@ -203,6 +203,10 @@ class version_helper_remote_test extends \phpbb_test_case
 	{
 		$this->file_downloader->set($input);
 
+		// version_helper->get_versions() doesn't return a value on VERSIONCHECK_FAIL but only throws exception
+		// so the $return is undefined. Define it here
+		$return = false;
+
 		if (!$valid_data)
 		{
 			try {

@@ -21,6 +21,8 @@ class phpbb_mock_user
 {
 	public $host = "testhost";
 	public $page = array('root_script_path' => '/');
+	public $style = [];
+	public $data = [];
 	
 	private $options = array();
 	public function optionget($item)

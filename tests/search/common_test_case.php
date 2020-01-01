@@ -200,6 +200,9 @@ abstract class phpbb_search_common_test_case extends phpbb_search_test_case
 		$this->assertEquals($ok, $rv);
 		if ($ok)
 		{
+			// If there are valid keywords, search->split_keywords perfoms array sort
+			sort($split_words);
+
 			// only check criteria if the search is going to be performed
 			$this->assert_array_content_equals($split_words, $this->search->get_split_words());
 		}
