@@ -286,12 +286,19 @@ class acp_extensions
 						'DISABLE'	=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($ext_name),
 					]);
 
-					$json_response = new \phpbb\json_response;
-					$json_response->send(array(
+					$data = [
 						'EXT_ENABLE_SUCCESS'	=> true,
 						'ACTIONS'				=> $actions,
-					));
+						'REFRESH_DATA'			=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
+					];
+
+					$json_response = new \phpbb\json_response;
+					$json_response->send($data);
 				}
+
 				trigger_error($this->user->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
@@ -342,12 +349,19 @@ class acp_extensions
 						'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($ext_name),
 					]);
 
-					$json_response = new \phpbb\json_response;
-					$json_response->send(array(
+					$data = [
 						'EXT_DISABLE_SUCCESS'	=> true,
 						'ACTIONS'				=> $actions,
-					));
+						'REFRESH_DATA'			=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
+					];
+
+					$json_response = new \phpbb\json_response;
+					$json_response->send($data);
 				}
+
 				trigger_error($this->user->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
@@ -404,12 +418,19 @@ class acp_extensions
 						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
 					]);
 
-					$json_response = new \phpbb\json_response;
-					$json_response->send(array(
+					$data = [
 						'EXT_DELETE_DATA_SUCCESS'	=> true,
 						'ACTIONS'					=> $actions,
-					));
+						'REFRESH_DATA'				=> [
+							'url'	=> '',
+							'time'	=> 0,
+						],
+					];
+
+					$json_response = new \phpbb\json_response;
+					$json_response->send($data);
 				}
+
 				trigger_error($this->user->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
