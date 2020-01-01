@@ -11,23 +11,45 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class acp_storage_module extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class acp_storage_module extends migration
 {
+	public function effectively_installed()
+	{
+		$sql = 'SELECT module_id
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = 'acp'
+				AND module_langname = 'ACP_STORAGE_SETTINGS'";
+		$result = $this->db->sql_query($sql);
+		$acp_storage_module_id = (int) $this->db->sql_fetchfield('module_id');
+		$this->db->sql_freeresult($result);
+
+		return !empty($acp_storage_module_id);
+	}
+
+	static public function depends_on()
+	{
+		return [
+			'\phpbb\db\migration\data\v400\dev',
+		];
+	}
+
 	public function update_data()
 	{
-		return array(
-			array('module.add', array(
+		return [
+			['module.add', [
 				'acp',
 				'ACP_SERVER_CONFIGURATION',
-				array(
+				[
 					'module_basename'	=> 'acp_storage',
 					'module_langname'	=> 'ACP_STORAGE_SETTINGS',
 					'module_mode'		=> 'settings',
 					'module_auth'		=> 'acl_a_storage',
-				),
-			)),
-		);
+				],
+			]],
+		];
 	}
 }
