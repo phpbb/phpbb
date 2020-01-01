@@ -44,7 +44,7 @@ class mcp_logs
 
 		if (is_array($action))
 		{
-			list($action, ) = each($action);
+			$action = key($action);
 		}
 		else
 		{
