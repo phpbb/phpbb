@@ -38,6 +38,7 @@ class user_emoji_permission extends \phpbb\db\migration\migration
 	{
 		return [
 			['permission.add', ['u_emoji']],
+			['permission.permission_set', ['REGISTERED', 'u_emoji', 'group']],
 		];
 	}
 }
