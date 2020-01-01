@@ -653,11 +653,12 @@ switch ($mode)
 			FROM ' . ZEBRA_TABLE . "
 			WHERE zebra_id = $user_id
 				AND user_id = {$user->data['user_id']}";
-
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
-		$foe = (bool) $row['foe'] ?? false;
-		$friend = (bool) $row['friend'] ?? false;
+
+		$foe = $row ? (bool) $row['foe'] : false;
+		$friend = $row ? (bool) $row['friend'] : false;
+
 		$db->sql_freeresult($result);
 
 		if ($config['load_onlinetrack'])
