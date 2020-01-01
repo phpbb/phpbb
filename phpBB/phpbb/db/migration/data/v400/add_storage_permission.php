@@ -11,18 +11,32 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class add_storage_permission extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class add_storage_permission extends migration
 {
+	public function effectively_installed()
+	{
+		$sql = 'SELECT auth_option_id
+			FROM ' . $this->tables['acl_options'] . "
+			WHERE auth_option = 'a_storage'";
+		$result = $this->db->sql_query($sql);
+		$a_storage_option_id = (int) $this->db->sql_fetchfield('auth_option_id');
+		$this->db->sql_freeresult($result);
+
+		return !empty($a_storage_option_id);
+	}
+
 	public function update_data()
 	{
-		return array(
+		return [
 			// Add permission
-			array('permission.add', array('a_storage')),
+			['permission.add', ['a_storage']],
 
 			// Set permissions
-			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'a_storage')),
-		);
+			['permission.permission_set', ['ROLE_ADMIN_FULL', 'a_storage']],
+		];
 	}
 }
