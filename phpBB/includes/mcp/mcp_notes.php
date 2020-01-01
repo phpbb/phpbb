@@ -42,7 +42,7 @@ class mcp_notes
 
 		if (is_array($action))
 		{
-			list($action, ) = each($action);
+			$action = key($action);
 		}
 
 		$this->page_title = 'MCP_NOTES';

@@ -1209,7 +1209,8 @@ function get_config()
 	if (is_array($convert->config_schema['table_format']))
 	{
 		$convert_config = array();
-		list($key, $val) = each($convert->config_schema['table_format']);
+		$key = key($convert->config_schema['table_format']);
+		$val = current($convert->config_schema['table_format']);
 
 		do
 		{
