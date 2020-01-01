@@ -75,14 +75,13 @@ abstract class phpbb_database_test_case extends TestCase
 
 		if (!file_exists(self::$schema_file))
 		{
-
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite3();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($db, true);
 
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, self::get_core_tables());
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
 		}
 
@@ -318,5 +317,24 @@ abstract class phpbb_database_test_case extends TestCase
 			// increase assertion count
 			$this->assertTrue(true);
 		}
+	}
+
+	static public function get_core_tables() : array
+	{
+		global $phpbb_root_path, $table_prefix;
+
+		static $core_tables = [];
+
+		if (empty($tables))
+		{
+			$tables_yml_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
+
+			foreach ($tables_yml_data['parameters'] as $parameter => $table)
+			{
+				$core_tables[str_replace('tables.', '', $parameter)] = str_replace('%core.table_prefix%', $table_prefix, $table);
+			}
+		}
+
+		return $core_tables;
 	}
 }

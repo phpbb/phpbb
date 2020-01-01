@@ -43,6 +43,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 			$phpbb_root_path,
 			$php_ext,
 			$table_prefix,
+			self::get_core_tables(),
 			array($module_tools),
 			new \phpbb\db\migration\helper()
 		);

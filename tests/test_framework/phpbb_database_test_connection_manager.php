@@ -372,8 +372,9 @@ class phpbb_database_test_connection_manager
 			$db = new \phpbb\db\driver\sqlite3();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($db, true);
+			$tables = phpbb_database_test_case::get_core_tables();
 
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, $tables);
 			$db_table_schema = $schema_generator->get_schema();
 		}
 

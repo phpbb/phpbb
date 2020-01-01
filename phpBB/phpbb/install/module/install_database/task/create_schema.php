@@ -13,7 +13,14 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\db\driver\driver_interface;
+use phpbb\db\migration\schema_generator;
+use phpbb\db\tools\tools_interface;
+use phpbb\filesystem\filesystem_interface;
 use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\install\helper\config;
+use phpbb\install\helper\database;
+use phpbb\install\helper\iohandler\iohandler_interface;
 
 /**
  * Create database schema
@@ -21,32 +28,32 @@ use phpbb\install\exception\resource_limit_reached_exception;
 class create_schema extends \phpbb\install\task_base
 {
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
-	 * @var \phpbb\db\tools\tools_interface
+	 * @var tools_interface
 	 */
 	protected $db_tools;
 
 	/**
-	 * @var \phpbb\install\helper\database
+	 * @var database
 	 */
 	protected $database_helper;
 
 	/**
-	 * @var \phpbb\filesystem\filesystem_interface
+	 * @var filesystem_interface
 	 */
 	protected $filesystem;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 
@@ -61,21 +68,28 @@ class create_schema extends \phpbb\install\task_base
 	protected $php_ext;
 
 	/**
+	 * @var array
+	 */
+	protected $tables;
+
+	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\config							$config				Installer's config provider
-	 * @param \phpbb\install\helper\database						$db_helper			Installer's database helper
-	 * @param \phpbb\filesystem\filesystem_interface				$filesystem			Filesystem service
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler			Installer's input-output handler
-	 * @param string												$phpbb_root_path	Path phpBB's root
-	 * @param string												$php_ext			Extension of PHP files
+	 * @param config						$config				Installer's config provider
+	 * @param database						$db_helper			Installer's database helper
+	 * @param filesystem_interface			$filesystem			Filesystem service
+	 * @param iohandler_interface			$iohandler			Installer's input-output handler
+	 * @param string						$phpbb_root_path	Path phpBB's root
+	 * @param string						$php_ext			Extension of PHP files
+	 * @param array							$tables				Tables array
 	 */
-	public function __construct(\phpbb\install\helper\config $config,
-								\phpbb\install\helper\database $db_helper,
-								\phpbb\filesystem\filesystem_interface $filesystem,
-								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
+	public function __construct(config $config,
+								database $db_helper,
+								filesystem_interface $filesystem,
+								iohandler_interface $iohandler,
 								$phpbb_root_path,
-								$php_ext)
+								$php_ext,
+								$tables)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
@@ -99,6 +113,7 @@ class create_schema extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
+		$this->tables			= $tables;
 
 		parent::__construct(true);
 	}
@@ -180,14 +195,15 @@ class create_schema extends \phpbb\install\task_base
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db, true);
-			$schema_generator = new \phpbb\db\migration\schema_generator(
+			$schema_generator = new schema_generator(
 				$migrator_classes,
 				new \phpbb\config\config(array()),
 				$this->db,
 				$db_tools,
 				$this->phpbb_root_path,
 				$this->php_ext,
-				$table_prefix
+				$table_prefix,
+				$this->tables
 			);
 			$db_table_schema = $schema_generator->get_schema();
 		}

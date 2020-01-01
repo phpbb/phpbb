@@ -249,6 +249,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$phpbb_root_path,
 			$phpEx,
 			self::$config['table_prefix'],
+			phpbb_database_test_case::get_core_tables(),
 			array(),
 			new \phpbb\db\migration\helper()
 		);

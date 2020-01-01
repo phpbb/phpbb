@@ -87,6 +87,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->phpbb_root_path,
 			'php',
 			$this->table_prefix,
+			self::get_core_tables(),
 			array(),
 			new \phpbb\db\migration\helper()
 		);
