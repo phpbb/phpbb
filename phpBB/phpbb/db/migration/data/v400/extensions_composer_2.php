@@ -11,23 +11,30 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class extensions_composer_2 extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class extensions_composer_2 extends migration
 {
+	public function effectively_installed()
+	{
+		return strpos($this->config['exts_composer_repositories'], 'https://satis.phpbb.com') !== false;
+	}
+
 	public function update_data()
 	{
 		$repositories = json_decode($this->config['exts_composer_repositories'], true);
 		$repositories[] = 'https://satis.phpbb.com';
 		$repositories = array_unique($repositories);
 
-		return array(
-			array('config.update', array('exts_composer_repositories', json_encode($repositories, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))),
-		);
+		return [
+			['config.update', ['exts_composer_repositories', json_encode($repositories, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]],
+		];
 	}
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v330\extensions_composer');
+		return ['\phpbb\db\migration\data\v400\extensions_composer'];
 	}
 }

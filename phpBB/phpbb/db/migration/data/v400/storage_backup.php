@@ -11,30 +11,38 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class storage_backup extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+use phpbb\storage\provider\local;
+
+class storage_backup extends migration
 {
+	public function effectively_installed()
+	{
+		return $this->db_tools->sql_table_exists($this->tables['backups']);
+	}
+
 	public function update_schema()
 	{
-		return array(
-			'add_tables' => array(
-				$this->table_prefix . 'backups'	=> array(
-					'COLUMNS' => array(
-						'backup_id'			=> array('UINT', null, 'auto_increment'),
-						'filename'			=> array('VCHAR', ''),
-					),
+		return [
+			'add_tables' => [
+				$this->table_prefix . 'backups'	=> [
+					'COLUMNS' => [
+						'backup_id'			=> ['UINT', null, 'auto_increment'],
+						'filename'			=> ['VCHAR', ''],
+					],
 					'PRIMARY_KEY'	=> 'backup_id',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('storage\\backup\\provider', \phpbb\storage\provider\local::class)),
-			array('config.add', array('storage\\backup\\config\\path', 'store')),
-		);
+		return [
+			['config.add', ['storage\\backup\\provider', local::class]],
+			['config.add', ['storage\\backup\\config\\path', 'store']],
+		];
 	}
 }

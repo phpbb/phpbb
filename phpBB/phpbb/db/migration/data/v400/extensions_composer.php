@@ -11,29 +11,36 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class extensions_composer extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class extensions_composer extends migration
 {
+	public function effectively_installed()
+	{
+		return $this->config->offsetExists('exts_composer_repositories');
+	}
+
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('exts_composer_repositories', json_encode([
+		return [
+			['config.add', ['exts_composer_repositories', json_encode([
 				'https://www.phpbb.com/customise/db/composer/',
-			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))),
-			array('config.add', array('exts_composer_packagist', false)),
-			array('config.add', array('exts_composer_json_file', 'composer-ext.json')),
-			array('config.add', array('exts_composer_vendor_dir', 'vendor-ext/')),
-			array('config.add', array('exts_composer_enable_on_install', false)),
-			array('config.add', array('exts_composer_purge_on_remove', true)),
-			array('module.add', array(
+			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]],
+			['config.add', ['exts_composer_packagist', false]],
+			['config.add', ['exts_composer_json_file', 'composer-ext.json']],
+			['config.add', ['exts_composer_vendor_dir', 'vendor-ext/']],
+			['config.add', ['exts_composer_enable_on_install', false]],
+			['config.add', ['exts_composer_purge_on_remove', true]],
+			['module.add', [
 				'acp',
 				'ACP_EXTENSION_MANAGEMENT',
-				array(
+				[
 					'module_basename'	=> 'acp_extensions',
-					'modes'				=> array('catalog'),
-				),
-			)),
-		);
+					'modes'				=> ['catalog'],
+				],
+			]],
+		];
 	}
 }

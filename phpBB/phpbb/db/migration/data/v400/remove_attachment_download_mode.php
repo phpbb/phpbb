@@ -11,29 +11,36 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class remove_attachment_download_mode extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class remove_attachment_download_mode extends migration
 {
+	public function effectively_installed()
+	{
+		return !$this->db_tools->sql_column_exists($this->tables['extension_groups'], 'download_mode');
+	}
+
 	public function update_schema()
 	{
-		return array(
-			'drop_columns'	=> array(
-				$this->table_prefix . 'extension_groups'			=> array(
+		return [
+			'drop_columns'	=> [
+				$this->table_prefix . 'extension_groups'			=> [
 					'download_mode',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
-			'add_columns'	=> array(
-				$this->table_prefix . 'extension_groups'			=> array(
-					'download_mode'		=> array('BOOL', '1'),
-				),
-			),
-		);
+		return [
+			'add_columns'	=> [
+				$this->table_prefix . 'extension_groups'			=> [
+					'download_mode'		=> ['BOOL', '1'],
+				],
+			],
+		];
 	}
 }

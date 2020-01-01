@@ -11,34 +11,44 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class storage_adapter_local_subfolders extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+use phpbb\storage\provider\local;
+
+class storage_adapter_local_subfolders extends migration
 {
+	public function effectively_installed()
+	{
+		return $this->config->offsetExists('storage\\attachment\\config\\subfolders') ||
+			$this->config->offsetExists('storage\\avatar\\config\\subfolders') ||
+			$this->config->offsetExists('storage\\backup\\config\\subfolders');
+	}
+
 	static public function depends_on()
 	{
-		return array(
-			'\phpbb\db\migration\data\v330\storage_attachment',
-			'\phpbb\db\migration\data\v330\storage_avatar',
-			'\phpbb\db\migration\data\v330\storage_backup',
-		);
+		return [
+			'\phpbb\db\migration\data\v400\storage_attachment',
+			'\phpbb\db\migration\data\v400\storage_avatar',
+			'\phpbb\db\migration\data\v400\storage_backup',
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('if', array(
-				($this->config['storage\\attachment\\provider'] == \phpbb\storage\provider\local::class),
-				array('config.add', array('storage\\attachment\\config\\subfolders', '0')),
-			)),
-			array('if', array(
-				($this->config['storage\\avatar\\provider'] == \phpbb\storage\provider\local::class),
-				array('config.add', array('storage\\avatar\\config\\subfolders', '0')),
-			)),
-			array('if', array(
-				($this->config['storage\\backup\\provider'] == \phpbb\storage\provider\local::class),
-				array('config.add', array('storage\\backup\\config\\subfolders', '0')),
-			)),
-		);
+		return [
+			['if', [
+				($this->config['storage\\attachment\\provider'] == local::class),
+				['config.add', ['storage\\attachment\\config\\subfolders', '0']],
+			]],
+			['if', [
+				($this->config['storage\\avatar\\provider'] == local::class),
+				['config.add', ['storage\\avatar\\config\\subfolders', '0']],
+			]],
+			['if', [
+				($this->config['storage\\backup\\provider'] == local::class),
+				['config.add', ['storage\\backup\\config\\subfolders', '0']],
+			]],
+		];
 	}
 }

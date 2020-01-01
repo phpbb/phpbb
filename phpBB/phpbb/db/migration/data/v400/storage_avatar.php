@@ -11,16 +11,24 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class storage_avatar extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+use phpbb\storage\provider\local;
+
+class storage_avatar extends migration
 {
+	public function effectively_installed()
+	{
+		return $this->config->offsetExists('storage\\avatar\\provider');
+	}
+
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('storage\\avatar\\provider', \phpbb\storage\provider\local::class)),
-			array('config.add', array('storage\\avatar\\config\\path', $this->config['avatar_path'])),
-			array('config.remove', array('avatar_path')),
-		);
+		return [
+			['config.add', ['storage\\avatar\\provider', local::class]],
+			['config.add', ['storage\\avatar\\config\\path', $this->config['avatar_path']]],
+			['config.remove', ['avatar_path']],
+		];
 	}
 }

@@ -11,45 +11,52 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
+use phpbb\db\migration\container_aware_migration;
+use phpbb\storage\exception\exception;
 use phpbb\storage\storage;
 
-class storage_track extends \phpbb\db\migration\container_aware_migration
+class storage_track extends container_aware_migration
 {
+	public function effectively_installed()
+	{
+		return $this->db_tools->sql_table_exists($this->tables['storage']);
+	}
+
 	static public function depends_on()
 	{
-		return array(
-			'\phpbb\db\migration\data\v330\storage_attachment',
-			'\phpbb\db\migration\data\v330\storage_avatar',
-			'\phpbb\db\migration\data\v330\storage_backup',
-		);
+		return [
+			'\phpbb\db\migration\data\v400\storage_attachment',
+			'\phpbb\db\migration\data\v400\storage_avatar',
+			'\phpbb\db\migration\data\v400\storage_backup',
+		];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'add_tables' => array(
-				$this->table_prefix . 'storage'	=> array(
-					'COLUMNS' => array(
-						'file_id'			=> array('UINT', null, 'auto_increment'),
-						'file_path'			=> array('VCHAR', ''),
-						'storage'			=> array('VCHAR', ''),
-						'filesize'			=> array('UINT:20', 0),
-					),
+		return [
+			'add_tables' => [
+				$this->table_prefix . 'storage'	=> [
+					'COLUMNS' => [
+						'file_id'			=> ['UINT', null, 'auto_increment'],
+						'file_path'			=> ['VCHAR', ''],
+						'storage'			=> ['VCHAR', ''],
+						'filesize'			=> ['UINT:20', 0],
+					],
 					'PRIMARY_KEY'	=> 'file_id',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
-			'drop_tables'	=> array(
+		return [
+			'drop_tables'	=> [
 				$this->table_prefix . 'storage',
-			),
-		);
+			],
+		];
 	}
 
 	public function update_data()
@@ -90,9 +97,9 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 			{
 				$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (exception $e)
 			{
-				// If file don't exist, don't track it
+				// If file doesn't exist, don't track it
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -114,9 +121,9 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 			{
 				$storage->track_file($row['physical_filename']);
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (exception $e)
 			{
-				// If file don't exist, don't track it
+				// If file doesn't exist, don't track it
 			}
 
 			if ($row['thumbnail'] == 1)
@@ -125,9 +132,9 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 				{
 					$storage->track_file('thumb_' . $row['physical_filename']);
 				}
-				catch (\phpbb\storage\exception\exception $e)
+				catch (exception $e)
 				{
-					// If file don't exist, don't track it
+					// If file doesn't exist, don't track it
 				}
 			}
 		}
@@ -150,9 +157,9 @@ class storage_track extends \phpbb\db\migration\container_aware_migration
 			{
 				$storage->track_file($row['filename']);
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (exception $e)
 			{
-				// If file don't exist, don't track it
+				// If file doesn't exist, don't track it
 			}
 		}
 

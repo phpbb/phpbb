@@ -11,16 +11,24 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class storage_attachment extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+use phpbb\storage\provider\local;
+
+class storage_attachment extends migration
 {
+	public function effectively_installed()
+	{
+		return $this->config->offsetExists('storage\\attachment\\provider');
+	}
+
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('storage\\attachment\\provider', \phpbb\storage\provider\local::class)),
-			array('config.add', array('storage\\attachment\\config\\path', $this->config['upload_path'])),
-			array('config.remove', array('upload_path')),
-		);
+		return [
+			['config.add', ['storage\\attachment\\provider', local::class]],
+			['config.add', ['storage\\attachment\\config\\path', $this->config['upload_path']]],
+			['config.remove', ['upload_path']],
+		];
 	}
 }
