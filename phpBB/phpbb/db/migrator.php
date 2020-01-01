@@ -13,8 +13,12 @@
 
 namespace phpbb\db;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\db\migration\helper;
 use phpbb\db\output_handler\migrator_output_handler_interface;
 use phpbb\db\output_handler\null_migrator_output_handler;
+use phpbb\db\tools\tools_interface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -28,20 +32,23 @@ class migrator
 	 */
 	protected $container;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools\tools_interface */
+	/** @var tools_interface */
 	protected $db_tools;
 
-	/** @var \phpbb\db\migration\helper */
+	/** @var helper */
 	protected $helper;
 
 	/** @var string */
 	protected $table_prefix;
+
+	/** @var array */
+	protected $tables;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -92,9 +99,20 @@ class migrator
 	protected $output_handler;
 
 	/**
-	* Constructor of the database migrator
-	*/
-	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	 * Constructor of the database migrator
+	 * @param ContainerInterface $container
+	 * @param config $config
+	 * @param driver\driver_interface $db
+	 * @param tools\tools_interface $db_tools
+	 * @param $migrations_table
+	 * @param $phpbb_root_path
+	 * @param $php_ext
+	 * @param $table_prefix
+	 * @param $tables
+	 * @param $tools
+	 * @param migration\helper $helper
+	 */
+	public function __construct(ContainerInterface $container, config $config, driver_interface $db, tools_interface $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tables, $tools, helper $helper)
 	{
 		$this->container = $container;
 		$this->config = $config;
@@ -108,6 +126,7 @@ class migrator
 		$this->php_ext = $php_ext;
 
 		$this->table_prefix = $table_prefix;
+		$this->tables = $tables;
 
 		$this->output_handler = new null_migrator_output_handler();
 
@@ -950,7 +969,7 @@ class migrator
 	*/
 	protected function get_migration($name)
 	{
-		$migration = new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+		$migration = new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix, $this->tables);
 
 		if ($migration instanceof ContainerAwareInterface)
 		{
