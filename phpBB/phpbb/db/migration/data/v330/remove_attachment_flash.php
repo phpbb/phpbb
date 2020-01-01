@@ -21,8 +21,13 @@ class remove_attachment_flash extends \phpbb\db\migration\migration
 	const ATTACHMENT_CATEGORY_FLASH = 5;
 
 	protected $cat_id = array(
-			self::ATTACHMENT_CATEGORY_FLASH,
-		);
+		self::ATTACHMENT_CATEGORY_FLASH,
+	);
+
+	public static function depends_on()
+	{
+		return ['\phpbb\db\migration\data\v330\dev',];
+	}
 
 	public function update_data()
 	{
