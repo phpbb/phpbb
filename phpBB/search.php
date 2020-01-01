@@ -1079,6 +1079,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$view_topic_url_params = "f=$forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : '');
 			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
+			$folder_img = $folder_alt = $u_mcp_queue = '';
+			$topic_type = $posts_unapproved = 0;
+			$unread_topic = $topic_unapproved = $topic_deleted = false;
+
 			if ($show_results == 'topics')
 			{
 				if ($config['load_db_track'] && $author_id === $user->data['user_id'])
@@ -1086,7 +1090,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$row['topic_posted'] = 1;
 				}
 
-				$folder_img = $folder_alt = $topic_type = '';
 				topic_status($row, $replies, (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false, $folder_img, $folder_alt, $topic_type);
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
@@ -1213,10 +1216,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
 			));
-
-			$folder_img = $folder_alt = $u_mcp_queue = '';
-			$topic_type = $posts_unapproved = 0;
-			$unread_topic = $topic_unapproved = $topic_deleted = false;
 
 			/**
 			* Modify the topic data before it is assigned to the template
