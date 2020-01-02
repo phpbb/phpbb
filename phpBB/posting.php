@@ -739,25 +739,8 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	/**
 	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
 	 * Using their Numeric Character Reference's Hexadecimal notation.
-	 * Check the permissions for posting Emojis first.
 	 */
-	if ($auth->acl_get('u_emoji'))
-	{
-		$subject = utf8_encode_ucr($subject);
-	}
-	else
-	{
-		/**
-		 * Check for out-of-bounds characters that are currently
-		 * not supported by utf8_bin in MySQL
-		 */
-		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $subject, $matches))
-		{
-			$character_list = implode('<br>', $matches[0]);
-
-			trigger_error($user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list));
-		}
-	}
+	$subject = utf8_encode_ucr($subject);
 
 	if ($subject && $message)
 	{
