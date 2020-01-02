@@ -665,6 +665,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
 		$message = $request->variable('message', '', true);
 
+		/**
+		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+		 * Using their Numeric Character Reference's Hexadecimal notation.
+		 */
+		$subject = utf8_encode_ucr($subject);
+
 		if ($subject && $message)
 		{
 			if (confirm_box(true))
