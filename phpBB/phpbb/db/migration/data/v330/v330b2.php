@@ -26,6 +26,7 @@ class v330b2 extends \phpbb\db\migration\migration
 			'\phpbb\db\migration\data\v330\add_display_unapproved_posts_config',
 			'\phpbb\db\migration\data\v330\forums_legend_limit',
 			'\phpbb\db\migration\data\v330\remove_email_hash',
+			'\phpbb\db\migration\data\v330\v330b1',
 		);
 	}
 
