@@ -39,7 +39,7 @@
 		</dl>
 	</div>
 	<script>
-        var statsData = {S_STATS_DATA};
+		var statsData = {{ S_STATS_DATA }};
 	</script>
 	<!-- EVENT acp_help_phpbb_stats_after -->
 	<fieldset>
@@ -54,11 +54,11 @@
 <form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
 	<fieldset>
 		<p class="submit-buttons">
-			<!-- BEGIN providers -->
-				<!-- BEGIN values -->
-					<input type="hidden" name="{providers.NAME}[{providers.values.KEY}]" value="{providers.values.VALUE}" />
-				<!-- END values -->
-			<!-- END providers -->
+			{% for providers in loops.providers %}
+				{% for values in providers.values %}
+					<input type="hidden" name="{{ providers.NAME }}[{{ values.KEY }}]" value="{{ values.VALUE }}" />
+				{% endfor %}
+			{% endfor %}
 			<input class="button1" type="submit" id="submit_stats" name="submit" value="{L_SEND_STATISTICS}" />
 		</p>
 	</fieldset>

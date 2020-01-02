@@ -124,7 +124,7 @@ class phpbb_questionnaire_php_data_provider
 			'zend.ze1_compatibility_mode'	=> (int) @ini_get('zend.ze1_compatibility_mode'),
 			'unicode.semantics'				=> (int) @ini_get('unicode.semantics'),
 			'zend_thread_safty'				=> (int) function_exists('zend_thread_id'),
-			'extensions'					=> implode(",", get_loaded_extensions()),
+			'extensions'					=> implode(',', get_loaded_extensions()),
 		);
 	}
 }
