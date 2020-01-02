@@ -420,6 +420,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgpasswd', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgprofileinfo', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_download', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_emoji', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_hideonline', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_ignoreflood', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm', 1);
