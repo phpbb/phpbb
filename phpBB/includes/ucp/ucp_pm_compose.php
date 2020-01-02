@@ -870,6 +870,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				'address_list'			=> $address_list
 			);
 
+			/**
+			 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+			 * Using their Numeric Character Reference's Hexadecimal notation.
+			 */
+			$subject = utf8_encode_ucr($subject);
+
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
