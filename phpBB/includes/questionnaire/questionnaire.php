@@ -68,7 +68,7 @@ class phpbb_questionnaire_data_collector
 
 	function get_data_for_form()
 	{
-		return base64_encode(serialize($this->get_data_raw()));
+		return base64_encode(json_encode($this->get_data_raw()));
 	}
 
 	/**
@@ -124,7 +124,7 @@ class phpbb_questionnaire_php_data_provider
 			'zend.ze1_compatibility_mode'	=> (int) @ini_get('zend.ze1_compatibility_mode'),
 			'unicode.semantics'				=> (int) @ini_get('unicode.semantics'),
 			'zend_thread_safty'				=> (int) function_exists('zend_thread_id'),
-			'extensions'					=> get_loaded_extensions(),
+			'extensions'					=> implode(',', get_loaded_extensions()),
 		);
 	}
 }
