@@ -274,10 +274,10 @@ $lang = array_merge($lang, array(
 	'FILESYSTEM_CANNOT_CREATE_SYMLINK'			=> 'Unable to create a symlink',
 	'FILESYSTEM_CANNOT_CREATE_DIRECTORY'		=> 'Unable to create directory',
 	'FILESYSTEM_CANNOT_DELETE_FILES'			=> 'Unable to delete files from the system',
-	'FILESYSTEM_CANNOT_DUMP_FILE'				=> 'Unable to dump file',
+	'FILESYSTEM_CANNOT_DUMP_FILE'				=> 'Unable to dump into file',
 	'FILESYSTEM_CANNOT_MIRROR_DIRECTORY'		=> 'Unable to mirror directory',
 	'FILESYSTEM_CANNOT_RENAME_FILE'				=> 'Unable to rename a file from the system',
-	'FILESYSTEM_CANNOT_TOUCH_FILES'				=> 'Unable to determine if the file exists',
+	'FILESYSTEM_CANNOT_TOUCH_FILES'				=> 'Unable to create file or change file timestamps',
 
 	'FTP_FSOCK_HOST'				=> 'FTP host',
 	'FTP_FSOCK_HOST_EXPLAIN'		=> 'FTP server used to connect your site.',
