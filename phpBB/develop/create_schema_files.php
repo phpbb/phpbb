@@ -59,4 +59,20 @@ $fp = fopen($schema_path . 'schema.json', 'wb');
 fwrite($fp, json_encode($schema_data, JSON_PRETTY_PRINT));
 fclose($fp);
 
-echo 'Successfully created schema file';
+if (!empty($schema_exceptions = $schema_generator->get_exceptions()))
+{
+	echo "Errors while generating schema file\n\n";
+
+	$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+	$lang->add_lang('migrator');
+	$user = new \phpbb\user($lang, '\phpbb\datetime');
+
+	foreach ($schema_exceptions as $exception)
+	{
+		echo $exception->getLocalisedMessage($user) . "\n";
+	}
+}
+else
+{
+	echo "Successfully created schema file\n";
+}

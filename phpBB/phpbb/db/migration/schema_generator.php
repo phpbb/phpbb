@@ -42,6 +42,9 @@ class schema_generator
 	/** @var array */
 	protected $tables;
 
+	/** @var array[exception] */
+	protected $exceptions = [];
+
 	/** @var array */
 	protected $dependencies = array();
 
@@ -100,6 +103,11 @@ class schema_generator
 						{
 							foreach ($data as $table => $table_data)
 							{
+								if (isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_EXISTS', $migration_class, $table);
+								}
+
 								$this->tables[$table] = $table_data;
 							}
 						}
@@ -107,6 +115,11 @@ class schema_generator
 						{
 							foreach ($data as $table)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								unset($this->tables[$table]);
 							}
 						}
@@ -114,8 +127,18 @@ class schema_generator
 						{
 							foreach ($data as $table => $add_columns)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								foreach ($add_columns as $column => $column_data)
 								{
+									if (isset($this->tables[$table]['COLUMNS'][$column]) && $column_data != $this->tables[$table]['COLUMNS'][$column])
+									{
+										$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_COLUMN_EXISTS', $migration_class, $column, $table);
+									}
+
 									if (isset($column_data['after']))
 									{
 										$columns = $this->tables[$table]['COLUMNS'];
@@ -144,6 +167,11 @@ class schema_generator
 							{
 								foreach ($change_columns as $column => $column_data)
 								{
+									if (!isset($this->tables[$table]['COLUMNS'][$column]))
+									{
+										$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_COLUMN_NOT_EXIST', $migration_class, $column, $table);
+									}
+
 									$this->tables[$table]['COLUMNS'][$column] = $column_data;
 								}
 							}
@@ -152,6 +180,11 @@ class schema_generator
 						{
 							foreach ($data as $table => $drop_columns)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								if (is_array($drop_columns))
 								{
 									foreach ($drop_columns as $column)
@@ -169,8 +202,18 @@ class schema_generator
 						{
 							foreach ($data as $table => $add_index)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								foreach ($add_index as $key => $index_data)
 								{
+									if (isset($this->tables[$table]['KEYS'][$key]))
+									{
+										$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_KEY_EXISTS', $migration_class, $key, $table);
+									}
+
 									$this->tables[$table]['KEYS'][$key] = array('UNIQUE', $index_data);
 								}
 							}
@@ -179,8 +222,18 @@ class schema_generator
 						{
 							foreach ($data as $table => $add_index)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								foreach ($add_index as $key => $index_data)
 								{
+									if (isset($this->tables[$table]['KEYS'][$key]))
+									{
+										$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_KEY_EXISTS', $migration_class, $key, $table);
+									}
+
 									$this->tables[$table]['KEYS'][$key] = array('INDEX', $index_data);
 								}
 							}
@@ -189,6 +242,11 @@ class schema_generator
 						{
 							foreach ($data as $table => $drop_keys)
 							{
+								if (!isset($this->tables[$table]))
+								{
+									$this->exceptions[] = new exception('MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST', $migration_class, $table);
+								}
+
 								foreach ($drop_keys as $key)
 								{
 									unset($this->tables[$table]['KEYS'][$key]);
@@ -238,5 +296,15 @@ class schema_generator
 				throw new \UnexpectedValueException("Unable to resolve the dependency '$dependency'");
 			}
 		}
+	}
+
+	/**
+	 * Get exceptions with potential issues that appeared during schema generation
+	 *
+	 * @return array Exceptions generated during schema generation
+	 */
+	public function get_exceptions()
+	{
+		return $this->exceptions;
 	}
 }

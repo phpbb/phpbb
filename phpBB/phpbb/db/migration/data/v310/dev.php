@@ -41,12 +41,6 @@ class dev extends \phpbb\db\migration\container_aware_migration
 				$this->table_prefix . 'profile_fields'	=> array(
 					'field_show_on_pm'		=> array('BOOL', 0),
 				),
-				$this->table_prefix . 'styles'		=> array(
-					'style_path'			=> array('VCHAR:100', ''),
-					'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
-					'style_parent_id'		=> array('UINT:4', 0),
-					'style_parent_tree'		=> array('TEXT', ''),
-				),
 				$this->table_prefix . 'reports'		=> array(
 					'reported_post_text'		=> array('MTEXT_UNI', ''),
 					'reported_post_uid'			=> array('VCHAR:8', ''),

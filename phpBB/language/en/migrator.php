@@ -68,6 +68,12 @@ $lang = array_merge($lang, array(
 	'MIGRATION_INVALID_DATA_UNDEFINED_TOOL'			=> 'A migration is invalid. An undefined migration tool was encountered.',
 	'MIGRATION_INVALID_DATA_UNDEFINED_METHOD'		=> 'A migration is invalid. An undefined migration tool method was encountered.',
 
+	'MIGRATION_INVALID_SCHEMA_COLUMN_EXISTS'		=> 'Migration %1$s is invalid. Column %2$s already exists in table %3$s.',
+	'MIGRATION_INVALID_SCHEMA_COLUMN_NOT_EXIST'		=> 'Migration %1$s is invalid. Column %2$s does not exist in table %3$s.',
+	'MIGRATION_INVALID_SCHEMA_KEY_EXISTS'			=> 'Migration %1$s is invalid. Key %2$s already exists in table %3$s.',
+	'MIGRATION_INVALID_SCHEMA_TABLE_EXISTS'			=> 'Migration %1$s is invalid. Table %2$s already exists.',
+	'MIGRATION_INVALID_SCHEMA_TABLE_NOT_EXIST'		=> 'Migration %1$s is invalid. Table %2$s does not exist.',
+
 	'MODULE_ERROR'						=> 'An error occurred while creating a module: %s',
 	'MODULE_EXISTS'						=> 'A module already exists: %s',
 	'MODULE_EXIST_MULTIPLE'				=> 'Several modules with the given parent module langname already exist: %s. Try using before/after keys to clarify the module placement.',
