@@ -436,23 +436,23 @@ class fulltext_sphinx
 	public function split_keywords(&$keywords, $terms)
 	{
 		// Keep quotes and new lines
-		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
+		$keywords = str_replace(array['&quot;', "\n"], array['"', ' '], trim($keywords));
 
 		if ($terms == 'all')
 		{
 			// Replaces verbal operators OR and NOT with special characters | and -, unless appearing within quotation marks
-			$match		= array('#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i');
-			$replace	= array(' | ', ' -');
+			$match		= array['#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i'];
+			$replace	= array[' | ', ' -'];
 
 			$keywords = preg_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_EXTENDED);
 		}
 		else
 		{
-			$match = array ( '\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;');
-			$replace = array ( ' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+			$match = array['\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;'];
+			$replace = array[' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
 
-			$keywords = str_replace ($match, $replace, $keywords);
+			$keywords = str_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
@@ -467,43 +467,56 @@ class fulltext_sphinx
 
 	/**
 	* Cleans search query passed into Sphinx search engine, as follows:
-	* 1. Hyphenated words are replaced with keyword search for either the exact phrase with spaces or as a single word without spaces eg search for "know-it-all" becomes ("know it all"|"knowitall*") 
+	* 1. Hyphenated words are replaced with keyword search for either the exact phrase with spaces
+	*    or as a single word without spaces eg search for "know-it-all" becomes ("know it all"|"knowitall*")
 	* 2. Words with apostrophes are contracted eg "it's" becomes "its"
 	* 3. <, >, " and & are decoded from HTML entities.
 	* 4. Following special characters used as search operators in Sphinx are preserved when used with correct syntax:
-	* (a) quorum matching:  "the world is a wonderful place"/3 -- finds 3 of the words within the phrase. Number must be between 1 and 9.
-	* (b) proximity search: "hello world"~10 -- finds hello and world within 10 words of each other. Number can be between 1 and 99.
-	* (c) strict word order: aaa << bbb << ccc -- finds "aaa" only where it appears before "bbb" and only where "bbb" appears before "ccc".
-	* (d) exact match operator: if lemmatizer or stemming enabled, search will find exact match only and ignore other grammatical forms of the same word stem..
-	* eg raining =cats and =dogs -- will not return "raining cat and dog" 
-	* eg ="search this exact phrase" -- will not return "searched this exact phrase", "searching these exact phrases".
-	* 5. Special characters /, ~, << and = not complying with the correct syntax and other reserved operators are escaped and searched literally.
-	* Special characters not explicitly listed in charset_table or blend_chars in sphinx.conf will not be indexed and keywords containing them will be ignored by Sphinx.
-	* By default, only $, %, & and @ characters are indexed and searchable.
-	* String transformation is in backend only and not visible to the end user nor reflected in the results page URL or keyword highlighting.
+	*    (a) quorum matching: "the world is a wonderful place"/3
+	*        Finds 3 of the words within the phrase. Number must be between 1 and 9.
+	*    (b) proximity search: "hello world"~10
+	*        Finds hello and world within 10 words of each other. Number can be between 1 and 99.
+	*    (c) strict word order: aaa << bbb << ccc
+	*        Finds "aaa" only where it appears before "bbb" and only where "bbb" appears before "ccc".
+	*    (d) exact match operator: if lemmatizer or stemming enabled,
+	*        search will find exact match only and ignore other grammatical forms of the same word stem.
+	*        eg. raining =cats and =dogs
+	*            will not return "raining cat and dog"
+	*        eg. ="search this exact phrase"
+	*            will not return "searched this exact phrase", "searching these exact phrases".
+	* 5. Special characters /, ~, << and = not complying with the correct syntax
+	*    and other reserved operators are escaped and searched literally.
+	*    Special characters not explicitly listed in charset_table or blend_chars in sphinx.conf
+	*    will not be indexed and keywords containing them will be ignored by Sphinx.
+	*    By default, only $, %, & and @ characters are indexed and searchable.
+	*    String transformation is in backend only and not visible to the end user
+	*    nor reflected in the results page URL or keyword highlighting.
+	*
+	* @param string	$search_string
+	* @return string
 	*/
 	public function sphinx_clean_search_string($search_string)
 	{
-		$from = array('@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\'');
-		$to = array('\@', '\^', '\$', '\!', '<', '>', '"', '&', '');
-		
+		$from = array['@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\''];
+		$to = array['\@', '\^', '\$', '\!', '<', '>', '"', '&', ''];
+
 		$search_string = str_replace($from, $to, $search_string);
-		
+
 		$search_string = strrev($search_string);
-		$search_string = preg_replace(array('#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'), array('/\\', '~\\'), $search_string);
+		$search_string = preg_replace(array['#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'], array['/\\', '~\\'], $search_string);
 		$search_string = strrev($search_string);
-		
-		$match = array('#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#');
-		$replace = array('\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\=');
-		
+
+		$match = array['#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#'];
+		$replace = array['\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\='];
+
 		$search_string = preg_replace($match, $replace, $search_string);
 		$search_string = preg_replace('#\s+"\|#', '"|', $search_string);
-			
+
 		/**
-		* OPTIONAL: Thousands separator stripped from numbers, eg search for '90,000' is queried as '90000'. 
+		* OPTIONAL: Thousands separator stripped from numbers, eg search for '90,000' is queried as '90000'.
 		* By default commas are stripped from search index so that '90,000' is indexed as '90000'
 		*/
-		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);		
+		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);
 
 		return $search_string;
 	}
