@@ -54,7 +54,7 @@
 <form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
 	<fieldset>
 		<p class="submit-buttons">
-			{% for providers in loops.providers %}
+			{% for providers in providers %}
 				{% for values in providers.values %}
 					<input type="hidden" name="{{ providers.NAME }}[{{ values.KEY }}]" value="{{ values.VALUE }}" />
 				{% endfor %}
