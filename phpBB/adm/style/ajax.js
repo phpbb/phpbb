@@ -1,4 +1,4 @@
-/* global phpbb */
+/* global phpbb, statsData */
 
 (function($) {  // Avoid conflicts with other libraries
 
@@ -74,7 +74,7 @@ phpbb.prepareSendStats = function () {
 			var $sendStatisticsSuccess = $('<input />', {
 				type: 'hidden',
 				name: 'send_statistics_response',
-				value: res
+				value: JSON.stringify(res)
 			});
 			$sendStatisticsSuccess.appendTo('p.submit-buttons');
 
@@ -87,7 +87,7 @@ phpbb.prepareSendStats = function () {
 		$.ajax({
 			url: $this.attr('data-ajax-action').replace('&amp;', '&'),
 			type: 'POST',
-			data: 'systemdata=' + encodeURIComponent($this.find('input[name=systemdata]').val()),
+			data: statsData,
 			success: returnHandler,
 			error: errorHandler,
 			cache: false

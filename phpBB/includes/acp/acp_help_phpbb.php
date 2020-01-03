@@ -32,7 +32,7 @@ class acp_help_phpbb
 			include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
 		}
 
-		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
+		$collect_url = "https://www.phpbb.com/statistics/send";
 
 		$this->tpl_name = 'acp_help_phpbb';
 		$this->page_title = 'ACP_HELP_PHPBB';
@@ -90,13 +90,15 @@ class acp_help_phpbb
 
 			if (!empty($response))
 			{
-				if ((strpos($response, 'Thank you') !== false || strpos($response, 'Flood protection') !== false))
+				$decoded_response = json_decode(htmlspecialchars_decode($response), true);
+
+				if ($decoded_response && isset($decoded_response['status']) && $decoded_response['status'] == 'ok')
 				{
 					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
+					trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 
@@ -106,7 +108,8 @@ class acp_help_phpbb
 		$template->assign_vars(array(
 			'U_COLLECT_STATS'		=> $collect_url,
 			'S_COLLECT_STATS'		=> (!empty($config['help_send_statistics'])) ? true : false,
-			'RAW_DATA'				=> $collector->get_data_for_form(),
+			'S_STATS'				=> $collector->get_data_raw(),
+			'S_STATS_DATA'			=> json_encode($collector->get_data_raw()),
 			'U_ACP_MAIN'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 			'U_ACTION'				=> $this->u_action,
 			// Pass earliest time we should try to send stats again
