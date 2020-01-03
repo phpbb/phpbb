@@ -74,7 +74,7 @@ phpbb.prepareSendStats = function () {
 			var $sendStatisticsSuccess = $('<input />', {
 				type: 'hidden',
 				name: 'send_statistics_response',
-				value: res
+				value: JSON.stringify(res)
 			});
 			$sendStatisticsSuccess.appendTo('p.submit-buttons');
 
