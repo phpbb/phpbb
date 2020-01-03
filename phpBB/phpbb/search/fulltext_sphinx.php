@@ -436,21 +436,21 @@ class fulltext_sphinx
 	public function split_keywords(&$keywords, $terms)
 	{
 		// Keep quotes and new lines
-		$keywords = str_replace(array['&quot;', "\n"], array['"', ' '], trim($keywords));
+		$keywords = str_replace(['&quot;', "\n"], ['"', ' '], trim($keywords));
 
 		if ($terms == 'all')
 		{
 			// Replaces verbal operators OR and NOT with special characters | and -, unless appearing within quotation marks
-			$match		= array['#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i'];
-			$replace	= array[' | ', ' -'];
+			$match		= ['#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i'];
+			$replace	= [' | ', ' -'];
 
 			$keywords = preg_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_EXTENDED);
 		}
 		else
 		{
-			$match = array['\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;'];
-			$replace = array[' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+			$match = ['\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;'];
+			$replace = [' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
 
 			$keywords = str_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
@@ -497,17 +497,17 @@ class fulltext_sphinx
 	*/
 	public function sphinx_clean_search_string($search_string)
 	{
-		$from = array['@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\''];
-		$to = array['\@', '\^', '\$', '\!', '<', '>', '"', '&', ''];
+		$from = ['@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\''];
+		$to = ['\@', '\^', '\$', '\!', '<', '>', '"', '&', ''];
 
 		$search_string = str_replace($from, $to, $search_string);
 
 		$search_string = strrev($search_string);
-		$search_string = preg_replace(array['#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'], array['/\\', '~\\'], $search_string);
+		$search_string = preg_replace(['#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'], ['/\\', '~\\'], $search_string);
 		$search_string = strrev($search_string);
 
-		$match = array['#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#'];
-		$replace = array['\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\='];
+		$match = ['#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#'];
+		$replace = ['\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\='];
 
 		$search_string = preg_replace($match, $replace, $search_string);
 		$search_string = preg_replace('#\s+"\|#', '"|', $search_string);
