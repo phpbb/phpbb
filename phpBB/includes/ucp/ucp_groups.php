@@ -875,6 +875,11 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
+						if (!check_form_key('ucp_groups'))
+						{
+							trigger_error($user->lang('FORM_INVALID') . $return_page);
+						}
+
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
