@@ -331,10 +331,16 @@ class fulltext_sphinx
 				array('docinfo',					'extern'),
 				array('morphology',					'none'),
 				array('stopwords',					''),
+				array('wordforms',					'  # optional, specify path to wordforms file. See ./docs/sphinx_wordforms.txt for example'),
+				array('exceptions',					'  # optional, specify path to exceptions file. See ./docs/sphinx_exceptions.txt for example'),
 				array('min_word_len',				'2'),
 				array('charset_table',				'U+FF10..U+FF19->0..9, 0..9, U+FF41..U+FF5A->a..z, U+FF21..U+FF3A->a..z, A..Z->a..z, a..z, U+0149, U+017F, U+0138, U+00DF, U+00FF, U+00C0..U+00D6->U+00E0..U+00F6, U+00E0..U+00F6, U+00D8..U+00DE->U+00F8..U+00FE, U+00F8..U+00FE, U+0100->U+0101, U+0101, U+0102->U+0103, U+0103, U+0104->U+0105, U+0105, U+0106->U+0107, U+0107, U+0108->U+0109, U+0109, U+010A->U+010B, U+010B, U+010C->U+010D, U+010D, U+010E->U+010F, U+010F, U+0110->U+0111, U+0111, U+0112->U+0113, U+0113, U+0114->U+0115, U+0115, U+0116->U+0117, U+0117, U+0118->U+0119, U+0119, U+011A->U+011B, U+011B, U+011C->U+011D, U+011D, U+011E->U+011F, U+011F, U+0130->U+0131, U+0131, U+0132->U+0133, U+0133, U+0134->U+0135, U+0135, U+0136->U+0137, U+0137, U+0139->U+013A, U+013A, U+013B->U+013C, U+013C, U+013D->U+013E, U+013E, U+013F->U+0140, U+0140, U+0141->U+0142, U+0142, U+0143->U+0144, U+0144, U+0145->U+0146, U+0146, U+0147->U+0148, U+0148, U+014A->U+014B, U+014B, U+014C->U+014D, U+014D, U+014E->U+014F, U+014F, U+0150->U+0151, U+0151, U+0152->U+0153, U+0153, U+0154->U+0155, U+0155, U+0156->U+0157, U+0157, U+0158->U+0159, U+0159, U+015A->U+015B, U+015B, U+015C->U+015D, U+015D, U+015E->U+015F, U+015F, U+0160->U+0161, U+0161, U+0162->U+0163, U+0163, U+0164->U+0165, U+0165, U+0166->U+0167, U+0167, U+0168->U+0169, U+0169, U+016A->U+016B, U+016B, U+016C->U+016D, U+016D, U+016E->U+016F, U+016F, U+0170->U+0171, U+0171, U+0172->U+0173, U+0173, U+0174->U+0175, U+0175, U+0176->U+0177, U+0177, U+0178->U+00FF, U+00FF, U+0179->U+017A, U+017A, U+017B->U+017C, U+017C, U+017D->U+017E, U+017E, U+0410..U+042F->U+0430..U+044F, U+0430..U+044F, U+4E00..U+9FFF'),
-				array('min_prefix_len',				'0'),
-				array('min_infix_len',				'0'),
+				array('ignore_chars', 				'U+0027, U+002C'),
+				array('min_prefix_len',				'3 # Minimum number of characters for wildcard searches by prefix (min 1). Default is 3. If specified, set min_infix_len to 0'),
+				array('min_infix_len',				'0 # Minimum number of characters for wildcard searches by infix (min 2). If specified, set min_prefix_len to 0'),
+				array('html_strip',					'1'),
+				array('index_exact_words',			'0 # Set to 1 to enable exact search operator. Requires wordforms or morphology'),
+				array('blend_chars', 				'U+23, U+24, U+25, U+26, U+40'),
 			),
 			'index index_phpbb_' . $this->id . '_delta : index_phpbb_' . $this->id . '_main' => array(
 				array('path',						$this->config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_delta'),
@@ -429,21 +435,26 @@ class fulltext_sphinx
 	*/
 	public function split_keywords(&$keywords, $terms)
 	{
+		// Keep quotes and new lines
+		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
+
 		if ($terms == 'all')
 		{
-			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#', '#@#');
-			$replace	= array(' & ', ' | ', '  - ', ' +', ' -', ' |', '');
+			// Replaces verbal operators OR and NOT with special characters | and -, unless appearing within quotation marks
+			$match		= array('#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i');
+			$replace	= array(' | ', ' -');
 
 			$keywords = preg_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_EXTENDED);
 		}
 		else
 		{
+			$match = array ( '\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;');
+			$replace = array ( ' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+
+			$keywords = str_replace ($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
-
-		// Keep quotes and new lines
-		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
 
 		if (strlen($keywords) > 0)
 		{
@@ -452,6 +463,49 @@ class fulltext_sphinx
 		}
 
 		return false;
+	}
+
+	/**
+	* Cleans search query passed into Sphinx search engine, as follows:
+	* 1. Hyphenated words are replaced with keyword search for either the exact phrase with spaces or as a single word without spaces eg search for "know-it-all" becomes ("know it all"|"knowitall*") 
+	* 2. Words with apostrophes are contracted eg "it's" becomes "its"
+	* 3. <, >, " and & are decoded from HTML entities.
+	* 4. Following special characters used as search operators in Sphinx are preserved when used with correct syntax:
+	* (a) quorum matching:  "the world is a wonderful place"/3 -- finds 3 of the words within the phrase. Number must be between 1 and 9.
+	* (b) proximity search: "hello world"~10 -- finds hello and world within 10 words of each other. Number can be between 1 and 99.
+	* (c) strict word order: aaa << bbb << ccc -- finds "aaa" only where it appears before "bbb" and only where "bbb" appears before "ccc".
+	* (d) exact match operator: if lemmatizer or stemming enabled, search will find exact match only and ignore other grammatical forms of the same word stem..
+	* eg raining =cats and =dogs -- will not return "raining cat and dog" 
+	* eg ="search this exact phrase" -- will not return "searched this exact phrase", "searching these exact phrases".
+	* 5. Special characters /, ~, << and = not complying with the correct syntax and other reserved operators are escaped and searched literally.
+	* Special characters not explicitly listed in charset_table or blend_chars in sphinx.conf will not be indexed and keywords containing them will be ignored by Sphinx.
+	* By default, only $, %, & and @ characters are indexed and searchable.
+	* String transformation is in backend only and not visible to the end user nor reflected in the results page URL or keyword highlighting.
+	*/
+	public function sphinx_clean_search_string($search_string)
+	{
+		$from = array('@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\'');
+		$to = array('\@', '\^', '\$', '\!', '<', '>', '"', '&', '');
+		
+		$search_string = str_replace($from, $to, $search_string);
+		
+		$search_string = strrev($search_string);
+		$search_string = preg_replace(array('#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'), array('/\\', '~\\'), $search_string);
+		$search_string = strrev($search_string);
+		
+		$match = array('#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#');
+		$replace = array('\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\=');
+		
+		$search_string = preg_replace($match, $replace, $search_string);
+		$search_string = preg_replace('#\s+"\|#', '"|', $search_string);
+			
+		/**
+		* OPTIONAL: Thousands separator stripped from numbers, eg search for '90,000' is queried as '90000'. 
+		* By default commas are stripped from search index so that '90,000' is indexed as '90000'
+		*/
+		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);		
+
+		return $search_string;
 	}
 
 	/**
@@ -645,7 +699,7 @@ class fulltext_sphinx
 		$this->sphinx->SetFilter('deleted', array(0));
 
 		$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
-		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
@@ -653,7 +707,7 @@ class fulltext_sphinx
 		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
 			usleep(SPHINX_CONNECT_WAIT_TIME);
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 		}
 
 		if ($this->sphinx->GetLastError())
@@ -676,7 +730,7 @@ class fulltext_sphinx
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
 			$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 			// Could be connection to localhost:9312 failed (errno=111,
 			// msg=Connection refused) during rotate, retry if so
@@ -684,7 +738,7 @@ class fulltext_sphinx
 			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 			{
 				usleep(SPHINX_CONNECT_WAIT_TIME);
-				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 			}
 		}
 
