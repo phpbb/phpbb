@@ -104,14 +104,14 @@ h4 {
 	border-top: 1px solid #ccc;
 }
 
-code { 
-	color: #006600; 
-	font-weight: normal; 
-	font-family: 'Courier New', monospace; 
-	border-color: #D1D7DC; 
-	border-width: 1px; 
-	border-style: solid; 
-	background-color: #FAFAFA; 
+code {
+	color: #006600;
+	font-weight: normal;
+	font-family: 'Courier New', monospace;
+	border-color: #D1D7DC;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FAFAFA;
 	padding: 0 4px;
 }
 
@@ -152,6 +152,14 @@ pre {
 
 a#logo:hover {
 	text-decoration: none;
+}
+
+.site_logo {
+	background-image: url("../images/site_logo.svg");
+	background-repeat: no-repeat;
+	display: inline-block;
+	width: 149px;
+	height: 52px;
 }
 
 #doc-description {
