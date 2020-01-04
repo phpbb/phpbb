@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v330rc1">Changes since 3.3.0-RC1</a></li>
 		<li><a href="#v330b2">Changes since 3.3.0-b2</a></li>
 		<li><a href="#v330b1">Changes since 3.3.0-b1</a></li>
 		<li><a href="#v32x">Changes since 3.2.x</a></li>
@@ -145,6 +146,48 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v330rc1"></a><h3>Changes since 3.3.0-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15592">PHPBB3-15592</a>] - &quot;Place inline&quot; button appears when BBcode is disabled (Post settings)</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-15902">PHPBB3-15902</a>] - Out of range error with Sphinx search</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16209">PHPBB3-16209</a>] - Nginx example configuration file blocks an image in the ACP</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16230">PHPBB3-16230</a>] - Check phrasing of FILESYSTEM_CANNOT_* lang keys</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16257">PHPBB3-16257</a>] - Typo in Email Settings section</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16260">PHPBB3-16260</a>] - Missing check whether the index exists in ACP - PHP 7.4</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16261">PHPBB3-16261</a>] - Missing check whether the index exists in install - PHP 7.4</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16262">PHPBB3-16262</a>] - php 7.3 compact() calls with undefined variables causing error page</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16263">PHPBB3-16263</a>] - Apache auth provider test fails on bamboo</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16266">PHPBB3-16266</a>] - Error on clean install with PHP 7.4</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16267">PHPBB3-16267</a>] - Check whether the index exists in ACP BBcodes - PHP 7.4</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16273">PHPBB3-16273</a>] - Trying to access array offset on value of type bool in Memberlist</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16274">PHPBB3-16274</a>] - compact() calls with undefined variables in search.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16276">PHPBB3-16276</a>] - Undefined $mode property in bbcode_firstpass class</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16278">PHPBB3-16278</a>] - Update instructions (INSTALL.html)</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16281">PHPBB3-16281</a>] - Extensions' Tab does not show up automatically</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16282">PHPBB3-16282</a>] - Default jQuery CDN URL is outdated on new installs</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16285">PHPBB3-16285</a>] - Missing sanity checks in migrations for 3.3</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16287">PHPBB3-16287</a>] - At first ACP screen after install, error message regarding statistics submission</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16221">PHPBB3-16221</a>] - ACP statistics are ugly</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16277">PHPBB3-16277</a>] - Move from each() function</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16279">PHPBB3-16279</a>] - Add permission for Emojii in topic title</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-16283">PHPBB3-16283</a>] - Update requirements for 3.3.0</li>
+			</ul>
+			<h4>Security</h4>
+			<ul>
+				<li>[SECURITY-249] - Group avatar overwrite on invalid submit</li>
+				<li>[SECURITY-250] - Group leader can be tricked into approving user</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[SECURITY-251] - Unwanted move of PMs to folders</li>
+				<li>[SECURITY-252] - PMs of unsuspecting users can be marked as important</li>
+				<li>[SECURITY-253] - PM export without proper validation</li>
+			</ul>
+
 			<a name="v330b2"></a><h3>Changes since 3.3.0-b2</h3>
 			<h4>Bug</h4>
 			<ul>
