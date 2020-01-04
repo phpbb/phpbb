@@ -32,6 +32,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id']);
 
+	add_form_key('ucp_pm_view_folder');
+
 	if (!$submit_export)
 	{
 		$user->add_lang('viewforum');
@@ -196,6 +198,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$export_type = $request->variable('export_option', '');
 		$enclosure = $request->variable('enclosure', '');
 		$delimiter = $request->variable('delimiter', '');
+
+		if (!check_form_key('ucp_pm_view_folder'))
+		{
+			trigger_error('FORM_INVALID');
+		}
 
 		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
