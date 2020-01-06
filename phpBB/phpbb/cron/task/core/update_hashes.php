@@ -56,7 +56,7 @@ class update_hashes extends \phpbb\cron\task\base
 
 		foreach ($defaults as $type)
 		{
-			if ($hashing_algorithms[$type]->is_supported())
+			if ($hashing_algorithms[$type]->is_supported() && !$hashing_algorithms[$type] instanceof \phpbb\passwords\driver\base_native)
 			{
 				$this->default_type = $type;
 				break;
