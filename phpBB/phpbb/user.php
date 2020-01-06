@@ -342,10 +342,6 @@ class user extends \phpbb\session
 
 		$this->img_lang = $this->lang_name;
 
-		// Call phpbb_user_session_handler() in case external application want to "bend" some variables or replace classes...
-		// After calling it we continue script execution...
-		phpbb_user_session_handler();
-
 		/**
 		* Execute code at the end of user setup
 		*
