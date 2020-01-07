@@ -958,6 +958,11 @@ function handle_mark_actions($user_id, $mark_action)
 	{
 		case 'mark_important':
 
+			if (!check_form_key('ucp_pm_view'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 				SET pm_marked = 1 - pm_marked
 				WHERE folder_id = $cur_folder_id
