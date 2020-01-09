@@ -52,7 +52,6 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = true;
 		$user->browser				= $this->server['HTTP_USER_AGENT'];
 		$user->referer				= '';
 		$user->forwarded_for		= '';

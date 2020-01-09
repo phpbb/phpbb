@@ -193,6 +193,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	*/
 	public function test_first_last_post_info($mode, $retain_username, $expected_posts, $expected_topics, $expected_forums)
 	{
+		global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
+
 		$this->assertFalse(user_delete($mode, 2, $retain_username));
 
 		$sql = 'SELECT post_id, poster_id, post_username

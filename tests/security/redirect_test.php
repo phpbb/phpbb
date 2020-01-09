@@ -60,6 +60,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 
 	protected function get_path_helper()
 	{
+		global $phpbb_root_path;
+
 		if (!($this->path_helper instanceof \phpbb\path_helper))
 		{
 			$this->path_helper = new \phpbb\path_helper(
@@ -68,7 +70,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 				),
 				new \phpbb\filesystem\filesystem(),
 				$this->createMock('\phpbb\request\request'),
-				$this->phpbb_root_path,
+				$phpbb_root_path,
 				'php'
 			);
 		}
@@ -109,7 +111,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 
 		if ($expected_error !== false)
 		{
-			$this->setExpectedTriggerError(E_USER_WARNING, $user->lang[$expected_error]);
+			$this->setExpectedTriggerError(E_USER_WARNING, $expected_error);
 		}
 
 		$result = redirect($test, true, $disable_cd_check);
