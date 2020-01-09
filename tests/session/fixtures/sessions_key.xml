@@ -29,11 +29,20 @@
         <column>username_clean</column>
         <column>user_permissions</column>
         <column>user_sig</column>
-        <row>
+        <column>user_type</column>
+       <row>
             <value>4</value>
             <value>bar</value>
             <value></value>
             <value></value>
+            <value>0</value>
+        </row>
+       <row>
+            <value>1</value>
+            <value>anonymous</value>
+            <value></value>
+            <value></value>
+            <value>2</value>
         </row>
     </table>
 </dataset>

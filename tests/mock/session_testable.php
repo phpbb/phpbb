@@ -21,6 +21,7 @@
 class phpbb_mock_session_testable extends \phpbb\session
 {
 	private $_cookies = array();
+	public $lang = [];
 
 	public function set_cookie($name, $data, $time, $httponly = true)
 	{

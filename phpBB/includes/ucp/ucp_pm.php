@@ -361,7 +361,7 @@ class ucp_pm
 
 				$template->assign_vars(array(
 					'CUR_FOLDER_ID'			=> $folder_id,
-					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
+					'CUR_FOLDER_NAME'		=> $folder_status ? $folder_status['folder_name'] : false,
 					'NUM_NOT_MOVED'			=> $num_not_moved,
 					'NUM_REMOVED'			=> $num_removed,
 					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
@@ -384,12 +384,12 @@ class ucp_pm
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
 					'S_IN_SENTBOX'			=> ($folder_id == PRIVMSGS_SENTBOX) ? true : false,
 
-					'FOLDER_STATUS'				=> $folder_status['message'],
-					'FOLDER_MAX_MESSAGES'		=> $folder_status['max'],
-					'FOLDER_CUR_MESSAGES'		=> $folder_status['cur'],
-					'FOLDER_REMAINING_MESSAGES'	=> $folder_status['remaining'],
-					'FOLDER_PERCENT'			=> $folder_status['percent'])
-				);
+					'FOLDER_STATUS'				=> $folder_status ? $folder_status['message'] : false,
+					'FOLDER_MAX_MESSAGES'		=> $folder_status ? $folder_status['max'] : false,
+					'FOLDER_CUR_MESSAGES'		=> $folder_status ? $folder_status['cur'] : false,
+					'FOLDER_REMAINING_MESSAGES'	=> $folder_status ? $folder_status['remaining'] : false,
+					'FOLDER_PERCENT'			=> $folder_status ? $folder_status['percent'] : false,
+				));
 
 				if ($action == 'view_folder')
 				{
@@ -405,7 +405,7 @@ class ucp_pm
 				{
 					$template->assign_vars(array(
 						'S_VIEW_MESSAGE'		=> true,
-						'L_RETURN_TO_FOLDER'	=> $user->lang('RETURN_TO', $folder_status['folder_name']),
+						'L_RETURN_TO_FOLDER'	=> $user->lang('RETURN_TO', $folder_status ? $folder_status['folder_name'] : ''),
 						'MSG_ID'				=> $msg_id,
 					));
 

@@ -110,7 +110,7 @@ class phpbb_request_var_test extends phpbb_test_case
 		);
 
 		$result = request_var($path, $default);
-		$this->assertEquals($expected, $result, 'Testing deep access to multidimensional input arrays: ' . $path);
+		$this->assertEquals($expected, $result);
 	}
 
 	public function deep_access()

@@ -304,11 +304,45 @@ abstract class phpbb_database_test_case extends TestCase
 		return new phpbb_database_test_connection_manager($config);
 	}
 
+	/** array_diff() does not corretly compare multidimensionsl arrays
+	 *  This solution used for that https://www.codeproject.com/Questions/780780/PHP-Finding-differences-in-two-multidimensional-ar
+	 */
+	function array_diff_assoc_recursive($array1, $array2)
+	{
+		$difference = array();
+		foreach ($array1 as $key => $value)
+		{
+			if (is_array($value))
+			{
+				if (!isset($array2[$key]))
+				{
+					$difference[$key] = $value;
+				}
+				else if (!is_array($array2[$key]))
+				{
+					$difference[$key] = $value;
+				}
+				else
+				{
+					$new_diff = $this->array_diff_assoc_recursive($value, $array2[$key]);
+					if (!empty($new_diff))
+					{
+						$difference[$key] = $new_diff;
+					}
+				}
+			}
+			else if (!isset($array2[$key]) || $array2[$key] != $value)
+			{
+				$difference[$key] = $value;
+			}
+		}
+		return $difference;
+	}
+
 	public function assert_array_content_equals($one, $two)
 	{
-		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
-		// but one array_diff is not enough!
-		if (count(array_diff($one, $two)) || count(array_diff($two, $one)))
+		// one-way comparison is not enough!
+		if (count($this->array_diff_assoc_recursive($one, $two)) || count($this->array_diff_assoc_recursive($two, $one)))
 		{
 			// get a nice error message
 			$this->assertEquals($one, $two);

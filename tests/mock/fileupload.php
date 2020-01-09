@@ -21,6 +21,11 @@ class phpbb_mock_fileupload
 	public $error_prefix = '';
 	public $valid_dimensions = true;
 
+	public $min_width = 0;
+	public $min_height = 0;
+	public $max_width = 0;
+	public $max_height = 0;
+
 	public function valid_dimensions($filespec)
 	{
 		return $this->valid_dimensions;
