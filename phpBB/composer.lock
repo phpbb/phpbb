@@ -827,7 +827,7 @@
                 "oauth",
                 "security"
             ],
-            "time": "2016-07-12T22:15:00+00:00"
+            "time": "2018-02-14T22:37:14+00:00"
         },
         {
             "name": "marc1706/fast-image-size",
@@ -1300,16 +1300,16 @@
         },
         {
             "name": "s9e/regexp-builder",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/RegexpBuilder.git",
-                "reference": "59d0167a909659d718f53964f7653d2c83a5f8fe"
+                "reference": "605b33841a766abd40ba3d07c15d0f62b5e7f033"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/59d0167a909659d718f53964f7653d2c83a5f8fe",
-                "reference": "59d0167a909659d718f53964f7653d2c83a5f8fe",
+                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/605b33841a766abd40ba3d07c15d0f62b5e7f033",
+                "reference": "605b33841a766abd40ba3d07c15d0f62b5e7f033",
                 "shasum": ""
             },
             "require": {
@@ -1317,7 +1317,7 @@
                 "php": ">=5.5.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "<5.8"
+                "phpunit/phpunit": "*"
             },
             "type": "library",
             "autoload": {
@@ -1334,7 +1334,7 @@
             "keywords": [
                 "regexp"
             ],
-            "time": "2019-04-26T17:55:23+00:00"
+            "time": "2020-01-08T02:46:22+00:00"
         },
         {
             "name": "s9e/text-formatter",
@@ -2801,6 +2801,7 @@
                 "code",
                 "zf"
             ],
+            "abandoned": "laminas/laminas-code",
             "time": "2019-12-10T19:21:15+00:00"
         },
         {
@@ -2855,6 +2856,7 @@
                 "events",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
         }
     ],
