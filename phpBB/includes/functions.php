@@ -4493,8 +4493,6 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		$template->display('body');
 	}
 
-	garbage_collection();
-
 	if ($exit_handler)
 	{
 		exit_handler();
