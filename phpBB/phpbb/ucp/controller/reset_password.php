@@ -424,12 +424,8 @@ class reset_password
 			}
 		}
 
-		if (!empty($errors))
-		{
-			$this->template->assign_block_vars_array('PASSWORD_RESET_ERRORS', array_map([$this->language, 'lang'], $errors));
-		}
-
 		$this->template->assign_vars([
+			'PASSWORD_RESET_ERRORS'		=> !empty($errors) ? array_map([$this->language, 'lang'], $errors) : '',
 			'S_IS_PASSWORD_RESET'		=> true,
 			'U_RESET_PASSWORD_ACTION'	=> $this->helper->route('phpbb_ucp_reset_password_controller'),
 			'S_HIDDEN_FIELDS'			=> build_hidden_fields([
