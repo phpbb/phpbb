@@ -4493,6 +4493,20 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		$template->display('body');
 	}
 
+	/**
+	* Do not lose database connection on controllers.
+	* @todo verify if garbage_collection() still is needed.
+	*/
+	global $symfony_request;
+
+	$script_name = $symfony_request->getScriptName();
+	$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
+
+	if ($page_name !== 'app.php')
+	{
+		garbage_collection();
+	}
+
 	if ($exit_handler)
 	{
 		exit_handler();
