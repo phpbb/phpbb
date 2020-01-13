@@ -42,25 +42,24 @@ $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
 // We need to choose which of the url parameters we must trust and ignore the others
-	$forum_id = 0;
-	$topic_id = 0;
-	$post_id = 0;
+$forum_id = 0;
+$topic_id = 0;
+$post_id = 0;
 
 switch ($mode)
 {
 	case 'popup':
 	case 'smilies':
 		$forum_id = $request->variable('f', 0);
-		break;
+	break;
 
 	case 'post':
 		$forum_id = $request->variable('f', 0);
 		if (!$forum_id)
 		{
-			$user->setup('posting');
 			trigger_error('NO_FORUM');
 		}
-		break;
+	break;
 
 	case 'bump':
 	case 'reply':
@@ -76,10 +75,9 @@ switch ($mode)
 		}
 		if (!$topic_id || !$forum_id)
 		{
-			$user->setup('posting');
 			trigger_error('NO_TOPIC');
 		}
-		break;
+	break;
 
 	case 'edit':
 	case 'delete':
@@ -106,7 +104,7 @@ switch ($mode)
 			$user->setup('posting');
 			trigger_error('NO_POST');
 		}
-		break;
+	break;
 }
 
 
