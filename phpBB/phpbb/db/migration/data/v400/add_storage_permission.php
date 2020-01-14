@@ -29,6 +29,13 @@ class add_storage_permission extends migration
 		return !empty($a_storage_option_id);
 	}
 
+	static public function depends_on()
+	{
+		return [
+			'\phpbb\db\migration\data\v400\dev',
+		];
+	}
+
 	public function update_data()
 	{
 		return [

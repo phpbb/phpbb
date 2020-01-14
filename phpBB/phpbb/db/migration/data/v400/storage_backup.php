@@ -23,6 +23,13 @@ class storage_backup extends migration
 		return $this->db_tools->sql_table_exists($this->tables['backups']);
 	}
 
+	static public function depends_on()
+	{
+		return [
+			'\phpbb\db\migration\data\v400\dev',
+		];
+	}
+
 	public function update_schema()
 	{
 		return [
