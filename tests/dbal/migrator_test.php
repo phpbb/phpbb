@@ -69,6 +69,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
 			'phpbb_',
+			self::get_core_tables(),
 			$tools,
 			new \phpbb\db\migration\helper()
 		);

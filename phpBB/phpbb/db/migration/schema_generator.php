@@ -43,12 +43,23 @@ class schema_generator
 	protected $tables;
 
 	/** @var array */
+	protected $table_names;
+
+	/** @var array */
 	protected $dependencies = array();
 
 	/**
-	* Constructor
-	*/
-	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	 * Constructor
+	 * @param array $class_names
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\db\tools\tools_interface $db_tools
+	 * @param string $phpbb_root_path
+	 * @param string $php_ext
+	 * @param string $table_prefix
+	 * @param array $tables
+	 */
+	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $phpbb_root_path, $php_ext, $table_prefix, $tables)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -57,6 +68,7 @@ class schema_generator
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->table_prefix = $table_prefix;
+		$this->table_names = $tables;
 	}
 
 	/**
@@ -90,7 +102,7 @@ class schema_generator
 
 				if (empty($open_dependencies))
 				{
-					$migration = new $migration_class($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+					$migration = new $migration_class($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix, $this->table_names);
 					$tree[] = $migration_class;
 					$migration_key = array_search($migration_class, $migrations);
 
