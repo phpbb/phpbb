@@ -64,13 +64,14 @@ class add extends command
 	/**
 	 * Construct method
 	 *
-	 * @param user             $user
-	 * @param driver_interface $db
-	 * @param config           $config
-	 * @param language         $language
-	 * @param manager          $password_manager
-	 * @param string           $phpbb_root_path
-	 * @param string           $php_ext
+	 * @param user				$user
+	 * @param driver_interface	$db
+	 * @param config			$config
+	 * @param helper			$helper
+	 * @param language			$language
+	 * @param manager			$password_manager
+	 * @param string			$phpbb_root_path
+	 * @param string			$php_ext
 	 */
 	public function __construct(user $user, driver_interface $db, config $config, helper $helper, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
 	{

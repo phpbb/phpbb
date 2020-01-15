@@ -55,8 +55,8 @@ class menu
 	 * Constructor.
 	 *
 	 * @param \phpbb\cp\helper\auth				$cp_auth			Control panel auth object
-	 * @param \phpbb\cp\manager					$cp_manager			Control panel manager object
 	 * @param \phpbb\cp\helper\identifiers		$cp_ids				Control panel identifiers object
+	 * @param \phpbb\cp\manager					$cp_manager			Control panel manager object
 	 * @param \phpbb\controller\helper			$helper				Controller helper object
 	 * @param \phpbb\language\language			$lang				Language object
 	 * @param \phpbb\request\request			$request			Request object

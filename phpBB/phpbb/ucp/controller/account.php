@@ -99,8 +99,8 @@ class account
 		login_link $ucp_login_link,
 		permissions $ucp_permissions,
 		register $ucp_register,
-		reset_password $ucp_reset_password,
 		resend $ucp_resend,
+		reset_password $ucp_reset_password,
 		$root_path,
 		$php_ext
 	)
@@ -118,8 +118,8 @@ class account
 		$this->ucp_login_link		= $ucp_login_link;
 		$this->ucp_permissions		= $ucp_permissions;
 		$this->ucp_register			= $ucp_register;
-		$this->ucp_reset_password	= $ucp_reset_password;
 		$this->ucp_resend			= $ucp_resend;
+		$this->ucp_reset_password	= $ucp_reset_password;
 
 		$this->root_path			= $root_path;
 		$this->php_ext				= $php_ext;

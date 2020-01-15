@@ -31,8 +31,8 @@ services:
             - '@ucp.login_link'
             - '@ucp.permissions'
             - '@ucp.register'
-            - '@ucp.reset_password'
             - '@ucp.resend'
+            - '@ucp.reset_password'
             - '%core.root_path%'
             - '%core.php_ext%'
 

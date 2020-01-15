@@ -42,7 +42,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\auth\auth $auth
-	* @param \phpbb\acp\helper\auth_admin $auth_admin,
+	* @param \phpbb\acp\helper\auth_admin $auth_admin
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	*/
