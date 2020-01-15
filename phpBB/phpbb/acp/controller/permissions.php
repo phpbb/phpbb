@@ -749,7 +749,6 @@ class permissions
 			return trigger_error($this->language->lang('NO_AUTH_OPERATION') . $this->helper->adm_back_route($u_mode), E_USER_WARNING);
 		}
 
-
 		// We loop through the auth settings defined in our submit
 		$ug_id = key($psubmit);
 		$forum_id = key($psubmit[$ug_id]);
