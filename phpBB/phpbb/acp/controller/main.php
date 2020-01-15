@@ -44,7 +44,7 @@ class main
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\php\ini */
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
 	/** @var \phpbb\request\request */
@@ -92,6 +92,7 @@ class main
 	 * @param \phpbb\acp\helper\controller			$helper				ACP Controller helper
 	 * @param \phpbb\language\language				$language			Language object
 	 * @param \phpbb\log\log						$log				Log object
+	 * @param \bantu\IniGetWrapper\IniGetWrapper	$php_ini			PHP ini object
 	 * @param \phpbb\request\request				$request			Request object
 	 * @param \phpbb\storage\storage				$storage_avatar		Avatar storage object
 	 * @param \phpbb\template\template				$template			Template object
@@ -114,6 +115,7 @@ class main
 		\phpbb\acp\helper\controller $helper,
 		\phpbb\language\language $language,
 		\phpbb\log\log $log,
+		\bantu\IniGetWrapper\IniGetWrapper $php_ini,
 		\phpbb\request\request $request,
 		\phpbb\storage\storage $storage_avatar,
 		\phpbb\template\template $template,
@@ -136,6 +138,7 @@ class main
 		$this->helper				= $helper;
 		$this->language				= $language;
 		$this->log					= $log;
+		$this->php_ini				= $php_ini;
 		$this->request				= $request;
 		$this->storage_avatar		= $storage_avatar;
 		$this->template				= $template;
@@ -782,13 +785,11 @@ class main
 			$this->template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($this->root_path . 'config.' . $this->php_ext) & 0x0002));
 		}
 
-		global $phpbb_container;
-
-		$this->php_ini = $phpbb_container->get('php_ini');
 		$func_overload = $this->php_ini->getNumeric('mbstring.func_overload');
 		$encoding_translation = $this->php_ini->getString('mbstring.encoding_translation');
 		$http_input = $this->php_ini->getString('mbstring.http_input');
 		$http_output = $this->php_ini->getString('mbstring.http_output');
+
 		if (extension_loaded('mbstring'))
 		{
 			$this->template->assign_vars([

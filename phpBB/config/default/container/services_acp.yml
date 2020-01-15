@@ -95,6 +95,7 @@ services:
     acp.bbcodes:
         class: phpbb\acp\controller\bbcodes
         arguments:
+            - '@text_formatter.acp_utils'
             - '@cache.driver'
             - '@dbal.conn'
             - '@dispatcher'
@@ -383,6 +384,7 @@ services:
             - '@acp.controller.helper'
             - '@language'
             - '@log'
+            - '@php_ini'
             - '@request'
             - '@storage.avatar'
             - '@template'

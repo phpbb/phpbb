@@ -15,6 +15,9 @@ namespace phpbb\acp\controller;
 
 class bbcodes
 {
+	/** @var \phpbb\textformatter\s9e\acp_utils */
+	protected $bbcodes_utils;
+
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
@@ -51,6 +54,7 @@ class bbcodes
 	/**
 	 * Constructor.
 	 *
+	 * @param \phpbb\textformatter\s9e\acp_utils	$bbcodes_utils	Textformatter BBCodes utilities object
 	 * @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	 * @param \phpbb\db\driver\driver_interface		$db				Database object
 	 * @param \phpbb\event\dispatcher				$dispatcher		Event dispatcher object
@@ -64,6 +68,7 @@ class bbcodes
 	 * @param array									$tables		phpBB tables
 	 */
 	public function __construct(
+		\phpbb\textformatter\s9e\acp_utils $bbcodes_utils,
 		\phpbb\cache\driver\driver_interface $cache,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
@@ -77,18 +82,19 @@ class bbcodes
 		$tables
 	)
 	{
-		$this->cache		= $cache;
-		$this->db			= $db;
-		$this->dispatcher	= $dispatcher;
-		$this->helper		= $helper;
-		$this->language		= $language;
-		$this->log			= $log;
-		$this->request		= $request;
-		$this->template		= $template;
-		$this->tf_cache		= $tf_cache;
-		$this->user			= $user;
+		$this->bbcodes_utils	= $bbcodes_utils;
+		$this->cache			= $cache;
+		$this->db				= $db;
+		$this->dispatcher		= $dispatcher;
+		$this->helper			= $helper;
+		$this->language			= $language;
+		$this->log				= $log;
+		$this->request			= $request;
+		$this->template			= $template;
+		$this->tf_cache			= $tf_cache;
+		$this->user				= $user;
 
-		$this->tables		= $tables;
+		$this->tables			= $tables;
 	}
 
 	public function main()
@@ -243,18 +249,15 @@ class bbcodes
 				];
 				extract($this->dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
-				global $phpbb_container;
+				$bbcode_info = $this->bbcodes_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
+				$warn_unsafe = $bbcode_info['status'] === $this->bbcodes_utils::BBCODE_STATUS_UNSAFE;
 
-				$acp_utils   = $phpbb_container->get('text_formatter.acp_utils');
-				$bbcode_info = $acp_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
-				$warn_unsafe = $bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE;
-
-				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_TEMPLATE)
+				if ($bbcode_info['status'] === $this->bbcodes_utils::BBCODE_STATUS_INVALID_TEMPLATE)
 				{
 					return trigger_error($this->language->lang('BBCODE_INVALID_TEMPLATE') . $this->helper->adm_back_route('acp_bbcodes'), E_USER_WARNING);
 				}
 
-				if ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_INVALID_DEFINITION)
+				if ($bbcode_info['status'] === $this->bbcodes_utils::BBCODE_STATUS_INVALID_DEFINITION)
 				{
 					return trigger_error($this->language->lang('BBCODE_INVALID') . $this->helper->adm_back_route('acp_bbcodes'), E_USER_WARNING);
 				}
