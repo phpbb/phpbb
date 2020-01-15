@@ -61,19 +61,16 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->admin_login();
 		$this->add_lang('acp/groups');
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/groups/manage/add?sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$crawler = self::submit($form, array('group_name' => 'request-group'));
-
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$crawler = self::submit($form, array('group_name' => 'request-group'));
+		$crawler = self::submit($form, ['group_name' => 'request-group']);
 
 		$this->assertContainsLang('GROUP_CREATED', $crawler->filter('#main')->text());
 
 		$group_id = $this->get_group_id('request-group');
 
 		// Make admin group leader
-		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&action=list&g=' . $group_id . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/admin/groups/manage/list/' . $group_id . '?sid=' . $this->sid);
 		$form = $crawler->filter('input[name=addusers]')->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form, [
 			'leader'	=> 1,
@@ -94,7 +91,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 
 		$group_id = $this->get_group_id('request-group');
 
-		$crawler = self::request('GET', 'ucp.php?i=ucp_groups&mode=membership&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/groups/edit?sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form, ['selected' => $group_id, 'action' => 'join']);
 		$this->assertContainsLang('GROUP_JOIN_PENDING_CONFIRM', $crawler->text());
@@ -113,10 +110,10 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->add_lang('acp/groups');
 
 		$group_id = $this->get_group_id('request-group');
-		$crawler = self::request('GET', 'ucp.php?i=ucp_groups&mode=manage&action=list&g=' . $group_id . '&sid=' . $this->sid);
+		$crawler = self::request('GET', 'app.php/user/groups/manage/list/' . $group_id. '?sid=' . $this->sid);
 		$form = $crawler->filter('input[name=update]')->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form, [
-			'mark'	=> [$crawler->filter('input[name="mark[]"]')->first()->attr('value')],
+			'mark'		=> [$crawler->filter('input[name="mark[]"]')->first()->attr('value')],
 			'action'	=> 'approve',
 		]);
 

@@ -52,7 +52,7 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_bbcodes&sid=' . $this->sid . '&mode=bbcodes&action=add');
+		$crawler = self::request('GET', 'app.php/admin/bbcodes?action=add&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form([
 			'bbcode_match' => $match,
 			'bbcode_tpl'   => $tpl

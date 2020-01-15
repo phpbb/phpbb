@@ -155,7 +155,7 @@ class groups
 
 				if ($submit || $default)
 				{
-					$action = $default ? 'change_default' : $action;
+					$action = $default ? 'change_default' : $this->request->variable('action', '', true);
 					$group_id = $action === 'change_default' ? $this->request->variable('default', 0) : $this->request->variable('selected', 0);
 
 					if (!$group_id)
@@ -454,6 +454,7 @@ class groups
 			break;
 
 			case 'manage':
+				$action		= $this->request->variable('action', $action, true);
 				$action		= $this->request->is_set_post('addusers') ? 'addusers' : $action;
 				$group_id	= (int) $g;
 

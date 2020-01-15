@@ -13,6 +13,8 @@
 
 namespace phpbb\acp\controller;
 
+use phpbb\exception\exception_interface;
+use phpbb\exception\version_check_exception;
 use phpbb\composer\io\html_output_formatter;
 use phpbb\composer\io\web_io;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
