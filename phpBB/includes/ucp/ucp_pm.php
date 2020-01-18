@@ -209,14 +209,14 @@ class ucp_pm
 					$submit_mark = false;
 				}
 
-				if (($move_pm || $submit_mark) && !check_form_key('ucp_pm_view'))
-				{
-					trigger_error('FORM_INVALID');
-				}
-
 				// Move PM
 				if ($move_pm)
 				{
+					if (!check_form_key('ucp_pm_view'))
+					{
+						trigger_error('FORM_INVALID');
+					}
+
 					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
 					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 
