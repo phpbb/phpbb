@@ -72,6 +72,8 @@ class lexer extends \Twig_Lexer
 			'endspaceless',
 			'verbatim',
 			'endverbatim',
+			'apply',
+			'endapply',
 		);
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
