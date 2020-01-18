@@ -4,22 +4,22 @@
 	<ul id="nav-footer" class="nav-footer linklist" role="menubar">
 		<li class="breadcrumbs">
 			<!-- IF U_SITE_HOME -->
-				{% spaceless %}
+				{% apply spaceless %}
 				<span class="crumb">
 					<a href="{U_SITE_HOME}" data-navbar-reference="home">
 						<i class="icon fa-home fa-fw" aria-hidden="true"></i><span>{L_SITE_HOME}</span>
 					</a>
 				</span>
-				{% endspaceless %}
+				{% endapply %}
 			<!-- ENDIF -->
 			<!-- EVENT overall_footer_breadcrumb_prepend -->
-			{% spaceless %}
+			{% apply spaceless %}
 			<span class="crumb">
 				<a href="{U_INDEX}" data-navbar-reference="index">
 					<!-- IF not U_SITE_HOME --><i class="icon fa-home fa-fw" aria-hidden="true"></i><!-- ENDIF --><span>{L_INDEX}</span>
 				</a>
 			</span>
-			{% endspaceless %}
+			{% endapply %}
 			<!-- EVENT overall_footer_breadcrumb_append -->
 		</li>
 		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT -->
