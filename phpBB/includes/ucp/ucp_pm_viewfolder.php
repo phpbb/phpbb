@@ -32,7 +32,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id']);
 
-	add_form_key('ucp_pm_view_folder');
+	add_form_key('ucp_pm_view');
 
 	if (!$submit_export)
 	{
@@ -199,7 +199,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$enclosure = $request->variable('enclosure', '');
 		$delimiter = $request->variable('delimiter', '');
 
-		if (!check_form_key('ucp_pm_view_folder'))
+		if (!check_form_key('ucp_pm_view'))
 		{
 			trigger_error('FORM_INVALID');
 		}
