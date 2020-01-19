@@ -97,7 +97,7 @@ services:
             - '@symfony_request'
             - '@request'
             - '@routing.helper'
-            - '%core.adm_relative_path%'
+            - '%core.root_path%%core.adm_relative_path%'
             - '%core.php_ext%'
             - '%debug.sql_explain%'
 
