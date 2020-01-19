@@ -85,12 +85,21 @@ services:
     controller.helper:
         class: phpbb\controller\helper
         arguments:
+            - '@auth'
+            - '@cache.driver'
+            - '@cron.manager'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@language'
             - '@template'
             - '@user'
             - '@config'
             - '@symfony_request'
             - '@request'
             - '@routing.helper'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'
+            - '%debug.sql_explain%'
 
     controller.resolver:
         class: phpbb\controller\resolver

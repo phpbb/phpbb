@@ -13,6 +13,18 @@
 
 namespace phpbb\controller;
 
+use phpbb\auth\auth;
+use \phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\config\config;
+use phpbb\cron\manager;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\request\request_interface;
+use phpbb\routing\helper as routing_helper;
+use phpbb\symfony_request;
+use phpbb\template\template;
+use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,53 +34,101 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 */
 class helper
 {
+	/** @var auth */
+	protected $auth;
+
+	/** @var cache_interface */
+	protected $cache;
+
+	/** @var manager */
+	protected $cron_manager;
+
+	/** @var driver_interface */
+	protected $db;
+
+	/** @var dispatcher */
+	protected $dispatcher;
+
+	/** @var language */
+	protected $language;
+
 	/**
 	* Template object
-	* @var \phpbb\template\template
+	* @var template
 	*/
 	protected $template;
 
 	/**
 	* User object
-	* @var \phpbb\user
+	* @var user
 	*/
 	protected $user;
 
 	/**
 	* config object
-	* @var \phpbb\config\config
+	* @var config
 	*/
 	protected $config;
 
-	/* @var \phpbb\symfony_request */
+	/* @var symfony_request */
 	protected $symfony_request;
 
-	/* @var \phpbb\request\request_interface */
+	/* @var request_interface */
 	protected $request;
 
 	/**
-	 * @var \phpbb\routing\helper
+	 * @var routing_helper
 	 */
 	protected $routing_helper;
+
+	/** @var string */
+	protected $admin_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/** @var bool $sql_explain */
+	protected $sql_explain;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\template\template $template Template object
-	 * @param \phpbb\user $user User object
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
-	 * @param \phpbb\request\request_interface $request phpBB request object
-	 * @param \phpbb\routing\helper $routing_helper Helper to generate the routes
+	 * @param auth $auth Auth object
+	 * @param cache_interface $cache
+	 * @param manager $cron_manager
+	 * @param driver_interface $db Dbal object
+	 * @param dispatcher $dispatcher
+	 * @param language $language
+	 * @param template $template Template object
+	 * @param user $user User object
+	 * @param config $config Config object
+	 * @param symfony_request $symfony_request Symfony Request object
+	 * @param request_interface $request phpBB request object
+	 * @param routing_helper $routing_helper Helper to generate the routes
+	 * @param string $admin_path Admin path
+	 * @param string $php_ext PHP extension
+	 * @param bool $sql_explain Flag whether to display sql explain
 	 */
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\routing\helper $routing_helper)
+	public function __construct(auth $auth, cache_interface $cache, manager $cron_manager, driver_interface $db,
+								dispatcher $dispatcher, language $language, template $template, user $user, config $config,
+								symfony_request $symfony_request, request_interface $request, routing_helper $routing_helper,
+								$admin_path, $php_ext, $sql_explain = false)
 	{
+		$this->auth = $auth;
+		$this->cache = $cache;
+		$this->cron_manager = $cron_manager;
+		$this->db = $db;
+		$this->dispatcher = $dispatcher;
+		$this->language = $language;
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
 		$this->routing_helper = $routing_helper;
+		$this->admin_path = $admin_path;
+		$this->php_ext = $php_ext;
+		$this->sql_explain = $sql_explain;
 	}
 
 	/**
@@ -92,7 +152,7 @@ class helper
 			'body'	=> $template_file,
 		));
 
-		page_footer(true, false, false);
+		$this->display_footer();
 
 		$headers = !empty($this->user->data['is_bot']) ? array('X-PHPBB-IS-BOT' => 'yes') : array();
 
@@ -142,8 +202,8 @@ class helper
 	public function message($message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
 	{
 		array_unshift($parameters, $message);
-		$message_text = call_user_func_array(array($this->user, 'lang'), $parameters);
-		$message_title = $this->user->lang($title);
+		$message_text = call_user_func_array(array($this->language, 'lang'), $parameters);
+		$message_title = $this->language->lang($title);
 
 		if ($this->request->is_ajax())
 		{
@@ -174,7 +234,7 @@ class helper
 	 *
 	 * @param	int		$time	time in seconds, when redirection should occur
 	 * @param	string	$url	the URL where the user should be redirected
-	 * @return	null
+	 * @return	void
 	 */
 	public function assign_meta_refresh_var($time, $url)
 	{
@@ -191,5 +251,87 @@ class helper
 	public function get_current_url()
 	{
 		return generate_board_url(true) . $this->request->escape($this->symfony_request->getRequestUri(), true);
+	}
+
+	/**
+	 * Handle display actions for footer, e.g. SQL report and credit line
+	 *
+	 * @param bool $run_cron Flag whether cron should be run
+	 *
+	 * @return void
+	 */
+	public function display_footer($run_cron = true)
+	{
+		$this->display_sql_report();
+
+		$this->template->assign_vars([
+				'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($this->db, $this->config, $this->auth, $this->user, $this->dispatcher),
+				'TRANSLATION_INFO'		=> $this->language->is_set('TRANSLATION_INFO') ? $this->language->lang('TRANSLATION_INFO') : '',
+				'CREDIT_LINE'			=> $this->language->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
+
+				'U_ACP'					=> ($this->auth->acl_get('a_') && !empty($this->user->data['is_registered'])) ? append_sid("{$this->admin_path}index.{$this->php_ext}", false, true, $this->user->session_id) : '',
+		]);
+
+		if ($run_cron)
+		{
+			$this->set_cron_task();
+		}
+	}
+
+	/**
+	 * Display SQL report
+	 *
+	 * @return void
+	 */
+	protected function display_sql_report()
+	{
+		if ($this->sql_explain && $this->request->variable('explain', false) && $this->auth->acl_get('a_'))
+		{
+			$this->db->sql_report('display');
+		}
+	}
+
+	/**
+	 * Set cron task for footer
+	 *
+	 * @return void
+	 */
+	protected function set_cron_task()
+	{
+		// Call cron-type script
+		$call_cron = false;
+		if (!defined('IN_CRON') && !$this->config['use_system_cron'] && !$this->config['board_disable'] && !$this->user->data['is_bot'] && !$this->cache->get('_cron.lock_check'))
+		{
+			$call_cron = true;
+			$time_now = (!empty($this->user->time_now) && is_int($this->user->time_now)) ? $this->user->time_now : time();
+
+			// Any old lock present?
+			if (!empty($this->config['cron_lock']))
+			{
+				$cron_time = explode(' ', $this->config['cron_lock']);
+
+				// If 1 hour lock is present we do not set a cron task
+				if ($cron_time[0] + 3600 >= $time_now)
+				{
+					$call_cron = false;
+				}
+			}
+		}
+
+		// Call cron job?
+		if ($call_cron)
+		{
+			$task = $this->cron_manager->find_one_ready_task();
+
+			if ($task)
+			{
+				$url = $task->get_url();
+				$this->template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+			}
+			else
+			{
+				$this->cache->put('_cron.lock_check', true, 60);
+			}
+		}
 	}
 }
