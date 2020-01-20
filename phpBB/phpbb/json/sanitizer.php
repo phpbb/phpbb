@@ -1,24 +1,25 @@
 <?php
+declare(strict_types=1);
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-namespace phpbb;
+namespace phpbb\json;
 
 use phpbb\request\type_cast_helper;
 
 /**
-* JSON sanitizer class
-*/
-class json_sanitizer
+ * JSON sanitizer class
+ */
+class sanitizer
 {
 	/**
 	 * Sanitize json data
@@ -27,7 +28,7 @@ class json_sanitizer
 	 *
 	 * @return array Sanitized data
 	 */
-	static public function sanitize($data)
+	static public function sanitize(array $data) : array
 	{
 		if (!empty($data))
 		{
@@ -48,7 +49,7 @@ class json_sanitizer
 	 *
 	 * @return array Data array
 	 */
-	static public function decode($json)
+	static public function decode(string $json) : array
 	{
 		$data = json_decode($json, true);
 		return !empty($data) ? self::sanitize($data) : [];

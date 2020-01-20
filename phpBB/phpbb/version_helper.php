@@ -390,7 +390,7 @@ class version_helper
 			}
 
 			// Sanitize any data we retrieve from a server
-			$info = json_sanitizer::decode($info);
+			$info = json\sanitizer::decode($info);
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{
