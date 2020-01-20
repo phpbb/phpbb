@@ -40,6 +40,9 @@ class helper
 	/** @var cache_interface */
 	protected $cache;
 
+	/** @var config */
+	protected $config;
+
 	/** @var manager */
 	protected $cron_manager;
 
@@ -52,34 +55,20 @@ class helper
 	/** @var language */
 	protected $language;
 
-	/**
-	* Template object
-	* @var template
-	*/
-	protected $template;
+	/* @var request_interface */
+	protected $request;
 
-	/**
-	* User object
-	* @var user
-	*/
-	protected $user;
-
-	/**
-	* config object
-	* @var config
-	*/
-	protected $config;
+	/** @var routing_helper */
+	protected $routing_helper;
 
 	/* @var symfony_request */
 	protected $symfony_request;
 
-	/* @var request_interface */
-	protected $request;
+	/** @var template */
+	protected $template;
 
-	/**
-	 * @var routing_helper
-	 */
-	protected $routing_helper;
+	/** @var user */
+	protected $user;
 
 	/** @var string */
 	protected $admin_path;
@@ -95,23 +84,25 @@ class helper
 	 *
 	 * @param auth $auth Auth object
 	 * @param cache_interface $cache
+	 * @param config $config Config object
 	 * @param manager $cron_manager
-	 * @param driver_interface $db Dbal object
+	 * @param driver_interface $db DBAL object
 	 * @param dispatcher $dispatcher
 	 * @param language $language
-	 * @param template $template Template object
-	 * @param user $user User object
-	 * @param config $config Config object
-	 * @param symfony_request $symfony_request Symfony Request object
 	 * @param request_interface $request phpBB request object
 	 * @param routing_helper $routing_helper Helper to generate the routes
+	 * @param symfony_request $symfony_request Symfony Request object
+	 * @param template $template Template object
+	 * @param user $user User object
+	 * @param string $root_path phpBB root path
 	 * @param string $admin_path Admin path
 	 * @param string $php_ext PHP extension
 	 * @param bool $sql_explain Flag whether to display sql explain
 	 */
-	public function __construct(auth $auth, cache_interface $cache, manager $cron_manager, driver_interface $db,
-								dispatcher $dispatcher, language $language, template $template, user $user, config $config,
-								symfony_request $symfony_request, request_interface $request, routing_helper $routing_helper,
+	public function __construct(auth $auth, cache_interface $cache, config $config, manager $cron_manager,
+								driver_interface $db, dispatcher $dispatcher, language $language,
+								request_interface $request, routing_helper $routing_helper,
+								symfony_request $symfony_request, template $template, user $user, $root_path,
 								$admin_path, $php_ext, $sql_explain = false)
 	{
 		$this->auth = $auth;
@@ -126,7 +117,7 @@ class helper
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
 		$this->routing_helper = $routing_helper;
-		$this->admin_path = $admin_path;
+		$this->admin_path = $root_path . $admin_path;
 		$this->php_ext = $php_ext;
 		$this->sql_explain = $sql_explain;
 	}
@@ -166,7 +157,7 @@ class helper
 	* @param array	$params		String or array of additional url parameters
 	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
 	* @param string|bool		$session_id	Possibility to use a custom session id instead of the global one
-	* @param bool|string		$reference_type The type of reference to be generated (one of the constants)
+	* @param int	$reference_type	The type of reference to be generated (one of the constants)
 	* @return string The URL already passed through append_sid()
 	*/
 	public function route($route, array $params = array(), $is_amp = true, $session_id = false, $reference_type = UrlGeneratorInterface::ABSOLUTE_PATH)

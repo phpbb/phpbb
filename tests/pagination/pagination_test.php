@@ -65,17 +65,18 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->helper = new phpbb_mock_controller_helper(
 			new \phpbb\auth\auth(),
 			new \phpbb\cache\driver\dummy(),
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, '', 'php'),
 			$db,
 			new phpbb_mock_event_dispatcher(),
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			$this->template,
-			$this->user,
-			$this->config,
-			$symfony_request,
 			$request,
 			$this->routing_helper,
-			'',
+			$symfony_request,
+			$this->template,
+			$this->user,
+			$phpbb_root_path,
+			'adm/',
 			'php'
 		);
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);

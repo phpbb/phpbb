@@ -158,7 +158,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->db = $this->new_dbal();
 		$this->dispatcher = new phpbb_mock_event_dispatcher();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
-		$this->admin_path = $phpbb_root_path . 'adm/';
+		$this->admin_path = 'adm/';
 		$this->php_ext = $phpEx;
 
 		// Set correct current phpBB root path
@@ -208,16 +208,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -267,16 +268,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -326,16 +328,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -385,16 +388,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -444,16 +448,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -503,16 +508,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -559,16 +565,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -618,16 +625,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
@@ -665,16 +673,17 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
+			$this->config,
 			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
-			$this->template,
-			$this->user,
-			$this->config,
-			$this->symfony_request,
 			$this->request,
 			$this->routing_helper,
+			$this->symfony_request,
+			$this->template,
+			$this->user,
+			$this->root_path,
 			$this->admin_path,
 			$this->php_ext
 		);
