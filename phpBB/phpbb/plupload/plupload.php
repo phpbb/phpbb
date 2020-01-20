@@ -263,24 +263,14 @@ class plupload
 		$resize = '';
 		if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0)
 		{
-			if ($this->config['img_strip_metadata'] == 1)
-			{
-				$resize = sprintf(
-					'resize: {width: %d, height: %d, quality: %d, preserve_headers: false},',
-					(int) $this->config['img_max_width'],
-					(int) $this->config['img_max_height'],
-					(int) $this->config['img_quality']
-				);
-			}
-			else
-			{
-				$resize = sprintf(
-					'resize: {width: %d, height: %d, quality: %d},',
-					(int) $this->config['img_max_width'],
-					(int) $this->config['img_max_height'],
-					(int) $this->config['img_quality']
-				);
-			}
+			$preserve_headers_value = $this->config['img_strip_metadata'] ? 'false' : 'true';
+			$resize = sprintf(
+				'resize: {width: %d, height: %d, quality: %d, preserve_headers: %s},',
+				(int) $this->config['img_max_width'],
+				(int) $this->config['img_max_height'],
+				(int) $this->config['img_quality'],
+				$preserve_headers_value
+			);
 		}
 
 		return $resize;

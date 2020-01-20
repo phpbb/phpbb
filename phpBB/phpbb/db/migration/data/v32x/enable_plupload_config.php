@@ -17,16 +17,14 @@ class enable_plupload_config extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
-			'\phpbb\db\migration\data\v32x\v329',
-		);
+		return ['\phpbb\db\migration\data\v32x\v329',];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('img_quality', '90')),
-			array('config.add', array('img_strip_metadata', '1')),
-		);
+		return [
+			['config.add', ['img_quality', '90']],
+			['config.add', ['img_strip_metadata', '1']],
+		];
 	}
 }
