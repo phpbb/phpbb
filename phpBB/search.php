@@ -1100,7 +1100,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE) && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
-				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $controller_helper->route(($topic_unapproved ? 'approve_details' : 'unapproved_posts'), ['t' => $result_topic_id], true, $user->session_id) : '';
+				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $controller_helper->route(($topic_unapproved ? 'mcp_approve_details' : 'mcp_unapproved_posts'), ['t' => $result_topic_id], true, $user->session_id) : '';
 				$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $controller_helper->route('mcp_deleted_topics', ['t' => $result_topic_id], true, $user->session_id) : $u_mcp_queue;
 
 				$row['topic_title'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu', '<span class="posthilit">$1</span>', $row['topic_title']);

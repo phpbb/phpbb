@@ -93,8 +93,8 @@ class menu
 	public function build($cp)
 	{
 		// Reset the menu items
-		$this->actives		= [];
-		$this->items		= [];
+		$this->actives	= [];
+		$this->items	= [];
 
 		// Set the control panel type
 		$this->panel = $cp;
@@ -105,10 +105,10 @@ class menu
 		// Get identifiers for item authentication
 		$this->cp_ids->get_identifiers($cp);
 
-		// Build a menu, all items indexed per parent
+		// Build a menu; all items indexed per parent
 		$this->build_menu();
 
-		// Build all active items, the accessed item and its parents
+		// Build all active items; the accessed item and its parents
 		$this->build_actives();
 
 		// Build the navigation menu tree
@@ -233,7 +233,7 @@ class menu
 					$variables['ITEMS'] = $this->build_menu_tree($name);
 
 					// If this is a category and the categories pre-defined route is not available
-					if ($s_category && empty($variables['ITEMS'][$route]))
+					if ($s_category && empty($variables['ITEMS'][$route]) && !empty($variables['ITEMS']))
 					{
 						// Get the first child of the category
 						$first = reset($variables['ITEMS']);

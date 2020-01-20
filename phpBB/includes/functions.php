@@ -3744,7 +3744,12 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	/** @var \phpbb\cp\menu $cp_menu */
 	$cp_menu = $phpbb_container->get('cp.menu');
 
-	$cp_menu->build('mcp');
+	if ($user->data['is_registered'] && !$user->data['is_bot'])
+	{
+		// Build MCP menu before UCP menu to save on CP identifiers query
+		$cp_menu->build('mcp');
+	}
+
 	$cp_menu->build('ucp');
 
 	// gzip_compression
