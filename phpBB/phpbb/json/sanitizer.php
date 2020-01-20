@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /**
  *
  * This file is part of the phpBB Forum Software package.
@@ -11,6 +10,8 @@ declare(strict_types=1);
  * the docs/CREDITS.txt file.
  *
  */
+
+declare(strict_types=1);
 
 namespace phpbb\json;
 
