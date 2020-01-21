@@ -278,11 +278,26 @@ function reset_role(id) {
 		return;
 	}
 
-	t.options[0].selected = true;
+	var parent = t.parentNode,
+		roleId = match_role_settings(id.replace('role', 'perm')),
+		text = no_role_assigned,
+		index = 0;
 
-	var parent = t.parentNode;
-	parent.querySelector('span.dropdown-trigger').innerText = no_role_assigned;
-	parent.querySelector('input[data-name^=role]').value = '0';
+	if (roleId) {
+		for (var i = 0; i < t.options.length; i++) {
+			if (t.options[i].value == roleId) {
+				text = t.options[i].text;
+				index = i;
+				break;
+			}
+		}
+	}
+
+	t.value = roleId;
+	t.options[index].selected = true;
+
+	parent.querySelector('span.dropdown-trigger').innerText = text;
+	parent.querySelector('input[data-name^=role]').value = roleId;
 }
 
 /**
@@ -301,4 +316,37 @@ function set_role_settings(role_id, target_id) {
 	for (var r in settings) {
 		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
 	}
+}
+
+function match_role_settings(id)
+{
+	var fs = document.getElementById(id),
+		cbs = fs.getElementsByTagName('input'),
+		xyz = {};
+
+	for (var i = 0; i < cbs.length; i++) {
+		var matches = cbs[i].id.match(/setting\[\d+]\[\d+]\[([a-z_]+)]/);
+
+		if (matches !== null && cbs[i].checked && cbs[i].value !== '-1') {
+			xyz[matches[1]] = parseInt(cbs[i].value);
+		}
+	}
+
+	xyz = sort_and_stringify(xyz);
+
+	for (var r in role_options)
+	{
+		if (sort_and_stringify(role_options[r]) === xyz) {
+			return r;
+		}
+	}
+
+	return 0;
+}
+
+function sort_and_stringify(obj) {
+	return JSON.stringify(Object.keys(obj).sort().reduce(function (result, key) {
+		result[key] = obj[key];
+		return result;
+	}, {}));
 }
