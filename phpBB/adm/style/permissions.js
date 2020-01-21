@@ -322,21 +322,21 @@ function match_role_settings(id)
 {
 	var fs = document.getElementById(id),
 		cbs = fs.getElementsByTagName('input'),
-		xyz = {};
+		set = {};
 
 	for (var i = 0; i < cbs.length; i++) {
 		var matches = cbs[i].id.match(/setting\[\d+]\[\d+]\[([a-z_]+)]/);
 
 		if (matches !== null && cbs[i].checked && cbs[i].value !== '-1') {
-			xyz[matches[1]] = parseInt(cbs[i].value);
+			set[matches[1]] = parseInt(cbs[i].value);
 		}
 	}
 
-	xyz = sort_and_stringify(xyz);
+	set = sort_and_stringify(set);
 
 	for (var r in role_options)
 	{
-		if (sort_and_stringify(role_options[r]) === xyz) {
+		if (sort_and_stringify(role_options[r]) === set) {
 			return r;
 		}
 	}
