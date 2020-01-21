@@ -103,17 +103,51 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 	return false;
 }
 
+function installer_class_loader($phpbb_root_path, $phpEx)
+{
+	$phpbb_class_loader_new = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
+	$phpbb_class_loader_new->register();
+	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+	$phpbb_class_loader->register();
+	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\convert\\', "{$phpbb_root_path}install/convert/", $phpEx);
+	$phpbb_class_loader->register();
+	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
+	$phpbb_class_loader_ext->register();
+}
+
+function installer_shutdown_function($display_errors)
+{
+	$error = error_get_last();
+
+	if ($error)
+	{
+		// Restore original display errors value
+		@ini_set('display_errors', $display_errors);
+
+		$phpbb_root_path = __DIR__ . '/../';
+		$phpEx = 'php';
+
+		installer_class_loader($phpbb_root_path, $phpEx);
+		$supported_error_levels = E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED;
+
+		$cache = new \phpbb\cache\driver\file(__DIR__ . '/../cache/installer');
+		if (strpos($error['file'], realpath($cache->cache_dir)) !== false)
+		{
+			$cache->purge();
+
+			die('The installer has detected an issue with a cached file. Try reloading the page to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.');
+		}
+		else if ($error['type'] & $supported_error_levels)
+		{
+			trigger_error($error['message'], $error['type']);
+		}
+	}
+}
+
 phpbb_require_updated('includes/startup.' . $phpEx, $phpbb_root_path);
 phpbb_require_updated('phpbb/class_loader.' . $phpEx, $phpbb_root_path);
 
-$phpbb_class_loader_new = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
-$phpbb_class_loader_new->register();
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-$phpbb_class_loader->register();
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\convert\\', "{$phpbb_root_path}install/convert/", $phpEx);
-$phpbb_class_loader->register();
-$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
-$phpbb_class_loader_ext->register();
+installer_class_loader($phpbb_root_path, $phpEx);
 
 // In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
 $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
@@ -129,6 +163,9 @@ phpbb_require_updated('includes/utf/utf_tools.' . $phpEx, $phpbb_root_path);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'installer_msg_handler');
+$php_ini = new \bantu\IniGetWrapper\IniGetWrapper();
+
+register_shutdown_function('installer_shutdown_function', $php_ini->getNumeric('display_errors'));
 
 $phpbb_installer_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_installer_container_builder
