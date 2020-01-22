@@ -82,7 +82,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[code]unparsed code[/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code</code></pre></div>'
 			),
 			array(
 				'[list]no item[/list]',
@@ -195,12 +195,12 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Do not parse textual bbcodes in code
 				'[code]unparsed code [b]bold [i]bold + italic[/i][/b][/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [b]bold [i]bold + italic[/i][/b]</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [b]bold [i]bold + italic[/i][/b]</code></pre></div>'
 			),
 			array(
 				// Do not parse quote bbcodes in code
 				'[code]unparsed code [quote="username"]quoted[/quote][/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [quote="username"]quoted[/quote]</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [quote="username"]quoted[/quote]</code></pre></div>'
 			),
 			array(
 				// Textual bbcode nesting into textual bbcode
@@ -209,11 +209,11 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				"[code]\tline1\n  line2[/code]",
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
 			),
 			array(
 				"[code]\n\tline1\n  line2[/code]",
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
 			),
 			array(
 				'... http://example.org ...',
