@@ -23,7 +23,7 @@ class enable_plupload_config extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['config.add', ['img_quality', '90']],
+			['config.add', ['img_quality', '85']],
 			['config.add', ['img_strip_metadata', '1']],
 		];
 	}
