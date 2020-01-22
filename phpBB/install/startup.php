@@ -133,9 +133,21 @@ function installer_shutdown_function($display_errors)
 		$cache = new \phpbb\cache\driver\file(__DIR__ . '/../cache/installer');
 		if (strpos($error['file'], realpath($cache->cache_dir)) !== false)
 		{
-			$cache->purge();
+			$file_age = @filemtime($error['file']);
 
-			die('The installer has detected an issue with a cached file. Try reloading the page to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.');
+			if ($file_age !== false && ($file_age + 60) < time())
+			{
+				$cache->purge();
+
+				$symfony_request = new \phpbb\symfony_request(new \phpbb\request\request(new \phpbb\request\type_cast_helper()));
+
+				header('Location: ' . $symfony_request->getRequestUri());
+				exit();
+			}
+			else
+			{
+				die('The installer has detected an issue with a cached file. Try reloading the page and/or manually clearing the cache to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.');
+			}
 		}
 		else if ($error['type'] & $supported_error_levels)
 		{
