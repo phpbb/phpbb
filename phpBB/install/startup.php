@@ -151,7 +151,57 @@ function installer_shutdown_function($display_errors)
 		}
 		else if ($error['type'] & $supported_error_levels)
 		{
-			trigger_error($error['message'], $error['type']);
+			// Convert core errors to user warnings for trigger_error()
+			if ($error['type'] == E_CORE_ERROR || $error['type'] == E_COMPILE_ERROR)
+			{
+				$error['type'] = E_USER_ERROR;
+			}
+			else if ($error['type'] == E_CORE_WARNING)
+			{
+				$error['type'] = E_USER_WARNING;
+			}
+
+			try
+			{
+				installer_msg_handler($error['type'], $error['message'], $error['file'], $error['line']);
+			}
+			catch (\phpbb\exception\runtime_exception $exception)
+			{
+				echo '<!DOCTYPE html>';
+				echo '<html dir="ltr">';
+				echo '<head>';
+				echo '<meta charset="utf-8">';
+				echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+				echo '<title>General Error</title>';
+				echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
+				echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
+				echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
+				echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
+				echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
+				echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } ';
+				echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
+				echo "\n" . '/* ]]> */' . "\n";
+				echo '</style>';
+				echo '</head>';
+				echo '<body id="errorpage">';
+				echo '<div id="wrap">';
+				echo '	<div id="acp">';
+				echo '	<div class="panel">';
+				echo '		<div id="content">';
+				echo '			<h1>General Error</h1>';
+
+				echo '			<div>' . $exception->getMessage() . '</div>';
+
+				echo '		</div>';
+				echo '	</div>';
+				echo '	</div>';
+				echo '	<div id="page-footer">';
+				echo '		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited';
+				echo '	</div>';
+				echo '</div>';
+				echo '</body>';
+				echo '</html>';
+			}
 		}
 	}
 }
@@ -177,7 +227,10 @@ phpbb_require_updated('includes/utf/utf_tools.' . $phpEx, $phpbb_root_path);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'installer_msg_handler');
 $php_ini = new \bantu\IniGetWrapper\IniGetWrapper();
 
-register_shutdown_function('installer_shutdown_function', $php_ini->getNumeric('display_errors'));
+$ini_display_errors = $php_ini->getNumeric('display_errors');
+register_shutdown_function('installer_shutdown_function', $ini_display_errors);
+// Suppress errors until we have created the containers
+@ini_set('display_errors', 0);
 
 $phpbb_installer_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_installer_container_builder
@@ -191,3 +244,5 @@ $phpbb_installer_container = $phpbb_installer_container_builder
 	->with_config_path($config_path)
 	->with_custom_parameters(array('cache.driver.class' => 'phpbb\cache\driver\file'))
 	->get_container();
+
+@ini_set('display_errors', $ini_display_errors);
