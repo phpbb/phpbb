@@ -1114,12 +1114,15 @@ function display_custom_bbcodes()
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
 		}
 
+		// Convert Numeric Character References to UTF-8 chars.
+		$row['bbcode_helpline'] = utf8_decode_ncr($row['bbcode_helpline']);
+
 		$custom_tags = array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
-			'BBCODE_HELPLINE'	=> utf8_decode_ncr($row['bbcode_helpline']),
+			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
 		);
 
 		/**
