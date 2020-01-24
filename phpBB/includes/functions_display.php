@@ -1119,7 +1119,7 @@ function display_custom_bbcodes()
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
-			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
+			'BBCODE_HELPLINE'	=> utf8_decode_ncr($row['bbcode_helpline']),
 		);
 
 		/**

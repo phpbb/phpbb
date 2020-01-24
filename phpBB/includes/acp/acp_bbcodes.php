@@ -231,7 +231,7 @@ class acp_bbcodes
 						'bbcode_match'				=> $bbcode_match,
 						'bbcode_tpl'				=> $bbcode_tpl,
 						'display_on_posting'		=> $display_on_posting,
-						'bbcode_helpline'			=> $bbcode_helpline,
+						'bbcode_helpline'			=> utf8_encode_ucr($bbcode_helpline),
 						'first_pass_match'			=> $data['first_pass_match'],
 						'first_pass_replace'		=> $data['first_pass_replace'],
 						'second_pass_match'			=> $data['second_pass_match'],
