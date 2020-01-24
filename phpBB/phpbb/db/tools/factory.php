@@ -25,19 +25,19 @@ class factory
 	 */
 	public function get($db_driver, $return_statements = false)
 	{
-		if ($db_driver instanceof \phpbb\db\driver\mssql_base)
+		$platform = $db_driver->get_sql_layer();
+		switch ($platform)
 		{
-			return new \phpbb\db\tools\mssql($db_driver, $return_statements);
+			case 'mssqlnative':
+				return new \phpbb\db\tools\mssql($db_driver, $return_statements);
+			case 'postgres':
+				return new \phpbb\db\tools\postgres($db_driver, $return_statements);
+			case 'mysqli':
+			case 'oracle':
+			case 'sqlite3':
+				return new \phpbb\db\tools\tools($db_driver, $return_statements);
+			default:
+				throw new \InvalidArgumentException('Invalid database driver given');
 		}
-		else if ($db_driver instanceof \phpbb\db\driver\postgres)
-		{
-			return new \phpbb\db\tools\postgres($db_driver, $return_statements);
-		}
-		else if ($db_driver instanceof \phpbb\db\driver\driver_interface)
-		{
-			return new \phpbb\db\tools\tools($db_driver, $return_statements);
-		}
-
-		throw new \InvalidArgumentException('Invalid database driver given');
 	}
 }

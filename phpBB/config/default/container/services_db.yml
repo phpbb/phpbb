@@ -5,6 +5,7 @@ services:
             - '@service_container'
 
     dbal.conn.driver:
+        class: phpbb\db\driver\driver_interface
         synthetic: true
 
 # ----- DB Tools -----

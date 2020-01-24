@@ -14,66 +14,10 @@
 namespace phpbb\db\driver;
 
 /**
-* MSSQL Database Base Abstraction Layer
+ * MSSQL Database Base Abstraction Layer
+ *
+ * @deprecated 4.0.0-dev The driver interface is deprecated, please use Doctrine DBAL directly instead.
  */
-abstract class mssql_base extends \phpbb\db\driver\driver
+abstract class mssql_base extends doctrine
 {
-	/**
-	* {@inheritDoc}
-	*/
-	public function sql_concatenate($expr1, $expr2)
-	{
-		return $expr1 . ' + ' . $expr2;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_escape($msg)
-	{
-		return str_replace(array("'", "\0"), array("''", ''), $msg);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_lower_text($column_name)
-	{
-		return "LOWER(SUBSTRING($column_name, 1, DATALENGTH($column_name)))";
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
-	}
-
-	/**
-	* Build NOT LIKE expression
-	* @access private
-	*/
-	function _sql_not_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function cast_expr_to_bigint($expression)
-	{
-		return 'CONVERT(BIGINT, ' . $expression . ')';
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
 }

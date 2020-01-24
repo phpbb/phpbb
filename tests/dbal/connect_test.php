@@ -28,13 +28,9 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 		$db = new $config['dbms']();
 
-		// Failure to connect results in a trigger_error call in dbal.
-		// phpunit converts triggered errors to exceptions.
-		// In particular there should be no fatals here.
 		try
 		{
-			$db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']);
-			$this->assertFalse(true);
+			$this->assertFalse($db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']));
 		}
 		catch (Exception $e)
 		{

@@ -42,11 +42,9 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 			array('user_id' => '2'),
 			array('user_id' => '3'),
 			array('user_id' => '6'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			),
+			$db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_single_like()
@@ -71,11 +69,9 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		$this->assertEquals(array(
 			array('user_id' => '4'),
 			array('user_id' => '5'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			),
+			$db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_single_not_in()
@@ -101,11 +97,9 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 			array('user_id' => '1'),
 			array('user_id' => '2'),
 			array('user_id' => '6'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			),
+			$db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_single_in()
@@ -131,11 +125,9 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 			array('user_id' => '3'),
 			array('user_id' => '4'),
 			array('user_id' => '5'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			),
+			$db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_and_of_or_of_and()
@@ -189,11 +181,8 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		$this->assertEquals(array(
 			array('user_id' => '2'),
 			array('user_id' => '4'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			), $db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_triple_and_with_in()
@@ -226,10 +215,8 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 			array('user_id' => '1'),
 			array('user_id' => '2'),
 			array('user_id' => '3'),
-			), $db->sql_fetchrowset($result),
-			($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
+			),
+			$db->sql_fetchrowset($result)
 		);
 
 	}
@@ -268,11 +255,10 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 
 		$db->sql_return_on_error(false);
 
-		$this->assertEquals(array(), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+		$this->assertEquals(
+			array(),
+			$db->sql_fetchrowset($result)
+		);
 	}
 
 	public function test_triple_and_with_is_null()
@@ -312,10 +298,8 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		$this->assertEquals(array(
 			array('username' => 'helper'),
 			array('username' => 'mass email'),
-			), $db->sql_fetchrowset($result),
-				($result === false) ?
-				"SQL ERROR:<br>" . var_export($sql, true) . "<br>" . $db->sql_error() :
-				var_export($sql, true) . '   ' . var_export($result, true)
-			);
+			),
+			$db->sql_fetchrowset($result)
+		);
 	}
 }
