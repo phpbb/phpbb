@@ -240,6 +240,12 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
+					/**
+					 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+					 * Using their Numeric Character Reference's Hexadecimal notation.
+					 */
+					$bbcode_helpline = utf8_encode_ucr($bbcode_helpline);
+
 					$sql_ary = array_merge($sql_ary, array(
 						'bbcode_tag'				=> $data['bbcode_tag'],
 						'bbcode_match'				=> $bbcode_match,
