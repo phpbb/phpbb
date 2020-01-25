@@ -41,7 +41,7 @@ $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || $save |
 $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
-// We need to choose which of the url parameters we must trust and ignore the others
+// Only assign required URL parameters
 $forum_id = 0;
 $topic_id = 0;
 $post_id = 0;
