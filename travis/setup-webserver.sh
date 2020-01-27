@@ -22,6 +22,7 @@ PHPBB_ROOT_PATH=$(realpath "$DIR/../phpBB")
 NGINX_SITE_CONF="/etc/nginx/sites-enabled/default"
 NGINX_CONF="/etc/nginx/nginx.conf"
 APP_SOCK=$(realpath "$DIR")/php-app.sock
+NGINX_PHP_CONF="$DIR/nginx-php.conf"
 
 # php-fpm
 PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
@@ -45,13 +46,21 @@ sudo $PHP_FPM_BIN \
 	--fpm-config "$DIR/php-fpm.conf"
 
 # nginx
-cat $DIR/../phpBB/docs/nginx.sample.conf \
-| sed "s/root \/path\/to\/phpbb/root $(echo $PHPBB_ROOT_PATH | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" \
-| sed -e '1,/The actual board domain/d' \
-| sed -e '/If running php as fastcgi/,$d' \
-| sed -e "s/fastcgi_pass php;/fastcgi_pass unix:$(echo $APP_SOCK | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g');/g" \
-| sed -e 's/#listen 80/listen 80/' \
-| sudo tee $NGINX_SITE_CONF
 sudo sed -i "s/user www-data;/user $USER;/g" $NGINX_CONF
+sudo cp "$DIR/../phpBB/docs/nginx.sample.conf" "$NGINX_SITE_CONF"
+sudo sed -i \
+	-e "s/example\.com/localhost/g" \
+	-e "s|root /path/to/phpbb;|root $PHPBB_ROOT_PATH;|g" \
+	$NGINX_SITE_CONF
 
+# Generate FastCGI configuration for Nginx
+echo "
+upstream php {
+	server unix:$APP_SOCK;
+}
+" > $NGINX_PHP_CONF
+
+sudo mv "$NGINX_PHP_CONF" /etc/nginx/conf.d/php.conf
+
+sudo nginx -T
 sudo service nginx start
