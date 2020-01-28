@@ -13,18 +13,18 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class enable_plupload_config extends \phpbb\db\migration\migration
+class add_plupload_config extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return ['\phpbb\db\migration\data\v32x\v329',];
+		return ['\phpbb\db\migration\data\v32x\v329'];
 	}
 
 	public function update_data()
 	{
 		return [
 			['config.add', ['img_quality', '85']],
-			['config.add', ['img_strip_metadata', '1']],
+			['config.add', ['img_strip_metadata', '0']],
 		];
 	}
 }

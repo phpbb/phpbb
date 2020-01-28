@@ -112,9 +112,9 @@ $lang = array_merge($lang, array(
 	'IMAGE_LINK_SIZE'			=> 'Image link dimensions',
 	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'Display image attachment as an inline text link if image is larger than this. To disable this behaviour, set the values to 0px by 0px.',
 	'IMAGE_QUALITY'				=> 'Quality of uploaded image attachments (JPEG only)',
-	'IMAGE_QUALITY_EXPLAIN'		=> 'Specify value between 50% (smaller file size) and 90% (higher quality). Quality higher than 90% increases filesize and is disabled. Setting only applies if max image dimensions set to value other than 0px by 0px.',
+	'IMAGE_QUALITY_EXPLAIN'		=> 'Specify value between 50% (smaller file size) and 90% (higher quality). Quality higher than 90% increases filesize and is disabled. Setting only applies if maximum image dimensions are set to a value other than 0px by 0px.',
 	'IMAGE_STRIP_METADATA'		=> 'Strip image metadata (JPEG only)',
-	'IMAGE_STRIP_METADATA_EXPLAIN'	=> 'Strip Exif metadata eg author name, GPS coordinates & camera details. Setting only applies if max image dimensions set to value other than 0px by 0px.',
+	'IMAGE_STRIP_METADATA_EXPLAIN'	=> 'Strip Exif metadata, e.g. author name, GPS coordinates and camera details. Setting only applies if maximum image dimensions are set to a value other than 0px by 0px.',
 
 	'MAX_ATTACHMENTS'				=> 'Maximum number of attachments per post',
 	'MAX_ATTACHMENTS_PM'			=> 'Maximum number of attachments per private message',
