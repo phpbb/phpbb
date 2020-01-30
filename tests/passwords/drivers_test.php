@@ -24,8 +24,8 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		
 		// Initialize argon2 default options
 		$this->argon2_default_cost_options = [
-			'memory_cost' => 1024,
-			'time_cost'   => 2,
+			'memory_cost' => 65536,
+			'time_cost'   => 4,
 			'threads'     => 2
 		];
 
