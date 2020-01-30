@@ -2364,7 +2364,7 @@ if ($s_can_vote || $s_quick_reply)
 			'S_QUICK_REPLY'			=> true,
 			'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
 			'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
-			'SUBJECT'				=> 'Re: ' . censor_text($topic_data['topic_title']),
+			'SUBJECT'				=> 'Re: ' . censor_text($topic_data['topic_last_post_subject']),
 		];
 
 		/**
