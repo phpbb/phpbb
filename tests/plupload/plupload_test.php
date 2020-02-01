@@ -19,12 +19,16 @@ class phpbb_plupload_test extends phpbb_test_case
 			array(
 				0,
 				0,
+				85,
+				0,
 				'',
 			),
 			array(
 				130,
 				150,
-				'resize: {width: 130, height: 150, quality: 85},'
+				85,
+				1,
+				'resize: {width: 130, height: 150, quality: 85, preserve_headers: false},'
 			),
 		);
 	}
@@ -32,7 +36,7 @@ class phpbb_plupload_test extends phpbb_test_case
 	/**
 	* @dataProvider generate_resize_string_data
 	*/
-	public function test_generate_resize_string($config_width, $config_height, $expected)
+	public function test_generate_resize_string($config_width, $config_height, $config_quality, $config_metadata, $expected)
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -41,6 +45,8 @@ class phpbb_plupload_test extends phpbb_test_case
 		$config = new \phpbb\config\config(array(
 			'img_max_width'		=> $config_width,
 			'img_max_height'	=> $config_height,
+			'img_quality'		=> $config_quality,
+			'img_strip_metadata'	=> $config_metadata,
 			'upload_path'		=> 'files',
 		));
 		$plupload = new \phpbb\plupload\plupload(
