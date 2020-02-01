@@ -154,6 +154,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_thumb_width', '400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize', '12000');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_quality', '85');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_strip_metadata', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_max', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_time', '21600');

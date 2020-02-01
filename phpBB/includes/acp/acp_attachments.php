@@ -168,6 +168,8 @@ class acp_attachments
 						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'img_strip_metadata'		=> array('lang' => 'IMAGE_STRIP_METADATA',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'img_quality'				=> array('lang' => 'IMAGE_QUALITY',			'validate' => 'int:50:90',	'type' => 'number:50:90', 'explain' => true, 'append' => ' &percnt;'),
 						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
 				);
