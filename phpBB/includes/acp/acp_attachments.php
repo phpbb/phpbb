@@ -1452,50 +1452,6 @@ class acp_attachments
 	}
 
 	/**
-	* Test Settings
-	*/
-	function test_upload(&$error, $upload_dir, $create_directory = false)
-	{
-		global $user, $phpbb_root_path;
-
-		// Does the target directory exist, is it a directory and writable.
-		if ($create_directory)
-		{
-			if (!file_exists($phpbb_root_path . $upload_dir))
-			{
-				@mkdir($phpbb_root_path . $upload_dir, 0777);
-
-				try
-				{
-					$this->filesystem->phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
-				}
-				catch (\phpbb\filesystem\exception\filesystem_exception $e)
-				{
-					// Do nothing
-				}
-			}
-		}
-
-		if (!file_exists($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $upload_dir);
-			return;
-		}
-
-		if (!is_dir($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $upload_dir);
-			return;
-		}
-
-		if (!$this->filesystem->is_writable($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
-			return;
-		}
-	}
-
-	/**
 	* Perform operations on sites for external linking
 	*/
 	function perform_site_list()
