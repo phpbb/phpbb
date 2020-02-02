@@ -225,10 +225,10 @@ define('REFERER_VALIDATE_HOST', 1);
 define('REFERER_VALIDATE_PATH', 2);
 
 // phpbb_chmod() permissions
-@define('CHMOD_ALL', 7);
-@define('CHMOD_READ', 4);
-@define('CHMOD_WRITE', 2);
-@define('CHMOD_EXECUTE', 1);
+@define('CHMOD_ALL', 7); // @deprecated 3.2
+@define('CHMOD_READ', 4); // @deprecated 3.2
+@define('CHMOD_WRITE', 2); // @deprecated 3.2
+@define('CHMOD_EXECUTE', 1); // @deprecated 3.2
 
 // Captcha code length
 define('CAPTCHA_MIN_CHARS', 4);

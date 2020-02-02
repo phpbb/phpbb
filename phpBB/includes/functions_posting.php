@@ -717,7 +717,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	try
 	{
-		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+		$phpbb_filesystem->phpbb_chmod($destination, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 	}
 	catch (\phpbb\filesystem\exception\filesystem_exception $e)
 	{
