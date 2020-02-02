@@ -4315,15 +4315,17 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 * @param \phpbb\request\request_interface		$request	Request object
 * @param \phpbb\auth\auth						$auth		Auth object
 * @param \phpbb\db\driver\driver_interface		$db			Database connection
+ *
+ * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
 	global $phpbb_container;
 
-	if ($phpbb_container->getParameter('debug.sql_explain') && $request->variable('explain', false) && $auth->acl_get('a_'))
-	{
-		$db->sql_report('display');
-	}
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$controller_helper->display_sql_report();
 }
 
 /**

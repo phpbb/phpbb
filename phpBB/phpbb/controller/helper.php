@@ -274,7 +274,7 @@ class helper
 	 *
 	 * @return void
 	 */
-	protected function display_sql_report()
+	public function display_sql_report()
 	{
 		if ($this->sql_explain && $this->request->variable('explain', false) && $this->auth->acl_get('a_'))
 		{
