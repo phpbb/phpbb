@@ -434,7 +434,7 @@ if ($post_data['forum_type'] != FORUM_POST && in_array($mode, array('post', 'bum
 }
 
 // Forum/Topic locked?
-if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get('m_edit', $forum_id))
+if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get($mode == 'reply' ? 'm_lock' : 'm_edit', $forum_id))
 {
 	trigger_error(($post_data['forum_status'] == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED');
 }
