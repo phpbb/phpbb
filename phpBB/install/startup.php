@@ -103,6 +103,12 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 	return false;
 }
 
+/**
+ * Register class loaders for installer
+ *
+ * @param string $phpbb_root_path phpBB root path
+ * @param string $phpEx PHP file extension
+ */
 function installer_class_loader($phpbb_root_path, $phpEx)
 {
 	$phpbb_class_loader_new = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
@@ -115,6 +121,12 @@ function installer_class_loader($phpbb_root_path, $phpEx)
 	$phpbb_class_loader_ext->register();
 }
 
+/**
+ * Installer shutdown function. Tries to resolve errors that might have occured
+ * during execution of installer
+ *
+ * @param int $display_errors Original display errors value
+ */
 function installer_shutdown_function($display_errors)
 {
 	$error = error_get_last();
@@ -124,6 +136,8 @@ function installer_shutdown_function($display_errors)
 		// Restore original display errors value
 		@ini_set('display_errors', $display_errors);
 
+		// Manually define phpBB root path and phpEx. These will not be passed
+		// on from app.php
 		$phpbb_root_path = __DIR__ . '/../';
 		$phpEx = 'php';
 
@@ -131,7 +145,8 @@ function installer_shutdown_function($display_errors)
 		$supported_error_levels = E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED;
 
 		$cache = new \phpbb\cache\driver\file(__DIR__ . '/../cache/installer');
-		if (strpos($error['file'], realpath($cache->cache_dir)) !== false)
+		$filesystem = new \phpbb\filesystem\filesystem();
+		if (strpos($error['file'], $filesystem->realpath($cache->cache_dir)) !== false)
 		{
 			$file_age = @filemtime($error['file']);
 
@@ -146,6 +161,7 @@ function installer_shutdown_function($display_errors)
 			}
 			else
 			{
+				// Language system is not available
 				die('The installer has detected an issue with a cached file. Try reloading the page and/or manually clearing the cache to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.');
 			}
 		}

@@ -637,7 +637,7 @@ class filesystem implements filesystem_interface
 	}
 
 	/**
-	 * Try to resolve real path when PHP's realpath failes to do so
+	 * Try to resolve real path when PHP's realpath fails to do so
 	 *
 	 * @param string	$path
 	 * @return bool|string
