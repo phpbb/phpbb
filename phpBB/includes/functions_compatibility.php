@@ -712,3 +712,24 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 	}
 	return $hidden;
 }
+
+/**
+* Delete all PM(s) for a given user and delete the ones without references
+*
+* @param	int		$user_id	ID of the user whose private messages we want to delete
+*
+* @return	boolean		False if there were no pms found, true otherwise.
+*
+* @deprecated 3.2.10 (To be removed 4.0.0)
+*/
+function phpbb_delete_user_pms($user_id)
+{
+	$user_id = (int) $user_id;
+
+	if (!$user_id)
+	{
+		return false;
+	}
+
+	return phpbb_delete_users_pms(array($user_id));
+}
