@@ -511,3 +511,48 @@ function phpbb_pcre_utf8_support()
 {
 	return true;
 }
+
+/**
+* Load the autoloaders added by the extensions.
+*
+* @param string $phpbb_root_path Path to the phpbb root directory.
+*
+* @deprecated 3.2.9 (To be removed 4.0.0)
+*/
+function phpbb_load_extensions_autoloaders($phpbb_root_path)
+{
+	$iterator = new \RecursiveIteratorIterator(
+		new \phpbb\recursive_dot_prefix_filter_iterator(
+			new \RecursiveDirectoryIterator(
+				$phpbb_root_path . 'ext/',
+				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
+			)
+		),
+		\RecursiveIteratorIterator::SELF_FIRST
+	);
+	$iterator->setMaxDepth(2);
+
+	foreach ($iterator as $file_info)
+	{
+		if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
+		{
+			$filename = $file_info->getRealPath() . '/autoload.php';
+			if (file_exists($filename))
+			{
+				require $filename;
+			}
+		}
+	}
+}
+
+/**
+* Casts a variable to the given type.
+*
+* @deprecated
+*/
+function set_var(&$result, $var, $type, $multibyte = false)
+{
+	// no need for dependency injection here, if you have the object, call the method yourself!
+	$type_cast_helper = new \phpbb\request\type_cast_helper();
+	$type_cast_helper->set_var($result, $var, $type, $multibyte);
+}
