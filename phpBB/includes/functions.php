@@ -3907,54 +3907,6 @@ function phpbb_quoteattr($data, $entities = null)
 }
 
 /**
-* Converts query string (GET) parameters in request into hidden fields.
-*
-* Useful for forwarding GET parameters when submitting forms with GET method.
-*
-* It is possible to omit some of the GET parameters, which is useful if
-* they are specified in the form being submitted.
-*
-* sid is always omitted.
-*
-* @param \phpbb\request\request $request Request object
-* @param array $exclude A list of variable names that should not be forwarded
-* @return string HTML with hidden fields
-*/
-function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
-{
-	$names = $request->variable_names(\phpbb\request\request_interface::GET);
-	$hidden = '';
-	foreach ($names as $name)
-	{
-		// Sessions are dealt with elsewhere, omit sid always
-		if ($name == 'sid')
-		{
-			continue;
-		}
-
-		// Omit any additional parameters requested
-		if (!empty($exclude) && in_array($name, $exclude))
-		{
-			continue;
-		}
-
-		$escaped_name = phpbb_quoteattr($name);
-
-		// Note: we might retrieve the variable from POST or cookies
-		// here. To avoid exposing cookies, skip variables that are
-		// overwritten somewhere other than GET entirely.
-		$value = $request->variable($name, '', true);
-		$get_value = $request->variable($name, '', true, \phpbb\request\request_interface::GET);
-		if ($value === $get_value)
-		{
-			$escaped_value = phpbb_quoteattr($value);
-			$hidden .= "<input type='hidden' name=$escaped_name value=$escaped_value />";
-		}
-	}
-	return $hidden;
-}
-
-/**
 * Get user avatar
 *
 * @param array $user_row Row from the users table
