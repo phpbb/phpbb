@@ -85,13 +85,7 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 			return;
 		break;
 		case E_USER_ERROR:
-			$msg = '<b>General Error:</b><br />' . $msg_text . '<br /> in file ' . $errfile . ' on line ' . $errline;
-
-			$backtrace = get_backtrace();
-			if ($backtrace)
-			{
-				$msg .= '<br /><br />BACKTRACE<br />' . $backtrace;
-			}
+			$msg = '<b>General Error:</b><br>' . $msg_text . '<br> in file ' . $errfile . ' on line ' . $errline . '<br><br>';
 
 			throw new \phpbb\exception\runtime_exception($msg);
 		break;
