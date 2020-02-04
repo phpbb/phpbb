@@ -894,6 +894,8 @@ switch ($mode)
 			trigger_error('NO_EMAIL');
 		}
 
+		$user->add_lang('ucp');
+
 		/** @var $form \phpbb\message\form */
 		$form = $phpbb_container->get('message.form.' . $form_name);
 
