@@ -2415,7 +2415,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 /**
 * Function auto_prune(), this function now relies on passed vars
 */
-function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
+function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq, $log_prune = true)
 {
 	global $db, $user, $phpbb_log;
 
@@ -2435,13 +2435,18 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 
 		if ($result['topics'] == 0 && $result['posts'] == 0)
 		{
+			$column = $prune_mode === 'shadow' ? 'prune_shadow_next' : 'prune_next';
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET prune_next = $next_prune
+				SET $column = $next_prune
 				WHERE forum_id = $forum_id";
 			$db->sql_query($sql);
 		}
 
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_AUTO_PRUNE', false, array($row['forum_name']));
+		if ($log_prune)
+		{
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_AUTO_PRUNE', false, [$row['forum_name']]);
+		}
 	}
 
 	return;
