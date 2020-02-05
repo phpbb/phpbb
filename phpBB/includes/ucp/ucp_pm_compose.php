@@ -689,6 +689,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				);
 				$db->sql_query($sql);
 
+				/** @var \phpbb\attachment\manager $attachment_manager */
+				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$attachment_manager->delete('attach', array_column($message_parser->attachment_data, 'attach_id'));
+
 				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 
 				meta_refresh(3, $redirect_url);
