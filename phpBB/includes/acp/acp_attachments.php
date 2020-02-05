@@ -123,17 +123,29 @@ class acp_attachments
 					include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				}
 
-				$sql = 'SELECT group_name, cat_id
+				$allowed_pm_groups = [];
+				$allowed_post_groups = [];
+				$s_assigned_groups = [];
+
+				$sql = 'SELECT group_id, group_name, cat_id, allow_group, allow_in_pm
 					FROM ' . EXTENSION_GROUPS_TABLE . '
 					WHERE cat_id > 0
 					ORDER BY cat_id';
 				$result = $db->sql_query($sql);
-
-				$s_assigned_groups = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$row['group_name'] = $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($row['group_name'])) : $row['group_name'];
 					$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
+
+					if ($row['allow_group'])
+					{
+						$allowed_post_groups[] = $row['group_id'];
+					}
+
+					if ($row['allow_in_pm'])
+					{
+						$allowed_pm_groups[] = $row['group_id'];
+					}
 				}
 				$db->sql_freeresult($result);
 
@@ -151,13 +163,13 @@ class acp_attachments
 
 						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
+						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
 						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'wpath',	'type' => 'text:25:100', 'explain' => true),
 						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
 						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize_pm'		=> array('lang' => 'ATTACH_MAX_PM_FILESIZE','validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
-						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
-						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
 						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -261,9 +273,13 @@ class acp_attachments
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
+					'S_EMPTY_PM_GROUPS'		=> empty($allowed_pm_groups),
+					'S_EMPTY_POST_GROUPS'	=> empty($allowed_post_groups),
 					'S_SECURE_DOWNLOADS'	=> $this->new_config['secure_downloads'],
 					'S_DEFINED_IPS'			=> ($defined_ips != '') ? true : false,
 					'S_WARNING'				=> (count($error)) ? true : false,
+
+					'U_EXTENSION_GROUPS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=ext_groups"),
 
 					'WARNING_MSG'			=> implode('<br />', $error),
 					'DEFINED_IPS'			=> $defined_ips,
