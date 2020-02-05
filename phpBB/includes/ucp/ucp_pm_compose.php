@@ -706,8 +706,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 					'message'	=> $message,
 					'u'			=> $to_user_id,
 					'g'			=> $to_group_id,
-					'p'			=> $msg_id)
-				);
+					'p'			=> $msg_id,
+					'attachment_data' => $message_parser->attachment_data,
+				));
 				$s_hidden_fields .= build_address_field($address_list);
 
 				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
