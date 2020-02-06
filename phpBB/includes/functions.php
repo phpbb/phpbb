@@ -4283,15 +4283,17 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 * @param \phpbb\request\request_interface		$request	Request object
 * @param \phpbb\auth\auth						$auth		Auth object
 * @param \phpbb\db\driver\driver_interface		$db			Database connection
+ *
+ * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
 	global $phpbb_container;
 
-	if ($phpbb_container->getParameter('debug.sql_explain') && $request->variable('explain', false) && $auth->acl_get('a_'))
-	{
-		$db->sql_report('display');
-	}
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$controller_helper->display_sql_report();
 }
 
 /**
@@ -4371,8 +4373,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $phpEx;
-	global $request, $phpbb_dispatcher, $phpbb_admin_path;
+	global $phpbb_dispatcher, $phpbb_container, $template;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -4394,55 +4395,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	phpbb_check_and_display_sql_report($request, $auth, $db);
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
-	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
-		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
-
-		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
-	);
-
-	// Call cron-type script
-	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('_cron.lock_check'))
-	{
-		$call_cron = true;
-		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
-
-		// Any old lock present?
-		if (!empty($config['cron_lock']))
-		{
-			$cron_time = explode(' ', $config['cron_lock']);
-
-			// If 1 hour lock is present we do not call cron.php
-			if ($cron_time[0] + 3600 >= $time_now)
-			{
-				$call_cron = false;
-			}
-		}
-	}
-
-	// Call cron job?
-	if ($call_cron)
-	{
-		global $phpbb_container;
-
-		/* @var $cron \phpbb\cron\manager */
-		$cron = $phpbb_container->get('cron.manager');
-		$task = $cron->find_one_ready_task();
-
-		if ($task)
-		{
-			$url = $task->get_url();
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
-		}
-		else
-		{
-			$cache->put('_cron.lock_check', true, 60);
-		}
-	}
+	$controller_helper->display_footer($run_cron);
 
 	/**
 	* Execute code and/or modify output before displaying the template.
