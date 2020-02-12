@@ -449,10 +449,9 @@ class fulltext_sphinx
 		}
 		else
 		{
-			$match = ['\\', '(',')','|','!','@','~', '/', '^', '$', '=','&amp;', '&lt;', '&gt;'];
-			$replace = [' ', ' ', ' ', ' ',' ',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+			$match = ['\\', '(',')', '|', '!', '@', '~', '/', '^', '$', '=', '&amp;', '&lt;', '&gt;'];
 
-			$keywords = str_replace($match, $replace, $keywords);
+			$keywords = str_replace($match, ' ', $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
