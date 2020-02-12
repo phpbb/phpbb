@@ -1,5 +1,4 @@
 # Sample tokenised exception file for phpBB using Sphinx search engine
-# Copyright (c) 2020 -- KYPREO 
 #
 # Exceptions allow one or more tokens to be mapped to a single keyword. 
 # Exceptions are defined BEFORE tokenisation and are therefore case sensitive and accept characters that would normally be excluded such as punctuation.

@@ -1,5 +1,4 @@
 # Sample wordforms file for phpBB using Sphinx search engine
-# Copyright (c) 2020 -- KYPREO 
 #
 # Wordform rules map different word forms to a single normal form. 
 # Wordforms are defined AFTER tokenisation and are therefore case insensitive and cannot contain ignored characters.
