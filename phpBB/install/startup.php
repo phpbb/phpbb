@@ -156,7 +156,7 @@ function installer_shutdown_function($display_errors)
 			else
 			{
 				// Language system is not available
-				die('The installer has detected an issue with a cached file. Try reloading the page and/or manually clearing the cache to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.');
+				die('The installer has detected an issue with a cached file. Try reloading the page and/or manually clearing the cache to resolve the issue. If you require further assistance, please visit the <a href="https://www.phpbb.com/community/" target="_blank">phpBB support forums</a>.');
 			}
 		}
 		else if ($error['type'] & $supported_error_levels)
