@@ -1,0 +1,97 @@
+# Sample tokenised exception file for phpBB using Sphinx search engine
+#
+# Exceptions allow one or more tokens to be mapped to a single keyword. 
+# Exceptions are defined BEFORE tokenisation and are therefore case sensitive and accept characters that would normally be excluded such as punctuation.
+# Exceptions are applied to both indexing and searching, such that search queries for one mapped variation will find all others.
+# List needs to be customised according to board and language requirements.
+# Please remove all commented lines before use.
+#
+# See Sphinx documentation for further details: http://sphinxsearch.com/docs/current/conf-exceptions.html
+#
+# Examples:
+#
+# Acronyms and initialisms
+U.S.A. => usa
+u.s.a. => usa
+U.S.A => usa
+u.s.a => usa
+USA => usa
+U.S. => usa
+u.s. => usa
+U.S => usa
+u.s => usa
+US => usa
+# Abbreviations using ampersand
+profit & loss => p&l
+profit and loss => p&l
+P & L => p&l
+P and L => p&l
+p & l => p&l
+p and l => p&l
+# Ampersands
+& => and
+# Ordinals
+1st => first
+1ST => first
+2nd => second
+2ND => second
+3rd => third
+3RD => third
+4th => fourth
+4TH => fourth
+5th => fifth
+5TH => fifth
+6th => sixth
+6TH => sixth
+7th => seventh
+7TH => seventh
+8th => eighth
+8TH => eighth
+9th => ninth
+9TH => ninth
+10th => tenth
+10TH => tenth
+# Numerals
+1 => one
+2 => two
+3 => three
+4 => four
+5 => five
+6 => six
+7 => seven
+8 => eight
+9 => nine
+10 => ten
+11 => eleven
+12 => twelve
+13 => thirteen
+14 => fourteen
+15 => fifteen
+16 => sixteen
+17 => seventeen
+18 => eighteen
+19 => nineteen
+20 => twenty
+30 => thirty
+40 => forty
+50 => fifty
+60 => sixty
+70 => seventy
+80 => eighty
+90 => ninety
+100 => one hundred
+1000 => one thousand
+10000 => ten thousand
+100000 => one hundred thousand
+1000000 => one million
+1000000000 => one billion
+# Numbered groupings / decades
+10s => tens
+20s => twenties
+30s => thirties
+40s => forties
+50s => fifties
+60s => sixties
+70s => seventies
+80s => eighties
+90s => nineties
