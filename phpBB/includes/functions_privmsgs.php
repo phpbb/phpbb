@@ -1180,25 +1180,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 }
 
 /**
-* Delete all PM(s) for a given user and delete the ones without references
-*
-* @param	int		$user_id	ID of the user whose private messages we want to delete
-*
-* @return	boolean		False if there were no pms found, true otherwise.
-*/
-function phpbb_delete_user_pms($user_id)
-{
-	$user_id = (int) $user_id;
-
-	if (!$user_id)
-	{
-		return false;
-	}
-
-	return phpbb_delete_users_pms(array($user_id));
-}
-
-/**
 * Delete all PM(s) for given users and delete the ones without references
 *
 * @param	array		$user_ids	IDs of the users whose private messages we want to delete

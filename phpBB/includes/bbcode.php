@@ -219,8 +219,6 @@ class bbcode
 			$db->sql_freeresult($result);
 		}
 
-		// To perform custom second pass in extension, use $this->bbcode_second_pass_by_extension()
-		// method which accepts variable number of parameters
 		foreach ($bbcode_ids as $bbcode_id)
 		{
 			switch ($bbcode_id)
@@ -679,6 +677,8 @@ class bbcode
 	* Accepts variable number of parameters
 	*
 	* @return mixed Second pass result
+	*
+	* @deprecated 3.2.10 (To be removed 4.0.0)
 	*/
 	function bbcode_second_pass_by_extension()
 	{
