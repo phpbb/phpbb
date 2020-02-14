@@ -206,6 +206,7 @@ $lang = array_merge($lang, array(
 	'DISPLAY_MESSAGES'		=> 'Display messages from previous',
 	'DISPLAY_POSTS'			=> 'Display posts from previous',
 	'DISPLAY_TOPICS'		=> 'Display topics from previous',
+	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered email domain has no valid MX record.',
 	'DOWNLOADED'			=> 'Downloaded',
 	'DOWNLOADING_FILE'		=> 'Downloading file',
 	'DOWNLOAD_COUNTS'		=> array(
