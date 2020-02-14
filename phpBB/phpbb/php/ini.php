@@ -17,6 +17,7 @@ namespace phpbb\php;
 * Wrapper class for ini_get function.
 *
 * Provides easier handling of the different interpretations of ini values.
+* @deprecated 3.2.10 (To be removed 4.0.0)
 */
 class ini
 {
