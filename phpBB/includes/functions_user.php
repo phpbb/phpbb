@@ -1046,13 +1046,15 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$banlist_ary[] = (int) $row['user_id'];
 				}
 				while ($row = $db->sql_fetchrow($result));
+
+				$db->sql_freeresult($result);
 			}
 			else
 			{
 				$db->sql_freeresult($result);
+
 				trigger_error('NO_USERS', E_USER_WARNING);
 			}
-			$db->sql_freeresult($result);
 		break;
 
 		case 'ip':
