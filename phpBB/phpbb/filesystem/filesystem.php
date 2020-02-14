@@ -599,7 +599,7 @@ class filesystem implements filesystem_interface
 	}
 
 	/**
-	 * Try to resolve real path when PHP's realpath failes to do so
+	 * Try to resolve real path when PHP's realpath fails to do so
 	 *
 	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
 	 *
