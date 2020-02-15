@@ -1011,7 +1011,7 @@ class queue
 
 				try
 				{
-					$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+					$this->filesystem->phpbb_chmod($this->cache_file, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 				}
 				catch (\phpbb\filesystem\exception\filesystem_exception $e)
 				{
@@ -1065,7 +1065,7 @@ class queue
 
 			try
 			{
-				$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+				$this->filesystem->phpbb_chmod($this->cache_file, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 			}
 			catch (\phpbb\filesystem\exception\filesystem_exception $e)
 			{
