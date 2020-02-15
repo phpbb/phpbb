@@ -581,7 +581,7 @@ class file extends \phpbb\cache\driver\base
 
 			try
 			{
-				$this->filesystem->phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
+				$this->filesystem->phpbb_chmod($file, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 			}
 			catch (\phpbb\filesystem\exception\filesystem_exception $e)
 			{
