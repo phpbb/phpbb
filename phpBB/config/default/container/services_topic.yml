@@ -1,0 +1,18 @@
+services:
+    topic.view.topic_list_renderer:
+        class: \phpbb\topic\view\topic_list_renderer
+
+    topic.data.repository:
+        class: \phpbb\topic\data\topic_repository
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@content.visibility'
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@user'
+            - '%tables.forums%'
+            - '%tables.forums_track%'
+            - '%tables.topics%'
+            - '%tables.topics_posted%'
+            - '%tables.topics_track%'

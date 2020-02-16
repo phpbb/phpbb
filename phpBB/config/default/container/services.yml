@@ -12,6 +12,7 @@ imports:
     - { resource: services_feed.yml }
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
+    - { resource: services_forum.yml }
     - { resource: services_help.yml }
     - { resource: services_http.yml }
     - { resource: services_language.yml }
@@ -27,6 +28,7 @@ imports:
     - { resource: services_storage.yml }
     - { resource: services_text_formatter.yml }
     - { resource: services_text_reparser.yml }
+    - { resource: services_topic.yml }
     - { resource: services_twig.yml }
     - { resource: services_twig_extensions.yml }
     - { resource: services_ucp.yml }
