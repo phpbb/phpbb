@@ -82,9 +82,6 @@ class ucp_notifications
 								];
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
-								unset($notification_type_name);
-								unset($notification_method_name);
-
 								if ($is_set_notify && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
 									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
@@ -194,6 +191,7 @@ class ucp_notifications
 	* @param \phpbb\user $user
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param string $block
+	*
 	* @changed 3.2.10-RC1 Added $phpbb_dispatcher
 	*/
 	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $block = 'notification_types')
@@ -242,9 +240,6 @@ class ucp_notifications
 						'tpl_ary'
 					];
 					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
-
-					unset($notification_type_name);
-					unset($notification_method_name);
 
 					$template->assign_block_vars($block . '.notification_methods', $tpl_ary);
 				}
