@@ -61,23 +61,21 @@ class ucp_notifications
 						{
 							foreach ($notification_methods as $method => $method_data)
 							{
-								$notification_type_name = $type_data['id'];
-								$notification_method_name = $method_data['id'];
-								$is_set_notify = (bool) $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
+								$is_set_notify = $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
 
 								/**
 								* Event to perform additional actions before ucp_notifications is submitted
 								*
 								* @event core.ucp_notifications_submit_notification_is_set
-								* @var	string	notification_type_name		The notification type identifier (read only)
-								* @var	string	notification_method_name	The notification method identifier (read only)
-								* @var	bool	is_set_notify				The notification is set or not
+								* @var	string	type_data		The notification type data
+								* @var	string	method_data		The notification method data
+								* @var	bool	is_set_notify	The notification is set or not
 								*
 								* @since 3.2.10-RC1
 								*/
 								$vars = [
-									'notification_type_name',
-									'notification_method_name',
+									'type_data',
+									'method_data',
 									'is_set_notify'
 								];
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
@@ -215,8 +213,6 @@ class ucp_notifications
 
 				foreach ($notification_methods as $method => $method_data)
 				{
-					$notification_type_name = $type_data['id'];
-					$notification_method_name = $method_data['id'];
 					$tpl_ary = [
 						'METHOD'			=> $method_data['id'],
 						'NAME'				=> $user->lang($method_data['lang']),
@@ -228,15 +224,15 @@ class ucp_notifications
 					* Event to perform additional actions before ucp_notifications is displayed
 					*
 					* @event core.ucp_notifications_output_notification_types_modify_template_vars
-					* @var	string	notification_type_name		The notification type identifier (read only)
-					* @var	string	notification_method_name	The notification method identifier (read only)
-					* @var	array	tpl_ary						The template variables
+					* @var	string	type_data		The notification type data
+					* @var	string	method_data		The notification method data
+					* @var	array	tpl_ary			The template variables
 					*
 					* @since 3.2.10-RC1
 					*/
 					$vars = [
-						'notification_type_name',
-						'notification_method_name',
+						'type_data',
+						'method_data',
 						'tpl_ary'
 					];
 					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
