@@ -361,8 +361,6 @@ class manager
 				'notified_users',
 			);
 			extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications_for_users_modify_data', compact($vars)));
-
-			unset($notification_method_name);
 		}
 
 		if (!count($notify_users))

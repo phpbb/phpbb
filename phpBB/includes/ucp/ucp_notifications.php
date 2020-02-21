@@ -73,11 +73,11 @@ class ucp_notifications
 								*
 								* @since 3.2.10-RC1
 								*/
-								$vars = [
+								$vars = array(
 									'type_data',
 									'method_data',
 									'is_set_notify'
-								];
+								);
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
 								if ($is_set_notify && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
@@ -230,11 +230,11 @@ class ucp_notifications
 					*
 					* @since 3.2.10-RC1
 					*/
-					$vars = [
+					$vars = array(
 						'type_data',
 						'method_data',
 						'tpl_ary'
-					];
+					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
 
 					$template->assign_block_vars($block . '.notification_methods', $tpl_ary);
