@@ -61,14 +61,14 @@ class ucp_notifications
 						{
 							foreach ($notification_methods as $method => $method_data)
 							{
-								$is_set_notify = $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
+								$is_set_notify = ($request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']))) ? true : false;
 
 								/**
 								* Event to perform additional actions before ucp_notifications is submitted
 								*
 								* @event core.ucp_notifications_submit_notification_is_set
-								* @var	string	type_data		The notification type data
-								* @var	string	method_data		The notification method data
+								* @var	array	type_data		The notification type data
+								* @var	array	method_data		The notification method data
 								* @var	bool	is_set_notify	The notification is set or not
 								*
 								* @since 3.2.10-RC1
@@ -224,8 +224,8 @@ class ucp_notifications
 					* Event to perform additional actions before ucp_notifications is displayed
 					*
 					* @event core.ucp_notifications_output_notification_types_modify_template_vars
-					* @var	string	type_data		The notification type data
-					* @var	string	method_data		The notification method data
+					* @var	array	type_data		The notification type data
+					* @var	array	method_data		The notification method data
 					* @var	array	tpl_ary			The template variables
 					*
 					* @since 3.2.10-RC1
