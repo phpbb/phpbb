@@ -76,7 +76,7 @@ class ucp_notifications
 								$vars = array(
 									'type_data',
 									'method_data',
-									'is_set_notify'
+									'is_set_notify',
 								);
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
@@ -233,7 +233,7 @@ class ucp_notifications
 					$vars = array(
 						'type_data',
 						'method_data',
-						'tpl_ary'
+						'tpl_ary',
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
 
