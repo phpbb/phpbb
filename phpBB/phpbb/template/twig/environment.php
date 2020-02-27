@@ -55,11 +55,11 @@ class environment extends \Twig_Environment
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param string $cache_path The path to the cache directory
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
-	* @param \Twig_LoaderInterface $loader Twig loader interface
+	* @param \Twig\Loader\LoaderInterface $loader Twig loader interface
 	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig\Loader\LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
