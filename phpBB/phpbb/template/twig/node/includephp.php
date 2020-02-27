@@ -29,7 +29,7 @@ class includephp extends \Twig\Node\Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig\Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig\Compiler $compiler)
 	{
@@ -80,7 +80,7 @@ class includephp extends \Twig\Node\Node
 		{
 			$compiler
 				->outdent()
-				->write("} catch (\Twig_Error_Loader \$e) {\n")
+				->write("} catch (\Twig\Error\LoaderError \$e) {\n")
 				->indent()
 				->write("// ignore missing template\n")
 				->outdent()

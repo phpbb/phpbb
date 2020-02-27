@@ -261,8 +261,8 @@ class environment extends \Twig\Environment
 	*
 	* @param string  $name  The template name
 	* @param integer $index The index if it is an embedded template
-	* @return \Twig_TemplateInterface A template instance representing the given template name
-	* @throws \Twig_Error_Loader
+	* @return \Twig\Template A template instance representing the given template name
+	* @throws \Twig\Error\LoaderError
 	*/
 	public function loadTemplate($name, $index = null)
 	{
@@ -279,7 +279,7 @@ class environment extends \Twig\Environment
 
 					return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
 				}
-				catch (\Twig_Error_Loader $e)
+				catch (\Twig\Error\LoaderError $e)
 				{
 				}
 			}
@@ -298,7 +298,7 @@ class environment extends \Twig\Environment
 	*
 	* @param string  $name  The template name
 	* @return string
-	* @throws \Twig_Error_Loader
+	* @throws \Twig\Error\LoaderError
 	*/
 	public function findTemplate($name)
 	{
@@ -315,7 +315,7 @@ class environment extends \Twig\Environment
 
 					return parent::getLoader()->getCacheKey('@' . $namespace . '/' . $name);
 				}
-				catch (\Twig_Error_Loader $e)
+				catch (\Twig\Error\LoaderError $e)
 				{
 				}
 			}

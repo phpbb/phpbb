@@ -34,7 +34,7 @@ class event extends \Twig\Node\Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig\Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig\Compiler $compiler)
 	{

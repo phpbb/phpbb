@@ -24,7 +24,7 @@ class definenode extends \Twig\Node\Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig\Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig\Compiler $compiler)
 	{
@@ -37,7 +37,7 @@ class definenode extends \Twig\Node\Node
 				->subcompile($this->getNode('value'))
 			;
 
-			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig_Markup(\$value, \$this->env->getCharset());\n");
+			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig\Markup(\$value, \$this->env->getCharset());\n");
 		}
 		else
 		{

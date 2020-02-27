@@ -18,9 +18,9 @@ class includejs extends \Twig\TokenParser\AbstractTokenParser
 	/**
 	* Parses a token and returns a node.
 	*
-	* @param \Twig\Token $token A Twig_Token instance
+	* @param \Twig\Token $token A Twig\Token instance
 	*
-	* @return \Twig\Node\Node A Twig_Node instance
+	* @return \Twig\Node\Node A Twig\Node instance
 	*/
 	public function parse(\Twig\Token $token)
 	{

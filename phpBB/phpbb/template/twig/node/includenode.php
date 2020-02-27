@@ -18,7 +18,7 @@ class includenode extends \Twig\Node\IncludeNode
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig\Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig\Compiler $compiler)
 	{

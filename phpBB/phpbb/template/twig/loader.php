@@ -139,7 +139,7 @@ class loader extends \Twig\Loader\FilesystemLoader
 			// Try validating the name (which may throw an exception)
 			$this->validateName($name);
 		}
-		catch (\Twig_Error_Loader $e)
+		catch (\Twig\Error\LoaderError $e)
 		{
 			if (strpos($e->getRawMessage(), 'Looks like you try to load a template outside configured directories') === 0)
 			{
