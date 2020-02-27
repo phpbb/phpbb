@@ -108,9 +108,9 @@
 								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>
 							<!-- ELSE -->
 							{% if forumrow.U_UNAPPROVED_TOPICS %}
-								{{ lang('TOPIC_UNAPPROVED_FORUM', forumrow.TOPICS) }}
+								{{ Lang('TOPIC_UNAPPROVED_FORUM', forumrow.TOPICS) }}
 							{% else %}
-								{{ lang('NO_POSTS') }}
+								{{ Lang('NO_POSTS') }}
 							{% endif %}
 							<!-- ENDIF -->
 						</span>
