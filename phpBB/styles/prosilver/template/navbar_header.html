@@ -192,7 +192,7 @@
 			{% EVENT overall_header_breadcrumb_prepend %}
 				<span class="crumb" {{ MICRODATA }}><a itemprop="item" href="{{ U_INDEX }}" accesskey="h" data-navbar-reference="index">{% if not U_SITE_HOME %}<i class="icon fa-home fa-fw"></i>{% endif %}<span itemprop="name">{{ L_INDEX }}</span></a><meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}" /></span>
 
-			{% for navlinks in navlinks %}
+			{% for navlinks in loops.navlinks %}
 				{% set NAVLINK_NAME = navlinks.BREADCRUMB_NAME | default(navlinks.FORUM_NAME) %}
 				{% set NAVLINK_LINK = navlinks.U_BREADCRUMB | default(navlinks.U_VIEW_FORUM) %}
 
