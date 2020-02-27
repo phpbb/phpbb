@@ -24,7 +24,7 @@ class event extends \Twig_Node
 	/** @var \Twig_Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 

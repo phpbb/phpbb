@@ -15,7 +15,7 @@ namespace phpbb\template\twig\node;
 
 abstract class includeasset extends \Twig_Node
 {
-	public function __construct(\Twig_Node_Expression $expr, $lineno, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, $lineno, $tag = null)
 	{
 		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
 	}
