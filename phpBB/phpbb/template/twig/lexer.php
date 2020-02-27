@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig;
 
-class lexer extends \Twig_Lexer
+class lexer extends \Twig\Lexer
 {
 	public function tokenize(\Twig\Source $source)
 	{
