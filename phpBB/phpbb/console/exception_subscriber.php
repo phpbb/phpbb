@@ -15,7 +15,7 @@ namespace phpbb\console;
 
 use phpbb\exception\exception_interface;
 use Symfony\Component\Console\ConsoleEvents;
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class exception_subscriber implements EventSubscriberInterface
@@ -39,27 +39,27 @@ class exception_subscriber implements EventSubscriberInterface
 	 * This listener is run when the ConsoleEvents::EXCEPTION event is triggered.
 	 * It translate the exception message. If din debug mode the original exception is embedded.
 	 *
-	 * @param ConsoleExceptionEvent $event
+	 * @param ConsoleErrorEvent $event
 	 */
-	public function on_exception(ConsoleExceptionEvent $event)
+	public function on_exception(ConsoleErrorEvent $event)
 	{
-		$original_exception = $event->getException();
+		$original_exception = $event->getError();
 
 		if ($original_exception instanceof exception_interface)
 		{
-			$parameters = array_merge(array($original_exception->getMessage()), $original_exception->get_parameters());
-			$message = call_user_func_array(array($this->language, 'lang'), $parameters);
+			$parameters = array_merge([$original_exception->getMessage()], $original_exception->get_parameters());
+			$message = call_user_func_array([$this->language, 'lang'], $parameters);
 
 			$exception = new \RuntimeException($message , $original_exception->getCode(), $original_exception);
 
-			$event->setException($exception);
+			$event->setError($exception);
 		}
 	}
 
 	static public function getSubscribedEvents()
 	{
-		return array(
-			ConsoleEvents::EXCEPTION => 'on_exception',
-		);
+		return [
+			ConsoleEvents::ERROR => 'on_exception',
+		];
 	}
 }
