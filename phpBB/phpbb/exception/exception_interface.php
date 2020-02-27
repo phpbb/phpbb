@@ -18,7 +18,7 @@ namespace phpbb\exception;
  *
  * Define an exception which support a language var as message.
  */
-interface exception_interface
+interface exception_interface extends \Throwable
 {
 	/**
 	 * Return the arguments associated with the message if it's a language var.
