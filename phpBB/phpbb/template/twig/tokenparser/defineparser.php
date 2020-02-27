@@ -19,20 +19,20 @@ class defineparser extends \Twig_TokenParser
 	/**
 	* Parses a token and returns a node.
 	*
-	* @param \Twig_Token $token A Twig_Token instance
+	* @param \Twig\Token $token A Twig_Token instance
 	*
 	* @return \Twig_Node A Twig_Node instance
 	* @throws \Twig_Error_Syntax
 	* @throws \phpbb\template\twig\node\definenode
 	*/
-	public function parse(\Twig_Token $token)
+	public function parse(\Twig\Token $token)
 	{
 		$lineno = $token->getLine();
 		$stream = $this->parser->getStream();
 		$name = $this->parser->getExpressionParser()->parseExpression();
 
 		$capture = false;
-		if ($stream->test(\Twig_Token::OPERATOR_TYPE, '='))
+		if ($stream->test(\Twig\Token::OPERATOR_TYPE, '='))
 		{
 			$stream->next();
 			$value = $this->parser->getExpressionParser()->parseExpression();
@@ -44,22 +44,22 @@ class defineparser extends \Twig_TokenParser
 				throw new \Twig_Error_Syntax('Invalid DEFINE', $token->getLine(), $this->parser->getStream()->getSourceContext()->getPath());
 			}
 
-			$stream->expect(\Twig_Token::BLOCK_END_TYPE);
+			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 		}
 		else
 		{
 			$capture = true;
 
-			$stream->expect(\Twig_Token::BLOCK_END_TYPE);
+			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
 			$value = $this->parser->subparse(array($this, 'decideBlockEnd'), true);
-			$stream->expect(\Twig_Token::BLOCK_END_TYPE);
+			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 		}
 
 		return new \phpbb\template\twig\node\definenode($capture, $name, $value, $lineno, $this->getTag());
 	}
 
-	public function decideBlockEnd(\Twig_Token $token)
+	public function decideBlockEnd(\Twig\Token $token)
 	{
 		return $token->test('ENDDEFINE');
 	}

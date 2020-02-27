@@ -19,11 +19,11 @@ class includeparser extends \Twig_TokenParser_Include
 	/**
 	* Parses a token and returns a node.
 	*
-	* @param \Twig_Token $token A Twig_Token instance
+	* @param \Twig\Token $token A Twig_Token instance
 	*
 	* @return \Twig_Node A Twig_Node instance
 	*/
-	public function parse(\Twig_Token $token)
+	public function parse(\Twig\Token $token)
 	{
 		$expr = $this->parser->getExpressionParser()->parseExpression();
 
