@@ -376,13 +376,13 @@ if ($module->is_active('zebra', 'friends'))
 	{
 		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
-		$tpl_ary = array(
+		$tpl_ary = [
 			'USER_ID'		=> $row['user_id'],
 			'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 			'USER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 			'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'])
-		);
+		];
 
 		/**
 		* Event to modify the template before listing of friends
