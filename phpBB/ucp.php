@@ -364,9 +364,9 @@ if ($module->is_active('zebra', 'friends'))
 	*
 	* @since 3.2.10-RC1
 	*/
-	$vars = array(
+	$vars = [
 		'sql_ary',
-	);
+	];
 	extract($phpbb_dispatcher->trigger_event('core.ucp_modify_friends_sql', compact($vars)));
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', $sql_ary);
@@ -394,11 +394,11 @@ if ($module->is_active('zebra', 'friends'))
 		*
 		* @since 3.2.10-RC1
 		*/
-		$vars = array(
+		$vars = [
 			'row',
 			'tpl_ary',
 			'which',
-		);
+		];
 		extract($phpbb_dispatcher->trigger_event('core.ucp_modify_friends_template_vars', compact($vars)));
 
 		$template->assign_block_vars("friends_{$which}", $tpl_ary);
