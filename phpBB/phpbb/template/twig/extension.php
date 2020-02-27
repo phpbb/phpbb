@@ -134,7 +134,7 @@ class extension extends \Twig_Extension
 	/**
 	* Grabs a subset of a loop
 	*
-	* @param \Twig_Environment $env          A Twig_Environment instance
+	* @param \Twig\Environment $env          A Twig\Environment instance
 	* @param mixed            $item         A variable
 	* @param integer          $start        Start of the subset
 	* @param integer          $end   	     End of the subset
@@ -142,7 +142,7 @@ class extension extends \Twig_Extension
 	*
 	* @return mixed The sliced variable
 	*/
-	public function loop_subset(\Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
+	public function loop_subset(\Twig\Environment $env, $item, $start, $end = null, $preserveKeys = false)
 	{
 		// We do almost the same thing as Twig's slice (array_slice), except when $end is positive
 		if ($end >= 1)

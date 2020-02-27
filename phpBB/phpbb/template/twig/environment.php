@@ -15,7 +15,7 @@ namespace phpbb\template\twig;
 
 use phpbb\template\assets_bag;
 
-class environment extends \Twig_Environment
+class environment extends \Twig\Environment
 {
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
@@ -169,7 +169,7 @@ class environment extends \Twig_Environment
 	* Set the namespace look up order to load templates from
 	*
 	* @param array $namespace
-	* @return \Twig_Environment
+	* @return \Twig\Environment
 	*/
 	public function setNamespaceLookUpOrder($namespace)
 	{

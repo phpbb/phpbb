@@ -16,7 +16,7 @@ namespace phpbb\feed\controller;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use \phpbb\event\dispatcher_interface;
+use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\feed\feed_interface;
 use phpbb\feed\exception\feed_unavailable_exception;
@@ -28,11 +28,12 @@ use phpbb\user;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
 
 class feed
 {
 	/**
-	 * @var \Twig_Environment
+	 * @var Environment
 	 */
 	protected $template;
 
@@ -89,7 +90,7 @@ class feed
 	/**
 	 * Constructor
 	 *
-	 * @param \Twig_Environment $twig
+	 * @param Environment $twig
 	 * @param symfony_request $request
 	 * @param controller_helper $controller_helper
 	 * @param config $config
@@ -101,7 +102,7 @@ class feed
 	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param string $php_ext
 	 */
-	public function __construct(\Twig_Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
+	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;

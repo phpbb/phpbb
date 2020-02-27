@@ -15,7 +15,7 @@ namespace phpbb\template\twig\node;
 
 class php extends \Twig\Node\Node
 {
-	/** @var \Twig_Environment */
+	/** @var \Twig\Environment */
 	protected $environment;
 
 	public function __construct(\Twig\Node\TextNode $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
