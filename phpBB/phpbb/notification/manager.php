@@ -353,13 +353,13 @@ class manager
 			*
 			* @since 3.2.10-RC1
 			*/
-			$vars = array(
+			$vars = [
 				'notification_type_name',
 				'notification_method_name',
 				'data',
 				'notify_users',
 				'notified_users',
-			);
+			];
 			extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications_for_users_modify_data', compact($vars)));
 		}
 
