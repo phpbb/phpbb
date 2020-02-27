@@ -111,11 +111,11 @@ class loader extends \Twig\Loader\FilesystemLoader
 	}
 
 	/**
-	* Find the template
-	*
-	* Override for Twig_Loader_Filesystem::findTemplate to add support
-	*	for loading from safe directories.
-	*/
+	 * Find the template
+	 *
+	 * Override for \Twig\Loader\FilesystemLoader::findTemplate
+	 * to add support for loading from safe directories.
+	 */
 	protected function findTemplate($name, $throw = true)
 	{
 		$name = (string) $name;
