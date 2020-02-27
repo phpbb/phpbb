@@ -14,9 +14,9 @@
 
 namespace phpbb\template\twig\node;
 
-class definenode extends \Twig_Node
+class definenode extends \Twig\Node\Node
 {
-	public function __construct($capture, \Twig_Node $name, \Twig_Node $value, $lineno, $tag = null)
+	public function __construct($capture, \Twig\Node\Node $name, \Twig\Node\Node $value, $lineno, $tag = null)
 	{
 		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
 	}

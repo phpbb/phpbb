@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
-class includenode extends \Twig_Node_Include
+class includenode extends \Twig\Node\IncludeNode
 {
 	/**
 	* Compiles the node to PHP.

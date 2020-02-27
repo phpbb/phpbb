@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
-abstract class includeasset extends \Twig_Node
+abstract class includeasset extends \Twig\Node\Node
 {
 	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, $lineno, $tag = null)
 	{

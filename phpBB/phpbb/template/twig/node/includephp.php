@@ -14,7 +14,7 @@
 
 namespace phpbb\template\twig\node;
 
-class includephp extends \Twig_Node
+class includephp extends \Twig\Node\Node
 {
 	/** @var \Twig_Environment */
 	protected $environment;

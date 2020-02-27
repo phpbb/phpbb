@@ -13,12 +13,12 @@
 
 namespace phpbb\template\twig\node;
 
-class php extends \Twig_Node
+class php extends \Twig\Node\Node
 {
 	/** @var \Twig_Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Text $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig\Node\TextNode $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 

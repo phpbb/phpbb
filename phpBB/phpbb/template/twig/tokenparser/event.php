@@ -33,7 +33,7 @@ class event extends \Twig\TokenParser\AbstractTokenParser
 	*
 	* @param \Twig\Token $token A Twig_Token instance
 	*
-	* @return \Twig_Node A Twig_Node instance
+	* @return \Twig\Node\Node A Twig_Node instance
 	*/
 	public function parse(\Twig\Token $token)
 	{

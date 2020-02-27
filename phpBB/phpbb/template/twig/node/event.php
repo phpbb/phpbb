@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
-class event extends \Twig_Node
+class event extends \Twig\Node\Node
 {
 	/**
 	* The subdirectory in which all template listener files must be placed
