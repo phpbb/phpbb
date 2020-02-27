@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class php extends \Twig_TokenParser
+class php extends \Twig\TokenParser\AbstractTokenParser
 {
 	/** @var \phpbb\template\twig\environment */
 	protected $environment;

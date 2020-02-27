@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class includecss extends \Twig_TokenParser
+class includecss extends \Twig\TokenParser\AbstractTokenParser
 {
 	/**
 	* Parses a token and returns a node.

@@ -14,7 +14,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class defineparser extends \Twig_TokenParser
+class defineparser extends \Twig\TokenParser\AbstractTokenParser
 {
 	/**
 	* Parses a token and returns a node.

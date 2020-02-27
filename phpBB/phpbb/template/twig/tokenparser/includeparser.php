@@ -14,7 +14,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class includeparser extends \Twig_TokenParser_Include
+class includeparser extends \Twig\TokenParser\IncludeTokenParser
 {
 	/**
 	* Parses a token and returns a node.
