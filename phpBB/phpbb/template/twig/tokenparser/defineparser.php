@@ -37,7 +37,7 @@ class defineparser extends \Twig_TokenParser
 			$stream->next();
 			$value = $this->parser->getExpressionParser()->parseExpression();
 
-			if ($value instanceof \Twig_Node_Expression_Name)
+			if ($value instanceof \Twig\Node\Expression\NameExpression)
 			{
 				// This would happen if someone improperly formed their DEFINE syntax
 				// e.g. <!-- DEFINE $VAR = foo -->
