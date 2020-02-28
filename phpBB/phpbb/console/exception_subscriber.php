@@ -20,15 +20,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class exception_subscriber implements EventSubscriberInterface
 {
-	/**
-	 * @var \phpbb\language\language
-	 */
+	/** @var \phpbb\language\language */
 	protected $language;
 
 	/**
-	 * Construct method
+	 * Constructor.
 	 *
-	 * @param \phpbb\language\language $language Language object
+	 * @param \phpbb\language\language	$language	Language object
 	 */
 	public function __construct(\phpbb\language\language $language)
 	{
@@ -36,12 +34,12 @@ class exception_subscriber implements EventSubscriberInterface
 	}
 
 	/**
-	 * This listener is run when the ConsoleEvents::EXCEPTION event is triggered.
-	 * It translate the exception message. If din debug mode the original exception is embedded.
+	 * This listener is run when the ConsoleEvents::ERROR event is triggered.
+	 * It translate the error message. If in debug mode the original exception is embedded.
 	 *
 	 * @param ConsoleErrorEvent $event
 	 */
-	public function on_exception(ConsoleErrorEvent $event)
+	public function on_error(ConsoleErrorEvent $event)
 	{
 		$original_exception = $event->getError();
 
@@ -59,7 +57,7 @@ class exception_subscriber implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return [
-			ConsoleEvents::ERROR => 'on_exception',
+			ConsoleEvents::ERROR => 'on_error',
 		];
 	}
 }
