@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
-* Extension of the Symfony3.3 EventDispatcher
+* Extension of the Symfony EventDispatcher
 *
 * It provides an additional `trigger_event` method, which
 * gives some syntactic sugar for dispatching events. Instead
