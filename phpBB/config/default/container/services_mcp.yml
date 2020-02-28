@@ -17,7 +17,6 @@ services:
     mcp.ban:
         class: phpbb\mcp\controller\ban
         arguments:
-            - '@acp.ban'
             - '@auth'
             - '@dbal.conn'
             - '@dispatcher'

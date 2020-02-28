@@ -15,9 +15,6 @@ namespace phpbb\mcp\controller;
 
 class ban
 {
-	/** @var \phpbb\acp\controller\ban */
-	protected $acp_ban;
-
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -51,7 +48,6 @@ class ban
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\acp\controller\ban			$acp_ban		ACP Ban controller
 	 * @param \phpbb\auth\auth					$auth			Auth object
 	 * @param \phpbb\db\driver\driver_interface	$db				Database object
 	 * @param \phpbb\event\dispatcher			$dispatcher		Event dispatcher object
@@ -64,7 +60,6 @@ class ban
 	 * @param array								$tables			phpBB tables
 	 */
 	public function __construct(
-		\phpbb\acp\controller\ban $acp_ban,
 		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		\phpbb\event\dispatcher $dispatcher,
@@ -77,7 +72,6 @@ class ban
 		$tables
 	)
 	{
-		$this->acp_ban		= $acp_ban;
 		$this->auth			= $auth;
 		$this->db			= $db;
 		$this->dispatcher	= $dispatcher;
