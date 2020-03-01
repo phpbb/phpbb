@@ -759,6 +759,10 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 			);
 			$db->sql_query($sql);
 
+			/** @var \phpbb\attachment\manager $attachment_manager */
+			$attachment_manager = $phpbb_container->get('attachment.manager');
+			$attachment_manager->delete('attach', array_column($message_parser->attachment_data, 'attach_id'));
+
 			$meta_info = ($mode == 'post') ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 			meta_refresh(3, $meta_info);
