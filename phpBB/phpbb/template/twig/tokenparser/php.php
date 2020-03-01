@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class php extends \Twig_TokenParser
+class php extends \Twig\TokenParser\AbstractTokenParser
 {
 	/** @var \phpbb\template\twig\environment */
 	protected $environment;
@@ -31,24 +31,24 @@ class php extends \Twig_TokenParser
 	/**
 	* Parses a token and returns a node.
 	*
-	* @param \Twig_Token $token A Twig_Token instance
+	* @param \Twig\Token $token A Twig\Token instance
 	*
-	* @return \Twig_Node A Twig_Node instance
+	* @return \Twig\Node\Node A Twig\Node instance
 	*/
-	public function parse(\Twig_Token $token)
+	public function parse(\Twig\Token $token)
 	{
 		$stream = $this->parser->getStream();
 
-		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
+		$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
 		$body = $this->parser->subparse(array($this, 'decideEnd'), true);
 
-		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
+		$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
 		return new \phpbb\template\twig\node\php($body, $this->environment, $token->getLine(), $this->getTag());
 	}
 
-	public function decideEnd(\Twig_Token $token)
+	public function decideEnd(\Twig\Token $token)
 	{
 		return $token->test('ENDPHP');
 	}

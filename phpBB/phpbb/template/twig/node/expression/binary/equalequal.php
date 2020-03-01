@@ -13,9 +13,9 @@
 
 namespace phpbb\template\twig\node\expression\binary;
 
-class equalequal extends \Twig_Node_Expression_Binary
+class equalequal extends \Twig\Node\Expression\Binary\AbstractBinary
 {
-	public function operator(\Twig_Compiler $compiler)
+	public function operator(\Twig\Compiler $compiler)
 	{
 		return $compiler->raw('===');
 	}

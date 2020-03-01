@@ -69,7 +69,7 @@ class twig extends \phpbb\template\base
 	/**
 	* Twig Environment
 	*
-	* @var \Twig_Environment
+	* @var \Twig\Environment
 	*/
 	protected $twig;
 
