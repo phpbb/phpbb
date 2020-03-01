@@ -267,7 +267,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			// Direct child of current branch
 			$parent_id = $forum_id;
-			$parent_subforum_limit = $row['display_subforum_limit'];
+			$parent_subforum_limit = $row['display_subforum_limit'] ?? false;
 			$forum_rows[$forum_id] = $row;
 
 			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
