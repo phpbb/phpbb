@@ -13,9 +13,9 @@
 
 namespace phpbb\template\twig\node\expression\binary;
 
-class notequalequal extends \Twig_Node_Expression_Binary
+class notequalequal extends \Twig\Node\Expression\Binary\AbstractBinary
 {
-	public function operator(\Twig_Compiler $compiler)
+	public function operator(\Twig\Compiler $compiler)
 	{
 		return $compiler->raw('!==');
 	}

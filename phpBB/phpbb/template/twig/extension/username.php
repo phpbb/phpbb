@@ -33,7 +33,7 @@ class username extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('username', array($this, 'get_username')),
+			new \Twig\TwigFunction('username', array($this, 'get_username')),
 		);
 	}
 
