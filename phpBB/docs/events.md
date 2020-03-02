@@ -2376,6 +2376,34 @@ ucp_friend_list_before
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
+ucp_header_friends_offline_username_full_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Append information to offline friends username in UCP
+
+ucp_header_friends_offline_username_full_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Prepend information to offline friends username in UCP
+
+ucp_header_friends_online_username_full_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Append information to online friends username in UCP
+
+ucp_header_friends_online_username_full_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Prepend information to online friends username in UCP
+
 ucp_main_front_user_activity_after
 ===
 * Locations:
