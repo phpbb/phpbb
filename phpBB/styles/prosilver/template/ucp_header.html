@@ -69,11 +69,11 @@
 				<dt>{L_FRIENDS}</dt>
 
 				<!-- BEGIN friends_online -->
-					<dd class="friend-online" title="{L_FRIENDS_ONLINE}">{friends_online.USERNAME_FULL} <!-- IF S_SHOW_PM_BOX --> <input type="submit" name="add_to[{friends_online.USER_ID}]" value="{L_ADD}" class="button2" /><!-- ENDIF --><!-- IF friends_online.S_LAST_ROW and .friends_offline --><hr /><!-- ENDIF --></dd>
+					<dd class="friend-online" title="{L_FRIENDS_ONLINE}">{% EVENT ucp_header_friends_online_username_full_prepend %}{friends_online.USERNAME_FULL}{% EVENT ucp_header_friends_online_username_full_append %} <!-- IF S_SHOW_PM_BOX --> <input type="submit" name="add_to[{friends_online.USER_ID}]" value="{L_ADD}" class="button2" /><!-- ENDIF --><!-- IF friends_online.S_LAST_ROW and .friends_offline --><hr /><!-- ENDIF --></dd>
 				<!-- END friends_online -->
 
 				<!-- BEGIN friends_offline -->
-					<dd class="friend-offline" title="{L_FRIENDS_OFFLINE}">{friends_offline.USERNAME_FULL} <!-- IF S_SHOW_PM_BOX --><input type="submit" name="add_to[{friends_offline.USER_ID}]" value="{L_ADD}" class="button2" /><!-- ENDIF --></dd>
+					<dd class="friend-offline" title="{L_FRIENDS_OFFLINE}">{% EVENT ucp_header_friends_offline_username_full_prepend %}{friends_offline.USERNAME_FULL}{% EVENT ucp_header_friends_offline_username_full_append %} <!-- IF S_SHOW_PM_BOX --><input type="submit" name="add_to[{friends_offline.USER_ID}]" value="{L_ADD}" class="button2" /><!-- ENDIF --></dd>
 				<!-- END friends_offline -->
 			</dl>
 
