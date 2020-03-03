@@ -109,7 +109,7 @@
 		<div id="tabs" class="tabs sub-panels" data-show-panel="<!-- IF SHOW_PANEL -->{SHOW_PANEL}<!-- ELSE -->options-panel<!-- ENDIF -->" role="tablist">
 			<ul>
 				<li id="options-panel-tab" class="tab activetab"><a href="#tabs" data-subpanel="options-panel" role="tab" aria-controls="options-panel"><span>{L_OPTIONS}</span></a></li>
-				<!-- IF S_SHOW_ATTACH_BOX -->
+				<!-- IF S_SHOW_ATTACH_BOX and FILTERS -->
 					<li id="attach-panel-tab" class="tab">
 						<a href="#tabs" data-subpanel="attach-panel" role="tab" aria-controls="attach-panel">
 							{L_ATTACHMENTS} <strong id="file-total-progress" class="file-total-progress"><strong id="file-total-progress-bar" class="file-total-progress-bar"></strong></strong>
