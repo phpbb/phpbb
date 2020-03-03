@@ -123,7 +123,9 @@ pre {
 	border-width: 1px;
 	border-style: solid;
 	background-color: #FAFAFA;
-	padding: 0 4px
+	padding: 0 4px;
+	-moz-tab-size: 4;
+	tab-size: 4;
 }
 
 #wrap {
@@ -263,10 +265,9 @@ a:active	{ color: #368AD2; }
 	padding: 3px;
 	background-color: #FFFFFF;
 	border: 1px solid #C9D2D8;
-	font-size: 1em;
 	margin-bottom: 10px;
 	display: block;
-	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
+	font: 1em Monaco, "Andale Mono","Courier New", Courier, mono;
 	line-height: 1.3em;
 }
 
@@ -342,4 +343,24 @@ a:active	{ color: #368AD2; }
 	clear: both;
 	content: '';
 	display: block;
+}
+
+.column1 {
+	float: left;
+	clear: left;
+	width: 49%;
+}
+
+.column2 {
+	float: right;
+	clear: right;
+	width: 49%;
+}
+
+@media all and (max-width: 700px) {
+	.column1, .column2 {
+		float: none;
+		width: auto;
+		clear: both;
+	}
 }
