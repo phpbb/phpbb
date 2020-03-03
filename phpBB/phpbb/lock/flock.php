@@ -73,7 +73,7 @@ class flock
 		// one file for writing simultaneously
 		if (file_exists($this->path . '.lock'))
 		{
-			$mode = 'rb';
+			$mode = 'rb+';
 		}
 		else
 		{
@@ -89,7 +89,7 @@ class flock
 				// Two processes may attempt to create lock file at the same time.
 				// Have the losing process try opening the lock file again for reading
 				// on the assumption that the winning process created it
-				$mode = 'rb';
+				$mode = 'rb+';
 				$this->lock_fp = @fopen($this->path . '.lock', $mode);
 			}
 			else
