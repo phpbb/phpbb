@@ -133,6 +133,8 @@ $lang = array_merge($lang, array(
 	'NOT_ASSIGNED'				=> 'Not assigned',
 	'NO_ATTACHMENTS'			=> 'No attachments found for this period.',
 	'NO_EXT_GROUP'				=> 'None',
+	'NO_EXT_GROUP_ALLOWED_PM'	=> 'There are no <a href="%s">allowed extension groups</a> for private messages.',
+	'NO_EXT_GROUP_ALLOWED_POST'	=> 'There are no <a href="%s">allowed extension groups</a> for posts.',
 	'NO_EXT_GROUP_NAME'			=> 'No group name entered',
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No extension group specified.',
 	'NO_FILE_CAT'				=> 'None',
