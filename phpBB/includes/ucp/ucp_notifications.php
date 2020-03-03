@@ -61,7 +61,7 @@ class ucp_notifications
 						{
 							foreach ($notification_methods as $method => $method_data)
 							{
-								$is_set_notify = ($request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']))) ? true : false;
+								$is_set_notify = $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
 
 								/**
 								* Event to perform additional actions before ucp_notifications is submitted
@@ -189,8 +189,6 @@ class ucp_notifications
 	* @param \phpbb\user $user
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param string $block
-	*
-	* @changed 3.2.10-RC1 Added $phpbb_dispatcher
 	*/
 	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $block = 'notification_types')
 	{

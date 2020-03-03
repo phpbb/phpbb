@@ -341,14 +341,14 @@ class manager
 			}
 
 			/**
-			* Allow filtering the notify_users array by notification_type_name & notification_method_name for a notification that is about to be sent.
+			* Allow filtering the $notify_users array by $notification_type_name & $notification_method_name for a notification that is about to be sent.
 			* Here, $notify_users is already filtered from users who've already been notified.
 			*
 			* @event core.notification_manager_add_notifications_for_users_modify_data
 			* @var	string	notification_type_name		The notification type identifier
 			* @var	string	notification_method_name	The notification method identifier (read only)
-			* @var	array 	data						Data specific for the notification_type_name used will be inserted
-			* @var	array 	notify_users				The array of userid that are going to be notified for this notification. Set to array() to cancel or unset each user by userid.
+			* @var	array 	data						Data specific for this type that will be inserted
+			* @var	array 	notify_users				User list to notify
 			* @var	array 	notified_users				The list of the users already notified (read only)
 			*
 			* @since 3.2.10-RC1
