@@ -1931,7 +1931,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 	$s_cannot_edit = !$auth->acl_get('f_edit', $forum_id) || $user->data['user_id'] != $poster_id;
 	$s_cannot_edit_time = $config['edit_time'] && $row['post_time'] <= time() - ($config['edit_time'] * 60);
-	$s_cannot_edit_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];
+	$s_cannot_edit_locked = ($topic_data['topic_status'] == ITEM_LOCKED && !$auth->acl_get('m_lock', $forum_id)) || $row['post_edit_locked'];
 
 	$s_cannot_delete = $user->data['user_id'] != $poster_id || (
 			!$auth->acl_get('f_delete', $forum_id) &&
