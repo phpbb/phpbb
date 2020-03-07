@@ -277,7 +277,7 @@ class manager
 		* Here, $notify_users is already filtered by f_read and the ignored list included in the options variable
 		*
 		* @event core.notification_manager_add_notifications
-		* @var	string	notification_type_name		The forum id from where the topic belongs
+		* @var	string	notification_type_name		The notification type identifier
 		* @var	array 	data						Data specific for the notification_type_name used will be inserted
 		* @var	array 	notify_users				The array of userid that are going to be notified for this notification. Set to array() to cancel.
 		* @var	array 	options						The options that were used when this method was called (read only)
@@ -333,10 +333,34 @@ class manager
 		foreach ($this->get_subscription_methods_instances() as $method)
 		{
 			$notified_users = $method->get_notified_users($notification_type_id, array('item_id' => $item_id));
+			$notification_method_name = $method->get_type();
+
 			foreach ($notified_users as $user => $notifications)
 			{
 				unset($notify_users[$user]);
 			}
+
+			/**
+			* Allow filtering the $notify_users array by $notification_type_name & $notification_method_name for a notification that is about to be sent.
+			* Here, $notify_users is already filtered from users who've already been notified.
+			*
+			* @event core.notification_manager_add_notifications_for_users_modify_data
+			* @var	string	notification_type_name		The notification type identifier
+			* @var	string	notification_method_name	The notification method identifier (read only)
+			* @var	array 	data						Data specific for this type that will be inserted
+			* @var	array 	notify_users				User list to notify
+			* @var	array 	notified_users				The list of the users already notified (read only)
+			*
+			* @since 3.2.10-RC1
+			*/
+			$vars = [
+				'notification_type_name',
+				'notification_method_name',
+				'data',
+				'notify_users',
+				'notified_users',
+			];
+			extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications_for_users_modify_data', compact($vars)));
 		}
 
 		if (!count($notify_users))
