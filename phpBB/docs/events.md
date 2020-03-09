@@ -2758,6 +2758,13 @@ viewforum_body_last_post_author_username_prepend
 * Since: 3.2.4-RC1
 * Purpose: Prepend information to last post author username of member
 
+viewforum_body_online_list_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before the online users list
+
 viewforum_body_topic_author_username_append
 ===
 * Locations:
@@ -2914,6 +2921,13 @@ viewtopic_body_footer_before
 * Since: 3.1.0-a1
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver.
+
+viewtopic_body_online_list_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before the online users list
 
 viewtopic_body_pagination_top_after
 ===
