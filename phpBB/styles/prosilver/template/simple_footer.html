@@ -1,8 +1,19 @@
 	</div>
 
-	<div class="copyright" role="contentinfo">{CREDIT_LINE}
-		<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
-		<!-- IF DEBUG_OUTPUT --><br />{DEBUG_OUTPUT}<!-- ENDIF -->
+	<div class="copyright" role="contentinfo">
+		<p class="footer-row">
+			<span class="footer-copyright">{{ CREDIT_LINE }}</span>
+		</p>
+		{% if TRANSLATION_INFO %}
+			<p class="footer-row">
+				<span class="footer-copyright">{{ TRANSLATION_INFO }}</span>
+			</p>
+		{% endif %}
+		{% if DEBUG_OUTPUT %}
+			<p class="footer-row">
+				<span class="footer-info">{{ DEBUG_OUTPUT }}</span>
+			</p>
+		{% endif %}
 	</div>
 
 	<div id="darkenwrapper" class="darkenwrapper" data-ajax-error-title="{L_AJAX_ERROR_TITLE}" data-ajax-error-text="{L_AJAX_ERROR_TEXT}" data-ajax-error-text-abort="{L_AJAX_ERROR_TEXT_ABORT}" data-ajax-error-text-timeout="{L_AJAX_ERROR_TEXT_TIMEOUT}" data-ajax-error-text-parsererror="{L_AJAX_ERROR_TEXT_PARSERERROR}">
