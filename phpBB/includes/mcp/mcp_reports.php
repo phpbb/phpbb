@@ -337,6 +337,11 @@ class mcp_reports
 			case 'reports_closed':
 				$topic_id = $request->variable('t', 0);
 
+				if ($request->is_set_post('t'))
+				{
+					$topic_id = $request->variable('t', 0, false, \phpbb\request\request_interface::POST);
+				}
+
 				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
 				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
@@ -412,7 +417,7 @@ class mcp_reports
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
 				{
-					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . $row['forum_name'] . '</option>';
+					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $user->lang('ELLIPSIS')) . '</option>';
 					$forum_data[$row['forum_id']] = $row;
 				}
 				unset($forum_list_reports);
