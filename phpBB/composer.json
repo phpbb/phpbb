@@ -54,7 +54,7 @@
 	},
 	"require-dev": {
 		"fabpot/goutte": "~3.2",
-		"facebook/webdriver": "~1.6",
+		"php-webdriver/webdriver": "~1.8",
 		"laravel/homestead": "~7.0",
 		"phing/phing": "~2.4",
 		"phpunit/dbunit": "~4.0",
