@@ -129,6 +129,10 @@ hr {
 	display: none;
 }
 
+.nojs .uses-js {
+	display: none;
+}
+
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px)
 {
 	body {

@@ -152,6 +152,8 @@ class acp_extensions
 				$this->list_available_exts();
 
 				$this->template->assign_vars(array(
+					'S_AJAX_DISABLED'		=> $this->request->variable('ajax', '', true) === 'off',
+					'U_AJAX_DISABLE'		=> $this->u_action . '&amp;action=list&amp;ajax=off',
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,

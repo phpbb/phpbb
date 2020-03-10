@@ -7,7 +7,17 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
 	<fieldset class="quick">
-		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.3" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a> &bull; <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
+		<span class="small">
+			{% if not S_AJAX_DISABLED %}
+				<a href="{{ U_AJAX_DISABLE }}" class="uses-js">{{ lang('DISABLE_AJAX_ACTIONS') }}</a>
+				&bull;
+			{% endif %}
+			<a href="https://www.phpbb.com/go/customise/extensions/3.3" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a>
+			&bull;
+			<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a>
+			&bull;
+			<a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a>
+		</span>
 	</fieldset>
 
 	<form id="version_check_settings" method="post" action="{U_ACTION}" style="display:none">

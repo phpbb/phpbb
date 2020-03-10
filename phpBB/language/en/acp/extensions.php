@@ -116,6 +116,7 @@ $lang = array_merge($lang, array(
 	'AUTHOR_HOMEPAGE'		=> 'Homepage',
 	'AUTHOR_ROLE'			=> 'Role',
 
+	'DISABLE_AJAX_ACTIONS'	=> 'Disable AJAX actions',
 	'NOT_UP_TO_DATE'		=> '%s is not up to date',
 	'UP_TO_DATE'			=> '%s is up to date',
 	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
