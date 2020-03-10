@@ -372,7 +372,7 @@ function mcp_post_details($id, $mode, $action)
 
 		if (!$lookup_all)
 		{
-			$template->assign_var('U_LOOKUP_ALL', "$url&amp;i=main&amp;mode=post_details&amp;rdns=all");
+			$template->assign_var('U_LOOKUP_ALL', $base_url . '&amp;rdns=all');
 		}
 
 		$num_users = false;
