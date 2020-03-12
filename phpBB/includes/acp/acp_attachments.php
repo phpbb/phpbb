@@ -1309,7 +1309,7 @@ class acp_attachments
 	*/
 	public function get_attachment_stats($limit = '')
 	{
-		$sql = 'SELECT COUNT(a.attach_id) AS num_files, SUM(a.filesize) AS upload_dir_size
+		$sql = 'SELECT COUNT(a.attach_id) AS num_files, SUM(' . $this->db->cast_expr_to_bigint('a.filesize') . ') AS upload_dir_size
 			FROM ' . ATTACHMENTS_TABLE . " a
 			WHERE a.is_orphan = 0
 				$limit";
