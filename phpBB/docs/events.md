@@ -1894,6 +1894,34 @@ posting_editor_submit_buttons
 * Since: 3.1.6-RC1
 * Purpose: Add custom buttons in the posting editor
 
+posting_editor_topic_icons_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-rc1
+* Purpose: Add custom data after the topic icons loop
+
+posting_editor_topic_icons_append
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-rc1
+* Purpose: Append custom data to the topic icon
+
+posting_editor_topic_icons_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-rc1
+* Purpose: Add custom data before the topic icons loop
+
+posting_editor_topic_icons_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-rc1
+* Purpose: Prepend custom data to the topic icon
+
 posting_layout_include_panel_body
 ===
 * Locations:
