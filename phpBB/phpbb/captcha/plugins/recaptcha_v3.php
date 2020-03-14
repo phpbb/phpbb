@@ -14,18 +14,27 @@
 namespace phpbb\captcha\plugins;
 
 /**
- * Google reCaptcha v3 plugin.
+ * Google reCAPTCHA v3 plugin.
  */
 class recaptcha_v3 extends captcha_abstract
 {
-	const CURL		= 'curl';
-	const POST		= 'post';
-	const SOCKET	= 'socket';
+	/**
+	 * Possible request methods to verify the token.
+	 */
+	const CURL   = 'curl';
+	const POST   = 'post';
+	const SOCKET = 'socket';
 
-	const GOOGLE	= 'google.com';
-	const RECAPTCHA	= 'recaptcha.net';
+	/**
+	 * Possible domain names to load the script and verify the token.
+	 */
+	const GOOGLE    = 'google.com';
+	const RECAPTCHA = 'recaptcha.net';
 
+	/** @var string Default action when no other applies */
 	static protected $action = 'default';
+
+	/** @var array CAPTCHA types mapped to their action with threshold */
 	static protected $actions = [
 		CONFIRM_REG		=> 'register',
 		CONFIRM_LOGIN	=> 'login',
@@ -33,29 +42,67 @@ class recaptcha_v3 extends captcha_abstract
 		CONFIRM_REPORT	=> 'report',
 	];
 
+	/**
+	 * Execute.
+	 *
+	 * Not needed by this CAPTCHA plugin.
+	 *
+	 * @return void
+	 */
 	public function execute()
 	{
 	}
 
+	/**
+	 * Execute demo.
+	 *
+	 * Not needed by this CAPTCHA plugin.
+	 *
+	 * @return void
+	 */
 	public function execute_demo()
 	{
 	}
 
+	/**
+	 * Get generator class.
+	 *
+	 * Not needed by this CAPTCHA plugin.
+	 *
+	 * @throws \Exception
+	 * @return void
+	 */
 	public function get_generator_class()
 	{
 		throw new \Exception('No generator class given.');
 	}
 
+	/**
+	 * Get CAPTCHA plugin name.
+	 *
+	 * @return string
+	 */
 	public function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA_V3';
 	}
 
+	/**
+	 * Indicator that this CAPTCHA plugin requires configuration.
+	 *
+	 * @return bool
+	 */
 	public function has_config()
 	{
 		return true;
 	}
 
+	/**
+	 * Initialize this CAPTCHA plugin.
+	 *
+	 * @param int	$type	The CAPTCHA type
+	 * @return void
+	 */
 	public function init($type)
 	{
 		/**
@@ -68,6 +115,11 @@ class recaptcha_v3 extends captcha_abstract
 		parent::init($type);
 	}
 
+	/**
+	 * Whether or not this CAPTCHA plugin is available.
+	 *
+	 * @return bool
+	 */
 	public function is_available()
 	{
 		/**
@@ -82,6 +134,13 @@ class recaptcha_v3 extends captcha_abstract
 			&& ($config->offsetGet('recaptcha_v3_secret') ?? false);
 	}
 
+	/**
+	 * Create the ACP page for configuring this CAPTCHA plugin.
+	 *
+	 * @param string		$id			The ACP module identifier
+	 * @param \acp_captcha	$module		The ACP module basename
+	 * @return void
+	 */
 	public function acp_page($id, $module)
 	{
 		/**
@@ -157,11 +216,22 @@ class recaptcha_v3 extends captcha_abstract
 		]);
 	}
 
+	/**
+	 * Create the ACP page for previewing this CAPTCHA plugin.
+	 *
+	 * @param string	$id		The module identifier
+	 * @return bool|string
+	 */
 	public function get_demo_template($id)
 	{
 		return $this->get_template();
 	}
 
+	/**
+	 * Get the template for this CAPTCHA plugin.
+	 *
+	 * @return bool|string		False if CAPTCHA is already solved, template file name otherwise
+	 */
 	public function get_template()
 	{
 		/**
@@ -199,17 +269,27 @@ class recaptcha_v3 extends captcha_abstract
 		return 'captcha_recaptcha_v3.html';
 	}
 
-	function validate()
+	/**
+	 * Validate the user's input.
+	 *
+	 * @return bool|string
+	 */
+	public function validate()
 	{
 		if (!parent::validate())
 		{
 			return false;
 		}
 
-		return $this->recaptcha_check_answer();
+		return $this->recaptcha_verify_token();
 	}
 
-	function recaptcha_check_answer()
+	/**
+	 * Validate the token returned by Google reCAPTCHA v3.
+	 *
+	 * @return bool|string		False on success, string containing the error otherwise
+	 */
+	protected function recaptcha_verify_token()
 	{
 		/**
 		 * @var \phpbb\config\config		$config		Config object
@@ -223,12 +303,13 @@ class recaptcha_v3 extends captcha_abstract
 		$token		= $request->variable('recaptcha_token', '', true);
 		$threshold	= (double) $config["recaptcha_v3_threshold_{$action}"] ?? $config['recaptcha_v3_threshold'] ?? 0.5;
 
-		// Discard spam submissions
+		// No token was provided, discard spam submissions
 		if (empty($token))
 		{
 			return $language->lang('RECAPTCHA_INCORRECT');
 		}
 
+		// Create the request method that should be used
 		switch ($config['recaptcha_v3_method'] ?? '')
 		{
 			case self::CURL:
@@ -245,8 +326,10 @@ class recaptcha_v3 extends captcha_abstract
 			break;
 		}
 
+		// Create the recaptcha instance
 		$recaptcha = new \ReCaptcha\ReCaptcha($config['recaptcha_v3_secret'], $method);
 
+		// Set the expected action and threshold, and verify the token
 		$result = $recaptcha->setExpectedAction($action)
 							->setScoreThreshold($threshold)
 							->verify($token, $user->ip);
