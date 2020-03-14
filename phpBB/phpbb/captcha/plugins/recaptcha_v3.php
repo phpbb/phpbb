@@ -31,16 +31,25 @@ class recaptcha_v3 extends captcha_abstract
 	const GOOGLE    = 'google.com';
 	const RECAPTCHA = 'recaptcha.net';
 
-	/** @var string Default action when no other applies */
-	static protected $action = 'default';
-
-	/** @var array CAPTCHA types mapped to their action with threshold */
+	/** @var array CAPTCHA types mapped to their action */
 	static protected $actions = [
+		0				=> 'default',
 		CONFIRM_REG		=> 'register',
 		CONFIRM_LOGIN	=> 'login',
 		CONFIRM_POST	=> 'post',
 		CONFIRM_REPORT	=> 'report',
 	];
+
+	/**
+	 * Get CAPTCHA types mapped to their action.
+	 *
+	 * @static
+	 * @return array
+	 */
+	static public function get_actions()
+	{
+		return self::$actions;
+	}
 
 	/**
 	 * Execute.
@@ -116,7 +125,7 @@ class recaptcha_v3 extends captcha_abstract
 	}
 
 	/**
-	 * Whether or not this CAPTCHA plugin is available.
+	 * Whether or not this CAPTCHA plugin is available and setup.
 	 *
 	 * @return bool
 	 */
@@ -170,7 +179,6 @@ class recaptcha_v3 extends captcha_abstract
 			$config->set('recaptcha_v3_secret', $request->variable('recaptcha_v3_secret', '', true));
 			$config->set('recaptcha_v3_domain', $request->variable('recaptcha_v3_domain', '', true));
 			$config->set('recaptcha_v3_method', $request->variable('recaptcha_v3_method', '', true));
-			$config->set('recaptcha_v3_threshold', $request->variable('recaptcha_v3_threshold', 0.50));
 
 			foreach (self::$actions as $action)
 			{
@@ -196,21 +204,16 @@ class recaptcha_v3 extends captcha_abstract
 
 			'RECAPTCHA_V3_KEY'			=> $config['recaptcha_v3_key'] ?? '',
 			'RECAPTCHA_V3_SECRET'		=> $config['recaptcha_v3_secret'] ?? '',
-			'RECAPTCHA_V3_THRESHOLD'	=> $config['recaptcha_v3_threshold'] ?? 0.5,
 
 			'RECAPTCHA_V3_DOMAIN'		=> $config['recaptcha_v3_domain'] ?? self::GOOGLE,
 			'RECAPTCHA_V3_DOMAINS'		=> [self::GOOGLE, self::RECAPTCHA],
 
 			'RECAPTCHA_V3_METHOD'		=> $config['recaptcha_v3_method'] ?? self::POST,
 			'RECAPTCHA_V3_METHODS'		=> [
-				'POST'		=> self::POST,
-				'CURL'		=> self::CURL,
-				'SOCKET'	=> self::SOCKET,
+				self::POST		=> ini_get('allow_url_fopen') && function_exists('file_get_contents'),
+				self::CURL		=> extension_loaded('curl') && function_exists('curl_init'),
+				self::SOCKET	=> function_exists('fsockopen'),
 			],
-
-			'S_RECAPTCHA_V3_CURL'		=> extension_loaded('curl') && function_exists('curl_init'),
-			'S_RECAPTCHA_V3_POST'		=> ini_get('allow_url_fopen') && function_exists('file_get_contents'),
-			'S_RECAPTCHA_V3_SOCKET'		=> function_exists('fsockopen'),
 
 			'U_ACTION'					=> $module->u_action,
 		]);
@@ -257,7 +260,7 @@ class recaptcha_v3 extends captcha_abstract
 		$template->assign_vars([
 			'CONFIRM_EXPLAIN'		=> $language->lang($explain, '<a href="' . $contact . '">', '</a>'),
 
-			'RECAPTCHA_ACTION'		=> self::$actions[$this->type] ?? self::$action,
+			'RECAPTCHA_ACTION'		=> self::$actions[$this->type] ?? reset(self::$actions),
 			'RECAPTCHA_KEY'			=> $config['recaptcha_v3_key'] ?? '',
 			'U_RECAPTCHA_SCRIPT'	=> sprintf('//%s/recaptcha/api.js?render=%s', $domain, $render),
 
@@ -299,9 +302,10 @@ class recaptcha_v3 extends captcha_abstract
 		 */
 		global $config, $language, $request, $user;
 
-		$action		= $request->variable('recaptcha_action', self::$action, true);
 		$token		= $request->variable('recaptcha_token', '', true);
-		$threshold	= (double) $config["recaptcha_v3_threshold_{$action}"] ?? $config['recaptcha_v3_threshold'] ?? 0.5;
+		$action		= $request->variable('recaptcha_action', '', true);
+		$action		= in_array($action, self::$actions) ? $action : reset(self::$actions);
+		$threshold	= (double) $config["recaptcha_v3_threshold_{$action}"] ?? 0.5;
 
 		// No token was provided, discard spam submissions
 		if (empty($token))

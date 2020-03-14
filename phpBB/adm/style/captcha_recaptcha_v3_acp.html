@@ -48,13 +48,13 @@
 				<br><span>{{ lang('RECAPTCHA_V3_METHOD_EXPLAIN') }}</span>
 			</dt>
 			<dd>
-				{% for method, constant in RECAPTCHA_V3_METHODS %}
+				{% for method, available in RECAPTCHA_V3_METHODS %}
 					<label>
-						{% set disabled = not attribute(_context, 'S_RECAPTCHA_V3_' ~ method) ? ' disabled' %}
-						{% set checked = constant == RECAPTCHA_V3_METHOD ? ' checked' %}
+						{% set checked = method == RECAPTCHA_V3_METHOD ? ' checked' %}
+						{% set disabled = not available ? ' disabled' %}
 
-						<input class="radio" name="recaptcha_v3_method" type="radio" value="{{ constant }}"{{ checked ~ disabled }}>
-						<span>{{ lang('RECAPTCHA_V3_METHOD_' ~ method) }}</span>
+						<input class="radio" name="recaptcha_v3_method" type="radio" value="{{ method }}"{{ checked ~ disabled }}>
+						<span>{{ lang('RECAPTCHA_V3_METHOD_' ~ method|upper) }}</span>
 					</label>
 				{% endfor %}
 			</dd>
@@ -65,17 +65,14 @@
 		<legend>{{ lang('RECAPTCHA_V3_THRESHOLDS') }}</legend>
 		<p>{{ lang('RECAPTCHA_V3_THRESHOLDS_EXPLAIN') }}</p>
 
-		<dl>
-			<dt>
-				<label for="recaptcha_v3_threshold">{{ lang('RECAPTCHA_V3_THRESHOLD') ~ lang('COLON') }}</label>
-				<br><span class="explain">{{ lang('RECAPTCHA_V3_THRESHOLD_EXPLAIN') }}</span>
-			</dt>
-			<dd><input id="recaptcha_v3_threshold" name="recaptcha_v3_threshold" type="number" value="{{ RECAPTCHA_V3_THRESHOLD }}" min="0" max="1" step="0.1"></dd>
-		</dl>
-
 		{% for threshold in thresholds %}
 			<dl>
-				<dt><label for="{{ threshold.key }}">{{ lang(threshold.key|upper) ~ lang('COLON') }}</label></dt>
+				<dt>
+					<label for="{{ threshold.key }}">{{ lang(threshold.key|upper) ~ lang('COLON') }}</label>
+					{% if lang_defined(threshold.key|upper ~ '_EXPLAIN') %}
+						<br><span>{{ lang(threshold.key|upper ~ '_EXPLAIN') }}</span>
+					{% endif %}
+				</dt>
 				<dd><input id="{{ threshold.key }}" name="{{ threshold.key }}" type="number" value="{{ threshold.value }}" min="0" max="1" step="0.1"></dd>
 			</dl>
 		{% endfor %}
