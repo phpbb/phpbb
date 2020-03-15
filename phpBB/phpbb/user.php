@@ -262,8 +262,8 @@ class user extends \phpbb\session
 		}
 
 		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE . " s
-			WHERE s.style_id = $style_id";
+			FROM ' . STYLES_TABLE . '
+			WHERE style_id = ' . (int) $style_id;
 		$result = $db->sql_query($sql, 3600);
 		$this->style = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -274,8 +274,8 @@ class user extends \phpbb\session
 			$style_id = $this->data['user_style'];
 
 			$sql = 'SELECT *
-				FROM ' . STYLES_TABLE . " s
-				WHERE s.style_id = $style_id";
+				FROM ' . STYLES_TABLE . '
+				WHERE style_id = ' . (int) $style_id;
 			$result = $db->sql_query($sql, 3600);
 			$this->style = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
