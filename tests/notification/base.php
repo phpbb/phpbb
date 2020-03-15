@@ -19,7 +19,9 @@ require_once dirname(__FILE__) . '/manager_helper.php';
 
 abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 {
-	protected $notifications, $db, $container, $user, $config, $auth, $cache;
+	/** @var phpbb_notification_manager_helper */
+	protected $notifications;
+	protected $db, $container, $user, $config, $auth, $cache;
 
 	protected function get_notification_types()
 	{
