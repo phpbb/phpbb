@@ -31,8 +31,8 @@ class email extends \phpbb\notification\method\messenger_base
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var string */
-	protected $email_notifications_table;
+	/** @var string Notification emails table */
+	protected $notification_emails_table;
 
 	/**
 	 * Notification Method email Constructor
@@ -43,16 +43,16 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
-	 * @param string $email_notifications_table
+	 * @param string $notification_emails_table
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $email_notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $notification_emails_table)
 	{
 		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;
 		$this->db = $db;
-		$this->email_notifications_table = $email_notifications_table;
+		$this->notification_emails_table = $notification_emails_table;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class email extends \phpbb\notification\method\messenger_base
 		$notified_users = array();
 
 		$sql = 'SELECT user_id
-			FROM ' . $this->email_notifications_table . '
+			FROM ' . $this->notification_emails_table . '
 			WHERE notification_type_id = ' . (int) $notification_type_id .
 			(isset($options['item_id']) ? ' AND item_id = ' . (int) $options['item_id'] : '') .
 			(isset($options['item_parent_id']) ? ' AND item_parent_id = ' . (int) $options['item_parent_id'] : '') .
@@ -106,7 +106,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function notify()
 	{
-		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->email_notifications_table);
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->notification_emails_table);
 
 		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
@@ -125,7 +125,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
-		$sql = 'DELETE FROM ' . $this->email_notifications_table . '
+		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
 			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '1=1') .
 			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
 			(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
@@ -137,7 +137,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
-		$sql = 'DELETE FROM ' . $this->email_notifications_table . '
+		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
 			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '1=1') .
 			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
 			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : 'item_parent_id = ' . (int) $item_parent_id) : '');

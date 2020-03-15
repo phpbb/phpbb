@@ -87,7 +87,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
-		$phpbb_container->setParameter('tables.email_notifications', 'phpbb_email_notifications');
+		$phpbb_container->setParameter('tables.notification_emails', 'phpbb_notification_emails');
 
 		$this->notification_method_email = $this->getMockBuilder('\phpbb\notification\method\email')
 			->setConstructorArgs([
@@ -97,7 +97,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				$phpbb_container->get('dbal.conn'),
 				$phpbb_root_path,
 				$phpEx,
-				$phpbb_container->getParameter('tables.email_notifications')
+				$phpbb_container->getParameter('tables.notification_emails')
 			])
 			->setMethods(['notify_using_messenger'])
 			->getMock();

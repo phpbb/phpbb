@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v33x;
 
-class add_email_notifications_table extends \phpbb\db\migration\migration
+class add_notification_emails_table extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -26,7 +26,7 @@ class add_email_notifications_table extends \phpbb\db\migration\migration
 	{
 		return [
 			'add_tables'	=> [
-				$this->table_prefix . 'email_notifications' => [
+				$this->table_prefix . 'notification_emails' => [
 					'COLUMNS'	=> [
 						'notification_type_id'	=> ['USINT', 0],
 						'item_id'				=> ['ULINT', 0],
@@ -42,7 +42,7 @@ class add_email_notifications_table extends \phpbb\db\migration\migration
 	public function revert_schema()
 	{
 		return [
-			'drop_tables' => [$this->table_prefix . 'email_notifications'],
+			'drop_tables' => [$this->table_prefix . 'notification_emails'],
 		];
 	}
 }

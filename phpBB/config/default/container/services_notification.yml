@@ -209,7 +209,7 @@ services:
             - '@dbal.conn'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '%tables.email_notifications%'
+            - '%tables.notification_emails%'
         tags:
             - { name: notification.method }
 
