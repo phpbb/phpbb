@@ -82,25 +82,25 @@ if ($post_id)
 {
 	// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
 	$sql = 'SELECT topic_id, forum_id
-		FROM ' . POSTS_TABLE . "
-		WHERE post_id = $post_id";
+		FROM ' . POSTS_TABLE . '
+		WHERE post_id = ' . (int) $post_id;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$topic_id = (int) $row['topic_id'];
-	$forum_id = (int) $row['forum_id'];
+	$topic_id = $row['topic_id'] ?? false;
+	$forum_id = $row['forum_id'] ?? false;
 }
 else if ($topic_id)
 {
 	$sql = 'SELECT forum_id
-		FROM ' . TOPICS_TABLE . "
-		WHERE topic_id = $topic_id";
+		FROM ' . TOPICS_TABLE . '
+		WHERE topic_id = ' . (int) $topic_id;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$forum_id = (int) $row['forum_id'];
+	$forum_id = $row['forum_id'] ?? false;
 }
 
 // If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
