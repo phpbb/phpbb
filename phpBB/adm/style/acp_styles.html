@@ -96,6 +96,7 @@
 	<thead>
 	<tr>
 		<th>{L_STYLE_NAME}</th>
+		<th width="10%" style="white-space: nowrap; text-align: center;">{{ lang('STYLE_VERSION') }}</th>
 		<th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_PHPBB_VERSION}</th>
 		<!-- IF not STYLES_LIST_HIDE_COUNT --><th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th><!-- ENDIF -->
 		<th width="25%" style="white-space: nowrap; text-align: center;">{L_ACTIONS}</th>
@@ -130,6 +131,7 @@
 				<span class="style-path"><br />{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
 			<!-- ENDIF -->
 		</td>
+		<td class="{$ROW_CLASS} users">{{ styles_list.STYLE_VERSION }}</td>
 		<td class="{$ROW_CLASS} users">{styles_list.STYLE_PHPBB_VERSION}</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->
 			<td class="{$ROW_CLASS} users">{styles_list.USERS}</td>

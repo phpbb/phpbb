@@ -646,7 +646,7 @@ class acp_styles
 
 		// Set up styles list variables
 		// Addons should increase this number and update template variable
-		$this->styles_list_cols = 4;
+		$this->styles_list_cols = 5;
 		$this->template->assign_var('STYLES_LIST_COLS', $this->styles_list_cols);
 
 		// Show styles list
@@ -701,7 +701,7 @@ class acp_styles
 
 		usort($styles, array($this, 'sort_styles'));
 
-		$this->styles_list_cols = 3;
+		$this->styles_list_cols = 4;
 		$this->template->assign_vars(array(
 			'STYLES_LIST_COLS'	=> $this->styles_list_cols,
 			'STYLES_LIST_HIDE_COUNT'	=> true
@@ -959,22 +959,25 @@ class acp_styles
 
 		$style['_shown'] = true;
 
+		$style_cfg = $this->read_style_cfg($style['style_path']);
+
 		// Generate template variables
 		$actions = array();
 		$row = array(
 			// Style data
-			'STYLE_ID'		=> $style['style_id'],
-			'STYLE_NAME'	=> htmlspecialchars($style['style_name']),
-			'STYLE_PHPBB_VERSION'	=> $this->read_style_cfg($style['style_path'])['phpbb_version'],
-			'STYLE_PATH'	=> htmlspecialchars($style['style_path']),
-			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
-			'STYLE_ACTIVE'	=> $style['style_active'],
+			'STYLE_ID'				=> $style['style_id'],
+			'STYLE_NAME'			=> htmlspecialchars($style['style_name']),
+			'STYLE_VERSION'			=> $style_cfg['style_version'] ?? '-',
+			'STYLE_PHPBB_VERSION'	=> $style_cfg['phpbb_version'],
+			'STYLE_PATH'			=> htmlspecialchars($style['style_path']),
+			'STYLE_COPYRIGHT'		=> strip_tags($style['style_copyright']),
+			'STYLE_ACTIVE'			=> $style['style_active'],
 
 			// Additional data
-			'DEFAULT'		=> ($style['style_id'] && $style['style_id'] == $this->default_style),
-			'USERS'			=> (isset($style['_users'])) ? $style['_users'] : '',
-			'LEVEL'			=> $level,
-			'PADDING'		=> (4 + 16 * $level),
+			'DEFAULT'			=> ($style['style_id'] && $style['style_id'] == $this->default_style),
+			'USERS'				=> (isset($style['_users'])) ? $style['_users'] : '',
+			'LEVEL'				=> $level,
+			'PADDING'			=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
 			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
 
