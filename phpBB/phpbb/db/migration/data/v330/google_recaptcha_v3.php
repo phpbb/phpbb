@@ -38,24 +38,7 @@ class google_recaptcha_v3 extends \phpbb\db\migration\migration
 
 		foreach (\phpbb\captcha\plugins\recaptcha_v3::get_actions() as $action)
 		{
-			$data[] = ['config.add', "recaptcha_v3_threshold_{$action}", 0.5];
-		}
-
-		return $data;
-	}
-
-	public function revert_data()
-	{
-		$data = [
-			['config.remove', ['recaptcha_v3_key']],
-			['config.remove', ['recaptcha_v3_secret']],
-			['config.remove', ['recaptcha_v3_domain']],
-			['config.remove', ['recaptcha_v3_method']],
-		];
-
-		foreach (\phpbb\captcha\plugins\recaptcha_v3::get_actions() as $action)
-		{
-			$data[] = ['config.remove', "recaptcha_v3_threshold_{$action}"];
+			$data[] = ['config.add', ["recaptcha_v3_threshold_{$action}", 0.5]];
 		}
 
 		return $data;
