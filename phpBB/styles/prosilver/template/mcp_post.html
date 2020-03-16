@@ -329,9 +329,11 @@
 			</tbody>
 			</table>
 
-			<div class="buttons">
-				<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
-			</div>
+			{% if U_LOOKUP_ALL %}
+				<div class="buttons">
+					<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
+				</div>
+			{% endif %}
 
 			<div class="pagination">
 				<ul>
