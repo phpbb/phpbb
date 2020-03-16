@@ -1172,10 +1172,10 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['FORM_INVALID'];
 	}
 
-	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
+	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !$request->is_set_post('delete') && $auth->acl_get('m_approve', $forum_id))
 	{
-		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
-		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
+		$is_first_post = ($post_id <= $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
+		$is_last_post = ($post_id >= $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
 		$updated_post_data = $phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
 
 		if (!empty($updated_post_data))
@@ -1545,7 +1545,7 @@ if ($submit || $preview || $refresh)
 			}
 
 			// Handle delete mode...
-			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
+			if ($request->is_set_post('delete_permanent') || ($request->is_set_post('delete') && $post_data['post_visibility'] != ITEM_DELETED))
 			{
 				$delete_reason = $request->variable('delete_reason', '', true);
 				phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $delete_reason);
