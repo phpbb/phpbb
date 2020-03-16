@@ -2819,7 +2819,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
+			confirm_box(false, [$l_confirm, 1], build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
 
