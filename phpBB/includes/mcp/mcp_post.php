@@ -363,14 +363,16 @@ function mcp_post_details($id, $mode, $action)
 		/** @var \phpbb\pagination $pagination */
 		$pagination = $phpbb_container->get('pagination');
 
-		$rdns_ip_num = $request->variable('rdns', '');
 		$start_users = $request->variable('start_users', 0);
+		$rdns_ip_num = $request->variable('rdns', '');
+		$lookup_all = $rdns_ip_num === 'all';
 
-		if ($rdns_ip_num != 'all')
+		$base_url = $url . '&amp;i=main&amp;mode=post_details';
+		$base_url .= $lookup_all ? '&amp;rdns=all' : '';
+
+		if (!$lookup_all)
 		{
-			$template->assign_vars(array(
-				'U_LOOKUP_ALL'	=> "$url&amp;i=main&amp;mode=post_details&amp;rdns=all")
-			);
+			$template->assign_var('U_LOOKUP_ALL', $base_url . '&amp;rdns=all');
 		}
 
 		$num_users = false;
@@ -405,7 +407,7 @@ function mcp_post_details($id, $mode, $action)
 			}
 
 			$pagination->generate_template_pagination(
-				$url . '&amp;i=main&amp;mode=post_details',
+				$base_url,
 				'pagination',
 				'start_users',
 				$num_users,
@@ -475,7 +477,7 @@ function mcp_post_details($id, $mode, $action)
 				'NUM_POSTS'		=> $row['postings'],
 				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
-				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
+				'U_LOOKUP_IP'	=> (!$lookup_all && $rdns_ip_num != $row['poster_ip']) ? "$base_url&amp;start_ips={$start_ips}&amp;rdns={$row['poster_ip']}#ip" : '',
 				'U_WHOIS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
 			);
 		}
@@ -489,7 +491,7 @@ function mcp_post_details($id, $mode, $action)
 			}
 
 			$pagination->generate_template_pagination(
-				$url . '&amp;i=main&amp;mode=post_details',
+				$base_url,
 				'pagination_ips',
 				'start_ips',
 				$num_ips,
