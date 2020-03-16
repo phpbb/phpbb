@@ -370,8 +370,9 @@ class mcp_queue
 				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
 
-				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
+				// If 'sort' is set, "Go" was pressed which is located behind the forums <select> box
+				// Then, unset the topic id so it does not override the forum id
+				$topic_id = $request->is_set_post('sort') ? 0 : $topic_id;
 
 				if ($topic_id)
 				{
@@ -650,6 +651,9 @@ class mcp_queue
 					$template->assign_block_vars('postrow', $post_row);
 				}
 				unset($rowset, $forum_names);
+
+				/* @var \phpbb\pagination $pagination */
+				$pagination = $phpbb_container->get('pagination');
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
 				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
