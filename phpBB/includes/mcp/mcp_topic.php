@@ -457,6 +457,12 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	$post_info = $post_info[$post_id];
 	$subject = trim($subject);
 
+	/**
+	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 */
+	$subject = utf8_encode_ucr($subject);
+
 	// Make some tests
 	if (!$subject)
 	{
