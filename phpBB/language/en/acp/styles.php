@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 
 if (empty($lang) || !is_array($lang))
 {
-	$lang = [];
+	$lang = array();
 }
 
 // DEVELOPERS PLEASE NOTE
@@ -36,7 +36,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang = array_merge($lang, [
+$lang = array_merge($lang, array(
 	'ACP_STYLES_EXPLAIN'						=> 'Here you can manage the styles available on your board.<br>Please note you cannot uninstall the “<strong>prosilver</strong>” style as it is phpBB’s default and primary parent style.',
 
 	'CANNOT_BE_INSTALLED'						=> 'Cannot be installed',
@@ -88,4 +88,4 @@ $lang = array_merge($lang, [
 	'UNINSTALL_DEFAULT'							=> 'You cannot uninstall the default style.',
 
 	'BROWSE_STYLES_DATABASE'					=> 'Browse styles database',
-]);
+));
