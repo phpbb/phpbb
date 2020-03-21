@@ -62,6 +62,7 @@ class ucp_notifications
 							foreach ($notification_methods as $method => $method_data)
 							{
 								$is_set_notify = $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
+								$is_available = $method_data['method']->is_available($type_data['type']);
 
 								/**
 								* Event to perform additional actions before ucp_notifications is submitted
@@ -70,6 +71,7 @@ class ucp_notifications
 								* @var	array	type_data		The notification type data
 								* @var	array	method_data		The notification method data
 								* @var	bool	is_set_notify	The notification is set or not
+								* @var	bool	is_available	The notification is available or not
 								* @var	array	subscriptions	The subscriptions data
 								*
 								* @since 3.2.10-RC1
@@ -78,15 +80,16 @@ class ucp_notifications
 									'type_data',
 									'method_data',
 									'is_set_notify',
+									'is_available',
 									'subscriptions',
 								];
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
-								if ($is_set_notify && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
+								if ($is_set_notify && $is_available && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
 									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
 								}
-								else if (!$is_set_notify && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
+								else if ((!$is_set_notify || !$is_available) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
