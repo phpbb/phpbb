@@ -853,7 +853,10 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	var minutes = offset % 60;
 	var hours = (offset - minutes) / 60;
 
-	if (hours < 10) {
+	if (hours === 0) {
+		hours = '00';
+		sign = '+';
+	} else if (hours < 10) {
 		hours = '0' + hours.toString();
 	} else {
 		hours = hours.toString();
