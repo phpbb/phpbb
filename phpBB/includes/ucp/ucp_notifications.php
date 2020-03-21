@@ -70,6 +70,7 @@ class ucp_notifications
 								* @var	array	type_data		The notification type data
 								* @var	array	method_data		The notification method data
 								* @var	bool	is_set_notify	The notification is set or not
+								* @var	array	subscriptions	The subscriptions data
 								*
 								* @since 3.2.10-RC1
 								*/
@@ -77,6 +78,7 @@ class ucp_notifications
 									'type_data',
 									'method_data',
 									'is_set_notify',
+									'subscriptions',
 								];
 								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
@@ -225,6 +227,7 @@ class ucp_notifications
 					* @var	array	type_data		The notification type data
 					* @var	array	method_data		The notification method data
 					* @var	array	tpl_ary			The template variables
+					* @var	array	subscriptions	The subscriptions data
 					*
 					* @since 3.2.10-RC1
 					*/
@@ -232,6 +235,7 @@ class ucp_notifications
 						'type_data',
 						'method_data',
 						'tpl_ary',
+						'subscriptions',
 					];
 					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
 
