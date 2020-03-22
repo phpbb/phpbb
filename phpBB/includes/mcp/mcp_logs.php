@@ -39,6 +39,7 @@ class mcp_logs
 		global $config, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('acp/common');
+		$this->p_master->add_mod_info('acp');
 
 		$action = $request->variable('action', array('' => ''));
 
