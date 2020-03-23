@@ -99,8 +99,8 @@ class manager
 		\phpbb\user $user,
 		$fields_table,
 		$fields_data_table,
-		$fields_lang_table,
-		$fields_data_lang_table
+		$fields_data_lang_table,
+		$fields_lang_table
 	)
 	{
 		$this->auth				= $auth;
@@ -116,9 +116,9 @@ class manager
 		$this->user				= $user;
 
 		$this->fields_table				= $fields_table;
-		$this->fields_lang_table		= $fields_lang_table;
 		$this->fields_data_table		= $fields_data_table;
 		$this->fields_data_lang_table	= $fields_data_lang_table;
+		$this->fields_lang_table		= $fields_lang_table;
 	}
 
 	/**
