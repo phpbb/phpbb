@@ -31,6 +31,9 @@ class manager_test extends phpbb_database_test_case
 	/** @var string Table prefix */
 	protected $table_prefix;
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/manager.xml');
@@ -42,10 +45,8 @@ class manager_test extends phpbb_database_test_case
 
 		global $phpbb_root_path, $phpEx, $table_prefix;
 
-		$factory = new \phpbb\db\tools\factory();
-
 		$this->db			= $this->new_dbal();
-		$this->db_tools		= $factory->get($this->db, true);
+		$this->db_tools		= $this->getMock('\phpbb\db\tools\tools', [], [$this->db]);
 		$this->config_text	= new \phpbb\config\db_text($this->db, $table_prefix . 'config_text');
 		$this->table_prefix	= $table_prefix;
 
@@ -83,54 +84,56 @@ class manager_test extends phpbb_database_test_case
 
 	public function test_disable_profilefields()
 	{
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', 'pf_1')->shouldBeCalled();
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', 'pf_2')->shouldBeCalled();
-
-	#	$this->config_text->set('foo_bar_type.saved', json_encode([1 => 'pf_1', 2 => 'pf_2']));
-
+		// Disable the profile field type
 		$this->manager->disable_profilefields('foo_bar_type');
 
 		$sql = 'SELECT field_id, field_ident
-			FROM ' . PROFILE_FIELDS_TABLE . "
+			FROM ' . $this->table_prefix . "profile_fields
 			WHERE field_active = 1
 				AND field_type = 'foo_bar_type'";
-
 		$this->assertSqlResultEquals([], $sql, 'All profile fields should be disabled');
+
+		// Test that the config entry exists
+		$saved = $this->config_text->get('foo_bar_type.saved');
+		$saved = (array) json_decode($saved, true);
+		$this->assertEquals([
+			1	=> 'pf_1',
+			2	=> 'pf_2',
+		], $saved, 'All disable profile fields should be saved');
 	}
 
 	public function test_enable_profilefields()
 	{
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_ACTIVATE', 'pf_1')->shouldBeCalled();
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_ACTIVATE', 'pf_2')->shouldBeCalled();
-
-	#	$this->config_text->get('foo_bar_type.saved')->willReturn(json_encode([1 => 'pf_1', 2 => 'pf_2']));
-	#	$this->config_text->delete('foo_bar_type.saved')->shouldBeCalled();
-
+		// Enable the profile field type
 		$this->manager->enable_profilefields('foo_bar_type');
 
 		$sql = 'SELECT field_id
-			FROM ' . PROFILE_FIELDS_TABLE . "
+			FROM ' . $this->table_prefix . "profile_fields
 			WHERE field_active = 1
 				AND field_type = 'foo_bar_type'";
-
 		$this->assertSqlResultEquals([
 			['field_id' => '1'],
 			['field_id' => '2'],
 		], $sql, 'All profile fields should be enabled');
+
+		// Test that the config entry was removed
+		$saved = $this->config_text->get('foo_bar_type.saved');
+		$this->assertEquals($saved, null, 'All disable profile fields should be removed');
 	}
 
 	public function test_purge_profilefields()
 	{
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_REMOVED', 'pf_1')->shouldBeCalled();
-	#	$this->log->add('admin', 'LOG_PROFILE_FIELD_REMOVED', 'pf_2')->shouldBeCalled();
+		$this->db_tools
+			->expects($this->exactly(2))
+			->method('sql_column_remove')
+			->with(
+				$this->table_prefix . 'profile_fields_data',
+				$this->stringStartsWith('pf_')
+			);
 
-	#	$this->config_text->delete('foo_bar_type.saved')->shouldBeCalled();
-
-	#	$this->db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_pf_1')->shouldBeCalled();
-	#	$this->db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_pf_2')->shouldBeCalled();
-
+		// Get the field identifiers
 		$sql = 'SELECT field_id
-			FROM ' . PROFILE_FIELDS_TABLE . "
+			FROM ' . $this->table_prefix . "profile_fields
 			WHERE field_type = 'foo_bar_type'";
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
@@ -138,28 +141,36 @@ class manager_test extends phpbb_database_test_case
 
 		$field_ids = array_map('intval', array_column($rowset, 'field_id'));
 
+		// Purge the profile field type
 		$this->manager->purge_profilefields('foo_bar_type');
 
+		// Test all the profile field tables
 		$sql = 'SELECT field_id
-			FROM ' . PROFILE_FIELDS_TABLE . "
+			FROM ' . $this->table_prefix . "profile_fields
 			WHERE field_type = 'foo_bar_type'";
-
 		$this->assertSqlResultEquals([], $sql, 'All profile fields should be removed');
 
 		$sql = 'SELECT field_id
-			FROM ' . PROFILE_FIELDS_LANG_TABLE . "
+			FROM ' . $this->table_prefix . "profile_fields_lang
 			WHERE field_type = 'foo_bar_type'";
-
 		$this->assertSqlResultEquals([], $sql, 'All profile fields lang should be removed');
 
 		$sql = 'SELECT lang_name
-			FROM ' . PROFILE_LANG_TABLE . '
+			FROM ' . $this->table_prefix . 'profile_lang
 			WHERE ' . $this->db->sql_in_set('field_id', $field_ids);
-
 		$this->assertSqlResultEquals([], $sql, 'All profile fields lang should be removed');
 
-		$sql = 'SELECT field_id, field_order FROM ' . PROFILE_FIELDS_TABLE;
+		$sql = 'SELECT field_id, field_order 
+			FROM ' . $this->table_prefix . 'profile_fields';
+		$this->assertSqlResultEquals([
+			[
+				'field_id'		=> '3',
+			 	'field_order'	=> '1'
+			]
+		], $sql, 'Profile fields order should be recalculated, starting by 1');
 
-		$this->assertSqlResultEquals([['field_id' => '3', 'field_order' => '1'],], $sql, 'Profile fields order should be recalculated, starting by 1');
+		// Test that the config entry was removed
+		$saved = $this->config_text->get('foo_bar_type.saved');
+		$this->assertEquals($saved, null, 'All disable profile fields should be removed');
 	}
 }
