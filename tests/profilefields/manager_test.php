@@ -22,7 +22,7 @@ class manager_test extends phpbb_database_test_case
 	/** @var \phpbb\profilefields\manager */
 	protected $manager;
 
-	/** @var \phpbb\log\log_interface */
+	/** @var \phpbb\log\log */
 	protected $log;
 
 	/** @var \phpbb\db\tools */
