@@ -364,9 +364,11 @@ class manager
 			return [];
 		}
 
+		$user_ids = (array) $user_ids;
+
 		$sql = 'SELECT *
 			FROM ' . $this->fields_data_table . '
-			WHERE ' . $this->db->sql_in_set('user_id', array_map('intval', (array) $user_ids));
+			WHERE ' . $this->db->sql_in_set('user_id', array_map('intval', $user_ids));
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
