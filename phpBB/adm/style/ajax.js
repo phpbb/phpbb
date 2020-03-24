@@ -421,5 +421,16 @@ $(function() {
 	}
 });
 
+/**
+* Automatically display custom profile fields FontAwesome icon
+*/
+$(function() {
+	$('#field_icon').on('keyup blur', function() {
+		var input = $(this).val();
+		var $icon = $(this).next('i');
+		$icon.attr('class', 'icon fa-' + input + ' fa-fw');
+	});
+
+});
 
 })(jQuery); // Avoid conflicts with other libraries
