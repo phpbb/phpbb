@@ -1,3 +1,5 @@
+/* global phpbb */
+
 /*
 javascript for Bubble Tooltips by Alessandro Fulciniti
 - http://pro.html.it - http://web-graphics.com

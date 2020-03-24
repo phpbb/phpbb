@@ -7,6 +7,21 @@
 		"doc": "docs"
 	},
 	"xo": {
+		"ignores": [
+			"./phpbb/adm/style/admin.js",
+			"./phpbb/adm/style/ajax.js",
+			"./phpbb/adm/style/permissions.js",
+			"./phpbb/adm/style/tooltip.js",
+			"./phpbb/assets/cookieconsent/*.js",
+			"./phpbb/assets/javascript/core.js",
+			"./phpbb/assets/javascript/editor.js",
+			"./phpbb/assets/javascript/installer.js",
+			"./phpbb/assets/javascript/plupload.js",
+			"./phpbb/assets/javascript/jquery*.js",
+			"./phpbb/assets/plupload/*.js",
+			"./phpbb/styles/prosilver/template/ajax.js",
+			"./phpbb/styles/prosilver/template/forum_fn.js"
+		],
 		"rules": {
 			"quotes": [
 				"error",
@@ -25,14 +40,14 @@
 				"error",
 				"always"
 			],
-			"multiline-comment-style": "off",
-			"computed-property-spacing": "off",
-			"space-in-parens": "off",
-			"capitalized-comments": "off",
 			"object-curly-spacing": [
 				"error",
 				"always"
 			],
+			"multiline-comment-style": "off",
+			"computed-property-spacing": "off",
+			"space-in-parens": "off",
+			"capitalized-comments": "off",
 			"no-lonely-if": "off"
 		},
 		"env": [
