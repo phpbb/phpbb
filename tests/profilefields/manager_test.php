@@ -110,7 +110,8 @@ class manager_test extends phpbb_database_test_case
 		$sql = 'SELECT field_id
 			FROM ' . $this->table_prefix . "profile_fields
 			WHERE field_active = 1
-				AND field_type = 'foo_bar_type'";
+				AND field_type = 'foo_bar_type'
+			ORDER BY field_id ASC";
 		$this->assertSqlResultEquals([
 			['field_id' => '1'],
 			['field_id' => '2'],
@@ -161,7 +162,8 @@ class manager_test extends phpbb_database_test_case
 		$this->assertSqlResultEquals([], $sql, 'All profile fields lang should be removed');
 
 		$sql = 'SELECT field_id, field_order 
-			FROM ' . $this->table_prefix . 'profile_fields';
+			FROM ' . $this->table_prefix . 'profile_fields
+			ORDER BY field_id ASC';
 		$this->assertSqlResultEquals([
 			[
 				'field_id'		=> '3',
