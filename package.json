@@ -44,7 +44,15 @@
 	},
 	"browserslist": [
 		"> 1%",
-		"last 2 versions"
+		"not ie 11",
+		"not samsung 10.1",
+		"not and_uc 12.12",
+		"not op_mini all",
+		"edge >= 18",
+		"ff >= 72",
+		"chrome >= 79",
+		"safari >= 13",
+		"ios >= 12.4"
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
