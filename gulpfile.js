@@ -19,15 +19,10 @@ const build = {
 	css: './phpBB/styles/prosilver/theme/',
 };
 
-const AUTOPREFIXER_BROWSERS = [
-	'> 1%',
-	'last 2 versions'
-];
-
 gulp.task('css', () => {
 	const css = gulp
 	.src(build.css + '*.css')
-	.pipe(autoprefixer(AUTOPREFIXER_BROWSERS))
+	.pipe(autoprefixer())
 	.pipe(
 		postcss([
 			sorting(sortOrder)
