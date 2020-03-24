@@ -8,19 +8,18 @@
 	},
 	"xo": {
 		"ignores": [
-			"./phpbb/adm/style/admin.js",
-			"./phpbb/adm/style/ajax.js",
-			"./phpbb/adm/style/permissions.js",
-			"./phpbb/adm/style/tooltip.js",
-			"./phpbb/assets/cookieconsent/*.js",
-			"./phpbb/assets/javascript/core.js",
-			"./phpbb/assets/javascript/editor.js",
-			"./phpbb/assets/javascript/installer.js",
-			"./phpbb/assets/javascript/plupload.js",
-			"./phpbb/assets/javascript/jquery*.js",
-			"./phpbb/assets/plupload/*.js",
-			"./phpbb/styles/prosilver/template/ajax.js",
-			"./phpbb/styles/prosilver/template/forum_fn.js"
+			"./**/adm/style/admin.js",
+			"./**/adm/style/ajax.js",
+			"./**/adm/style/permissions.js",
+			"./**/adm/style/tooltip.js",
+			"./**/assets/javascript/core.js",
+			"./**/assets/javascript/editor.js",
+			"./**/assets/javascript/installer.js",
+			"./**/assets/javascript/plupload.js",
+			"./**/styles/prosilver/template/ajax.js",
+			"./**/styles/prosilver/template/forum_fn.js",
+			"./**/phpbb/**/*.js",
+			"./**/tests/**/*.js"
 		],
 		"rules": {
 			"quotes": [
