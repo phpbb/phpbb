@@ -1,6 +1,6 @@
 {
 	"name": "phpbb",
-	"version": "3.3.0-dev",
+	"version": "4.0.0-dev",
 	"description": "phpBB Forum Software application",
 	"main": " ",
 	"directories": {
