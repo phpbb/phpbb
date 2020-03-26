@@ -226,14 +226,9 @@ class acp_attachments
 					{
 						$size_var = $request->variable($config_name, '');
 
-						if (!empty($config_value))
-						{
-							$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
-						}
-						else
-						{
-							$config_value = 0;
-						}
+						$config_value = (int) $config_value;
+
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
 					}
 
 					if ($submit)
