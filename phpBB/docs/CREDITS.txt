@@ -27,11 +27,12 @@ phpBB Developers:        bantu (Andreas Fischer)
                          Derky (Derk Ruitenbeek)
                          Elsensee (Oliver Schramm)
                          Hanakin (Michael Miday)
+                         mrgoldy (Gijs Martens)
                          Nicofuma (Tristan Darricau)
                          rubencm (Rubén Calvo)
 
 For a list of phpBB Team members, please see:
-http://www.phpbb.com/about/team/
+https://www.phpbb.com/about/team/
 
 For a full list of phpBB code contributors, please see:
 https://github.com/phpbb/phpbb/graphs/contributors
