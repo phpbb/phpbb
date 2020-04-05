@@ -110,23 +110,23 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'window')
 	{
 		$sql_ary = [
-			'SELECT'	=> 'smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order',
+			'SELECT'	=> 's.smiley_url, MIN(s.emotion) AS emotion, MIN(s.code) AS code, s.smiley_width, s.smiley_height, MIN(s.smiley_order) AS min_smiley_order',
 			'FROM'		=> [
 				SMILIES_TABLE => 's',
 			],
-			'GROUP_BY'	=> 'smiley_url, smiley_width, smiley_height',
-			'ORDER_BY'	=> 'min_smiley_order',
+			'GROUP_BY'	=> 's.smiley_url, s.smiley_width, s.smiley_height',
+			'ORDER_BY'	=> 's.min_smiley_order',
 		];
 	}
 	else
 	{
 		$sql_ary = [
-			'SELECT'	=> '*',
+			'SELECT'	=> 's.*',
 			'FROM'		=> [
 				SMILIES_TABLE => 's',
 			],
-			'WHERE'		=> 'display_on_posting = 1',
-			'ORDER_BY'	=> 'smiley_order',
+			'WHERE'		=> 's.display_on_posting = 1',
+			'ORDER_BY'	=> 's.smiley_order',
 		];
 	}
 	
