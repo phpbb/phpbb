@@ -109,18 +109,51 @@ function generate_smilies($mode, $forum_id)
 
 	if ($mode == 'window')
 	{
-		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order
-			FROM ' . SMILIES_TABLE . '
-			GROUP BY smiley_url, smiley_width, smiley_height
-			ORDER BY min_smiley_order';
+		$sql_ary = [
+			'SELECT'	=> 'smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order',
+			'FROM'		=> [
+				SMILIES_TABLE => 's',
+			],
+			'GROUP_BY'	=> 'smiley_url, smiley_width, smiley_height',
+			'ORDER_BY'	=> 'min_smiley_order',
+		];
+	}
+	else
+	{
+		$sql_ary = [
+			'SELECT'	=> '*',
+			'FROM'		=> [
+				SMILIES_TABLE => 's',
+			],
+			'WHERE'		=> 'display_on_posting = 1',
+			'ORDER_BY'	=> 'smiley_order',
+		];
+	}
+	
+	/**
+	* Modify the SQL query that fetches the smilies
+	*
+	* @event core.generate_smilies_modify_sql
+	* @var string	mode		Smiley mode, either window or inline
+	* @var int		forum_id	Forum where smilies are generated, or 0 if composing a private message
+	* @var array	sql_ary		Array with SQL query data
+	* @since 3.2.10-RC1
+	*/
+	$vars = [
+		'mode',
+		'forum_id',
+		'sql_ary',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_modify_sql', compact($vars)));
+
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
+
+	if ($mode == 'window')
+	{
 		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $start, 3600);
 	}
 	else
 	{
-		$sql = 'SELECT *
-			FROM ' . SMILIES_TABLE . '
-			WHERE display_on_posting = 1
-			ORDER BY smiley_order';
 		$result = $db->sql_query($sql, 3600);
 	}
 
@@ -139,7 +172,7 @@ function generate_smilies($mode, $forum_id)
 	*
 	* @event core.generate_smilies_modify_rowset
 	* @var string	mode		Smiley mode, either window or inline
-	* @var int		forum_id	Forum where smilies are generated
+	* @var int		forum_id	Forum where smilies are generated, or 0 if composing a private message
 	* @var array	smilies		Smiley rows fetched from the database
 	* @since 3.2.9-RC1
 	*/
