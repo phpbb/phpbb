@@ -63,6 +63,7 @@ class add_bots extends \phpbb\install\task_base
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
 		'Baidu [Spider]'			=> array('Baiduspider', ''),
 		'Bing [Bot]'				=> array('bingbot/', ''),
+		'DuckDuckGo [Bot]'			=> array('DuckDuckBot/', ''),
 		'Exabot [Bot]'				=> array('Exabot', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
