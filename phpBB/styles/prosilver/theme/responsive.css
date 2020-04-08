@@ -552,22 +552,18 @@
 	}
 }
 
-@media (min-width: 700px) {
-	.postbody { width: 70%; }
-}
-
-@media (min-width: 701px) and (max-width: 850px) {
+@media (min-width: 701px) {
 	.postbody {
-		width: 76%;
+		/** deduct postprofile width (including border width, margin and padding) */
+		width: calc(100% - 200px - 1px);
 	}
 
 	.postprofile {
-		width: 22%;
+		width: 200px;
 	}
 }
 
 @media (min-width: 701px) and (max-width: 950px) {
-
 	ul.topiclist dt {
     	margin-right: -410px;
 	}
