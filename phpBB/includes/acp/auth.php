@@ -1134,6 +1134,8 @@ class auth_admin extends \phpbb\auth\auth
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
+		$order = array_flip(array_keys($phpbb_permissions->get_permissions()));
+
 		foreach ($category_array as $cat => $cat_array)
 		{
 			if (!$phpbb_permissions->category_defined($cat))
@@ -1149,21 +1151,11 @@ class auth_admin extends \phpbb\auth\auth
 				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
 			));
 
-			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
-			*	Commented out due to it's memory consumption and time needed
-			*
-			$key_array = array_intersect(array_keys($user->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
-			$values_array = $cat_array['permissions'];
 
-			$cat_array['permissions'] = array();
+			uksort($cat_array['permissions'], function($a, $b) use ($order) {
+				return $order[$a] <=> $order[$b];
+			});
 
-			foreach ($key_array as $key)
-			{
-				$key = str_replace('acl_', '', $key);
-				$cat_array['permissions'][$key] = $values_array[$key];
-			}
-			unset($key_array, $values_array);
-*/
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				if (!$phpbb_permissions->permission_defined($permission))
@@ -1229,7 +1221,6 @@ class auth_admin extends \phpbb\auth\auth
 			}
 
 			$permissions = $permission_row[$forum_id];
-			ksort($permissions);
 
 			foreach ($permissions as $permission => $auth_setting)
 			{
