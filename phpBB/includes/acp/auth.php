@@ -1131,7 +1131,7 @@ class auth_admin extends \phpbb\auth\auth
 	{
 		global $template, $phpbb_admin_path, $phpEx, $phpbb_container;
 
-		/* @var $phpbb_permissions \phpbb\permissions */
+		/** @var \phpbb\permissions $phpbb_permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		$order = array_flip(array_keys($phpbb_permissions->get_permissions()));
@@ -1150,7 +1150,6 @@ class auth_admin extends \phpbb\auth\auth
 
 				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
 			));
-
 
 			uksort($cat_array['permissions'], function($a, $b) use ($order) {
 				return $order[$a] <=> $order[$b];
