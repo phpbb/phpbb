@@ -36,7 +36,7 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 
 		if ($type == 'string')
 		{
-			$result = str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result);
+			$result = strtr($result, ["\r\n" => "\n", "\r" => "\n", "\0" => '', "\u{FEFF}" => '']);
 
 			if ($trim)
 			{
