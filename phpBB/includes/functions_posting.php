@@ -129,7 +129,7 @@ function generate_smilies($mode, $forum_id)
 			'ORDER_BY'	=> 's.smiley_order',
 		];
 	}
-	
+
 	/**
 	* Modify the SQL query that fetches the smilies
 	*
