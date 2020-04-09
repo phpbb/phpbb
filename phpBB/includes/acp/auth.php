@@ -1136,13 +1136,10 @@ class auth_admin extends \phpbb\auth\auth
 
 		$order = array_flip(array_keys($phpbb_permissions->get_permissions()));
 
+		$category_array = array_filter($category_array, [$phpbb_permissions, 'permission_defined'], ARRAY_FILTER_USE_KEY);
+
 		foreach ($category_array as $cat => $cat_array)
 		{
-			if (!$phpbb_permissions->category_defined($cat))
-			{
-				continue;
-			}
-
 			$template->assign_block_vars($tpl_cat, array(
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
