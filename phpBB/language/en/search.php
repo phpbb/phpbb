@@ -87,6 +87,7 @@ $lang = array_merge($lang, array(
 	'RESULT_DAYS'			=> 'Limit results to previous',
 	'RESULT_SORT'			=> 'Sort results by',
 	'RETURN_FIRST'			=> 'Return first',
+	'RETURN_FIRST_EXPLAIN'	=> 'Set to 0 to display the entire post.',
 	'GO_TO_SEARCH_ADV'	=> 'Go to advanced search',
 
 	'SEARCHED_FOR'				=> 'Search term used',

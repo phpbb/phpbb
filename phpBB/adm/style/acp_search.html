@@ -37,6 +37,13 @@
 		<dd><input id="max_num_search_keywords" type="number" min="0" max="9999" name="config[max_num_search_keywords]" value="{MAX_NUM_SEARCH_KEYWORDS}" /></dd>
 	</dl>
 	<dl>
+		<dt>
+			<label for="default_search_return_chars">{{ lang('DEFAULT_SEARCH_RETURN_CHARS') ~ lang('COLON') }}</label>
+			<br><span>{{ lang('DEFAULT_SEARCH_RETURN_CHARS_EXPLAIN') }}</span>
+		</dt>
+		<dd><input id="default_search_return_chars" name="config[default_search_return_chars]" type="number" value="{{ DEFAULT_SEARCH_RETURN_CHARS }}" min="0" max="9999"></dd>
+	</dl>
+	<dl>
 		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}{L_COLON}</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
 		<dd><input id="search_store_results" type="number" min="0" max="999999" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
 	</dl>

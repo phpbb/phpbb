@@ -79,8 +79,11 @@
 		<dd>{S_SELECT_SORT_DAYS}</dd>
 	</dl>
 	<dl>
-		<dt><label>{L_RETURN_FIRST}{L_COLON}</label></dt>
-		<dd><select name="ch" title="{L_RETURN_FIRST}">{S_CHARACTER_OPTIONS}</select> {L_POST_CHARACTERS}</dd>
+		<dt>
+			<label for="ch">{{ lang('RETURN_FIRST') ~ lang('COLON') }}</label>
+			<br><span>{{ lang('RETURN_FIRST_EXPLAIN') }}</span>
+		</dt>
+		<dd><input id="ch" name="ch" type="number" value="{{ DEFAULT_RETURN_CHARS }}" min="0" max="9999" title="{{ lang('RETURN_FIRST') }}"> {{ lang('POST_CHARACTERS') }}</dd>
 	</dl>
 	<!-- EVENT search_body_search_display_options_append -->
 	</fieldset>
