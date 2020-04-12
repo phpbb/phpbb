@@ -1203,7 +1203,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 				// Remove any post id anchor
 				if ($anchor_pos = (strrpos($redirect, '#p')) !== false)
 				{
-					$redirect = substr($redirect, 0, $anchor_post);
+					$redirect = substr($redirect, 0, $anchor_pos);
 				}
 
 				$success_msg = $user->lang['POST_DELETED_SUCCESS'];
