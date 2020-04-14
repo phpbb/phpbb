@@ -205,7 +205,7 @@
 	}
 
 	.cp-main .forabg,
-	.cp-main .forumdb,
+	.cp-main .forumbg,
 	.cp-main .post,
 	.cp-main .panel {
 		border-radius: 7px;
@@ -542,8 +542,7 @@
 		overflow: hidden;
 		width: auto;
 		min-height: 40px;
-		margin: 0;
-		margin-bottom: 5px;
+		margin: 0 0 5px 0;
 		padding-bottom: 5px;
 	}
 
@@ -730,21 +729,15 @@
 	}
 }
 
-@media (min-width: 700px) {
+@media (min-width: 701px) {
 	.postbody {
-		width: 70%;
+		/** deduct postprofile width (including border width, margin and padding) and postbody margin and padding */
+		width: calc(100% - 200px - 1px - 16px);
+		margin-right: 16px;
 	}
-}
 
-@media (min-width: 850px) {
-	.postbody {
-		width: 76%;
-	}
-}
-
-@media (max-width: 850px) {
 	.postprofile {
-		width: 28%;
+		width: 200px;
 	}
 }
 
