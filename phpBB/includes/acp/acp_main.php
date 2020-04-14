@@ -494,7 +494,7 @@ class acp_main
 
 		$start_date = $user->format_date($config['board_startdate']);
 
-		$boarddays = (time() - $config['board_startdate']) / 86400;
+		$boarddays = (time() - (int) $config['board_startdate']) / 86400;
 
 		$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 		$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
