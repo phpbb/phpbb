@@ -225,6 +225,9 @@ class acp_attachments
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
 						$size_var = $request->variable($config_name, '');
+
+						$config_value = (int) $config_value;
+
 						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
 					}
 
