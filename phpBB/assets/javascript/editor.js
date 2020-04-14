@@ -1,3 +1,5 @@
+/* global phpbb */
+
 /**
 * bbCode control by subBlue design [ www.subBlue.com ]
 * Includes unixsafe colour palette selector by SHS`
