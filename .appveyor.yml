@@ -6,6 +6,8 @@ services:
   - iis
 
 environment:
+  COMPOSER_AUTH:
+    secure: '{"github-oauth": {"github.com": "zvq38wk7sRe87Y9W2OCYXcK7WKQDsig7GRIUDHGmxm6ZQRK8JswPbi8JoJQbFhM+"}}'
   matrix:
   - db: mssql
     db_version: sql2012sp1
