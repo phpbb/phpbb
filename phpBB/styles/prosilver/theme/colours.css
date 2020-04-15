@@ -116,7 +116,7 @@ a:hover { color: #D31141; }
 	color: #000000;
 }
 
-.post:target h3 a {
+.post h3 a.first-unread { {
 	color: #000000;
 }
 
