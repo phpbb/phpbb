@@ -470,11 +470,17 @@ class factory implements \phpbb\textformatter\cache_interface
 		$tag->attributes->add('text');
 		$tag->template = '<xsl:value-of select="@text"/>';
 
+		$board_url = generate_board_url() . '/';
 		$tag->filterChain
 			->add(array($this->link_helper, 'truncate_local_url'))
 			->resetParameters()
 			->addParameterByName('tag')
-			->addParameterByValue(generate_board_url() . '/');
+			->addParameterByValue($board_url);
+		$tag->filterChain
+			->add(array($this->link_helper, 'truncate_local_url'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByValue(preg_replace('(^\\w+:)', '', $board_url));
 		$tag->filterChain
 			->add(array($this->link_helper, 'truncate_text'))
 			->resetParameters()
