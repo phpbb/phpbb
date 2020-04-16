@@ -27,7 +27,12 @@ class application extends \Symfony\Component\Console\Application
 	protected $in_shell = false;
 
 	/**
-	* @var \phpbb\language\language User object
+	* @var \phpbb\config\config Config object
+	*/
+	protected $config;
+
+	/**
+	* @var \phpbb\language\language Language object
 	*/
 	protected $language;
 
@@ -35,10 +40,12 @@ class application extends \Symfony\Component\Console\Application
 	* @param string						$name		The name of the application
 	* @param string						$version	The version of the application
 	* @param \phpbb\language\language	$language	The user which runs the application (used for translation)
+	* @param \phpbb\config\config		$config		Config object
 	*/
-	public function __construct($name, $version, \phpbb\language\language $language)
+	public function __construct($name, $version, \phpbb\language\language $language, \phpbb\config\config $config)
 	{
 		$this->language = $language;
+		$this->config = $config;
 
 		parent::__construct($name, $version);
 	}
@@ -97,9 +104,17 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function register_container_commands(\phpbb\di\service_collection $command_collection)
 	{
-		foreach ($command_collection as $service_command)
+		$commands_list = array_keys($command_collection->getArrayCopy());
+		foreach ($commands_list as $service_command)
 		{
-			$this->add($service_command);
+			// config_text DB table does not exist in phpBB prior to 3.1
+			// Hence skip cron tasks as they include reparser cron as it uses config_text table
+			if (phpbb_version_compare($this->config['version'], '3.1.0', '<') && strpos($service_command, 'cron') !== false)
+			{
+				continue;
+			}
+			$this->add($command_collection[$service_command]);
+
 		}
 	}
 
