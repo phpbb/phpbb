@@ -29,9 +29,9 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 	protected function get_notification_methods()
 	{
-		return array(
+		return [
 			'notification.method.email',
-		);
+		];
 	}
 
 	protected function setUp() : void
@@ -45,13 +45,13 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		global $db, $config, $user, $auth, $cache, $phpbb_container;
 
 		$db = $this->db = $this->new_dbal();
-		$config = $this->config = new \phpbb\config\config(array(
+		$config = $this->config = new \phpbb\config\config([
 			'allow_privmsg'			=> true,
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 			'allow_board_notifications'	=> true,
-		));
+		]);
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
@@ -184,7 +184,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 					6 => ['user_id' => '6'],
 					7 => ['user_id' => '7'],
 					8 => ['user_id' => '8'],
-				]
+				],
 			],
 			[
 				[
@@ -193,7 +193,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 					'topic_id'		=> '3',
 				],
 				[
-				]
+				],
 			],
 		];
 	}

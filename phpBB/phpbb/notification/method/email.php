@@ -83,7 +83,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function get_notified_users($notification_type_id, array $options)
 	{
-		$notified_users = array();
+		$notified_users = [];
 
 		$sql = 'SELECT user_id
 			FROM ' . $this->notification_emails_table . '
@@ -111,7 +111,7 @@ class email extends \phpbb\notification\method\messenger_base
 		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
-			$data = $this->clean_data($notification->get_insert_array());
+			$data = self::clean_data($notification->get_insert_array());
 			$insert_buffer->insert($data);
 		}
 
@@ -126,9 +126,9 @@ class email extends \phpbb\notification\method\messenger_base
 	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
-			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '1=1') .
-			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
-			(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
+			($item_id !== false ? ' AND ' . $this->db->sql_in_set('item_id', $item_id) : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -138,9 +138,9 @@ class email extends \phpbb\notification\method\messenger_base
 	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
-			WHERE ' . (($notification_type_id !== false) ? (is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '1=1') .
-			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
-			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : 'item_parent_id = ' . (int) $item_parent_id) : '');
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
+			($item_parent_id !== false ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -150,15 +150,15 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param array $data Notification data
 	 * @return array Cleaned notification data
 	 */
-	protected function clean_data(array $data)
+	static public function clean_data(array $data)
 	{
-		$model = array(
+		$row = [
 			'notification_type_id'	=> null,
 			'item_id'				=> null,
 			'item_parent_id'		=> null,
 			'user_id'				=> null,
-		);
+		];
 
-		return array_intersect_key($data, $model);
+		return array_intersect_key($data, $row);
 	}
 }
