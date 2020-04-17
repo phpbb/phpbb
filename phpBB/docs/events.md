@@ -2942,6 +2942,20 @@ viewtopic_body_contact_fields_before
 * Purpose: Add data before the contact fields on the user profile when viewing
 a post
 
+viewtopic_body_contact_icon_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content directly after the contact field icons in post user miniprofiles
+
+viewtopic_body_contact_icon_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content directly before the contact field icons in post user miniprofiles
+
 viewtopic_body_footer_before
 ===
 * Locations:
