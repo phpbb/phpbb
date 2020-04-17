@@ -197,7 +197,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 */
 function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $config, $user, $phpbb_container;
+	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container;
 
 	$rowset = array();
 
