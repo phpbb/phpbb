@@ -1,0 +1,40 @@
+<!-- INCLUDE overall_header.html -->
+
+	<a id="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+	<p>{L_EXTENSION_DELETE_DATA_EXPLAIN}</p>
+
+	<!-- IF MIGRATOR_ERROR -->
+	<div class="errorbox">
+		<p><strong>{L_MIGRATION_EXCEPTION_ERROR}</strong></p>
+		<p>{MIGRATOR_ERROR}</p>
+		<p><a href="{U_RETURN}">{L_RETURN_TO_EXTENSION_LIST}</a></p>
+	</div>
+	<!-- ELSEIF PRE -->
+	<div class="errorbox">
+		<p>{L_CONFIRM_MESSAGE}</p>
+	</div>
+
+	<form id="acp_extensions" method="post" action="{U_PURGE}">
+	<fieldset class="submit-buttons">
+		<legend>{L_EXTENSION_DELETE_DATA}</legend>
+		<input class="button1" type="submit" name="delete_data" value="{L_EXTENSION_DELETE_DATA}" />
+		<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
+	</fieldset>
+	</form>
+	<!-- ELSEIF S_NEXT_STEP -->
+		<div class="errorbox">
+			<p>{L_EXTENSION_DELETE_DATA_IN_PROGRESS}</p>
+		</div>
+	<!-- ELSE -->
+		<div class="successbox">
+			<p>{L_EXTENSION_DELETE_DATA_SUCCESS}</p>
+			<br />
+			<p><a href="{U_RETURN}">{L_RETURN_TO_EXTENSION_LIST}</a></p>
+		</div>
+	<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->
