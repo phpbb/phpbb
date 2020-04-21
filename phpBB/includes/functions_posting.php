@@ -138,6 +138,7 @@ function generate_smilies($mode, $forum_id)
 	* @var int		forum_id	Forum where smilies are generated, or 0 if composing a private message
 	* @var array	sql_ary		Array with SQL query data
 	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
 	*/
 	$vars = [
 		'mode',
