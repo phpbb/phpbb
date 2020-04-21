@@ -48,6 +48,7 @@ class purge extends command
 		else
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_PURGE', time(), array($name));
+			$this->check_apcu_cache($io);
 			$io->success($this->user->lang('CLI_EXTENSION_PURGE_SUCCESS', $name));
 			return 0;
 		}

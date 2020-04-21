@@ -128,6 +128,7 @@ services:
             - '@user'
             - '@ext.manager'
             - '@log'
+            - '%cache.driver.class%'
         tags:
             - { name: console.command }
 
@@ -137,6 +138,7 @@ services:
             - '@user'
             - '@ext.manager'
             - '@log'
+            - '%cache.driver.class%'
         tags:
             - { name: console.command }
 
@@ -173,6 +175,7 @@ services:
             - '@user'
             - '@ext.manager'
             - '@log'
+            - '%cache.driver.class%'
         tags:
             - { name: console.command }
 
@@ -191,6 +194,7 @@ services:
             - '@user'
             - '@ext.manager'
             - '@log'
+            - '%cache.driver.class%'
         tags:
             - { name: console.command }
 
