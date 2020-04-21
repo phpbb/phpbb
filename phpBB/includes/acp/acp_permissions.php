@@ -44,14 +44,14 @@ class acp_permissions
 			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
 		}
 
-		$this->permissions = $phpbb_container->get('acl.permissions');
-
 		$auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
 		add_permission_language();
 
 		$this->tpl_name = 'acp_permissions';
+
+		$this->permissions = $phpbb_container->get('acl.permissions');
 
 		// Trace has other vars
 		if ($mode == 'trace')
