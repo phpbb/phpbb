@@ -13,6 +13,9 @@
 <!-- BEGIN quote_close --></div></blockquote><!-- END quote_close -->
 <!-- BEGIN quote_extended -->
 <blockquote>
+	<xsl:if test="@post_url">
+		<xsl:attribute name="cite"><xsl:value-of select="@post_url"/></xsl:attribute>
+	</xsl:if>
 	<xsl:if test="not(@author)">
 		<xsl:attribute name="class">uncited</xsl:attribute>
 	</xsl:if>
@@ -42,7 +45,7 @@
 					<a href="{@msg_url}" data-msg-id="{@msg_id}">&#8593;</a>
 				</xsl:if>
 				<xsl:if test="@date">
-					<div class="responsive-hide"><xsl:value-of select="@date"/></div>
+					<span class="responsive-hide"><xsl:value-of select="@date"/></span>
 				</xsl:if>
 			</cite>
 		</xsl:if>

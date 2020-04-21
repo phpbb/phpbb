@@ -534,7 +534,7 @@ blockquote cite:before,
 	padding-right: 5px;
 }
 
-blockquote cite > div {
+blockquote cite > span {
 	font-weight: normal;
 	float: right;
 }
