@@ -822,10 +822,12 @@ class acp_users
 							* @var	string	action		Quick tool that should be run
 							* @var	array	user_row	Current user data
 							* @var	string	u_action	The u_action link
+							* @var	int		user_id		User id of the user to manage
 							* @since 3.1.0-a1
 							* @changed 3.2.2-RC1 Added u_action
+							* @changed 3.2.10-RC1 Added user_id
 							*/
-							$vars = array('action', 'user_row', 'u_action');
+							$vars = array('action', 'user_row', 'u_action', 'user_id');
 							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
 
 							unset($u_action);
@@ -2604,6 +2606,7 @@ class acp_users
 			break;
 
 			default:
+				$u_action = $this->u_action;
 
 				/**
 				* Additional modes provided by extensions
@@ -2613,11 +2616,14 @@ class acp_users
 				* @var	int		user_id			User id of the user to manage
 				* @var	array	user_row		Array with user data
 				* @var	array	error			Array with errors data
+				* @var	string	u_action		The u_action link
 				* @since 3.2.2-RC1
+				* @changed 3.2.10-RC1 Added u_action
 				*/
-				$vars = array('mode', 'user_id', 'user_row', 'error');
+				$vars = array('mode', 'user_id', 'user_row', 'error', 'u_action');
 				extract($phpbb_dispatcher->trigger_event('core.acp_users_mode_add', compact($vars)));
 
+				unset($u_action);
 			break;
 		}
 
