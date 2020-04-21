@@ -66,11 +66,14 @@ function generate_smilies($mode, $forum_id)
 		* @event core.generate_smilies_count_sql_before
 		* @var int		forum_id	Forum where smilies are generated
 		* @var array	sql_ary		Array with the SQL query
+		* @var string	base_url	URL for the "More smilies" link and its pagination
 		* @since 3.2.9-RC1
+		* @changed 3.2.10-RC1 Added base_url
 		*/
 		$vars = [
 			'forum_id',
 			'sql_ary',
+			'base_url',
 		];
 		extract($phpbb_dispatcher->trigger_event('core.generate_smilies_count_sql_before', compact($vars)));
 
@@ -183,9 +186,16 @@ function generate_smilies($mode, $forum_id)
 	* @var	string	mode			Mode of the smilies: window|inline
 	* @var	int		forum_id		The forum ID we are currently in
 	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @var string	base_url		URL for the "More smilies" link and its pagination
 	* @since 3.1.0-a1
+	* @changed 3.2.10-RC1 Added base_url
 	*/
-	$vars = array('mode', 'forum_id', 'display_link');
+	$vars = [
+		'mode',
+		'forum_id',
+		'display_link',
+		'base_url',
+	];
 	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
 
 	if ($mode == 'inline' && $display_link)
