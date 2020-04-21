@@ -56,15 +56,6 @@ services:
         tags:
             - { name: profilefield.type }
 
-    profilefields.type.googleplus:
-        class: phpbb\profilefields\type\type_googleplus
-        arguments:
-            - '@request'
-            - '@template'
-            - '@user'
-        tags:
-            - { name: profilefield.type }
-
     profilefields.type.int:
         class: phpbb\profilefields\type\type_int
         arguments:
