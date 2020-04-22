@@ -75,6 +75,7 @@ class ucp_notifications
 								* @var	array	subscriptions	The subscriptions data
 								*
 								* @since 3.2.10-RC1
+								* @since 3.3.1-RC1
 								*/
 								$vars = [
 									'type_data',
@@ -233,6 +234,7 @@ class ucp_notifications
 					* @var	array	subscriptions	The subscriptions data
 					*
 					* @since 3.2.10-RC1
+					* @since 3.3.1-RC1
 					*/
 					$vars = [
 						'type_data',
