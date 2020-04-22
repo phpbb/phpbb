@@ -1898,28 +1898,28 @@ posting_editor_topic_icons_after
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Add custom data after the topic icons loop
 
 posting_editor_topic_icons_append
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Append custom data to the topic icon
 
 posting_editor_topic_icons_before
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Add custom data before the topic icons loop
 
 posting_editor_topic_icons_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Prepend custom data to the topic icon
 
 posting_layout_include_panel_body
@@ -2408,28 +2408,28 @@ ucp_header_friends_offline_username_full_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_header.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Append information to offline friends username in UCP
 
 ucp_header_friends_offline_username_full_prepend
 ===
 * Locations:
     + styles/prosilver/template/ucp_header.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Prepend information to offline friends username in UCP
 
 ucp_header_friends_online_username_full_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_header.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Append information to online friends username in UCP
 
 ucp_header_friends_online_username_full_prepend
 ===
 * Locations:
     + styles/prosilver/template/ucp_header.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Prepend information to online friends username in UCP
 
 ucp_main_front_user_activity_after
@@ -2790,7 +2790,7 @@ viewforum_body_online_list_before
 ===
 * Locations:
     + styles/prosilver/template/viewforum_body.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Add content before the online users list
 
 viewforum_body_topic_author_username_append
@@ -2954,7 +2954,7 @@ viewtopic_body_online_list_before
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
-* Since: 3.2.10-RC1
+* Since: 3.2.10-RC1 , 3.3.1-RC1
 * Purpose: Add content before the online users list
 
 viewtopic_body_pagination_top_after
