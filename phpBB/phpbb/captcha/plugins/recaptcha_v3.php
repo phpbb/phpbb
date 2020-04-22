@@ -262,7 +262,7 @@ class recaptcha_v3 extends captcha_abstract
 
 			'RECAPTCHA_ACTION'		=> self::$actions[$this->type] ?? reset(self::$actions),
 			'RECAPTCHA_KEY'			=> $config['recaptcha_v3_key'] ?? '',
-			'U_RECAPTCHA_SCRIPT'	=> sprintf('//%s/recaptcha/api.js?render=%s', $domain, $render),
+			'U_RECAPTCHA_SCRIPT'	=> sprintf('//%1$s/recaptcha/api.js?render=%2$s', $domain, $render),
 
 			'S_CONFIRM_CODE'		=> true,
 			'S_RECAPTCHA_AVAILABLE'	=> $this->is_available(),

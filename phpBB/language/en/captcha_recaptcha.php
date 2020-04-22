@@ -46,15 +46,15 @@ $lang = array_merge($lang, array(
 
 	'RECAPTCHA_INCORRECT'			=> 'The solution you provided was incorrect',
 	'RECAPTCHA_NOSCRIPT'			=> 'Please enable JavaScript in your browser to load the challenge.',
-	'RECAPTCHA_NOT_AVAILABLE'		=> 'In order to use reCaptcha, you must create an account on <a href="http://www.google.com/recaptcha">www.google.com/recaptcha</a>.',
+	'RECAPTCHA_NOT_AVAILABLE'		=> 'In order to use reCaptcha, you must create an account on <a href="https://www.google.com/recaptcha">www.google.com/recaptcha</a>.',
 	'RECAPTCHA_INVISIBLE'			=> 'This CAPTCHA is actually invisible. To verify that it works, a small icon should appear in right bottom corner of this page.',
 
 	'RECAPTCHA_PUBLIC'				=> 'Site key',
-	'RECAPTCHA_PUBLIC_EXPLAIN'		=> 'Your site reCAPTCHA key. Keys can be obtained on <a href="http://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v2 &gt; Invisible reCAPTCHA badge type.',
-	'RECAPTCHA_V3_PUBLIC_EXPLAIN'	=> 'Your site reCAPTCHA key. Keys can be obtained on <a href="http://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v3.',
+	'RECAPTCHA_PUBLIC_EXPLAIN'		=> 'Your site reCAPTCHA key. Keys can be obtained on <a href="https://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v2 &gt; Invisible reCAPTCHA badge type.',
+	'RECAPTCHA_V3_PUBLIC_EXPLAIN'	=> 'Your site reCAPTCHA key. Keys can be obtained on <a href="https://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v3.',
 	'RECAPTCHA_PRIVATE'				=> 'Secret key',
-	'RECAPTCHA_PRIVATE_EXPLAIN'		=> 'Your secret reCAPTCHA key. Keys can be obtained on <a href="http://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v2 &gt; Invisible reCAPTCHA badge type.',
-	'RECAPTCHA_V3_PRIVATE_EXPLAIN'	=> 'Your secret reCAPTCHA key. Keys can be obtained on <a href="http://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v3.',
+	'RECAPTCHA_PRIVATE_EXPLAIN'		=> 'Your secret reCAPTCHA key. Keys can be obtained on <a href="https://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v2 &gt; Invisible reCAPTCHA badge type.',
+	'RECAPTCHA_V3_PRIVATE_EXPLAIN'	=> 'Your secret reCAPTCHA key. Keys can be obtained on <a href="https://www.google.com/recaptcha">www.google.com/recaptcha</a>. Please, use reCAPTCHA v3.',
 
 	'RECAPTCHA_V3_DOMAIN'				=> 'Request domain',
 	'RECAPTCHA_V3_DOMAIN_EXPLAIN'		=> 'The domain to fetch the script from and to use when verifying the request.<br>Use <samp>recaptcha.net</samp> when <samp>google.com</samp> is not accessible.',
