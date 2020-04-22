@@ -19,13 +19,13 @@ class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 	public function test_font_awesome_style()
 	{
 		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
-		$this->assertContains('all.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
+		$this->assertContains('font-awesome.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
 
 		$crawler = self::request('GET', 'viewtopic.php?t=1');
-		$this->assertContains('all.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
+		$this->assertContains('font-awesome.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
 
 		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
-		$this->assertContains('all.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
+		$this->assertContains('font-awesome.min', $crawler->filter('head > link[rel=stylesheet]')->eq(0)->attr('href'));
 	}
 
 	public function test_default_forum_style()
