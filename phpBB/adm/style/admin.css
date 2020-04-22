@@ -2647,7 +2647,7 @@ fieldset.permissions .padding {
 }
 
 .icon {
-	font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Brands';
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
 	font-weight: 900;
 	font-style: normal;
 }
@@ -2699,15 +2699,15 @@ fieldset.permissions .padding {
 }
 
 .send-stats-settings input[type=checkbox] + label:before {
-	content: "\f0c8";
-	font-family: 'Font Awesome 5 Free';
-	font-weight: normal;
+	font-family: "Font Awesome 5 Free";
 	font-size: 1.5em;
+	font-weight: normal;
+	content: "\f0c8";
 }
 
 .send-stats-settings input[type=checkbox]:checked + label:before {
-	content: "\f14a";
 	font-weight: bold;
+	content: "\f14a";
 	color: #3c763d;
 }
 

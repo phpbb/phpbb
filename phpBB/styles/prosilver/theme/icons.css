@@ -11,10 +11,10 @@
  */
 .icon, .button .icon, blockquote cite:before, .uncited:before {
 	display: inline-block;
+  	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
   	font-weight: 900;
   	font-style: normal;
   	font-variant: normal;
-  	font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Brands';
   	font-size: 14px;
   	line-height: 1;
   	text-rendering: auto; /* optimizelegibility throws things off #1094 */
