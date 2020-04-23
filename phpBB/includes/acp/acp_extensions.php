@@ -151,13 +151,13 @@ class acp_extensions
 				$this->list_disabled_exts();
 				$this->list_available_exts();
 
+				$this->tpl_name = 'acp_ext_list';
+
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
 				));
-
-				$this->tpl_name = 'acp_ext_list';
 			break;
 
 			case 'enable_pre':
@@ -182,11 +182,11 @@ class acp_extensions
 
 				$this->tpl_name = 'acp_ext_enable';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_PRE_STEP'		=> true,
 					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name),
-				));
+				]);
 			break;
 
 			case 'enable':
@@ -234,9 +234,9 @@ class acp_extensions
 
 				$this->tpl_name = 'acp_ext_enable';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'U_RETURN'		=> $this->u_action . '&amp;action=list',
-				));
+				]);
 			break;
 
 			case 'disable_pre':
@@ -247,11 +247,11 @@ class acp_extensions
 
 				$this->tpl_name = 'acp_ext_disable';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_PRE_STEP'		=> true,
 					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name),
-				));
+				]);
 			break;
 
 			case 'disable':
@@ -274,9 +274,9 @@ class acp_extensions
 
 				$this->tpl_name = 'acp_ext_disable';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'U_RETURN'	=> $this->u_action . '&amp;action=list',
-				));
+				]);
 			break;
 
 			case 'delete_data_pre':
@@ -284,13 +284,14 @@ class acp_extensions
 				{
 					redirect($this->u_action);
 				}
+
 				$this->tpl_name = 'acp_ext_delete_data';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'S_PRE_STEP'		=> true,
 					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name),
-				));
+				]);
 			break;
 
 			case 'delete_data':
@@ -320,9 +321,9 @@ class acp_extensions
 
 				$this->tpl_name = 'acp_ext_delete_data';
 
-				$this->template->assign_vars(array(
+				$this->template->assign_vars([
 					'U_RETURN'	=> $this->u_action . '&amp;action=list',
-				));
+				]);
 			break;
 
 			case 'details':
@@ -606,11 +607,11 @@ class acp_extensions
 	{
 		foreach ($actions as $lang => $url)
 		{
-			$this->template->assign_block_vars($block . '.actions', array(
+			$this->template->assign_block_vars($block . '.actions', [
 				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
 				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
-			));
+			]);
 		}
 	}
 
