@@ -8,17 +8,17 @@
 	<p>{{ lang('EXTENSION_DISABLE_EXPLAIN') }}</p>
 
 	{% if PRE %}
-	<fieldset>
-		<h2>{{ lang('CONFIRM') }}</h2>
-		<p>{{ lang('CONFIRM_MESSAGE') }}</p>
-	</fieldset>
+		<fieldset>
+			<h2>{{ lang('CONFIRM') }}</h2>
+			<p>{{ lang('CONFIRM_MESSAGE') }}</p>
+		</fieldset>
 
-	<form id="acp_extensions" method="post" action="{{ U_DISABLE }}">
-	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" name="disable" value="{{ lang('EXTENSION_DISABLE') }}" />
-		<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
-	</fieldset>
-	</form>
+		<form id="acp_extensions" method="post" action="{{ U_DISABLE }}">
+			<fieldset class="submit-buttons">
+				<input class="button1" type="submit" name="disable" value="{{ lang('EXTENSION_DISABLE') }}" />
+				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
+			</fieldset>
+		</form>
 	{% elseif S_NEXT_STEP %}
 		<div class="successbox notice">
 			<p>{{ lang('EXTENSION_DISABLE_IN_PROGRESS') }}</p>

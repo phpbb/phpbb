@@ -8,23 +8,23 @@
 	<p>{{ lang('EXTENSION_ENABLE_EXPLAIN') }}</p>
 
 	{% if MIGRATOR_ERROR %}
-	<div class="errorbox">
-		<p><strong>{{ lang('MIGRATION_EXCEPTION_ERROR') }}</strong></p>
-		<p>{{ MIGRATOR_ERROR }}</p>
-		<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
-	</div>
+		<div class="errorbox">
+			<p><strong>{{ lang('MIGRATION_EXCEPTION_ERROR') }}</strong></p>
+			<p>{{ MIGRATOR_ERROR }}</p>
+			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
+		</div>
 	{% elseif PRE %}
-	<fieldset>
-		<h2>{{ lang('CONFIRM') }}</h2>
-		<p>{{ lang('CONFIRM_MESSAGE') }}</p>
-	</fieldset>
+		<fieldset>
+			<h2>{{ lang('CONFIRM') }}</h2>
+			<p>{{ lang('CONFIRM_MESSAGE') }}</p>
+		</fieldset>
 
-	<form id="acp_extensions" method="post" action="{{ U_ENABLE }}">
-	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" name="enable" value="{{ lang('EXTENSION_ENABLE') }}" />
-		<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
-	</fieldset>
-	</form>
+		<form id="acp_extensions" method="post" action="{{ U_ENABLE }}">
+			<fieldset class="submit-buttons">
+				<input class="button1" type="submit" name="enable" value="{{ lang('EXTENSION_ENABLE') }}" />
+				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
+			</fieldset>
+		</form>
 	{% elseif S_NEXT_STEP %}
 		<div class="successbox notice">
 			<p>{{ lang('EXTENSION_ENABLE_IN_PROGRESS') }}</p>
