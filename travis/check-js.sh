@@ -18,8 +18,8 @@ then
 	npm install -g > /dev/null
 	npm install > /dev/null
 	set -x
-	npm run xo "phpbb/adm/style/*.js"
-	npm run xo "phpbb/assets/javascript/*.js"
-	npm run xo "phpbb/style/all/js/*.js"
-	npm run xo "phpbb/style/prosilver/template/*.js"
+	node_modules/xo/cli.js "phpBB/adm/style/*.js"
+	node_modules/xo/cli.js "phpBB/assets/javascript/*.js"
+	node_modules/xo/cli.js "phpBB/style/all/js/*.js"
+	node_modules/xo/cli.js "phpBB/style/prosilver/template/*.js"
 fi
