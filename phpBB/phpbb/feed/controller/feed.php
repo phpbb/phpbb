@@ -386,8 +386,7 @@ class feed
 		));
 
 		$response = new Response($content);
-		$response->headers->set('Content-Type', 'application/atom+xml');
-		$response->setCharset('UTF-8');
+		$response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
 		$response->setLastModified(new \DateTime('@' . $feed_updated_time));
 
 		if (!empty($this->user->data['is_bot']))
