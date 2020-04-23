@@ -21,8 +21,8 @@
 
 		<form id="acp_extensions" method="post" action="{{ U_ENABLE }}">
 			<fieldset class="submit-buttons">
-				<input class="button1" type="submit" name="enable" value="{{ lang('EXTENSION_ENABLE') }}" />
-				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
+				<input class="button1" type="submit" name="enable" value="{{ lang('EXTENSION_ENABLE') }}">
+				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}">
 			</fieldset>
 		</form>
 	{% elseif S_NEXT_STEP %}
@@ -32,7 +32,7 @@
 	{% else %}
 		<div class="successbox">
 			<p>{{ lang('EXTENSION_ENABLE_SUCCESS') }}</p>
-			<br />
+			<br>
 			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
 		</div>
 	{% endif %}
