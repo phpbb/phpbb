@@ -1,0 +1,15 @@
+{% if S_RECAPTCHA_AVAILABLE %}
+	<dl>
+		<dt>&nbsp;</dt>
+		<dd>
+			<noscript>
+				<div class="warningbox">{{ lang('RECAPTCHA_NOSCRIPT') }}</div>
+			</noscript>
+
+			{{ lang('RECAPTCHA_INVISIBLE') }}
+			<script src="{{ U_RECAPTCHA_SCRIPT }}" async defer></script>
+		</dd>
+	</dl>
+{% else %}
+	{{ lang('RECAPTCHA_NOT_AVAILABLE') }}
+{% endif %}

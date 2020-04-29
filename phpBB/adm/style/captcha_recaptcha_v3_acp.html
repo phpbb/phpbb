@@ -1,0 +1,108 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('ACP_VC_SETTINGS') }}</h1>
+<p>{{ lang('ACP_VC_SETTINGS_EXPLAIN') }}</p>
+
+<form id="acp_captcha" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('GENERAL_OPTIONS') }}</legend>
+
+		<dl>
+			<dt>
+				<label for="recaptcha_v3_key">{{ lang('RECAPTCHA_PUBLIC') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('RECAPTCHA_V3_PUBLIC_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input id="recaptcha_v3_key" name="recaptcha_v3_key" type="text" value="{{ RECAPTCHA_V3_KEY }}" size="50">
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="recaptcha_v3_secret">{{ lang('RECAPTCHA_PRIVATE') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('RECAPTCHA_V3_PRIVATE_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input id="recaptcha_v3_secret" name="recaptcha_v3_secret" type="text" value="{{ RECAPTCHA_V3_SECRET }}" size="50">
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('RECAPTCHA_V3_DOMAIN') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('RECAPTCHA_V3_DOMAIN_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{% for domain in RECAPTCHA_V3_DOMAINS %}
+					<label>
+						<input class="radio" name="recaptcha_v3_domain" type="radio" value="{{ domain }}"{{ domain == RECAPTCHA_V3_DOMAIN ? ' checked' }}>
+						<span>{{ domain }}</span>
+					</label>
+				{% endfor %}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('RECAPTCHA_V3_METHOD') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('RECAPTCHA_V3_METHOD_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{% for method, available in RECAPTCHA_V3_METHODS %}
+					<label>
+						{% set checked = method == RECAPTCHA_V3_METHOD ? ' checked' %}
+						{% set disabled = not available ? ' disabled' %}
+
+						<input class="radio" name="recaptcha_v3_method" type="radio" value="{{ method }}"{{ checked ~ disabled }}>
+						<span>{{ lang('RECAPTCHA_V3_METHOD_' ~ method|upper) }}</span>
+					</label>
+				{% endfor %}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('RECAPTCHA_V3_THRESHOLDS') }}</legend>
+		<p>{{ lang('RECAPTCHA_V3_THRESHOLDS_EXPLAIN') }}</p>
+
+		{% for threshold in thresholds %}
+			<dl>
+				<dt>
+					<label for="{{ threshold.key }}">{{ lang(threshold.key|upper) ~ lang('COLON') }}</label>
+					{% if lang_defined(threshold.key|upper ~ '_EXPLAIN') %}
+						<br><span>{{ lang(threshold.key|upper ~ '_EXPLAIN') }}</span>
+					{% endif %}
+				</dt>
+				<dd><input id="{{ threshold.key }}" name="{{ threshold.key }}" type="number" value="{{ threshold.value }}" min="0" max="1" step="0.1"></dd>
+			</dl>
+		{% endfor %}
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('PREVIEW') }}</legend>
+
+		{% if PREVIEW %}
+			<div class="successbox">
+				<h3>{{ lang('WARNING') }}</h3>
+				<p>{{ lang('CAPTCHA_PREVIEW_MSG') }}</p>
+			</div>
+		{% endif %}
+
+		{% include CAPTCHA_PREVIEW %}
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+
+		<p class="submit-buttons">
+			<input class="button1" id="submit" name="submit" type="submit" value="{{ lang('SUBMIT') }}">
+			<input class="button2" id="reset" name="reset" type="reset" value="{{ lang('RESET') }}">
+
+			<input name="select_captcha" type="hidden" value="{{ CAPTCHA_NAME }}">
+			<input name="configure" type="hidden" value="1">
+			{{ S_FORM_TOKEN }}
+		</p>
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}
