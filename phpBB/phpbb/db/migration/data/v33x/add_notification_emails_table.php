@@ -22,6 +22,11 @@ class add_notification_emails_table extends \phpbb\db\migration\migration
 		];
 	}
 
+	public function effectively_installed()
+	{
+		return $this->db_tools->sql_table_exists($this->table_prefix . 'notification_emails');
+	}
+
 	public function update_schema()
 	{
 		return [
