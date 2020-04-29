@@ -723,6 +723,7 @@ if (count($topic_list))
 	* @var	array	sql_array			SQL query array for obtaining topics/stickies
 	*
 	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
 	*/
 	$vars = [
 		'forum_id',

@@ -363,6 +363,7 @@ if ($module->is_active('zebra', 'friends'))
 	* @var	array	sql_ary		SQL query array for listing of friends
 	*
 	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
 	*/
 	$vars = [
 		'sql_ary',
@@ -393,6 +394,7 @@ if ($module->is_active('zebra', 'friends'))
 		* @var	string	which		friend is 'online' or 'offline'
 		*
 		* @since 3.2.10-RC1
+		* @since 3.3.1-RC1
 		*/
 		$vars = [
 			'row',
