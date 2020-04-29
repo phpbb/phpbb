@@ -57,3 +57,11 @@ services:
             - [set_name, [core.captcha.plugins.recaptcha]]
         tags:
             - { name: captcha.plugins }
+
+    core.captcha.plugins.recaptcha_v3:
+        class: phpbb\captcha\plugins\recaptcha_v3
+        shared: false
+        calls:
+            - ['set_name', ['core.captcha.plugins.recaptcha_v3']]
+        tags:
+            - { name: captcha.plugins }
