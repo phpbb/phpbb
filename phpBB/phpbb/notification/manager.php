@@ -350,6 +350,7 @@ class manager
 		* @var	array 	notify_users				User list to notify
 		*
 		* @since 3.2.10-RC1
+		* @since 3.3.1-RC1
 		*/
 		$vars = [
 			'notification_type_name',
