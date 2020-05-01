@@ -35,6 +35,7 @@ parameters:
     tables.migrations: '%core.table_prefix%migrations'
     tables.moderator_cache: '%core.table_prefix%moderator_cache'
     tables.modules: '%core.table_prefix%modules'
+    tables.notification_emails: '%core.table_prefix%notification_emails'
     tables.notification_types: '%core.table_prefix%notification_types'
     tables.notifications: '%core.table_prefix%notifications'
     tables.poll_options: '%core.table_prefix%poll_options'

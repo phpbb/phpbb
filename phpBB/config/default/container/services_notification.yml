@@ -206,8 +206,10 @@ services:
             - '@user_loader'
             - '@user'
             - '@config'
+            - '@dbal.conn'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '%tables.notification_emails%'
         tags:
             - { name: notification.method }
 
