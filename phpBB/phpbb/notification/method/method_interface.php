@@ -41,7 +41,7 @@ interface method_interface
 	/**
 	* Return the list of the users already notified
 	*
-	* @param int $notification_type_id Type of the notification
+	* @param int $notification_type_id ID of the notification type
 	* @param array $options
 	* @return array User
 	*/
