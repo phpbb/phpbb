@@ -1206,8 +1206,10 @@ class auth_admin extends \phpbb\auth\auth
 	{
 		global $phpbb_container;
 
-		/* @var $phpbb_permissions \phpbb\permissions */
+		/** @var \phpbb\permissions $phpbb_permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
+
+		$order = array_flip(array_keys($phpbb_permissions->get_permissions()));
 
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1216,7 +1218,11 @@ class auth_admin extends \phpbb\auth\auth
 				continue;
 			}
 
-			$permissions = $permission_row[$forum_id];
+			$permissions = array_filter($permission_row[$forum_id], [$phpbb_permissions, 'permission_defined'], ARRAY_FILTER_USE_KEY);
+
+			uksort($permissions, function($a, $b) use ($order) {
+				return $order[$a] <=> $order[$b];
+			});
 
 			foreach ($permissions as $permission => $auth_setting)
 			{
