@@ -1475,6 +1475,28 @@ if (!$s_forums)
 	trigger_error('NO_SEARCH');
 }
 
+/**
+ * Build options for a select list for the number of characters returned.
+ *
+ * If the admin defined amount is not available, we add that option.
+ *
+ * @deprecated 3.3.1-RC1	Templates should use an numeric input, in favor of a select.
+ */
+$s_characters = '<option value="0">' . $user->lang('ALL_AVAILABLE') . '</option>';
+$i_characters = array_merge([25, 50], range(100, 1000, 100));
+
+if (!in_array((int) $config['default_search_return_chars'], $i_characters))
+{
+	$i_characters[] = (int) $config['default_search_return_chars'];
+	sort($i_characters);
+}
+
+foreach ($i_characters as $i)
+{
+	$selected = $i === (int) $config['default_search_return_chars'] ? '" selected="selected' : '';
+	$s_characters .= sprintf('<option value="%1$s%2$s">%1$s</option>', $i, $selected);
+}
+
 $s_hidden_fields = array('t' => $topic_id);
 
 if ($_SID)
@@ -1495,6 +1517,7 @@ $template->assign_vars(array(
 	'DEFAULT_RETURN_CHARS'	=> (int) $config['default_search_return_chars'],
 	'S_SEARCH_ACTION'		=> append_sid("{$phpbb_root_path}search.$phpEx", false, true, 0), // We force no ?sid= appending by using 0
 	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
+	'S_CHARACTER_OPTIONS'	=> $s_characters,
 	'S_FORUM_OPTIONS'		=> $s_forums,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
