@@ -1478,14 +1478,15 @@ if (!$s_forums)
 /**
  * Build options for a select list for the number of characters returned.
  *
- * If the admin defined amount is not available, we add that option.
+ * If the admin defined amount is not within the predefined range,
+ * and the admin did not set it to unlimited (0), we add that option aswell.
  *
  * @deprecated 3.3.1-RC1	Templates should use an numeric input, in favor of a select.
  */
 $s_characters = '<option value="0">' . $user->lang('ALL_AVAILABLE') . '</option>';
 $i_characters = array_merge([25, 50], range(100, 1000, 100));
 
-if (!in_array((int) $config['default_search_return_chars'], $i_characters))
+if ($config['default_search_return_chars'] && !in_array((int) $config['default_search_return_chars'], $i_characters))
 {
 	$i_characters[] = (int) $config['default_search_return_chars'];
 	sort($i_characters);
