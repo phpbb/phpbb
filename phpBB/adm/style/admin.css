@@ -2913,7 +2913,8 @@ fieldset.permissions .permissions-switch {
 }
 
 .icon {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+	font-weight: 900;
 	font-style: normal;
 }
 
@@ -2965,12 +2966,14 @@ fieldset.permissions .permissions-switch {
 }
 
 .send-stats-settings input[type="checkbox"] + label:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	font-size: 1.5em;
-	content: "\f096";
+	font-weight: normal;
+	content: "\f0c8";
 }
 
 .send-stats-settings input[type="checkbox"]:checked + label:before {
+	font-weight: bold;
 	color: #3c763d;
 	content: "\f14a";
 }
