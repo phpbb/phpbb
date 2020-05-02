@@ -1049,6 +1049,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 
 	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
 	$forum_id = $request->variable('f', 0);
+	$topic_id = 0;
 
 	$s_hidden_fields = array(
 		'post_id_list'	=> $post_ids,
@@ -1122,8 +1123,6 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			));
 		}
 
-		$topic_id = $request->variable('t', 0);
-
 		// Return links
 		$return_link = array();
 		if ($affected_topics == 1 && $topic_id)
@@ -1152,7 +1151,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$topic_id_list = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$topic_id_list[] = $row['topic_id'];
+			$topic_id_list[] = $topic_id = $row['topic_id'];
 		}
 		$affected_topics = count($topic_id_list);
 		$db->sql_freeresult($result);
@@ -1183,8 +1182,6 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
 		$db->sql_freeresult($result);
 
-		$topic_id = $request->variable('t', 0);
-
 		// Return links
 		$return_link = array();
 		if ($affected_topics == 1 && !$deleted_topics && $topic_id)
@@ -1203,6 +1200,12 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			}
 			else
 			{
+				// Remove any post id anchor
+				if ($anchor_pos = (strrpos($redirect, '#p')) !== false)
+				{
+					$redirect = substr($redirect, 0, $anchor_pos);
+				}
+
 				$success_msg = $user->lang['POST_DELETED_SUCCESS'];
 			}
 		}
@@ -1260,7 +1263,6 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 	}
 
-	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
