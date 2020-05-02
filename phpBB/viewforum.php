@@ -997,6 +997,7 @@ if (count($topic_list))
 			'S_POST_STICKY'			=> ($row['topic_type'] == POST_STICKY) ? true : false,
 			'S_TOPIC_LOCKED'		=> ($row['topic_status'] == ITEM_LOCKED) ? true : false,
 			'S_TOPIC_MOVED'			=> ($row['topic_status'] == ITEM_MOVED) ? true : false,
+			'S_TOPIC_HOT'			=> ($config['hot_threshold'] && ($replies + 1) >= $config['hot_threshold'] && $row['topic_status'] != ITEM_LOCKED) ? true : false,
 
 			'U_NEWEST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread' : false,
 			'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id)  ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,

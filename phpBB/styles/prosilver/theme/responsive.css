@@ -581,8 +581,40 @@
 		margin-left: 0 !important;
 	}
 
+	/* post-buttons */
+
 	.has-profile .post-buttons {
 		margin: 5px;
+	}
+
+	.post-buttons > li > a {
+		display: none;
+	}
+
+	.post-buttons-responsive-menu,
+	.post-button-responsive,
+	.post-buttons-responsive-menu .post-buttons-label {
+		display: block !important;
+	}
+
+	.post-buttons-responsive-menu .dropdown-contents .button {
+		font-weight: normal;
+		line-height: inherit;
+		background: none;
+		border: none;
+		box-shadow: none;
+		color: #0f4d8a;
+		display: flex;
+	}
+
+	.post-buttons-responsive-menu .dropdown-contents .button:hover {
+		text-decoration: underline;
+		color: #d41142;
+	}
+
+	.post-buttons-responsive-menu .dropdown-contents .c-button-icon {
+		color: inherit;
+		padding-right: 5px;
 	}
 
 	/* Misc stuff

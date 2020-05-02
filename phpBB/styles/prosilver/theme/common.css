@@ -172,37 +172,37 @@ a:hover {
 	margin-top: 20px;
 }
 
-.logo {
-	float: left;
-	width: auto;
-	padding: 10px 13px 0 10px;
+.c-hero {
+	display: inline-flex;
+	flex: 1;
+	flex-direction: row;
+	align-self: auto;
+	padding: 12px;
 }
 
-.logo:hover {
-	text-decoration: none;
+.c-hero-logo {
+	width: 150px;
+	padding-right: 16px;
 }
 
-.site_logo {
-	background-repeat: no-repeat;
-	display: inline-block;
+.c-hero-logo-img {
 	width: 149px;
 	height: 52px;
+	margin-top: 0;
 }
 
-/* Site description and logo */
-.site-description {
-	float: left;
-	width: 65%;
-}
-
-.site-description h1 {
-	margin-right: 0;
+.c-hero-heading {
+	flex: 1;
+	align-self: auto;
+	margin: 0;
 }
 
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
 	border-radius: 7px;
+	display: flex;
+	flex-direction: column;
 	margin-bottom: 4px;
 	padding: 5px;
 }
@@ -370,15 +370,6 @@ a.header-avatar img {
 	margin-bottom: 2px;
 }
 
-a.header-avatar span:after {
-	font: normal normal normal 14px/1 FontAwesome;
-	vertical-align: top;
-	display: inline-block;
-	padding-top: 2px;
-	padding-left: 6px;
-	content: "\f0dd";
-}
-
 /* Dropdown menu
 ---------------------------------------- */
 .dropdown-container {
@@ -401,7 +392,7 @@ a.header-avatar span:after {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	position: absolute;
-	z-index: 2;
+	z-index: 201;
 	top: 1.2em;
 	left: 0;
 	display: none;
@@ -461,7 +452,7 @@ a.header-avatar span:after {
 }
 
 .dropdown .pointer {
-	z-index: 3;
+	z-index: 301;
 	top: -1px;
 	right: auto;
 	left: 10px;
@@ -493,7 +484,7 @@ a.header-avatar span:after {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	position: relative;
-	z-index: 2;
+	z-index: 201;
 	overflow: hidden;
 	overflow-y: auto;
 	max-height: 300px;
@@ -947,7 +938,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a {
-	padding: 0 8px;
+	padding: 2px;
 }
 
 .pagination li.page-jump a i {
@@ -974,6 +965,8 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .row .pagination li span {
 	font-size: 9px;
 	border-radius: 2px;
+	width: 14px;
+	height: 17px;
 	padding: 1px 3px;
 }
 
@@ -982,7 +975,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .phpbb_alert {
 	border: 1px solid transparent;
 	position: fixed;
-	z-index: 50;
+	z-index: 601;
 	top: 150px;
 	right: 0;
 	left: 0;
@@ -994,8 +987,8 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .phpbb_alert .alert_close {
 	float: right;
-	margin-top: -8px;
-	margin-right: -36px;
+	margin-top: 0;
+	margin-right: -22px;
 }
 
 .phpbb_alert p {
@@ -1019,14 +1012,14 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .darkenwrapper {
 	position: relative;
-	z-index: 44;
+	z-index: 401;
 	display: none;
 }
 
 .darken {
 	opacity: 0.5;
 	position: fixed;
-	z-index: 45;
+	z-index: 501;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -1035,7 +1028,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .loading_indicator {
 	position: fixed;
-	z-index: 51;
+	z-index: 701;
 	top: 50%;
 	left: 50%;
 	display: none;
@@ -1240,7 +1233,7 @@ ul.linklist:after,
 }
 
 .dropdown-extended {
-	z-index: 1;
+	z-index: 201;
 	display: none;
 }
 

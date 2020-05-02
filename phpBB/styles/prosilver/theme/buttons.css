@@ -12,7 +12,11 @@
 	white-space: nowrap;
 	border: 1px solid transparent;
 	border-radius: 4px;
-	display: inline-block;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	box-sizing: border-box;
+	height: 24px;
 	padding: 2px 8px;
 	cursor: pointer;
 	touch-action: manipulation;
@@ -87,13 +91,6 @@
 	padding: 0;
 }
 
-.contact-icon {
-	background-repeat: no-repeat;
-	display: block;
-	width: 16px;
-	height: 16px;
-}
-
 .contact-icons a {
 	border-right: 1px dotted;
 	border-bottom: 1px dotted;
@@ -144,8 +141,9 @@
 	margin-right: 10px;
 }
 
-.post-buttons .button span {
-	font-size: 0;
+.post-buttons-label,
+.post-buttons-responsive-menu {
+	display: none;
 }
 
 /* Responsive buttons in post body */

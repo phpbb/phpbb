@@ -10,12 +10,12 @@
 	<fieldset class="display-options clearfix">
 		<!-- IF U_VIEW_PREVIOUS_HISTORY -->
 			<a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
-				<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_PREVIOUS_HISTORY}</span>
+				{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN, '', true, 'c-return-arrow-icon') }}<span>{L_VIEW_PREVIOUS_HISTORY}</span>
 			</a>
 		<!-- ENDIF -->
 		<!-- IF U_VIEW_NEXT_HISTORY -->
 			<a href="{U_VIEW_NEXT_HISTORY}" class="right-box arrow-{S_CONTENT_FLOW_END}">
-				<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_HISTORY}</span>
+				{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_END, '', true, 'c-return-arrow-icon') }}<span>{L_VIEW_NEXT_HISTORY}</span>
 			</a>
 		<!-- ENDIF -->
 	</fieldset>
@@ -32,7 +32,7 @@
 					<!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->
 					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
 				</div>
-				{MESSAGE_AUTHOR_FULL}<!-- IF S_ONLINE -->  <i class="icon fa-circle fa-fw icon-md online" aria-hidden="true" title="{L_ONLINE}"></i><span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
+				{MESSAGE_AUTHOR_FULL}<!-- IF S_ONLINE -->  {{ Icon('iconify', 'fa:circle', lang('L_ONLINE'), true, 'c-online-icon') }}<span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
 			</dt>
 
 			<!-- EVENT ucp_pm_viewmessage_rank_before -->
@@ -55,7 +55,7 @@
 				<dd class="profile-contact">
 					<strong>{L_CONTACT}{L_COLON}</strong>
 					<div class="dropdown-container dropdown-left">
-						<a href="#" class="dropdown-trigger"  title="{CONTACT_USER}"><i class="icon fa-commenting-o fa-fw icon-lg" aria-hidden="true"></i><span class="sr-only">{CONTACT_USER}</span></a>
+						<a href="#" class="dropdown-trigger"  title="{CONTACT_USER}">{{ Icon('iconify', 'mdi:comment-processing-outline', '', true) }}<span class="sr-only">{CONTACT_USER}</span></a>
 						<div class="dropdown">
 							<div class="pointer"><div class="pointer-inner"></div></div>
 							<div class="dropdown-contents contact-icons">
@@ -66,7 +66,21 @@
 										<div>
 									<!-- ENDIF -->
 										<a href="<!-- IF contact.U_CONTACT -->{contact.U_CONTACT}<!-- ELSE -->{contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
-											<span class="contact-icon {contact.ID}-icon">{contact.NAME}</span>
+											{% if contact.ID == 'pm' %}
+												{{ Icon('iconify', 'mdi:comment-account-outline', '', true, 'contact-icon') }}
+											{% elseif contact.ID == 'email' %}
+												{{ Icon('iconify', 'mdi:at', '', true, 'contact-icon') }}
+											{% elseif contact.ID == 'phpbb_website' %}
+												{{ Icon('iconify', 'mdi:earth', '', true, 'contact-icon') }}
+											{% elseif contact.ID == 'phpbb_facebook' %}
+												{{ Icon('iconify', 'mdi:facebook-box', '', true, 'contact-icon c-facebook-icon') }}
+											{% elseif contact.ID == 'phpbb_twitter' %}
+												{{ Icon('iconify', 'mdi:twitter', '', true, 'contact-icon c-twitter-icon') }}
+											{% elseif contact.ID == 'phpbb_skype' %}
+												{{ Icon('iconify', 'mdi:skype', '', true, 'contact-icon c-skype-icon') }}
+											{% elseif contact.ID == 'phpbb_youtube' %}
+												{{ Icon('iconify', 'mdi:youtube', '', true, 'contact-icon c-youtube-icon') }}
+											{% endif %}
 										</a>
 									<!-- IF REMAINDER eq 3 or contact.S_LAST_ROW -->
 										</div>
@@ -91,28 +105,28 @@
 				<!-- IF U_EDIT -->
 					<li>
 						<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
-							<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
+							{{ Icon('iconify', 'fa:pencil', '', true, 'c-button-icon') }}<span class="sr-only">{L_BUTTON_EDIT}</span>
 						</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_DELETE -->
 					<li>
 						<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
-							<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
+							{{ Icon('iconify', 'fa:times', '', true, 'c-button-icon') }}span class="sr-only">{L_BUTTON_DELETE}</span>
 						</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_REPORT -->
 					<li>
 						<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
-							<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_REPORT}</span>
+							{{ Icon('iconify', 'fa:exclamation', '', true, 'c-button-icon') }}<span class="sr-only">{L_BUTTON_REPORT}</span>
 						</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_QUOTE -->
 					<li>
 						<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
-							<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_QUOTE}</span>
+							{{ Icon('iconify', 'fa:quote-left', '', true, 'c-button-icon') }}<span class="sr-only">{L_BUTTON_QUOTE}</span>
 						</a>
 					</li>
 				<!-- ENDIF -->
@@ -159,8 +173,7 @@
 
 		<div class="back2top">
 			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
-				<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
-				<span class="sr-only">{L_BACK_TO_TOP}</span>
+				{{ Icon('iconify', 'fa:chevron-circle-up', '', true, 'c-top-icon') }}<span class="sr-only">{L_BACK_TO_TOP}</span>
 			</a>
 		</div>
 
@@ -174,12 +187,12 @@
 	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button1 button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
 	<!-- IF U_PREVIOUS_PM -->
 		<a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
-			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_PREVIOUS_PM}</span>
+			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN', '', true, 'c-return-arrow-icon') }}<span>{L_VIEW_PREVIOUS_PM}</span>
 		</a>
 	<!-- ENDIF -->
 	<!-- IF U_NEXT_PM -->
 		<a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">
-			<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_PM}</span>
+			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_END', '', true, 'c-return-arrow-icon') }}<span>{L_VIEW_NEXT_PM}</span>
 		</a>
 	<!-- ENDIF -->
 	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button1 button button-form-bold" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->

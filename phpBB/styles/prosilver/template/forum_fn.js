@@ -448,8 +448,7 @@ function parseDocument($container) {
 	/**
 	* Responsive link lists
 	*/
-	var selector = '.linklist:not(.navlinks, [data-skip-responsive]),' +
-		'.postbody .post-buttons:not([data-skip-responsive])';
+	var selector = '.linklist:not(.navlinks, [data-skip-responsive])';
 	$container.find(selector).each(function() {
 		var $this = $(this),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
@@ -547,12 +546,6 @@ function parseDocument($container) {
 				var $clones1 = $linksFirst.clone();
 				$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
-				if ($this.hasClass('post-buttons')) {
-					$('.button', $menuContents).removeClass('button');
-					$('.sr-only', $menuContents).removeClass('sr-only');
-					$('.js-responsive-menu-link').addClass('button').addClass('button-icon-only');
-					$('.js-responsive-menu-link .icon').removeClass('fa-bars').addClass('fa-ellipsis-h');
-				}
 				copied1 = true;
 			}
 			if (!responsive1) {

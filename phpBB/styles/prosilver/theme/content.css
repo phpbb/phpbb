@@ -55,6 +55,7 @@ ul.topiclist.two-columns dt {
 }
 
 ul.topiclist dt .list-inner {
+	line-height: 16px;
 	margin-right: 440px;
 	padding-right: 5px;
 	padding-left: 5px;
@@ -196,23 +197,7 @@ dl.row-item dd {
 	min-height: 35px;
 }
 
-dl.row-item dt a {
-	display: inline;
-}
-
-/* topic row icon links */
-dl a.row-item-link {
-	position: absolute;
-	top: 50%;
-	left: 0;
-	display: block;
-	width: 30px;
-	height: 30px;
-	margin-top: -15px;
-	margin-left: 9px;
-	padding: 0;
-}
-
+/* topic row links */
 dd.posts,
 dd.topics,
 dd.views,
@@ -266,6 +251,10 @@ dd.redirect > span,
 dd.moderation > span {
 	display: block;
 	padding-left: 5px;
+}
+
+dd.lastpost > span {
+	line-height: 16px;
 }
 
 dd.extra,
@@ -754,6 +743,7 @@ fieldset.polls dd div {
 /* Poster profile block
 ---------------------------------------- */
 .postprofile {
+	line-height: 16px;
 	border: 1px solid transparent;
 	border-width: 0 0 0 1px;
 	float: right;
@@ -765,7 +755,7 @@ fieldset.polls dd div {
 .postprofile dd,
 .postprofile dt {
 	font-size: 10px;
-	line-height: 12px;
+	line-height: 16px;
 	margin-left: 8px;
 }
 

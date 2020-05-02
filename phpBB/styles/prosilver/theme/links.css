@@ -41,7 +41,7 @@ th a:hover {
 	background-position: center center;
 	border-radius: 3px 0 0 3px;
 	position: absolute;
-	z-index: 2;
+	z-index: 301;
 	top: 50%;
 	right: 0;
 	display: none;
@@ -158,7 +158,6 @@ a.lastsubject:hover {
 .back2top .top {
 	float: right;
 	margin-top: 0;
-	margin-right: -10px;
 }
 
 /* Arrow links  */
@@ -204,4 +203,12 @@ a.feed-icon-forum {
 
 a.anchor {
 	display: block;
+}
+
+.c-subscribe-action {
+	display: none !important;
+}
+
+.c-subscribe-action.is-active {
+	display: inline-block !important;
 }
