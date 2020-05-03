@@ -50,10 +50,10 @@
 			<fieldset>
 				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
 				<button class="button button-search" type="submit" title="{L_SEARCH}">
-					{{ Icon('iconify', 'fa:search', '', true, 'c-button-icon') }}<span class="sr-only">{L_SEARCH}</span>
+					{{ Icon('iconify', 'fa:search', lang('SEARCH'), true, 'c-button-icon') }}
 				</button>
 				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-					{{ Icon('iconify', 'fa:cog', '', true, 'c-button-icon') }}<span class="sr-only">{L_SEARCH_ADV}</span>
+					{{ Icon('iconify', 'fa:cog', lang('SEARCH_ADV'), true, 'c-button-icon') }}
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -149,7 +149,7 @@
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
 				<!-- EVENT viewtopic_body_post_author_before -->
-				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('iconify', 'fa:circle', lang('L_ONLINE'), true, 'c-online-icon') }}<span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
+				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('iconify', 'fa:circle', lang('L_ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
 				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
@@ -280,9 +280,9 @@
 			<!-- EVENT viewtopic_body_postrow_post_details_before -->
 			<p class="author">
 				{% if postrow.S_UNREAD_POST %}
-					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', '', true, 'c-topic-unread-icon') }}<span class="sr-only">{postrow.MINI_POST}</span></span>
+					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-unread-icon') }}</span>
 				{% else %}
-					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', '', true, 'c-topic-icon') }}<span class="sr-only">{postrow.MINI_POST}</span></span>
+					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-icon') }}</span>
 				{% endif %}
 				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span><time datetime="{postrow.POST_DATE_RFC3339}">{postrow.POST_DATE}</time>
 			</p>
@@ -368,7 +368,7 @@
 		<div class="back2top">
 			<!-- EVENT viewtopic_body_postrow_back2top_prepend -->
 			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
-				{{ Icon('iconify', 'fa:chevron-circle-up', '', true, 'c-top-icon') }}<span class="sr-only">{L_BACK_TO_TOP}</span>
+				{{ Icon('iconify', 'fa:chevron-circle-up', false('BACK_TO_TOP'), true, 'c-top-icon') }}
 			</a>
 			<!-- EVENT viewtopic_body_postrow_back2top_append -->
 		</div>
@@ -411,7 +411,7 @@
 	<!-- IF .quickmod -->
 	<div class="quickmod dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
 		<span title="{L_QUICK_MOD}" class="button button-secondary dropdown-trigger dropdown-select">
-			{{ Icon('iconify', 'fa:gavel', '', true, 'c-button-icon') }}<span class="sr-only">{L_QUICK_MOD}</span>
+			{{ Icon('iconify', 'fa:gavel', lang('QUICK_MOD'), true, 'c-button-icon') }}
 			<span class="caret">{{ Icon('iconify', 'fa:caret-down', '', true, 'c-button-icon') }}</span>
 		</span>
 		<div class="dropdown">

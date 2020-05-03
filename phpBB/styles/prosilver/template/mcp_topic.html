@@ -102,7 +102,7 @@
 				<ul class="post-buttons">
 					<li>
 						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
-							{{ Icon('iconify', 'fa:info', '', true, 'c-button-icon') }}<span class="sr-only">{L_POST_DETAILS}</span>
+							{{ Icon('iconify', 'fa:info', lang('POST_DETAILS'), true, 'c-button-icon') }}
 						</a>
 					</li>
 					<li>
@@ -119,7 +119,7 @@
 				<!-- EVENT mcp_topic_postrow_post_details_before -->
 				<p class="author">
 					<a href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
-						{{ Icon('iconify', 'fa:file', '', true) }}<span class="sr-only">{postrow.MINI_POST}</span>
+						{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true) }}
 					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} {% EVENT mcp_topic_post_author_full_prepend %}<strong>{postrow.POST_AUTHOR_FULL}</strong>{% EVENT mcp_topic_post_author_full_append %}<!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF -->
 				</p>
 				<!-- EVENT mcp_topic_postrow_post_details_after -->

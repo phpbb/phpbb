@@ -63,17 +63,17 @@
 					<!-- EVENT mcp_forum_topic_title_after -->
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-							{{ Icon('iconify', 'fa:question', '', true, 'c-unapproved-icon') }}<span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+							{{ Icon('iconify', 'fa:question', lang('TOPIC_UNAPPROVED'), true, 'c-unapproved-icon') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED -->
 						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-							{{ Icon('iconify', 'fa:recycle', '', true, 'c-topic-deleted-icon') }}<span class="sr-only">{L_TOPIC_DELETED}</span>
+							{{ Icon('iconify', 'fa:recycle', lang('TOPIC_DELETED'), true, 'c-topic-deleted-icon') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-							{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<span class="sr-only">{L_TOPIC_REPORTED}</span>
+							{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->&nbsp;<a href="{topicrow.U_DELETE_TOPIC}" class="topictitle">[ {L_DELETE_SHADOW_TOPIC} ]</a><!-- ENDIF -->

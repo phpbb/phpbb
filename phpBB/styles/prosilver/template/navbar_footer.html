@@ -7,7 +7,7 @@
 				{% apply spaceless %}
 				<span class="crumb">
 					<a href="{U_SITE_HOME}" data-navbar-reference="home">
-						{{ Icon('iconify', 'fa:home', '', true) }}<span>{L_SITE_HOME}</span>
+						{{ Icon('iconify', 'fa:home', lang('SITE_HOME'), false) }}
 					</a>
 				</span>
 				{% endapply %}
@@ -16,7 +16,7 @@
 			{% apply spaceless %}
 			<span class="crumb">
 				<a href="{U_INDEX}" data-navbar-reference="index">
-					<!-- IF not U_SITE_HOME -->{{ Icon('iconify', 'fa:home', '', true) }}<!-- ENDIF --><span>{L_INDEX}</span>
+					<!-- IF not U_SITE_HOME -->{{ Icon('iconify', 'fa:home', lang(INDEX), false) }}<!-- ENDIF -->
 				</a>
 			</span>
 			{% endapply %}
@@ -43,13 +43,13 @@
 		<!-- IF not S_IS_BOT -->
 			<li class="rightside">
 				<a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true" role="menuitem">
-					{{ Icon('iconify', 'fa:trash', '', true) }}<span>{L_DELETE_COOKIES}</span>
+					{{ Icon('iconify', 'fa:trash', lang('DELETE_COOKIES'), false) }}
 				</a>
 			</li>
 			<!-- IF S_DISPLAY_MEMBERLIST -->
 				<li class="rightside" data-last-responsive="true">
 					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">
-						{{ Icon('iconify', 'fa:group', '', true) }}<span>{L_MEMBERLIST}</span>
+						{{ Icon('iconify', 'fa:group', lang('MEMBERLIST'), false) }}
 					</a>
 				</li>
 			<!-- ENDIF -->
@@ -58,7 +58,7 @@
 		<!-- IF U_TEAM -->
 			<li class="rightside" data-last-responsive="true">
 				<a href="{U_TEAM}" role="menuitem">
-					{{ Icon('iconify', 'fa:shield', '', true) }}<span>{L_THE_TEAM}</span>
+					{{ Icon('iconify', 'fa:shield', lang('THE_TEAM'), false) }}
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -66,7 +66,7 @@
 		<!-- IF U_CONTACT_US -->
 			<li class="rightside" data-last-responsive="true">
 				<a href="{U_CONTACT_US}" role="menuitem">
-					{{ Icon('iconify', 'fa:envelope', '', true) }}<span>{L_CONTACT_US}</span>
+					{{ Icon('iconify', 'fa:envelope', lang('CONTACT_US'), false) }}
 				</a>
 			</li>
 		<!-- ENDIF -->

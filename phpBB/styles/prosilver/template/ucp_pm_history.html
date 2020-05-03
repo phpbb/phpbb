@@ -34,7 +34,7 @@
 			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
 
 			<p class="author">
-				<span title="{history_row.MINI_POST}">{{ Icon('iconify', 'fa:file', '', true, 'c-topic-icon') }}<span class="sr-only">{history_row.MINI_POST}</span></span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
+				<span title="{history_row.MINI_POST}">{{ Icon('iconify', 'fa:file', history_row.MINI_POST, true, 'c-topic-icon') }}</span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
 				<br />
 				{L_MESSAGE_BY_AUTHOR} <!-- EVENT ucp_pm_history_row_message_author_username_prepend -->{history_row.MESSAGE_AUTHOR_FULL}<!-- EVENT ucp_pm_history_row_message_author_username_append -->
 			</p>
@@ -51,6 +51,6 @@
 <hr />
 <p>
 	<a href="#cp-main" class="top">
-		{{ Icon('iconify', 'fa:chevron-circle-up', '', true, 'c-top-icon') }}<span>{L_BACK_TO_TOP}</span>
+		{{ Icon('iconify', 'fa:chevron-circle-up', lang('BACK_TO_TOP'), false, 'c-top-icon') }}
 	</a>
 </p>

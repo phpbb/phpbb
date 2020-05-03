@@ -56,10 +56,10 @@
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
 				<button class="button button-search" type="submit" title="{L_SEARCH}">
-					{{ Icon('iconify', 'fa:search', '', true, 'c-button-icon') }}<span class="sr-only">{L_SEARCH}</span>
+					{{ Icon('iconify', 'fa:search', lang('SEARCH'), true, 'c-button-icon') }}
 				</button>
-				<a href="{{ U_SEARCH_FORUM }}" class="button button-search-end" title="lang('SEARCH_ADV)">
-					{{ Icon('iconify', 'fa:cog', '', true, 'c-button-icon') }}<span class="sr-only">lang('SEARCH_ADV')</span>
+				<a href="{{ U_SEARCH_FORUM }}" class="button button-search-end" title="lang('SEARCH_ADV')">
+					{{ Icon('iconify', 'fa:cog', lang('SEARCH_ADV'), true, 'c-button-icon') }}
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -179,7 +179,7 @@
 						<!-- EVENT topiclist_row_prepend -->
 						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
 							<a class="unread" href="{topicrow.U_NEWEST_POST}">
-								{{ Icon('iconify', 'fa:file', '', true, 'c-topic-unread-icon') }}<span class="sr-only">{NEW_POST}</span>
+								{{ Icon('iconify', 'fa:file', NEW_POST, true, 'c-topic-unread-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.U_VIEW_TOPIC --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><!-- ELSE -->{topicrow.TOPIC_TITLE}<!-- ENDIF -->
@@ -190,12 +190,12 @@
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_DELETED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-								{{ Icon('iconify', 'fa:recycle', '', true, 'c-topic-deleted-icon') }}<span class="sr-only">{L_TOPIC_DELETED}</span>
+								{{ Icon('iconify', 'fa:recycle', lang('TOPIC_DELETED'), true, 'c-topic-deleted-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
 							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-								{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<span class="sr-only">{L_TOPIC_REPORTED}</span>
+								{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<br />
@@ -245,7 +245,7 @@
 					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT viewforum_body_last_post_author_username_prepend -->{topicrow.LAST_POST_AUTHOR_FULL}<!-- EVENT viewforum_body_last_post_author_username_append -->
 						<!-- IF not S_IS_BOT and topicrow.U_LAST_POST -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-								{{ Icon('iconify', 'fa:external-link-square', '', true, 'c-last-post-icon') }}<span class="sr-only">{VIEW_LATEST_POST}</span>
+								{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<br /><time datetime="{topicrow.LAST_POST_TIME_RFC3339}">{topicrow.LAST_POST_TIME}</time>

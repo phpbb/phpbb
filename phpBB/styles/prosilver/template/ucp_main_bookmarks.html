@@ -56,17 +56,17 @@
 					<div class="list-inner">
 						<!-- IF topicrow.S_UNREAD_TOPIC -->
 							<a class="unread" href="{topicrow.U_NEWEST_POST}">
-								{{ Icon('iconify', 'fa:file', '', true, 'c-topic-unread-icon') }}<span class="sr-only">{NEW_POST}</span>
+								{{ Icon('iconify', 'fa:file', NEW_POST, true, 'c-topic-unread-icon') }}
 							</a>
 						<!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-								{{ Icon('iconify', 'fa:question', '', true, 'c-unapproved-icon') }}<span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+								{{ Icon('iconify', 'fa:question', lang('TOPIC_UNAPPROVED'), true, 'c-unapproved-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
 							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-								{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<span class="sr-only">{L_TOPIC_REPORTED}</span>
+								{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<br />
@@ -97,7 +97,7 @@
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-						{{ Icon('iconify', 'fa:external-link-square', '', true, 'c-last-post-icon') }}<span class="sr-only">{VIEW_LATEST_POST}</span>
+						{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
 					</a>
 					<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>

@@ -69,8 +69,7 @@
 									{{ Icon('iconify', {
 										'fa:external-link' : forumrow.subforum.IS_LINK ,
 										'fa:file-o' : true,
-									}, '', true, 'c-subforum-icon') }}
-									<span>{forumrow.subforum.SUBFORUM_NAME}</span>
+									}, forumrow.subforum.SUBFORUM_NAME, false, 'c-subforum-icon') }}
 								</a>{% if not forumrow.subforum.S_LAST_ROW %}{L_COMMA_SEPARATOR}{% endif %}
 								<!-- EVENT forumlist_body_subforum_link_append -->
 							<!-- END subforum -->
@@ -98,11 +97,11 @@
 						<span>
 							<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
 								<a href="{forumrow.U_UNAPPROVED_TOPICS}" title="{L_TOPICS_UNAPPROVED}">
-									{{ Icon('iconify', 'mdi:alert-decagram', '', true, 'c-unapproved-icon') }}<span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
+									{{ Icon('iconify', 'mdi:alert-decagram', lang('TOPICS_UNAPPROVED'), true, 'c-unapproved-icon') }}
 								</a>
 							<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
 								<a href="{forumrow.U_UNAPPROVED_POSTS}" title="{L_POSTS_UNAPPROVED_FORUM}">
-									{{ Icon('iconify', 'mdi:alert-decagram', '', true, 'c-unapproved-icon') }}<span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
+									{{ Icon('iconify', 'mdi:alert-decagram', lang('TOPICS_UNAPPROVED'), true, 'c-unapproved-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<!-- IF forumrow.LAST_POST_TIME -->
@@ -114,7 +113,7 @@
 									{L_POST_BY_AUTHOR} <!-- EVENT forumlist_body_last_poster_username_prepend -->{forumrow.LAST_POSTER_FULL}<!-- EVENT forumlist_body_last_poster_username_append -->
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
-										{{ Icon('iconify', 'fa:external-link-square', '', true, 'c-last-post-icon') }}<span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
+										{{ Icon('iconify', 'fa:external-link-square', lang('TOPICS_UNAPPROVED'), true, 'c-last-post-icon') }}
 									</a>
 								<!-- ENDIF -->
 								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>

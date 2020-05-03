@@ -78,7 +78,7 @@
 						<!-- ENDIF -->
 						<!-- IF messagerow.S_PM_REPORTED -->
 							<a href="{messagerow.U_MCP_REPORT}">
-								{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<span class="sr-only">{PM_REPORTED}</span>
+								{{ Icon('iconify', 'fa:exclamation', PM_REPORTED, true, 'c-topic-reported-icon') }}
 							</a>
 						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }} <!-- ENDIF --><br />
 						<!-- IF S_SHOW_RECIPIENTS -->{L_MESSAGE_TO} {messagerow.RECIPIENTS}<!-- ELSE -->{L_MESSAGE_BY_AUTHOR} {messagerow.MESSAGE_AUTHOR_FULL} &raquo; {messagerow.SENT_TIME}<!-- ENDIF -->

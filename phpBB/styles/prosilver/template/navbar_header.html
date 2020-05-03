@@ -5,7 +5,7 @@
 
 		<li id="quick-links" class="quick-links dropdown-container responsive-menu<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true">
 			<a href="#" class="dropdown-trigger">
-				{{ Icon('iconify', 'fa:bars', '', true) }}<span>{L_QUICK_LINKS}</span>
+				{{ Icon('iconify', 'fa:bars', lang('QUICK_LINKS'), false) }}
 			</a>
 			<div class="dropdown">
 				<div class="pointer"><div class="pointer-inner"></div></div>
@@ -17,38 +17,38 @@
 						<!-- IF S_REGISTERED_USER -->
 							<li>
 								<a href="{U_SEARCH_SELF}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-account-outline', '', true) }}<span>{L_SEARCH_SELF}</span>
+									{{ Icon('iconify', 'mdi:file-account-outline', lang('SEARCH_SELF'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF S_USER_LOGGED_IN -->
 							<li>
 								<a href="{U_SEARCH_NEW}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-hidden', '', true) }}<span>{L_SEARCH_NEW}</span>
+									{{ Icon('iconify', 'mdi:file-hidden', lang('SEARCH_NEW'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF S_LOAD_UNREADS -->
 							<li>
 								<a href="{U_SEARCH_UNREAD}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file', '', true) }}<span>{L_SEARCH_UNREAD}</span>
+									{{ Icon('iconify', 'mdi:file', lang('SEARCH_UNREAD'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
 							<li>
 								<a href="{U_SEARCH_UNANSWERED}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-question-outline', '', true) }}<span>{L_SEARCH_UNANSWERED}</span>
+									{{ Icon('iconify', 'mdi:file-question-outline', lang('SEARCH_UNANSWERED'), false) }}
 								</a>
 							</li>
 							<li>
 								<a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-upload-outline', '', true) }}<span>{L_SEARCH_ACTIVE_TOPICS}</span>
+									{{ Icon('iconify', 'mdi:file-upload-outline', lang('SEARCH_ACTIVE_TOPICS'), false) }}
 								</a>
 							</li>
 							<li class="separator"></li>
 							<li>
 								<a href="{U_SEARCH}" role="menuitem">
-									{{ Icon('iconify', 'fa:search', '', true) }}<span>{L_SEARCH}</span>
+									{{ Icon('iconify', 'fa:search', lang('SEARCH'), false) }}
 								</a>
 							</li>
 					<!-- ENDIF -->
@@ -58,14 +58,14 @@
 						<!-- IF S_DISPLAY_MEMBERLIST -->
 							<li>
 								<a href="{U_MEMBERLIST}" role="menuitem">
-									{{ Icon('iconify', 'fa:group', '', true) }}<span>{L_MEMBERLIST}</span>
+									{{ Icon('iconify', 'fa:group', lang('MEMBERLIST'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF U_TEAM -->
 							<li>
 								<a href="{U_TEAM}" role="menuitem">
-									{{ Icon('iconify', 'fa:shield', '', true) }}<span>{L_THE_TEAM}</span>
+									{{ Icon('iconify', 'fa:shield', lang('THE_TEAM'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
@@ -80,21 +80,21 @@
 		<!-- EVENT overall_header_navigation_prepend -->
 		<li <!-- IF not S_USER_LOGGED_IN -->data-skip-responsive="true"<!-- ELSE -->data-last-responsive="true"<!-- ENDIF -->>
 			<a href="{U_FAQ}" rel="help" title="{L_FAQ_EXPLAIN}" role="menuitem">
-				{{ Icon('iconify', 'fa:question-circle', '', true) }}<span>{L_FAQ}</span>
+				{{ Icon('iconify', 'fa:question-circle', lang('FAQ'), false) }}
 			</a>
 		</li>
 		<!-- EVENT overall_header_navigation_append -->
 		<!-- IF U_ACP -->
 			<li data-last-responsive="true">
 				<a href="{U_ACP}" title="{L_ACP}" role="menuitem">
-					{{ Icon('iconify', 'fa:cogs', '', true) }}<span>{L_ACP_SHORT}</span>
+					{{ Icon('iconify', 'fa:cogs', '', false) }}<span>{{ lang('ACP_SHORT') }}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF U_MCP -->
 			<li data-last-responsive="true">
 				<a href="{U_MCP}" title="{L_MCP}" role="menuitem">
-					{{ Icon('iconify', 'fa:gavel', '', true) }}<span>{L_MCP_SHORT}</span>
+					{{ Icon('iconify', 'fa:gavel', '', false) }}<span>{{ lang('MCP_SHORT') }}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -111,7 +111,7 @@
 						<!-- IF U_RESTORE_PERMISSIONS -->
 							<li>
 								<a href="{U_RESTORE_PERMISSIONS}">
-									{{ Icon('iconify', 'fa:refresh', '', true) }}<span>{L_RESTORE_PERMISSIONS}</span>
+									{{ Icon('iconify', 'fa:refresh', lang('RESTORE_PERMISSIONS'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
@@ -120,13 +120,13 @@
 
 						<li>
 							<a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">
-								{{ Icon('iconify', 'fa:sliders', '', true) }}<span>{L_PROFILE}</span>
+								{{ Icon('iconify', 'fa:sliders', lang('PROFILE'), false) }}
 							</a>
 						</li>
 						<!-- IF U_USER_PROFILE -->
 							<li>
 								<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
-									{{ Icon('iconify', 'fa:user', '', true) }}<span>{L_READ_PROFILE}</span>
+									{{ Icon('iconify', 'fa:user', lang('READ_PROFILE'), false) }}
 								</a>
 							</li>
 						<!-- ENDIF -->
@@ -136,7 +136,7 @@
 						<li class="separator"></li>
 						<li>
 							<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-								{{ Icon('iconify', 'fa:power-off', '', true) }}<span>{L_LOGIN_LOGOUT}</span>
+								{{ Icon('iconify', 'fa:power-off', lang('LOGIN_LOGOUT'), false) }}
 							</a>
 						</li>
 					</ul>
@@ -147,14 +147,14 @@
 		<!-- IF S_DISPLAY_PM -->
 			<li class="rightside" data-skip-responsive="true">
 				<a href="{U_PRIVATEMSGS}" role="menuitem">
-					{{ Icon('iconify', 'fa:inbox', '', true) }}<span>{L_PRIVATE_MESSAGES} </span><strong class="badge<!-- IF not PRIVATE_MESSAGE_COUNT --> hidden<!-- ENDIF -->">{PRIVATE_MESSAGE_COUNT}</strong>
+					{{ Icon('iconify', 'fa:inbox', lang('PRIVATE_MESSAGES'), false) }}<strong class="badge<!-- IF not PRIVATE_MESSAGE_COUNT --> hidden<!-- ENDIF -->"> {PRIVATE_MESSAGE_COUNT}</strong>
 				</a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF S_NOTIFICATIONS_DISPLAY -->
 			<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
 				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification-button" class="dropdown-trigger">
-					{{ Icon('iconify', 'fa:bell', '', true) }}<span>{L_NOTIFICATIONS} </span><strong class="badge<!-- IF not NOTIFICATIONS_COUNT --> hidden<!-- ENDIF -->">{NOTIFICATIONS_COUNT}</strong>
+					{{ Icon('iconify', 'fa:bell', lang('NOTIFICATIONS'), false) }}<strong class="badge<!-- IF not NOTIFICATIONS_COUNT --> hidden<!-- ENDIF -->"> {NOTIFICATIONS_COUNT}</strong>
 				</a>
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>
@@ -163,13 +163,13 @@
 	<!-- ELSE IF not S_IS_BOT -->
 		<li class="rightside"  data-skip-responsive="true">
 			<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-				{{ Icon('iconify', 'fa:power-off', '', true) }}<span>{L_LOGIN_LOGOUT}</span>
+				{{ Icon('iconify', 'fa:power-off', lang('LOGIN_LOGOUT'), false) }}
 			</a>
 		</li>
 		<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
 			<li class="rightside" data-skip-responsive="true">
 				<a href="{U_REGISTER}" role="menuitem">
-					{{ Icon('iconify', 'fa:pencil-square-o', '', true) }}<span>{L_REGISTER}</span>
+					{{ Icon('iconify', 'fa:pencil-square-o', lang('REGISTER'), false) }}
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -208,7 +208,7 @@
 		{% if S_DISPLAY_SEARCH and not S_IN_SEARCH %}
 			<li class="rightside responsive-search">
 				<a href="{{ U_SEARCH }}" title="{{ lang('SEARCH_ADV_EXPLAIN') }}" role="menuitem">
-					{{ Icon('iconify', 'fa:search', '', true) }}<span class="sr-only">{L_SEARCH}</span>
+					{{ Icon('iconify', 'fa:search', lang('SEARCH'), true) }}
 				</a>
 			</li>
 		{% endif %}
