@@ -280,6 +280,17 @@ a.rightside {
 	margin-left: 7px;
 }
 
+ul.linklist li a:hover,
+ul.linklist li a:focus,
+ul.linklist li a:active {
+	text-decoration: none;
+}
+
+ul.linklist li a:hover span,
+ul.linklist li a:focus span {
+	text-decoration: underline;
+}
+
 ul.navlinks {
 	border-top: 1px solid transparent;
 }
@@ -494,6 +505,17 @@ a.header-avatar img {
 .dropdown-contents a {
 	display: block;
 	padding: 5px;
+}
+
+.dropdown-contents a:hover,
+.dropdown-contents a:active,
+.dropdown-contents a:focus {
+	text-decoration: none;
+}
+
+.dropdown-contents a:hover span,
+.dropdown-contents a:focus span {
+	text-decoration: underline;
 }
 
 .jumpbox {

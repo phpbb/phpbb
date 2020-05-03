@@ -103,7 +103,6 @@
 							<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
 								<a href="{forumrow.U_UNAPPROVED_POSTS}" title="{L_POSTS_UNAPPROVED_FORUM}">
 									{{ Icon('iconify', 'mdi:alert-decagram', '', true, 'c-unapproved-icon') }}<span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
-									<span class="sr-only">{L_POSTS_UNAPPROVED_FORUM}</span>
 								</a>
 							<!-- ENDIF -->
 							<!-- IF forumrow.LAST_POST_TIME -->
@@ -116,7 +115,6 @@
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
 										{{ Icon('iconify', 'fa:external-link-square', '', true, 'c-last-post-icon') }}<span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
-										<span class="sr-only">{L_VIEW_LATEST_POST}</span>
 									</a>
 								<!-- ENDIF -->
 								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>

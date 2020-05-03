@@ -120,3 +120,11 @@ blockquote cite:before,
 .c-button-icon {
 	margin-top: 0;
 }
+
+.c-subscribe-icon {
+	display: none !important;
+}
+
+.c-subscribe-icon.is-active {
+	display: inline !important;
+}

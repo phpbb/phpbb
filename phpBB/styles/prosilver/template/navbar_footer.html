@@ -24,11 +24,15 @@
 		</li>
 		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT -->
 			<li data-last-responsive="true">
-		<a class="c-subscribe-action{% if not S_WATCHING_FORUM %} is-active {% endif %}" href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-swap="subscribe" data-swap-url="{U_WATCH_FORUM_TOGGLE}">
-					{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscibe-icon') }}<span>{S_WATCH_FORUM_TITLE}</span>
-				</a>
-			<a class="c-subscribe-action{% if S_WATCHING_FORUM %} is-active {% endif %}" href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-swap="subscribe" data-swap-url="{U_WATCH_FORUM_TOGGLE}">
-					{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscibe-icon') }}<span>{S_WATCH_FORUM_TITLE}</span>
+				<a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">
+					{% if S_WATCHING_FORUM %}
+						{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon') }}
+						{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon is-active') }}
+					{% else %}
+						{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon is-active') }}
+						{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon') }}
+					{% endif %}
+					<span>{S_WATCH_FORUM_TITLE}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->

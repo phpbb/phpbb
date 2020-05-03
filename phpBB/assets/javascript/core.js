@@ -1052,11 +1052,11 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	var $anchor,
-		updateAll = $(this).data('update-all') ,
-		toggleText,
-		toggleUrl,
-		toggleClass;
+	let $anchor;
+	let updateAll = $(this).data('update-all');
+	let toggleText;
+	let toggleUrl;
+	let toggleIcon;
 
 	if (updateAll !== undefined && updateAll.length) {
 		$anchor = $(updateAll);
@@ -1067,21 +1067,19 @@ phpbb.addAjaxCallback('toggle_link', function() {
 	$anchor.each(function() {
 		var $this = $(this);
 
+		// Toggle link text
+		toggleText = $.trim($this.attr('data-toggle-text'));
+		$this.attr('data-toggle-text', $.trim($this.children('span').text()));
+		$this.attr('title', toggleText);
+		$this.children('span').last().text(toggleText);
+
 		// Toggle link url
 		toggleUrl = $this.attr('data-toggle-url');
 		$this.attr('data-toggle-url', $this.attr('href'));
 		$this.attr('href', toggleUrl);
 
-		// Toggle class of link parent
-		toggleClass = $this.attr('data-toggle-class');
-		$this.attr('data-toggle-class', $this.children().attr('class'));
-		$this.children('.icon').attr('class', toggleClass);
-
-		// Toggle link text
-		toggleText = $this.attr('data-toggle-text');
-		$this.attr('data-toggle-text', $this.children('span').text());
-		$this.attr('title', $.trim(toggleText));
-		$this.children('span').text(toggleText);
+		// Toggle Icon
+		$this.children().first().toggleClass('is-active').next().toggleClass('is-active')
 	});
 });
 

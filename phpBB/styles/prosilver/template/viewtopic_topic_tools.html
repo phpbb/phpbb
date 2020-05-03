@@ -10,11 +10,15 @@
 				<!-- EVENT viewtopic_topic_tools_before -->
 				<!-- IF U_WATCH_TOPIC -->
 					<li>
-						<a class="c-subscribe-action{% if not S_WATCHING_TOPIC %} is-active {% endif %}" href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="swap_subscribe" data-swap="subscribe" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".c-cubscribe-action">
-							{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscibe-icon') }}<span>{S_WATCH_TOPIC_TITLE}</span>
-						</a>
-						<a class="c-subscribe-action{% if S_WATCHING_TOPIC %} is-active {% endif %}" href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="swap_subscribe" data-swap="subscribe" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".c-cubscribe-action">
-							{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscibe-icon') }}<span>{S_WATCH_TOPIC_TITLE}</span>
+						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">
+							{% if S_WATCHING_TOPIC %}
+								{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon is-active') }}
+							{% else %}
+								{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon is-active') }}
+								{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon') }}
+							{% endif %}
+							<span>{S_WATCH_TOPIC_TITLE}</span>
 						</a>
 					</li>
 				<!-- ENDIF -->

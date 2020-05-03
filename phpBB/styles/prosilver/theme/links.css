@@ -204,11 +204,3 @@ a.feed-icon-forum {
 a.anchor {
 	display: block;
 }
-
-.c-subscribe-action {
-	display: none !important;
-}
-
-.c-subscribe-action.is-active {
-	display: inline-block !important;
-}
