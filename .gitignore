@@ -20,6 +20,7 @@
 !/phpBB/styles/prosilver/theme/en
 !/phpBB/styles/prosilver/theme/images
 !/phpBB/styles/all
+node_modules
 /phpBB/vendor
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
@@ -27,4 +28,5 @@
 /tests/vendor
 /vagrant/phpbb-install-config.yml
 .vagrant
+.idea
 *.DS_Store*
