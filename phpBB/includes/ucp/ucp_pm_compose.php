@@ -309,6 +309,35 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$post = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
+		/**
+		* Alter the row of the post being quoted when composing a private message
+		*
+		* @event core.ucp_pm_compose_compose_pm_basic_info_query_after
+		* @var	array	post			Array with data of the post being quoted
+		* @var	int		msg_id			topic_id in the page request
+		* @var	int		to_user_id		The id of whom the message is to
+		* @var	int		to_group_id		The id of the group whom the message is to
+		* @var	bool	submit			Whether the user is sending the PM or not
+		* @var	bool	preview			Whether the user is previewing the PM or not
+		* @var	string	action			One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+		* @var	bool	delete			Whether the user is deleting the PM
+		* @var	int		reply_to_all	Value of reply_to_all request variable.
+		* @since 3.2.10-RC1
+		* @since 3.3.1-RC1
+		*/
+		$vars = [
+			'post',
+			'msg_id',
+			'to_user_id',
+			'to_group_id',
+			'submit',
+			'preview',
+			'action',
+			'delete',
+			'reply_to_all',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_after', compact($vars)));
+
 		if (!$post)
 		{
 			// If editing it could be the recipient already read the message...
