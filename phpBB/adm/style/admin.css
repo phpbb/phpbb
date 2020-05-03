@@ -2065,6 +2065,8 @@ fieldset.permissions .padding {
 }
 
 .permissions-category ul {
+	display: flex;
+	flex-wrap: wrap;
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -2118,7 +2120,6 @@ fieldset.permissions .padding {
 
 .permissions-category .activetab a span.tabbg {
 	background-position: 100% 0;
-	padding-bottom: 7px;
 	color: #333333;
 }
 
@@ -2311,6 +2312,10 @@ fieldset.permissions .padding {
 	.permissions-category {
 		min-width: 0;
 		margin: 0 !important;
+	}
+
+	.permissions-category ul {
+		display: block;
 	}
 
 	.permissions-category a, .permissions-category a span.tabbg {
