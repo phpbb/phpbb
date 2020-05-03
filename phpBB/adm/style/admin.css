@@ -2317,6 +2317,8 @@ fieldset.permissions .permissions-switch {
 }
 
 .permissions-category ul {
+	display: flex;
+	flex-wrap: wrap;
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -2565,6 +2567,10 @@ fieldset.permissions .permissions-switch {
 	.permissions-category {
 		min-width: 0;
 		margin: 0 !important;
+	}
+
+	.permissions-category ul {
+		display: block;
 	}
 
 	.permissions-category a,
