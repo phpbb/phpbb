@@ -2046,6 +2046,33 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
+	/**
+	* Modify message rows before displaying the history in private messages
+	*
+	* @event core.message_history_modify_rowset
+	* @var int		msg_id			ID of the private message
+	* @var int		user_id			ID of the message author
+	* @var array	message_row		Array with message data
+	* @var array	folder			Array with data of user's message folders
+	* @var bool		in_post_mode	Whether or not we are viewing or composing
+	* @var array	rowset			Array with message history data
+	* @var string	url				Base URL used to generate links to private messages
+	* @var string	title			Subject of the private message
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'msg_id',
+		'user_id',
+		'message_row',
+		'folder',
+		'in_post_mode',
+		'rowset',
+		'url',
+		'title',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.message_history_modify_rowset', compact($vars)));
+
 	if (count($rowset) == 1 && !$in_post_mode)
 	{
 		return false;
