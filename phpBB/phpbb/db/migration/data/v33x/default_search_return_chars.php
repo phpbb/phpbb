@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v33x;
 
 class default_search_return_chars extends \phpbb\db\migration\migration
 {
