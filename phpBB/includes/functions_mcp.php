@@ -197,7 +197,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 */
 function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $config, $user, $phpbb_container;
+	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container;
 
 	$rowset = array();
 
@@ -264,6 +264,25 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 		$rowset[$row['post_id']] = $row;
 	}
 	$db->sql_freeresult($result);
+
+	/**
+	* This event allows you to modify post data displayed in the MCP
+	*
+	* @event core.mcp_get_post_data_after
+	* @var array	post_ids		Array with post ids that have been fetched
+	* @var mixed	acl_list		Either false or an array with permission strings to check
+	* @var bool		read_tracking	Whether or not to take last mark read time into account
+	* @var array	rowset			The array of posts to be returned
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'post_ids',
+		'acl_list',
+		'read_tracking',
+		'rowset',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.mcp_get_post_data_after', compact($vars)));
 
 	return $rowset;
 }
