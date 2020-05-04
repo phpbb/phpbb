@@ -418,17 +418,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	public function install_ext($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton($this->lang('EXTENSION_ENABLE'))->form();
 		$crawler = self::submit($form);
-		$this->add_lang('acp/extensions');
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
@@ -448,17 +449,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	public function disable_ext($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton($this->lang('EXTENSION_DISABLE'))->form();
 		$crawler = self::submit($form);
-		$this->add_lang('acp/extensions');
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
@@ -478,17 +480,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	public function delete_ext_data($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset div input.button2')->count());
+		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton($this->lang('EXTENSION_DELETE_DATA'))->form();
 		$crawler = self::submit($form);
-		$this->add_lang('acp/extensions');
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 

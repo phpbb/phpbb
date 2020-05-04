@@ -1,0 +1,40 @@
+{% INCLUDE 'overall_header.html' %}
+
+	<a id="maincontent"></a>
+
+	<h1>{{ lang('EXTENSIONS_ADMIN') }}</h1>
+
+	<p>{{ lang('EXTENSIONS_EXPLAIN') }}</p>
+	<p>{{ lang('EXTENSION_DELETE_DATA_EXPLAIN') }}</p>
+
+	{% if MIGRATOR_ERROR %}
+		<div class="errorbox">
+			<p><strong>{{ lang('MIGRATION_EXCEPTION_ERROR') }}</strong></p>
+			<p>{{ MIGRATOR_ERROR }}</p>
+			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
+		</div>
+	{% elseif S_PRE_STEP %}
+		<div class="errorbox">
+			<p>{{ CONFIRM_MESSAGE }}</p>
+		</div>
+
+		<form id="acp_extensions" method="post" action="{{ U_PURGE }}">
+			<fieldset class="submit-buttons">
+				<legend>{{ lang('EXTENSION_DELETE_DATA') }}</legend>
+				<input class="button1" type="submit" name="delete_data" value="{{ lang('EXTENSION_DELETE_DATA') }}">
+				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}">
+			</fieldset>
+		</form>
+	{% elseif S_NEXT_STEP %}
+		<div class="errorbox">
+			<p>{{ lang('EXTENSION_DELETE_DATA_IN_PROGRESS') }}</p>
+		</div>
+	{% else %}
+		<div class="successbox">
+			<p>{{ lang('EXTENSION_DELETE_DATA_SUCCESS') }}</p>
+			<br>
+			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
+		</div>
+	{% endif %}
+
+{% INCLUDE 'overall_footer.html' %}

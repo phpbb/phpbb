@@ -42,8 +42,8 @@
 		</tr>
 	</thead>
 	<tbody>
-
-		<tr id="ext_enabled_header"<!-- IF not .enabled --> class="hidden"<!-- ENDIF -->>
+		<!-- IF .enabled -->
+		<tr>
 			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_ENABLED}</strong><!-- EVENT acp_ext_list_enabled_title_after --></td>
 		</tr>
 		<!-- BEGIN enabled -->
@@ -59,12 +59,17 @@
 			</td>
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;">
-				<!-- INCLUDE acp_ext_actions.html -->
+				<!-- BEGIN actions -->
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
+					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
 			</td>
 		</tr>
 		<!-- END enabled -->
+		<!-- ENDIF -->
 
-		<tr id="ext_disabled_header"<!-- IF not .disabled --> class="hidden"<!-- ENDIF -->>
+		<!-- IF .disabled -->
+		<tr>
 			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_DISABLED}</strong><!-- EVENT acp_ext_list_disabled_title_after --></td>
 		</tr>
 		<!-- BEGIN disabled -->
@@ -82,10 +87,14 @@
 				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
 			</td>
 			<td style="text-align: center;">
-				<!-- INCLUDE acp_ext_actions.html -->
+				<!-- BEGIN actions -->
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
+					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
 			</td>
 		</tr>
 		<!-- END disabled -->
+		<!-- ENDIF -->
 	</tbody>
 	</table>
 

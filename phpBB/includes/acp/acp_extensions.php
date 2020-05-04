@@ -191,6 +191,8 @@ class acp_extensions
 				$this->list_disabled_exts($phpbb_extension_manager, $managed_packages);
 				$this->list_available_exts($phpbb_extension_manager, $managed_packages);
 
+				$this->tpl_name = 'acp_ext_list';
+
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
@@ -198,9 +200,8 @@ class acp_extensions
 					'MANAGED_EXTENSIONS'	=> $managed_packages,
 					'U_CATALOG_ACTION' 		=> $this->u_catalog_action,
 				));
-				$this->request->disable_super_globals();
 
-				$this->tpl_name = 'acp_ext_list';
+				$this->request->disable_super_globals();
 			break;
 
 			case 'enable_pre':
@@ -223,19 +224,13 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				if (confirm_box(true))
-				{
-					redirect($this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
-				}
-				else
-				{
-					confirm_box(false, $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> 'enable_pre',
-						'ext_name'	=> $ext_name,
-					)));
-				}
+				$this->tpl_name = 'acp_ext_enable';
+
+				$this->template->assign_vars([
+					'S_PRE_STEP'		=> true,
+					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name),
+				]);
 			break;
 
 			case 'enable':
@@ -260,8 +255,9 @@ class acp_extensions
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
+							$this->template->assign_var('S_NEXT_STEP', true);
+
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
-							trigger_error('EXTENSION_ENABLE_IN_PROGRESS', E_USER_NOTICE);
 						}
 					}
 
@@ -277,29 +273,14 @@ class acp_extensions
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
 				}
 
-				if ($this->request->is_ajax())
-				{
-					$actions = $this->output_actions('enabled', [
-						'DISABLE'	=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($ext_name),
-					]);
+				$this->tpl_name = 'acp_ext_enable';
 
-					$data = [
-						'EXT_ENABLE_SUCCESS'	=> true,
-						'ACTIONS'				=> $actions,
-						'REFRESH_DATA'			=> [
-							'url'	=> '',
-							'time'	=> 0,
-						],
-					];
-
-					$json_response = new \phpbb\json_response;
-					$json_response->send($data);
-				}
-
-				trigger_error($this->user->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				$this->template->assign_vars([
+					'U_RETURN'		=> $this->u_action . '&amp;action=list',
+				]);
 			break;
 
 			case 'disable_pre':
@@ -308,19 +289,13 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				if (confirm_box(true))
-				{
-					redirect($this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
-				}
-				else
-				{
-					confirm_box(false, $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> 'disable_pre',
-						'ext_name'	=> $ext_name,
-					)));
-				}
+				$this->tpl_name = 'acp_ext_disable';
+
+				$this->template->assign_vars([
+					'S_PRE_STEP'		=> true,
+					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name),
+				]);
 			break;
 
 			case 'disable':
@@ -337,32 +312,15 @@ class acp_extensions
 						$this->template->assign_var('S_NEXT_STEP', true);
 
 						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
-						trigger_error('EXTENSION_DISABLE_IN_PROGRESS', E_USER_NOTICE);
 					}
 				}
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
 
-				if ($this->request->is_ajax())
-				{
-					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
-						'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($ext_name),
-					]);
+				$this->tpl_name = 'acp_ext_disable';
 
-					$data = [
-						'EXT_DISABLE_SUCCESS'	=> true,
-						'ACTIONS'				=> $actions,
-						'REFRESH_DATA'			=> [
-							'url'	=> '',
-							'time'	=> 0,
-						],
-					];
-
-					$json_response = new \phpbb\json_response;
-					$json_response->send($data);
-				}
-
-				trigger_error($this->user->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				$this->template->assign_vars([
+					'U_RETURN'	=> $this->u_action . '&amp;action=list',
+				]);
 			break;
 
 			case 'delete_data_pre':
@@ -371,19 +329,13 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				if (confirm_box(true))
-				{
-					redirect($this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
-				}
-				else
-				{
-					confirm_box(false, $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
-						'i'			=> $id,
-						'mode'		=> $mode,
-						'action'	=> 'delete_data_pre',
-						'ext_name'	=> $ext_name,
-					)));
-				}
+				$this->tpl_name = 'acp_ext_delete_data';
+
+				$this->template->assign_vars([
+					'S_PRE_STEP'		=> true,
+					'CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name),
+				]);
 			break;
 
 			case 'delete_data':
@@ -402,36 +354,20 @@ class acp_extensions
 							$this->template->assign_var('S_NEXT_STEP', true);
 
 							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
-							trigger_error('EXTENSION_DELETE_DATA_IN_PROGRESS', E_USER_NOTICE);
 						}
 					}
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
 				}
 
-				if ($this->request->is_ajax())
-				{
-					$actions = $this->output_actions('disabled', [
-						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
-					]);
+				$this->tpl_name = 'acp_ext_delete_data';
 
-					$data = [
-						'EXT_DELETE_DATA_SUCCESS'	=> true,
-						'ACTIONS'					=> $actions,
-						'REFRESH_DATA'				=> [
-							'url'	=> '',
-							'time'	=> 0,
-						],
-					];
-
-					$json_response = new \phpbb\json_response;
-					$json_response->send($data);
-				}
-
-				trigger_error($this->user->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
+				$this->template->assign_vars([
+					'U_RETURN'	=> $this->u_action . '&amp;action=list',
+				]);
 			break;
 
 			case 'details':
@@ -1070,37 +1006,17 @@ class acp_extensions
 	*
 	* @param string $block
 	* @param array $actions
-	* @return array List of actions to be performed on the extension
 	*/
 	private function output_actions($block, $actions)
 	{
-		$vars_ary = array();
-		foreach ($actions as $lang => $options)
+		foreach ($actions as $lang => $url)
 		{
-			$url = $options;
-			if (is_array($options))
-			{
-				$url = $options['url'];
-			}
-
-			$vars = array(
+			$this->template->assign_block_vars($block . '.actions', [
 				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
 				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
-				'ACTION_AJAX'		=> 'ext_' . strtolower($lang),
-			);
-
-			if (isset($options['color']))
-			{
-				$vars['COLOR'] = $options['color'];
-			}
-
-			$this->template->assign_block_vars($block . '.actions', $vars);
-
-			$vars_ary[] = $vars;
+			]);
 		}
-
-		return $vars_ary;
 	}
 
 	/**
