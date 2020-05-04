@@ -1483,7 +1483,7 @@ if (!$s_forums)
  *
  * @deprecated 3.3.1-RC1	Templates should use an numeric input, in favor of a select.
  */
-$s_characters = '<option value="0">' . $user->lang('ALL_AVAILABLE') . '</option>';
+$s_characters = '<option value="0">' . $language->lang('ALL_AVAILABLE') . '</option>';
 $i_characters = array_merge([25, 50], range(100, 1000, 100));
 
 if ($config['default_search_return_chars'] && !in_array((int) $config['default_search_return_chars'], $i_characters))
@@ -1494,8 +1494,8 @@ if ($config['default_search_return_chars'] && !in_array((int) $config['default_s
 
 foreach ($i_characters as $i)
 {
-	$selected = $i === (int) $config['default_search_return_chars'] ? '" selected="selected' : '';
-	$s_characters .= sprintf('<option value="%1$s%2$s">%1$s</option>', $i, $selected);
+	$selected = $i === (int) $config['default_search_return_chars'] ? ' selected="selected"' : '';
+	$s_characters .= sprintf('<option value="%1$s"%2$s>%1$s</option>', $i, $selected);
 }
 
 $s_hidden_fields = array('t' => $topic_id);
