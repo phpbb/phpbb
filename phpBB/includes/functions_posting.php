@@ -2852,10 +2852,10 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				'S_ALLOWED_SOFTDELETE'	=> $can_softdelete,
 			));
 
-			$l_confirm = 'DELETE_POST';
 			if ($post_data['post_visibility'] == ITEM_DELETED)
 			{
-				$l_confirm .= '_PERMANENTLY';
+				$l_confirm = ['DELETE_POST_PERMANENTLY', 1];
+
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 			else if (!$can_softdelete)
