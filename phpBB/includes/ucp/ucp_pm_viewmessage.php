@@ -34,6 +34,27 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$author_id	= (int) $message_row['author_id'];
 	$view		= $request->variable('view', '');
 
+	/**
+	* Modify private message data before it is prepared to be displayed
+	*
+	* @event core.ucp_pm_view_message_before
+	* @var int		folder_id		ID of the folder the message is in
+	* @var array	folder			Array with data of user's message folders
+	* @var int		msg_id			ID of the private message
+	* @var array	message_row		Array with message data
+	* @var int		author_id		ID of the message author
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'folder_id',
+		'folder',
+		'msg_id',
+		'message_row',
+		'author_id',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_message_before', compact($vars)));
+
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
 	{
