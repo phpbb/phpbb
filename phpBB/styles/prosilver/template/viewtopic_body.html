@@ -149,7 +149,7 @@
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
 				<!-- EVENT viewtopic_body_post_author_before -->
-				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('iconify', 'fa:circle', lang('L_ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
+				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('iconify', 'fa:circle', lang('ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
 				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
@@ -180,7 +180,7 @@
 				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
 					<a href="#" class="dropdown-trigger" title="{postrow.CONTACT_USER}">
-						{{ Icon('iconify', 'mdi:comment-processing-outline', '', true) }}<span class="sr-only">{postrow.CONTACT_USER}</span>
+						{{ Icon('iconify', 'mdi:comment-processing-outline', postrow.CONTACT_USER, true) }}
 					</a>
 					<div class="dropdown">
 						<div class="pointer"><div class="pointer-inner"></div></div>
@@ -280,9 +280,9 @@
 			<!-- EVENT viewtopic_body_postrow_post_details_before -->
 			<p class="author">
 				{% if postrow.S_UNREAD_POST %}
-					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-unread-icon') }}</span>
+					<span>{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-unread-icon') }}</span>
 				{% else %}
-					<span title="{postrow.MINI_POST}">{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-icon') }}</span>
+					<span>{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-icon') }}</span>
 				{% endif %}
 				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span><time datetime="{postrow.POST_DATE_RFC3339}">{postrow.POST_DATE}</time>
 			</p>

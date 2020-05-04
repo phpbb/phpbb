@@ -25,28 +25,28 @@
 				<!-- IF U_BOOKMARK_TOPIC -->
 					<li>
 						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">
-							{{ Icon('iconify', 'mdi:bookmark-plus-outline', '', true) }}<span>{S_BOOKMARK_TOPIC}</span>
+							{{ Icon('iconify', 'mdi:bookmark-plus-outline', S_BOOKMARK_TOPIC, false) }}
 						</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_BUMP_TOPIC -->
 				<li>
 					<a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">
-						{{ Icon('iconify', 'mdi:update', '', true) }}<span>{L_BUMP_TOPIC}</span>
+						{{ Icon('iconify', 'mdi:update', lang('BUMP_TOPIC'), false) }}
 					</a>
 				</li>
 				<!-- ENDIF -->
 				<!-- IF U_EMAIL_TOPIC -->
 				<li>
 					<a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">
-						{{ Icon('iconify', 'mdi:send-circle-outline', '', true) }}<span>{L_EMAIL_TOPIC}</span>
+						{{ Icon('iconify', 'mdi:send-circle-outline', lang('EMAIL_TOPIC'), false) }}
 					</a>
 				</li>
 				<!-- ENDIF -->
 				<!-- IF U_PRINT_TOPIC -->
 				<li>
 					<a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p">
-						{{ Icon('iconify', 'ic:outline-print', '', true) }}<span>{L_PRINT_TOPIC}</span>
+						{{ Icon('iconify', 'ic:outline-print', lang('PRINT_TOPIC'), false) }}
 					</a>
 				</li>
 				<!-- ENDIF -->
