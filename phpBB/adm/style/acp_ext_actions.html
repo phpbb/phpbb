@@ -1,7 +1,0 @@
-{% for action in enabled.actions %}
-	<a href="{{ action.U_ACTION }}"{% if action.L_ACTION_EXPLAIN %} title="{{ action.L_ACTION_EXPLAIN }}"{% endif %}{% if action.COLOR %} style="color: {{ action.COLOR }};"{% endif %} data-ajax="{{ action.ACTION_AJAX }}" data-refresh="true">{{ action.L_ACTION }}</a>{% if not action.S_LAST_ROW %}&nbsp;|&nbsp;{% endif %}
-{% endfor %}
-
-{% for action in disabled.actions %}
-	<a href="{{ action.U_ACTION }}"{% if action.L_ACTION_EXPLAIN %} title="{{ action.L_ACTION_EXPLAIN }}"{% endif %}{% if action.COLOR %} style="color: {{ action.COLOR }};"{% endif %} data-ajax="{{ action.ACTION_AJAX }}" data-refresh="true">{{ action.L_ACTION }}</a>{% if not action.S_LAST_ROW %}&nbsp;|&nbsp;{% endif %}
-{% endfor %}
