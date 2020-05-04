@@ -72,7 +72,7 @@ class manager
 	 * @param \phpbb\auth\auth					$auth					Auth object
 	 * @param \phpbb\config\db_text				$config_text			Config_text object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
-	 * @param \phpbb\db\tools\tools				$db_tools				Database object
+	 * @param \phpbb\db\tools\tools				$db_tools				Database tools object
 	 * @param \phpbb\event\dispatcher_interface	$dispatcher				Event dispatcher object
 	 * @param \phpbb\language\language			$language				Language object
 	 * @param \phpbb\log\log					$log					Log object
