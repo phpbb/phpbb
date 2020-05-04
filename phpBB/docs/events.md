@@ -410,6 +410,27 @@ acp_posting_buttons_custom_tags_before
 * Since: 3.1.10-RC1
 * Purpose: Add content before the custom BBCodes in the ACP
 
+acp_profile_basic_options_after
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content after custom profile field basic options in the ACP
+
+acp_profile_basic_options_before
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before custom profile field basic options in the ACP
+
+acp_profile_contact_after
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content after contact specific custom profile field option in the ACP
+
 acp_profile_contact_before
 ===
 * Locations:
@@ -424,12 +445,33 @@ acp_profile_contact_last
 * Since: 3.1.11-RC1
 * Purpose: Add contact specific options to custom profile fields in the ACP
 
+acp_profile_options_before
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before custom profile field options in the ACP
+
 acp_profile_step_one_lang_after
 ===
 * Locations:
     + adm/style/acp_profile.html
 * Since: 3.1.11-RC1
 * Purpose: Add extra lang specific options to custom profile field step one configuration in the ACP
+
+acp_profile_visibility_options_after
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content after custom profile field visibility options in the ACP
+
+acp_profile_visibility_options_before
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before custom profile field visibility options in the ACP
 
 acp_prune_forums_append
 ===
