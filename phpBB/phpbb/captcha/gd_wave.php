@@ -100,7 +100,12 @@ class gd_wave
 		{
 			$coeff1 = ($i + 12) / 45;
 			$coeff2 = 1 - $coeff1;
-			$colors[$i] = imagecolorallocate($img, ($coeff2 * $maxr) + ($coeff1 * $minr), ($coeff2 * $maxg) + ($coeff1 * $ming), ($coeff2 * $maxb) + ($coeff1 * $minb));
+
+			$red = ($coeff2 * $maxr) + ($coeff1 * $minr);
+			$green = ($coeff2 * $maxg) + ($coeff1 * $ming);
+			$blue = ($coeff2 * $maxb) + ($coeff1 * $minb);
+
+			$colors[$i] = imagecolorallocate($img, min([255, (int) $red]), min([255, (int) $green]), min([255, (int) $blue]));
 		}
 
 		// $img_buffer is the last row of 3-space positions (converted to img-space), cached

@@ -89,6 +89,8 @@ class factory implements \phpbb\textformatter\cache_interface
 				author={TEXT1;optional}
 				post_id={UINT;optional}
 				post_url={URL;optional;postFilter=#false}
+				msg_id={UINT;optional}
+				msg_url={URL;optional;postFilter=#false}
 				profile_url={URL;optional;postFilter=#false}
 				time={UINT;optional}
 				url={URL;optional}
@@ -216,7 +218,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->urlConfig->disallowScheme($scheme);
 		}
-		foreach (explode(',', $this->config['allowed_schemes_links']) as $scheme)
+		foreach (array_filter(explode(',', $this->config['allowed_schemes_links'])) as $scheme)
 		{
 			$configurator->urlConfig->allowScheme(trim($scheme));
 		}
@@ -468,11 +470,17 @@ class factory implements \phpbb\textformatter\cache_interface
 		$tag->attributes->add('text');
 		$tag->template = '<xsl:value-of select="@text"/>';
 
+		$board_url = generate_board_url() . '/';
 		$tag->filterChain
 			->add(array($this->link_helper, 'truncate_local_url'))
 			->resetParameters()
 			->addParameterByName('tag')
-			->addParameterByValue(generate_board_url() . '/');
+			->addParameterByValue($board_url);
+		$tag->filterChain
+			->add(array($this->link_helper, 'truncate_local_url'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByValue(preg_replace('(^\\w+:)', '', $board_url));
 		$tag->filterChain
 			->add(array($this->link_helper, 'truncate_text'))
 			->resetParameters()

@@ -43,4 +43,44 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		$this->assertContains('<div>c</div>', $html);
 		$this->assertContains('<div>d</div>', $html);
 	}
+
+	/**
+	* @dataProvider get_bbcode_error_tests
+	*/
+	public function test_bbcode_error($match, $tpl, $error)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_bbcodes&sid=' . $this->sid . '&mode=bbcodes&action=add');
+		$form = $crawler->selectButton('Submit')->form([
+			'bbcode_match' => $match,
+			'bbcode_tpl'   => $tpl
+		]);
+		$crawler = self::submit($form);
+
+		$text = $crawler->filter('.errorbox')->text();
+		$this->assertStringContainsString($error, $text);
+	}
+
+	public function get_bbcode_error_tests()
+	{
+		return [
+			[
+				'XXX',
+				'',
+				'BBCode is constructed in an invalid form'
+			],
+			[
+				'[x]{TEXT}[/x]',
+				'<xsl:invalid',
+				'template is invalid'
+			],
+			[
+				'[x]{TEXT}[/x]',
+				'<script>{TEXT}</script>',
+				'unsafe'
+			],
+		];
+	}
 }

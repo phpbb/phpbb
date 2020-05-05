@@ -13,9 +13,9 @@
 
 namespace phpbb\template\twig;
 
-class lexer extends \Twig_Lexer
+class lexer extends \Twig\Lexer
 {
-	public function tokenize(\Twig_Source $source)
+	public function tokenize(\Twig\Source $source)
 	{
 		$code = $source->getCode();
 		$filename = $source->getName();
@@ -72,6 +72,8 @@ class lexer extends \Twig_Lexer
 			'endspaceless',
 			'verbatim',
 			'endverbatim',
+			'apply',
+			'endapply',
 		);
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
@@ -123,8 +125,8 @@ class lexer extends \Twig_Lexer
 		// Appends any filters
 		$code = preg_replace('#{([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ $1$2 }}', $code);
 
-		// Tokenize \Twig_Source instance
-		return parent::tokenize(new \Twig_Source($code, $filename));
+		// Tokenize \Twig\Source instance
+		return parent::tokenize(new \Twig\Source($code, $filename));
 	}
 
 	/**

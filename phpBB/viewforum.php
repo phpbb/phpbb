@@ -711,9 +711,28 @@ if (count($topic_list))
 		'SELECT'		=> $sql_array['SELECT'],
 		'FROM'			=> $sql_array['FROM'],
 		'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
-
 		'WHERE'			=> $db->sql_in_set('t.topic_id', $topic_list),
 	);
+
+	/**
+	* Event to modify the SQL query before obtaining topics/stickies
+	*
+	* @event core.viewforum_modify_topic_list_sql
+	* @var	int		forum_id			The forum ID
+	* @var	array	forum_data			Data about the forum
+	* @var	array	topic_list			Topic ids array
+	* @var	array	sql_array			SQL query array for obtaining topics/stickies
+	*
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'forum_id',
+		'forum_data',
+		'topic_list',
+		'sql_array',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topic_list_sql', compact($vars)));
 
 	// If store_reverse, then first obtain topics, then stickies, else the other way around...
 	// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because

@@ -267,7 +267,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			// Direct child of current branch
 			$parent_id = $forum_id;
-			$parent_subforum_limit = $row['display_subforum_limit'];
+			$parent_subforum_limit = $row['display_subforum_limit'] ?? false;
 			$forum_rows[$forum_id] = $row;
 
 			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
@@ -1115,6 +1115,9 @@ function display_custom_bbcodes()
 		{
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
 		}
+
+		// Convert Numeric Character References to UTF-8 chars.
+		$row['bbcode_helpline'] = utf8_decode_ncr($row['bbcode_helpline']);
 
 		$custom_tags = array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",

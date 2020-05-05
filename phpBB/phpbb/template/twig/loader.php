@@ -16,7 +16,7 @@ namespace phpbb\template\twig;
 /**
 * Twig Template loader
 */
-class loader extends \Twig_Loader_Filesystem
+class loader extends \Twig\Loader\FilesystemLoader
 {
 	protected $safe_directories = array();
 
@@ -42,7 +42,7 @@ class loader extends \Twig_Loader_Filesystem
 	* Set safe directories
 	*
 	* @param array $directories Array of directories that are safe (empty to clear)
-	* @return \Twig_Loader_Filesystem
+	* @return \Twig\Loader\FilesystemLoader
 	*/
 	public function setSafeDirectories($directories = array())
 	{
@@ -63,7 +63,7 @@ class loader extends \Twig_Loader_Filesystem
 	* Add safe directory
 	*
 	* @param string $directory Directory that should be added
-	* @return \Twig_Loader_Filesystem
+	* @return \Twig\Loader\FilesystemLoader
 	*/
 	public function addSafeDirectory($directory)
 	{
@@ -111,11 +111,11 @@ class loader extends \Twig_Loader_Filesystem
 	}
 
 	/**
-	* Find the template
-	*
-	* Override for Twig_Loader_Filesystem::findTemplate to add support
-	*	for loading from safe directories.
-	*/
+	 * Find the template
+	 *
+	 * Override for \Twig\Loader\FilesystemLoader::findTemplate
+	 * to add support for loading from safe directories.
+	 */
 	protected function findTemplate($name, $throw = true)
 	{
 		$name = (string) $name;
@@ -139,7 +139,7 @@ class loader extends \Twig_Loader_Filesystem
 			// Try validating the name (which may throw an exception)
 			$this->validateName($name);
 		}
-		catch (\Twig_Error_Loader $e)
+		catch (\Twig\Error\LoaderError $e)
 		{
 			if (strpos($e->getRawMessage(), 'Looks like you try to load a template outside configured directories') === 0)
 			{

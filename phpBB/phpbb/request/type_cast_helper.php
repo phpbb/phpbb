@@ -36,7 +36,7 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 
 		if ($type == 'string')
 		{
-			$result = str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result);
+			$result = strtr($result, ["\r\n" => "\n", "\r" => "\n", "\0" => '', "\u{FEFF}" => '']);
 
 			if ($trim)
 			{
@@ -106,7 +106,8 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 				return;
 			}
 
-			list($default_key, $default_value) = each($default);
+			$default_key = key($default);
+			$default_value = current($default);
 			$key_type = gettype($default_key);
 
 			$_var = $var;

@@ -109,6 +109,12 @@ class fulltext_native extends \phpbb\search\base
 	* Initialises the fulltext_native search backend with min/max word length
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
+	* @param	string	$phpbb_root_path	phpBB root path
+	* @param	string	$phpEx	PHP file extension
+	* @param	\phpbb\auth\auth	$auth	Auth object
+	* @param	\phpbb\config\config	$config	Config object
+	* @param	\phpbb\db\driver\driver_interface	$db	Database object
+	* @param	\phpbb\user	$user	User object
 	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
@@ -399,7 +405,7 @@ class fulltext_native extends \phpbb\search\base
 				}
 
 				// a group of words of which at least one word should be in every resulting post
-				if ($word[0] == '(')
+				if (isset($word[0]) && $word[0] == '(')
 				{
 					$word = array_unique(explode('|', substr($word, 1, -1)));
 				}
@@ -781,6 +787,8 @@ class fulltext_native extends \phpbb\search\base
 		$must_exclude_one_ids = $this->must_exclude_one_ids;
 		$must_not_contain_ids = $this->must_not_contain_ids;
 		$must_contain_ids = $this->must_contain_ids;
+
+		$sql_sort_table = $sql_sort_join = $sql_match = $sql_match_where = $sql_sort = '';
 
 		/**
 		* Allow changing the query used for counting for posts using fulltext_native

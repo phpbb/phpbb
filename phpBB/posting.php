@@ -436,7 +436,7 @@ if ($post_data['forum_type'] != FORUM_POST && in_array($mode, array('post', 'bum
 }
 
 // Forum/Topic locked?
-if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get('m_edit', $forum_id))
+if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get($mode == 'reply' ? 'm_lock' : 'm_edit', $forum_id))
 {
 	trigger_error(($post_data['forum_status'] == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED');
 }
@@ -1015,10 +1015,10 @@ if ($submit || $preview || $refresh || $save)
 		$error[] = $user->lang['FORM_INVALID'];
 	}
 
-	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
+	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !$request->is_set_post('delete') && $auth->acl_get('m_approve', $forum_id))
 	{
-		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
-		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
+		$is_first_post = ($post_id <= $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
+		$is_last_post = ($post_id >= $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
 		$updated_post_data = $phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
 
 		if (!empty($updated_post_data))
@@ -1037,21 +1037,24 @@ if ($submit || $preview || $refresh || $save)
 	/**
 	 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
 	 * Using their Numeric Character Reference's Hexadecimal notation.
+	 * Check the permissions for posting Emojis first.
 	 */
-	$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
-
-	/**
-	 * This should never happen again.
-	 * Leaving the fallback here just in case there will be the need of it.
-	 *
-	 * Check for out-of-bounds characters that are currently
-	 * not supported by utf8_bin in MySQL
-	 */
-	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+	if ($auth->acl_get('u_emoji'))
 	{
-		$character_list = implode('<br>', $matches[0]);
+		$post_data['post_subject'] = utf8_encode_ucr($post_data['post_subject']);
+	}
+	else
+	{
+		/**
+		 * Check for out-of-bounds characters that are currently
+		 * not supported by utf8_bin in MySQL
+		 */
+		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+		{
+			$character_list = implode('<br>', $matches[0]);
 
-		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
+			$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
+		}
 	}
 
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
@@ -1308,6 +1311,14 @@ if ($submit || $preview || $refresh || $save)
 			$data['topic_posts_approved'] = $post_data['topic_posts_approved'];
 			$data['topic_posts_unapproved'] = $post_data['topic_posts_unapproved'];
 			$data['topic_posts_softdeleted'] = $post_data['topic_posts_softdeleted'];
+		}
+
+		// Handle delete mode...
+		if ($request->is_set_post('delete_permanent') || ($request->is_set_post('delete') && $post_data['post_visibility'] != ITEM_DELETED))
+		{
+			$delete_reason = $request->variable('delete_reason', '', true);
+			phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $delete_reason);
+			return;
 		}
 
 		// Only return the username when it is either a guest posting or we are editing a post and
@@ -1759,7 +1770,7 @@ $page_data = array(
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_SOFTDELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
-	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked) && $post_id == $post_data['topic_last_post_id'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) ? true : false,
 	'S_RESTORE_ALLOWED'			=> $auth->acl_get('m_approve', $forum_id),
 	'S_IS_DELETED'				=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,

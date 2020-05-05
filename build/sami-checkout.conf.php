@@ -32,7 +32,7 @@ $iterator = Symfony\Component\Finder\Finder::create()
 ;
 
 $config = array(
-	'theme'                => 'enhanced',
+	'theme'                => 'default',
 	'title'                => 'phpBB API Documentation',
 	'build_dir'            => __DIR__.'/api/output/%version%',
 	'cache_dir'            => __DIR__.'/api/cache/%version%',

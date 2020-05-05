@@ -4,6 +4,11 @@ parameters:
     text_formatter.cache.renderer.key: _text_formatter_renderer
 
 services:
+    text_formatter.acp_utils:
+        class: phpbb\textformatter\s9e\acp_utils
+        arguments:
+            - '@text_formatter.s9e.factory'
+
     text_formatter.cache:
         alias: text_formatter.s9e.factory
 

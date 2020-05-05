@@ -40,8 +40,8 @@ class ldap extends base
 	/**
 	 * LDAP Authentication Constructor
 	 *
-	 * @param	driver_interface	$db			DBAL driver interface
 	 * @param	config				$config		Config object
+	 * @param	driver_interface	$db			DBAL driver interface
 	 * @param	language			$language	Language object
 	 * @param	user				$user		User object
 	 */

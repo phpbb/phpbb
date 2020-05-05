@@ -1894,6 +1894,34 @@ posting_editor_submit_buttons
 * Since: 3.1.6-RC1
 * Purpose: Add custom buttons in the posting editor
 
+posting_editor_topic_icons_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-RC1
+* Purpose: Add custom data after the topic icons loop
+
+posting_editor_topic_icons_append
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-RC1
+* Purpose: Append custom data to the topic icon
+
+posting_editor_topic_icons_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-RC1
+* Purpose: Add custom data before the topic icons loop
+
+posting_editor_topic_icons_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.10-RC1
+* Purpose: Prepend custom data to the topic icon
+
 posting_layout_include_panel_body
 ===
 * Locations:
@@ -2376,6 +2404,34 @@ ucp_friend_list_before
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
+ucp_header_friends_offline_username_full_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Append information to offline friends username in UCP
+
+ucp_header_friends_offline_username_full_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Prepend information to offline friends username in UCP
+
+ucp_header_friends_online_username_full_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Append information to online friends username in UCP
+
+ucp_header_friends_online_username_full_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.2.10-RC1
+* Purpose: Prepend information to online friends username in UCP
+
 ucp_main_front_user_activity_after
 ===
 * Locations:
@@ -2730,6 +2786,13 @@ viewforum_body_last_post_author_username_prepend
 * Since: 3.2.4-RC1
 * Purpose: Prepend information to last post author username of member
 
+viewforum_body_online_list_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before the online users list
+
 viewforum_body_topic_author_username_append
 ===
 * Locations:
@@ -2879,6 +2942,20 @@ viewtopic_body_contact_fields_before
 * Purpose: Add data before the contact fields on the user profile when viewing
 a post
 
+viewtopic_body_contact_icon_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content directly after the contact field icons in post user miniprofiles
+
+viewtopic_body_contact_icon_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content directly before the contact field icons in post user miniprofiles
+
 viewtopic_body_footer_before
 ===
 * Locations:
@@ -2886,6 +2963,13 @@ viewtopic_body_footer_before
 * Since: 3.1.0-a1
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver.
+
+viewtopic_body_online_list_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.10-RC1
+* Purpose: Add content before the online users list
 
 viewtopic_body_pagination_top_after
 ===

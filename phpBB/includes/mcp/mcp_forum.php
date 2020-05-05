@@ -43,6 +43,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$to_topic_id		= $request->variable('to_topic_id', 0);
 
 	$url_extra = '';
+//	$url_extra .= ($post_id) ? "&amp;p=$post_id" : (($topic_id) ? "&amp;t=$topic_id" : (($forum_id) ? "&amp;f=$forum_id" : ''));
+//	$url_extra .= ($GLOBALS['user_id']) ? '&amp;u=' . $GLOBALS['user_id'] : '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($GLOBALS['topic_id']) ? '&amp;t=' . $GLOBALS['topic_id'] : '';
 	$url_extra .= ($GLOBALS['post_id']) ? '&amp;p=' . $GLOBALS['post_id'] : '';
@@ -520,8 +522,8 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		sync('forum', 'forum_id', $sync_forums, true, true);
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
-		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $to_topic_id) . '">', '</a>');
+		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
 		/**

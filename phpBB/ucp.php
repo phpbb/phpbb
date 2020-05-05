@@ -358,6 +358,20 @@ if ($module->is_active('zebra', 'friends'))
 		'ORDER_BY'	=> 'u.username_clean ASC',
 	);
 
+	/**
+	* Event to modify the SQL query before listing of friends
+	*
+	* @event core.ucp_modify_friends_sql
+	* @var	array	sql_ary		SQL query array for listing of friends
+	*
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'sql_ary',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.ucp_modify_friends_sql', compact($vars)));
+
 	$sql = $db->sql_build_query('SELECT_DISTINCT', $sql_ary);
 	$result = $db->sql_query($sql);
 
@@ -365,14 +379,33 @@ if ($module->is_active('zebra', 'friends'))
 	{
 		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
-		$template->assign_block_vars("friends_{$which}", array(
+		$tpl_ary = [
 			'USER_ID'		=> $row['user_id'],
-
 			'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 			'USER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 			'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']))
-		);
+			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'])
+		];
+
+		/**
+		* Event to modify the template before listing of friends
+		*
+		* @event core.ucp_modify_friends_template_vars
+		* @var	array	row			friend user row
+		* @var	array	tpl_ary		friend template array
+		* @var	string	which		friend is 'online' or 'offline'
+		*
+		* @since 3.2.10-RC1
+		* @since 3.3.1-RC1
+		*/
+		$vars = [
+			'row',
+			'tpl_ary',
+			'which',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.ucp_modify_friends_template_vars', compact($vars)));
+
+		$template->assign_block_vars("friends_{$which}", $tpl_ary);
 	}
 	$db->sql_freeresult($result);
 }

@@ -25,7 +25,7 @@ class ucp_notifications
 
 	public function main($id, $mode)
 	{
-		global $config, $template, $user, $request, $phpbb_container;
+		global $config, $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
 		add_form_key('ucp_notification');
@@ -57,15 +57,40 @@ class ucp_notifications
 
 					foreach ($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 					{
-						foreach ($subscription_types as $type => $data)
+						foreach ($subscription_types as $type => $type_data)
 						{
 							foreach ($notification_methods as $method => $method_data)
 							{
-								if ($request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
+								$is_set_notify = $request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id']));
+								$is_available = $method_data['method']->is_available($type_data['type']);
+
+								/**
+								* Event to perform additional actions before ucp_notifications is submitted
+								*
+								* @event core.ucp_notifications_submit_notification_is_set
+								* @var	array	type_data		The notification type data
+								* @var	array	method_data		The notification method data
+								* @var	bool	is_set_notify	The notification is set or not
+								* @var	bool	is_available	The notification is available or not
+								* @var	array	subscriptions	The subscriptions data
+								*
+								* @since 3.2.10-RC1
+								* @since 3.3.1-RC1
+								*/
+								$vars = [
+									'type_data',
+									'method_data',
+									'is_set_notify',
+									'is_available',
+									'subscriptions',
+								];
+								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
+
+								if ($is_set_notify && $is_available && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
 									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
 								}
-								else if (!$request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
+								else if ((!$is_set_notify || !$is_available) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
@@ -80,7 +105,7 @@ class ucp_notifications
 
 				$this->output_notification_methods($phpbb_notifications, $template, $user, 'notification_methods');
 
-				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, 'notification_types');
+				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, $phpbb_dispatcher, 'notification_types');
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
@@ -168,9 +193,10 @@ class ucp_notifications
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
+	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param string $block
 	*/
-	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_types')
+	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $block = 'notification_types')
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
@@ -191,15 +217,34 @@ class ucp_notifications
 
 				foreach ($notification_methods as $method => $method_data)
 				{
-					$template->assign_block_vars($block . '.notification_methods', array(
+					$tpl_ary = [
 						'METHOD'			=> $method_data['id'],
-
 						'NAME'				=> $user->lang($method_data['lang']),
-
 						'AVAILABLE'			=> $method_data['method']->is_available($type_data['type']),
-
 						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type])) ? true : false,
-					));
+					];
+
+					/**
+					* Event to perform additional actions before ucp_notifications is displayed
+					*
+					* @event core.ucp_notifications_output_notification_types_modify_template_vars
+					* @var	array	type_data		The notification type data
+					* @var	array	method_data		The notification method data
+					* @var	array	tpl_ary			The template variables
+					* @var	array	subscriptions	The subscriptions data
+					*
+					* @since 3.2.10-RC1
+					* @since 3.3.1-RC1
+					*/
+					$vars = [
+						'type_data',
+						'method_data',
+						'tpl_ary',
+						'subscriptions',
+					];
+					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
+
+					$template->assign_block_vars($block . '.notification_methods', $tpl_ary);
 				}
 			}
 		}

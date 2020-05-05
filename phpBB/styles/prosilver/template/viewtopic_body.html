@@ -82,7 +82,7 @@
 <!-- EVENT viewtopic_body_poll_before -->
 
 <!-- IF S_HAS_POLL -->
-	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
+	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" data-refresh="true" class="topic_poll">
 
 	<div class="panel">
 		<div class="inner">
@@ -197,7 +197,7 @@
 									<div>
 								<!-- ENDIF -->
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
-										<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>
+										{% EVENT viewtopic_body_contact_icon_prepend %}<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>{% EVENT viewtopic_body_contact_icon_append %}
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
 									</div>
@@ -229,7 +229,12 @@
 			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 			<!-- EVENT viewtopic_body_post_subject_before -->
-			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="{postrow.POST_ICON_IMG_ALT}" title="{postrow.POST_ICON_IMG_ALT}" /> <!-- ENDIF --><a href="{postrow.U_MINI_POST}">{postrow.POST_SUBJECT}</a></h3>
+		<h3 {% if postrow.S_FIRST_ROW %}class="first"{% endif %}>
+			{% if postrow.POST_ICON_IMG %}
+				<img src="{{ T_ICONS_PATH }}{{ postrow.POST_ICON_IMG }}" width="{{ postrow.POST_ICON_IMG_WIDTH }}" height="{{ postrow.POST_ICON_IMG_HEIGHT }}" alt="{{ postrow.POST_ICON_IMG_ALT }}" title="{{ postrow.POST_ICON_IMG_ALT }}">
+			{% endif %}
+			<a {% if postrow.S_FIRST_UNREAD %}class="first-unread" {% endif %}href="{{ postrow.U_MINI_POST }}">{{ postrow.POST_SUBJECT }}</a>
+		</h3>
 
 		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
 		<!-- EVENT viewtopic_body_post_buttons_list_before -->
@@ -388,7 +393,6 @@
 		</div>
 	</div>
 
-	<hr class="divider" />
 	<!-- EVENT viewtopic_body_postrow_post_after -->
 <!-- END postrow -->
 
@@ -458,6 +462,8 @@
 
 <!-- EVENT viewtopic_body_footer_before -->
 <!-- INCLUDE jumpbox.html -->
+
+{% EVENT viewtopic_body_online_list_before %}
 
 <!-- IF S_DISPLAY_ONLINE_LIST and U_VIEWONLINE -->
 	<div class="stat-block online-list">

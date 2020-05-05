@@ -85,7 +85,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 	public function test_quote_pm()
 	{
 		$text     = 'This is a test private message sent by the testing framework.';
-		$expected = "(\\[quote=admin time=\\d+ user_id=2\\]\n" . $text . "\n\\[/quote\\])";
+		$expected = "(\\[quote=admin msg_id=\\d+ time=\\d+ user_id=2\\]\n" . $text . "\n\\[/quote\\])";
 
 		$this->login();
 		$message_id = $this->create_private_message('Test', $text, array(2));

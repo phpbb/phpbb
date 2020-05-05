@@ -46,7 +46,7 @@ class config extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('config', array($this, 'get_config')),
+			new \Twig\TwigFunction('config', array($this, 'get_config')),
 		);
 	}
 

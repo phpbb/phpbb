@@ -68,7 +68,7 @@ services:
             - { name: twig.extension }
 
     template.twig.extensions.debug:
-        class: Twig_Extension_Debug
+        class: Twig\Extension\DebugExtension
 
     template:
         class: phpbb\template\twig\twig

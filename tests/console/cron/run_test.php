@@ -122,6 +122,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function test_no_task()
 	{
+		global $phpbb_root_path, $phpEx;
+
 		$tasks = array(
 		);
 
@@ -163,6 +165,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function test_no_task_verbose()
 	{
+		global $phpbb_root_path, $phpEx;
+
 		$tasks = array(
 		);
 

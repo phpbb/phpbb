@@ -83,7 +83,7 @@ class fulltext_mysql extends \phpbb\search\base
 	 * @param string $phpEx PHP file extension
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\db\driver\driver_interface $db Database object
 	 * @param \phpbb\user $user User object
 	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
@@ -173,14 +173,15 @@ class fulltext_mysql extends \phpbb\search\base
 			$engine = $info['Type'];
 		}
 
-		$fulltext_supported =
-			$engine === 'MyISAM' ||
-			// FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
-			// http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
-			// We also require https://bugs.mysql.com/bug.php?id=67004 to be
-			// fixed for proper overall operation. Hence we require 5.6.8.
-			$engine === 'InnoDB' &&
-			phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>=');
+		$fulltext_supported = $engine === 'Aria' || $engine === 'MyISAM'
+			/**
+			 * FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
+			 * http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			 * We also require https://bugs.mysql.com/bug.php?id=67004 to be
+			 * fixed for proper overall operation. Hence we require 5.6.8.
+			 */
+			|| $engine === 'InnoDB'
+			&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>=');
 
 		if (!$fulltext_supported)
 		{

@@ -530,13 +530,16 @@ class acp_board
 
 			if ($submit)
 			{
-				if (strpos($data['type'], 'password') === 0 && $config_value === '********')
+				if (isset($data['type']) && strpos($data['type'], 'password') === 0 && $config_value === '********')
 				{
-					// Do not update password fields if the content is ********,
-					// because that is the password replacement we use to not
-					// send the password to the output
+					/**
+					 * Do not update password fields if the content is ********,
+					 * because that is the password replacement we use to not
+					 * send the password to the output
+					 */
 					continue;
 				}
+
 				$config->set($config_name, $config_value);
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
@@ -546,8 +549,8 @@ class acp_board
 			}
 		}
 
-		// Invalidate the text_formatter cache when posting options are changed
-		if ($mode == 'post' && $submit)
+		// Invalidate the text_formatter cache when posting or server options are changed
+		if (preg_match('(^(?:post|server)$)', $mode) && $submit)
 		{
 			$phpbb_container->get('text_formatter.cache')->invalidate();
 		}
@@ -645,6 +648,7 @@ class acp_board
 				$messenger->anti_abuse_headers($config, $user);
 				$messenger->assign_vars(array(
 					'USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+					'MESSAGE'	=> htmlspecialchars_decode($request->variable('send_test_email_text', '', true)),
 				));
 				$messenger->send(NOTIFY_EMAIL);
 
@@ -1164,6 +1168,7 @@ class acp_board
 	{
 		global $user;
 
-		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang['SEND_TEST_EMAIL'] . '" />';
+		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang('SEND_TEST_EMAIL') . '" />
+				<textarea id="' . $key . '_text" name="' . $key . '_text" placeholder="' . $user->lang('MESSAGE') . '"></textarea>';
 	}
 }

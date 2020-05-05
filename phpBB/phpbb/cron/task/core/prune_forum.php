@@ -75,14 +75,17 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 
+		$log_prune = true;
+
 		if ($this->forum_data['prune_days'])
 		{
-			auto_prune($this->forum_data['forum_id'], 'posted', $this->forum_data['forum_flags'], $this->forum_data['prune_days'], $this->forum_data['prune_freq']);
+			auto_prune($this->forum_data['forum_id'], 'posted', $this->forum_data['forum_flags'], $this->forum_data['prune_days'], $this->forum_data['prune_freq'], $log_prune);
+			$log_prune = false;
 		}
 
 		if ($this->forum_data['prune_viewed'])
 		{
-			auto_prune($this->forum_data['forum_id'], 'viewed', $this->forum_data['forum_flags'], $this->forum_data['prune_viewed'], $this->forum_data['prune_freq']);
+			auto_prune($this->forum_data['forum_id'], 'viewed', $this->forum_data['forum_flags'], $this->forum_data['prune_viewed'], $this->forum_data['prune_freq'], $log_prune);
 		}
 	}
 

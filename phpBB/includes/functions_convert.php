@@ -1209,7 +1209,8 @@ function get_config()
 	if (is_array($convert->config_schema['table_format']))
 	{
 		$convert_config = array();
-		list($key, $val) = each($convert->config_schema['table_format']);
+		$key = key($convert->config_schema['table_format']);
+		$val = current($convert->config_schema['table_format']);
 
 		do
 		{
@@ -1839,6 +1840,7 @@ function add_bots()
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
 		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
 		'Bing [Bot]'				=> array('bingbot/', ''),
+		'DuckDuckGo [Bot]'			=> array('DuckDuckBot/', ''),
 		'Exabot [Bot]'				=> array('Exabot/', ''),
 		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),

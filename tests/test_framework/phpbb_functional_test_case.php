@@ -689,9 +689,28 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return user_add($user_row);
 	}
 
+	/**
+	 * Get group ID
+	 *
+	 * @param string $group_name Group name
+	 * @return int Group id of specified group name
+	 */
+	protected function get_group_id($group_name)
+	{
+		$db = $this->get_db();
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return $group_id;
+	}
+
 	protected function remove_user_group($group_name, $usernames)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $user, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
@@ -721,19 +740,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
 
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+		$group_id = $this->get_group_id($group_name);
 
 		return group_user_del($group_id, false, $usernames, $group_name);
 	}
 
 	protected function add_user_group($group_name, $usernames, $default = false, $leader = false)
 	{
-		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $user, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
@@ -766,12 +780,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
 
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+		$group_id = $this->get_group_id($group_name);
 
 		return group_user_add($group_id, false, $usernames, $group_name, $default, $leader);
 	}
@@ -860,6 +869,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			{
 				$this->add_lang($file);
 			}
+
+			return;
 		}
 
 		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";

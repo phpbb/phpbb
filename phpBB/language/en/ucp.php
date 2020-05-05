@@ -178,7 +178,6 @@ $lang = array_merge($lang, array(
 	'DEMOTE_SELECTED'			=> 'Demote selected',
 	'DISABLE_CENSORS'			=> 'Enable word censoring',
 	'DISPLAY_GALLERY'			=> 'Display gallery',
-	'DOMAIN_NO_MX_RECORD_EMAIL'	=> 'The entered email domain has no valid MX record.',
 	'DOWNLOADS'					=> 'Downloads',
 
 	'EDIT_PM'					=> 'Edit message',

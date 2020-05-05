@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
-class event extends \Twig_Node
+class event extends \Twig\Node\Node
 {
 	/**
 	* The subdirectory in which all template listener files must be placed
@@ -21,10 +21,10 @@ class event extends \Twig_Node
 	*/
 	protected $listener_directory = 'event/';
 
-	/** @var \Twig_Environment */
+	/** @var \Twig\Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -34,9 +34,9 @@ class event extends \Twig_Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig_Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
-	public function compile(\Twig_Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 

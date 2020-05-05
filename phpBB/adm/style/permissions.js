@@ -269,8 +269,14 @@ function mark_one_option(id, field_name, s) {
 }
 
 /**
-* Reset role dropdown field to Select role... if an option gets changed
-*/
+ * (Re)set the permission role dropdown.
+ *
+ * Try and match the set permissions to an existing role.
+ * Otherwise reset the dropdown to "Select a role.."
+ *
+ * @param {string}	id		The fieldset identifier
+ * @returns {void}
+ */
 function reset_role(id) {
 	var t = document.getElementById(id);
 
@@ -278,18 +284,37 @@ function reset_role(id) {
 		return;
 	}
 
-	t.options[0].selected = true;
+	// Before resetting the role dropdown, try and match any permission role
+	var parent = t.parentNode,
+		roleId = match_role_settings(id.replace('role', 'perm')),
+		text = no_role_assigned,
+		index = 0;
 
-	var parent = t.parentNode;
-	parent.querySelector('span.dropdown-trigger').innerText = no_role_assigned;
-	parent.querySelector('input[data-name^=role]').value = '0';
+	// If a role permissions was matched, grab that option's value and index
+	if (roleId) {
+		for (var i = 0; i < t.options.length; i++) {
+			if (parseInt(t.options[i].value, 10) === roleId) {
+				text = t.options[i].text;
+				index = i;
+				break;
+			}
+		}
+	}
+
+	// Update the select's value and selected index
+	t.value = roleId;
+	t.options[index].selected = true;
+
+	// Update the dropdown trigger to show the new value
+	parent.querySelector('span.dropdown-trigger').innerText = text;
+	parent.querySelector('input[data-name^=role]').value = roleId;
 }
 
 /**
 * Load role and set options accordingly
 */
 function set_role_settings(role_id, target_id) {
-	settings = role_options[role_id];
+	var settings = role_options[role_id];
 
 	if (!settings) {
 		return;
@@ -301,4 +326,52 @@ function set_role_settings(role_id, target_id) {
 	for (var r in settings) {
 		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
 	}
+}
+
+/**
+ * Match the set permissions against the available roles.
+ *
+ * @param {string}	id		The parent fieldset identifier
+ * @return {number}			The permission role identifier
+ */
+function match_role_settings(id) {
+	var fieldset = document.getElementById(id),
+		radios = fieldset.getElementsByTagName('input'),
+		set = {};
+
+	// Iterate over all the radio buttons
+	for (var i = 0; i < radios.length; i++) {
+		var matches = radios[i].id.match(/setting\[\d+]\[\d+]\[([a-z_]+)]/);
+
+		// Make sure the name attribute matches, the radio is checked and it is not the "No" (-1) value.
+		if (matches !== null && radios[i].checked && radios[i].value !== '-1') {
+			set[matches[1]] = parseInt(radios[i].value, 10);
+		}
+	}
+
+	// Sort and stringify the 'set permissions' object
+	set = sort_and_stringify(set);
+
+	// Iterate over the available role options and return the first match
+	for (var r in role_options)
+	{
+		if (sort_and_stringify(role_options[r]) === set) {
+			return parseInt(r, 10);
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * Sort and stringify an Object so it can be easily compared against another object.
+ *
+ * @param {object}	obj		The object to sort (by key) and stringify
+ * @return {string}			The sorted object as a string
+ */
+function sort_and_stringify(obj) {
+	return JSON.stringify(Object.keys(obj).sort().reduce(function (result, key) {
+		result[key] = obj[key];
+		return result;
+	}, {}));
 }

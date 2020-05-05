@@ -23,7 +23,7 @@ if (php_sapi_name() !== 'cli')
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 define('PHPBB_ENVIRONMENT', 'production');
-define('PHPBB_VERSION', '3.3.0-b2');
+define('PHPBB_VERSION', '3.3.0');
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
@@ -42,11 +42,14 @@ $phpbb_installer_container->get('request')->enable_super_globals();
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 
+/** @var \phpbb\config\config $config */
+$config = $phpbb_installer_container->get('config');
+
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
 $language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting', 'cli'));
 
-$application = new \phpbb\console\application('phpBB Installer', PHPBB_VERSION, $language);
+$application = new \phpbb\console\application('phpBB Installer', PHPBB_VERSION, $language, $config);
 $application->setDispatcher($phpbb_installer_container->get('dispatcher'));
 $application->register_container_commands($phpbb_installer_container->get('console.installer.command_collection'));
 $application->run($input);

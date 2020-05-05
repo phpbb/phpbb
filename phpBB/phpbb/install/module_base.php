@@ -131,7 +131,7 @@ abstract class module_base implements module_interface
 					$name,
 				));
 
-				$this->install_config->increment_current_task_progress($this->task_step_count[$name]);
+				$this->install_config->increment_current_task_progress($this->task_step_count[$name] ?? false);
 			}
 			else
 			{

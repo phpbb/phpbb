@@ -136,7 +136,7 @@ class ucp_groups
 							{
 								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 							}
-							list(, $row) = each($row);
+							$row = current($row);
 
 							$sql = 'SELECT group_type
 								FROM ' . GROUPS_TABLE . '
@@ -240,7 +240,7 @@ class ucp_groups
 							{
 								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 							}
-							list(, $row) = each($row);
+							$row = current($row);
 
 							if (!$row['group_leader'])
 							{
@@ -460,7 +460,7 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{
@@ -534,7 +534,12 @@ class ucp_groups
 								'teampage'	=> $group_row['group_teampage'],
 							);
 
-							if ($config['allow_avatar'])
+							if (!check_form_key('ucp_groups'))
+							{
+								$error[] = $user->lang['FORM_INVALID'];
+							}
+
+							if (!count($error) && $config['allow_avatar'])
 							{
 								// Handle avatar
 								$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
@@ -554,11 +559,6 @@ class ucp_groups
 
 								// Merge any avatars errors into the primary error array
 								$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
-							}
-
-							if (!check_form_key('ucp_groups'))
-							{
-								$error[] = $user->lang['FORM_INVALID'];
 							}
 
 							// Validate submitted colour value
@@ -754,7 +754,7 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{
@@ -875,11 +875,16 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
+						if (!check_form_key('ucp_groups'))
+						{
+							trigger_error($user->lang('FORM_INVALID') . $return_page);
+						}
+
 						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{
@@ -906,7 +911,7 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{
@@ -985,7 +990,7 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{
@@ -1046,7 +1051,7 @@ class ucp_groups
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
-						list(, $row) = each($row);
+						$row = current($row);
 
 						if (!$row['group_leader'])
 						{

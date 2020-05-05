@@ -965,6 +965,11 @@ function handle_mark_actions($user_id, $mark_action)
 	{
 		case 'mark_important':
 
+			if (!check_form_key('ucp_pm_view'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 				SET pm_marked = 1 - pm_marked
 				WHERE folder_id = $cur_folder_id
@@ -1179,25 +1184,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	$db->sql_transaction('commit');
 
 	return true;
-}
-
-/**
-* Delete all PM(s) for a given user and delete the ones without references
-*
-* @param	int		$user_id	ID of the user whose private messages we want to delete
-*
-* @return	boolean		False if there were no pms found, true otherwise.
-*/
-function phpbb_delete_user_pms($user_id)
-{
-	$user_id = (int) $user_id;
-
-	if (!$user_id)
-	{
-		return false;
-	}
-
-	return phpbb_delete_users_pms(array($user_id));
 }
 
 /**

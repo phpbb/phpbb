@@ -13,6 +13,9 @@
 {% for quote_close in loops.quote_close %}</div></blockquote>{% endfor %}
 {% for quote_extended in loops.quote_extended %}
 <blockquote>
+	<xsl:if test="@post_url">
+		<xsl:attribute name="cite"><xsl:value-of select="@post_url"/></xsl:attribute>
+	</xsl:if>
 	<xsl:if test="not(@author)">
 		<xsl:attribute name="class">uncited</xsl:attribute>
 	</xsl:if>
@@ -38,7 +41,7 @@
 					<a href="{@post_url}" data-post-id="{@post_id}" onclick="if(document.getElementById(hash.substr(1)))href=hash">&#8593;</a>
 				</xsl:if>
 				<xsl:if test="@date">
-					<div class="responsive-hide"><xsl:value-of select="@date"/></div>
+					<span class="responsive-hide"><xsl:value-of select="@date"/></span>
 				</xsl:if>
 			</cite>
 		</xsl:if>

@@ -145,9 +145,11 @@ class run extends \phpbb\console\command\command
 	*		and returns with status 2.
 	*
 	* @see execute
-	* @param string $task_name The name of the task that should be run.
+	*
 	* @param InputInterface $input The input stream used to get the argument and verbose option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
+	* @param string $task_name The name of the task that should be run.
+	*
 	* @return int 0 if all is well, 2 if no task matches $task_name.
 	*/
 	protected function run_one(InputInterface $input, OutputInterface $output, $task_name)

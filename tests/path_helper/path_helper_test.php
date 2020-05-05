@@ -103,13 +103,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array(
 				$this->phpbb_root_path . 'test.php',
 				'//',
-				null,
-				null,
-				'./../',
-			),
-			array(
-				$this->phpbb_root_path . 'test.php',
-				'//',
 				'foo/bar.php',
 				'bar.php',
 				'./../',
@@ -137,13 +130,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 			),
 
 			// No correction if the path is already prepend by the web root path
-			array(
-				'./../' . $this->phpbb_root_path . 'test.php',
-				'//',
-				null,
-				null,
-				'',
-			),
 			array(
 				'./../' . $this->phpbb_root_path . 'test.php',
 				'//',

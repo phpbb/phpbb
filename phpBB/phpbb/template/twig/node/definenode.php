@@ -14,9 +14,9 @@
 
 namespace phpbb\template\twig\node;
 
-class definenode extends \Twig_Node
+class definenode extends \Twig\Node\Node
 {
-	public function __construct($capture, \Twig_Node $name, \Twig_Node $value, $lineno, $tag = null)
+	public function __construct($capture, \Twig\Node\Node $name, \Twig\Node\Node $value, $lineno, $tag = null)
 	{
 		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
 	}
@@ -24,9 +24,9 @@ class definenode extends \Twig_Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig_Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
-	public function compile(\Twig_Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 
@@ -37,7 +37,7 @@ class definenode extends \Twig_Node
 				->subcompile($this->getNode('value'))
 			;
 
-			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig_Markup(\$value, \$this->env->getCharset());\n");
+			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig\Markup(\$value, \$this->env->getCharset());\n");
 		}
 		else
 		{

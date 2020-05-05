@@ -16,7 +16,7 @@ namespace phpbb\feed\controller;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use \phpbb\event\dispatcher_interface;
+use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\feed\feed_interface;
 use phpbb\feed\exception\feed_unavailable_exception;
@@ -28,11 +28,12 @@ use phpbb\user;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
 
 class feed
 {
 	/**
-	 * @var \Twig_Environment
+	 * @var Environment
 	 */
 	protected $template;
 
@@ -89,7 +90,7 @@ class feed
 	/**
 	 * Constructor
 	 *
-	 * @param \Twig_Environment $twig
+	 * @param Environment $twig
 	 * @param symfony_request $request
 	 * @param controller_helper $controller_helper
 	 * @param config $config
@@ -101,7 +102,7 @@ class feed
 	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param string $php_ext
 	 */
-	public function __construct(\Twig_Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
+	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;
@@ -308,14 +309,13 @@ class feed
 			 * Event to modify the feed row
 			 *
 			 * @event core.feed_modify_feed_row
-			 * @var	int		forum_id	Forum ID
-			 * @var	string	mode		Feeds mode (forums|topics|topics_new|topics_active|news)
+			 * @var	feed_interface feed Feed instance
 			 * @var	array	row			Array with feed data
-			 * @var	int		topic_id	Topic ID
 			 *
 			 * @since 3.1.10-RC1
+			 * @changed 3.3.0 Replace forum_id, mode, topic_id with feed instance
 			 */
-			$vars = array('forum_id', 'mode', 'row', 'topic_id');
+			$vars = array('feed', 'row');
 			extract($this->phpbb_dispatcher->trigger_event('core.feed_modify_feed_row', compact($vars)));
 
 			// BBCode options to correctly disable urls, smilies, bbcode...
@@ -386,8 +386,7 @@ class feed
 		));
 
 		$response = new Response($content);
-		$response->headers->set('Content-Type', 'application/atom+xml');
-		$response->setCharset('UTF-8');
+		$response->headers->set('Content-Type', 'application/atom+xml; charset=UTF-8');
 		$response->setLastModified(new \DateTime('@' . $feed_updated_time));
 
 		if (!empty($this->user->data['is_bot']))

@@ -460,8 +460,7 @@ class auth_admin extends \phpbb\auth\auth
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
 
-				@reset($content_array);
-				while (list($ug_id, $ug_array) = each($content_array))
+				foreach ($content_array as $ug_id => $ug_array)
 				{
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
@@ -471,8 +470,7 @@ class auth_admin extends \phpbb\auth\auth
 					$s_role_options = '';
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
-					@reset($roles);
-					while (list($role_id, $role_row) = each($roles))
+					foreach ($roles as $role_id => $role_row)
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
@@ -559,8 +557,7 @@ class auth_admin extends \phpbb\auth\auth
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
 
-				@reset($content_array);
-				while (list($forum_id, $forum_array) = each($content_array))
+				foreach ($content_array as $forum_id => $forum_array)
 				{
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
@@ -570,8 +567,7 @@ class auth_admin extends \phpbb\auth\auth
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 					$s_role_options = '';
 
-					@reset($roles);
-					while (list($role_id, $role_row) = each($roles))
+					foreach ($roles as $role_id => $role_row)
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
@@ -1138,8 +1134,7 @@ class auth_admin extends \phpbb\auth\auth
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
-		@reset($category_array);
-		while (list($cat, $cat_array) = each($category_array))
+		foreach ($category_array as $cat => $cat_array)
 		{
 			if (!$phpbb_permissions->category_defined($cat))
 			{
@@ -1169,8 +1164,7 @@ class auth_admin extends \phpbb\auth\auth
 			}
 			unset($key_array, $values_array);
 */
-			@reset($cat_array['permissions']);
-			while (list($permission, $allowed) = each($cat_array['permissions']))
+			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				if (!$phpbb_permissions->permission_defined($permission))
 				{
@@ -1237,8 +1231,7 @@ class auth_admin extends \phpbb\auth\auth
 			$permissions = $permission_row[$forum_id];
 			ksort($permissions);
 
-			@reset($permissions);
-			while (list($permission, $auth_setting) = each($permissions))
+			foreach ($permissions as $permission => $auth_setting)
 			{
 				$cat = $phpbb_permissions->get_permission_category($permission);
 

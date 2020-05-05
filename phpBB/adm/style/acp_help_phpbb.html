@@ -38,10 +38,12 @@
 			<dd>{L_SEND_STATISTICS_LONG}</dd>
 		</dl>
 	</div>
+	<script>
+		var statsData = {{ S_STATS_DATA }};
+	</script>
 	<!-- EVENT acp_help_phpbb_stats_after -->
 	<fieldset>
 		<p class="submit-buttons">
-			<input type="hidden" name="systemdata" value="{RAW_DATA}" />
 			<input type="hidden" name="help_send_statistics_time" value="{COLLECT_STATS_TIME}" />
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
 		</p>
@@ -52,7 +54,11 @@
 <form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
 	<fieldset>
 		<p class="submit-buttons">
-			<input type="hidden" name="systemdata" value="{RAW_DATA}" />
+			{% for providers in providers %}
+				{% for values in providers.values %}
+					<input type="hidden" name="{{ providers.NAME }}[{{ values.KEY }}]" value="{{ values.VALUE }}" />
+				{% endfor %}
+			{% endfor %}
 			<input class="button1" type="submit" id="submit_stats" name="submit" value="{L_SEND_STATISTICS}" />
 		</p>
 	</fieldset>

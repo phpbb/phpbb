@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 class acp_main
 {
 	var $u_action;
+	private $php_ini;
 
 	function main($id, $mode)
 	{
@@ -429,11 +430,11 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4.0', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '7.1.3', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '7.1.3', '<a href="https://www.phpbb.com/support/docs/en/3.3/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 
@@ -493,7 +494,7 @@ class acp_main
 
 		$start_date = $user->format_date($config['board_startdate']);
 
-		$boarddays = (time() - $config['board_startdate']) / 86400;
+		$boarddays = (time() - (int) $config['board_startdate']) / 86400;
 
 		$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 		$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
@@ -684,14 +685,19 @@ class acp_main
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
 		}
 
+		$this->php_ini = $phpbb_container->get('php_ini');
+		$func_overload = $this->php_ini->getNumeric('mbstring.func_overload');
+		$encoding_translation = $this->php_ini->getString('mbstring.encoding_translation');
+		$http_input = $this->php_ini->getString('mbstring.http_input');
+		$http_output = $this->php_ini->getString('mbstring.http_output');
 		if (extension_loaded('mbstring'))
 		{
 			$template->assign_vars(array(
 				'S_MBSTRING_LOADED'						=> true,
-				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> (intval(@ini_get('mbstring.func_overload')) & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
-				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> (@ini_get('mbstring.encoding_translation') != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !in_array(@ini_get('mbstring.http_input'), array('pass', '')),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !in_array(@ini_get('mbstring.http_output'), array('pass', '')),
+				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> $func_overload && ($func_overload & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
+				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> $http_input && !in_array($http_input, array('pass', '')),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> $http_output && !in_array($http_output, array('pass', '')),
 			));
 		}
 

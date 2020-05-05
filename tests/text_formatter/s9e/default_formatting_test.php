@@ -82,7 +82,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[code]unparsed code[/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code</code></pre></div>'
 			),
 			array(
 				'[list]no item[/list]',
@@ -195,12 +195,12 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Do not parse textual bbcodes in code
 				'[code]unparsed code [b]bold [i]bold + italic[/i][/b][/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [b]bold [i]bold + italic[/i][/b]</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [b]bold [i]bold + italic[/i][/b]</code></pre></div>'
 			),
 			array(
 				// Do not parse quote bbcodes in code
 				'[code]unparsed code [quote="username"]quoted[/quote][/code]',
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [quote="username"]quoted[/quote]</code></pre></div>'
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>unparsed code [quote="username"]quoted[/quote]</code></pre></div>'
 			),
 			array(
 				// Textual bbcode nesting into textual bbcode
@@ -209,11 +209,11 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				"[code]\tline1\n  line2[/code]",
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
 			),
 			array(
 				"[code]\n\tline1\n  line2[/code]",
-				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
+				'<div class="codebox"><p>Code: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><pre><code>' . "\tline1\n  line2</code></pre></div>"
 			),
 			array(
 				'... http://example.org ...',
@@ -258,6 +258,10 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<a href="http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</a>'
 			),
 			array(
+				'[url]//localhost/phpbb/viewforum.php?f=1[/url]',
+				'<a href="//localhost/phpbb/viewforum.php?f=1" class="postlink">viewforum.php?f=1</a>'
+			),
+			array(
 				'[quote="[url=http://example.org]xxx[/url]"]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">xxx</a> wrote:</cite>...</div></blockquote>'
 			),
@@ -275,7 +279,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[quote=Username post_id=123]...[/quote]',
-				'<blockquote><div><cite>Username wrote: <a href="phpBB/viewtopic.php?p=123#p123" data-post-id="123" onclick="if(document.getElementById(hash.substr(1)))href=hash">↑</a></cite>...</div></blockquote>'
+				'<blockquote cite="phpBB/viewtopic.php?p=123#p123"><div><cite>Username wrote: <a href="phpBB/viewtopic.php?p=123#p123" data-post-id="123" onclick="if(document.getElementById(hash.substr(1)))href=hash">↑</a></cite>...</div></blockquote>'
 			),
 			array(
 				// Users are not allowed to submit their own URL for the post
@@ -284,7 +288,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[quote=Username time=58705871]...[/quote]',
-				'<blockquote><div><cite>Username wrote:<div class="responsive-hide">1971-11-11 11:11:11</div></cite>...</div></blockquote>'
+				'<blockquote><div><cite>Username wrote:<span class="responsive-hide">1971-11-11 11:11:11</span></cite>...</div></blockquote>'
 			),
 			array(
 				'[quote=Username user_id=123]...[/quote]',

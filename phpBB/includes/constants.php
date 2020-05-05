@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-@define('PHPBB_VERSION', '3.3.0-RC1-dev');
+@define('PHPBB_VERSION', '3.3.0');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -223,10 +223,10 @@ define('REFERER_VALIDATE_HOST', 1);
 define('REFERER_VALIDATE_PATH', 2);
 
 // phpbb_chmod() permissions
-@define('CHMOD_ALL', 7);
-@define('CHMOD_READ', 4);
-@define('CHMOD_WRITE', 2);
-@define('CHMOD_EXECUTE', 1);
+@define('CHMOD_ALL', 7); // @deprecated 3.2.10
+@define('CHMOD_READ', 4); // @deprecated 3.2.10
+@define('CHMOD_WRITE', 2); // @deprecated 3.2.10
+@define('CHMOD_EXECUTE', 1); // @deprecated 3.2.10
 
 // Captcha code length
 define('CAPTCHA_MIN_CHARS', 4);

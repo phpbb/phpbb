@@ -156,6 +156,7 @@ $u_permissions = array(
 	'u_download'	=> array(0, 1),
 	'u_attach'		=> array(0, 1),
 	'u_sig'			=> array(0, 1),
+	'u_emoji'		=> array(0, 1),
 	'u_pm_attach'	=> array(0, 1),
 	'u_pm_bbcode'	=> array(0, 1),
 	'u_pm_smilies'	=> array(0, 1),

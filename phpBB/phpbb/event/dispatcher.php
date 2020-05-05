@@ -13,11 +13,11 @@
 
 namespace phpbb\event;
 
-use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
-* Extension of the Symfony2 EventDispatcher
+* Extension of the Symfony EventDispatcher
 *
 * It provides an additional `trigger_event` method, which
 * gives some syntactic sugar for dispatching events. Instead
@@ -30,7 +30,7 @@ use Symfony\Component\EventDispatcher\Event;
 *     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_interface
+class dispatcher extends EventDispatcher implements dispatcher_interface
 {
 	/**
 	 * @var bool
@@ -40,7 +40,7 @@ class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_int
 	/**
 	* {@inheritdoc}
 	*/
-	public function trigger_event($eventName, $data = array())
+	public function trigger_event($eventName, $data = [])
 	{
 		$event = new \phpbb\event\data($data);
 		$this->dispatch($eventName, $event);

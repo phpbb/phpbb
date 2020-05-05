@@ -102,11 +102,11 @@
 			</form>
 		<!-- ENDIF -->
 
-		<!-- IF S_MESSAGE_REPORTED -->
+		{% if S_POST_REPORTED and not S_MCP_REPORT %}
 			<p class="post-notice reported">
-				<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span> <a href="{U_MCP_REPORT}"><strong>{L_MESSAGE_REPORTED}</strong></a>
+				<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPIC_REPORTED') }}</span> <a href="{{ U_MCP_REPORT }}"><strong>{{ lang('POST_REPORTED') }}</strong></a>
 			</p>
-		<!-- ENDIF -->
+		{% endif %}
 
 		{% EVENT mcp_post_text_before %}
 
@@ -329,9 +329,11 @@
 			</tbody>
 			</table>
 
-			<div class="buttons">
-				<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
-			</div>
+			{% if U_LOOKUP_ALL %}
+				<div class="buttons">
+					<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
+				</div>
+			{% endif %}
 
 			<div class="pagination">
 				<ul>

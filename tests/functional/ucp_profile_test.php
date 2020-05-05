@@ -26,7 +26,6 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 
 		$form = $crawler->selectButton('Submit')->form(array(
 			'pf_phpbb_facebook'	=> 'phpbb',
-			'pf_phpbb_googleplus' => 'phpbb',
 			'pf_phpbb_location'	=> 'Bertie´s Empire',
 			'pf_phpbb_skype'	=> 'phpbb.skype.account',
 			'pf_phpbb_twitter'	=> 'phpbb_twitter',
@@ -40,7 +39,6 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form();
 
 		$this->assertEquals('phpbb', $form->get('pf_phpbb_facebook')->getValue());
-		$this->assertEquals('phpbb', $form->get('pf_phpbb_googleplus')->getValue());
 		$this->assertEquals('Bertie´s Empire', $form->get('pf_phpbb_location')->getValue());
 		$this->assertEquals('phpbb.skype.account', $form->get('pf_phpbb_skype')->getValue());
 		$this->assertEquals('phpbb_twitter', $form->get('pf_phpbb_twitter')->getValue());

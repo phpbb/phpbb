@@ -13,12 +13,12 @@
 
 namespace phpbb\template\twig\node;
 
-class php extends \Twig_Node
+class php extends \Twig\Node\Node
 {
-	/** @var \Twig_Environment */
+	/** @var \Twig\Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Text $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig\Node\TextNode $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -28,9 +28,9 @@ class php extends \Twig_Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig_Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
-	public function compile(\Twig_Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 

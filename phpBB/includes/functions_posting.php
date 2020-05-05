@@ -66,11 +66,14 @@ function generate_smilies($mode, $forum_id)
 		* @event core.generate_smilies_count_sql_before
 		* @var int		forum_id	Forum where smilies are generated
 		* @var array	sql_ary		Array with the SQL query
+		* @var string	base_url	URL for the "More smilies" link and its pagination
 		* @since 3.2.9-RC1
+		* @changed 3.2.10-RC1 Added base_url
 		*/
 		$vars = [
 			'forum_id',
 			'sql_ary',
+			'base_url',
 		];
 		extract($phpbb_dispatcher->trigger_event('core.generate_smilies_count_sql_before', compact($vars)));
 
@@ -109,18 +112,52 @@ function generate_smilies($mode, $forum_id)
 
 	if ($mode == 'window')
 	{
-		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height, MIN(smiley_order) AS min_smiley_order
-			FROM ' . SMILIES_TABLE . '
-			GROUP BY smiley_url, smiley_width, smiley_height
-			ORDER BY min_smiley_order';
+		$sql_ary = [
+			'SELECT'	=> 's.smiley_url, MIN(s.emotion) AS emotion, MIN(s.code) AS code, s.smiley_width, s.smiley_height, MIN(s.smiley_order) AS min_smiley_order',
+			'FROM'		=> [
+				SMILIES_TABLE => 's',
+			],
+			'GROUP_BY'	=> 's.smiley_url, s.smiley_width, s.smiley_height',
+			'ORDER_BY'	=> 's.min_smiley_order',
+		];
+	}
+	else
+	{
+		$sql_ary = [
+			'SELECT'	=> 's.*',
+			'FROM'		=> [
+				SMILIES_TABLE => 's',
+			],
+			'WHERE'		=> 's.display_on_posting = 1',
+			'ORDER_BY'	=> 's.smiley_order',
+		];
+	}
+
+	/**
+	* Modify the SQL query that fetches the smilies
+	*
+	* @event core.generate_smilies_modify_sql
+	* @var string	mode		Smiley mode, either window or inline
+	* @var int		forum_id	Forum where smilies are generated, or 0 if composing a private message
+	* @var array	sql_ary		Array with SQL query data
+	* @since 3.2.10-RC1
+	* @since 3.3.1-RC1
+	*/
+	$vars = [
+		'mode',
+		'forum_id',
+		'sql_ary',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_modify_sql', compact($vars)));
+
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
+
+	if ($mode == 'window')
+	{
 		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], $start, 3600);
 	}
 	else
 	{
-		$sql = 'SELECT *
-			FROM ' . SMILIES_TABLE . '
-			WHERE display_on_posting = 1
-			ORDER BY smiley_order';
 		$result = $db->sql_query($sql, 3600);
 	}
 
@@ -139,7 +176,7 @@ function generate_smilies($mode, $forum_id)
 	*
 	* @event core.generate_smilies_modify_rowset
 	* @var string	mode		Smiley mode, either window or inline
-	* @var int		forum_id	Forum where smilies are generated
+	* @var int		forum_id	Forum where smilies are generated, or 0 if composing a private message
 	* @var array	smilies		Smiley rows fetched from the database
 	* @since 3.2.9-RC1
 	*/
@@ -183,9 +220,16 @@ function generate_smilies($mode, $forum_id)
 	* @var	string	mode			Mode of the smilies: window|inline
 	* @var	int		forum_id		The forum ID we are currently in
 	* @var	bool	display_link	Shall we display the "more smilies" link?
+	* @var string	base_url		URL for the "More smilies" link and its pagination
 	* @since 3.1.0-a1
+	* @changed 3.2.10-RC1 Added base_url
 	*/
-	$vars = array('mode', 'forum_id', 'display_link');
+	$vars = [
+		'mode',
+		'forum_id',
+		'display_link',
+		'base_url',
+	];
 	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
 
 	if ($mode == 'inline' && $display_link)
@@ -683,7 +727,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	try
 	{
-		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+		$phpbb_filesystem->phpbb_chmod($destination, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 	}
 	catch (\phpbb\filesystem\exception\filesystem_exception $e)
 	{
@@ -2701,7 +2745,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				$s_hidden_fields['delete_permanent'] = '1';
 			}
 
-			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
+			confirm_box(false, [$l_confirm, 1], build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
 

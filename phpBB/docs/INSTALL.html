@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="keywords" content="" />
-<meta name="description" content="phpBB 3.3.x Installation, updating and conversion informations" />
+<meta name="description" content="phpBB 3.3.x Installation, updating and conversion information" />
 <title>phpBB &bull; Install</title>
 
 <link href="assets/css/stylesheet.css" rel="stylesheet" type="text/css" media="screen" />
@@ -20,9 +20,9 @@
 			<div class="inner">
 
 			<div id="doc-description">
-				<a href="../index.php" id="logo"><img src="assets/images/site_logo.gif" alt="" /></a>
+				<a href="../index.php" id="logo"><span class="site_logo"></span></a>
 				<h1>phpBB 3.3.x Install</h1>
-				<p>phpBB 3.3.x Installation, updating and conversion informations</p>
+				<p>phpBB 3.3.x Installation, updating and conversion information</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
@@ -101,18 +101,18 @@
 
 		<div class="content">
 
-	<p>If you have basic knowledge of using FTP and are sure your hosting service or server will run phpBB3 you can use these steps to quickly get started. For a more detailed explanation you should skip this and go to <a href="#require">section 2</a> below.</p>
+	<p>If you have basic knowledge of using FTP and are sure your hosting service or server will run phpBB you can use these steps to quickly get started. For a more detailed explanation you should skip this and go to <a href="#require">section 2</a> below.</p>
 
 	<ol>
-		<li>Decompress the phpBB3 archive to a local directory on your system.</li>
+		<li>Decompress the phpBB archive to a local directory on your system.</li>
 		<li>Upload all the files contained in this archive (retaining the directory structure) to a web accessible directory on your server or hosting account.</li>
 		<li>Change the permissions on config.php to be writable by all (666 or -rw-rw-rw- within your FTP Client)</li>
 		<li>Change the permissions on the following directories to be writable by all (777 or -rwxrwxrwx within your FTP Client):<br />
 			<code>store/</code>, <code>cache/</code>, <code>files/</code> and <code>images/avatars/upload/</code>.</li>
-		<li>Point your web browser to the location where you uploaded the phpBB3 files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB3/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
+		<li>Point your web browser to the location where you uploaded the phpBB files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB3/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
 		<li>Click the <strong><em>INSTALL</em></strong> tab, follow the steps and fill out all the requested information.</li>
 		<li>Change the permissions on config.php to be writable only by yourself (644 or -rw-r--r-- within your FTP Client)</li>
-		<li>phpBB3 should now be available, please <strong>MAKE SURE</strong> you read at least <a href="#postinstall">Section 6</a> below for important, security related post-installation instructions, and also take note of <a href="#anti_spam">Section 7</a> regarding anti-spam measures.</li>
+		<li>phpBB should now be available, please <strong>MAKE SURE</strong> you read at least <a href="#postinstall">Section 6</a> below for important, security related post-installation instructions, and also take note of <a href="#anti_spam">Section 7</a> regarding anti-spam measures.</li>
 	</ol>
 
 	<p>If you experienced problems or do not know how to proceed with any of the steps above please read the rest of this document.</p>
@@ -133,7 +133,7 @@
 
 		<div class="content">
 
-	<p>phpBB 3.2.x has a few requirements which must be met before you are able to install and use it.</p>
+	<p>phpBB 3.3.x has a few requirements which must be met before you are able to install and use it.</p>
 
 	<ul>
 		<li>A webserver or web hosting account running on any major Operating System with support for PHP</li>
@@ -147,7 +147,7 @@
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP 7.1.0+</strong> but less than <strong>PHP 7.4</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 7.1.3+</strong> up to and including <strong>PHP 7.4</strong> with support for the database you intend to use.</li>
 		<li>The following PHP modules are required:
 		<ul>
 			<li>json</li>
@@ -353,7 +353,7 @@
 					<li>(The <code>ext/</code> directory</li>
 				</ul></li>
 
-				<li>Upload the contents of the 3.3.x Full Package into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
+				<li>Upload the contents of the 3.3.x Full Package (<strong>except</strong> for config.php) into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
 				<li>Browse to <code>/install/app.php/update</code></li>
 				<li>Read the notice <em>Update database only</em> and press <strong>Submit</strong></li>
 				<li>Delete the <code>install/</code> directory</li>
@@ -374,21 +374,21 @@
 
 		<div class="content">
 
-<p>This paragraph explains the steps necessary to convert your existing phpBB2 installation to phpBB3.</p>
+<p>This paragraph explains the steps necessary to convert your existing phpBB2 installation to phpBB 3.x.</p>
 
 <a name="prereq"></a><h3>5.i. Requirements before converting</h3>
 
-	<p>Before converting, we heavily recommend you do a <em>full backup of your database and files</em>! If you are unsure how to achieve this, please ask your hosting provider for advice. You basically need to follow the instructions given for <a href="#install">New installations</a>. Please <strong>do not</strong> overwrite any old files - install phpBB3 at a different location.</p>
+	<p>Before converting, we heavily recommend you do a <em>full backup of your database and files</em>! If you are unsure how to achieve this, please ask your hosting provider for advice. You basically need to follow the instructions given for <a href="#install">New installations</a>. Please <strong>do not</strong> overwrite any old files - install phpBB 3.x at a different location.</p>
 
-	<p>Once you made a backup of everything and also have a brand new phpBB3 installation, you can now begin the conversion.</p>
+	<p>Once you made a backup of everything and also have a brand new phpBB 3.x installation, you can now begin the conversion.</p>
 
-	<p>Note that the conversion requires <code>CREATE</code> and <code>DROP</code> privileges for the phpBB3 database user account.</p>
+	<p>Note that the conversion requires <code>CREATE</code> and <code>DROP</code> privileges for the phpBB 3.x database user account.</p>
 
 <a name="conversion"></a><h3>5.ii. Converting</h3>
 
-	<p>To begin the conversion, visit the <code>install/</code> folder of your phpBB3 installation (the same as you have done for installing). Now you will see a new tab <em>Convert</em>. Click this tab.</p>
+	<p>To begin the conversion, visit the <code>install/</code> folder of your phpBB 3.x installation (the same as you have done for installing). Now you will see a new tab <em>Convert</em>. Click this tab.</p>
 
-	<p>As with install, the conversion is automated. Your previous 2.0.x database tables will not be changed and the original 2.0.x files will remain unaltered. The conversion is actually only filling your phpBB3 database tables and copying additional data over to your phpBB3 installation. This has the benefit that if something goes wrong, you are able to either re-run the conversion or continue a conversion, while your old board is still accessible. We really recommend that you disable your old installation while converting, else you may have inconsistent data after the conversion.</p>
+	<p>As with install, the conversion is automated. Your previous 2.0.x database tables will not be changed and the original 2.0.x files will remain unaltered. The conversion is actually only filling your phpBB 3.x database tables and copying additional data over to your phpBB 3.x installation. This has the benefit that if something goes wrong, you are able to either re-run the conversion or continue a conversion, while your old board is still accessible. We really recommend that you disable your old installation while converting, else you may have inconsistent data after the conversion.</p>
 
 	<p>Please note that this conversion process may take quite some time and depending on your hosting provider this may result in it failing (due to web server resource limits or other timeout issues). If this is the case, you should ask your provider if they are willing to allow the convert script to temporarily exceed their limits (be nice and they will probably be quite helpful). If your host is unwilling to increase the limits to run the convertor, please see this article for performing the conversion on your local machine: <a href="https://www.phpbb.com/kb/article/offline-conversions/">Knowledge Base - Offline Conversions</a></p>
 
@@ -412,9 +412,9 @@
 
 	<p><strong>http 500 / white pages</strong> The conversion is a load-heavy procedure. Restrictions imposed by some server hosting providers can cause problems. The most common causes are: values too low for the PHP settings <code>memory_limit</code> and <code>max_execution_time</code>. Limits on the allowed CPU time are also a frequent cause for such errors, as are limits on the number of database queries allowed. If you cannot change such settings, then contact your hosting provider or run the conversion procedure on a different computer. The phpBB.com forums are also an excellent location to ask for support.</p>
 
-	<p><strong>Password conversion</strong> Due to the utf-8 based handling of passwords in phpBB3, it is not always possible to transfer all passwords. For passwords "lost in translation" the easiest workaround is to use the <em>I forgot my password</em> link on the login page.</p>
+	<p><strong>Password conversion</strong> Due to the utf-8 based handling of passwords in phpBB 3.x, it is not always possible to transfer all passwords. For passwords "lost in translation" the easiest workaround is to use the <em>I forgot my password</em> link on the login page.</p>
 
-	<p><strong>Path to your former board</strong> The convertor expects the relative path to your old board's files. So, for instance, if the old board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB3 installation is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
+	<p><strong>Path to your former board</strong> The convertor expects the relative path to your old board's files. So, for instance, if the old board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB 3.x installation is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
 
 	<p><strong>Missing images</strong> If your default board language's language pack does not include all images, then some images might be missing in your installation. Always use a complete language pack as default language.</p>
 

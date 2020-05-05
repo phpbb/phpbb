@@ -155,6 +155,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_thumb_width', '400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize', '12000');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_quality', '85');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_strip_metadata', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_max', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_login_limit_time', '21600');
@@ -185,7 +187,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
@@ -278,7 +280,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.0-RC1-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 
@@ -420,6 +422,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgname', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgpasswd', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgprofileinfo', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_download', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_emoji', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_hideonline', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_ignoreflood', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm', 1);
@@ -797,7 +800,6 @@ INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_len
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_twitter', 'profilefields.type.string', 'phpbb_twitter', '20', '1', '15', '', '', '[\w_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 10, 1, 'VIEW_TWITTER_PROFILE', 'http://twitter.com/%s');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_skype', 'profilefields.type.string', 'phpbb_skype', '20', '6', '32', '', '', '[a-zA-Z][\w\.,\-_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 11, 1, 'VIEW_SKYPE_PROFILE', 'skype:%s?userinfo');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_youtube', 'profilefields.type.string', 'phpbb_youtube', '20', '3', '60', '', '', '[a-zA-Z][\w\.,\-_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 12, 1, 'VIEW_YOUTUBE_CHANNEL', 'http://youtube.com/user/%s');
-INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_googleplus', 'profilefields.type.googleplus', 'phpbb_googleplus', '20', '3', '255', '', '', '[\w]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 13, 1, 'VIEW_GOOGLEPLUS_PROFILE', 'http://plus.google.com/%s');
 
 # User Notification Options (for first user)
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.post', 0, 2, 'notification.method.board');

@@ -21,37 +21,6 @@ if (!defined('IN_PHPBB'))
 
 // Common global functions
 /**
-* Load the autoloaders added by the extensions.
-*
-* @param string $phpbb_root_path Path to the phpbb root directory.
-*/
-function phpbb_load_extensions_autoloaders($phpbb_root_path)
-{
-	$iterator = new \RecursiveIteratorIterator(
-		new \phpbb\recursive_dot_prefix_filter_iterator(
-			new \RecursiveDirectoryIterator(
-				$phpbb_root_path . 'ext/',
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
-			)
-		),
-		\RecursiveIteratorIterator::SELF_FIRST
-	);
-	$iterator->setMaxDepth(2);
-
-	foreach ($iterator as $file_info)
-	{
-		if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
-		{
-			$filename = $file_info->getRealPath() . '/autoload.php';
-			if (file_exists($filename))
-			{
-				require $filename;
-			}
-		}
-	}
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @param int $num_chars Length of random string, defaults to 8.
@@ -3580,108 +3549,6 @@ function phpbb_optionset($bit, $set, $data)
 	return $data;
 }
 
-/**
-* Login using http authenticate.
-*
-* @param array	$param		Parameter array, see $param_defaults array.
-*
-* @return null
-*/
-function phpbb_http_login($param)
-{
-	global $auth, $user, $request;
-	global $config;
-
-	$param_defaults = array(
-		'auth_message'	=> '',
-
-		'autologin'		=> false,
-		'viewonline'	=> true,
-		'admin'			=> false,
-	);
-
-	// Overwrite default values with passed values
-	$param = array_merge($param_defaults, $param);
-
-	// User is already logged in
-	// We will not overwrite his session
-	if (!empty($user->data['is_registered']))
-	{
-		return;
-	}
-
-	// $_SERVER keys to check
-	$username_keys = array(
-		'PHP_AUTH_USER',
-		'Authorization',
-		'REMOTE_USER', 'REDIRECT_REMOTE_USER',
-		'HTTP_AUTHORIZATION', 'REDIRECT_HTTP_AUTHORIZATION',
-		'REMOTE_AUTHORIZATION', 'REDIRECT_REMOTE_AUTHORIZATION',
-		'AUTH_USER',
-	);
-
-	$password_keys = array(
-		'PHP_AUTH_PW',
-		'REMOTE_PASSWORD',
-		'AUTH_PASSWORD',
-	);
-
-	$username = null;
-	foreach ($username_keys as $k)
-	{
-		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
-		{
-			$username = htmlspecialchars_decode($request->server($k));
-			break;
-		}
-	}
-
-	$password = null;
-	foreach ($password_keys as $k)
-	{
-		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
-		{
-			$password = htmlspecialchars_decode($request->server($k));
-			break;
-		}
-	}
-
-	// Decode encoded information (IIS, CGI, FastCGI etc.)
-	if (!is_null($username) && is_null($password) && strpos($username, 'Basic ') === 0)
-	{
-		list($username, $password) = explode(':', base64_decode(substr($username, 6)), 2);
-	}
-
-	if (!is_null($username) && !is_null($password))
-	{
-		set_var($username, $username, 'string', true);
-		set_var($password, $password, 'string', true);
-
-		$auth_result = $auth->login($username, $password, $param['autologin'], $param['viewonline'], $param['admin']);
-
-		if ($auth_result['status'] == LOGIN_SUCCESS)
-		{
-			return;
-		}
-		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
-		{
-			send_status_line(401, 'Unauthorized');
-
-			trigger_error('NOT_AUTHORISED');
-		}
-	}
-
-	// Prepend sitename to auth_message
-	$param['auth_message'] = ($param['auth_message'] === '') ? $config['sitename'] : $config['sitename'] . ' - ' . $param['auth_message'];
-
-	// We should probably filter out non-ASCII characters - RFC2616
-	$param['auth_message'] = preg_replace('/[\x80-\xFF]/', '?', $param['auth_message']);
-
-	header('WWW-Authenticate: Basic realm="' . $param['auth_message'] . '"');
-	send_status_line(401, 'Unauthorized');
-
-	trigger_error('NOT_AUTHORISED');
-}
 
 /**
 * Escapes and quotes a string for use as an HTML/XML attribute value.
@@ -3728,54 +3595,6 @@ function phpbb_quoteattr($data, $entities = null)
 	}
 
 	return $data;
-}
-
-/**
-* Converts query string (GET) parameters in request into hidden fields.
-*
-* Useful for forwarding GET parameters when submitting forms with GET method.
-*
-* It is possible to omit some of the GET parameters, which is useful if
-* they are specified in the form being submitted.
-*
-* sid is always omitted.
-*
-* @param \phpbb\request\request $request Request object
-* @param array $exclude A list of variable names that should not be forwarded
-* @return string HTML with hidden fields
-*/
-function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
-{
-	$names = $request->variable_names(\phpbb\request\request_interface::GET);
-	$hidden = '';
-	foreach ($names as $name)
-	{
-		// Sessions are dealt with elsewhere, omit sid always
-		if ($name == 'sid')
-		{
-			continue;
-		}
-
-		// Omit any additional parameters requested
-		if (!empty($exclude) && in_array($name, $exclude))
-		{
-			continue;
-		}
-
-		$escaped_name = phpbb_quoteattr($name);
-
-		// Note: we might retrieve the variable from POST or cookies
-		// here. To avoid exposing cookies, skip variables that are
-		// overwritten somewhere other than GET entirely.
-		$value = $request->variable($name, '', true);
-		$get_value = $request->variable($name, '', true, \phpbb\request\request_interface::GET);
-		if ($value === $get_value)
-		{
-			$escaped_value = phpbb_quoteattr($value);
-			$hidden .= "<input type='hidden' name=$escaped_name value=$escaped_value />";
-		}
-	}
-	return $hidden;
 }
 
 /**
@@ -4119,7 +3938,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	/**
 	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
-	 * @deprecated 3.2.7 (To be removed: 3.3.0-a1)
+	 * @deprecated 3.2.7 (To be removed: 4.0.0-a1)
 	 */
 	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
 	if (!empty($form_token_login))
@@ -4246,7 +4065,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
+
+		'T_FONT_AWESOME_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
+		'T_FONT_AWESOME_V4SHIMS_LINK'	=> "{$web_path}assets/css/phpbb-fontawesome-v4-shims.min.css?assets_version=" . $config['assets_version'],
+
 		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery-3.4.1.min.js?assets_version=" . $config['assets_version'],
 		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
@@ -4316,15 +4138,17 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 * @param \phpbb\request\request_interface		$request	Request object
 * @param \phpbb\auth\auth						$auth		Auth object
 * @param \phpbb\db\driver\driver_interface		$db			Database connection
+ *
+ * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
 	global $phpbb_container;
 
-	if ($phpbb_container->getParameter('debug.sql_explain') && $request->variable('explain', false) && $auth->acl_get('a_'))
-	{
-		$db->sql_report('display');
-	}
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$controller_helper->display_sql_report();
 }
 
 /**
@@ -4404,8 +4228,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $phpEx;
-	global $request, $phpbb_dispatcher, $phpbb_admin_path;
+	global $phpbb_dispatcher, $phpbb_container, $template;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -4427,55 +4250,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	phpbb_check_and_display_sql_report($request, $auth, $db);
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
-	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
-		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
-
-		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id) : '')
-	);
-
-	// Call cron-type script
-	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('_cron.lock_check'))
-	{
-		$call_cron = true;
-		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
-
-		// Any old lock present?
-		if (!empty($config['cron_lock']))
-		{
-			$cron_time = explode(' ', $config['cron_lock']);
-
-			// If 1 hour lock is present we do not call cron.php
-			if ($cron_time[0] + 3600 >= $time_now)
-			{
-				$call_cron = false;
-			}
-		}
-	}
-
-	// Call cron job?
-	if ($call_cron)
-	{
-		global $phpbb_container;
-
-		/* @var $cron \phpbb\cron\manager */
-		$cron = $phpbb_container->get('cron.manager');
-		$task = $cron->find_one_ready_task();
-
-		if ($task)
-		{
-			$url = $task->get_url();
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
-		}
-		else
-		{
-			$cache->put('_cron.lock_check', true, 60);
-		}
-	}
+	$controller_helper->display_footer($run_cron);
 
 	/**
 	* Execute code and/or modify output before displaying the template.

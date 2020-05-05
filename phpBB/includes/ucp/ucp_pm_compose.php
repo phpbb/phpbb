@@ -307,6 +307,35 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			));
 		}
 
+		/**
+		* Alter the row of the post being quoted when composing a private message
+		*
+		* @event core.ucp_pm_compose_compose_pm_basic_info_query_after
+		* @var	array	post			Array with data of the post being quoted
+		* @var	int		msg_id			topic_id in the page request
+		* @var	int		to_user_id		The id of whom the message is to
+		* @var	int		to_group_id		The id of the group whom the message is to
+		* @var	bool	submit			Whether the user is sending the PM or not
+		* @var	bool	preview			Whether the user is previewing the PM or not
+		* @var	string	action			One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+		* @var	bool	delete			Whether the user is deleting the PM
+		* @var	int		reply_to_all	Value of reply_to_all request variable.
+		* @since 3.2.10-RC1
+		* @since 3.3.1-RC1
+		*/
+		$vars = [
+			'post',
+			'msg_id',
+			'to_user_id',
+			'to_group_id',
+			'submit',
+			'preview',
+			'action',
+			'delete',
+			'reply_to_all',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_after', compact($vars)));
+
 		if (!$post)
 		{
 			// If editing it could be the recipient already read the message...
@@ -751,6 +780,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				'address_list'			=> $address_list
 			);
 
+			/**
+			 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+			 * Using their Numeric Character Reference's Hexadecimal notation.
+			 */
+			$subject = utf8_encode_ucr($subject);
+
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm(($folder_id == PRIVMSGS_DRAFTBOX && $submit) ? 'submit_draft' : $action, $subject, $pm_data, ($save) ? PRIVMSGS_DRAFTBOX : PRIVMSGS_OUTBOX);
 
@@ -881,7 +916,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$quote_attributes['post_id'] = $post['msg_id'];
 		}
-
+		if ($action === 'quote')
+		{
+			$quote_attributes['msg_id'] = $post['msg_id'];
+		}
 		/** @var \phpbb\language\language $language */
 		$language = $phpbb_container->get('language');
 		/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */

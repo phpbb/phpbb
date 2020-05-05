@@ -33,7 +33,7 @@ class avatar extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			new \Twig_SimpleFunction('avatar', array($this, 'get_avatar')),
+			new \Twig\TwigFunction('avatar', array($this, 'get_avatar')),
 		);
 	}
 

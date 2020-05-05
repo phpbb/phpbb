@@ -227,15 +227,7 @@ class user extends \phpbb\session
 
 		$this->language->set_user_language($user_lang_name);
 
-		try
-		{
-			$this->timezone = new \DateTimeZone($user_timezone);
-		}
-		catch (\Exception $e)
-		{
-			// If the timezone the user has selected is invalid, we fall back to UTC.
-			$this->timezone = new \DateTimeZone('UTC');
-		}
+		$this->create_timezone($user_timezone);
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
@@ -262,8 +254,8 @@ class user extends \phpbb\session
 		}
 
 		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE . " s
-			WHERE s.style_id = $style_id";
+			FROM ' . STYLES_TABLE . '
+			WHERE style_id = ' . (int) $style_id;
 		$result = $db->sql_query($sql, 3600);
 		$this->style = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -274,8 +266,8 @@ class user extends \phpbb\session
 			$style_id = $this->data['user_style'];
 
 			$sql = 'SELECT *
-				FROM ' . STYLES_TABLE . " s
-				WHERE s.style_id = $style_id";
+				FROM ' . STYLES_TABLE . '
+				WHERE style_id = ' . (int) $style_id;
 			$result = $db->sql_query($sql, 3600);
 			$this->style = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -635,7 +627,7 @@ class user extends \phpbb\session
 		if (!$format_date_override)
 		{
 			$time = new $this->datetime($this, '@' . (int) $gmepoch, $utc);
-			$time->setTimezone($this->timezone);
+			$time->setTimezone($this->create_timezone());
 
 			return $time->format($format, $forcedate);
 		}
@@ -643,6 +635,36 @@ class user extends \phpbb\session
 		{
 			return $format_date_override;
 		}
+	}
+
+	/**
+	 * Create a DateTimeZone object in the context of the current user
+	 *
+	 * @param string $user_timezone Time zone of the current user.
+	 * @return DateTimeZone DateTimeZone object linked to the current users locale
+	 */
+	public function create_timezone($user_timezone = null)
+	{
+		if (!$this->timezone)
+		{
+			if (!$user_timezone)
+			{
+				global $config;
+				$user_timezone = ($this->data['user_id'] != ANONYMOUS) ? $this->data['user_timezone'] : $config['board_timezone'];
+			}
+
+			try
+			{
+				$this->timezone = new \DateTimeZone($user_timezone);
+			}
+			catch (\Exception $e)
+			{
+				// If the timezone the user has selected is invalid, we fall back to UTC.
+				$this->timezone = new \DateTimeZone('UTC');
+			}
+		}
+
+		return $this->timezone;
 	}
 
 	/**
@@ -655,7 +677,7 @@ class user extends \phpbb\session
 	*/
 	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
 	{
-		$timezone = $timezone ?: $this->timezone;
+		$timezone = $timezone ?: $this->create_timezone();
 		return new $this->datetime($this, $time, $timezone);
 	}
 
@@ -669,7 +691,7 @@ class user extends \phpbb\session
 	*/
 	public function get_timestamp_from_format($format, $time, \DateTimeZone $timezone = null)
 	{
-		$timezone = $timezone ?: $this->timezone;
+		$timezone = $timezone ?: $this->create_timezone();
 		$date = \DateTime::createFromFormat($format, $time, $timezone);
 		return ($date !== false) ? $date->format('U') : false;
 	}

@@ -25,10 +25,12 @@ class kernel_terminate_subscriber implements EventSubscriberInterface
 	* primarily cleanup stuff.
 	*
 	* @param PostResponseEvent $event
-	* @return null
+	* @return void
 	*/
 	public function on_kernel_terminate(PostResponseEvent $event)
 	{
+		garbage_collection();
+
 		exit_handler();
 	}
 

@@ -14,12 +14,12 @@
 
 namespace phpbb\template\twig\node;
 
-class includephp extends \Twig_Node
+class includephp extends \Twig\Node\Node
 {
-	/** @var \Twig_Environment */
+	/** @var \Twig\Environment */
 	protected $environment;
 
-	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $ignoreMissing = false, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $ignoreMissing = false, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -29,9 +29,9 @@ class includephp extends \Twig_Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig_Compiler A Twig_Compiler instance
+	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
-	public function compile(\Twig_Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 
@@ -80,7 +80,7 @@ class includephp extends \Twig_Node
 		{
 			$compiler
 				->outdent()
-				->write("} catch (\Twig_Error_Loader \$e) {\n")
+				->write("} catch (\Twig\Error\LoaderError \$e) {\n")
 				->indent()
 				->write("// ignore missing template\n")
 				->outdent()

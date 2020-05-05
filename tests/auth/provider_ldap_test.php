@@ -53,11 +53,21 @@ class phpbb_auth_provider_ldap_test extends phpbb_database_test_case
 	 */
 	public function test_init()
 	{
+		if (!extension_loaded('ldap'))
+		{
+			$this->markTestSkipped('LDAP extension not available.');
+		}
+
 		$this->assertFalse($this->provider->init());
 	}
 
 	public function test_login()
 	{
+		if (!extension_loaded('ldap'))
+		{
+			$this->markTestSkipped('LDAP extension not available.');
+		}
+
 		$username = 'admin';
 		$password = 'adminadmin';
 

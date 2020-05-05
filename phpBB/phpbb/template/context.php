@@ -384,7 +384,9 @@ class context
 		if (is_array($key))
 		{
 			// Search array to get correct position
-			list($search_key, $search_value) = @each($key);
+			$search_key = key($key);
+			$search_value = current($key);
+
 			foreach ($block as $i => $val_ary)
 			{
 				if ($val_ary[$search_key] === $search_value)
@@ -481,7 +483,8 @@ class context
 		if (is_array($key))
 		{
 			// Search array to get correct position
-			list($search_key, $search_value) = @each($key);
+			$search_key = key($key);
+			$search_value = current($key);
 
 			$key = null;
 			foreach ($block as $i => $val_ary)

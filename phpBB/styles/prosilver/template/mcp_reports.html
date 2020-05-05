@@ -46,7 +46,9 @@
 					<!-- IF S_PM -->
 					<dt>
 						<div class="list-inner">
-							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <br />
+							<a href="{{ postrow.U_VIEW_DETAILS }}" class="topictitle">{{ postrow.PM_SUBJECT }}</a>
+							{% if postrow.ATTACH_ICON_IMG %} <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i>{% endif %}
+							<br>
 							<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
 							<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
 							<div class="responsive-show" style="display: none;">
@@ -60,7 +62,9 @@
 					<!-- ELSE -->
 					<dt>
 						<div class="list-inner">
-							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <br />
+							<a href="{{ postrow.U_VIEW_DETAILS }}" class="topictitle">{{ postrow.POST_SUBJECT }}</a>
+							{% if postrow.ATTACH_ICON_IMG %} <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i>{% endif %}
+							<br>
 							<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 							<div class="responsive-show" style="display: none;">
 								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
@@ -81,7 +85,13 @@
 
 		<div class="action-bar bottom">
 			<!-- INCLUDE display_options.html -->
-			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" onClick="document.getElementById('mcp').submit()" /> <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
+			<!-- IF TOPIC_ID -->
+				<label>
+					<input type="hidden" name="t" value="0">
+					<input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" onClick="document.getElementById('mcp').submit()" />
+					<strong>{L_ONLY_TOPIC}</strong>
+				</label>
+			<!-- ENDIF -->
 
 			<div class="pagination">
 				{TOTAL_REPORTS}
