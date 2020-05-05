@@ -200,7 +200,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContains('Are you sure that you wish to delete the data associated with “phpBB Moo Extension”?', $crawler->filter('#main')->text());
+		$this->assertContains('Are you sure that you wish to delete the data associated with “phpBB Moo Extension”?', $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_actions()
@@ -211,7 +211,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Correctly submit the enable form
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton('enable')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
@@ -221,7 +221,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Correctly submit the disable form
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton('disable')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
@@ -231,7 +231,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Correctly submit the delete data form
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$form = $crawler->selectButton('confirm')->form();
+		$form = $crawler->selectButton('delete_data')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
 

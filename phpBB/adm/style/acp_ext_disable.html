@@ -1,0 +1,34 @@
+{% INCLUDE 'overall_header.html' %}
+
+	<a id="maincontent"></a>
+
+	<h1>{{ lang('EXTENSIONS_ADMIN') }}</h1>
+
+	<p>{{ lang('EXTENSIONS_EXPLAIN') }}</p>
+	<p>{{ lang('EXTENSION_DISABLE_EXPLAIN') }}</p>
+
+	{% if S_PRE_STEP %}
+		<fieldset>
+			<h2>{{ lang('CONFIRM') }}</h2>
+			<p>{{ CONFIRM_MESSAGE }}</p>
+		</fieldset>
+
+		<form id="acp_extensions" method="post" action="{{ U_DISABLE }}">
+			<fieldset class="submit-buttons">
+				<input class="button1" type="submit" name="disable" value="{{ lang('EXTENSION_DISABLE') }}">
+				<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}">
+			</fieldset>
+		</form>
+	{% elseif S_NEXT_STEP %}
+		<div class="successbox notice">
+			<p>{{ lang('EXTENSION_DISABLE_IN_PROGRESS') }}</p>
+		</div>
+	{% else %}
+		<div class="successbox">
+			<p>{{ lang('EXTENSION_DISABLE_SUCCESS') }}</p>
+			<br>
+			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
+		</div>
+	{% endif %}
+
+{% INCLUDE 'overall_footer.html' %}

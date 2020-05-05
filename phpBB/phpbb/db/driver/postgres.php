@@ -37,7 +37,7 @@ class postgres extends \phpbb\db\driver\driver
 
 		if ($sqlpassword)
 		{
-			$connect_string .= "password=$sqlpassword ";
+			$connect_string .= "password='$sqlpassword' ";
 		}
 
 		if ($sqlserver)

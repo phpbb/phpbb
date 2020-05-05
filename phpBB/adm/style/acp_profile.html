@@ -21,8 +21,11 @@
 
 	<!-- IF S_STEP_ONE -->
 
+		{% EVENT acp_profile_options_before %}
+
 		<fieldset>
 			<legend>{L_TITLE}</legend>
+		{% EVENT acp_profile_basic_options_before %}
 		<dl>
 			<dt><label>{L_FIELD_TYPE}{L_COLON}</label><br /><span>{L_FIELD_TYPE_EXPLAIN}</span></dt>
 			<dd><strong>{FIELD_TYPE}</strong></dd>
@@ -43,7 +46,10 @@
 			<dd><label><input type="radio" class="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
+		{% EVENT acp_profile_basic_options_after %}
 		</fieldset>
+
+		{% EVENT acp_profile_visibility_options_before %}
 
 		<fieldset>
 			<legend>{L_VISIBILITY_OPTION}</legend>
@@ -87,7 +93,10 @@
 			<dd><input class="text medium" type="text" name="field_contact_url" id="field_contact_url" value="{FIELD_CONTACT_URL}" /> <label for="field_contact_url">{L_FIELD_CONTACT_URL}</label></dd>
 			<!-- EVENT acp_profile_contact_last -->
 		</dl>
+		{% EVENT acp_profile_contact_after %}
 		</fieldset>
+
+		{% EVENT acp_profile_visibility_options_after %}
 
 		<!-- IF S_EDIT_MODE -->
 			<fieldset class="quick">

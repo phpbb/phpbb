@@ -333,16 +333,17 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 	public function install_ext($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset.submit-buttons input.button2')));
 
-		$this->find_element('cssSelector', "input[value='Yes']")->submit();
-		$this->add_lang('acp/extensions');
+		$this->find_element('cssSelector', "input[value='" . $this->lang('EXTENSION_ENABLE') . "']")->submit();
 
 		try
 		{
@@ -368,16 +369,17 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 	public function disable_ext($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset.submit-buttons input.button2')));
 
-		$this->find_element('cssSelector', "input[value='Yes']")->submit();
-		$this->add_lang('acp/extensions');
+		$this->find_element('cssSelector', "input[value='" . $this->lang('EXTENSION_DISABLE') . "']")->submit();
 
 		try
 		{
@@ -403,16 +405,17 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 	public function delete_ext_data($extension)
 	{
+		$this->add_lang('acp/extensions');
+
 		$this->login();
 		$this->admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset div input.button2')));
+		$this->assertNotEmpty(count($this->find_element('cssSelector', 'div.main fieldset.submit-buttons input.button2')));
 
-		$this->find_element('cssSelector', "input[value='Yes']")->submit();
-		$this->add_lang('acp/extensions');
+		$this->find_element('cssSelector', "input[value='" . $this->lang('EXTENSION_DELETE_DATA') . "']")->submit();
 
 		try
 		{
