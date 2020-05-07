@@ -340,9 +340,12 @@
 	<br class="responsive-hide" /><br class="responsive-hide" />
 
 	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
-		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
-		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set-permissions'].reset(); init_colours(active_pmask + active_fmask);" />
-		{S_FORM_TOKEN}
+		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />&nbsp;
+			<input class="button2" type="button"  id="reset" name="cancel" value="{L_RESET}" onclick="document.forms['set-permissions'].reset(); init_colours(active_pmask + active_fmask);" />
+			{S_FORM_TOKEN}
+		</p>
 	</fieldset>
 
 	<br class="responsive-hide" /><br class="responsive-hide" />
