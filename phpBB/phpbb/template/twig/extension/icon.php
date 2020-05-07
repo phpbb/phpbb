@@ -164,7 +164,7 @@ class icon extends \Twig\Extension\AbstractExtension
 				'CLASSES'		=> (string) $classes,
 				'ICON'			=> (string) $icon,
 				'SOURCE'		=> (string) $source,
-				'TITLE'			=> (string) $title,
+				'TITLE'			=> (string) $title && $type === 'svg' ? unique_id() : '',
 				'VIEW_BOX'		=> (string) $view_box,
 				'S_HIDDEN'		=> (bool) $hidden,
 			]);
@@ -258,7 +258,7 @@ class icon extends \Twig\Extension\AbstractExtension
 	 * 		'lock': topicrow.S_TOPIC_LOCKED,
 	 * 		'fire': topicrow.S_TOPIC_HOT,
 	 * 		'file': true,
-	 * }, 'MY_TITLE', true) }}
+	 * }, lang('MY_TITLE'), true) }}
 	 *
 	 * @param array		$icons			Array of icons and their booleans
 	 * @return string					The first 'true' icon
