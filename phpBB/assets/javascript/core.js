@@ -1052,11 +1052,11 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	let $anchor;
-	let updateAll = $(this).data('update-all');
-	let toggleText;
-	let toggleUrl;
-	let toggleIcon;
+	var $anchor;
+	var updateAll = $(this).data('update-all');
+	var toggleText;
+	var toggleUrl;
+	var toggleIcon;
 
 	if (updateAll !== undefined && updateAll.length) {
 		$anchor = $(updateAll);
