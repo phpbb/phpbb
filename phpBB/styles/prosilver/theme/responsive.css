@@ -581,6 +581,10 @@
 		margin-left: 0 !important;
 	}
 
+	.nav-footer.linklist .in-menu {
+		display: none !important;
+	}
+
 	/* post-buttons */
 
 	.has-profile .post-buttons {
@@ -591,6 +595,7 @@
 		display: none;
 	}
 
+	.nav-footer.linklist .post-buttons-responsive-menu .in-menu,
 	.post-buttons-responsive-menu,
 	.post-button-responsive,
 	.post-buttons-responsive-menu .post-buttons-label {

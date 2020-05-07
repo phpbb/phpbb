@@ -1379,7 +1379,7 @@ phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
 * Dropdown toggle event handler
 * This handler is used by phpBB.registerDropdown() and other functions
 */
-phpbb.toggleDropdown = function() {
+phpbb.toggleDropdown = function(event_) {
 	var $this = $(this),
 		options = $this.data('dropdown-options'),
 		parent = options.parent,
@@ -1387,6 +1387,9 @@ phpbb.toggleDropdown = function() {
 		direction;
 
 	if (!visible) {
+		// Prevent link default action
+		event_.preventDefault();
+		event_.stopPropagation();
 		// Hide other dropdown menus
 		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 
