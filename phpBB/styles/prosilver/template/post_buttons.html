@@ -1,0 +1,44 @@
+<!-- EVENT viewtopic_body_post_buttons_before -->
+<!-- IF postrow.U_EDIT -->
+	<li>
+		<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:pencil', lang('BUTTON_EDIT'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- IF postrow.U_DELETE -->
+	<li>
+		<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:times', lang('BUTTON_DELETE'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- IF postrow.U_REPORT -->
+	<li>
+		<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:exclamation', lang('BUTTON_REPORT'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- IF postrow.U_WARN -->
+	<li>
+		<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:exclamation-triangle', lang('BUTTON_WARN'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- IF postrow.U_INFO -->
+	<li>
+		<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:info', lang('BUTTON_INFORMATION'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- IF postrow.U_QUOTE -->
+	<li>
+		<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button button-icon-only">
+			{{ Icon('iconify', 'fa:quote-left', lang('BUTTON_QUOTE'), true, 'c-button-icon') }}
+		</a>
+	</li>
+<!-- ENDIF -->
+<!-- EVENT viewtopic_body_post_buttons_after -->
