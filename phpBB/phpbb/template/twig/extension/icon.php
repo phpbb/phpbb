@@ -164,7 +164,8 @@ class icon extends \Twig\Extension\AbstractExtension
 				'CLASSES'		=> (string) $classes,
 				'ICON'			=> (string) $icon,
 				'SOURCE'		=> (string) $source,
-				'TITLE'			=> (string) $title && $type === 'svg' ? unique_id() : '',
+				'TITLE'			=> (string) $title,
+				'TITLE_ID'		=> $title && $type === 'svg' ? unique_id() : '',
 				'VIEW_BOX'		=> (string) $view_box,
 				'S_HIDDEN'		=> (bool) $hidden,
 			]);
