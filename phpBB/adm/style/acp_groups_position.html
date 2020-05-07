@@ -15,13 +15,15 @@
 				<label><input type="radio" name="legend_sort_groupname" class="radio" value="0"<!-- IF not LEGEND_SORT_GROUPNAME --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 			</dd>
 		</dl>
-
-	<p class="submit-buttons">
-		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" name="reset" value="{L_RESET}" />
-		<input type="hidden" name="action" value="set_config_legend" />
-		{S_FORM_TOKEN}
-	</p>
+	</fieldset>
+	<fieldset>
+		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" name="reset" value="{L_RESET}" />
+			<input type="hidden" name="action" value="set_config_legend" />
+			{S_FORM_TOKEN}
+		</p>
 	</fieldset>
 	</form>
 

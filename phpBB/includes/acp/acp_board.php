@@ -141,12 +141,10 @@ class acp_board
 					'title'	=> 'ACP_AVATAR_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_AVATAR_SETTINGS',
-
 						'avatar_min_width'		=> array('lang' => 'MIN_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_min_height'		=> array('lang' => 'MIN_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_max_width'		=> array('lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
 						'avatar_max_height'		=> array('lang' => 'MAX_AVATAR_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
-
 						'allow_avatar'			=> array('lang' => 'ALLOW_AVATARS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
@@ -158,9 +156,7 @@ class acp_board
 					$display_vars['vars'] += $avatar_vars;
 				}
 
-				$display_vars['vars'] += [
-					'legend2'	=> 'ACP_SUBMIT_CHANGES'
-				];
+				$display_vars['vars']['legend2'] = 'ACP_SUBMIT_CHANGES';
 			break;
 
 			case 'message':

@@ -7,7 +7,7 @@
 <p>{L_ACP_PRUNE_USERS_EXPLAIN}</p>
 
 <form id="acp_prune" method="post" action="{U_ACTION}">
-	
+
 <fieldset>
 	<legend>{L_CRITERIA}</legend>
 <dl>
@@ -66,15 +66,19 @@
 	<dd><label><input type="radio" class="radio" name="action" value="delete" /> {L_DELETE_USERS}</label>
 		<label><input type="radio" class="radio" id="deactivate" name="action" value="deactivate" checked="checked" /> {L_DEACTIVATE}</label></dd>
 </dl>
-
-<p class="submit-buttons">
-	<input type="hidden" name="prune" value="1" />
-
-	<input class="button1" type="submit" id="update" name="update" value="{L_SUBMIT}" />&nbsp;
-	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	{S_FORM_TOKEN}
-</p>
 </fieldset>
+
+<fieldset>
+	<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+	<p class="submit-buttons">
+		<input type="hidden" name="prune" value="1" />
+
+		<input class="button1" type="submit" id="update" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
+	</p>
+</fieldset>
+
 </form>
 
 <!-- INCLUDE overall_footer.html -->
