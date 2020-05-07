@@ -57,12 +57,14 @@
 
 		<!-- ENDIF -->
 	<!-- END options -->
+	</fieldset>
 
-	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	</p>
-
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</p>
 	</fieldset>
 
 	<!-- IF not S_SECURE_DOWNLOADS -->
@@ -209,7 +211,7 @@
 
 		</fieldset>
 		<fieldset>
-			<legend>{L_ACP_SUBMIT_CHANGES}</legend>	
+			<legend>{L_ACP_SUBMIT_CHANGES}</legend>
 				<p class="submit-buttons">
 					<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 					<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
