@@ -452,24 +452,13 @@ function parseDocument($container) {
 	$container.find(selector).each(function() {
 		var $this = $(this),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
+			filterLast = '[data-last-responsive]',
 			$linksAll = $this.children(),
 			$linksNotSkip = $linksAll.not(filterSkip), // All items that can potentially be hidden
 			$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
 			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
 			persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
-			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>',
 			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occurred.
-
-		// Add a hidden drop-down menu to each links list (except those that already have one)
-		if (!persistent) {
-			if ($linksNotSkip.is('.rightside')) {
-				$linksNotSkip.filter('.rightside:first').before(html);
-				$this.children('.responsive-menu').addClass('rightside');
-			} else {
-				$this.append(html);
-			}
-		}
 
 		// Set some object references and initial states
 		var $menu = $this.children('.responsive-menu'),
