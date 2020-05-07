@@ -254,17 +254,70 @@
 		<!-- IF not S_IS_BOT -->
 			<!-- IF $SHOW_POST_BUTTONS -->
 				<ul class="post-buttons">
-					<!-- INCLUDE post_buttons.html -->
-						<li class="post-buttons-responsive-menu dropdown-container">
-							<a href="javascript:void(0);" class="button button-icon-only post-button-responsive dropdown-toggle">
-								{{ Icon('iconify', 'fa:bars', '', true, 'c-button-icon') }}
-							</a>
-							<div class="dropdown">
-								<div class="pointer">
-									<div class="pointer-inner"></div>
-								</div>
+					{% with {'post_buttons_hide_text': true} %}
+						{% block post_buttons %}
+							{% EVENT viewtopic_body_post_buttons_before %}
+
+							{% if postrow.U_EDIT %}
+								<li>
+									<a href="{{ postrow.U_EDIT }}" title="{{ lang('EDIT_POST') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:pencil', lang('BUTTON_EDIT'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_DELETE %}
+								<li>
+									<a href="{{ postrow.U_DELETE }}" title="{{ lang('DELETE_POST') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:times', lang('BUTTON_DELETE'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_REPORT %}
+								<li>
+									<a href="{{ postrow.U_REPORT }}" title="{{ lang('REPORT_POST') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:exclamation', lang('BUTTON_REPORT'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_WARN %}
+								<li>
+									<a href="{{ postrow.U_WARN }}" title="{{ lang('WARN_USER') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:exclamation-triangle', lang('BUTTON_WARN'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_INFO %}
+								<li>
+									<a href="{{ postrow.U_INFO }}" title="{{ lang('INFORMATION') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:info', lang('BUTTON_INFORMATION'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_QUOTE %}
+								<li>
+									<a href="{{ postrow.U_QUOTE }}" title="{{ lang('REPLY_WITH_QUOTE') }}" class="button button-icon-only">
+										{{ Icon('iconify', 'fa:quote-left', lang('BUTTON_QUOTE'), post_buttons_hide_text, 'c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+
+							{% EVENT viewtopic_body_post_buttons_after %}
+						{% endblock post_buttons %}
+					{% endwith %}
+
+					<li class="post-buttons-responsive-menu dropdown-container">
+						<a href="javascript:void(0);" class="button button-icon-only post-button-responsive dropdown-toggle">
+							{{ Icon('iconify', 'fa:bars', '', true, 'c-button-icon') }}
+						</a>
+						<div class="dropdown">
+							<div class="pointer">
+								<div class="pointer-inner"></div>
+							</div>
+
 							<ul class="dropdown-contents">
-								<!-- INCLUDE post_buttons.html -->
+								{% with {'post_buttons_hide_text': false} %}
+									{{ block('post_buttons', _self) }}
+								{% endwith %}
 							</ul>
 						</div>
 					</li>
