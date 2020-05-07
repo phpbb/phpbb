@@ -187,12 +187,12 @@
 	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button1 button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
 	<!-- IF U_PREVIOUS_PM -->
 		<a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
-			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN', lang('VIEW_PREVIOUS_PM'), false, 'c-return-arrow-icon') }}
+			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN, lang('VIEW_PREVIOUS_PM'), false, 'c-return-arrow-icon') }}
 		</a>
 	<!-- ENDIF -->
 	<!-- IF U_NEXT_PM -->
 		<a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">
-			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_END', lang('VIEW_NEXT_PM'), false, 'c-return-arrow-icon') }}
+			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_END, lang('VIEW_NEXT_PM'), false, 'c-return-arrow-icon') }}
 		</a>
 	<!-- ENDIF -->
 	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button1 button button-form-bold" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
