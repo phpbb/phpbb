@@ -270,6 +270,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
+			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['height'] : '',
