@@ -23,6 +23,10 @@ svg {
 	height: 18px;
 }
 
+.o-icon-src-fa {
+	padding: 2px;
+}
+
 .o-icon-font {
 	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
 	font-size: 14px;
@@ -42,10 +46,6 @@ svg {
 .o-icon + span,
 span + .o-icon {
 	padding-left: 4px;
-}
-
-.o-icon.o-icon-src-mdi + span {
-	padding-left: 2px;
 }
 
 blockquote cite:before,
