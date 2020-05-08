@@ -424,9 +424,9 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 }
 
 /**
- * Delete User(s) and all related.
+ * Delete user(s) and their related data
  *
- * @param string	$mode				Mode (retain|delete)
+ * @param string	$mode				Mode of posts deletion (retain|delete)
  * @param mixed		$user_ids			Either an array of integers or an integer
  * @param bool		$retain_username	True if username should be retained, false otherwise
  * @return bool
@@ -467,7 +467,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	 * @event core.delete_user_before
 	 * @var string	mode				Mode of posts deletion (retain|delete)
 	 * @var array	user_ids			ID(s) of the user(s) bound to be deleted
-	 * @var mixed	retain_username		True if username should be retained, false otherwise
+	 * @var bool	retain_username		True if username should be retained, false otherwise
 	 * @var array	user_rows			Array containing data of the user(s) bound to be deleted
 	 * @since 3.1.0-a1
 	 * @changed 3.2.4-RC1 Added user_rows
@@ -772,12 +772,12 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_transaction('commit');
 
 	/**
-	 * Event after of the user(s) delete action has been performed
+	 * Event after the user(s) delete action has been performed
 	 *
 	 * @event core.delete_user_after
 	 * @var string	mode				Mode of posts deletion (retain|delete)
 	 * @var array	user_ids			ID(s) of the deleted user(s)
-	 * @var mixed	retain_username		True if username should be retained, false otherwise
+	 * @var bool	retain_username		True if username should be retained, false otherwise
 	 * @var array	user_rows			Array containing data of the deleted user(s)
 	 * @since 3.1.0-a1
 	 * @changed 3.2.2-RC1 Added user_rows
