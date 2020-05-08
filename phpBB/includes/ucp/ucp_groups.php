@@ -440,10 +440,10 @@ class ucp_groups
 						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 						'GROUP_TYPE'			=> $group_row['group_type'],
 
-						'AVATAR'				=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
-						'AVATAR_IMAGE'			=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
-						'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-						'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+						'AVATAR'				=> !empty($avatar) ? $avatar : '',
+						'AVATAR_IMAGE'			=> !empty($avatar) ? $avatar : '',
+						'AVATAR_WIDTH'			=> isset($group_row['group_avatar_width']) ? $group_row['group_avatar_width'] : '',
+						'AVATAR_HEIGHT'			=> isset($group_row['group_avatar_height']) ? $group_row['group_avatar_height'] : '',
 					));
 				}
 
@@ -495,21 +495,22 @@ class ucp_groups
 						{
 							if (confirm_box(true))
 							{
+								$avatar_data['id'] = substr($avatar_data['id'], 1);
 								$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
 								$cache->destroy('sql', GROUPS_TABLE);
 
-								$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+								$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 								trigger_error($user->lang[$message] . $return_page);
 							}
 							else
 							{
 								confirm_box(false, $user->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
-										'avatar_delete'     => true,
-										'i'                 => $id,
-										'mode'              => $mode,
-										'g'			        => $group_id,
-										'action'            => $action))
-								);
+									'avatar_delete'     => true,
+									'i'                 => $id,
+									'mode'              => $mode,
+									'g'			        => $group_id,
+									'action'            => $action,
+								)));
 							}
 						}
 
