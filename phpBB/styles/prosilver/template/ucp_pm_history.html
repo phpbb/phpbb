@@ -34,7 +34,7 @@
 			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
 
 			<p class="author">
-				<span title="{history_row.MINI_POST}">{{ Icon('iconify', 'fa:file', history_row.MINI_POST, true, 'c-topic-icon') }}</span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
+				{{ Icon('iconify', 'fa:file', history_row.MINI_POST, true, 'c-topic-icon') }} {L_SENT_AT} {L_COLON} <strong>{history_row.SENT_DATE}</strong>
 				<br />
 				{L_MESSAGE_BY_AUTHOR} <!-- EVENT ucp_pm_history_row_message_author_username_prepend -->{history_row.MESSAGE_AUTHOR_FULL}<!-- EVENT ucp_pm_history_row_message_author_username_append -->
 			</p>
