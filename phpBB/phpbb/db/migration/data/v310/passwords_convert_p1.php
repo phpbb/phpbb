@@ -17,7 +17,7 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v310\passwords_p2');
+		return array('\phpbb\db\migration\data\v310\dev');
 	}
 
 	public function update_data()
