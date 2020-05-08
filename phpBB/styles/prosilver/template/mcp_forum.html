@@ -38,7 +38,7 @@
 		<li class="row<!-- IF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ENDIF -->">
 			<dl class="row-item">
 				<dt>
-					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_VIEW_TOPIC}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
 						{{ Icon('iconify', {
 							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
 							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
