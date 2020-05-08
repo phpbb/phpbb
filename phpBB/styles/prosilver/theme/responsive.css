@@ -600,6 +600,7 @@
 		display: none;
 	}
 
+	.nav-footer.linklist .responsive-menu,
 	.nav-footer.linklist .responsive-menu .in-menu,
 	.nav-main.linklist .responsive-menu .in-menu,
 	.post-buttons-responsive-menu,
@@ -785,6 +786,7 @@
 		display: block !important;
 	}
 
+	.nav-footer.linklist .responsive-menu,
 	.nav-main.linklist .responsive-menu .in-menu {
 		display: none !important;
 	}
