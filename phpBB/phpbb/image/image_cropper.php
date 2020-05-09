@@ -213,7 +213,7 @@ class image_cropper
 		$flip_mode |= $flip_horizontally ? IMG_FLIP_HORIZONTAL : 0;
 		$flip_mode |= $flip_vertically ? IMG_FLIP_VERTICAL : 0;
 
-		if ($flip_mode !== 0)
+		if (0 !== $flip_mode)
 		{
 			imageflip($image, $flip_mode);
 		}
@@ -249,13 +249,11 @@ class image_cropper
 	 */
 	public static function crop_image($image, int $x, int $y, int $width, int $height)
 	{
-		$new_image = imagecrop($image, [
+		return false !== ($new_image = imagecrop($image, [
 			'x'			=> $x,
 			'y'			=> $y,
 			'width'		=> $width,
 			'height'	=> $height,
-		]);
-
-		return false !== $new_image ? $new_image : $image;
+		])) ? $new_image : $image;
 	}
 }

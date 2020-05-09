@@ -24,7 +24,7 @@ use phpbb\storage\exception\exception as storage_exception;
 use phpbb\storage\storage;
 
 /**
-* Handles avatars uploaded to the board
+* Handles avatars uploaded to the board.
 */
 class upload extends \phpbb\avatar\driver\driver
 {
@@ -241,7 +241,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function delete($row)
 	{
-
 		$error = array();
 		$prefix = $this->config['avatar_salt'] . '_';
 		$ext = substr(strrchr($row['avatar'], '.'), 1);
