@@ -113,7 +113,7 @@
 		<legend>{L_GROUP_AVATAR}</legend>
 	<dl>
 		<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
-		<dd>{% if AVATAR_HTML %}{{ AVATAR_HTML }}{% else %}<img src="{{ ADMIN_ROOT_PATH ~ 'images/no_avatar.gif' }}" alt="">{% endif %}</dd>
+		<dd id="avatar-box">{% if AVATAR_HTML %}{{ AVATAR_HTML }}{% else %}<img src="{{ ADMIN_ROOT_PATH ~ 'images/no_avatar.gif' }}" alt="">{% endif %}</dd>
 		<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {L_DELETE_AVATAR}</label></dd>
 	</dl>
 	<dl>

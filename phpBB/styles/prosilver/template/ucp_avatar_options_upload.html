@@ -2,3 +2,70 @@
 	<dt><label for="avatar_upload_file">{L_UPLOAD_AVATAR_FILE}{L_COLON}</label></dt>
 	<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_UPLOAD_SIZE}" /><input type="file" name="avatar_upload_file" id="avatar_upload_file" class="inputbox autowidth" accept="{{ AVATAR_ALLOWED_EXTENSIONS }}" /></dd>
 </dl>
+
+{% if S_CROPPING_AVAILABLE %}
+	{% INCLUDECSS T_ASSETS_PATH ~ '/css/cropper.min.css' %}
+	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/cropper.min.js' %}
+	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/jquery-cropper.js' %}
+	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/phpbb-avatars.js' %}
+
+	<input type="hidden" id="avatar-cropper-data" name="avatar_cropper_data" value=""
+		   data-min-width="{{ AVATAR_MIN_WIDTH }}" data-max-width="{{ AVATAR_MAX_WIDTH }}"
+		   data-min-height="{{ AVATAR_MIN_HEIGHT }}" data-max-height="{{ AVATAR_MAX_HEIGHT }}"
+	/>
+
+	{% apply spaceless %}
+		<div class="avatar-cropper-buttons" id="avatar-cropper-buttons">
+			<div class="button-group">
+				<button class="button" type="button" title="{{ lang('ZOOM_IN') }}" data-cropper-action="zoom,0.1">
+					<i class="icon fa-search-plus fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('ZOOM_OUT') }}" data-cropper-action="zoom,-0.1">
+					<i class="icon fa-search-minus fa-fw"></i>
+				</button>
+			</div>
+
+			<div class="button-group">
+				<button class="button" type="button" title="{{ lang('MOVE_LEFT') }}" data-cropper-action="move,-10,0">
+					<i class="icon fa-arrow-left fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('MOVE_RIGHT') }}" data-cropper-action="move,10,0">
+					<i class="icon fa-arrow-right fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('MOVE_UP') }}" data-cropper-action="move,0,-10">
+					<i class="icon fa-arrow-up fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('MOVE_DOWN') }}" data-cropper-action="move,0,10">
+					<i class="icon fa-arrow-down fa-fw"></i>
+				</button>
+			</div>
+
+			<div class="button-group">
+				<button class="button" type="button" title="{{ lang('ROTATE_LEFT') }}" data-cropper-action="rotate,-90">
+					<i class="icon fa-rotate-left fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('ROTATE_RIGHT') }}" data-cropper-action="rotate,90">
+					<i class="icon fa-rotate-right fa-fw"></i>
+				</button>
+			</div>
+
+			<div class="button-group">
+				<button class="button" type="button" title="{{ lang('FLIP_HORIZONTALLY') }}" data-cropper-action="scaleX">
+					<i class="icon fa-arrows-h fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('FLIP_VERTICALLY') }}" data-cropper-action="scaleY">
+					<i class="icon fa-arrows-v fa-fw"></i>
+				</button>
+			</div>
+
+			<div class="button-group">
+				<button class="button" type="button" title="{{ lang('RESET') }}" data-cropper-action="reset">
+					<i class="icon fa-refresh fa-fw"></i>
+				</button>
+				<button class="button" type="button" title="{{ lang('CLEAR') }}" data-cropper-action="clear">
+					<i class="icon fa-times fa-fw"></i>
+				</button>
+			</div>
+		</div>
+	{% endapply %}
+{% endif %}
