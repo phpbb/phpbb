@@ -134,7 +134,7 @@
 								<!-- IF searchresults.S_HAS_POLL -->{{ Icon('iconify', 'fa:bar-chart', '', true) }}<!-- ENDIF -->
 								<!-- IF searchresults.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }}<!-- ENDIF -->
 								{% EVENT topiclist_row_topic_by_author_before %}
-								{L_POST_BY_AUTHOR} <!-- EVENT search_results_topic_author_username_prepend -->{searchresults.TOPIC_AUTHOR_FULL}<!-- EVENT search_results_topic_author_username_append --> <time datetime="{searchresults.FIRST_POST_TIME_RFC3339}">{searchresults.FIRST_POST_TIME}</time> &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+								{L_POST_BY_AUTHOR} <!-- EVENT search_results_topic_author_username_prepend -->{searchresults.TOPIC_AUTHOR_FULL}<!-- EVENT search_results_topic_author_username_append --> &raquo; <time datetime="{searchresults.FIRST_POST_TIME_RFC3339}">{searchresults.FIRST_POST_TIME}</time> &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 								{% EVENT topiclist_row_topic_by_author_after %}
 							</div>
 
