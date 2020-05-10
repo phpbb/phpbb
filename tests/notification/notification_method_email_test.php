@@ -44,6 +44,9 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 		global $db, $config, $user, $auth, $cache, $phpbb_container;
 
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+							  ->disableOriginalConstructor()
+							  ->getMock();
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config([
 			'allow_privmsg'			=> true,
@@ -56,7 +59,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
-		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
+		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
