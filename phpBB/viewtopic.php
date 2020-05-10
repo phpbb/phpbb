@@ -2040,13 +2040,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'RANK_IMG_SRC'		=> $user_cache[$poster_id]['rank_image_src'],
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
-		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['html'] : '',
-		'POSTER_AVATAR_LAZY'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['lazy'] : false,
-		'POSTER_AVATAR_SOURCE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['src'] : '',
-		'POSTER_AVATAR_TITLE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['title'] : '',
-		'POSTER_AVATAR_TYPE'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['type'] : '',
-		'POSTER_AVATAR_WIDTH'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['width'] : 0,
-		'POSTER_AVATAR_HEIGHT'	=> $user_cache[$poster_id]['avatar'] ? $user_cache[$poster_id]['avatar']['height'] : 0,
 		'POSTER_WARNINGS'	=> $auth->acl_get('m_warn') ? $user_cache[$poster_id]['warnings'] : '',
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 		'CONTACT_USER'		=> $user_cache[$poster_id]['contact_user'],
@@ -2118,6 +2111,11 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 		'S_DELETE_PERMANENT'	=> $permanent_delete_allowed,
 	);
+
+	if ($user_cache[$poster_id]['avatar'])
+	{
+		$post_row += $avatar_helper->get_template_vars($user_cache[$poster_id]['avatar'], 'POSTER_');
+	}
 
 	$user_poster_data = $user_cache[$poster_id];
 

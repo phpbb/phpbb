@@ -1657,9 +1657,10 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	$avatar_helper = $phpbb_container->get('avatar.helper');
 
 	$avatar = $avatar_helper->get_user_avatar($data);
+	$avatar_vars = $avatar_helper->get_template_vars($avatar);
 
 	// Dump it out to the template
-	$template_data = array(
+	$template_data = array_merge($avatar_vars, [
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $user_rank_data['title'],
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1673,14 +1674,6 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
-
-		'AVATAR_IMG'		=> $avatar['html'],
-		'AVATAR_LAZY'		=> $avatar['lazy'],
-		'AVATAR_SOURCE'		=> $avatar['src'],
-		'AVATAR_TITLE'		=> $avatar['title'],
-		'AVATAR_TYPE'		=> $avatar['type'],
-		'AVATAR_WIDTH'		=> $avatar['width'],
-		'AVATAR_HEIGHT'		=> $avatar['height'],
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
@@ -1703,7 +1696,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'L_SEND_EMAIL_USER' => $user->lang('SEND_EMAIL_USER', $username),
 		'L_CONTACT_USER'	=> $user->lang('CONTACT_USER', $username),
 		'L_VIEWING_PROFILE' => $user->lang('VIEWING_PROFILE', $username),
-	);
+	]);
 
 	/**
 	* Preparing a user's data before displaying it in profile and memberlist

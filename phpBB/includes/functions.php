@@ -3872,6 +3872,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$avatar_helper = $phpbb_container->get('avatar.helper');
 
 	$avatar = $avatar_helper->get_user_avatar($user->data);
+	$template->assign_vars($avatar_helper->get_template_vars($avatar, 'CURRENT_USER_'));
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
@@ -3886,14 +3887,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 
+		'NO_AVATAR_SOURCE'				=> $avatar_helper->get_no_avatar_source(),
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'CURRENT_USER_AVATAR'			=> $avatar['html'],
-		'CURRENT_USER_AVATAR_LAZY'		=> $avatar['lazy'],
-		'CURRENT_USER_AVATAR_SOURCE'	=> $avatar['src'],
-		'CURRENT_USER_AVATAR_TITLE'		=> $avatar['title'],
-		'CURRENT_USER_AVATAR_TYPE'		=> $avatar['type'],
-		'CURRENT_USER_AVATAR_WIDTH'		=> $avatar['width'],
-		'CURRENT_USER_AVATAR_HEIGHT'	=> $avatar['height'],
 		'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USER_GROUP_COLOR'		=> $user->data['user_colour'],

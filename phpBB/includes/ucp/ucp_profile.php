@@ -761,16 +761,10 @@ class ucp_profile
 				$avatar_helper = $phpbb_container->get('avatar.helper');
 
 				$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
-					'AVATAR'			=> $avatar['html'],
-					'AVATAR_LAZY'		=> $avatar['lazy'],
-					'AVATAR_SOURCE'		=> $avatar['src'],
-					'AVATAR_TITLE'		=> $avatar['title'],
-					'AVATAR_TYPE'		=> $avatar['type'],
-					'AVATAR_WIDTH'		=> $avatar['width'],
-					'AVATAR_HEIGHT'		=> $avatar['height'],
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 

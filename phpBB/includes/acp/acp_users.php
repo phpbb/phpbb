@@ -1972,24 +1972,17 @@ class acp_users
 				$avatar_helper = $phpbb_container->get('avatar.helper');
 
 				$avatar = $avatar_helper->get_user_avatar($user_row, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'S_AVATAR'	=> true,
-					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
-
-					'AVATAR'			=> empty($avatar['html']) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar['html'],
-					'AVATAR_LAZY'		=> $avatar['lazy'],
-					'AVATAR_SOURCE'		=> $avatar['src'],
-					'AVATAR_TITLE'		=> $avatar['title'],
-					'AVATAR_TYPE'		=> $avatar['type'],
-					'AVATAR_WIDTH'		=> $avatar['width'],
-					'AVATAR_HEIGHT'		=> $avatar['height'],
+					'S_AVATAR'			=> true,
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> $user->lang(($config['avatar_filesize'] == 0) ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN', $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 
-					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
+					'S_AVATARS_ENABLED'	=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 
 			break;

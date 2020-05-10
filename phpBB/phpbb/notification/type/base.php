@@ -297,13 +297,15 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
 			'UNREAD'			=> !$this->notification_read,
 
-			'AVATAR'			=> $avatar ? $avatar['html'] : '',
-			'AVATAR_LAZY'		=> $avatar ? $avatar['lazy'] : true,
-			'AVATAR_SRC'		=> $avatar ? $avatar['src'] : '',
+			'AVATAR_SOURCE'		=> $avatar ? $avatar['src'] : '',
 			'AVATAR_TITLE'		=> $avatar ? $avatar['title'] : '',
 			'AVATAR_TYPE'		=> $avatar ? $avatar['type'] : '',
+
 			'AVATAR_WIDTH'		=> $avatar ? $avatar['width'] : 0,
 			'AVATAR_HEIGHT'		=> $avatar ? $avatar['height'] : 0,
+
+			'AVATAR_HTML'		=> $avatar ? $avatar['html'] : '',
+			'AVATAR_LAZY'		=> $avatar ? $avatar['lazy'] : true,
 
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
 		];

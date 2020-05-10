@@ -347,6 +347,7 @@ class mcp_warn
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
+		$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
@@ -359,13 +360,6 @@ class mcp_warn
 			'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 			'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
 
-			'AVATAR_IMG'		=> $avatar['html'],
-			'AVATAR_LAZY'		=> $avatar['lazy'],
-			'AVATAR_SOURCE'		=> $avatar['src'],
-			'AVATAR_TITLE'		=> $avatar['title'],
-			'AVATAR_TYPE'		=> $avatar['type'],
-			'AVATAR_WIDTH'		=> $avatar['width'],
-			'AVATAR_HEIGHT'		=> $avatar['height'],
 			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
@@ -506,6 +500,7 @@ class mcp_warn
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
+		$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
@@ -521,13 +516,6 @@ class mcp_warn
 			'USERNAME'			=> get_username_string('username', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 			'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 
-			'AVATAR_IMG'		=> $avatar['html'],
-			'AVATAR_LAZY'		=> $avatar['lazy'],
-			'AVATAR_SOURCE'		=> $avatar['src'],
-			'AVATAR_TITLE'		=> $avatar['title'],
-			'AVATAR_TYPE'		=> $avatar['type'],
-			'AVATAR_WIDTH'		=> $avatar['width'],
-			'AVATAR_HEIGHT'		=> $avatar['height'],
 			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,

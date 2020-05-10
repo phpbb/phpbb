@@ -13,43 +13,55 @@
 
 namespace phpbb\avatar;
 
+use phpbb\avatar\driver\driver_interface;
+use phpbb\config\config;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\path_helper;
+use phpbb\user;
+
+/**
+ * Avatar helper object.
+ *
+ * Generates avatars and their variables for display.
+ */
 class helper
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var dispatcher */
 	protected $dispatcher;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\avatar\manager */
+	/** @var manager */
 	protected $manager;
 
-	/** @var \phpbb\path_helper */
+	/** @var path_helper */
 	protected $path_helper;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config		$config			Config object
-	 * @param \phpbb\event\dispatcher	$dispatcher		Event dispatcher object
-	 * @param \phpbb\language\language	$language		Language object
-	 * @param \phpbb\avatar\manager		$manager		Avatar manager object
-	 * @param \phpbb\path_helper		$path_helper	Path helper object
-	 * @param \phpbb\user				$user			User object
+	 * @param config		$config			Config object
+	 * @param dispatcher	$dispatcher		Event dispatcher object
+	 * @param language		$language		Language object
+	 * @param manager		$manager		Avatar manager object
+	 * @param path_helper	$path_helper	Path helper object
+	 * @param user			$user			User object
 	 */
 	public function __construct(
-		\phpbb\config\config $config,
-		\phpbb\event\dispatcher $dispatcher,
-		\phpbb\language\language $language,
+		config $config,
+		dispatcher $dispatcher,
+		language $language,
 		manager $manager,
-		\phpbb\path_helper $path_helper,
-		\phpbb\user $user
+		path_helper $path_helper,
+		user $user
 	)
 	{
 		$this->config		= $config;
@@ -61,6 +73,32 @@ class helper
 	}
 
 	/**
+	 * Get an avatar's template variables.
+	 *
+	 * @param array		$avatar			The avatar's data
+	 * @param string	$prefix			The variables' prefix
+	 * @return array					The avatar's template variables
+	 */
+	public function get_template_vars(array $avatar, string $prefix = ''): array
+	{
+		$prefix = $prefix && substr($prefix, -1) !== '_' ? "{$prefix}_" : $prefix;
+
+		return [
+			"{$prefix}AVATAR"			=> $avatar,
+
+			"{$prefix}AVATAR_SOURCE"	=> $avatar['src'],
+			"{$prefix}AVATAR_TITLE"		=> $avatar['title'],
+			"{$prefix}AVATAR_TYPE"		=> $avatar['type'],
+
+			"{$prefix}AVATAR_WIDTH"		=> $avatar['width'],
+			"{$prefix}AVATAR_HEIGHT"	=> $avatar['height'],
+
+			"{$prefix}AVATAR_LAZY"		=> $avatar['lazy'],
+			"{$prefix}AVATAR_HTML"		=> $avatar['html'],
+		];
+	}
+
+	/**
 	 * Get user avatar data.
 	 *
 	 * @param array		$row			The user's table row
@@ -69,9 +107,9 @@ class helper
 	 * @param bool		$lazy			Indicator whether the avatar should be lazy loaded (requires JS) or not
 	 * @return array					The avatar data array
 	 */
-	public function get_user_avatar(array $row, $title = 'USER_AVATAR', $ignore_config = false, $lazy = false)
+	public function get_user_avatar(array $row, string $title = 'USER_AVATAR', bool $ignore_config = false, bool $lazy = false): array
 	{
-		$row = $this->manager->clean_row($row, 'user');
+		$row = manager::clean_row($row, 'user');
 
 		return $this->get_avatar($row, $title, $ignore_config, $lazy);
 	}
@@ -85,9 +123,9 @@ class helper
 	 * @param bool		$lazy			Indicator whether the avatar should be lazy loaded (requires JS) or not
 	 * @return array					The avatar data array
 	 */
-	public function get_group_avatar(array $row, $title = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
+	public function get_group_avatar(array $row, string $title = 'GROUP_AVATAR', bool $ignore_config = false, bool $lazy = false): array
 	{
-		$row = $this->manager->clean_row($row, 'group');
+		$row = manager::clean_row($row, 'group');
 
 		return $this->get_avatar($row, $title, $ignore_config, $lazy);
 	}
@@ -101,7 +139,7 @@ class helper
 	 * @param bool		$lazy			Indicator whether the avatar should be lazy loaded (requires JS) or not
 	 * @return array					The avatar data array
 	 */
-	public function get_avatar(array $row, $title, $ignore_config = false, $lazy = false)
+	public function get_avatar(array $row, string $title, bool $ignore_config = false, bool $lazy = false): array
 	{
 		if (!$this->config['allow_avatar'] && !$ignore_config)
 		{
@@ -126,7 +164,7 @@ class helper
 			'html'		=> '',
 		];
 
-		/** @var \phpbb\avatar\driver\driver_interface $driver */
+		/** @var driver_interface $driver */
 		$driver = $this->manager->get_driver($row['avatar_type'], !$ignore_config);
 
 		if ($driver !== null)
@@ -183,6 +221,24 @@ class helper
 	}
 
 	/**
+	 * Get the "no avatar" source string.
+	 *
+	 * @return string					The "no avatar" source string
+	 */
+	public function get_no_avatar_source(): string
+	{
+		/**
+		 * We need to correct the phpBB root path in case this is called from a controller,
+		 * because the web path will be incorrect otherwise.
+		 */
+		$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
+		$web_path	= $board_url ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+		$style_path	= rawurlencode($this->user->style['style_path']);
+
+		return "{$web_path}styles/{$style_path}/theme/images/no_avatar.gif";
+	}
+
+	/**
 	 * Get an avatar's HTML <img> element.
 	 *
 	 * Created for Backwards Compatibility (BC).
@@ -193,21 +249,11 @@ class helper
 	 * @param array		$data			The avatar data array
 	 * @return string					The avatar's HTML <img> element
 	 */
-	protected function get_avatar_html(array $data)
+	private function get_avatar_html(array $data): string
 	{
 		if ($data['lazy'])
 		{
-			/**
-			 * We need to correct the phpBB root path in case this is called from a controller,
-			 * because the web path will be incorrect otherwise.
-			 */
-			$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-			$web_path	= $board_url ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
-			$style_path	= rawurlencode($this->user->style['style_path']);
-
-			$theme = "{$web_path}styles/{$style_path}/theme";
-
-			$data['src'] = $theme . '/images/no_avatar.gif" data-src="' . $data['src'];
+			$data['src'] = $this->get_no_avatar_source() . ' data-src="' . $data['src'];
 		}
 
 		$src = ' src="' . $data['src'] . '"';
