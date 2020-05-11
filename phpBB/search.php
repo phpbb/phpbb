@@ -47,7 +47,7 @@ $sort_days		= $request->variable('st', 0);
 $sort_key		= $request->variable('sk', 't');
 $sort_dir		= $request->variable('sd', 'd');
 
-$return_chars	= $request->variable('ch', ($topic_id) ? -1 : 300);
+$return_chars	= $request->variable('ch', $topic_id ? 0 : (int) $config['default_search_return_chars']);
 $search_forum	= $request->variable('fid', array(0));
 
 // We put login boxes for the case if search_id is newposts, egosearch or unreadposts
@@ -692,7 +692,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
-	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
+	$u_search .= $return_chars !== (int) $config['default_search_return_chars'] ? '&amp;ch=' . $return_chars : '';
 
 	/**
 	* Event to add or modify search URL parameters
@@ -975,7 +975,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					strip_bbcode($text_only_message, $row['bbcode_uid']);
 				}
 
-				if ($return_chars == -1 || utf8_strlen($text_only_message) < ($return_chars + 3))
+				if ($return_chars === 0 || utf8_strlen($text_only_message) < ($return_chars + 3))
 				{
 					$row['display_text_only'] = false;
 
@@ -1475,16 +1475,27 @@ if (!$s_forums)
 	trigger_error('NO_SEARCH');
 }
 
-// Number of chars returned
-$s_characters = '<option value="-1">' . $user->lang['ALL_AVAILABLE'] . '</option>';
-$s_characters .= '<option value="0">0</option>';
-$s_characters .= '<option value="25">25</option>';
-$s_characters .= '<option value="50">50</option>';
+/**
+ * Build options for a select list for the number of characters returned.
+ *
+ * If the admin defined amount is not within the predefined range,
+ * and the admin did not set it to unlimited (0), we add that option aswell.
+ *
+ * @deprecated 3.3.1-RC1	Templates should use an numeric input, in favor of a select.
+ */
+$s_characters = '<option value="0">' . $language->lang('ALL_AVAILABLE') . '</option>';
+$i_characters = array_merge([25, 50], range(100, 1000, 100));
 
-for ($i = 100; $i <= 1000; $i += 100)
+if ($config['default_search_return_chars'] && !in_array((int) $config['default_search_return_chars'], $i_characters))
 {
-	$selected = ($i == 300) ? ' selected="selected"' : '';
-	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+	$i_characters[] = (int) $config['default_search_return_chars'];
+	sort($i_characters);
+}
+
+foreach ($i_characters as $i)
+{
+	$selected = $i === (int) $config['default_search_return_chars'] ? ' selected="selected"' : '';
+	$s_characters .= sprintf('<option value="%1$s"%2$s>%1$s</option>', $i, $selected);
 }
 
 $s_hidden_fields = array('t' => $topic_id);
@@ -1504,6 +1515,7 @@ if (!empty($_EXTRA_URL))
 }
 
 $template->assign_vars(array(
+	'DEFAULT_RETURN_CHARS'	=> (int) $config['default_search_return_chars'],
 	'S_SEARCH_ACTION'		=> append_sid("{$phpbb_root_path}search.$phpEx", false, true, 0), // We force no ?sid= appending by using 0
 	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
