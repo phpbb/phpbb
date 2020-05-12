@@ -27,6 +27,10 @@ blockquote cite:before,
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
+.icon {
+	padding-right: 2px;
+}
+
 .button .icon {
 	padding-right: 0;
 }
