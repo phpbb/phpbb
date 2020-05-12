@@ -223,6 +223,7 @@ class acp_update
 
 		// Remove necessary directories and files from the download
 		$filesystem->remove([
+			$temp_dir . '/phpBB3/.htaccess',
 			$temp_dir . '/phpBB3/config.php',
 			$temp_dir . '/phpBB3/files',
 			$temp_dir . '/phpBB3/images',

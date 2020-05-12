@@ -498,7 +498,7 @@ $lang = array_merge($lang, [
 			<li>Set “British English” as the default language.</li>
 			<li>Download the new version’s full package from phpBB.</li>
 			<li>Verify the sha256 checksum against the one provided by phpBB.</li>
-			<li>Remove the <code>config.php</code> file from the downloaded package.</li>
+			<li>Remove the <code>config.php</code> and <code>.htaccess</code> files from the downloaded package.</li>
 			<li>Remove the <code>/images</code>, <code>/files</code> and <code>/store</code> directories from the downloaded package.</li>
 			<li>Remove the <code>/cache</code> and <code>/vendor</code> directories from the current installation.</li>
 			<li>Copy all the files from the downloaded package to the current installation.</li>
