@@ -167,7 +167,7 @@ class acp_update
 		{
 			$this->instant_update_error(
 				$this->language->lang('DIRECTORY_NOT_WRITABLE') . '<br>' .
-				$this->language->lang('MAKE_FOLDER_WRITABLE', $this->root_path . 'store')
+				$this->language->lang('MAKE_FOLDER_WRITABLE', '/store')
 			);
 		}
 
