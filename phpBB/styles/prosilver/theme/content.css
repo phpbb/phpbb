@@ -600,6 +600,7 @@ blockquote .codebox {
 	border-top: 1px solid transparent;
 	clear: left;
 	overflow-x: auto;
+	overflow-y: hidden;
 	margin-top: 4px;
 	padding-top: 4px;
 }
