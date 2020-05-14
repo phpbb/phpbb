@@ -553,6 +553,7 @@ blockquote .codebox {
 	clear: left;
 	border-top: 1px solid transparent;
 	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .attachbox dd dd {
