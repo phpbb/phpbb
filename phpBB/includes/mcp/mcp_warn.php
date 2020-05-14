@@ -572,11 +572,12 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		submit_pm('post', $warn_pm_subject, $pm_data, false);
 	}
 
-	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, array($user_row['username']));
-	$log_id = $phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING_BODY', false, array(
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, [$user_row['username']]);
+
+	$log_id = $phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING_BODY', false, [
 		'reportee_id' => $user_row['user_id'],
-		$warning
-	));
+		utf8_encode_ucr($warning)
+	]);
 
 	$sql_ary = array(
 		'user_id'		=> $user_row['user_id'],
