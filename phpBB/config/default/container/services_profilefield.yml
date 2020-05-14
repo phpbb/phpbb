@@ -3,15 +3,20 @@ services:
         class: phpbb\profilefields\manager
         arguments:
             - '@auth'
+            - '@config_text'
             - '@dbal.conn'
+            - '@dbal.tools'
             - '@dispatcher'
+            - '@language'
+            - '@log'
             - '@request'
             - '@template'
             - '@profilefields.type_collection'
             - '@user'
             - '%tables.profile_fields%'
-            - '%tables.profile_fields_language%'
             - '%tables.profile_fields_data%'
+            - '%tables.profile_fields_options_language%'
+            - '%tables.profile_fields_language%'
 
     profilefields.lang_helper:
         class: phpbb\profilefields\lang_helper
