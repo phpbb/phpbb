@@ -39,22 +39,25 @@ class manager_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/manager.xml');
 	}
 
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
 		global $phpbb_root_path, $phpEx, $table_prefix;
 
 		$this->db			= $this->new_dbal();
-		$this->db_tools		= $this->getMock('\phpbb\db\tools\tools', [], [$this->db]);
+		$this->db_tools		= $this->getMockBuilder('\phpbb\db\tools\tools')
+								->setMethods([])
+								->setConstructorArgs([$this->db])
+								->getMock();
 		$this->config_text	= new \phpbb\config\db_text($this->db, $table_prefix . 'config_text');
 		$this->table_prefix	= $table_prefix;
 
 		$container	= new phpbb_mock_container_builder();
 		$dispatcher	= new phpbb_mock_event_dispatcher();
 
-		$request	= $this->getMock('\phpbb\request\request');
-		$template	= $this->getMock('\phpbb\template\template');
+		$request	= $this->createMock('\phpbb\request\request');
+		$template	= $this->createMock('\phpbb\template\template');
 
 		$auth		= new \phpbb\auth\auth();
 		$language	= new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
