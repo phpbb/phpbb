@@ -30,7 +30,7 @@ class font_awesome_update extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['config.add', ['load_font_awesome_url', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css']],
+			['config.add', ['load_font_awesome_url', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css']],
 		];
 	}
 }
