@@ -105,6 +105,12 @@ class report
 		$reason_id		= $this->request->variable('reason_id', 0);
 		$report_text	= $this->request->variable('report_text', '', true);
 
+		/**
+		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+		 * Using their Numeric Character Reference's Hexadecimal notation.
+		 */
+		$report_text	= utf8_encode_ucr($report_text);
+
 		$submit = $this->request->variable('submit', '');
 		$cancel = $this->request->variable('cancel', '');
 
