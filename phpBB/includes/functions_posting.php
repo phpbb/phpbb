@@ -2429,12 +2429,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				if ($user->data['user_id'] == $poster_id)
 				{
 					$phpbb_notifications->update_notifications(array(
+						'notification.type.mention',
 						'notification.type.quote',
 					), $notification_data);
 				}
 
 				$phpbb_notifications->update_notifications(array(
-					'notification.type.mention',
 					'notification.type.bookmark',
 					'notification.type.topic',
 					'notification.type.post',
