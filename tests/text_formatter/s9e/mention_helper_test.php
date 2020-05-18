@@ -80,11 +80,11 @@ class mention_helper_test extends phpbb_database_test_case
 	{
 		return [
 			[
-				'<r><MENTION id="3" type="u"><s>[mention=u:3]</s>test<e>[/mention]</e></MENTION></r>',
+				'<r><MENTION user_id="3"><s>[mention=u:3]</s>test<e>[/mention]</e></MENTION></r>',
 				'mode=viewprofile&amp;u=3',
 			],
 			[
-				'<r><MENTION id="3" type="g"><s>[mention=g:3]</s>test<e>[/mention]</e></MENTION></r>',
+				'<r><MENTION group_id="3"><s>[mention=g:3]</s>test<e>[/mention]</e></MENTION></r>',
 				'mode=group&amp;g=3',
 			],
 		];
@@ -103,11 +103,11 @@ class mention_helper_test extends phpbb_database_test_case
 	{
 		return [
 			[
-				'<r><MENTION id="3" type="u"><s>[mention=u:3]</s>test<e>[/mention]</e></MENTION><MENTION id="4" type="u"><s>[mention=u:4]</s>test<e>[/mention]</e></MENTION><MENTION id="5" type="u"><s>[mention=u:5]</s>test<e>[/mention]</e></MENTION></r>',
+				'<r><MENTION user_id="3"><s>[mention=u:3]</s>test<e>[/mention]</e></MENTION><MENTION user_id="4"><s>[mention=u:4]</s>test<e>[/mention]</e></MENTION><MENTION user_id="5"><s>[mention=u:5]</s>test<e>[/mention]</e></MENTION></r>',
 				[3, 4, 5],
 			],
 			[
-				'<r><MENTION id="1" type="g"><s>[mention=g:1]</s>test<e>[/mention]</e></MENTION><MENTION id="2" type="g"><s>[mention=g:2]</s>test<e>[/mention]</e></MENTION><MENTION id="3" type="g"><s>[mention=g:3]</s>test<e>[/mention]</e></MENTION></r>',
+				'<r><MENTION group_id="1"><s>[mention=g:1]</s>test<e>[/mention]</e></MENTION><MENTION group_id="2"><s>[mention=g:2]</s>test<e>[/mention]</e></MENTION><MENTION group_id="3"><s>[mention=g:3]</s>test<e>[/mention]</e></MENTION></r>',
 				[4, 2, 6],
 			],
 		];

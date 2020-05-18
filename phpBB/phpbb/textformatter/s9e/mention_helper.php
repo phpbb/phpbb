@@ -33,12 +33,12 @@ class mention_helper
 	protected $user;
 
 	/**
-	 * @var string Base URL for a user profile link, uses {ID} as placeholder
+	 * @var string Base URL for a user profile link, uses {USER_ID} as placeholder
 	 */
 	protected $user_profile_url;
 
 	/**
-	 * @var string Base URL for a group profile link, uses {ID} as placeholder
+	 * @var string Base URL for a group profile link, uses {GROUP_ID} as placeholder
 	 */
 	protected $group_profile_url;
 
@@ -61,8 +61,8 @@ class mention_helper
 		$this->db = $db;
 		$this->auth = $auth;
 		$this->user = $user;
-		$this->user_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={ID}', false);
-		$this->group_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=group&g={ID}', false);
+		$this->user_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=viewprofile&u={USER_ID}', false);
+		$this->group_profile_url = append_sid($root_path . 'memberlist.' . $php_ext, 'mode=group&g={GROUP_ID}', false);
 	}
 
 	/**
@@ -83,12 +83,13 @@ class mention_helper
 			'MENTION',
 			function ($attributes) use ($profile_urls)
 			{
-				if (isset($attributes['type']) && isset($attributes['id']))
+				if (isset($attributes['user_id']))
 				{
-					$type = $attributes['type'];
-					$id = $attributes['id'];
-
-					$attributes['profile_url'] = str_replace('{ID}', $id, $profile_urls[$type]);
+					$attributes['profile_url'] = str_replace('{USER_ID}', $attributes['user_id'], $profile_urls['u']);
+				}
+				else if (isset($attributes['group_id']))
+				{
+					$attributes['profile_url'] = str_replace('{GROUP_ID}', $attributes['group_id'], $profile_urls['g']);
 				}
 
 				return $attributes;
@@ -186,21 +187,15 @@ class mention_helper
 			return $ids;
 		}
 
-		$dom = new \DOMDocument;
-		$dom->loadXML($xml);
-		$xpath = new \DOMXPath($dom);
+		// Add IDs of users mentioned directly
+		$user_ids = TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'user_id');
+		$ids = array_merge($ids, array_map('intval', $user_ids));
 
-		/** @var \DOMElement $mention */
-		foreach ($xpath->query('//MENTION') as $mention)
+		// Add IDs of users mentioned as group members
+		$group_ids = TextFormatterUtils::getAttributeValues($xml, 'MENTION', 'group_id');
+		foreach ($group_ids as $group_id)
 		{
-			if ($mention->getAttribute('type') === 'u')
-			{
-				$ids[] = (int) $mention->getAttribute('id');
-			}
-			else if ($mention->getAttribute('type') === 'g')
-			{
-				$this->get_user_ids_for_group($ids, (int) $mention->getAttribute('id'));
-			}
+			$this->get_user_ids_for_group($ids, (int) $group_id);
 		}
 
 		return $ids;
