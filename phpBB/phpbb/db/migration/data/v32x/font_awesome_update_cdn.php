@@ -15,6 +15,11 @@ namespace phpbb\db\migration\data\v32x;
 
 class font_awesome_update_cdn extends \phpbb\db\migration\migration
 {
+	public function effectively_installed()
+	{
+		return phpbb_version_compare($this->config['version'], '3.3.0', '>=');
+	}
+
 	static public function depends_on()
 	{
 		return [
