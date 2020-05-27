@@ -11,26 +11,26 @@
 *
 */
 
-namespace phpbb\db\migration\data\v320;
+namespace phpbb\db\migration\data\v32x;
 
-class font_awesome_update extends \phpbb\db\migration\migration
+class font_awesome_update_cdn extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['load_font_awesome_url']);
+		return phpbb_version_compare($this->config['version'], '3.3.0', '>=');
 	}
 
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v320\dev',
+			'\phpbb\db\migration\data\v32x\v329',
 		];
 	}
 
 	public function update_data()
 	{
 		return [
-			['config.add', ['load_font_awesome_url', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css']],
+			['config.update', ['load_font_awesome_url', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css']],
 		];
 	}
 }
