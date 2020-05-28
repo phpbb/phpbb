@@ -66,6 +66,24 @@
 <script src="{T_JQUERY_LINK}"></script>
 <!-- IF S_ALLOW_CDN --><script>window.jQuery || document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery.min.js?assets_version={T_ASSETS_VERSION}">\x3C/script>');</script><!-- ENDIF -->
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
+{% if S_VIEWTOPIC %}
+	<script>
+		(function($){
+			document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery.lazyload.1.9.6.min.js">\x3C/script>');
+			const $postImages = $('[data-src]');
+
+			$postImages.each(function () {
+				const $this = $(this)
+				const src = $this.attr('src');
+				const loader = $this.data('src');
+
+				$this.attr('src', loader);
+				$this.data('src', src);
+				$this.lazyload();
+			});
+		})(jQuery);
+	</script>
+{% endif %}
 <!-- INCLUDEJS forum_fn.js -->
 <!-- INCLUDEJS ajax.js -->
 <!-- IF S_ALLOW_CDN -->
