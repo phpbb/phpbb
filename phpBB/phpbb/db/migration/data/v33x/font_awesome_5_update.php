@@ -19,6 +19,7 @@ class font_awesome_5_update extends \phpbb\db\migration\migration
 	{
 		return [
 			'\phpbb\db\migration\data\v330\v330',
+			'\phpbb\db\migration\data\v32x\font_awesome_update_cdn',
 		];
 	}
 
