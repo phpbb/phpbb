@@ -80,7 +80,9 @@
 
 				$this.attr('src', loader);
 				$this.data('src', src);
+				$this.addClass('postimage-loading');
 				$this.lazyload();
+				$this.removeClass('postimage-loading');
 			});
 		})(jQuery);
 	</script>

@@ -280,6 +280,12 @@ dd.option {
 	box-sizing: border-box;
 }
 
+.postimage-loading {
+	background-color: #495057; /* gray-700 */
+	min-width: 100px;
+	min-height: 100px;
+}
+
 .search .postbody {
 	width: 68%;
 }
