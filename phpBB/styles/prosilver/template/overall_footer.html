@@ -69,7 +69,8 @@
 {% if S_VIEWTOPIC %}
 	<script>
 		(function($){
-			document.write('<script src="{T_ASSETS_PATH}/javascript/jquery.lazyload.1.9.7.min.js"></script>');
+			const $load = $('body').find('/javascript/core.js').first();
+			$load.after('<script src="{T_ASSETS_PATH}/javascript/jquery.lazyload.1.9.7.min.js"></script>');
 			const $postImages = $('[data-src]');
 
 			$postImages.each(function () {
