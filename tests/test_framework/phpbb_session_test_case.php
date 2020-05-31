@@ -65,7 +65,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($time_now - (int) $config['session_length']) . '
 				AND session_user_id <> ' . ANONYMOUS . '
-			GROUP BY session_user_id';
+			GROUP BY session_user_id ORDER BY session_user_id ASC';
 
 		$this->assertSqlResultEquals($expected_sessions, $sql, $message);
 	}

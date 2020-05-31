@@ -464,7 +464,7 @@ $old_char = '';
 foreach ($lang_references as $lang_var => $filenames)
 {
 	$var = preg_replace('#^L_(.*?)#', '\1', $lang_var);
-	$char = $var{0};
+	$char = $var[0];
 	if ($old_char != $char)
 	{
 		$old_char = $char;
@@ -480,7 +480,7 @@ foreach ($lang_references as $lang_var => $filenames)
 	echo '.';
 	flush();
 	$var = preg_replace('#^L_(.*?)#', '\1', $lang_var);
-	$char = $var{0};
+	$char = $var[0];
 	if ($old_char != $char)
 	{
 		$old_char = $char;

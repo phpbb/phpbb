@@ -143,11 +143,58 @@ class helper
 			'body'	=> $template_file,
 		));
 
-		$this->display_footer();
+		$run_cron = true;
+		$page_footer_override = false;
 
-		$headers = !empty($this->user->data['is_bot']) ? array('X-PHPBB-IS-BOT' => 'yes') : array();
+		/**
+		 * Execute code and/or overwrite page_footer()
+		 *
+		 * @event core.page_footer
+		 * @var	bool	run_cron			Shall we run cron tasks
+		 * @var	bool	page_footer_override	Shall we skip displaying the page footer
+		 * @since 3.1.0-a1
+		 * @changed 3.3.1-RC1 Added to controller helper render() method for backwards compatibility
+		 */
+		$vars = ['run_cron', 'page_footer_override'];
+		extract($this->dispatcher->trigger_event('core.page_footer', compact($vars)));
 
-		return new Response($this->template->assign_display('body'), $status_code, $headers);
+		if (!$page_footer_override)
+		{
+			$this->display_footer($run_cron);
+		}
+
+		$headers = !empty($this->user->data['is_bot']) ? ['X-PHPBB-IS-BOT' => 'yes'] : [];
+
+		$display_template = true;
+		$exit_handler = true; // not used
+
+		/**
+		 * Execute code and/or modify output before displaying the template.
+		 *
+		 * @event core.page_footer_after
+		 * @var	bool display_template	Whether or not to display the template
+		 * @var	bool exit_handler		Whether or not to run the exit_handler() (no effect on controller pages)
+		 *
+		 * @since 3.1.0-RC5
+		 * @changed 3.3.1-RC1 Added to controller helper render() method for backwards compatibility
+		 */
+		$vars = ['display_template', 'exit_handler'];
+		extract($this->dispatcher->trigger_event('core.page_footer_after', compact($vars)));
+
+		$response = new Response($display_template ? $this->template->assign_display('body') : '', $status_code, $headers);
+
+		/**
+		 * Modify response before output
+		 *
+		 * @event core.controller_helper_render_response
+		 * @var	Response response	Symfony response object
+		 *
+		 * @since 3.3.1-RC1
+		 */
+		$vars = ['response'];
+		extract($this->dispatcher->trigger_event('core.controller_helper_render_response', compact($vars)));
+
+		return $response;
 	}
 
 	/**
