@@ -1464,6 +1464,9 @@ function user_ipwhois($ip)
 
 	$ipwhois = '';
 
+	// Limit the query to all possible flags (whois.arin.net)
+	$ip = 'z ' . $ip;
+
 	if (($fsk = @fsockopen($whois_host, 43)))
 	{
 		// CRLF as per RFC3912
