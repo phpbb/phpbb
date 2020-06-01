@@ -1566,10 +1566,11 @@ function mcp_fork_topic($topic_ids)
 				// Copy Attachments
 				if ($row['post_attachment'])
 				{
-					$sql = 'SELECT * FROM ' . ATTACHMENTS_TABLE . "
-						WHERE post_msg_id = {$row['post_id']}
-							AND topic_id = $topic_id
-							AND in_message = 0";
+					$sql = 'SELECT * FROM ' . ATTACHMENTS_TABLE . '
+						WHERE post_msg_id = ' . (int) $row['post_id'] . '
+							AND topic_id = ' . (int) $topic_id . '
+							AND in_message = 0
+						ORDER BY attach_id ASC';
 					$result = $db->sql_query($sql);
 
 					$sql_ary = array();
