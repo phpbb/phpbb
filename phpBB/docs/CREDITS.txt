@@ -22,10 +22,8 @@ phpBB Project Manager:   Marshalrusty (Yuriy Rusko)
 
 phpBB Lead Developer:    Marc (Marc Alexander)
 
-phpBB Developers:        bantu (Andreas Fischer)
-                         CHItA (Máté Bartus)
+phpBB Developers:        CHItA (Máté Bartus)
                          Derky (Derk Ruitenbeek)
-                         Elsensee (Oliver Schramm)
                          Hanakin (Michael Miday)
                          mrgoldy (Gijs Martens)
                          Nicofuma (Tristan Darricau)
@@ -53,11 +51,13 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          APTX (Marek A. Ruszczyński)   [12/2007 - 04/2011]
                          Arty (Vjacheslav Trushkin)    [02/2012 - 07/2012]
                          Ashe (Ludovic Arnaud)         [10/2002 - 11/2003, 06/2006 - 10/2006]
+                         bantu (Andreas Fischer)       [07/2009 - 06/2020]
                          BartVB (Bart van Bragt)       [11/2000 - 03/2006]
                          ckwalsh (Cullen Walsh)        [01/2010 - 07/2011]
                          DavidMJ (David M.)            [12/2005 - 08/2009]
                          dhn (Dominik Dröscher)        [05/2007 - 01/2011]
                          dhruv.goel92 (Dhruv Goel)     [04/2013 - 05/2016]
+                         Elsensee (Oliver Schramm)     [03/2015 - 06/2020]
                          EXreaction (Nathan Guse)      [07/2012 - 05/2014]
                          GrahamJE (Graham Eames)       [09/2005 - 11/2006]
                          igorw (Igor Wiedler)          [08/2010 - 02/2013]
