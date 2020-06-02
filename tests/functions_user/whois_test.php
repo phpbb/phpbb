@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 
-class phpbb_functions_user_whois_test extends phpbb_functional_test_case
+class phpbb_functions_user_whois_test extends phpbb_test_case
 {
 	public function ips_data()
 	{
