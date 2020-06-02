@@ -11,10 +11,23 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_functions_user_whois_test extends phpbb_test_case
 {
-	public function ips_data()
+	protected function setUp()
+	{
+		global $config, $phpbb_dispatcher, $user, $request, $symfony_request;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$config = new \phpbb\config\config([]);
+		$request = new phpbb_mock_request();
+		$symfony_request = new \phpbb\symfony_request($request);
+	}
+
+	 public function ips_data()
 	{
 		return [
-			['2001:4860:4860:0000:0000:0000:0000:8888'], // Google public DNS
+			['2001:4860:4860::8888'], // Google public DNS
 			['64.233.161.139'], // google.com
 		];
 	}
