@@ -288,6 +288,16 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_verify_peer',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_verify_peer_name', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_forums', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('teampage_memberships', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.pm_text_cron_interval', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.pm_text_last_cron', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.poll_option_cron_interval', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.poll_option_last_cron', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.poll_title_cron_interval', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.poll_title_last_cron', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.post_text_cron_interval', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.post_text_last_cron', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_cron_interval', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_last_cron', '0');
@@ -316,6 +326,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_s
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('read_notification_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('reparse_lock', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_indexing_state', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
