@@ -103,6 +103,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subje
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_search_return_chars', '300');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_unapproved_posts', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_force_sender', '0');
