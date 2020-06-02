@@ -13,7 +13,7 @@ class phpbb_functions_user_whois_test extends phpbb_test_case
 {
 	protected function setUp()
 	{
-		global $config, $phpbb_dispatcher, $user, $request, $symfony_request;
+		global $config, $phpbb_dispatcher, $user, $request, $symfony_request, $phpbb_root_path, $phpEx;
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
