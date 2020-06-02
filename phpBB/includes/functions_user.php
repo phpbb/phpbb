@@ -1470,8 +1470,11 @@ function user_ipwhois($ip)
 
 	$ipwhois = '';
 
-	// Limit the query to all possible flags (whois.arin.net)
-	$ip = 'z ' . $ip;
+	if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+	{
+		// Limit the query to all possible flags (whois.arin.net)
+		$ip = 'z ' . $ip;
+	}
 
 	if (($fsk = @fsockopen($whois_host, 43)))
 	{
