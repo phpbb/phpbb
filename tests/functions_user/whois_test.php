@@ -14,7 +14,7 @@ class phpbb_functions_user_whois_test extends phpbb_test_case
 	public function ips_data()
 	{
 		return [
-			['2001:4860:4860::8888'], // Google public DNS
+			['2001:4860:4860:0000:0000:0000:0000:8888'], // Google public DNS
 			['64.233.161.139'], // google.com
 		];
 	}
