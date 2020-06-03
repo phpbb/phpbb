@@ -119,6 +119,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_forum', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_http_auth', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_item_statistics', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_post', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_limit_topic', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall', '1');
