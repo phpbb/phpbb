@@ -948,7 +948,7 @@ class migrator
 	* @param string $name Name of the migration
 	* @return \phpbb\db\migration\migration
 	*/
-	protected function get_migration($name)
+	public function get_migration($name)
 	{
 		$migration = new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
 
