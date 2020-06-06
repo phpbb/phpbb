@@ -94,29 +94,28 @@ class migrations_check_config_added_test extends phpbb_test_case
 					continue;
 				}
 
+				$config_name = $step[1][0];
 				// Exclude removed configuration options and filter them out
 				if ($step[0] == 'config.remove')
 				{
-					if (!isset($config_removed[$step[1][0]]))
+					if (!isset($config_removed[$config_name]))
 					{
-						$config_removed[$step[1][0]] = true;
+						$config_removed[$config_name] = true;
 					}
 
 					continue;
 				}
 
-				$action = explode('.', $step[0]);
-				$method = $action[1];
-				$config_name = $step[1][0];
-
 				// Fill error entries for configuration options which were not added to shema_data.sql
-				if (!isset($config_names[$config_name]) && !isset($config_removed[$config_name]))
+				if (!isset($config_names[$config_name]))
 				{
 					$config_names[$config_name] = [$config_name, $class];
 				}
 			}
 		}
 
+		// Drop configuration options which were removed by config.remove
+		$config_names = array_diff_key($config_names, $config_removed);
 		return $config_names;
 	}
 
