@@ -257,6 +257,15 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_trigger_post
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_expire_days', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_gc', '86400');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_domain', 'google.com');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_key', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_method', 'post');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_secret', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_default', '0.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_login', '0.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_post', '0.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_register', '0.5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_report', '0.5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('remote_upload_verify', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
