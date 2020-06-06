@@ -23,7 +23,7 @@ class font_awesome_update_cdn extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v32x\v329',
+			'\phpbb\db\migration\data\v32x\add_missing_config',
 		];
 	}
 

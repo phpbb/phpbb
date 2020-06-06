@@ -760,7 +760,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_query($sql);
 
 	// Clean the private messages tables from the user
-	if (!function_exists('phpbb_delete_user_pms'))
+	if (!function_exists('phpbb_delete_users_pms'))
 	{
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
