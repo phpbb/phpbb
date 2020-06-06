@@ -50,6 +50,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			[],
 			new \phpbb\db\migration\helper()
 		);
+		$this->container->set('migrator', $this->migrator);
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			$this->phpbb_root_path,
@@ -75,7 +76,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			}
 
 			// Create migration object instance
-			$migration = new $class($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+			$migration = $this->migrator->get_migration($class);
 
 			// $step[0] - action (config.*|if|custom|etc), $step[1][1] - action when wrapped with 'if' action
 			// $step[1] - action parameters for non-'if'-wrapped actions (0 => config_name and 1 => config_value)
