@@ -292,7 +292,7 @@ class language
 	 *
 	 * @return string
 	 */
-	public function lang_array($key, $args = array())
+	public function lang_array($key, array $args = [])
 	{
 		$lang = $this->lang_raw($key);
 
