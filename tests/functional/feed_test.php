@@ -63,6 +63,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
+		// Disable showing unapproved posts to users
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=features");
+		$form = $crawler->selectButton('Submit')->form();
+		$form->setValues(['config[display_unapproved_posts]' => false]);
+		$crawler = self::submit($form);
+		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+
 		// Special config (Guest can't see attachments)
 		$this->add_lang('acp/permissions');
 
