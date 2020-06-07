@@ -20,10 +20,9 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 	/**
 	* Sets up basic test objects
 	*
-	* @access public
-	* @return null
+	* @access protected
 	*/
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

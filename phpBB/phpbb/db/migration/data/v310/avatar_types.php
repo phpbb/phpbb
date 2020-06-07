@@ -16,7 +16,7 @@ namespace phpbb\db\migration\data\v310;
 class avatar_types extends \phpbb\db\migration\migration
 {
 	/**
-	* @var avatar type map
+	* @var array avatar type map
 	*/
 	protected $avatar_type_map = array(
 		AVATAR_UPLOAD	=> 'avatar.driver.upload',

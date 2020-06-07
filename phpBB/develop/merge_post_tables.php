@@ -36,13 +36,13 @@ include($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
 $cache = new acm();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-// Just Do it (tm) 
+// Just Do it (tm)
 $sql = "RENAME TABLE {$table_prefix}posts TO {$table_prefix}posts_temp";
 $db->sql_query($sql);
 
-$sql = "CREATE TABLE {$table_prefix}posts 
-	SELECT p.*, pt.post_subject, pt.post_text, pt.post_checksum, pt.bbcode_bitfield, pt.bbcode_uid 
-		FROM {$table_prefix}posts_temp p, {$table_prefix}posts_text pt 
+$sql = "CREATE TABLE {$table_prefix}posts
+	SELECT p.*, pt.post_subject, pt.post_text, pt.post_checksum, pt.bbcode_bitfield, pt.bbcode_uid
+		FROM {$table_prefix}posts_temp p, {$table_prefix}posts_text pt
 		WHERE pt.post_id = p.post_id";
 $db->sql_query($sql);
 
@@ -50,13 +50,13 @@ switch ($db->get_sql_layer())
 {
 	case 'mysql':
 	case 'mysql4':
-		$sql = 'ALTER TABLE ' . $table_prefix . 'posts 
-			ADD PRIMARY KEY (post_id), 
-			ADD INDEX topic_id (topic_id), 
-			ADD INDEX poster_ip (poster_ip), 
-			ADD INDEX post_visibility (post_visibility), 
-			MODIFY COLUMN post_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
-			ADD COLUMN post_encoding varchar(11) DEFAULT \'iso-8859-15\' NOT NULL'; 
+		$sql = 'ALTER TABLE ' . $table_prefix . 'posts
+			ADD PRIMARY KEY (post_id),
+			ADD INDEX topic_id (topic_id),
+			ADD INDEX poster_ip (poster_ip),
+			ADD INDEX post_visibility (post_visibility),
+			MODIFY COLUMN post_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+			ADD COLUMN post_encoding varchar(11) DEFAULT \'iso-8859-15\' NOT NULL';
 		break;
 
 	case 'mssql':
@@ -78,9 +78,9 @@ $db->sql_query($sql);
 $sql = "UPDATE {$table_prefix}users SET user_id = 1 WHERE user_id = 0";
 $db->sql_query($sql);
 
-$sql = "SELECT t.topic_id 
-	FROM {$table_prefix}topics t 
-	LEFT JOIN {$table_prefix}posts p ON p.topic_id = t.topic_id 
+$sql = "SELECT t.topic_id
+	FROM {$table_prefix}topics t
+	LEFT JOIN {$table_prefix}posts p ON p.topic_id = t.topic_id
 	WHERE p.topic_id IS NULL";
 $result = $db->sql_query($sql);
 
@@ -93,15 +93,15 @@ if ($row = $db->sql_fetchrow($result))
 	}
 	while ($row = $db->sql_fetchrow($result));
 
-	$sql = "DELETE FROM {$table_prefix}topics 
+	$sql = "DELETE FROM {$table_prefix}topics
 		WHERE topic_id IN ($del_sql)";
 	$db->sql_query($sql);
 }
 $db->sql_freeresult($result);
 
 $del_sql = '';
-$sql = "SELECT topic_id, MIN(post_id) AS first_post_id, MAX(post_id) AS last_post_id, COUNT(post_id) AS total_posts 
-	FROM {$table_prefix}posts 
+$sql = "SELECT topic_id, MIN(post_id) AS first_post_id, MAX(post_id) AS last_post_id, COUNT(post_id) AS total_posts
+	FROM {$table_prefix}posts
 	GROUP BY topic_id";
 $result = $db->sql_query($sql);
 
@@ -109,7 +109,7 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$del_sql .= (($del_sql != '') ? ', ' : '') . $row['topic_id'];
 
-	$sql = "UPDATE {$table_prefix}topics 
+	$sql = "UPDATE {$table_prefix}topics
 		SET topic_first_post_id = " . $row['first_post_id'] . ", topic_last_post_id = " . $row['last_post_id'] . ", topic_replies = " . ($row['total_posts'] - 1) . "
 		WHERE topic_id = " . $row['topic_id'];
 	$db->sql_query($sql);
@@ -120,8 +120,8 @@ $sql = "DELETE FROM {$table_prefix}topics WHERE topic_id NOT IN ($del_sql)";
 $db->sql_query($sql);
 
 $topic_count = $post_count = array();
-$sql = "SELECT forum_id, COUNT(topic_id) AS topics 
-	FROM {$table_prefix}topics 
+$sql = "SELECT forum_id, COUNT(topic_id) AS topics
+	FROM {$table_prefix}topics
 	GROUP BY forum_id";
 $result = $db->sql_query($sql);
 
@@ -131,8 +131,8 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-$sql = "SELECT forum_id, COUNT(post_id) AS posts  
-	FROM {$table_prefix}posts 
+$sql = "SELECT forum_id, COUNT(post_id) AS posts
+	FROM {$table_prefix}posts
 	GROUP BY forum_id";
 $result = $db->sql_query($sql);
 
@@ -166,13 +166,13 @@ while ($row = $db->sql_fetchrow($result))
 	$forum_id = $row['forum_id'];
 
 	$sql_ary[] = "UPDATE " . $table_prefix . "forums
-		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts_approved = " . (($post_count[$forum_id]) ? $post_count[$forum_id] : 0) . ", forum_topics_approved = " . (($topic_count[$forum_id]) ? $topic_count[$forum_id] : 0) . " 
+		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts_approved = " . (($post_count[$forum_id]) ? $post_count[$forum_id] : 0) . ", forum_topics_approved = " . (($topic_count[$forum_id]) ? $topic_count[$forum_id] : 0) . "
 		WHERE forum_id = $forum_id";
 
 	$sql = "SELECT t.topic_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
 		FROM " . $table_prefix . "topics t, " . $table_prefix . "users u, " . $table_prefix . "posts p, " . $table_prefix . "posts p2, " . $table_prefix . "users u2
-		WHERE t.forum_id = $forum_id 
-			AND u.user_id = t.topic_poster 
+		WHERE t.forum_id = $forum_id
+			AND u.user_id = t.topic_poster
 			AND p.post_id = t.topic_first_post_id
 			AND p2.post_id = t.topic_last_post_id
 			AND u2.user_id = p2.poster_id";
@@ -192,7 +192,7 @@ $db->sql_freeresult($result);
 
 foreach ($sql_ary as $sql)
 {
-	$sql . "<br />";
+	echo $sql . "<br />";
 	$db->sql_query($sql);
 }
 

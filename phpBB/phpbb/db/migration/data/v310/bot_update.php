@@ -54,6 +54,7 @@ class bot_update extends \phpbb\db\migration\migration
 			if (!$group_row)
 			{
 				// default fallback, should never get here
+				$group_row = [];
 				$group_row['group_id'] = 6;
 				$group_row['group_colour'] = '9E8DA7';
 			}

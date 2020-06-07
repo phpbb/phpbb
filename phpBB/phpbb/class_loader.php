@@ -46,7 +46,7 @@ class class_loader
 	* @param string $namespace Required namespace for files to be loaded
 	* @param string $path    Directory to load files from
 	* @param string $php_ext The file extension for PHP files
-	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
+	* @param \phpbb\cache\driver\driver_interface|null $cache An implementation of the phpBB cache interface.
 	*/
 	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
 	{
@@ -67,7 +67,7 @@ class class_loader
 	* the class loader will resolve paths by checking for the existence of every
 	* directory in the class name every time.
 	*
-	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
+	* @param \phpbb\cache\driver\driver_interface|null $cache An implementation of the phpBB cache interface.
 	*/
 	public function set_cache(\phpbb\cache\driver\driver_interface $cache = null)
 	{

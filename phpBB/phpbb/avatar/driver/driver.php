@@ -80,7 +80,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\path_helper $path_helper phpBB path helper
-	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
+	* @param \phpbb\cache\driver\driver_interface|null $cache Cache driver
 	*/
 	public function __construct(\phpbb\config\config $config, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
 	{

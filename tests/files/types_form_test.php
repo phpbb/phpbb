@@ -13,8 +13,7 @@
 
 class phpbb_files_types_form_test extends phpbb_test_case
 {
-	private $path;
-
+	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
@@ -69,7 +68,6 @@ class phpbb_files_types_form_test extends phpbb_test_case
 			->method('handle_upload')
 			->willReturn(array());
 
-		$this->path = __DIR__ . '/fixture/';
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -160,7 +158,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 			->willReturn($plupload);
 
 		$type_form = new \phpbb\files\types\form($this->factory, $this->language, $this->php_ini, $this->plupload, $this->request);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_form->set_upload($upload);
 

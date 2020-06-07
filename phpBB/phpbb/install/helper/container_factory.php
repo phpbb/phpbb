@@ -47,7 +47,7 @@ class container_factory
 	/**
 	 * The full phpBB container
 	 *
-	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
+	 * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
 	 */
 	protected $container;
 

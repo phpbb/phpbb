@@ -320,7 +320,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 * Generates a text with approx. the specified length which contains the specified words and their context
 *
 * @param	string	$text	The full text from which context shall be extracted
-* @param	string	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
+* @param	array	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
 * @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
 *
 * @return	string			Context of the specified words separated by "..."
@@ -845,7 +845,6 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			$relative_url	= substr($relative_url, 0, $split);
 		}
 	}
-
 	// if the last character of the url is a punctuation mark, exclude it from the url
 	$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
 
@@ -1344,7 +1343,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
 
 	$replace = array();
-	foreach ($matches[0] as $num => $capture)
+	foreach (array_keys($matches[0]) as $num)
 	{
 		$index = $matches[1][$num];
 

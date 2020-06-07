@@ -50,7 +50,7 @@ class finder
 	* Creates a new finder instance with its dependencies
 	*
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param \phpbb\cache\service $cache A cache instance or null
+	* @param \phpbb\cache\service|null $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder

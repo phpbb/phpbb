@@ -13,7 +13,7 @@
 
 class phpbb_passwords_helper_test extends \phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		// Prepare dependencies for drivers
 		$config =  new \phpbb\config\config(array());

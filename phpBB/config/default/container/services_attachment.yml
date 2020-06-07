@@ -32,7 +32,6 @@ services:
             - '@config'
             - '@files.upload'
             - '@language'
-            - '@mimetype.guesser'
             - '@dispatcher'
             - '@plupload'
             - '@storage.attachment'

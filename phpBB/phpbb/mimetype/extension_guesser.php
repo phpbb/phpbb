@@ -16,7 +16,7 @@ namespace phpbb\mimetype;
 class extension_guesser extends guesser_base
 {
 	/**
-	* @var file extension map
+	* @var array file extension map
 	*/
 	protected $extension_map = array(
 		'3dm'		=> 'x-world/x-3dmf',

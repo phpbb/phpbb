@@ -75,7 +75,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -524,9 +524,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new style
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
-	* @param string $parent_style_id Parent style id. Default = 1
+	* @param int $parent_style_id Parent style id. Default = 1
 	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
 	*/
 	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
@@ -600,7 +600,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Remove temporary style created by add_style()
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
 	*/
 	protected function delete_style($style_id, $style_path)

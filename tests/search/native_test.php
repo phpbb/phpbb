@@ -16,7 +16,6 @@ require_once dirname(__FILE__) . '/../test_framework/phpbb_search_test_case.php'
 class phpbb_search_native_test extends phpbb_search_test_case
 {
 	protected $db;
-	protected $search;
 
 	public function getDataSet()
 	{

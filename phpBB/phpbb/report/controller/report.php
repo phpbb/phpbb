@@ -59,7 +59,7 @@ class report
 	protected $php_ext;
 
 	/**
-	 * @var \phpbb\report\report_handler_interface
+	 * @var \phpbb\report\handler_factory
 	 */
 	protected $report_handler;
 

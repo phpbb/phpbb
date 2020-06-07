@@ -26,7 +26,7 @@ interface manager_interface
 	 *
 	 * @param array $packages Packages to install.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
@@ -37,7 +37,7 @@ interface manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
@@ -48,7 +48,7 @@ interface manager_interface
 	 *
 	 * @param array $packages Packages to remove.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */

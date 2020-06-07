@@ -99,7 +99,7 @@ class local extends base
 	 * Retrieve upload array
 	 *
 	 * @param string $source_file Source file name
-	 * @param array $filedata File data array
+	 * @param array|bool $filedata File data array
 	 *
 	 * @return array Upload array
 	 */

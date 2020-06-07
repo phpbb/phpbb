@@ -14,7 +14,6 @@
 namespace phpbb\console\command\user;
 
 use phpbb\console\command\command;
-use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
@@ -28,9 +27,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete extends command
 {
-	/** @var driver_interface */
-	protected $db;
-
 	/** @var language */
 	protected $language;
 
@@ -58,16 +54,14 @@ class delete extends command
 	 * Construct method
 	 *
 	 * @param user             $user
-	 * @param driver_interface $db
 	 * @param language         $language
 	 * @param log_interface    $log
 	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, language $language, log_interface $log, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, language $language, log_interface $log, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
-		$this->db = $db;
 		$this->language = $language;
 		$this->log = $log;
 		$this->user_loader = $user_loader;

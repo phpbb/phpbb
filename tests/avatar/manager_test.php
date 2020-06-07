@@ -19,13 +19,16 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	protected $manager;
 	protected $avatar_foobar;
 	protected $avatar_barfoo;
+	protected $config;
+	protected $db;
+	protected $user;
 
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/users.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -49,13 +52,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			$phpEx
 		);
 
-		$guessers = array(
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
-			new \phpbb\mimetype\extension_guesser,
-			new \phpbb\mimetype\content_guesser,
-		);
-		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$imagesize = new \FastImageSize\FastImageSize();
 
 		$dispatcher = new phpbb_mock_event_dispatcher();

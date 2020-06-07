@@ -16,7 +16,6 @@ require_once dirname(__FILE__) . '/common_test_case.php';
 class phpbb_search_postgres_test extends phpbb_search_common_test_case
 {
 	protected $db;
-	protected $search;
 
 	public function getDataSet()
 	{

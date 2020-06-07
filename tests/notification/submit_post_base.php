@@ -47,7 +47,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_' . $this->item_type . '.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

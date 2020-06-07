@@ -43,7 +43,7 @@ class manager
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
-	* @param \phpbb\cache\service $cache A cache instance or null
+	* @param \phpbb\cache\service|null $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
 	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')

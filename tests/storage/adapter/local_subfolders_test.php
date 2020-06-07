@@ -19,7 +19,7 @@
 
 	protected $filesystem;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -33,7 +33,7 @@
 		mkdir($this->path);
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		$this->adapter = null;
 		rmdir($this->path);

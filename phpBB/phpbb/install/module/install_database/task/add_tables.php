@@ -36,11 +36,6 @@ class add_tables extends \phpbb\install\task_base
 	protected $db_tools;
 
 	/**
-	 * @var \phpbb\filesystem\filesystem_interface
-	 */
-	protected $filesystem;
-
-	/**
 	 * @var string
 	 */
 	protected $schema_file_path;
@@ -50,12 +45,10 @@ class add_tables extends \phpbb\install\task_base
 	 *
 	 * @param \phpbb\install\helper\config				$config
 	 * @param \phpbb\install\helper\database			$db_helper
-	 * @param \phpbb\filesystem\filesystem_interface	$filesystem
 	 * @param string									$phpbb_root_path
 	 */
 	public function __construct(\phpbb\install\helper\config $config,
 								\phpbb\install\helper\database $db_helper,
-								\phpbb\filesystem\filesystem_interface $filesystem,
 								$phpbb_root_path)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
@@ -75,7 +68,6 @@ class add_tables extends \phpbb\install\task_base
 
 		$this->config			= $config;
 		$this->db_tools			= $factory->get($this->db);
-		$this->filesystem		= $filesystem;
 		$this->schema_file_path	= $phpbb_root_path . 'store/schema.json';
 
 		parent::__construct(true);

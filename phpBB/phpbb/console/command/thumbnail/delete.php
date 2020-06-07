@@ -37,7 +37,7 @@ class delete extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \config\config $config The config
+	* @param \phpbb\config\config $config The config
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param string $phpbb_root_path Root path

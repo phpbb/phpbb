@@ -21,7 +21,6 @@ services:
         shared: false
         arguments:
             - '@language'
-            - '@php_ini'
             - '@upload_imagesize'
             - '@mimetype.guesser'
             - '@plupload'
@@ -30,7 +29,6 @@ services:
         class: phpbb\files\upload
         shared: false
         arguments:
-            - '@filesystem'
             - '@files.factory'
             - '@language'
             - '@php_ini'

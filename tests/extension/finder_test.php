@@ -18,7 +18,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	/** @var \phpbb\finder */
 	protected $finder;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',

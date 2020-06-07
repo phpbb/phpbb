@@ -847,3 +847,37 @@ function phpbb_delete_user_pms($user_id)
 
 	return phpbb_delete_users_pms(array($user_id));
 }
+
+/**
+* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
+*
+* @param string $input		A numeric string.
+*
+* @return int|float			Integer $input if $input fits integer,
+*							float $input otherwise.
+*
+* @deprecated 3.2.10 (To be removed 4.0.0)
+*/
+function phpbb_to_numeric($input)
+{
+	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Check and display the SQL report if requested.
+*
+* @param \phpbb\request\request_interface		$request	Request object
+* @param \phpbb\auth\auth						$auth		Auth object
+* @param \phpbb\db\driver\driver_interface		$db			Database connection
+ *
+ * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
+*/
+function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$controller_helper->display_sql_report();
+}

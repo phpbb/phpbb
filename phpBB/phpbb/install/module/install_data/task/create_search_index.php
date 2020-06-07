@@ -18,7 +18,6 @@ use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher;
 use phpbb\config\config;
 use phpbb\install\helper\container_factory;
-use phpbb\language\language;
 use phpbb\search\fulltext_native;
 use phpbb\user;
 
@@ -43,11 +42,6 @@ class create_search_index extends \phpbb\install\task_base
 	 * @var dispatcher
 	 */
 	protected $phpbb_dispatcher;
-
-	/**
-	 * @var language
-	 */
-	protected $language;
 
 	/**
 	 * @var user
@@ -78,7 +72,6 @@ class create_search_index extends \phpbb\install\task_base
 		$this->auth				= $container->get('auth');
 		$this->config			= $config;
 		$this->db				= $container->get('dbal.conn');
-		$this->language			= $container->get('language');
 		$this->phpbb_dispatcher = $container->get('dispatcher');
 		$this->user 			= $container->get('user');
 

@@ -15,9 +15,6 @@ require_once dirname(__FILE__) . '/type_foo.php';
 
 class phpbb_files_types_remote_test extends phpbb_test_case
 {
-	/** @var string */
-	private $path;
-
 	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
 
@@ -72,14 +69,13 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 			))));
 		$this->factory = new \phpbb\files\factory($this->container);
 
-		$this->path = __DIR__ . '/fixture/';
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	public function test_upload_fsock_fail()
 	{
 		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->temp, $this->language, $this->php_ini, $this->request);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
 
@@ -114,7 +110,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 			->method('getString')
 			->willReturn($max_file_size);
 		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->temp, $this->language, $php_ini, $this->request);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
 
@@ -126,7 +122,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	public function test_upload_wrong_path()
 	{
 		$type_remote = new \phpbb\files\types\foo($this->config, $this->factory, $this->temp, $this->language, $this->php_ini, $this->request);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
 		$type_remote::$tempnam_path = $this->phpbb_root_path . 'cache/wrong/path';

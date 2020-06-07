@@ -40,7 +40,7 @@ class datetime extends \DateTime
 	*
 	* @param user $user object for context.
 	* @param string $time String in a format accepted by strtotime().
-	* @param \DateTimeZone $timezone Time zone of the time.
+	* @param \DateTimeZone|null $timezone Time zone of the time.
 	*/
 	public function __construct($user, $time = 'now', \DateTimeZone $timezone = null)
 	{

@@ -180,7 +180,7 @@ function user_update_name($old_name, $new_name)
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param array $cp_data custom profile fields, see custom_profile::build_insert_sql_array
 * @param array $notifications_data The notifications settings for the new user
-* @return the new user's ID.
+* @return int  The new user's ID.
 */
 function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
@@ -1610,7 +1610,8 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 
 /**
 * Validate Date
-* @param String $string a date in the dd-mm-yyyy format
+* @param string $date_string a date in the dd-mm-yyyy format
+* @param bool $optional
 * @return	boolean
 */
 function validate_date($date_string, $optional = false)
@@ -1645,7 +1646,6 @@ function validate_date($date_string, $optional = false)
 
 	return false;
 }
-
 
 /**
 * Validate Match
@@ -2216,7 +2216,7 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $config, $phpbb_container;
+	global $phpbb_container;
 
 	$storage = $phpbb_container->get('storage.avatar');
 
@@ -2576,7 +2576,7 @@ function group_correct_avatar($group_id, $old_entry)
 
 	try
 	{
-		$this->storage->rename($old_filename, $new_filename);
+		$storage->rename($old_filename, $new_filename);
 
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'

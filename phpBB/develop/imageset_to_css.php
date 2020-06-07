@@ -2,7 +2,7 @@
 
 /*
 	Converts imageset to CSS code
-	
+
 	Change style name and path below, open in browser.
 */
 
@@ -145,8 +145,6 @@ for ($i=0; $i<count($list); $i++)
 }
 
 echo ob_get_clean();
-return;
-
 
 /*
 	Functions
@@ -155,7 +153,7 @@ function get_imageset($path, $lang = '')
 {
 	$cfg = $path . ($lang ? '/' . $lang : '') . '/imageset.cfg';
 	if (!@file_exists($cfg))
-	{	
+	{
 		return false;
 	}
 	$data = file($cfg);
@@ -163,12 +161,12 @@ function get_imageset($path, $lang = '')
 	for ($i=0; $i<count($data); $i++)
 	{
 		$str = trim($data[$i]);
-		if (substr($str, 0, 4) != 'img_') 
+		if (substr($str, 0, 4) != 'img_')
 		{
 			continue;
 		}
 		$list = explode('=', $data[$i]);
-		if (count($list) != 2) 
+		if (count($list) != 2)
 		{
 			continue;
 		}
@@ -371,4 +369,3 @@ function css($list, $path = './', $bidi = false)
 	}
 	return $code;
 }
-

@@ -33,6 +33,8 @@ class bbcode
 
 	var $template_bitfield;
 
+	protected $template_filename;
+
 	/**
 	* Constructor
 	*/
@@ -149,7 +151,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container;
 
 		if (empty($this->template_filename))
 		{
@@ -702,4 +704,5 @@ class bbcode
 
 		return $return;
 	}
+
 }

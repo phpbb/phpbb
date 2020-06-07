@@ -43,17 +43,17 @@ class manager implements manager_interface
 	protected $exception_prefix;
 
 	/**
-	 * @var array Caches the managed packages list (for the current type)
+	 * @var array|null Caches the managed packages list (for the current type)
 	 */
 	private $managed_packages;
 
 	/**
-	 * @var array Caches the managed packages list (for all phpBB types)
+	 * @var array|null Caches the managed packages list (for all phpBB types)
 	 */
 	private $all_managed_packages;
 
 	/**
-	 * @var array Caches the available packages list
+	 * @var array|null Caches the available packages list
 	 */
 	private $available_packages;
 
@@ -101,7 +101,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function pre_install(array $packages, IOInterface $io = null)
 	{
@@ -112,7 +112,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function post_install(array $packages, IOInterface $io = null)
 	{
@@ -146,7 +146,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function pre_update(array $packages, IOInterface $io = null)
 	{
@@ -157,7 +157,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function post_update(array $packages, IOInterface $io = null)
 	{
@@ -193,7 +193,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function pre_remove(array $packages, IOInterface $io = null)
 	{
@@ -204,7 +204,7 @@ class manager implements manager_interface
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
-	 * @param IOInterface $io IO object used for the output
+	 * @param IOInterface|null $io IO object used for the output
 	 */
 	protected function post_remove(array $packages, IOInterface $io = null)
 	{

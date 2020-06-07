@@ -45,7 +45,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		));
 		$this->container->set('groupposition.teampage', new \phpbb\groupposition\teampage(
 			$this->db,
-			$this->user,
 			$this->cache->get_driver()
 		));
 		$this->container->set('group_helper', new \phpbb\group\helper(

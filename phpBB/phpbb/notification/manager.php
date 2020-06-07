@@ -70,8 +70,6 @@ class manager
 	* @param \phpbb\user $user
 	* @param string $notification_types_table
 	* @param string $user_notifications_table
-	*
-	* @return \phpbb\notification\manager
 	*/
 	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
@@ -919,6 +917,8 @@ class manager
 	*/
 	public function get_notification_type_id($notification_type_name)
 	{
+		$notification_type_ids = [];
+
 		$sql = 'SELECT notification_type_id, notification_type_name
 			FROM ' . $this->notification_types_table;
 		$result = $this->db->sql_query($sql, 604800); // cache for one week

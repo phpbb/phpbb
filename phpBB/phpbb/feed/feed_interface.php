@@ -61,7 +61,6 @@ interface feed_interface
 	 *
 	 * @param $item_row
 	 * @param $row
-	 * @return array
 	 */
 	public function adjust_item(&$item_row, &$row);
 }

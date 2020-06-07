@@ -24,7 +24,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		$application = new Application();
 		$application->add(new delete(
 			$this->user,
-			$this->db,
 			$this->language,
 			$this->log,
 			$this->user_loader,

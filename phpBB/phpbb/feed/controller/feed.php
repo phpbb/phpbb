@@ -290,7 +290,7 @@ class feed
 	 *
 	 * @return Response
 	 *
-	 * @throw exception\feed_exception
+	 * @throws exception\feed_exception
 	 */
 	protected function send_feed_do(feed_interface $feed)
 	{
@@ -401,7 +401,7 @@ class feed
 	/**
 	 * Throw and exception saying that the feed isn't available
 	 *
-	 * @throw http_exception
+	 * @throws http_exception
 	 */
 	protected function send_unavailable()
 	{

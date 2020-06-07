@@ -13,8 +13,7 @@
 
 class phpbb_files_types_base_test extends phpbb_test_case
 {
-	private $path;
-
+	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
@@ -31,9 +30,6 @@ class phpbb_files_types_base_test extends phpbb_test_case
 
 	/** @var \phpbb\request\request_interface */
 	protected $request;
-
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
 
 	protected function setUp(): void
 	{
@@ -56,9 +52,6 @@ class phpbb_files_types_base_test extends phpbb_test_case
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
 			))));
 		$this->factory = new \phpbb\files\factory($this->container);
-
-		$this->path = __DIR__ . '/fixture/';
-		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	public function data_check_upload_size()
@@ -79,7 +72,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 		$php_ini->expects($this->any())
 			->method('getString')
 			->willReturn($max_filesize);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $php_ini, $this->request);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $php_ini, $this->request);
 		$type_form = new \phpbb\files\types\local($this->factory, $this->language, $php_ini, $this->request);
 		$file = $this->getMockBuilder('\phpbb\files\filespec')
 			->disableOriginalConstructor()

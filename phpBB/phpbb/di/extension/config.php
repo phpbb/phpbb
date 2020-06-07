@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class config extends Extension
 {
-	/** @var array */
+	/** @var \phpbb\config_php_file */
 	protected $config_php;
 
 	public function __construct(\phpbb\config_php_file $config_php)

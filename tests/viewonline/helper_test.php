@@ -13,7 +13,9 @@
 
 class phpbb_viewonline_helper_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected $viewonline_helper;
+
+	protected function setUp(): void
 	{
 		parent::setUp();
 

@@ -707,6 +707,7 @@ function validate_range($value_ary, &$error)
 /**
 * Inserts new config display_vars into an exisiting display_vars array
 * at the given position.
+* Used by extensions.
 *
 * @param array $display_vars An array of existing config display vars
 * @param array $add_config_vars An array of new config display vars

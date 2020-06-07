@@ -18,7 +18,6 @@ use \phpbb\cache\service;
 use \phpbb\config\config;
 use \phpbb\event\dispatcher;
 use \phpbb\language\language;
-use \phpbb\mimetype\guesser;
 use \phpbb\plupload\plupload;
 use \phpbb\storage\storage;
 use \phpbb\filesystem\temp;
@@ -44,9 +43,6 @@ class upload
 	/** @var language */
 	protected $language;
 
-	/** @var guesser Mimetype guesser */
-	protected $mimetype_guesser;
-
 	/** @var dispatcher */
 	protected $phpbb_dispatcher;
 
@@ -62,7 +58,7 @@ class upload
 	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\files\filespec Current filespec instance */
+	/** @var \phpbb\files\filespec_storage Current filespec instance */
 	private $file;
 
 	/** @var array File data */
@@ -81,21 +77,19 @@ class upload
 	 * @param config $config
 	 * @param \phpbb\files\upload $files_upload
 	 * @param language $language
-	 * @param guesser $mimetype_guesser
 	 * @param dispatcher $phpbb_dispatcher
 	 * @param plupload $plupload
 	 * @param storage $storage
 	 * @param temp $temp
 	 * @param user $user
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, user $user)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->files_upload = $files_upload;
 		$this->language = $language;
-		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->plupload = $plupload;
 		$this->storage = $storage;
@@ -233,8 +227,6 @@ class upload
 
 	/**
 	 * Create thumbnail for file if necessary
-	 *
-	 * @return array Updated $filedata
 	 */
 	protected function create_thumbnail()
 	{

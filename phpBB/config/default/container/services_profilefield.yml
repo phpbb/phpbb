@@ -9,7 +9,6 @@ services:
             - '@dispatcher'
             - '@language'
             - '@log'
-            - '@request'
             - '@template'
             - '@profilefields.type_collection'
             - '@user'

@@ -24,7 +24,7 @@ class manager
 	* Hashing algorithm type map
 	* Will be used to map hash prefix to type
 	*/
-	protected $type_map = false;
+	protected $type_map = [];
 
 	/**
 	* Service collection of hashing algorithms
@@ -329,12 +329,12 @@ class manager
 	* Create combined hash from already hashed password
 	*
 	* @param string $password_hash Complete current password hash
-	* @param string $type Type of the hashing algorithm the password hash
+	* @param array $type Type of the hashing algorithm the password hash
 	*		should be combined with
 	* @return string|bool Combined password hash if combined hashing was
 	*		successful, else false
 	*/
-	public function combined_hash_password($password_hash, $type)
+	public function combined_hash_password($password_hash, array $type)
 	{
 		$this->initialize();
 

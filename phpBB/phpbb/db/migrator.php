@@ -50,6 +50,9 @@ class migrator
 	/** @var array */
 	protected $tables;
 
+	/** @var array */
+	protected $tools;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -87,7 +90,7 @@ class migrator
 	*
 	* 'effectively_installed' set and set to true if the migration was effectively_installed
 	*
-	* @var array
+	* @var array|bool
 	*/
 	protected $last_run_migration = false;
 
@@ -130,6 +133,7 @@ class migrator
 
 		$this->output_handler = new null_migrator_output_handler();
 
+		$this->tools = [];
 		foreach ($tools as $tool)
 		{
 			$this->tools[$tool->get_name()] = $tool;
@@ -699,7 +703,7 @@ class migrator
 				}
 
 				// Reverse the step that was run
-				$result = $this->run_step($reverse_step, false, !$revert);
+				$this->run_step($reverse_step, false, !$revert);
 			}
 
 			throw $e;

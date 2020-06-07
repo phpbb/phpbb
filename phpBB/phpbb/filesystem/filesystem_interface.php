@@ -177,14 +177,14 @@ interface filesystem_interface
 	/**
 	 * Mirrors a directory to another.
 	 *
-	 * @param string		$origin_dir	The origin directory
-	 * @param string		$target_dir	The target directory
-	 * @param \Traversable	$iterator	A Traversable instance
-	 * @param array			$options	An array of boolean options
-	 *									Valid options are:
-	 *										- $options['override'] Whether to override an existing file on copy or not (see copy())
-	 *										- $options['copy_on_windows'] Whether to copy files instead of links on Windows (see symlink())
-	 *										- $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
+	 * @param string			$origin_dir	The origin directory
+	 * @param string			$target_dir	The target directory
+	 * @param \Traversable|null	$iterator	A Traversable instance
+	 * @param array				$options	An array of boolean options
+	 *										Valid options are:
+	 *											- $options['override'] Whether to override an existing file on copy or not (see copy())
+	 *											- $options['copy_on_windows'] Whether to copy files instead of links on Windows (see symlink())
+	 *											- $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
 	 *
 	 * @throws \phpbb\filesystem\exception\filesystem_exception When the file cannot be copied.
 	 * 															The filename which triggered the error can be

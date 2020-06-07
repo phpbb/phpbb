@@ -126,6 +126,8 @@ class obtain_file_updater_method extends task_base
 	 */
 	protected function get_available_compression_methods()
 	{
+		$methods = [];
+
 		$methods[] = array(
 			'value'		=> '.tar',
 			'label'		=> '.tar',

@@ -29,7 +29,7 @@ class manager
 
 	/**
 	* Array that contains a list of enabled drivers
-	* @var array
+	* @var array|bool
 	*/
 	static protected $enabled_drivers = false;
 

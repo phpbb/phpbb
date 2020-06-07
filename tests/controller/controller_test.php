@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class phpbb_controller_controller_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',

@@ -62,6 +62,26 @@ class content_visibility
 	protected $php_ext;
 
 	/**
+	* @var string
+	*/
+	protected $forums_table;
+
+	/**
+	* @var string
+	*/
+	protected $posts_table;
+
+	/**
+	* @var string
+	*/
+	protected $topics_table;
+
+	/**
+	* @var string
+	*/
+	protected $users_table;
+
+	/**
 	* Constructor
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object

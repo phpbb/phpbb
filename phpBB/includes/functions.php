@@ -915,7 +915,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 /**
 * Get topic tracking info by using already fetched info
 */
-function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
+function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time)
 {
 	global $user;
 
@@ -959,7 +959,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 /**
 * Get topic tracking info from db (for cookie based tracking only this function is used)
 */
-function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
+function get_complete_topic_tracking($forum_id, $topic_ids)
 {
 	global $config, $user, $request;
 
@@ -3216,8 +3216,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 */
 function phpbb_filter_root_path($errfile)
 {
-	global $phpbb_filesystem;
-
 	static $root_path;
 
 	if (empty($root_path))
@@ -4099,25 +4097,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 }
 
 /**
-* Check and display the SQL report if requested.
-*
-* @param \phpbb\request\request_interface		$request	Request object
-* @param \phpbb\auth\auth						$auth		Auth object
-* @param \phpbb\db\driver\driver_interface		$db			Database connection
- *
- * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
-*/
-function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
-
-	$controller_helper->display_sql_report();
-}
-
-/**
 * Generate the debug output string
 *
 * @param \phpbb\db\driver\driver_interface	$db			Database connection
@@ -4314,19 +4293,6 @@ function exit_handler()
 	(ob_get_level() > 0) ? @ob_flush() : @flush();
 
 	exit;
-}
-
-/**
-* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
-*
-* @param string $input		A numeric string.
-*
-* @return int|float			Integer $input if $input fits integer,
-*							float $input otherwise.
-*/
-function phpbb_to_numeric($input)
-{
-	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 }
 
 /**

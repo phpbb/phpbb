@@ -19,8 +19,6 @@ require_once dirname(__FILE__) . '/common_test_case.php';
 
 class phpbb_cache_apcu_driver_test extends phpbb_cache_common_test_case
 {
-	protected static $config;
-
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');

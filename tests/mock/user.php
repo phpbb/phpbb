@@ -23,7 +23,8 @@ class phpbb_mock_user
 	public $page = array('root_script_path' => '/');
 	public $style = [];
 	public $data = [];
-	
+	public $lang = [];
+
 	private $options = array();
 	public function optionget($item)
 	{
@@ -31,10 +32,10 @@ class phpbb_mock_user
 		{
 			throw new Exception(sprintf("You didn't set the option '%s' on the mock user using optionset.", $item));
 		}
-		
+
 		return $this->options[$item];
 	}
-	
+
 	public function optionset($item, $value)
 	{
 		$this->options[$item] = $value;

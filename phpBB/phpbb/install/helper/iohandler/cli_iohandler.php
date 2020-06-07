@@ -38,7 +38,7 @@ class cli_iohandler extends iohandler_base
 	protected $input_values = array();
 
 	/**
-	 * @var \Symfony\Component\Console\Helper\ProgressBar
+	 * @var \Symfony\Component\Console\Helper\ProgressBar|null
 	 */
 	protected $progress_bar;
 

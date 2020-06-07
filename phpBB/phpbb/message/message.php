@@ -39,7 +39,7 @@ class message
 	protected $sender_address = '';
 	/** @var string */
 	protected $sender_lang = '';
-	/** @var string */
+	/** @var string|int */
 	protected $sender_id = '';
 	/** @var string */
 	protected $sender_username = '';

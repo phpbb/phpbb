@@ -978,7 +978,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$approved_posts = 0;
-	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
+	$post_ids = $poster_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
 	$sql = 'SELECT post_id, poster_id, post_visibility, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
@@ -1518,7 +1518,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_reported should be empty by now, if it's not it contains
 			// posts that are falsely flagged as reported
-			foreach ($post_reported as $post_id => $void)
+			foreach (array_keys($post_reported) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1623,7 +1623,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_attachment should be empty by now, if it's not it contains
 			// posts that are falsely flagged as having attachments
-			foreach ($post_attachment as $post_id => $void)
+			foreach (array_keys($post_attachment) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1696,7 +1696,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$where_sql";
 			$result = $db->sql_query($sql);
 
-			$forum_data = $forum_ids = $post_ids = $last_post_id = $post_info = array();
+			$forum_data = $forum_ids = $post_ids = $post_info = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['forum_type'] == FORUM_LINK)
@@ -2031,7 +2031,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			if (count($delete_topics))
 			{
 				$delete_topic_ids = array();
-				foreach ($delete_topics as $topic_id => $void)
+				foreach (array_keys($delete_topics) as $topic_id)
 				{
 					unset($topic_data[$topic_id]);
 					$delete_topic_ids[] = $topic_id;
@@ -2605,7 +2605,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 * @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
 * @param	int		$topic_id		Restrict the log entries to the given topic_id
 * @param	int		$user_id		Restrict the log entries to the given user_id
-* @param	int		$log_time		Only get log entries newer than the given timestamp
+* @param	int		$limit_days		Only get log entries newer than the given timestamp
 * @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
 * @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
 *
