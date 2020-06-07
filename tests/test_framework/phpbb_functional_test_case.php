@@ -55,8 +55,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// installed, and also before each test case is run.
 		self::$config['table_prefix'] = 'phpbb_';
 
-		self::$config['display_unapproved_posts'] = false;
-
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
