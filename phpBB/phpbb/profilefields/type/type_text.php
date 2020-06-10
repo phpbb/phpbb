@@ -109,7 +109,7 @@ class type_text extends type_string_common
 	{
 		/**
 		 * Check for out-of-bounds characters that are currently
-		 * not supported by utf8_bin in MySQL if Emoji is not allowed
+		 * not supported by utf8_bin in MySQL if Emoji are not allowed
 		 */
 		if (!$this->auth->acl_get('u_emoji'))
 		{
