@@ -254,6 +254,17 @@ class manager
 			/** @var \phpbb\profilefields\type\type_interface $profile_field */
 			$profile_field = $this->type_collection[$row['field_type']];
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
+
+			/**
+			 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL with UCR/NCR
+			 * using their Numeric Character Reference's Hexadecimal notation.
+			 * Check the permissions for using Emojis first.
+			 */
+			if ($this->auth->acl_get('u_emoji'))
+			{
+				$cp_data['pf_' . $row['field_ident']] = utf8_encode_ucr($cp_data['pf_' . $row['field_ident']]);
+			}
+
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
 			if (($cp_result = $profile_field->validate_profile_field($check_value, $row)) !== false)

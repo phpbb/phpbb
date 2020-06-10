@@ -16,6 +16,12 @@ namespace phpbb\profilefields\type;
 class type_text extends type_string_common
 {
 	/**
+	* Auth object
+	* @var \phpbb\auth\auth
+	*/
+	protected $auth;
+
+	/**
 	* Request object
 	* @var \phpbb\request\request
 	*/
@@ -36,12 +42,14 @@ class type_text extends type_string_common
 	/**
 	* Construct
 	*
+	* @param	\phpbb\auth\auth			$auth		Auth object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
+		$this->auth = $auth;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -99,6 +107,17 @@ class type_text extends type_string_common
 	*/
 	public function validate_profile_field(&$field_value, $field_data)
 	{
+		/**
+		 * Check for out-of-bounds characters that are currently
+		 * not supported by utf8_bin in MySQL if Emoji is not allowed
+		 */
+		if (!$this->auth->acl_get('u_emoji'))
+		{
+			if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $field_value))
+			{
+				return $this->user->lang('FIELD_INVALID_CHARS_INVALID', $this->get_field_name($field_data['lang_name']));
+			}
+		}
 		return $this->validate_string_profile_field('text', $field_value, $field_data);
 	}
 
