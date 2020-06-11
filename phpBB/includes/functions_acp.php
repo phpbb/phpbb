@@ -453,8 +453,20 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					$error[] = $language->lang('URL_INVALID', $language->lang($config_definition['lang']));
 				}
 
+				goto validate_string;
+
+			case 'csv':
+				// Validate comma separated values
+				$unfiltered_array = explode(',', $cfg_array[$config_name]);
+				$filtered_array = array_filter($unfiltered_array);
+				if (!empty($filtered_array) && count($unfiltered_array) !== count($filtered_array))
+				{
+					$error[] = $language->lang('CSV_INVALID', $language->lang($config_definition['lang']));
+				}
+
 			// no break here
 
+			validate_string:
 			case 'string':
 				$length = utf8_strlen($cfg_array[$config_name]);
 

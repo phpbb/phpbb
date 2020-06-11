@@ -218,7 +218,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->urlConfig->disallowScheme($scheme);
 		}
-		foreach (array_filter(explode(',', $this->config['allowed_schemes_links'])) as $scheme)
+
+		$schemes = array_filter(explode(',', $this->config['allowed_schemes_links']));
+		foreach ($schemes as $scheme)
 		{
 			$configurator->urlConfig->allowScheme(trim($scheme));
 		}

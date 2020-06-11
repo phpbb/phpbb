@@ -235,6 +235,7 @@ $lang = array_merge($lang, array(
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
 	'CRON_NO_TASK'			=> 'No cron tasks need to be run right now.',
 	'CRON_NO_TASKS'			=> 'No cron tasks could be found.',
+	'CSV_INVALID'			=> 'The provided comma-separated setting “%1$s” is invalid. The values should be delimited by comma only, it should not contain any leading or trailing delimiters.',
 	'CURRENT_VERSION'		=> 'Current version',
 
 	'DEACTIVATE'				=> 'Deactivate',
@@ -316,6 +317,7 @@ $lang = array_merge($lang, array(
 
 	'UCP'					=> 'User Control Panel',
 	'URL_INVALID'			=> 'The provided URL for the setting “%1$s” is invalid.',
+	'URL_SCHEME_INVALID'	=> 'The provided scheme “%2$s” in comma-separated setting “%1$s” is invalid. Scheme should start with a latin character followed by alphanumeric characters, hyphens or dots.',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
