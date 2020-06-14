@@ -241,6 +241,25 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	}
 
 	/**
+	 * Check if a permission role exists
+	 *
+	 * @param string $role_name The role name
+	 *
+	 * @return int The id of the role if it exists, 0 otherwise
+	 */
+	public function role_exists($role_name)
+	{
+		$sql = 'SELECT role_id
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
+		$result = $this->db->sql_query($sql);
+		$role_id = (int) $this->db->sql_fetchfield('role_id');
+		$this->db->sql_freeresult($result);
+
+		return $role_id;
+	}
+
+	/**
 	* Add a new permission role
 	*
 	* @param string $role_name The new role name
@@ -251,13 +270,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	*/
 	public function role_add($role_name, $role_type, $role_description = '')
 	{
-		$sql = 'SELECT role_id
-			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
-		$this->db->sql_query($sql);
-		$role_id = (int) $this->db->sql_fetchfield('role_id');
-
-		if ($role_id)
+		if ($this->role_exists($role_name))
 		{
 			return;
 		}
@@ -290,13 +303,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	*/
 	public function role_update($old_role_name, $new_role_name)
 	{
-		$sql = 'SELECT role_id
-			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($old_role_name) . "'";
-		$this->db->sql_query($sql);
-		$role_id = (int) $this->db->sql_fetchfield('role_id');
-
-		if (!$role_id)
+		if (!$this->role_exists($old_role_name))
 		{
 			throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $old_role_name);
 		}
@@ -315,13 +322,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	*/
 	public function role_remove($role_name)
 	{
-		$sql = 'SELECT role_id
-			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
-		$this->db->sql_query($sql);
-		$role_id = (int) $this->db->sql_fetchfield('role_id');
-
-		if (!$role_id)
+		if (!($role_id = $this->role_exists($role_name)))
 		{
 			return;
 		}
@@ -381,13 +382,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		switch ($type)
 		{
 			case 'role':
-				$sql = 'SELECT role_id
-					FROM ' . ACL_ROLES_TABLE . "
-					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
-				$this->db->sql_query($sql);
-				$role_id = (int) $this->db->sql_fetchfield('role_id');
-
-				if (!$role_id)
+				if (!($role_id = $this->role_exists($name)))
 				{
 					throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $name);
 				}
@@ -539,13 +534,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		switch ($type)
 		{
 			case 'role':
-				$sql = 'SELECT role_id
-					FROM ' . ACL_ROLES_TABLE . "
-					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
-				$this->db->sql_query($sql);
-				$role_id = (int) $this->db->sql_fetchfield('role_id');
-
-				if (!$role_id)
+				if (!($role_id = $this->role_exists($name)))
 				{
 					throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $name);
 				}
