@@ -641,7 +641,7 @@ class user extends \phpbb\session
 	 * Create a DateTimeZone object in the context of the current user
 	 *
 	 * @param string $user_timezone Time zone of the current user.
-	 * @return DateTimeZone DateTimeZone object linked to the current users locale
+	 * @return \DateTimeZone DateTimeZone object linked to the current users locale
 	 */
 	public function create_timezone($user_timezone = null)
 	{

@@ -13,6 +13,7 @@
 
 namespace phpbb\install\module\install_finish\task;
 
+use phpbb\config\db;
 use phpbb\install\exception\resource_limit_reached_exception;
 
 /**
@@ -31,7 +32,7 @@ class install_extensions extends \phpbb\install\task_base
 	protected $iohandler;
 
 	/**
-	 * @var \phpbb\config\db
+	 * @var db
 	 */
 	protected $config;
 
@@ -74,7 +75,6 @@ class install_extensions extends \phpbb\install\task_base
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->extension_manager = $container->get('ext.manager');
-		$this->config			= $container->get('config');
 		$this->db				= $container->get('dbal.conn');
 		$this->finder = new \Symfony\Component\Finder\Finder();
 		$this->finder->in($phpbb_root_path . 'ext/')
@@ -82,6 +82,19 @@ class install_extensions extends \phpbb\install\task_base
 			->depth('< 3')
 			->files()
 			->name('composer.json');
+
+		/** @var \phpbb\cache\driver\driver_interface $cache */
+		$cache = $container->get('cache.driver');
+		$cache->destroy('config');
+
+		$this->config = new db(
+			$this->db,
+			$cache,
+			$container->get_parameter('tables.config')
+		);
+
+		global $config;
+		$config = $this->config;
 
 		// Make sure asset version exists in config. Otherwise we might try to
 		// insert the assets_version setting into the database and cause a
