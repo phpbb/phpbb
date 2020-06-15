@@ -27,7 +27,6 @@ class session
 	var $forwarded_for = '';
 	var $host = '';
 	var $session_id = '';
-	public $id = ANONYMOUS;
 	var $ip = '';
 	var $load = 0;
 	var $time_now = 0;
@@ -365,8 +364,6 @@ class session
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
 			{
-				$this->id = (int) $this->data['user_id'];
-
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
@@ -652,7 +649,7 @@ class session
 		}
 
 		// Force user id to be integer...
-		$this->id = $this->data['user_id'] = (int) $this->data['user_id'];
+		$this->data['user_id'] = (int) $this->data['user_id'];
 
 		// At this stage we should have a filled data array, defined cookie u and k data.
 		// data array should contain recent session info if we're a real user and a recent
@@ -1668,5 +1665,15 @@ class session
 				$this->leave_newly_registered();
 			}
 		}
+	}
+
+	/**
+	 * Get user ID
+	 *
+	 * @return int User ID
+	 */
+	public function id() : int
+	{
+		return isset($this->data['user_id']) ? (int) $this->data['user_id'] : ANONYMOUS;
 	}
 }

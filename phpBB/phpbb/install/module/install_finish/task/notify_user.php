@@ -97,6 +97,9 @@ class notify_user extends \phpbb\install\task_base
 			$container->get_parameter('tables.config')
 		);
 
+		global $config;
+		$config = $this->config;
+
 		parent::__construct(true);
 	}
 
@@ -111,11 +114,6 @@ class notify_user extends \phpbb\install\task_base
 		if ($this->config['email_enable'])
 		{
 			include ($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-
-			// functions_messenger.php uses config to determine language paths
-			// Remove when able
-			global $config;
-			$config = $this->config;
 
 			$messenger = new \messenger(false);
 			$messenger->template('installed', $this->install_config->get('user_language', 'en'));
