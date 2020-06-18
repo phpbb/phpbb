@@ -73,6 +73,7 @@ class install_extensions extends \phpbb\install\task_base
 		$this->extension_table = $container->get_parameter('tables.ext');
 
 		$this->log				= $container->get('log');
+		$this->config			= $container->get('config');
 		$this->user				= $container->get('user');
 		$this->extension_manager = $container->get('ext.manager');
 		$this->db				= $container->get('dbal.conn');
@@ -87,14 +88,12 @@ class install_extensions extends \phpbb\install\task_base
 		$cache = $container->get('cache.driver');
 		$cache->destroy('config');
 
-		$this->config = new db(
+		global $config;
+		$config = new db(
 			$this->db,
 			$cache,
 			$container->get_parameter('tables.config')
 		);
-
-		global $config;
-		$config = $this->config;
 
 		// Make sure asset version exists in config. Otherwise we might try to
 		// insert the assets_version setting into the database and cause a
