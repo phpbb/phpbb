@@ -30,7 +30,6 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	{
 		global $config, $request, $user, $cache, $phpbb_root_path, $phpEx;
 
-		$auth = new \phpbb\auth\auth();
 		$config = new \phpbb\config\config([]);
 		$cache = new phpbb_mock_cache;
 		$user = $this->getMock('\phpbb\user', array(), array(
@@ -45,7 +44,6 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 		$template = $this->getMock('\phpbb\template\template');
 
 		$this->cp = new \phpbb\profilefields\type\type_url(
-			$auth,
 			$request,
 			$template,
 			$user

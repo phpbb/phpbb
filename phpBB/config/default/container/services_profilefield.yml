@@ -82,7 +82,6 @@ services:
     profilefields.type.string:
         class: phpbb\profilefields\type\type_string
         arguments:
-            - '@auth'
             - '@request'
             - '@template'
             - '@user'
@@ -92,7 +91,6 @@ services:
     profilefields.type.text:
         class: phpbb\profilefields\type\type_text
         arguments:
-            - '@auth'
             - '@request'
             - '@template'
             - '@user'
@@ -102,7 +100,6 @@ services:
     profilefields.type.url:
         class: phpbb\profilefields\type\type_url
         arguments:
-            - '@auth'
             - '@request'
             - '@template'
             - '@user'

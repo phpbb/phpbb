@@ -26,7 +26,6 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	{
 		global $config, $request, $user, $cache, $phpbb_root_path, $phpEx;
 
-		$auth = new \phpbb\auth\auth();
 		$user = $this->getMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
@@ -41,7 +40,6 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 		$template = $this->getMock('\phpbb\template\template');
 
 		$this->cp = new \phpbb\profilefields\type\type_string(
-			$auth,
 			$request,
 			$template,
 			$user

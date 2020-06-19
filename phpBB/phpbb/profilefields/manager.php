@@ -256,14 +256,10 @@ class manager
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
 
 			/**
-			 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL with UCR/NCR
-			 * using their Numeric Character Reference's Hexadecimal notation.
-			 * Check the permissions for using Emojis first.
+			 * Replace Emoji and other 4bit UTF-8 chars not allowed by MySQL
+			 * with their Numeric Character Reference's Hexadecimal notation.
 			 */
-			if ($this->auth->acl_get('u_emoji'))
-			{
-				$cp_data['pf_' . $row['field_ident']] = utf8_encode_ucr($cp_data['pf_' . $row['field_ident']]);
-			}
+			$cp_data['pf_' . $row['field_ident']] = utf8_encode_ucr($cp_data['pf_' . $row['field_ident']]);
 
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
