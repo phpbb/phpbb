@@ -27,6 +27,12 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 		);
 	}
 
+	/**
+	 * Update passwords with convert flag to have $CP$ prefix
+	 *
+	 * @param int $start Limit start value
+	 * @return int|void Null if conversion is finished, next start value if not
+	 */
 	public function update_passwords($start)
 	{
 		// Nothing to do if user_pass_convert column doesn't exist
@@ -51,8 +57,8 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 			$converted_users++;
 
 			$user_id = (int) $row['user_id'];
-			// Only prefix passwords without proper prefix
-			if (!isset($update_users[$user_id]) && !preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $row['user_password']))
+			// Prefix all passwords that need to be converted
+			if (!isset($update_users[$user_id]))
 			{
 				// Use $CP$ prefix for passwords that need to
 				// be converted and set pass convert to false.
