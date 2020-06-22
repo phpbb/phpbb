@@ -704,5 +704,4 @@ class bbcode
 
 		return $return;
 	}
-
 }
