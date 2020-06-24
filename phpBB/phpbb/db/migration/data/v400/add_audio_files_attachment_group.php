@@ -23,13 +23,13 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['custom', [[$this, 'add_audio_files_attachment_group']]],
+			['custom', [[$this, 'add_audio_files']]],
 		];
 	}
 
-	public function add_audio_files_attachment_group()
+	public function add_audio_files()
 	{
-		$sql = 'SELECT group_id 
+		$sql = 'SELECT group_id
 			FROM ' . $this->table_prefix . 'extension_groups
 			WHERE ' . $this->db->sql_build_array('SELECT', ['group_name' => 'AUDIO_FILES']);
 		$result = $this->db->sql_query($sql);
@@ -48,8 +48,8 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 			]);
 			$this->db->sql_query($sql);
 			$audio_group_id = $this->db->sql_nextid();
-		} 
-		else 
+		}
+		else
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . 'extension_groups SET cat_id = 7
 				WHERE ' . $this->db->sql_build_array('SELECT', ['group_id' => $audio_group_id]);
@@ -58,7 +58,7 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 
 		$audio_extensions = ['mp3', 'wav', 'm4a', 'ogg', 'webm'];
 
-		foreach($audio_extensions as $audio_extension)
+		foreach ($audio_extensions as $audio_extension)
 		{
 			$sql = 'SELECT group_id
 				FROM ' . $this->table_prefix . 'extensions
@@ -74,10 +74,10 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 					'extension'	=> $audio_extension,
 				]);
 				$this->db->sql_query($sql);
-			} 
+			}
 			else if ($extension_group_id != $audio_group_id)
 			{
-				$sql = 'UPDATE ' . $this->table_prefix . "extensions SET group_id = $audio_group_id 
+				$sql = 'UPDATE ' . $this->table_prefix . "extensions SET group_id = $audio_group_id
 					WHERE " . $this->db->sql_build_array('SELECT', ['extension' => $audio_extension]);
 				$this->db->sql_query($sql);
 			}
