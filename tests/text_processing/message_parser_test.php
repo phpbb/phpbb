@@ -344,26 +344,6 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 			),
 			array(
 				'[img]http://example.org/100x100.png[/img]',
-				'<r>[img]<URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL>[/img]</r>',
-				array(true, true, true, true, true, true, true),
-				function ($phpbb_container)
-				{
-					$phpbb_container->get('config')->set('max_post_img_height', 12);
-				},
-				array('Your images may only be up to 12 pixels high.')
-			),
-			array(
-				'[img]http://example.org/100x100.png[/img]',
-				'<r>[img]<URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL>[/img]</r>',
-				array(true, true, true, true, true, true, true),
-				function ($phpbb_container)
-				{
-					$phpbb_container->get('config')->set('max_post_img_width', 34);
-				},
-				array('Your images may only be up to 34 pixels wide.')
-			),
-			array(
-				'[img]http://example.org/100x100.png[/img]',
 				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
 				array(true, true, true, true, true, true, true),
 				function ($phpbb_container)
@@ -391,16 +371,6 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 					$phpbb_container->get('config')->set('max_sig_img_height', 12);
 					$phpbb_container->get('config')->set('max_sig_img_width', 34);
 				}
-			),
-			array(
-				'[img]http://example.org/404.png[/img]',
-				'<r>[img]<URL url="http://example.org/404.png">http://example.org/404.png</URL>[/img]</r>',
-				array(true, true, true, true, true, true, true),
-				function ($phpbb_container)
-				{
-					$phpbb_container->get('config')->set('max_post_img_height', 12);
-				},
-				array('It was not possible to determine the dimensions of the image.')
 			),
 			array(
 				'[flash=999,999]http://example.org/foo.swf[/flash]',

@@ -380,40 +380,16 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param  string  $url        Original URL
 	* @param  array   $url_config Config used by the URL filter
 	* @param  Logger  $logger
-	* @param  integer $max_height Maximum height allowed
-	* @param  integer $max_width  Maximum width allowed
+	*
 	* @return string|bool         Original value if valid, FALSE otherwise
 	*/
-	static public function filter_img_url($url, array $url_config, Logger $logger, $max_height, $max_width)
+	static public function filter_img_url($url, array $url_config, Logger $logger)
 	{
 		// Validate the URL
 		$url = UrlFilter::filter($url, $url_config, $logger);
 		if ($url === false)
 		{
 			return false;
-		}
-
-		if ($max_height || $max_width)
-		{
-			$imagesize = new \FastImageSize\FastImageSize();
-			$size_info = $imagesize->getImageSize($url);
-			if ($size_info === false)
-			{
-				$logger->err('UNABLE_GET_IMAGE_SIZE');
-				return false;
-			}
-
-			if ($max_height && $max_height < $size_info['height'])
-			{
-				$logger->err('MAX_IMG_HEIGHT_EXCEEDED', array('max_height' => $max_height));
-				return false;
-			}
-
-			if ($max_width && $max_width < $size_info['width'])
-			{
-				$logger->err('MAX_IMG_WIDTH_EXCEEDED', array('max_width' => $max_width));
-				return false;
-			}
 		}
 
 		return $url;

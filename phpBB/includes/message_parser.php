@@ -401,32 +401,6 @@ class bbcode_firstpass extends bbcode
 			$in = 'http://' . $in;
 		}
 
-		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
-		{
-			$imagesize = new \FastImageSize\FastImageSize();
-			$size_info = $imagesize->getImageSize(htmlspecialchars_decode($in));
-
-			if ($size_info === false)
-			{
-				$error = true;
-				$this->warn_msg[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-			}
-			else
-			{
-				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $size_info['height'])
-				{
-					$error = true;
-					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
-				}
-
-				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $size_info['width'])
-				{
-					$error = true;
-					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
-				}
-			}
-		}
-
 		if ($error || $this->path_in_domain($in))
 		{
 			return '[img]' . $in . '[/img]';
