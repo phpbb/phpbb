@@ -21,6 +21,8 @@ matrix:
       env: DB=mysqli
     - php: 7.4
       env: DB=mysqli
+    - php: 7.4
+      env: DB=mysqli;MYSQL8=1
     - php: nightly
       env: DB=mysqli
   allow_failures:
@@ -32,6 +34,9 @@ services:
   - postgresql
   - mysql
   - memcached
+
+before_install:
+  - travis/setup-mysql8.sh $MYSQL8
 
 install:
   - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
