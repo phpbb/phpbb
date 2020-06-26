@@ -35,11 +35,8 @@ services:
   - mysql
   - memcached
 
-before_install:
-  - travis/setup-mysql8.sh $MYSQL8
-
 install:
-  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
 
 before_script:
   - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION $NOTESTS

@@ -11,13 +11,6 @@
 set -e
 set -x
 
-MYSQL8=$1
-
-if [ "$MYSQL8" != '1' ]
-then
-	exit 0
-fi
-
 wget https://repo.mysql.com//mysql-apt-config_0.8.15-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.15-1_all.deb
 sudo apt-get update -q
