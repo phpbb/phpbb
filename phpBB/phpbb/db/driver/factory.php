@@ -456,4 +456,12 @@ class factory implements driver_interface
 	{
 		return $this->get_driver()->sql_in_set($field, $array, $negate, $allow_empty_set);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function sql_quote($msg)
+	{
+		return $this->get_driver()->sql_quote($msg);
+	}
 }

@@ -118,7 +118,7 @@ function generate_smilies($mode, $forum_id)
 				SMILIES_TABLE => 's',
 			],
 			'GROUP_BY'	=> 's.smiley_url, s.smiley_width, s.smiley_height',
-			'ORDER_BY'	=> 'min_smiley_order',
+			'ORDER_BY'	=> $db->sql_quote('min_smiley_order'),
 		];
 	}
 	else

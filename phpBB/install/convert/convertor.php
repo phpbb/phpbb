@@ -1300,7 +1300,7 @@ class convertor
 						else
 						{
 							// No table alias
-							$sql_data['source_tables'][$m[1]] = (empty($convert->src_table_prefix)) ? $m[1] : $convert->src_table_prefix . $m[1] . ' ' . $m[1];
+							$sql_data['source_tables'][$m[1]] = (empty($convert->src_table_prefix)) ? $m[1] : $convert->src_table_prefix . $m[1] . ' ' . $db->sql_quote($m[1]);
 						}
 
 						$sql_data['select_fields'][$value_1] = $value_1;
@@ -1314,7 +1314,7 @@ class convertor
 				{
 					foreach ($m[1] as $value)
 					{
-						$sql_data['source_tables'][$value] = (empty($convert->src_table_prefix)) ? $value : $convert->src_table_prefix . $value . ' ' . $value;
+						$sql_data['source_tables'][$value] = (empty($convert->src_table_prefix)) ? $value : $convert->src_table_prefix . $value . ' ' . $db->sql_quote($value);
 					}
 				}
 			}
@@ -1323,7 +1323,7 @@ class convertor
 		// Add the aliases to the list of tables
 		foreach ($aliases as $alias => $table)
 		{
-			$sql_data['source_tables'][$alias] = $convert->src_table_prefix . $table . ' ' . $alias;
+			$sql_data['source_tables'][$alias] = $convert->src_table_prefix . $table . ' ' . $db->sql_quote($alias);
 		}
 
 		// 'left_join'		=> 'forums LEFT JOIN forum_prune ON forums.forum_id = forum_prune.forum_id',

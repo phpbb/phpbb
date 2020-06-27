@@ -427,4 +427,12 @@ class sqlite3 extends \phpbb\db\driver\driver
 			break;
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_quote($msg)
+	{
+		return '\'' . $msg . '\'';
+	}
 }

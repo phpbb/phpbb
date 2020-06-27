@@ -28,7 +28,7 @@ class phpbb_functional_smilies_test extends phpbb_functional_test_case
 				SMILIES_TABLE => 's',
 			],
 			'GROUP_BY'	=> 's.smiley_url, s.smiley_width, s.smiley_height',
-			'ORDER_BY'	=> 'min_smiley_order',
+			'ORDER_BY'	=> $db->sql_quote('min_smiley_order'),
 		];
 		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query($sql);
@@ -39,7 +39,7 @@ class phpbb_functional_smilies_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'posting.php?mode=smilies');
 		foreach ($smilies as $index => $smiley)
 		{
-			$this->assertContains($smiley['smiley_url'],
+			$this->assertStringContainsString($smiley['smiley_url'],
 				$crawler->filter('div[class="inner"] > a > img')->eq($index)->attr('src')
 			);
 		}
