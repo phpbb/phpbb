@@ -176,6 +176,16 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.type.forum:
+        class: phpbb\notification\type\forum
+        shared: false
+        parent: notification.type.post
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
+
 # ----- Notification's methods -----
 # Service MUST NOT be shared for all the plugins to work.
     notification.method_collection:
