@@ -72,6 +72,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	public function test_subscriptions()
 	{
 		$expected_subscriptions = array(
+			'notification.type.forum'		=> array('notification.method.board'),
 			'notification.type.post'		=> array('notification.method.board'),
 			'notification.type.topic'		=> array('notification.method.board'),
 			'notification.type.quote'		=> array('notification.method.board'),
