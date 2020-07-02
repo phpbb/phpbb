@@ -18,7 +18,7 @@ if (php_sapi_name() !== 'cli')
 
 if (version_compare(PHP_VERSION, '7.1.3', '<'))
 {
-	die('patch_stylesheet_cache_busters.php requires at least PHP 7.1.3');
+	die('stylesheet_cache_busters.php requires at least PHP 7.1.3');
 }
 
 // Usage: "$ php build/stylesheet_cache_busters.php"
