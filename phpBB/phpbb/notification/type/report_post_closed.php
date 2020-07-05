@@ -35,7 +35,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*
 	* @var string
 	*/
-	public $email_template = '';
+	public $email_template = 'report_closed';
 
 	/**
 	* Language key used to output the text
@@ -43,6 +43,18 @@ class report_post_closed extends \phpbb\notification\type\post
 	* @var string
 	*/
 	protected $language_key = 'NOTIFICATION_REPORT_CLOSED';
+
+	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id', 'lang', and 'group')
+	*/
+	static public $notification_option = [
+		'id'	=> 'notification.type.report_post_closed',
+		'lang'	=> 'NOTIFICATION_TYPE_REPORT_CLOSED',
+		'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+	];
 
 	/**
 	* Inherit notification read status from post.
@@ -53,7 +65,7 @@ class report_post_closed extends \phpbb\notification\type\post
 
 	public function is_available()
 	{
-		return false;
+		return $this->auth->acl_getf_global('f_report');
 	}
 
 	/**
@@ -64,14 +76,18 @@ class report_post_closed extends \phpbb\notification\type\post
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($post, $options = [])
 	{
+		$options = array_merge([
+			'ignore_users'		=> [],
+		], $options);
+
 		if ($post['reporter'] == $this->user->data['user_id'])
 		{
-			return array();
+			return [];
 		}
 
-		return array($post['reporter'] => $this->notification_manager->get_default_methods());
+		return $this->check_user_notification_options([$post['reporter']], $options);
 	}
 
 	/**
@@ -81,7 +97,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_email_template()
 	{
-		return false;
+		return $this->email_template;
 	}
 
 	/**
@@ -91,7 +107,17 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_email_template_variables()
 	{
-		return array();
+		$post_username = $this->get_data('post_username') ?: $this->user_loader->get_username($this->get_data('poster_id'), 'username');
+		$closer_username = $this->user_loader->get_username($this->get_data('closer_id'), 'username');
+
+		return [
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($post_username),
+			'CLOSER_NAME'	=> htmlspecialchars_decode($closer_username),
+			'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
+			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
+
+			'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
+		];
 	}
 
 	/**
@@ -101,7 +127,15 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_url()
 	{
-		return '';
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
+	}
+
+	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return $this->get_url();
 	}
 
 	/**
@@ -147,13 +181,13 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function users_to_query()
 	{
-		return array($this->get_data('closer_id'));
+		return [$this->get_data('closer_id')];
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($post, $pre_create_data = [])
 	{
 		$this->set_data('closer_id', $post['closer_id']);
 

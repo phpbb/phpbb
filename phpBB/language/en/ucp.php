@@ -343,6 +343,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_POST'							=> 'Someone replies to a topic to which you are subscribed',
 	'NOTIFICATION_TYPE_QUOTE'							=> 'Someone quotes you in a post',
 	'NOTIFICATION_TYPE_REPORT'							=> 'Someone reports a post',
+	'NOTIFICATION_TYPE_REPORT_CLOSED'					=> 'Your report on a post is closed by a moderator',
 	'NOTIFICATION_TYPE_REPORT_PM'						=> 'Someone reports a private message',
 	'NOTIFICATION_TYPE_REPORT_PM_CLOSED'				=> 'Your report on a private message is closed by a moderator',
 	'NOTIFICATION_TYPE_TOPIC'							=> 'Someone creates a topic in a forum to which you are subscribed',

@@ -100,8 +100,8 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template_variables()
 	{
-		$sender_data = $this->user_loader->get_user($this->get_data('from_user_id'));
-		$closer_data = $this->user_loader->get_user($this->get_data('closer_id'));
+		$sender_data = $this->user_loader->get_username($this->get_data('from_user_id'), 'username');
+		$closer_data = $this->user_loader->get_username($this->get_data('closer_id'), 'username');
 
 		return [
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($sender_data['username']),
