@@ -37,9 +37,9 @@ function patch_file(string $filepath): void
 	$old	= $file;
 	$new	= preg_replace_callback(
 		'(^@import\\s+url\\([\'"](?<basename>\\w++\\.css)\\?\\K(?:hash|v)=[^\'"]++)m',
-		function ($m) use ($filepath)
+		function ($match) use ($filepath)
 		{
-			$path = dirname($filepath) . DIRECTORY_SEPARATOR . $m['basename'];
+			$path = dirname($filepath) . DIRECTORY_SEPARATOR . $match['basename'];
 			$hash = sprintf('%08x', crc32(file_get_contents($path)));
 
 			return 'hash=' . $hash;
