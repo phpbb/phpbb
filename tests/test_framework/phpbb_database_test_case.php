@@ -54,7 +54,7 @@ abstract class phpbb_database_test_case extends TestCase
 		return array();
 	}
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -90,7 +90,7 @@ abstract class phpbb_database_test_case extends TestCase
 		parent::setUpBeforeClass();
 	}
 
-	static public function tearDownAfterClass()
+	static public function tearDownAfterClass(): void
 	{
 		if (file_exists(self::$install_schema_file))
 		{

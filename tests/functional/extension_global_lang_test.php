@@ -26,7 +26,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		'foo/bar/language/en/',
 	);
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -34,7 +34,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass()
+	static public function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 

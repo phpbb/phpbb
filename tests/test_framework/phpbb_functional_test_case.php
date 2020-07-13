@@ -42,7 +42,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $already_installed = false;
 	static protected $last_post_timestamp = 0;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

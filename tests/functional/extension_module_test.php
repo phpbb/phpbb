@@ -25,7 +25,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		'./',
 	);
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -33,7 +33,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass()
+	static public function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 

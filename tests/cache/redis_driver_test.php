@@ -22,7 +22,7 @@ class phpbb_cache_redis_driver_test extends \phpbb_cache_common_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		if (!extension_loaded('redis'))
 		{
