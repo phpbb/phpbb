@@ -31,21 +31,21 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// XXX hardcoded id
 		$crawler = self::request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
 		// these language strings are html
-		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
+		$this->assertStringContainsString($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}
 
 	public function test_select_user()
 	{
 		// User permissions
 		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
-		$this->assertContains($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
+		$this->assertStringContainsString($this->lang('ACP_USERS_PERMISSIONS_EXPLAIN'), $this->get_content());
 
 		// Select admin
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$data = array('username[0]' => 'admin');
 		$form->setValues($data);
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
+		$this->assertStringContainsString($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 	}
 
 	public function permissions_data()
@@ -93,7 +93,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// Get the form
 		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
-		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
+		$this->assertStringContainsString($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		// XXX globals for \phpbb\auth\auth, refactor it later
 		global $db, $cache;
@@ -115,7 +115,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$data = array("setting[$object_id][0][$permission]" => '0');
 		$form->setValues($data);
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
+		$this->assertStringContainsString($this->lang('AUTH_UPDATED'), $crawler->text());
 
 		// check acl again
 		$auth = new \phpbb\auth\auth;

@@ -60,7 +60,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$post = $this->create_topic($this->data['forums']['Reapprove Test #1'], 'Reapprove Test Topic #1', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Reapprove Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Reapprove Test Topic #1', $crawler->filter('h2')->text());
 		$this->data['topics']['Reapprove Test Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Reapprove Test Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -83,7 +83,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$post2 = $this->create_post($this->data['forums']['Reapprove Test #1'], $post['topic_id'], 'Re: Reapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertNotContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -99,7 +99,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$post = $this->create_topic($this->data['forums']['Reapprove Test #1'], 'Reapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Reapprove Test #1']}&sid={$this->sid}");
 
-		$this->assertNotContains('Reapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Reapprove Test Topic #2', $crawler->filter('html')->text());
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -146,8 +146,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Reapprove Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Reapprove Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
 
 		$form = $crawler->selectButton($this->lang('APPROVE'))->form();
 		$crawler = self::submit($form);
@@ -167,11 +167,11 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertContains('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'] . '&t=' . $this->data['topics']['Reapprove Test Topic #1'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'] . '&t=' . $this->data['topics']['Reapprove Test Topic #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Reapprove Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Reapprove Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
 	}
 
 	public function test_approve_topic()
@@ -206,7 +206,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}");
-		$this->assertContains('Reapprove Test Topic #2', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Reapprove Test Topic #2', $crawler->filter('h2')->text());
 
 		$form = $crawler->selectButton($this->lang('APPROVE'))->form();
 		$crawler = self::submit($form);
@@ -226,10 +226,10 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertContains('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}");
-		$this->assertContains('Reapprove Test Topic #2', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Reapprove Test Topic #2', $crawler->filter('h2')->text());
 	}
 
 	public function test_edit_posts()
@@ -273,8 +273,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->submit_post($posting_url, 'EDIT_POST', $form_data, 'POST_EDITED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertNotContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertNotContains('Post edited by testing framework', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Post edited by testing framework', $crawler->filter('#page-body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 2,
@@ -297,8 +297,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}", array(), false);
 		self::assert_response_html(404);
-		$this->assertNotContains('Reapprove Test Topic #2', $crawler->filter('#page-body')->text());
-		$this->assertNotContains('Post edited by testing framework', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Reapprove Test Topic #2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Post edited by testing framework', $crawler->filter('#page-body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -314,8 +314,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->login();
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertContains('Post edited by testing framework', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Post edited by testing framework', $crawler->filter('#page-body')->text());
 	}
 
 	public function test_approve_post_again()

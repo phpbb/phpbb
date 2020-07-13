@@ -111,7 +111,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			if ($i < self::CHUNKS - 1)
 			{
-				$this->assertContains('{"jsonrpc":"2.0","id":"id","result":null}', self::get_content());
+				$this->assertStringContainsString('{"jsonrpc":"2.0","id":"id","result":null}', self::get_content());
 			}
 			else
 			{

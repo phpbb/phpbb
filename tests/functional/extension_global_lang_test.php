@@ -67,9 +67,9 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$crawler = self::request('GET', 'index.php');
 
 		// language from language/en/common.php
-		$this->assertNotContains('Skip to content', $crawler->filter('.skiplink')->text());
+		$this->assertStringNotContainsString('Skip to content', $crawler->filter('.skiplink')->text());
 
 		// language from ext/foo/bar/language/en/foo_global.php
-		$this->assertContains('Overwritten by foo', $crawler->filter('.skiplink')->text());
+		$this->assertStringContainsString('Overwritten by foo', $crawler->filter('.skiplink')->text());
 	}
 }

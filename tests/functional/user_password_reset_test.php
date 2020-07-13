@@ -25,7 +25,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
-		$this->assertContains('app.php/user/forgot_password', $crawler->getUri());
+		$this->assertStringContainsString('app.php/user/forgot_password', $crawler->getUri());
 		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
@@ -143,11 +143,11 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	{
 		$this->add_lang('ucp');
 		$crawler = self::request('GET', 'ucp.php');
-		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => 'reset-password-test-user', 'password' => 'reset-password-test-user'));
-		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
+		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -163,12 +163,12 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->logout();
 
 		$crawler = self::request('GET', 'ucp.php');
-		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		// Try logging in with the old password
 		$crawler = self::submit($form, array('username' => 'reset-password-test-user', 'password' => 'reset-password-test-userreset-password-test-user'));
-		$this->assertContains($this->lang('LOGIN_ERROR_PASSWORD', '', ''), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('LOGIN_ERROR_PASSWORD', '', ''), $crawler->filter('html')->text());
 	}
 
 	/**

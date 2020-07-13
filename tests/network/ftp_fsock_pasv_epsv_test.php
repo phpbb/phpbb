@@ -55,7 +55,7 @@ class phpbb_network_ftp_fsock_pasv_epsv_test extends phpbb_test_case
 		{
 			$this->markTestSkipped("Failed to connect to $hostname: $result");
 		}
-		$this->assertContains('debian', $o->_ls());
+		$this->assertStringContainsString('debian', $o->_ls());
 		$o->_close();
 	}
 

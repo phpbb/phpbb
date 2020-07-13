@@ -81,6 +81,6 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 			'--deactivate'	=> $deactivate,
 		));
 
-		$this->assertContains($expected, $command_tester->getDisplay());
+		$this->assertStringContainsString($expected, $command_tester->getDisplay());
 	}
 }

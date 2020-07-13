@@ -162,7 +162,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--no-newline'	=> false,
 		));
 
-		$this->assertContains('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
 	}
 
 	public function test_increment_dynamic()
@@ -178,7 +178,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> true,
 		));
 
-		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -195,7 +195,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> false,
 		));
 
-		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -211,7 +211,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> true,
 		));
 
-		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -226,7 +226,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'key'			=> 'test_key',
 		));
 
-		$this->assertContains('CLI_CONFIG_DELETE_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_DELETE_SUCCESS', $command_tester->getDisplay());
 		$this->assertEmpty($this->config);
 	}
 
@@ -240,7 +240,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'key'			=> 'wrong_key',
 		));
 
-		$this->assertContains('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
 		$this->assertEmpty($this->config);
 	}
 

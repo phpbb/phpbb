@@ -30,6 +30,6 @@ class phpbb_functional_jumpbox_test extends phpbb_functional_test_case
 
 	protected function check_valid_jump($forum)
 	{
-		$this->assertContains($this->lang('FORUM') . ": $forum", $this->crawler->filter('#cp-main h2')->text(), $this->crawler->text());
+		$this->assertStringContainsString($this->lang('FORUM') . ": $forum", $this->crawler->filter('#cp-main h2')->text(), $this->crawler->text());
 	}
 }

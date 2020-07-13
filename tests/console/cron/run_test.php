@@ -103,7 +103,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
-		$this->assertContains('RUNNING_TASK', $command_tester->getDisplay());
+		$this->assertStringContainsString('RUNNING_TASK', $command_tester->getDisplay());
 		$this->assertSame(true, $this->task->executed);
 		$this->assertSame(0, $exit_status);
 		$this->assertSame(false, $this->lock->owns_lock());
@@ -119,7 +119,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name));
 
-		$this->assertContains('CRON_LOCK_ERROR', $command_tester->getDisplay());
+		$this->assertStringContainsString('CRON_LOCK_ERROR', $command_tester->getDisplay());
 		$this->assertSame(false, $this->task->executed);
 		$this->assertSame(1, $exit_status);
 	}
@@ -215,7 +215,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
-		$this->assertContains('CRON_NO_TASK', $command_tester->getDisplay());
+		$this->assertStringContainsString('CRON_NO_TASK', $command_tester->getDisplay());
 		$this->assertSame(0, $exit_status);
 		$this->assertSame(false, $this->lock->owns_lock());
 	}
@@ -240,7 +240,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, 'name' => 'foo'));
 
-		$this->assertContains('CRON_NO_SUCH_TASK', $command_tester->getDisplay());
+		$this->assertStringContainsString('CRON_NO_SUCH_TASK', $command_tester->getDisplay());
 		$this->assertSame(false, $this->task->executed);
 		$this->assertSame(2, $exit_status);
 		$this->assertSame(false, $this->lock->owns_lock());
@@ -251,7 +251,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, 'name' => 'phpbb_cron_task_simple', '--verbose' => true));
 
-		$this->assertContains('RUNNING_TASK', $command_tester->getDisplay());
+		$this->assertStringContainsString('RUNNING_TASK', $command_tester->getDisplay());
 		$this->assertSame(true, $this->task->executed);
 		$this->assertSame(0, $exit_status);
 		$this->assertSame(false, $this->lock->owns_lock());

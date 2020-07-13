@@ -74,7 +74,7 @@ class phpbb_functions_get_remote_file extends phpbb_test_case
 			'Failed asserting that the second line of the version file is a valid URL.'
 		);
 
-		$this->assertContains('http', $lines[1]);
-		$this->assertContains('phpbb.com', $lines[1], '', true);
+		$this->assertStringContainsString('http', $lines[1]);
+		$this->assertStringContainsString('phpbb.com', $lines[1], '', true);
 	}
 }

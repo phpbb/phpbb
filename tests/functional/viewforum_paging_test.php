@@ -127,8 +127,8 @@ class viewforum_paging_test extends phpbb_functional_test_case
 		$this->assertEquals(2, $crawler->filter('div.pagination')->count());
 		$top_pagination = $crawler->filter('div.pagination')->eq(0);
 		$this->assertEquals(3, $top_pagination->filter('li')->count(), 'Number of pagination items on page 1 does not match');
-		$this->assertContains('1', $top_pagination->filter('li')->eq(0)->text());
-		$this->assertContains('2', $top_pagination->filter('li')->eq(1)->text());
+		$this->assertStringContainsString('1', $top_pagination->filter('li')->eq(0)->text());
+		$this->assertStringContainsString('2', $top_pagination->filter('li')->eq(1)->text());
 		$this->assertContainsLang('NEXT', $top_pagination->filter('li')->eq(2)->text());
 	}
 
@@ -157,8 +157,8 @@ class viewforum_paging_test extends phpbb_functional_test_case
 		$top_pagination = $crawler->filter('div.pagination')->eq(0);
 		$this->assertEquals(3, $top_pagination->filter('li')->count(), 'Number of pagination items on page 2 does not match');
 		$this->assertContainsLang('PREVIOUS', $top_pagination->filter('li')->eq(0)->text());
-		$this->assertContains('1', $top_pagination->filter('li')->eq(1)->text());
-		$this->assertContains('2', $top_pagination->filter('li')->eq(2)->text());
+		$this->assertStringContainsString('1', $top_pagination->filter('li')->eq(1)->text());
+		$this->assertStringContainsString('2', $top_pagination->filter('li')->eq(2)->text());
 	}
 
 	protected function assert_forum_details($forum_id, $details, $additional_error_message = '')
