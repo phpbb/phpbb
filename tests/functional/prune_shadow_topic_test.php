@@ -61,7 +61,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$this->post = $this->create_topic($this->data['forums']['Prune Shadow'], 'Prune Shadow #1', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Prune Shadow #1', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Prune Shadow #1', $crawler->filter('html')->text());
 		$this->data['topics']['Prune Shadow #1'] = (int) $this->post['topic_id'];
 		$this->data['posts']['Prune Shadow #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -79,7 +79,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$post2 = $this->create_post($this->data['forums']['Prune Shadow'], $this->post['topic_id'], 'Re: Prune Shadow #1-#2', 'This is a test post posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Prune Shadow #1-#2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Re: Prune Shadow #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Prune Shadow #1-#2'] = (int) $post2['post_id'];
 
 		$this->assert_forum_details($this->data['forums']['Prune Shadow'], array(

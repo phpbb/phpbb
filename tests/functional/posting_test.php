@@ -24,17 +24,17 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$this->assertContains('This is a test topic posted by the testing framework.', $crawler->filter('html')->text());
+		$this->assertStringContainsString('This is a test topic posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test creating a reply with bbcode
 		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test [b]post[/b] posted by the testing framework.');
 
 		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
-		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
+		$this->assertStringContainsString('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test quoting a message
 		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post2['topic_id']}&p={$post2['post_id']}&sid={$this->sid}");
-		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
+		$this->assertStringContainsString('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 	}
 
 	public function test_unsupported_characters()
@@ -44,7 +44,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$post = $this->create_topic(2, "Test Topic \xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", 'This is a test with emoji character in the topic title.');
 		$this->create_post(2, $post['topic_id'], "Re: Test Topic 1 \xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", 'This is a test with emoji characters in the topic title.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$this->assertContains("\xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", $crawler->text());
+		$this->assertStringContainsString("\xF0\x9F\xA4\x94 3\xF0\x9D\x94\xBB\xF0\x9D\x95\x9A", $crawler->text());
 	}
 
 	public function test_supported_unicode_characters()
@@ -54,7 +54,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
 		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', "This is a test with these weird characters: \xF0\x9F\x84\x90 \xF0\x9F\x84\x91");
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$this->assertContains("\xF0\x9F\x84\x90 \xF0\x9F\x84\x91", $crawler->text());
+		$this->assertStringContainsString("\xF0\x9F\x84\x90 \xF0\x9F\x84\x91", $crawler->text());
 	}
 
 	public function test_html_entities()
@@ -64,7 +64,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
 		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', '&#128512;');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$this->assertContains('&#128512;', $crawler->text());
+		$this->assertStringContainsString('&#128512;', $crawler->text());
 	}
 
 	public function test_quote()
@@ -96,7 +96,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$form->setValues(array('message' => 'Edited post'));
 		$crawler = self::submit($form);
 
-		$this->assertContains('Edited post', $crawler->filter("#post_content{$post_id} .content")->text());
+		$this->assertStringContainsString('Edited post', $crawler->filter("#post_content{$post_id} .content")->text());
 	}
 
 	/**
@@ -163,11 +163,11 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			$text_content = $crawler->filter('#p' . $post['post_id'])->text();
 			foreach ($contains[$quote_depth] as $contains_text)
 			{
-				$this->assertContains($contains_text, $text_content);
+				$this->assertStringContainsString($contains_text, $text_content);
 			}
 			foreach ($not_contains[$quote_depth] as $not_contains_text)
 			{
-				$this->assertNotContains($not_contains_text, $text_content);
+				$this->assertStringNotContainsString($not_contains_text, $text_content);
 			}
 		}
 	}
@@ -229,7 +229,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			'message' => 'My post',
 		));
 		$crawler = self::submit($form);
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'<strong class="text-strong">My signature</strong>',
 			$crawler->filter('#preview .signature')->html()
 		);
@@ -274,7 +274,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			'message' => $text,
 		));
 		$crawler = self::submit($form);
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'<a href="http://example.org/" class="postlink">http://example.org/</a> tcp://localhost:22/ServiceName',
 			$crawler->filter('#preview .content')->html()
 		);
@@ -295,7 +295,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			'message' => $text,
 		));
 		$crawler = self::submit($form);
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'http://example.org/ <a href="tcp://localhost:22/ServiceName" class="postlink">tcp://localhost:22/ServiceName</a>',
 			$crawler->filter('#preview .content')->html()
 		);

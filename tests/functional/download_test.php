@@ -49,7 +49,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$post = $this->create_topic($this->data['forums']['Download #1'], 'Download Topic #1', 'This is a test topic posted by the testing framework.', array('upload_files' => 1));
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Download Topic #1', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Download Topic #1', $crawler->filter('html')->text());
 		$this->data['topics']['Download Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Download Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -57,7 +57,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$post2 = $this->create_post($this->data['forums']['Download #1'], $post['topic_id'], 'Re: Download Topic #1-#2', 'This is a test post posted by the testing framework.', array('upload_files' => 1));
 		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Download Topic #1-#2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Re: Download Topic #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Download Topic #1-#2'] = (int) $post2['post_id'];
 	}
 
@@ -115,7 +115,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$this->assertContainsLang('POST_DELETED', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Download Topic #1']}&sid={$this->sid}");
-		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
 	}
 
 	public function test_download_softdeleted_post()
@@ -182,7 +182,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Download Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Download Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Download Topic #1', $crawler->filter('h2')->text());
 	}
 
 	public function test_download_softdeleted_topic()

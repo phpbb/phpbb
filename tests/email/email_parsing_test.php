@@ -137,13 +137,13 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$reflection_template = $this->reflection_template_property->getValue($this->messenger);
 		$msg = trim($reflection_template->assign_display('body'));
 
-		$this->assertContains($author_name, $msg);
-		$this->assertContains($forum_name, $msg);
-		$this->assertContains($topic_title, $msg);
-		$this->assertContains($username, $msg);
-		$this->assertContains(htmlspecialchars_decode($config['sitename']), $msg);
-		$this->assertContains(str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])), $msg);
-		$this->assertNotContains('EMAIL_SIG', $msg);
-		$this->assertNotContains('U_STOP_WATCHING_FORUM', $msg);
+		$this->assertStringContainsString($author_name, $msg);
+		$this->assertStringContainsString($forum_name, $msg);
+		$this->assertStringContainsString($topic_title, $msg);
+		$this->assertStringContainsString($username, $msg);
+		$this->assertStringContainsString(htmlspecialchars_decode($config['sitename']), $msg);
+		$this->assertStringContainsString(str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])), $msg);
+		$this->assertStringNotContainsString('EMAIL_SIG', $msg);
+		$this->assertStringNotContainsString('U_STOP_WATCHING_FORUM', $msg);
 	}
 }

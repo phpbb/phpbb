@@ -64,8 +64,8 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 	public function test_display_subforums()
 	{
 		$crawler = self::request('GET', "index.php?sid={$this->sid}");
-		$this->assertContains('Subforum Test #1.1', $crawler->html());
-		$this->assertContains('Subforum Test #1.1.1', $crawler->html());
+		$this->assertStringContainsString('Subforum Test #1.1', $crawler->html());
+		$this->assertStringContainsString('Subforum Test #1.1.1', $crawler->html());
 	}
 
 	/**
@@ -85,8 +85,8 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 		self::submit($form);
 
 		$crawler = self::request('GET', "index.php?sid={$this->sid}");
-		$this->assertContains('Subforum Test #1.1', $crawler->html());
-		$this->assertNotContains('Subforum Test #1.1.1', $crawler->html());
+		$this->assertStringContainsString('Subforum Test #1.1', $crawler->html());
+		$this->assertStringNotContainsString('Subforum Test #1.1.1', $crawler->html());
 	}
 
 	protected function get_forum_id($forum_name)

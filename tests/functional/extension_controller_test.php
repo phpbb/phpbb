@@ -62,7 +62,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/bar', array(), false);
 		self::assert_response_status_code();
-		$this->assertContains("foo/bar controller handle() method", $crawler->filter('body')->text());
+		$this->assertStringContainsString("foo/bar controller handle() method", $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
@@ -74,7 +74,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/foo');
 		$crawler = self::request('GET', 'app.php/foo/foo', array(), false);
 		self::assert_response_status_code();
-		$this->assertContains("foo/foo controller handle() method", $crawler->filter('body')->text());
+		$this->assertStringContainsString("foo/foo controller handle() method", $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/foo');
 	}
 
@@ -85,7 +85,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/template');
-		$this->assertContains("I am a variable", $crawler->filter('#content')->text());
+		$this->assertStringContainsString("I am a variable", $crawler->filter('#content')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
@@ -95,7 +95,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	public function test_controller_template_include_js_css()
 	{
 		$crawler = self::request('GET', 'app.php/help/faq');
-		$this->assertContains("./../../assets/javascript/core.js", $crawler->filter('body')->html());
+		$this->assertStringContainsString("./../../assets/javascript/core.js", $crawler->filter('body')->html());
 	}
 
 	/**
@@ -107,7 +107,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
-		$this->assertContains('Missing value for argument #1: test in class foo\bar\controller\controller:baz', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Missing value for argument #1: test in class foo\bar\controller\controller:baz', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
@@ -119,7 +119,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/exception', array(), false);
 		$this->assert_response_html(500);
-		$this->assertContains('Exception thrown from foo/exception route', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Exception thrown from foo/exception route', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
@@ -136,7 +136,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'app.php/does/not/exist', array(), false);
 		$this->assert_response_html(404);
-		$this->assertContains('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
+		$this->assertStringContainsString('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
 	}
 
 	/**
@@ -157,7 +157,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->assertStringStartsWith('./app.php/foo/login_redirect', $form->get('redirect')->getValue());
 
 		$crawler = self::submit($form);
-		$this->assertContains("I am a variable", $crawler->filter('#content')->text(), 'Unsuccessful redirect after using login_box()');
+		$this->assertStringContainsString("I am a variable", $crawler->filter('#content')->text(), 'Unsuccessful redirect after using login_box()');
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 

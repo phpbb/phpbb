@@ -787,7 +787,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php');
-		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		if ($autologin)
@@ -795,7 +795,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$form['autologin']->tick();
 		}
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
+		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -814,7 +814,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
+		$this->assertStringContainsString($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
 
 	}
@@ -835,7 +835,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
-		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 
@@ -844,7 +844,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
+				$this->assertStringContainsString($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
@@ -934,7 +934,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 */
 	public function assertContainsLang($needle, $haystack, $message = '')
 	{
-		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+		$this->assertStringContainsString(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
 	/**
@@ -946,7 +946,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function assertNotContainsLang($needle, $haystack, $message = '')
 	{
-		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+		$this->assertStringNotContainsString(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
 	/*
@@ -961,7 +961,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
-		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringNotContainsString('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 
 		if ($status_code !== false)
@@ -982,7 +982,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		// Any output before the xml opening means there was an error
 		$content = self::get_content();
-		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringNotContainsString('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
 
 		if ($status_code !== false)
@@ -1163,7 +1163,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 			else
 			{
-				$this->assertContains($expected, $crawler->filter('html')->text());
+				$this->assertStringContainsString($expected, $crawler->filter('html')->text());
 			}
 			return null;
 		}
@@ -1206,7 +1206,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$crawler = self::submit_message($posting_url, 'POST_NEW_PM', $form_data);
 
-		$this->assertContains($this->lang('MESSAGE_STORED'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('MESSAGE_STORED'), $crawler->filter('html')->text());
 		$url = $crawler->selectLink($this->lang('VIEW_PRIVATE_MESSAGE', '', ''))->link()->getUri();
 
 		return $this->get_parameter_from_link($url, 'p');
@@ -1230,7 +1230,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$last_post_timestamp = time();
 
 		$crawler = self::request('GET', $posting_url);
-		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang($posting_contains), $crawler->filter('html')->text());
 
 		if (!empty($form_data['upload_files']))
 		{

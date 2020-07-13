@@ -21,11 +21,11 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$crawler = self::request('GET', 'app.php/post/1/report', array(), false);
 		$this->assert_response_html(403);
 		$this->add_lang('mcp');
-		$this->assertContains($this->lang('USER_CANNOT_REPORT'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('USER_CANNOT_REPORT'), $crawler->filter('html')->text());
 
 		$this->set_reporting_guest(1);
 		$crawler = self::request('GET', 'app.php/post/1/report');
-		$this->assertContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 		$this->set_reporting_guest(-1);
 	}
 
@@ -33,12 +33,12 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 	{
 		$this->login();
 		$crawler = self::request('GET', 'app.php/post/1/report');
-		$this->assertNotContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
+		$this->assertStringNotContainsString($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 
 		$this->add_lang('mcp');
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('POST_REPORTED_SUCCESS'), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_REPORTED_SUCCESS'), $crawler->text());
 	}
 
 	protected function set_reporting_guest($report_post_allowed)
