@@ -169,10 +169,10 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider validate_since_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_validate_since_throws($since)
 	{
+		$this->expectException('LogicException');
 		$this->exporter->validate_since($since);
 	}
 
@@ -203,7 +203,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider validate_event_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_validate_event_throws($event_name, $event, $exception_code)
 	{
@@ -240,10 +239,10 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider validate_vars_docblock_array_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_validate_vars_docblock_array_throws($vars_array, $vars_docblock)
 	{
+		$this->expectException('LogicException');
 		$this->exporter->validate_vars_docblock_array($vars_array, $vars_docblock);
 	}
 
@@ -282,10 +281,10 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider get_dispatch_name_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_get_dispatch_name_throws($event_line)
 	{
+		$this->expectException('LogicException');
 		$this->exporter->set_content(array($event_line));
 		$this->exporter->get_event_name(0, true);
 	}
@@ -328,10 +327,10 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider get_trigger_event_name_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_get_trigger_event_name_throws($event_line)
 	{
+		$this->expectException('LogicException');
 		$this->exporter->set_content(array($event_line));
 		$this->exporter->get_event_name(0, false);
 	}
@@ -459,7 +458,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider get_vars_from_array_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_get_vars_from_array_throws($lines, $event_line, $exception_code)
 	{
@@ -545,7 +543,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider get_vars_from_docblock_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_get_vars_from_docblock_throws($lines, $event_line, $exception_code)
 	{
@@ -649,7 +646,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider find_since_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_find_since_throws($lines, $event_line, $exception_code)
 	{
@@ -751,7 +747,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 
 	/**
 	* @dataProvider find_description_throws_data
-	* @expectedException LogicException
 	*/
 	public function test_find_description_throws($lines, $event_line, $exception_code)
 	{

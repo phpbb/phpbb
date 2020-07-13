@@ -66,12 +66,11 @@ class phpbb_tests_tree_nestedset_forum_add_remove_test extends phpbb_tests_tree_
 
 	/**
 	* @dataProvider delete_throws_data
-	*
-	* @expectedException			OutOfBoundsException
-	* @expectedExceptionMessage		FORUM_NESTEDSET_INVALID_ITEM
 	*/
 	public function test_delete_throws($explain, $forum_id)
 	{
+		$this->expectException('OutOfBoundsException');
+		$this->expectExceptionMessage('FORUM_NESTEDSET_INVALID_ITEM');
 		$this->set->delete($forum_id);
 	}
 
