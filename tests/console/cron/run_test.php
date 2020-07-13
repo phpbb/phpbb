@@ -112,7 +112,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	public function test_error_lock()
 	{
 		$this->expectException(\phpbb\exception\runtime_exception::class);
-		$this->expectException('CRON_LOCK_ERROR');
+		$this->expectExceptionMessage('CRON_LOCK_ERROR');
 
 		$this->lock->acquire();
 		$command_tester = $this->get_command_tester();
@@ -233,7 +233,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	public function test_arg_invalid()
 	{
 		$this->expectException(\phpbb\exception\runtime_exception::class);
-		$this->expectException('CRON_NO_SUCH_TASK');
+		$this->expectExceptionMessage('CRON_NO_SUCH_TASK');
 
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, 'name' => 'foo'));
