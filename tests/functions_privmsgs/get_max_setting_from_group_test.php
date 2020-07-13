@@ -54,11 +54,9 @@ class phpbb_functions_privmsgs_get_max_setting_from_group_test extends phpbb_dat
 		$this->assertEquals($expected, phpbb_get_max_setting_from_group($this->db, $user_id, $setting));
 	}
 
-	/**
-	 * @expectedException InvalidArgumentException
-	 */
 	public function test_get_max_setting_from_group_throws()
 	{
+		$this->expectException('InvalidArgumentException');
 		phpbb_get_max_setting_from_group($this->db, ANONYMOUS, 'not_a_setting');
 	}
 }

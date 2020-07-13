@@ -65,11 +65,10 @@ class phpbb_console_command_check_test extends phpbb_test_case
 		$this->assertSame($status, 1);
 	}
 
-	/**
-	 * @expectedException phpbb\exception\runtime_exception
-	 */
 	public function test_error()
 	{
+		$this->expectException(\phpbb\exception\runtime_exception::class);
+
 		$command_tester = $this->get_command_tester('1');
 		$this->version_helper->set_file_location('acme.corp','foo', 'bar.json');
 

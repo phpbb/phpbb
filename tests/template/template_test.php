@@ -1073,11 +1073,9 @@ EOT
 		$this->assertEquals("outer - 0 - Test assigning block vars array loop 0:outer - 1 - Test assigning block vars array loop 1:middle - 0 - 1st iterationmiddle - 1 - 2nd iterationmiddle - 2 - 3rd iteration", $this->display('test'), 'Ensuring assigning block vars array to template is working correctly');
 	}
 
-	/**
-	* @expectedException Twig_Error_Syntax
-	*/
 	public function test_define_error()
 	{
+		$this->expectException('Twig_Error_Syntax');
 		$this->run_template('define_error.html', array(), array(), array(), '');
 	}
 }
