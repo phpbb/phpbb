@@ -38,4 +38,11 @@ fi
 
 cd phpBB
 php ../composer.phar install --dev --no-interaction
+if [ "$TRAVIS_PHP_VERSION" == "nightly" ]
+then
+	php ../composer.phar config minimum-stability dev \
+	&& php ../composer.phar config prefer-stable true \
+	&& php ../composer.phar remove phpunit/dbunit --dev --update-with-dependencies \
+	&& php ../composer.phar require symfony/yaml:~4.4 misantron/dbunit:~5.0 phpunit/phpunit:^9.3 --dev --update-with-dependencies --ignore-platform-reqs
+fi
 cd ..

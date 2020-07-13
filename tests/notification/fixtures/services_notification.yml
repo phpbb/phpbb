@@ -38,9 +38,6 @@ services:
     groupposition.teampage:
         synthetic: true
 
-    groupposition.teampage:
-        synthetic: true
-
     text_formatter.s9e.factory:
         synthetic: true
 
