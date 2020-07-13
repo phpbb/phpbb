@@ -30,7 +30,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->backupStaticAttributesBlacklist['phpbb_functional_feed_test'] = array('init_values');
+		$this->excludeBackupStaticAttributes([
+			'phpbb_functional_feed_test' => ['init_values'],
+		]);
 
 		$this->purge_cache();
 	}

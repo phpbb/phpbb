@@ -183,13 +183,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 	}
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	public function __construct($name = NULL, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed'),
-		);
+		$backupStaticAttributesBlacklist = [
+			'phpbb_functional_test_case' => ['config', 'already_installed'],
+		];
+		$this->excludeBackupStaticAttributes($backupStaticAttributesBlacklist);
 	}
 
 	protected function get_db()
