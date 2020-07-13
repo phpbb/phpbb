@@ -21,7 +21,7 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	/** @var phpbb_mock_extension_manager */
 	protected $extension_manager;
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

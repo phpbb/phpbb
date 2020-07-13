@@ -16,7 +16,7 @@ class phpbb_lint_test extends phpbb_test_case
 	static protected $php_binary;
 	static protected $exclude;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		// Try to use PHP_BINARY constant if available so lint tests are run
 		// using the same php binary as phpunit. If not available (pre PHP

@@ -20,7 +20,7 @@ class phpbb_network_ftp_fsock_pasv_epsv_test extends phpbb_test_case
 {
 	static protected $ipv4;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		$hostname = 'ftp.debian.org.';
 		self::$ipv4 = gethostbyname($hostname);
