@@ -45,7 +45,7 @@ script:
   - travis/check-doctum-parse-errors.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION $NOTESTS ./
-  - sh -c "if [ '$SLOWTESTS' != '1' -a '$DB' = 'mysqli' ]; then phpBB/vendor/bin/phpunit tests/lint_test.php; fi"
+  - sh -c "if [ '$SLOWTESTS' != '1' -a '$DB' = 'mysqli' ]; then phpBB/vendor/bin/phpunit tests/phpbb_lint_test.php; fi"
   - sh -c "if [ '$NOTESTS' != '1' -a '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --verbose --stop-on-error; fi"
   - sh -c "if [ '$SLOWTESTS' = '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow; fi"
   - sh -c "set -x;if [ '$NOTESTS' = '1' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git remote set-branches --add origin $TRAVIS_BRANCH && git fetch && git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..$TRAVIS_PULL_REQUEST_SHA; fi"
