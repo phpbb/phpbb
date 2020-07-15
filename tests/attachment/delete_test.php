@@ -40,7 +40,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path;
 

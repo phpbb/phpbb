@@ -24,7 +24,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		'foo/bar/',
 	);
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		$this->purge_cache();
 
@@ -46,7 +46,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

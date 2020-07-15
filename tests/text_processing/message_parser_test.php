@@ -25,7 +25,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		stream_wrapper_register('http', __CLASS__ . '_proxy');
 	}
 
-	public static function tearDownAfterClass(): void
+	static public function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 		stream_wrapper_restore('http');

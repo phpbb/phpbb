@@ -22,7 +22,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	* @access public
 	* @return null
 	*/
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $request, $user, $cache, $phpbb_root_path, $phpEx;
 

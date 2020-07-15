@@ -21,7 +21,7 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 
 	abstract function get_url();
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';

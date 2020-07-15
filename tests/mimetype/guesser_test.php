@@ -27,7 +27,7 @@ class guesser_test extends \phpbb_test_case
 
 	protected $fileinfo_supported = false;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path;
 

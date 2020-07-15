@@ -17,7 +17,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 	protected $user;
 	protected $request;
 
-	protected function setup(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

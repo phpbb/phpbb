@@ -19,7 +19,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 	/** @var \ReflectionProperty */
 	protected $reflection_template_property;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user;
 

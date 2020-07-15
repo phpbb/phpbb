@@ -25,7 +25,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	protected $state_table;
 	protected $user;
 
-	protected function setup(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

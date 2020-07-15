@@ -67,7 +67,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $phpbb_root_path, $phpEx;
 

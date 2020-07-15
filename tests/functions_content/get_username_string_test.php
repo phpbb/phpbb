@@ -13,7 +13,7 @@
 
 class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

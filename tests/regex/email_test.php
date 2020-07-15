@@ -15,7 +15,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 {
 	protected $regex;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->regex = '#^' . get_preg_expression('email') . '$#i';
 	}

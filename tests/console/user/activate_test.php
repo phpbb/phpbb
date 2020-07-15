@@ -21,7 +21,7 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 {
 	protected $notifications;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

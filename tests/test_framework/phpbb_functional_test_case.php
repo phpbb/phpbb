@@ -75,7 +75,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

@@ -43,7 +43,7 @@ class phpbb_get_banned_user_ids_test extends phpbb_database_test_case
 		);
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $db;
 

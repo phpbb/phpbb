@@ -45,7 +45,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

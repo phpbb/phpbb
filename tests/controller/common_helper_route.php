@@ -41,7 +41,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 

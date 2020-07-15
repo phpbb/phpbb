@@ -32,7 +32,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/thumbnail.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
 

@@ -38,7 +38,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		// Get session here so that config is mocked correctly
@@ -60,7 +60,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 		// Set cache back to what it was before the test changed it
