@@ -34,7 +34,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		];
 	}
 
-	protected function setUp() : void
+	protected function setUp(): void
 	{
 		phpbb_database_test_case::setUp();
 
