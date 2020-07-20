@@ -36,6 +36,10 @@ class migrations_check_config_added_test extends phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 
+		$tools = [
+			new \phpbb\db\migration\tool\config($this->config),
+		];
+
 		$this->container = new phpbb_mock_container_builder();
 
 		$this->migrator = new \phpbb\db\migrator(
@@ -48,7 +52,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			$this->php_ext,
 			$this->table_prefix,
 			[],
-			[],
+			$tools,
 			new \phpbb\db\migration\helper()
 		);
 		$this->container->set('migrator', $this->migrator);
