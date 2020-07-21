@@ -1088,3 +1088,10 @@ li.breadcrumbs span:first-child > a {
 		margin-bottom: 5px;
 	}
 }
+
+@media (min-width: 701px) {
+	.rtl .postbody {
+		margin-right: 0;
+		margin-left: 16px;
+	}
+}
