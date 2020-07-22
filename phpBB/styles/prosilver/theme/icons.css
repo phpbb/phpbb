@@ -11,8 +11,8 @@
  */
 .icon, .button .icon, blockquote cite:before, .uncited:before {
 	display: inline-block;
-  	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
-  	font-weight: 900;
+  	font-family: FontAwesome;
+  	font-weight: normal;
   	font-style: normal;
   	font-variant: normal;
   	font-size: 14px;
@@ -22,9 +22,9 @@
   	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon { padding-right: 2px; }
+.icon:before { padding-right: 2px; }
 
-.button .icon {
+.button .icon:before {
 	padding-right: 0;
 }
 
