@@ -42,7 +42,7 @@ foreach ($xml->xpath('//item') as $item)
 {
 	$key = (string) $item->key;
 
-	$keyUrl = 'http://tracker.phpbb.com/browse/' . $key;
+	$keyUrl = 'https://tracker.phpbb.com/browse/' . $key;
 	$keyLink = '<a href="' . $keyUrl . '">' . $key . '</a>';
 
 	$value = str_replace($key, $keyLink, htmlspecialchars($item->title));
