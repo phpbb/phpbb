@@ -270,14 +270,14 @@ while ($row = $db->sql_fetchrow($result))
 				$matches = array();
 
 				$pattern = '#(viewtopic|posting)\.' . $phpEx . '((\?|&)\w+=\w+)*(\?|&)';
-				preg_match($pattern . 'f=(\d+)#', $row['session_page'], $matches, PREG_UNMATCHED_AS_NULL);
+				preg_match($pattern . 'f=(\d+)#', $row['session_page'], $matches);
 				if ($matches[$array_match_index])
 				{
 					$forum_id = (int) $matches[$array_match_index];
 				}
 				else
 				{
-					preg_match($pattern . 't=(\d+)#', $row['session_page'], $matches, PREG_UNMATCHED_AS_NULL);
+					preg_match($pattern . 't=(\d+)#', $row['session_page'], $matches);
 					if ($matches[$array_match_index])
 					{
 						$topic_id = $matches[$array_match_index];
@@ -290,7 +290,7 @@ while ($row = $db->sql_fetchrow($result))
 					}
 					else
 					{
-						preg_match($pattern . 'p=(\d+)#', $row['session_page'], $matches, PREG_UNMATCHED_AS_NULL);
+						preg_match($pattern . 'p=(\d+)#', $row['session_page'], $matches);
 						if ($matches[$array_match_index])
 						{
 							$post_id = $matches[$array_match_index];
