@@ -285,8 +285,9 @@ while ($row = $db->sql_fetchrow($result))
 						$sql = 'SELECT forum_id
 							FROM ' . TOPICS_TABLE . "
 							WHERE topic_id = $topic_id";
-						$db->sql_query($sql);
+						$result = $db->sql_query($sql);
 						$forum_id = (int) $db->sql_fetchfield('forum_id');
+						$db->sql_freeresult($result);
 					}
 					else
 					{
@@ -301,8 +302,9 @@ while ($row = $db->sql_fetchrow($result))
 								FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 								WHERE p.post_id = ' . $post_id . '
 								AND t.topic_id = p.topic_id';
-							$db->sql_query($sql);
+							$result = $db->sql_query($sql);
 							$forum_id = (int) $db->sql_fetchfield('forum_id');
+							$db->sql_freeresult($result);
 						}
 						else
 						{
