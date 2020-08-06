@@ -273,8 +273,6 @@ class factory implements \phpbb\textformatter\cache_interface
 			->add('#imageurl', __NAMESPACE__ . '\\parser::filter_img_url')
 			->addParameterByName('urlConfig')
 			->addParameterByName('logger')
-			->addParameterByName('max_img_height')
-			->addParameterByName('max_img_width')
 			->markAsSafeAsURL()
 			->setJS('UrlFilter.filter');
 

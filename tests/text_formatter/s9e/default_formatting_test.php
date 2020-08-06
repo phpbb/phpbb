@@ -133,6 +133,10 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<img src="https://area51.phpbb.com/images/area51.png" class="postimage" alt="Image">'
 			),
 			array(
+				'[img]foo://area51.phpbb.com/images/area51.png[/img]',
+				'[img]foo://area51.phpbb.com/images/area51.png[/img]'
+			),
+			array(
 				'[url]https://area51.phpbb.com/[/url]',
 				'<a href="https://area51.phpbb.com/" class="postlink">https://area51.phpbb.com/</a>'
 			),
