@@ -13,9 +13,9 @@
 .button .icon,
 blockquote cite:before,
 .uncited:before {
-	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+	font-family: FontAwesome;
 	font-size: 14px;
-	font-weight: 900;
+	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
 	line-height: 1;
@@ -27,11 +27,11 @@ blockquote cite:before,
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
-.icon {
+.icon:before {
 	padding-right: 2px;
 }
 
-.button .icon {
+.button .icon:before {
 	padding-right: 0;
 }
 

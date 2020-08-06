@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v331rc1">Changes since 3.3.1-RC1</a></li>
 		<li><a href="#v330">Changes since 3.3.0</a></li>
 		<li><a href="#v330rc1">Changes since 3.3.0-RC1</a></li>
 		<li><a href="#v330b2">Changes since 3.3.0-b2</a></li>
@@ -150,6 +151,29 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v331rc1"></a><h3>Changes since 3.3.1-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16524">PHPBB3-16524</a>] - General error (SQL ERROR) on adding emoji character to the profile field</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16543">PHPBB3-16543</a>] - Update querystring in stylesheet.css to hashes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16550">PHPBB3-16550</a>] - compact(): Undefined variable: url - in PMs</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16552">PHPBB3-16552</a>] - Roll back FontAwesome 5 changes.</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16552">PHPBB3-16559</a>] - Undefined event variables in MCP queue</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16554">PHPBB3-16554</a>] - Align all .htaccess files to support Apache 2.4 mod_authz_core directives</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16555">PHPBB3-16555</a>] - Update to the latest version of jQuery</li>
+			</ul>
+			<h4>Security Issue</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-259">SECURITY-259</a>] - Server-Side Request Forgery via FastImageSize in s9e textformatter</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-257">SECURITY-257</a>] - Potential RCE via Phar Deserialization through Legacy BBCode Parser</li>
+			</ul>
+
 			<a name="v330"></a><h3>Changes since 3.3.0</h3>
 			<h4>Bug</h4>
 			<ul>

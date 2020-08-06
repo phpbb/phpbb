@@ -7,17 +7,15 @@
     --------------------------------------------------------------
 */
 
-@import url("normalize.css?v=4.0");
-@import url("base.css?v=4.0");
-@import url("utilities.css?v=4.0");
-@import url("common.css?v=4.0");
-@import url("links.css?v=4.0");
-@import url("content.css?v=4.0");
-@import url("buttons.css?v=4.0");
-@import url("cp.css?v=4.0");
-@import url("forms.css?v=4.0");
-@import url("icons.css?v=4.0");
-@import url("colours.css?v=4.0");
-@import url("responsive.css?v=4.0");
-@import url("bidi.css?v=4.0");
-@import url("tweaks.css?v=4.0");
+@import url("normalize.css?hash=e6c08715");
+@import url("base.css?hash=9b6738c8");
+@import url("utilities.css?hash=b95e1ad4");
+@import url("common.css?hash=fe09f059");
+@import url("links.css?hash=5fc8ca41");
+@import url("content.css?hash=0daf1369");
+@import url("buttons.css?hash=f4e39187");
+@import url("cp.css?hash=2530357c");
+@import url("forms.css?hash=7a849801");
+@import url("icons.css?hash=2fcf49a1");
+@import url("colours.css?hash=73de7bbf");
+@import url("responsive.css?hash=8b3f0a01");

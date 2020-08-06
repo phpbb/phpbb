@@ -93,8 +93,7 @@ function adm_page_header($page_title)
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 
-		'T_FONT_AWESOME_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$phpbb_root_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
-		'T_FONT_AWESOME_V4SHIMS_LINK'	=> "{$phpbb_root_path}assets/css/phpbb-fontawesome-v4-shims.min.css?assets_version=" . $config['assets_version'],
+		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$phpbb_root_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 
@@ -183,7 +182,7 @@ function adm_page_footer($copyright_html = true)
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
-		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery-3.4.1.min.js",
+		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery-3.5.1.min.js",
 		'S_ALLOW_CDN'		=> !empty($config['allow_cdn']),
 		'VERSION'			=> $config['version'])
 	);
