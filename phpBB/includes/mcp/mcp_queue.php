@@ -156,6 +156,7 @@ class mcp_queue
 
 				$post_id = $request->variable('p', 0);
 				$topic_id = $request->variable('t', 0);
+				$topic_info = [];
 
 				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
@@ -1432,6 +1433,8 @@ class mcp_queue
 					$redirect = append_sid($phpbb_root_path . 'viewforum.' . $phpEx, 'f=' . $request->variable('f', 0));
 				}
 			}
+
+			$disapprove_reason_lang = $disapprove_reason_lang ?? '';
 
 			/**
 			 * Perform additional actions during post(s) disapproval
