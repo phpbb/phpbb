@@ -121,6 +121,11 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 				'[img:]https&#58;//area51&#46;phpbb&#46;com/images/area51&#46;png[/img:]',
 			),
 			array(
+				'Test default bbcodes: img with unsupported protocol',
+				'[img]foo://foo/bar[/img]',
+				'[img]foo://foo/bar[/img]',
+			),
+			array(
 				'Test default bbcodes: simple url',
 				'[url]https://area51.phpbb.com/[/url]',
 				'[url:]https&#58;//area51&#46;phpbb&#46;com/[/url:]',

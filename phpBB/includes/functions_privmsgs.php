@@ -2048,6 +2048,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
+	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
+
 	/**
 	* Modify message rows before displaying the history in private messages
 	*
@@ -2082,7 +2084,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 	$title = censor_text($title);
 
-	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 	$next_history_pm = $previous_history_pm = $prev_id = 0;
 
 	// Re-order rowset to be able to get the next/prev message rows...
