@@ -201,19 +201,28 @@ abstract class memory extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
+	public function sql_save($query, $data, $ttl)
 	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$query_id = md5($query);
+		$query_id = $this->get_cache_id_from_sql_query($query);
+		if (!$this->cache_query_tables($query, $query_id))
+		{
+			return false;
+		}
 
+		$this->_write('sql_' . $query_id, $data, $ttl);
+
+		return true;
+	}
+
+	private function cache_query_tables($query, $query_id)
+	{
 		// determine which tables this query belongs to
 		// Some queries use backticks, namely the get_database_size() query
 		// don't check for conformity, the SQL would error and not reach here.
 		if (!preg_match_all('/(?:FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?)|(?:JOIN (`?\\w+`?(?: \\w+)?))/', $query, $regs, PREG_SET_ORDER))
 		{
 			// Bail out if the match fails.
-			return $query_result;
+			return false;
 		}
 
 		$tables = array();
@@ -252,19 +261,7 @@ abstract class memory extends \phpbb\cache\driver\base
 			$this->_write('sql_' . $table_name, $temp, 0);
 		}
 
-		// store them in the right place
-		$this->sql_rowset[$query_id] = array();
-		$this->sql_row_pointer[$query_id] = 0;
-
-		while ($row = $db->sql_fetchrow($query_result))
-		{
-			$this->sql_rowset[$query_id][] = $row;
-		}
-		$db->sql_freeresult($query_result);
-
-		$this->_write('sql_' . $query_id, $this->sql_rowset[$query_id], $ttl);
-
-		return $query_id;
+		return true;
 	}
 
 	/**

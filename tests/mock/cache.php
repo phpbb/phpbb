@@ -148,21 +148,6 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 	{
 		return $query_result;
 	}
-	public function sql_exists($query_id)
-	{
-	}
-	public function sql_fetchrow($query_id)
-	{
-	}
-	public function sql_fetchfield($query_id, $field)
-	{
-	}
-	public function sql_rowseek($rownum, $query_id)
-	{
-	}
-	public function sql_freeresult($query_id)
-	{
-	}
 
 	public function obtain_bots()
 	{

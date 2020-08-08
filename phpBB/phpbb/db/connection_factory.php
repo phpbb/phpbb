@@ -19,6 +19,7 @@ use Doctrine\DBAL\Driver\Mysqli\MysqliConnection;
 use Doctrine\DBAL\DriverManager;
 use PDO;
 use phpbb\config_php_file;
+use phpbb\cache\doctrine_bridge;
 use phpbb\db\exception\connection_failed;
 use phpbb\db\exception\invalid_database_type;
 
@@ -30,14 +31,15 @@ class connection_factory
 	/**
 	 * Returns a Doctrine DBAL connection.
 	 *
-	 * @param config_php_file $config Configuration parameters.
+	 * @param config_php_file $config			Configuration parameters.
+	 * @param doctrine_bridge $cache_driver	Cache driver.
 	 *
 	 * @return Connection Database connection object.
 	 *
 	 * @throws invalid_database_type If the specified DB type is not supported.
 	 * @throws connection_failed If the database connection could not be established.
 	 */
-	public static function get_connection(config_php_file $config)
+	public static function get_connection(config_php_file $config, doctrine_bridge $cache_driver)
 	{
 		$dbms = self::get_driver_name($config->convert_30_dbms_to_31($config->get('dbms')));
 		$db_host = $config->get('dbhost');
@@ -46,7 +48,11 @@ class connection_factory
 		$db_name = $config->get('dbname');
 		$db_port = $config->get('dbport');
 
-		return self::get_connection_from_params($dbms, $db_host, $db_port, $db_user, $db_pass, $db_name);
+		$connection = self::get_connection_from_params($dbms, $db_host, $db_port, $db_user, $db_pass, $db_name);
+		$config = $connection->getConfiguration();
+		$config->setResultCacheImpl($cache_driver);
+
+		return $connection;
 	}
 
 	/**

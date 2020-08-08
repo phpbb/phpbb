@@ -277,7 +277,6 @@ final class result_iterator implements result_iterator_interface
 	 */
 	private function reexectue_query()
 	{
-		// @todo: ttl?
 		$this->data = $this->driver->sql_query($this->sql);
 	}
 }

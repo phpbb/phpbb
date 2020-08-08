@@ -106,48 +106,8 @@ class dummy extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
+	public function sql_save($query, $data, $ttl)
 	{
-		return $query_result;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_exists($query_id)
-	{
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchrow($query_id)
-	{
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchfield($query_id, $field)
-	{
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_rowseek($rownum, $query_id)
-	{
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_freeresult($query_id)
-	{
-		return false;
+		return true;
 	}
 }

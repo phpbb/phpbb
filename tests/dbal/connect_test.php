@@ -20,7 +20,7 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 	public function test_failing_connect()
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_filesystem;
+		global $phpbb_filesystem;
 
 		$phpbb_filesystem = new phpbb\filesystem\filesystem();
 
@@ -28,14 +28,6 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 		$db = new $config['dbms']();
 
-		try
-		{
-			$this->assertFalse($db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']));
-		}
-		catch (Exception $e)
-		{
-			// should have a legitimate message
-			$this->assertNotEmpty($e->getMessage());
-		}
+		$this->assertFalse($db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']));
 	}
 }

@@ -95,73 +95,29 @@ interface driver_interface
 	*
 	* @param string $query			SQL query
 	*
-	* @return int|bool				Query ID (integer) if cache contains a rowset
+	* @return array|false			The cached data the if cache contains a rowset
 	*								for the specified query.
 	*								False otherwise.
 	*/
 	public function sql_load($query);
 
 	/**
-	* Save result of an SQL query in cache.
-	*
-	* In persistent cache stores, this function stores the query
-	* result to persistent storage. In other words, there is no need
-	* to call save() afterwards.
-	*
-	* @param \phpbb\db\driver\driver_interface $db	Database connection
-	* @param string $query			SQL query, should be used for generating storage key
-	* @param mixed $query_result	The result from \dbal::sql_query, to be passed to
-	* 								\dbal::sql_fetchrow to get all rows and store them
-	* 								in cache.
-	* @param int $ttl				Time to live, after this timeout the query should
-	*								expire from the cache.
-	* @return int|mixed				If storing in cache succeeded, an integer $query_id
-	* 								representing the query should be returned. Otherwise
-	* 								the original $query_result should be returned.
-	*/
-	public function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl);
+	 * Save a SQL query result set to cache.
+	 *
+	 * @param string	$query	The SQL query string.
+	 * @param array		$data	The result of the query.
+	 * @param int		$ttl	The time to live attribute.
+	 *
+	 * @return bool True, if the data has been written to the cache, False otherwise.
+	 */
+	public function sql_save($query, $data, $ttl);
 
 	/**
-	* Check if result for a given SQL query exists in cache.
-	*
-	* @param int $query_id
-	* @return bool
-	*/
-	public function sql_exists($query_id);
-
-	/**
-	* Fetch row from cache (database)
-	*
-	* @param int $query_id
-	* @return array|bool 			The query result if found in the cache, otherwise
-	* 								false.
-	*/
-	public function sql_fetchrow($query_id);
-
-	/**
-	* Fetch a field from the current row of a cached database result (database)
-	*
-	* @param int $query_id
-	* @param string $field 			The name of the column.
-	* @return string|bool 			The field of the query result if found in the cache,
-	* 								otherwise false.
-	*/
-	public function sql_fetchfield($query_id, $field);
-
-	/**
-	* Seek a specific row in an a cached database result (database)
-	*
-	* @param int $rownum 			Row to seek to.
-	* @param int $query_id
-	* @return bool
-	*/
-	public function sql_rowseek($rownum, $query_id);
-
-	/**
-	* Free memory used for a cached database result (database)
-	*
-	* @param int $query_id
-	* @return bool
-	*/
-	public function sql_freeresult($query_id);
+	 * Returns the cache key for the SQL query.
+	 *
+	 * @param string $query The SQL query.
+	 *
+	 * @return string The cache key for the SQL query.
+	 */
+	public function get_cache_id_from_sql_query($query);
 }
