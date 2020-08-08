@@ -13,6 +13,7 @@
 
 namespace phpbb\db\driver;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
@@ -49,6 +50,11 @@ class doctrine extends driver implements driver_interface
 	private $insert_table_name = '';
 
 	/**
+	 * @var bool
+	 */
+	private $enable_caching;
+
+	/**
 	 * Database driver constructor.
 	 *
 	 * @param Connection $connection Doctrine connection object.
@@ -58,6 +64,7 @@ class doctrine extends driver implements driver_interface
 		parent::__construct();
 
 		$this->connection = $connection;
+		$this->enable_caching = !is_null($connection);
 
 		$this->detect_platform();
 		$this->db_connect_id = false;
@@ -633,20 +640,28 @@ class doctrine extends driver implements driver_interface
 		return $result;
 	}
 
-	//@todo
+	/**
+	 * Executes a SQL query.
+	 *
+	 * @param string	$sql		The query SQL.
+	 * @param int		$cache_ttl	Cache time-to-live.
+	 *
+	 * @return false|result_iterator
+	 */
 	private function query($sql, $cache_ttl = 0)
 	{
 		$this->start_query_timer($sql);
-
-		// @todo: cache
-		//$this->query_result = ($cache && $cache_ttl) ? $cache->sql_load($query) : false;
-		//$this->sql_add_num_queries($this->query_result);
 		$this->sql_add_num_queries(false);
 
-		// if cache miss
 		try
 		{
-			$this->query_result = new result_iterator($this->connection->query($sql), $sql, $this);
+			$cache_config = null;
+			if ($cache_ttl !== 0 && $this->enable_caching)
+			{
+				$cache_config = new QueryCacheProfile($cache_ttl, $sql);
+			}
+
+			$this->query_result = new result_iterator($this->connection->executeQuery($sql, [], [], $cache_config), $sql, $this);
 		}
 		catch (DBALException $e)
 		{
@@ -661,16 +676,10 @@ class doctrine extends driver implements driver_interface
 			return false;
 		}
 
-		//if ($cache && $cache_ttl)
-		//{
-		//	$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
-		//}
-
-		// @todo: if not cache miss
-		//if ($this->debug_sql_explain)
-		//{
-		//	$this->sql_report('fromcache', $sql);
-		//}
+		if ($cache_ttl !== 0 && $this->enable_caching)
+		{
+			$this->query_result->fetch_all();
+		}
 
 		$this->open_queries[$this->query_result->get_id()] = $this->query_result;
 

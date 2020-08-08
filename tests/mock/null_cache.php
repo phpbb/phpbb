@@ -43,9 +43,4 @@ class phpbb_mock_null_cache
 	public function set_bots($bots)
 	{
 	}
-
-	public function sql_exists($query_id)
-	{
-		return false;
-	}
 }
