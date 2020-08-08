@@ -42,8 +42,7 @@ class doctrine_bridge implements Cache
 
 	public function contains($sql)
 	{
-		$cache_key = $this->cache->get_cache_id_from_sql_query($sql);
-		return $this->cache->_exists('sql_' . $cache_key);
+		return $this->cache->_exists($this->cache->get_cache_id_from_sql_query($sql));
 	}
 
 	public function save($sql, $data, $ttl = 0)
@@ -53,8 +52,7 @@ class doctrine_bridge implements Cache
 
 	public function delete($sql)
 	{
-		$cache_key = $this->cache->get_cache_id_from_sql_query($sql);
-		$this->cache->destroy('sql_' . $cache_key);
+		$this->cache->destroy($this->cache->get_cache_id_from_sql_query($sql));
 		return true;
 	}
 

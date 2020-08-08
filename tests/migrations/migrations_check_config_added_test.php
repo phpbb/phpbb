@@ -30,6 +30,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 		]);
 
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
+		$this->db->method('get_sql_layer')->willReturn('sqlite3');
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->db);
 		$this->table_prefix = 'phpbb_';
@@ -47,6 +48,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext,
 			$this->table_prefix,
+			[],
 			[],
 			new \phpbb\db\migration\helper()
 		);

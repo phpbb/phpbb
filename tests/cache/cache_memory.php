@@ -31,6 +31,11 @@ class phpbb_cache_memory extends \phpbb\cache\driver\memory
 	*/
 	function _read($var)
 	{
+		if (!array_key_exists($var, $this->data))
+		{
+			return false;
+		}
+
 		return $this->data[$var];
 	}
 

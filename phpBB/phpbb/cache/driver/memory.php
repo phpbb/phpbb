@@ -203,13 +203,13 @@ abstract class memory extends \phpbb\cache\driver\base
 	*/
 	public function sql_save($query, $data, $ttl)
 	{
-		$query_id = $this->get_cache_id_from_sql_query($query);
+		$query_id = $this->get_cache_hash_for_sql_query($query);
 		if (!$this->cache_query_tables($query, $query_id))
 		{
 			return false;
 		}
 
-		$this->_write('sql_' . $query_id, $data, $ttl);
+		$this->_write($this->get_cache_id_from_sql_query($query), $data, $ttl);
 
 		return true;
 	}

@@ -139,14 +139,20 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 	}
 	public function sql_load($query)
 	{
+		return true;
 	}
 
 	/**
 	* {@inheritDoc}
 	*/
-	public function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
+	public function sql_save($query, $data, $ttl)
 	{
-		return $query_result;
+		return true;
+	}
+
+	public function get_cache_id_from_sql_query($query)
+	{
+		return 'foo';
 	}
 
 	public function obtain_bots()

@@ -29,7 +29,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			'version'	=> '3.1.0',
 		));
 		$container = new \phpbb_mock_container_builder();
-		$db = new \phpbb\db\driver\factory($container);
+		$db = new \phpbb\db\driver\doctrine();
 		$this->cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setMethods(array('get'))
 			->setConstructorArgs(array(new \phpbb\cache\driver\dummy(), $config, $db, '../../', 'php'))

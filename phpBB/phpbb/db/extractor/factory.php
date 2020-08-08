@@ -49,25 +49,19 @@ class factory
 	public function get()
 	{
 		// Return the appropriate DB extractor
-		if ($this->db instanceof \phpbb\db\driver\mssql_base)
+		$dbtype = $this->db->get_sql_layer();
+		switch ($dbtype)
 		{
-			return $this->container->get('dbal.extractor.extractors.mssql_extractor');
-		}
-		else if ($this->db instanceof \phpbb\db\driver\mysql_base)
-		{
-			return $this->container->get('dbal.extractor.extractors.mysql_extractor');
-		}
-		else if ($this->db instanceof \phpbb\db\driver\oracle)
-		{
-			return $this->container->get('dbal.extractor.extractors.oracle_extractor');
-		}
-		else if ($this->db instanceof \phpbb\db\driver\postgres)
-		{
-			return $this->container->get('dbal.extractor.extractors.postgres_extractor');
-		}
-		else if ($this->db instanceof \phpbb\db\driver\sqlite3)
-		{
-			return $this->container->get('dbal.extractor.extractors.sqlite3_extractor');
+			case 'mssqlnative':
+				return $this->container->get('dbal.extractor.extractors.mssql_extractor');
+			case 'mysqli':
+				return $this->container->get('dbal.extractor.extractors.mysql_extractor');
+			case 'postgres':
+				return $this->container->get('dbal.extractor.extractors.postgres_extractor');
+			case 'oracle':
+				return $this->container->get('dbal.extractor.extractors.oracle_extractor');
+			case 'sqlite3':
+				return $this->container->get('dbal.extractor.extractors.sqlite3_extractor');
 		}
 
 		throw new \InvalidArgumentException('Invalid database driver given');

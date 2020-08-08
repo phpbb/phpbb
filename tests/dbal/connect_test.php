@@ -26,6 +26,11 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 		$config = $this->get_database_config();
 
+		if (strpos($config['dbms'], 'sqlite'))
+		{
+			$this->markTestSkipped('SQLite connection cannot fail.');
+		}
+
 		$db = new $config['dbms']();
 
 		$this->assertFalse($db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']));

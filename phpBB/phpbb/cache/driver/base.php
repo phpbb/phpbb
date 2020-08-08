@@ -85,8 +85,31 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	public function get_cache_id_from_sql_query($query)
 	{
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		return md5($query);
+		return 'sql_' . $this->get_cache_hash_for_sql_query($query);
+	}
+
+	/**
+	 * Returns the hash part of the cache key for a SQL query.
+	 *
+	 * @param string $query The SQL query
+	 *
+	 * @return string The hash.
+	 */
+	protected function get_cache_hash_for_sql_query($query)
+	{
+		return md5($this->normalize_query_whitespaces($query));
+	}
+
+	/**
+	 * Normalizes the whitespaces in a SQL query.
+	 *
+	 * @param string $query The SQL query to normalize.
+	 *
+	 * @return string The normalized query.
+	 */
+	protected function normalize_query_whitespaces($query)
+	{
+		return preg_replace('/[\n\r\s\t]+/', ' ', $query);
 	}
 
 	/**
@@ -94,10 +117,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_load($query)
 	{
-		// Remove extra spaces and tabs
-		$query_id = $this->get_cache_id_from_sql_query($query);
-
-		if (($result = $this->_read('sql_' . $query_id)) === false)
+		if (($result = $this->_read($this->get_cache_id_from_sql_query($query))) === false)
 		{
 			return false;
 		}
