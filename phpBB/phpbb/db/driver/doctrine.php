@@ -18,6 +18,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use phpbb\cache\doctrine_bridge;
 use phpbb\db\connection_factory;
 use phpbb\db\result_iterator;
 use phpbb\db\result_iterator_interface;
@@ -57,7 +58,7 @@ class doctrine extends driver implements driver_interface
 	/**
 	 * Database driver constructor.
 	 *
-	 * @param Connection $connection Doctrine connection object.
+	 * @param Connection|null $connection Doctrine connection object.
 	 */
 	public function __construct(?Connection $connection = null)
 	{
@@ -68,6 +69,19 @@ class doctrine extends driver implements driver_interface
 
 		$this->detect_platform();
 		$this->db_connect_id = false;
+	}
+
+	/**
+	 * Sets a cache instance to the database driver.
+	 *
+	 * @param \phpbb\cache\driver\driver_interface $cache
+	 */
+	public function set_cache(\phpbb\cache\driver\driver_interface $cache)
+	{
+		$cache_driver = new doctrine_bridge($cache);
+		$config = $this->connection->getConfiguration();
+		$config->setResultCacheImpl($cache_driver);
+		$this->enable_caching = true;
 	}
 
 	/**
@@ -156,13 +170,17 @@ class doctrine extends driver implements driver_interface
 		$total = ($total < 0) ? 0 : $total;
 		$offset = ($offset < 0) ? 0 : $offset;
 
-		try
+		if ($total !== 0 || $offset !== 0)
 		{
-			$query = $this->platform->modifyLimitQuery($query, $total, $offset);
-		}
-		catch (DBALException $e)
-		{
-			return false;
+			try
+			{
+				$total = ($total === 0) ? null : $total;
+				$query = $this->platform->modifyLimitQuery($query, $total, $offset);
+			}
+			catch (DBALException $e)
+			{
+				return false;
+			}
 		}
 
 		return $this->sql_query($query, $cache_ttl);
@@ -427,7 +445,6 @@ class doctrine extends driver implements driver_interface
 			return false;
 		}
 
-
 		$this->detect_platform();
 
 		return $this->connection->isConnected();
@@ -444,7 +461,7 @@ class doctrine extends driver implements driver_interface
 			return $this->platform->getName();
 		}
 
-		$result = $this->sql_query($sql); // @todo: cache
+		$result = $this->sql_query($sql);
 		$version = $this->sql_fetchfield('version');
 		$this->sql_freeresult($result);
 

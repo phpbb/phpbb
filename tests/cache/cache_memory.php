@@ -23,26 +23,45 @@ class phpbb_cache_memory extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	protected function _read(string $var)
+	* Fetch an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return mixed Cached data
+	*/
+	function _read($var)
 	{
-		return $this->data[$var] ?? false;
+		if (!array_key_exists($var, $this->data))
+		{
+			return false;
+		}
+
+		return $this->data[$var];
 	}
 
 	/**
-	* {@inheritDoc}
+	* Store data in the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @param mixed $data Data to store
+	* @param int $ttl Time-to-live of cached data
+	* @return bool True if the operation succeeded
 	*/
-	protected function _write(string $var, $data, int $ttl = 2592000): bool
+	function _write($var, $data, $ttl = 2592000)
 	{
 		$this->data[$var] = $data;
 		return true;
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	protected function _delete(string $var): bool
+	* Remove an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return bool True if the operation succeeded
+	*/
+	function _delete($var)
 	{
 		unset($this->data[$var]);
 		return true;

@@ -17,7 +17,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Mysqli\MysqliConnection;
 use Doctrine\DBAL\DriverManager;
-use PDO;
 use phpbb\config_php_file;
 use phpbb\cache\doctrine_bridge;
 use phpbb\db\exception\connection_failed;
@@ -74,6 +73,7 @@ class connection_factory
 	{
 		$dbms = self::get_driver_name($dbms);
 		$params = self::get_connection_params($dbms, $db_host, $db_port, $db_user, $db_pass, $db_name);
+		$params = self::set_charset_params($dbms, $params);
 
 		if (strpos($dbms, 'mysql') !== false)
 		{
@@ -84,7 +84,7 @@ class connection_factory
 			else
 			{
 				$params['driverOptions'] = [
-					PDO::MYSQL_ATTR_FOUND_ROWS => true,
+					\PDO::MYSQL_ATTR_FOUND_ROWS => true,
 				];
 			}
 		}
@@ -97,6 +97,30 @@ class connection_factory
 		{
 			throw new connection_failed($e);
 		}
+	}
+
+	/**
+	 * Sets the connection charset.
+	 *
+	 * @param string	$dbms	The name of the driver.
+	 * @param array		$params Parameter array.
+	 *
+	 * @return array Parameter array extended with the charset option.
+	 */
+	private static function set_charset_params($dbms, $params)
+	{
+		switch ($dbms)
+		{
+			case 'pdo_mysql':
+			case 'mysqli':
+			case 'pdo_oci':
+			case 'oci8':
+			case 'pdo_pgsql':
+				$params['charset'] = 'UTF8';
+				break;
+		}
+
+		return $params;
 	}
 
 	/**

@@ -309,8 +309,8 @@ class file extends \phpbb\cache\driver\base
 	*/
 	public function sql_save($query, $data, $ttl)
 	{
-		$query_id = $this->get_cache_id_from_sql_query($query);
-		if ($this->_write('sql_' . $query_id, $data, $ttl + time(), $query))
+		$query = $this->normalize_query_whitespaces($query);
+		if ($this->_write($this->get_cache_id_from_sql_query($query), $data, $ttl + time(), $query))
 		{
 			return true;
 		}
