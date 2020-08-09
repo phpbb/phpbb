@@ -869,8 +869,8 @@ function phpbb_to_numeric($input)
 * @param \phpbb\request\request_interface		$request	Request object
 * @param \phpbb\auth\auth						$auth		Auth object
 * @param \phpbb\db\driver\driver_interface		$db			Database connection
- *
- * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
+*
+* @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {

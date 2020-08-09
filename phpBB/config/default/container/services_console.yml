@@ -289,7 +289,6 @@ services:
         class: phpbb\console\command\user\activate
         arguments:
             - '@user'
-            - '@dbal.conn'
             - '@config'
             - '@language'
             - '@log'
@@ -317,7 +316,6 @@ services:
         class: phpbb\console\command\user\delete
         arguments:
             - '@user'
-            - '@dbal.conn'
             - '@language'
             - '@log'
             - '@user_loader'

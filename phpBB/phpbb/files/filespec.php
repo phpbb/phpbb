@@ -19,7 +19,7 @@ use phpbb\language\language;
  * Responsible for holding all file relevant information, as well as doing file-specific operations.
  * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
  *
- * @deprecated
+ * @deprecated 4.0.0	Use phpbb\files\filespec_storage instead
  */
 class filespec
 {
