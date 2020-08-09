@@ -7,6 +7,7 @@ imports:
     - { resource: services_content.yml }
     - { resource: services_cron.yml }
     - { resource: services_db.yml }
+    - { resource: services_doctrine.yml }
     - { resource: services_event.yml }
     - { resource: services_extensions.yml }
     - { resource: services_feed.yml }

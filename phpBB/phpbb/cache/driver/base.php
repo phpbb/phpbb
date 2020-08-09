@@ -18,8 +18,6 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	var $vars = array();
 	var $is_modified = false;
 
-	var $sql_rowset = array();
-	var $sql_row_pointer = array();
 	var $cache_dir = '';
 
 	/**
@@ -60,8 +58,6 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 		}
 
 		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		if (function_exists('opcache_reset'))
 		{
@@ -69,8 +65,6 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 		}
 
 		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
 	}
@@ -82,12 +76,40 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	{
 		$this->save();
 		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_cache_id_from_sql_query($query)
+	{
+		return 'sql_' . $this->get_cache_hash_for_sql_query($query);
+	}
+
+	/**
+	 * Returns the hash part of the cache key for a SQL query.
+	 *
+	 * @param string $query The SQL query
+	 *
+	 * @return string The hash.
+	 */
+	protected function get_cache_hash_for_sql_query($query)
+	{
+		return md5($this->normalize_query_whitespaces($query));
+	}
+
+	/**
+	 * Normalizes the whitespaces in a SQL query.
+	 *
+	 * @param string $query The SQL query to normalize.
+	 *
+	 * @return string The normalized query.
+	 */
+	protected function normalize_query_whitespaces($query)
+	{
+		return preg_replace('/[\n\r\s\t]+/', ' ', $query);
 	}
 
 	/**
@@ -95,83 +117,12 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_load($query)
 	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$query_id = md5($query);
-
-		if (($result = $this->_read('sql_' . $query_id)) === false)
+		if (($result = $this->_read($this->get_cache_id_from_sql_query($query))) === false)
 		{
 			return false;
 		}
 
-		$this->sql_rowset[$query_id] = $result;
-		$this->sql_row_pointer[$query_id] = 0;
-
-		return $query_id;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchrow($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < count($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchfield($query_id, $field)
-	{
-		if ($this->sql_row_pointer[$query_id] < count($this->sql_rowset[$query_id]))
-		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= count($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		$this->sql_row_pointer[$query_id] = $rownum;
-		return true;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
-
-		return true;
+		return $result;
 	}
 
 	/**

@@ -307,27 +307,15 @@ class file extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
+	public function sql_save($query, $data, $ttl)
 	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-
-		$query_id = md5($query);
-		$this->sql_rowset[$query_id] = array();
-		$this->sql_row_pointer[$query_id] = 0;
-
-		while ($row = $db->sql_fetchrow($query_result))
+		$query = $this->normalize_query_whitespaces($query);
+		if ($this->_write($this->get_cache_id_from_sql_query($query), $data, $ttl + time(), $query))
 		{
-			$this->sql_rowset[$query_id][] = $row;
-		}
-		$db->sql_freeresult($query_result);
-
-		if ($this->_write('sql_' . $query_id, $this->sql_rowset[$query_id], $ttl + time(), $query))
-		{
-			return $query_id;
+			return true;
 		}
 
-		return $query_result;
+		return false;
 	}
 
 	/**

@@ -20,26 +20,19 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 	public function test_failing_connect()
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_filesystem;
+		global $phpbb_filesystem;
 
 		$phpbb_filesystem = new phpbb\filesystem\filesystem();
 
 		$config = $this->get_database_config();
 
+		if (strpos($config['dbms'], 'sqlite'))
+		{
+			$this->markTestSkipped('SQLite connection cannot fail.');
+		}
+
 		$db = new $config['dbms']();
 
-		// Failure to connect results in a trigger_error call in dbal.
-		// phpunit converts triggered errors to exceptions.
-		// In particular there should be no fatals here.
-		try
-		{
-			$db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']);
-			$this->assertFalse(true);
-		}
-		catch (Exception $e)
-		{
-			// should have a legitimate message
-			$this->assertNotEmpty($e->getMessage());
-		}
+		$this->assertFalse($db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']));
 	}
 }

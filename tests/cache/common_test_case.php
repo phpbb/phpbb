@@ -74,6 +74,7 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 		global $db, $cache, $phpbb_root_path, $phpEx;
 		$config = new phpbb\config\config(array());
 		$db = $this->new_dbal();
+		$db->set_cache($this->driver);
 		$cache = new \phpbb\cache\service($this->driver, $config, $db, $phpbb_root_path, $phpEx);
 
 		$sql = "SELECT * FROM phpbb_config

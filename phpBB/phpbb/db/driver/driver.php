@@ -14,8 +14,10 @@
 namespace phpbb\db\driver;
 
 /**
-* Database Abstraction Layer
-*/
+ * Database Abstraction Layer
+ *
+ * @deprecated 4.0.0-dev The driver interface is deprecated, please use Doctrine DBAL directly instead.
+ */
 abstract class driver implements driver_interface
 {
 	var $db_connect_id;
@@ -86,6 +88,11 @@ abstract class driver implements driver_interface
 	protected $debug_sql_explain = false;
 
 	/**
+	 * @var string
+	 */
+	protected $last_query_text = '';
+
+	/**
 	* Constructor
 	*/
 	function __construct()
@@ -119,22 +126,6 @@ abstract class driver implements driver_interface
 	public function set_debug_sql_explain($value)
 	{
 		$this->debug_sql_explain = $value;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_sql_layer()
-	{
-		return $this->sql_layer;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_db_name()
-	{
-		return $this->dbname;
 	}
 
 	/**
@@ -175,14 +166,6 @@ abstract class driver implements driver_interface
 	public function get_sql_error_sql()
 	{
 		return $this->sql_error_sql;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_transaction()
-	{
-		return $this->transaction;
 	}
 
 	/**
@@ -249,175 +232,6 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_close()
-	{
-		if (!$this->db_connect_id)
-		{
-			return false;
-		}
-
-		if ($this->transaction)
-		{
-			do
-			{
-				$this->sql_transaction('commit');
-			}
-			while ($this->transaction);
-		}
-
-		foreach ($this->open_queries as $query_id)
-		{
-			$this->sql_freeresult($query_id);
-		}
-
-		// Connection closed correctly. Set db_connect_id to false to prevent errors
-		if ($result = $this->_sql_close())
-		{
-			$this->db_connect_id = false;
-		}
-
-		return $result;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		if (empty($query))
-		{
-			return false;
-		}
-
-		// Never use a negative total or offset
-		$total = ($total < 0) ? 0 : $total;
-		$offset = ($offset < 0) ? 0 : $offset;
-
-		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchrowset($query_id = false)
-	{
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			$result = array();
-			while ($row = $this->sql_fetchrow($query_id))
-			{
-				$result[] = $row;
-			}
-
-			return $result;
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($cache && $cache->sql_exists($query_id))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		if (!$query_id)
-		{
-			return false;
-		}
-
-		$this->sql_freeresult($query_id);
-		$query_id = $this->sql_query($this->last_query_text);
-
-		if (!$query_id)
-		{
-			return false;
-		}
-
-		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
-		for ($i = 0; $i < $rownum; $i++)
-		{
-			if (!$this->sql_fetchrow($query_id))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return (isset($row[$field])) ? $row[$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_like_expression($expression)
-	{
-		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
-		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
-
-		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_not_like_expression($expression)
-	{
-		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
-		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
-
-		return $this->_sql_not_like_expression('NOT LIKE \'' . $this->sql_escape($expression) . '\'');
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
 	public function sql_case($condition, $action_true, $action_false = false)
 	{
 		$sql_case = 'CASE WHEN ' . $condition;
@@ -430,84 +244,9 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function sql_concatenate($expr1, $expr2)
-	{
-		return $expr1 . ' || ' . $expr2;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
 	function sql_buffer_nested_transactions()
 	{
 		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_transaction($status = 'begin')
-	{
-		switch ($status)
-		{
-			case 'begin':
-				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (preventing auto commit)
-				if ($this->transaction)
-				{
-					$this->transactions++;
-					return true;
-				}
-
-				$result = $this->_sql_transaction('begin');
-
-				if (!$result)
-				{
-					$this->sql_error();
-				}
-
-				$this->transaction = true;
-			break;
-
-			case 'commit':
-				// If there was a previously opened transaction we do not commit yet...
-				// but count back the number of inner transactions
-				if ($this->transaction && $this->transactions)
-				{
-					$this->transactions--;
-					return true;
-				}
-
-				// Check if there is a transaction (no transaction can happen if
-				// there was an error, with a combined rollback and error returning enabled)
-				// This implies we have transaction always set for autocommit db's
-				if (!$this->transaction)
-				{
-					return false;
-				}
-
-				$result = $this->_sql_transaction('commit');
-
-				if (!$result)
-				{
-					$this->sql_error();
-				}
-
-				$this->transaction = false;
-				$this->transactions = 0;
-			break;
-
-			case 'rollback':
-				$result = $this->_sql_transaction('rollback');
-				$this->transaction = false;
-				$this->transactions = 0;
-			break;
-
-			default:
-				$result = $this->_sql_transaction($status);
-			break;
-		}
-
-		return $result;
 	}
 
 	/**
@@ -598,56 +337,6 @@ abstract class driver implements driver_interface
 		{
 			return $field . ($negate ? ' NOT IN ' : ' IN ') . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_bit_and($column_name, $bit, $compare = '')
-	{
-		if (method_exists($this, '_sql_bit_and'))
-		{
-			return $this->_sql_bit_and($column_name, $bit, $compare);
-		}
-
-		return $column_name . ' & ' . (1 << $bit) . (($compare) ? ' ' . $compare : '');
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_bit_or($column_name, $bit, $compare = '')
-	{
-		if (method_exists($this, '_sql_bit_or'))
-		{
-			return $this->_sql_bit_or($column_name, $bit, $compare);
-		}
-
-		return $column_name . ' | ' . (1 << $bit) . (($compare) ? ' ' . $compare : '');
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function cast_expr_to_bigint($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function cast_expr_to_string($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_lower_text($column_name)
-	{
-		return "LOWER($column_name)";
 	}
 
 	/**
@@ -960,7 +649,6 @@ abstract class driver implements driver_interface
 		return $operations_ary;
 	}
 
-
 	/**
 	* {@inheritDoc}
 	*/
@@ -1006,7 +694,7 @@ abstract class driver implements driver_interface
 				}
 			}
 
-			if ($this->transaction)
+			if ($this->get_transaction())
 			{
 				$this->sql_transaction('rollback');
 			}
@@ -1023,7 +711,7 @@ abstract class driver implements driver_interface
 			trigger_error($message, E_USER_ERROR);
 		}
 
-		if ($this->transaction)
+		if ($this->get_transaction())
 		{
 			$this->sql_transaction('rollback');
 		}

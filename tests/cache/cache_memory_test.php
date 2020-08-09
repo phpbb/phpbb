@@ -30,6 +30,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 
 		$this->cache = new phpbb_cache_memory();
 		$db = $this->new_dbal();
+		$db->set_cache($this->cache);
 		$this->db = $db;
 	}
 
@@ -105,25 +106,16 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 	{
 		foreach ($sql_queries as $query)
 		{
-			$sql_request_res = $this->db->sql_query($query[0]);
-
-			$this->cache->sql_save($this->db, $query[0], $sql_request_res, 1);
-
-			$results = array();
-			$query_id = $this->cache->sql_load($query[0]);
-			while ($row = $this->cache->sql_fetchrow($query_id))
-			{
-				$results[] = $row;
-			}
-			$this->cache->sql_freeresult($query_id);
-			$this->assertEquals($query[1], count($results));
+			$this->db->sql_query($query[0], 100);
+			$results = array_values($this->cache->sql_load($query[0]));
+			$this->assertEquals($query[1], count($results[0]));
 		}
 
 		$this->cache->destroy('sql', $table);
 
 		foreach ($sql_queries as $query)
 		{
-			$this->assertNotEquals(false, $this->cache->sql_load($query[0]));
+			$this->assertFalse($this->cache->sql_load($query[0]));
 		}
 	}
 }
