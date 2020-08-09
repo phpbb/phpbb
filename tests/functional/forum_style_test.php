@@ -48,15 +48,6 @@ class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 2 WHERE forum_id = 2');
 
 		$crawler = self::request('GET', 'viewtopic.php?t=1&f=2');
-<<<<<<< HEAD
-		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->eq(1)->attr('href'));
-
-		$crawler = self::request('GET', 'viewtopic.php?t=1');
-		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->eq(1)->attr('href'));
-
-		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
-		$this->assertContains('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->eq(1)->attr('href'));
-=======
 		$this->assertStringContainsString('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->eq(2)->attr('href'));
 
 		$crawler = self::request('GET', 'viewtopic.php?t=1');
@@ -64,7 +55,6 @@ class phpbb_functional_forum_style_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'viewtopic.php?t=1&view=next');
 		$this->assertStringContainsString('styles/test_style/', $crawler->filter('head > link[rel=stylesheet]')->eq(2)->attr('href'));
->>>>>>> 33be5dc489... [ticket/16549] Move from assert[Not]Contains to assertString[Not]ContainsString
 
 		$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_style = 0 WHERE forum_id = 2');
 		$this->delete_style(2, 'test_style');
