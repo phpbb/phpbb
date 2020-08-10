@@ -53,6 +53,10 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 			'lang_name'        => 'field',
 			'field_required'   => false,
 			'field_validation' => '.*',
+			'field_show_novalue'	=> null,
+			'field_novalue'    	=> null,
+			'field_minlen'		=> null,
+			'field_maxlen'		=> null,
 		);
 	}
 

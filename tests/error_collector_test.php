@@ -51,14 +51,16 @@ class phpbb_error_collector_test extends phpbb_test_case
 		// Cause a warning
 		1/0; $line = __LINE__;
 
-		// Cause a notice
-		$array = array(0 => 'value');
-		$value = $array[1]; $line2 = __LINE__;
+		// Cause a "Notice: unserialize(): Error at offset 0 of 27 bytes in ..."
+		// "Undefined array index" used earlier was promoted to warning in PHP 8.0,
+		// see https://github.com/php/php-src/commit/c48b745f0090c944e77c1fbcfb6c4df3b54356ad
+		unserialize("obvious non-serialized data"); $line2 = __LINE__;
 
 		$collector->uninstall();
 
 		// The notice should not be collected
-		$this->assertEmpty($collector->errors[1]);
+		$this->assertFalse(isset($collector->errors[1]));
+		$this->assertEquals(count($collector->errors), 1);
 
 		list($errno, $msg_text, $errfile, $errline) = $collector->errors[0];
 		$error_contents = $collector->format_errors();

@@ -137,6 +137,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->files_upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
+		$this->user->data['user_id'] = ANONYMOUS;
 
 
 		$this->upload = new \phpbb\attachment\upload(
@@ -181,7 +182,14 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 				)
 			),
 			array('foobar', 1, true,
-				array(),
+				// Instead of setting to false or empty array, set default filedata array
+				// as otherwise it throws PHP undefined array key warnings
+				// in different file upload related services
+				array(
+					'realname'		=> null,
+					'type'			=> null,
+					'size'			=> null,
+				),
 				array(
 					'error' => array(
 						'NOT_UPLOADED',
@@ -244,7 +252,16 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_root_path
 		);
 
-		$filedata = $this->upload->upload('foobar', 1, true);
+		// Instead of setting to false or empty array, set default filedata array
+		// as otherwise it throws PHP undefined array key warnings
+		// in different file upload related services
+		$filedata = $this->upload->upload('foobar', 1, true, '', false,
+			[
+				'realname'		=> null,
+				'type'			=> null,
+				'size'			=> null,
+			]
+		);
 
 		$this->assertSame(array(
 			'error'		=> array(),

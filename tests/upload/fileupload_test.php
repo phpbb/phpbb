@@ -183,7 +183,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
-		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
+		// Upload file data should be set to prevent "Undefined array key" PHP 8 warning
+		$filedata = [
+			'size'		=> 519,
+			'realname'	=> $this->path . 'jpg.jpg',
+			'type'		=> false,
+		];
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
 		$this->assertFalse($file->additional_checks());
 		$this->assertTrue($file->move_file('../tests/upload/fixture/copies', true));
@@ -197,7 +203,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
-		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
+		// Upload file data should be set to prevent "Undefined array key" PHP 8 warning
+		$filedata = [
+			'size'		=> 519,
+			'realname'	=> $this->path . 'jpg.jpg',
+			'type'		=> false,
+		];
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
 		$this->assertFalse($file->move_file('../tests/upload/fixture'));
 		$this->assertFalse($file->get('file_moved'));
@@ -212,7 +224,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		copy($this->path . 'jpg', $this->path . 'copies/jpg.jpg');
-		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
+		// Upload file data should be set to prevent "Undefined array key" PHP 8 warning
+		$filedata = [
+			'size'		=> 519,
+			'realname'	=> $this->path . 'jpg.jpg',
+			'type'		=> false,
+		];
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
 		$file->move_file('../tests/upload/fixture/copies', true);
 		$this->assertEquals(0, count($file->error));

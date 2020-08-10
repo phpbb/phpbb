@@ -66,6 +66,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 			$this->language,
 			'\phpbb\datetime'
 		));
+		$user->data['user_email'] = '';
 
 		$this->user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 

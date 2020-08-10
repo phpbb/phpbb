@@ -61,7 +61,10 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 		                ->getMock();
 		$factory->expects($this->once())
 		        ->method('regenerate')
-		        ->will($this->returnValue(array('parser' => $mock)));
+		        ->will($this->returnValue([
+					'parser' => $mock,
+					'renderer' => $mock,
+				]));
 
 		$renderer = new \phpbb\textformatter\s9e\renderer(
 			$cache,
@@ -160,6 +163,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewcensors', false);
 
 					$phpbb_container->set('user', $user);
@@ -175,6 +179,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewcensors', false);
 
 					$config = new \phpbb\config\config(array('allow_nocensors' => true));
@@ -193,6 +198,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewcensors', false);
 
 					$config = new \phpbb\config\config(array('allow_nocensors' => true));
@@ -222,6 +228,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewflash', false);
 
 					$phpbb_container->set('user', $user);
@@ -241,6 +248,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewimg', false);
 
 					$phpbb_container->set('user', $user);
@@ -260,7 +268,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
-					$user->optionset('smilies', false);
+					$user->data['user_options'] = 230271;
+					$user->optionset('viewsmilies', false);
 
 					$phpbb_container->set('user', $user);
 				}

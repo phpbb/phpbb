@@ -249,7 +249,16 @@ class notification_method_email_test extends phpbb_tests_notification_base
 	 */
 	public function test_notification_email($notification_type, $post_data, $expected_users)
 	{
-		$post_data = array_merge(['post_time' => 1349413322], $post_data);
+		$post_data = array_merge([
+				'post_time' => 1349413322,
+				'poster_id' => 1,
+				'topic_title' => '',
+				'post_subject' => '',
+				'post_username' => '',
+				'forum_name' => '',
+			],
+			
+			$post_data);
 		$notification_options = [
 			'item_id'			=> $post_data['post_id'],
 			'item_parent_id'	=> $post_data['topic_id'],

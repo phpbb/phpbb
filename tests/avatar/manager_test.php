@@ -333,7 +333,9 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 					'avatar_type'	=> '',
 					'avatar_width'	=> 0,
 					'avatar_height'	=> 0,
-				), 1, array(
+				),
+				array(
+					'id' => 1,
 					'avatar'		=> 'foobar@example.com',
 					'avatar_type'	=> 'avatar.driver.gravatar',
 					'avatar_width'	=> '16',
@@ -346,7 +348,9 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 					'avatar_type'	=> '',
 					'avatar_width'	=> 0,
 					'avatar_height'	=> 0,
-				), 5, array(
+				),
+				array(
+					'id' => 5,
 					'avatar'		=> 'g5_1414350991.jpg',
 					'avatar_type'	=> 'avatar.driver.upload',
 					'avatar_width'	=> '80',
@@ -359,13 +363,13 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	/**
 	* @dataProvider data_handle_avatar_delete
 	*/
-	public function test_handle_avatar_delete($expected, $id, $avatar_data, $table, $prefix)
+	public function test_handle_avatar_delete($expected, $avatar_data, $table, $prefix)
 	{
 		$this->config['allow_avatar_gravatar'] = true;
 		$this->assertNull($this->manager->handle_avatar_delete($this->db, $this->user, $avatar_data, $table, $prefix));
 
 		$sql = 'SELECT * FROM ' . $table . '
-				WHERE ' . $prefix . 'id = ' . $id;
+				WHERE ' . $prefix . 'id = ' . (int) $avatar_data['id'];
 		$result = $this->db->sql_query_limit($sql, 1);
 
 		$row = $this->manager->clean_row($this->db->sql_fetchrow($result), substr($prefix, 0, -1));

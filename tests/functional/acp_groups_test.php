@@ -117,8 +117,10 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_common_groups_te
 		else
 		{
 			$this->form_data = $form->getValues();
-			$this->assertEquals($tick_legend, $this->form_data['group_legend']);
-			$this->assertEquals($tick_teampage, $this->form_data['group_teampage']);
+			// form_data[] values can be bool or null if not ticked, $tick_* value can be bool or null if not set.
+			// Cast both to the same type to correctly compare the values.
+			$this->assertEquals((bool) $tick_legend, (bool) ($this->form_data['group_legend'] ?? false));
+			$this->assertEquals((bool) $tick_teampage, (bool) ($this->form_data['group_teampage'] ?? false));
 		}
 	}
 }

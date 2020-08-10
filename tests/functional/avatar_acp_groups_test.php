@@ -80,6 +80,6 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form_data = $form->getValues();
-		$this->assertEmpty($form_data['avatar_type']);
+		$this->assertFalse(isset($form_data['avatar_type']));
 	}
 }

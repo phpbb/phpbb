@@ -32,6 +32,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		global $auth, $request, $symfony_request, $user;
 		$user = new phpbb_mock_user();
 		$user->optionset('user_id', 2);
+		$user->style['style_path'] = '';
+		$user->data['user_id'] = 2;
 		$auth = $this->getMockBuilder('phpbb\auth\auth')
 			->disableOriginalConstructor()
 			->setMethods(['acl_get'])

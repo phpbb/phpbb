@@ -493,7 +493,8 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			array(
 				'loop_expressions.html',
 				array(),
-				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				// Do not use 'loop' as a block name to not override Twig's internal 'loop' object
+				array('loop1' => array(array(),array(),array(),array(),array(),array()),),
 				array(),
 				'yesnononoyesnoyesnonoyesnono',
 			),
