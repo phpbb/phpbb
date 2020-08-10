@@ -459,7 +459,7 @@ function parseDocument($container) {
 			$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
 			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
 			persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
-			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>',
 			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occurred.
 
 		// Add a hidden drop-down menu to each links list (except those that already have one)
@@ -813,7 +813,7 @@ function parseDocument($container) {
 			$ul = $this.children(),
 			$tabs = $ul.children().not('[data-skip-responsive]'),
 			$links = $tabs.children('a'),
-			$item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
+			$item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
 			$menu = $item.find('.dropdown-contents'),
 			maxHeight = 0,
 			lastWidth = false,
