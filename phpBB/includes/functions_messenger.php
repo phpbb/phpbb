@@ -469,7 +469,7 @@ class messenger
 
 		$domain = ($config['server_name']) ?: $request->server('SERVER_NAME', 'phpbb.generated');
 
-		return md5(unique_id(time())) . '@' . $domain;
+		return md5(unique_id()) . '@' . $domain;
 	}
 
 	/**
