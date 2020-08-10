@@ -100,6 +100,7 @@ class config_php_file
 	{
 		if (!$this->config_loaded && file_exists($this->config_file))
 		{
+			$defined_vars = null; // Define variable before call get_defined_vars
 			$defined_vars = get_defined_vars();
 
 			require($this->config_file);
