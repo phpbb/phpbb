@@ -169,7 +169,7 @@ function parse_document(container)
 			ul = $this.children(),
 			tabs = ul.children().not('[data-skip-responsive]'),
 			links = tabs.children('a'),
-			item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
+			item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
 			menu = item.find('.dropdown-contents'),
 			maxHeight = 0,
 			lastWidth = false,
