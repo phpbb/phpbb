@@ -1413,16 +1413,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "2.7.1",
+            "version": "2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "16a1c759307da654bedd7b649bef6930384e9561"
+                "reference": "af4a87455710a5c83d54d71938fbb0e359e852c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/16a1c759307da654bedd7b649bef6930384e9561",
-                "reference": "16a1c759307da654bedd7b649bef6930384e9561",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/af4a87455710a5c83d54d71938fbb0e359e852c3",
+                "reference": "af4a87455710a5c83d54d71938fbb0e359e852c3",
                 "shasum": ""
             },
             "require": {
@@ -1449,7 +1449,7 @@
             },
             "type": "library",
             "extra": {
-                "version": "2.7.1"
+                "version": "2.7.3"
             },
             "autoload": {
                 "psr-4": {
@@ -1479,7 +1479,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2020-06-06T14:59:45+00:00"
+            "time": "2020-07-20T18:56:00+00:00"
         },
         {
             "name": "seld/jsonlint",
