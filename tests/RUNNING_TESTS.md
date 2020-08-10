@@ -204,6 +204,11 @@ line:
 Port 8910 is the default port that will be used by UI tests to connect
 to the WebDriver instance.
 
+Please note that PhantomJS does not support ECMAScript 2015 (ES 6th Edition).
+Tests using PhantomJS have been removed in phpBB 3.3.2, 
+and the WebDriver dependency is removed in phpBB 4.
+UI tests will take a different form in phpBB 4. 
+
 More Information
 ================
 

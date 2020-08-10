@@ -40,7 +40,6 @@ require_once 'test_framework/phpbb_test_case.php';
 require_once 'test_framework/phpbb_database_test_case.php';
 require_once 'test_framework/phpbb_database_test_connection_manager.php';
 require_once 'test_framework/phpbb_functional_test_case.php';
-require_once 'test_framework/phpbb_ui_test_case.php';
 
 if (file_exists(__DIR__ . '/vendor/autoload.php'))
 {
