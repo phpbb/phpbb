@@ -425,7 +425,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	public function test_create_int_default_null()
 	{
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
-		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_13282', array('TINT:2')));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_13282', array('TINT:2', null)));
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
 	}
 

@@ -30,7 +30,7 @@ class phpbb_functions_validate_num_test extends phpbb_test_case
 		$this->helper->assert_valid_data(array(
 			'empty' => array(
 				array(),
-				'',
+				null, // '' < 0 is true since PHP 8.0, hence use null instead of '' (empty string)
 				array('num'),
 			),
 			'zero' => array(
@@ -54,7 +54,7 @@ class phpbb_functions_validate_num_test extends phpbb_test_case
 				array('num', false, 2, 3),
 			),
 			'string' => array(
-				array(),
+				version_compare(PHP_VERSION, '7.5', '<=') ? [] : ['TOO_LARGE'], // See https://wiki.php.net/rfc/string_to_number_comparison
 				'foobar',
 				array('num'),
 			),

@@ -37,6 +37,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$user->data['user_options'] = 230271;
 		$user->optionset('viewcensors', true);
 		$user->optionset('viewflash', true);
 		$user->optionset('viewimg', true);
@@ -72,6 +73,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$user->data['user_options'] = 230271;
 		// Do not ignore word censoring by user (switch censoring on in UCP)
 		$user->optionset('viewcensors', true);
 
@@ -172,6 +174,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewflash', false);
 
 					$phpbb_container->set('user', $user);
@@ -192,6 +195,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
+					$user->data['user_options'] = 230271;
 					$user->optionset('viewimg', false);
 
 					$phpbb_container->set('user', $user);
@@ -212,7 +216,8 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 					$lang = new \phpbb\language\language($lang_loader);
 					$user = new \phpbb\user($lang, '\phpbb\datetime');
-					$user->optionset('smilies', false);
+					$user->data['user_options'] = 230271;
+					$user->optionset('viewsmilies', false);
 
 					$phpbb_container->set('user', $user);
 				}

@@ -52,6 +52,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$user->data['user_lang'] = 'en';
 		$phpbb_container->set('user', $user);
 		$extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',

@@ -65,8 +65,10 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 			'lang_id'	 	   => 1,
 			'lang_name'        => 'field',
 			'field_required'   => false,
-			'field_default_value' => 1,
-			'field_length' => 1,
+			'field_default_value'	=> 1,
+			'field_length'			=> 1,
+			'field_show_novalue'	=> null,
+			'field_novalue'			=> null,
 		);
 
 		$this->options = array(

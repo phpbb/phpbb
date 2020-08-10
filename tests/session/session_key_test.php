@@ -34,6 +34,8 @@ class phpbb_session_login_keys_test extends phpbb_session_test_case
 		$session->cookie_data['k'] = $this->key_id;
 
 		// Try to access session with the session key
+		global $request, $symfony_request, $phpbb_filesystem, $phpbb_root_path;
+		$session->page = $session->extract_current_page($phpbb_root_path);
 		$session->session_create(false, false, false);
 		$this->assertEquals($this->user_id, $session->data['user_id'], 'User should be logged in by the session key');
 	}
@@ -45,6 +47,8 @@ class phpbb_session_login_keys_test extends phpbb_session_test_case
 		$session = $this->session_factory->get_session($this->db);
 
 		// Reset of the keys for this user
+		$session->cookie_data['k'] = $this->key_id;
+		$session->data['user_id'] = $this->user_id;
 		$session->reset_login_keys($this->user_id);
 
 		// Using a user_id and key that was in the database (before reset)
@@ -52,6 +56,8 @@ class phpbb_session_login_keys_test extends phpbb_session_test_case
 		$session->cookie_data['k'] = $this->key_id;
 
 		// Try to access session with the session key
+		global $request, $symfony_request, $phpbb_filesystem, $phpbb_root_path;
+		$session->page = $session->extract_current_page($phpbb_root_path);
 		$session->session_create(false, false, $this->user_id);
 		$this->assertNotEquals($this->user_id, $session->data['user_id'], 'User is not logged in because the session key is invalid');
 

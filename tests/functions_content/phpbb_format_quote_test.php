@@ -25,6 +25,7 @@ class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 		$lang_file_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$this->lang = new \phpbb\language\language($lang_file_loader);
 		$user = new \phpbb\user($this->lang, '\phpbb\datetime');
+		$user->data['user_options'] = 230271;
 		$cache = new phpbb_mock_cache();
 
 		parent::setUp();

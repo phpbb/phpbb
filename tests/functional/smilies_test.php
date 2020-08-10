@@ -39,7 +39,7 @@ class phpbb_functional_smilies_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'posting.php?mode=smilies');
 		foreach ($smilies as $index => $smiley)
 		{
-			$this->assertContains($smiley['smiley_url'],
+			$this->assertStringContainsString($smiley['smiley_url'],
 				$crawler->filter('div[class="inner"] > a > img')->eq($index)->attr('src')
 			);
 		}
