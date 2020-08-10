@@ -554,9 +554,7 @@
 
 @media (min-width: 701px) {
 	.postbody {
-		/** deduct postprofile width (including border width, margin and padding) and postbody margin and padding */
-		width: calc(100% - 200px - 1px - 16px);
-		margin-right: 16px;
+		width: calc(100% - 200px - 1px - 1px);
 	}
 
 	.postprofile {
