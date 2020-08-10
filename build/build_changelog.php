@@ -18,21 +18,31 @@ if ($_SERVER['argc'] != 2)
 	exit(1);
 }
 
-$fixVersion = $_SERVER['argv'][1];
+if ($_SERVER['argv'][1] == '--stdin')
+{
+	$stdIn = file_get_contents('php://stdin');
+	// XML output from tracker can be directly piped to this script using:
+	// cat tracker_output.xml | php build/build_changelog.php --stdin
+	$xml = simplexml_load_string($stdIn);
+}
+else
+{
+	$fixVersion = $_SERVER['argv'][1];
 
-$query = 'project IN (PHPBB3, SECURITY)
-	AND resolution = Fixed
-	AND fixVersion = "' . $fixVersion . '"
-	AND status IN ("Unverified Fix", Closed)';
+	$query = 'project IN (PHPBB3, SECURITY)
+		AND resolution = Fixed
+		AND fixVersion = "' . $fixVersion . '"
+		AND status IN ("Unverified Fix", Closed)';
 
-$url = 'http://tracker.phpbb.com/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=' . urlencode($query) . '&tempMax=1000';
-$xml = simplexml_load_string(file_get_contents($url));
+	$url = 'https://tracker.phpbb.com/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=' . urlencode($query) . '&tempMax=1000';
+	$xml = simplexml_load_string(file_get_contents($url));
+}
 
 foreach ($xml->xpath('//item') as $item)
 {
 	$key = (string) $item->key;
 
-	$keyUrl = 'http://tracker.phpbb.com/browse/' . $key;
+	$keyUrl = 'https://tracker.phpbb.com/browse/' . $key;
 	$keyLink = '<a href="' . $keyUrl . '">' . $key . '</a>';
 
 	$value = str_replace($key, $keyLink, htmlspecialchars($item->title));
