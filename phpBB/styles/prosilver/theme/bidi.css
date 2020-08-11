@@ -831,6 +831,12 @@
 	padding-left: 5px;
 }
 
+.rtl input[type="email"],
+.rtl input[type="url"],
+.rtl .always-ltr {
+	direction: ltr;
+}
+
 /* Definition list layout for forms
 ---------------------------------------- */
 .rtl fieldset dt {
