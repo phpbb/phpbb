@@ -895,7 +895,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	* @var	string	soft_delete_reason		The reason we're soft deleting
 	* @var	string	action					The current delete action
 	* @var	array	check_permission		The array with a permission to check for, can be set to false to not check them
-	* @since 3.2.6-RC1
+	* @since 3.3.2-RC1
 	*/
 	$vars = array(
 		'topic_ids',
@@ -1034,7 +1034,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		* @var	int		forum_id				The current forum ID
 		* @var	bool	only_softdeleted		If the topic_ids are all soft deleted, this is true
 		* @var	bool	only_shadow				If the topic_ids are all shadow topics, this is true
-		* @since 3.2.6-RC1
+		* @since 3.3.2-RC1
 		*/
 		$vars = array(
 			'l_confirm',
