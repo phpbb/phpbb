@@ -13,6 +13,12 @@
 
 class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var \phpbb\db\migration\tool\permission */
+	protected $tool;
+
 	public $group_ids = array(
 		'REGISTERED' => 2,
 		'GLOBAL_MODERATORS' => 4,
@@ -217,5 +223,23 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 				$this->assertEquals(false, empty($registered_users_perm), 'u_test is not empty for Registered users');
 			break;
 		}
+	}
+
+	public function data_test_permission_role_exists()
+	{
+		return array(
+			array('ROLE_MOD_FULL', true),
+			array('ROLE_USER_FULL', true),
+			array('ROLE_ADMIN_STANDARD', true),
+			array('ROLE_DOES_NOT_EXIST', false),
+		);
+	}
+
+	/**
+	 * @dataProvider data_test_permission_role_exists
+	 */
+	public function test_permission_role_exists($role_name, $expected)
+	{
+		$this->assertEquals($expected, $this->tool->role_exists($role_name));
 	}
 }
