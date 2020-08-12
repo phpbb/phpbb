@@ -46,7 +46,11 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			new \phpbb\routing\file_locator($filesystem, dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
-		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, dirname(__FILE__) . '/', 'php', false);
+
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
+		$router = new phpbb_mock_router($mock_container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', false);
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
@@ -66,7 +70,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			new \phpbb\auth\auth(),
 			new \phpbb\cache\driver\dummy(),
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, '', 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, '', 'php'),
 			$db,
 			new phpbb_mock_event_dispatcher(),
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),

@@ -102,6 +102,12 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 			$phpEx
 		);
 
-		return new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $phpEx);
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
+		$cron_manager = new \phpbb\cron\manager($mock_container, $routing_helper, $phpbb_root_path, $phpEx);
+		$cron_manager->load_tasks($tasks);
+
+		return $cron_manager;
 	}
 }

@@ -102,7 +102,11 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 			$pathEx
 		);
 
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $pathEx);
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
+		$this->cron_manager = new \phpbb\cron\manager($mock_container, $routing_helper, $phpbb_root_path, $pathEx);
+		$this->cron_manager->load_tasks($tasks);
 	}
 
 	public function get_command_tester()
