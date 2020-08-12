@@ -559,16 +559,16 @@ class postgres extends tools
 		// we don't want to double up on constraints if we change different number data types
 		if (isset($column_data['constraint']))
 		{
-			$constraint_sql = "SELECT consrc as constraint_data
-				FROM pg_constraint, pg_class bc
+			$constraint_sql = "SELECT pg_get_constraintdef(pc.oid) AS constraint_data
+				FROM pg_constraint pc, pg_class bc
 				WHERE conrelid = bc.oid
-					AND bc.relname = '{$table_name}'
+					AND bc.relname = '" . $this->db->sql_escape($table_name) . "'
 					AND NOT EXISTS (
 						SELECT *
-						FROM pg_constraint as c, pg_inherits as i
-						WHERE i.inhrelid = pg_constraint.conrelid
-							AND c.conname = pg_constraint.conname
-							AND c.consrc = pg_constraint.consrc
+						FROM pg_constraint AS c, pg_inherits AS i
+						WHERE i.inhrelid = pc.conrelid
+							AND c.conname = pc.conname
+							AND pg_get_constraintdef(c.oid) = pg_get_constraintdef(pc.oid)
 							AND c.conrelid = i.inhparent
 					)";
 
