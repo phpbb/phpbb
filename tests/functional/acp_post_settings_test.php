@@ -31,7 +31,7 @@ class phpbb_functional_acp_post_settings_test extends phpbb_functional_test_case
 		]);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('WARNING', $crawler->filter('div[class="errorbox"] > h3')->text());
-		$this->assertContains($this->lang('CSV_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS')), $crawler->filter('div[class="errorbox"] > p')->text());
+		$this->assertStringContainsString($this->lang('CSV_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS')), $crawler->filter('div[class="errorbox"] > p')->text());
 
 		// Test trailing comma and invalid scheme - invalid
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
@@ -39,8 +39,8 @@ class phpbb_functional_acp_post_settings_test extends phpbb_functional_test_case
 		]);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('WARNING', $crawler->filter('div[class="errorbox"] > h3')->text());
-		$this->assertContains($this->lang('CSV_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS')), $crawler->filter('div[class="errorbox"] > p')->text());
-		$this->assertContains($this->lang('URL_SCHEME_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS'), '2ftp'), $crawler->filter('div[class="errorbox"] > p')->text());
+		$this->assertStringContainsString($this->lang('CSV_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS')), $crawler->filter('div[class="errorbox"] > p')->text());
+		$this->assertStringContainsString($this->lang('URL_SCHEME_INVALID', $this->lang('ALLOWED_SCHEMES_LINKS'), '2ftp'), $crawler->filter('div[class="errorbox"] > p')->text());
 
 		// Test empty setting - valid
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
