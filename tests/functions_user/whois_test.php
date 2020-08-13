@@ -44,8 +44,8 @@ class phpbb_functions_user_whois_test extends phpbb_test_case
 	public function test_ip_whois($ip)
 	{
 		$ip_whois = user_ipwhois($ip);
-		$this->assertNotContains('Query terms are ambiguous', $ip_whois);
-		$this->assertNotContains('no entries found', $ip_whois);
-		$this->assertNotContains('ERROR', $ip_whois);
+		$this->assertStringNotContainsString('Query terms are ambiguous', $ip_whois);
+		$this->assertStringNotContainsString('no entries found', $ip_whois);
+		$this->assertStringNotContainsString('ERROR', $ip_whois);
 	}
 }
