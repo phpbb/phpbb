@@ -54,7 +54,7 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->assertContainsLang('UCP_PROFILE_PROFILE_INFO', $crawler->filter('#cp-main h2')->text());
 
 		$form = $crawler->selectButton('Submit')->form([
-			'pf_phpbb_location'	=> '😁', // grinning face with smiling eyes Emoji
+			'pf_phpbb_location' => '😁', // grinning face with smiling eyes Emoji
 		]);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
@@ -62,5 +62,38 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
 		$form = $crawler->selectButton('Submit')->form();
 		$this->assertEquals('😁', $form->get('pf_phpbb_location')->getValue());
+	}
+
+	public function test_autologin_keys_manage()
+	{
+		$this->add_lang('ucp');
+		$this->login('admin', true);
+		$db = $this->get_db();
+
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=autologin_keys');
+		$this->assertContainsLang('UCP_PROFILE_AUTOLOGIN_KEYS', $crawler->filter('#cp-main h2')->text());
+
+		$profile_url = $crawler->filter('a[title="Profile"]')->attr('href');
+		$user_id = $this->get_parameter_from_link($profile_url, 'u');
+
+		$sql_ary = [
+			'SELECT'	=> 'sk.key_id',
+			'FROM'		=> [SESSIONS_KEYS_TABLE	=> 'sk'],
+			'WHERE'		=> 'sk.user_id = ' . (int) $user_id,
+			'ORDER_BY'	=> 'sk.last_login ASC',
+		];
+		$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), 1);
+		$key_id = substr($db->sql_fetchfield('key_id'), 0, 8);
+		$db->sql_freeresult($result);
+
+		$this->assertContains($key_id, $crawler->filter('label[for="' . $key_id . '"]')->text());
+
+		$form = $crawler->selectButton('submit')->form();
+		$form['keys'][0]->tick();
+		$crawler = self::submit($form);
+		$this->assertContains($this->lang('AUTOLOGIN_SESSION_KEYS_DELETED'), $crawler->filter('html')->text());
+
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=autologin_keys');
+		$this->assertContains($this->lang('PROFILE_NO_AUTOLOGIN_KEYS'), $crawler->filter('tbody > tr > td[class="bg1"]')->text());
 	}
 }

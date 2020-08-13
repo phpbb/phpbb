@@ -810,23 +810,50 @@ class ucp_profile
 					$error = array_map(array($user, 'lang'), $error);
 				}
 
-				$sql = 'SELECT key_id, last_ip, last_login
-					FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE user_id = ' . (int) $user->data['user_id'] . '
-					ORDER BY last_login ASC';
+				$sql_ary = [
+					'SELECT'	=> 'sk.key_id, sk.last_ip, sk.last_login',
+					'FROM'		=> [SESSIONS_KEYS_TABLE	=> 'sk'],
+					'WHERE'		=> 'sk.user_id = ' . (int) $user->data['user_id'],
+					'ORDER_BY'	=> 'sk.last_login ASC',
+				];
 
-				$result = $db->sql_query($sql);
+				/**
+				 * Event allows changing SQL query for autologin keys
+				 *
+				 * @event core.ucp_profile_autologin_keys_sql
+				 * @var	array	sql_ary	Array with autologin keys SQL query
+				 * @since 3.3.2-RC1
+				 */
+				$vars = ['sql_ary'];
+				extract($phpbb_dispatcher->trigger_event('core.ucp_profile_autologin_keys_sql', compact($vars)));
 
-				while ($row = $db->sql_fetchrow($result))
+				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+				$sessions = (array) $db->sql_fetchrowset($result);
+				$db->sql_freeresult($result);
+
+				$template_vars = [];
+				foreach ($sessions as $row)
 				{
-					$template->assign_block_vars('sessions', array(
-						'KEY' => substr($row['key_id'], 0, 8),
+					$key = substr($row['key_id'], 0, 8);
+					$template_vars[$key] = [
+						'KEY' => $key,
 						'IP' => $row['last_ip'],
 						'LOGIN_TIME' => $user->format_date($row['last_login']),
-					));
+					];
 				}
 
-				$db->sql_freeresult($result);
+				/**
+				 * Event allows changing template variables
+				 *
+				 * @event core.ucp_profile_autologin_keys_template_vars
+				 * @var	array	sessions		Array with session keys data
+				 * @var	array	template_vars	Array with template variables
+				 * @since 3.3.2-RC1
+				 */
+				$vars = ['sessions', 'template_vars'];
+				extract($phpbb_dispatcher->trigger_event('core.ucp_profile_autologin_keys_template_vars', compact($vars)));
+
+				$template->assign_block_vars_array('sessions', $template_vars);
 
 			break;
 		}

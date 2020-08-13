@@ -2730,6 +2730,62 @@ ucp_prefs_view_select_menu_prepend
 * Purpose: Add options to the top of the drop-down lists block of the Edit
 Display Options screen
 
+ucp_profile_autologin_keys_tbody_key_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table column after the first column.
+
+ucp_profile_autologin_keys_tbody_key_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table column before the first column.
+
+ucp_profile_autologin_keys_tbody_mark_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table column after the last column.
+
+ucp_profile_autologin_keys_tbody_mark_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table column before the last column.
+
+ucp_profile_autologin_keys_thead_key_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table header content after the first column.
+
+ucp_profile_autologin_keys_thead_key_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table header content before the first column.
+
+ucp_profile_autologin_keys_thead_mark_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table header content after the last column.
+
+ucp_profile_autologin_keys_thead_mark_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_autologin_keys.html
+* Since: 3.3.2-RC1
+* Purpose: Add table header content before the last column.
+
 ucp_profile_profile_info_after
 ===
 * Locations:

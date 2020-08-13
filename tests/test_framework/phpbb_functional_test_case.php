@@ -788,7 +788,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return group_user_add($group_id, false, $usernames, $group_name, $default, $leader);
 	}
 
-	protected function login($username = 'admin')
+	protected function login($username = 'admin', $autologin = false)
 	{
 		$this->add_lang('ucp');
 
@@ -796,6 +796,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		if ($autologin)
+		{
+			$form['autologin']->tick();
+		}
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
 		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
