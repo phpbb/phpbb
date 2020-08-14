@@ -3933,7 +3933,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'CURRENT_USER_AVATAR'			=> phpbb_get_user_avatar($user->data),
 		'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
-		'CURRENT_USER_GROUP_COLOR'		=> ' color: #' . $user->data['user_colour'],
+		'CURRENT_USER_GROUP_COLOR'		=> $user->data['user_colour'],
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),

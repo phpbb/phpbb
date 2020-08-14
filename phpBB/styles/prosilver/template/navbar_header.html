@@ -112,7 +112,7 @@
 						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
 							{% if CURRENT_USER_AVATAR %}{{ CURRENT_USER_AVATAR }} {% endif %}
 							{{ CURRENT_USERNAME_SIMPLE }}
-							{{ Icon('iconify', 'fa:caret-down', '', true, '', {'style': CURRENT_USER_GROUP_COLOR}) }}
+							{{ Icon('iconify', 'fa:caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
 						</a>
 						<div class="dropdown">
 							<div class="pointer"><div class="pointer-inner"></div></div>
