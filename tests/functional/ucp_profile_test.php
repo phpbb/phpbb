@@ -86,14 +86,14 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$key_id = substr($db->sql_fetchfield('key_id'), 0, 8);
 		$db->sql_freeresult($result);
 
-		$this->assertContains($key_id, $crawler->filter('label[for="' . $key_id . '"]')->text());
+		$this->assertStringContainsString($key_id, $crawler->filter('label[for="' . $key_id . '"]')->text());
 
 		$form = $crawler->selectButton('submit')->form();
 		$form['keys'][0]->tick();
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('AUTOLOGIN_SESSION_KEYS_DELETED'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('AUTOLOGIN_SESSION_KEYS_DELETED'), $crawler->filter('html')->text());
 
 		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=autologin_keys');
-		$this->assertContains($this->lang('PROFILE_NO_AUTOLOGIN_KEYS'), $crawler->filter('tbody > tr > td[class="bg1"]')->text());
+		$this->assertStringContainsString($this->lang('PROFILE_NO_AUTOLOGIN_KEYS'), $crawler->filter('tbody > tr > td[class="bg1"]')->text());
 	}
 }
