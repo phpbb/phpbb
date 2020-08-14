@@ -97,7 +97,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
 	{
-		$this->storage = $this->createMock('\phpbb\storage\storage', array('delete', 'exists'));
+		$this->storage = $this->createMock('\phpbb\storage\storage');
 		if ($throw_exception)
 		{
 			$this->storage->expects($this->any())

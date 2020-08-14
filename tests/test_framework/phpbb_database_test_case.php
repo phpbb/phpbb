@@ -359,7 +359,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 		static $core_tables = [];
 
-		if (empty($tables))
+		if (empty($core_tables))
 		{
 			$tables_yml_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
 

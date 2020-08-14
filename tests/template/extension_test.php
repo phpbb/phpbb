@@ -90,7 +90,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($phpbb_container),
+			new \phpbb\event\dispatcher(),
 			[
 				'cache'			=> false,
 				'debug'			=> false,

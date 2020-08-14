@@ -95,10 +95,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// User
-		$user = $this->createMock('\phpbb\user', array(), array(
-			$lang,
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->ip = '';
 		$user->data = array(
 			'user_id'		=> 2,

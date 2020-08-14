@@ -69,7 +69,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

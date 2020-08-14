@@ -165,9 +165,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $getPathInfo, $getRequestUri, $getScriptName, $correction)
 	{
-		$symfony_request = $this->createMock('\phpbb\symfony_request', array(), array(
-			new phpbb_mock_request(),
-		));
+		$symfony_request = $this->createMock('\phpbb\symfony_request');
 		$symfony_request->expects($this->any())
 			->method('getPathInfo')
 			->will($this->returnValue($getPathInfo));
@@ -185,7 +183,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			'php'
 		);
 
-		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input));
 	}
 
 	public function clean_url_data()

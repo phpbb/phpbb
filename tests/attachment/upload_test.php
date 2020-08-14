@@ -119,7 +119,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 				$this->mimetype_guesser
 			));
 
-		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
+		$this->container = new phpbb_mock_container_builder();
 		$this->container->set('files.filespec_storage', new \phpbb\files\filespec_storage(
 			$this->language,
 			new \FastImageSize\FastImageSize(),
@@ -140,7 +140,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->request
 		));
 		$this->factory = new \phpbb\files\factory($this->container);
-		$this->files_upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request, $phpbb_root_path);
+		$this->files_upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request);
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
