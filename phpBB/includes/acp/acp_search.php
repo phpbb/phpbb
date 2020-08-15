@@ -265,8 +265,6 @@ class acp_search
 				$this->state[0] = $request->variable('search_type', '');
 			}
 
-			$error = false;
-
 			$search_backend_factory = $phpbb_container->get('search.backend_factory');
 			$this->search = $search_backend_factory->get($this->state[0]);
 
