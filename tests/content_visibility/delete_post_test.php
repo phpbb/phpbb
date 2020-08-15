@@ -292,7 +292,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array(
 			'num_posts' => 3,
 			'num_topics' => 1,
-			'search_type' => 'phpbb_mock_search',
+			'search_type' => 'foo',
 		));
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();

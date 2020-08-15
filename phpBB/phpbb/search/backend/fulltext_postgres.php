@@ -13,6 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\user;
+
 /**
 * Fulltext search for PostgreSQL
 */
@@ -45,7 +50,7 @@ class fulltext_postgres extends base implements search_backend_interface
 
 	/**
 	 * Config object
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
@@ -57,13 +62,13 @@ class fulltext_postgres extends base implements search_backend_interface
 
 	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
 	 * User object
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
@@ -91,16 +96,14 @@ class fulltext_postgres extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_postgres, which is used as a search backend
 	 *
-	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 * @param config $config Config object
+	 * @param driver_interface $db Database object
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
-	 * @param \phpbb\auth\auth $auth Auth object
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\db\driver\driver_interface Database object
-	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;

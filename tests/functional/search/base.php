@@ -38,7 +38,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->create_search_index('\phpbb\search\backend\fulltext_native');
+		$this->create_search_index('phpbb\search\backend\fulltext_native');
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 

@@ -13,6 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\user;
+
 /**
 * phpBB's own db driven fulltext search, version 2
 */
@@ -83,41 +88,39 @@ class fulltext_native extends base implements search_backend_interface
 
 	/**
 	 * Config object
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
 	 * User object
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
 	/**
-	* Initialises the fulltext_native search backend with min/max word length
-	*
-	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
-	* @param	string	$phpbb_root_path	phpBB root path
-	* @param	string	$phpEx	PHP file extension
-	* @param	\phpbb\auth\auth	$auth	Auth object
-	* @param	\phpbb\config\config	$config	Config object
-	* @param	\phpbb\db\driver\driver_interface	$db	Database object
-	* @param	\phpbb\user	$user	User object
-	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
-	*/
-	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	 * Initialises the fulltext_native search backend with min/max word length
+	 *
+	 * @param config $config Config object
+	 * @param driver_interface $db Database object
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param user $user User object
+	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $phpEx PHP file extension
+	 */
+	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;

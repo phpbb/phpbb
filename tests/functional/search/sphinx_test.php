@@ -18,7 +18,7 @@ require_once __DIR__ . '/base.php';
 */
 class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 {
-	protected $search_backend = '\phpbb\search\backend\fulltext_sphinx';
+	protected $search_backend = 'phpbb\search\backend\fulltext_sphinx';
 
 	public function test_search_backend()
 	{

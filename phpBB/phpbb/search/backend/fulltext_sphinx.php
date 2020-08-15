@@ -13,6 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\event\dispatcher_interface;
+use phpbb\user;
+
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
 define('SPHINX_CONNECT_WAIT_TIME', 300);
@@ -67,13 +72,13 @@ class fulltext_sphinx implements search_backend_interface
 
 	/**
 	 * Auth object
-	 * @var \phpbb\auth\auth
+	 * @var auth
 	 */
 	protected $auth;
 
 	/**
 	 * Config object
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
@@ -97,13 +102,13 @@ class fulltext_sphinx implements search_backend_interface
 
 	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
 	 * User object
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
@@ -124,14 +129,14 @@ class fulltext_sphinx implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_postgres, which is used as a search backend
 	 *
-	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 * @param auth $auth Auth object
+	 * @param config $config Config object
+	 * @param $db
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
-	 * @param \phpbb\auth\auth $auth Auth object
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\db\driver\driver_interface Database object
-	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @throws \Exception
 	 */
 	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{

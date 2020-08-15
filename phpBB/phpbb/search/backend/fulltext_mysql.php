@@ -78,16 +78,14 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
-	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
-	 * @param string $phpbb_root_path Relative path to phpBB root
-	 * @param string $phpEx PHP file extension
-	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface $db Database object
+	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher Event dispatcher object
 	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param string $phpbb_root_path Relative path to phpBB root
+	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;
