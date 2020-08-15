@@ -1735,7 +1735,7 @@ class fulltext_native extends base implements search_backend_interface
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
 			meta_refresh(1, $u_action);
-			trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+			trigger_error($this->user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $this->user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
 		}
 	}
 

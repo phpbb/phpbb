@@ -323,6 +323,11 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', $attachment_delete);
 
+		$search_backend = $this->createMock(\phpbb\search\backend\search_backend_interface::class);
+		$search_backend_factory = $this->createMock(\phpbb\search\search_backend_factory::class);
+		$search_backend_factory->method('get_active')->willReturn($search_backend);
+		$phpbb_container->set('search.backend_factory', $search_backend_factory);
+
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 
 		$result = $db->sql_query('SELECT post_id, post_visibility, post_delete_reason

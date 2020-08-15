@@ -275,7 +275,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_results', '1800');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', '\phpbb\search\backend\fulltext_native');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'phpbb\search\backend\fulltext_native');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');

@@ -295,7 +295,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// Select which method we'll use to obtain the post_id or topic_id information
 	$search_backend_factory = $phpbb_container->get('search.backend_factory');
-	$search = $search_backend_factory->get_search();
+	$search = $search_backend_factory->get_active();
 
 	// let the search module split up the keywords
 	if ($keywords)

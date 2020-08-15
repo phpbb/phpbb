@@ -54,6 +54,13 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'auth.provider_collection',
 			$provider_collection
 		);
+
+		$search_backend = $this->createMock(\phpbb\search\backend\search_backend_interface::class);
+		$search_backend_factory = $this->createMock(\phpbb\search\search_backend_factory::class);
+		$search_backend_factory->method('get_active')->willReturn($search_backend);
+		$phpbb_container->set('search.backend_factory', $search_backend_factory);
+
+
 		$phpbb_container->setParameter('tables.auth_provider_oauth_token_storage', 'phpbb_oauth_tokens');
 		$phpbb_container->setParameter('tables.auth_provider_oauth_states', 'phpbb_oauth_states');
 		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');

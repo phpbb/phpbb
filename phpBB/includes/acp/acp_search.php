@@ -149,65 +149,48 @@ class acp_search
 				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 			}
 
-			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != $config['search_type']))
+			if (isset($cfg_array['search_type']) && ($cfg_array['search_type'] != $config['search_type']))
 			{
-				$search = null;
-				$error = false;
-
-				if (!$this->init_search($cfg_array['search_type'], $search, $error))
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get($cfg_array['search_type']);
+				if (confirm_box(true))
 				{
-					if (confirm_box(true))
+					if (!method_exists($search, 'init') || !($error = $search->init()))
 					{
-						if (!method_exists($search, 'init') || !($error = $search->init()))
-						{
-							$config->set('search_type', $cfg_array['search_type']);
+						$config->set('search_type', $cfg_array['search_type']);
 
-							if (!$updated)
-							{
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
-							}
-							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
-						}
-						else
+						if (!$updated)
 						{
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 						}
+						$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
-							'i'			=> $id,
-							'mode'		=> $mode,
-							'submit'	=> true,
-							'updated'	=> $updated,
-							'config'	=> array('search_type' => $cfg_array['search_type']),
-						)));
+						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 				else
 				{
-					trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+					confirm_box(false, $user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'submit'	=> true,
+						'updated'	=> $updated,
+						'config'	=> array('search_type' => $cfg_array['search_type']),
+					)));
 				}
 			}
 
-			$search = null;
-			$error = false;
-			if (!$this->init_search($config['search_type'], $search, $error))
+			if ($updated)
 			{
-				if ($updated)
+				if (method_exists($search, 'config_updated'))
 				{
-					if (method_exists($search, 'config_updated'))
+					if ($search->config_updated())
 					{
-						if ($search->config_updated())
-						{
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
-						}
+						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
-			}
-			else
-			{
-				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));

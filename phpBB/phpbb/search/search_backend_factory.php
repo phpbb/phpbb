@@ -15,24 +15,25 @@ namespace phpbb\search;
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
+use phpbb\search\backend\search_backend_interface;
 
 class search_backend_factory
 {
 	/**
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\di\service_collection
+	 * @var service_collection
 	 */
 	protected $search_backends;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config				$config
-	 * @param \phpbb\di\service_collection		$search_backends
+	 * @param config $config
+	 * @param service_collection $search_backends
 	 */
 	public function __construct(config $config, service_collection $search_backends)
 	{
@@ -45,7 +46,7 @@ class search_backend_factory
 	 *
 	 * @param string	$class
 	 *
-	 * @return \phpbb\search\backend\search_backend_interface
+	 * @return search_backend_interface
 	 */
 	public function get($class)
 	{
@@ -55,7 +56,7 @@ class search_backend_factory
 	/**
 	 * Obtains active search backend
 	 *
-	 * @return \phpbb\search\backend\search_backend_interface
+	 * @return search_backend_interface
 	 */
 	public function get_active()
 	{
