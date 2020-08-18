@@ -402,7 +402,7 @@ class phpbb_test_case_helpers
 			$tables['phpbb_styles'][] = array(
 				'style_id' => 1,
 				'style_path' => 'prosilver',
-				'bbcode_bitfield' => 'kNg='
+				'bbcode_bitfield' => '//g='
 			);
 		}
 

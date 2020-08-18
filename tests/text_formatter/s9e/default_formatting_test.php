@@ -50,7 +50,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 		return array(
 			array(
 				'[b]bold[/b]',
-				'<span style="font-weight:bold">bold</span>'
+				'<strong class="text-strong">bold</strong>'
 			),
 			array(
 				'[u]underlined[/u]',
@@ -58,7 +58,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[i]italic[/i]',
-				'<span style="font-style:italic">italic</span>'
+				'<em class="text-italics">italic</em>'
 			),
 			array(
 				'[color=#FF0000]colored[/color]',
@@ -70,7 +70,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[size=75]smaller[/size]',
-				'<span style="font-size: 75%; line-height: normal">smaller</span>'
+				'<span style="font-size:75%;line-height:116%">smaller</span>'
 			),
 			array(
 				'[quote]quoted[/quote]',
@@ -184,17 +184,17 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Allow textual bbcodes in textual bbcodes
 				'[b]bold [i]bold + italic[/i][/b]',
-				'<span style="font-weight:bold">bold <span style="font-style:italic">bold + italic</span></span>'
+				'<strong class="text-strong">bold <em class="text-italics">bold + italic</em></strong>'
 			),
 			array(
 				// Allow textual bbcodes in url with description
 				'[url=https://area51.phpbb.com/]Area51 [i]italic[/i][/url]',
-				'<a href="https://area51.phpbb.com/" class="postlink">Area51 <span style="font-style:italic">italic</span></a>'
+				'<a href="https://area51.phpbb.com/" class="postlink">Area51 <em class="text-italics">italic</em></a>'
 			),
 			array(
 				// Allow url with description in textual bbcodes
 				'[i]italic [url=https://area51.phpbb.com/]Area51[/url][/i]',
-				'<span style="font-style:italic">italic <a href="https://area51.phpbb.com/" class="postlink">Area51</a></span>'
+				'<em class="text-italics">italic <a href="https://area51.phpbb.com/" class="postlink">Area51</a></em>'
 			),
 			array(
 				// Do not parse textual bbcodes in code
@@ -209,7 +209,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			array(
 				// Textual bbcode nesting into textual bbcode
 				'[b]bold [i]bold + italic[/b] italic[/i]',
-				'<span style="font-weight:bold">bold <span style="font-style:italic">bold + italic</span></span><span style="font-style:italic"> italic</span>'
+				'<strong class="text-strong">bold <em class="text-italics">bold + italic</em></strong><em class="text-italics"> italic</em>'
 			),
 			array(
 				"[code]\tline1\n  line2[/code]",
