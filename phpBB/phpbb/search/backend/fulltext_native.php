@@ -1687,7 +1687,8 @@ class fulltext_native extends base implements search_backend_interface
 
 		$starttime = microtime(true);
 		$row_count = 0;
-		$post_counter = $acp_module->state[2];
+
+		$post_counter = &$acp_module->state[2];
 		while (still_on_time() && $post_counter <= $acp_module->max_post_id)
 		{
 			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
@@ -1723,6 +1724,7 @@ class fulltext_native extends base implements search_backend_interface
 
 			$post_counter += $acp_module->batch_size;
 		}
+
 		// save the current state
 		$acp_module->save_state();
 

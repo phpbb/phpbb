@@ -274,8 +274,6 @@ class acp_search
 
 			$this->max_post_id = $this->get_max_post_id();
 
-			$post_counter = (isset($this->state[2])) ? $this->state[2] : 0;
-			$this->state[2] = &$post_counter;
 			$this->save_state();
 
 			switch ($action)
