@@ -14,7 +14,6 @@
 class phpbb_lint_test extends phpbb_test_case
 {
 	static protected $php_binary;
-	static protected $exclude;
 
 	static public function setUpBeforeClass()
 	{

@@ -29,7 +29,7 @@ class remote extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var filesystem Filesystem temp */
+	/** @var temp Filesystem temp */
 	protected $temp;
 
 	/** @var language */

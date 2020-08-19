@@ -767,7 +767,7 @@ function generate_forum_nav(&$forum_data_ary)
 		return;
 	}
 
-	$navlinks_parents = $forum_template_data = array();
+	$navlinks_parents = array();
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data_ary);

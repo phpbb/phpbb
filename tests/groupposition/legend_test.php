@@ -32,36 +32,28 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_get_group_value($group_id, $expected, $throws_exception)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
 		if ($throws_exception)
 		{
 			$this->expectException($throws_exception);
 		}
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
 	public function test_get_group_count()
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals(2, $test_class->get_group_count());
 	}
 
@@ -94,16 +86,12 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_add_group($group_id, $expected_added, $expected)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($expected_added, $test_class->add_group($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -184,16 +172,12 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_delete_group($group_id, $skip_group, $expected_deleted, $expected)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($expected_deleted, $test_class->delete_group($group_id, $skip_group));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -241,16 +225,12 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move_up($group_id, $excepted_moved, $expected)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($excepted_moved, $test_class->move_up($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -298,16 +278,12 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move_down($group_id, $excepted_moved, $expected)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($excepted_moved, $test_class->move_down($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -398,16 +374,12 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move($group_id, $increment, $excepted_moved, $expected)
 	{
-		global $cache, $phpbb_root_path, $phpEx;
+		global $cache;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->lang = array();
 
-		$test_class = new \phpbb\groupposition\legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db);
 		$this->assertEquals($excepted_moved, $test_class->move($group_id, $increment));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -417,4 +389,3 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 }
-

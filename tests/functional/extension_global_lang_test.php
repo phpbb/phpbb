@@ -41,7 +41,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -52,7 +52,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 

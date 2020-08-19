@@ -31,7 +31,7 @@ class language_file_loader
 	protected $php_ext;
 
 	/**
-	 * @var \phpbb\extension\manager	Extension manager
+	 * @var \phpbb\extension\manager|null	Extension manager
 	 */
 	protected $extension_manager;
 

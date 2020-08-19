@@ -39,6 +39,11 @@ class extension_manager extends manager
 	protected $filesystem;
 
 	/**
+	 * @var string
+	 */
+	protected $root_path;
+
+	/**
 	 * @var array
 	 */
 	private $enabled_extensions;
@@ -61,7 +66,7 @@ class extension_manager extends manager
 	 * @param string			$package_type		Composer type of managed packages
 	 * @param string			$exception_prefix	Exception prefix to use
 	 * @param string			$root_path			phpBB root path
-	 * @param config			$config				Config object
+	 * @param config|null		$config				Config object
 	 */
 	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix, $root_path, config $config = null)
 	{

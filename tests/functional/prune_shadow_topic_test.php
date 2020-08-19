@@ -126,7 +126,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$sql = 'UPDATE phpbb_topics
 			SET topic_last_post_time = ' . (time() - 60*60*24*3) . '
 			WHERE topic_id = ' . ($this->data['topics']['Prune Shadow #1'] + 1);
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}");
 		$this->assertNotEmpty($crawler->filter('img')->last()->attr('src'));

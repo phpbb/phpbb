@@ -233,7 +233,7 @@ class helper
 			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
 		}
 
-		trim($path, '/');
+		//$path = trim($path, '/'); // TODO: Check this
 		$path_parts = explode('/', $path);
 		$resolved = array();
 		$resolved_path = $prefix;

@@ -61,7 +61,6 @@ define('ACL_YES', 1);
 define('ACL_NO', -1);
 
 // Login error codes
-define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
 define('LOGIN_SUCCESS', 3);
 define('LOGIN_SUCCESS_CREATE_PROFILE', 20);
@@ -120,10 +119,6 @@ define('POST_NORMAL', 0);
 define('POST_STICKY', 1);
 define('POST_ANNOUNCE', 2);
 define('POST_GLOBAL', 3);
-
-// Lastread types
-define('TRACK_NORMAL', 0);
-define('TRACK_POSTED', 1);
 
 // Notify methods
 define('NOTIFY_EMAIL', 0);

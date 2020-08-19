@@ -24,11 +24,10 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	protected $command_name;
 	protected $db;
 	protected $config;
+	protected $user;
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 
 		if (file_exists($this->cache_dir))
@@ -44,10 +43,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));
-		$this->user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime')
-		);
+		$this->user = $this->createMock('\phpbb\user');
 	}
 
 	public function test_purge()

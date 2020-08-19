@@ -335,7 +335,7 @@ class acp_styles
 		$uninstalled = array();
 		foreach ($rows as $style)
 		{
-			$result = $this->uninstall_style($style, $delete_files);
+			$result = $this->uninstall_style($style);
 
 			if (is_string($result))
 			{

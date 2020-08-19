@@ -45,9 +45,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -69,12 +66,15 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $phpbb_root_path, $phpEx;
 
@@ -115,15 +115,13 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			->method('get')
 			->willReturn(new \phpbb\files\filespec_storage(
 				$this->language,
-				$this->php_ini,
 				new \FastImageSize\FastImageSize(),
 				$this->mimetype_guesser
 			));
 
-		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
+		$this->container = new phpbb_mock_container_builder();
 		$this->container->set('files.filespec_storage', new \phpbb\files\filespec_storage(
 			$this->language,
-			$this->php_ini,
 			new \FastImageSize\FastImageSize(),
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
@@ -142,7 +140,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->request
 		));
 		$this->factory = new \phpbb\files\factory($this->container);
-		$this->files_upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$this->files_upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request);
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
@@ -153,7 +151,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->config,
 			$this->files_upload,
 			$this->language,
-			$this->mimetype_guesser,
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
@@ -246,7 +243,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->config,
 			$this->files_upload,
 			$this->language,
-			$this->mimetype_guesser,
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
@@ -355,7 +351,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			))
 			->setConstructorArgs(array(
 				$this->language,
-				$this->php_ini,
 				new \FastImageSize\FastImageSize(),
 				$this->mimetype_guesser,
 				$this->plupload
@@ -411,7 +406,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->config,
 			$this->files_upload,
 			$this->language,
-			$this->mimetype_guesser,
 			$this->phpbb_dispatcher,
 			$plupload,
 			$this->storage,

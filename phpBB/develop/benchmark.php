@@ -24,7 +24,7 @@ srand ((double) microtime() * 1000000);
 set_time_limit(240*60);
 
 // Here's the text we stick in posts..
-$bigass_text = ' 
+$bigass_text = '
 phpBB BBCode test suite v0.0.2
 auto-linkification:
 http://something.com
@@ -37,22 +37,22 @@ Simple code block with some <html> <tags>.
 [b]bolded[/b], [i]italic[/i]
 [email]james@totalgeek.org[/email]
 [url=http://www.totalgeek.org]totalgeek.org[/url]
-[url]www.totalgeek.org[/url] 
-[list] 
+[url]www.totalgeek.org[/url]
+[list]
 [*] This is the first bulleted item.
 [*] This is the second bulleted item.
-[/list] 
-[list=A] 
+[/list]
+[list=A]
 [*] This is the first bulleted item.
 [*] This is the second bulleted item.
-[/list] 
+[/list]
 [quote]
 And a quote!
 [/quote]
 ';
 
 
-// The script expects the ID's in the tables to sequential (1,2,3,4,5), 
+// The script expects the ID's in the tables to sequential (1,2,3,4,5),
 // so no holes please (1,4,5,8)...
 $nr_of_users  = nrof(USERS_TABLE);
 $nr_of_cats   = nrof(CATEGORIES_TABLE);
@@ -78,7 +78,7 @@ while($users > 0)
 		echo "status: $usercreationcount <br>\n";
 		flush();
 	}
-	
+
 }
 
 if ($posts > 0)
@@ -110,14 +110,14 @@ What do you want to create?<p>
 </form>
 
     <?php
-} 
-else 
+}
+else
 {
 
 	list ($starttime_msec,$starttime_sec) = explode(" ",$starttime);
 	list ($endtime_msec,$endtime_sec) = explode(" ",$endtime);
 	$timetaken_sec = ($endtime_sec+$endtime_msec) - ($starttime_sec+$starttime_msec);
-	print "<B>TIME TAKEN : ".$timetaken_sec."s</B><BR>\n"; 
+	print "<B>TIME TAKEN : ".$timetaken_sec."s</B><BR>\n";
 
 	print "<p>\n<a href=\"$PHP_SELF\">Back to the overview page</a>\n";
 }
@@ -127,38 +127,38 @@ function filldb($newposts)
 {
 	global $nr_of_forums;
 	global $nr_of_users;
-  
+
 	$forum_topic_counts = array();
-  
+
 	for ($i = 1; $i <= $nr_of_forums; $i++)
 	{
   		$forum_topic_counts[$i] = get_topic_count($i);
 	}
-  
+
 	for($i = 0; $i < $newposts; $i++)
 	{
 		$userid   = rand(2, $nr_of_users - 1);
 		$forum    = rand(1,$nr_of_forums);
-		
-		if ((rand(0,30) < 1) || ($forum_topic_count[$forum] == 0))
+
+		if ((rand(0,30) < 1) || ($forum_topic_counts[$forum] == 0))
 		{
 			// create a new topic 1 in 30 times (or when there are none);
 			make_topic($userid, "Testing topic $i", $forum);
-			$forum_topic_count[$forum]++;
-		} 
-		else 
+			$forum_topic_counts[$forum]++;
+		}
+		else
 		{
 			// Otherwise create a reply(posting) somewhere.
 			$topic = get_smallest_topic($forum);
 			create_posting($userid, $topic, $forum, "reply");
 		}
-		
+
 		if (($i % 1000) == 0)
 		{
 			echo "status: $i <br>";
 			flush();
 		}
-	 
+
 	}
 }
 
@@ -166,7 +166,7 @@ function filldb($newposts)
 function get_smallest_topic($forum_id)
 {
 	global $db;
-	
+
 	$sql = "SELECT topic_id
 		FROM " . TOPICS_TABLE . "
 		WHERE (forum_id = $forum_id)
@@ -184,14 +184,14 @@ function get_smallest_topic($forum_id)
 	{
 		message_die(GENERAL_ERROR, "Couldn't get smallest topic.", "", __LINE__, __FILE__, $sql);
 	}
-	
+
 }
 
 
 function get_topic_count($forum_id)
 {
 	global $db;
-	
+
 	$sql = "SELECT forum_topics_approved
 		FROM " . FORUMS_TABLE . "
 		WHERE (forum_id = $forum_id)";
@@ -208,7 +208,7 @@ function get_topic_count($forum_id)
 	{
 		message_die(GENERAL_ERROR, "Couldn't get topic count.", "", __LINE__, __FILE__, $sql);
 	}
-	
+
 }
 
 
@@ -218,7 +218,7 @@ function make_topic($user_id, $subject, $forum_id)
 	$topic_type = POST_NORMAL;
 	$topic_vote = 0;
 	$current_time = time();
-	
+
 	$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type, topic_vote)
 			VALUES ('$subject', $user_id, $current_time, $forum_id, " . TOPIC_UNLOCKED . ", $topic_type, $topic_vote)";
 
@@ -230,9 +230,9 @@ function make_topic($user_id, $subject, $forum_id)
 	{
 		message_die(GENERAL_ERROR, "Error inserting data into topics table", "", __LINE__, __FILE__, $sql);
 	}
-	
+
 	create_posting($user_id, $new_topic_id, $forum_id);
-	
+
 	return $new_topic_id;
 }
 
@@ -258,19 +258,19 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	$smilies_on = 1;
 	$attach_sig = 1;
 	$bbcode_uid = make_bbcode_uid();
-	
+
 	$post_subject = 'random subject';
-	
-	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);	
-	
+
+	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);
+
 	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_visibility, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
 		VALUES ($new_topic_id, $forum_id, $user_id, 0, 0, '$post_username', $current_time, '$user_ip', 1, '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig, '$post_subject', '$post_message')";
 	$result = $db->sql_query($sql);
-	
+
 	if ($result)
 	{
 		$new_post_id = $db->sql_nextid();
-	
+
 		$sql = "UPDATE " . TOPICS_TABLE . "
 			SET topic_last_post_id = $new_post_id";
 		if($mode == "reply")
@@ -288,13 +288,13 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 				$sql .= ", forum_topics_approved = forum_topics_approved + 1";
 			}
 			$sql .= " WHERE forum_id = $forum_id";
-	
+
 			if($db->sql_query($sql))
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_posts = user_posts + 1
 					WHERE user_id = " . $user_id;
-	
+
 				if($db->sql_query($sql, END_TRANSACTION))
 				{
 					// SUCCESS.
@@ -325,7 +325,7 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	else
 	{
 		message_die(GENERAL_ERROR, "Error inserting data into posts table", "", __LINE__, __FILE__, $sql);
-	}	
+	}
 }
 
 
@@ -334,9 +334,10 @@ function generatepost($size=850)
    global $bigass_text;
    // Returns a string with a length between $size and $size*0.2
    $size = rand(0.2*$size, $size);
-   
+
    $textsize = strlen($bigass_text);
    $currentsize = 0;
+   $message = '';
    // Add whole $text multiple times
    while($currentsize < $size && $size-$currentsize <= $textsize)
    {
@@ -348,8 +349,8 @@ function generatepost($size=850)
 
    return (addslashes($message));
 }
-   
-      
+
+
 function nrof($table)
 {
 	global $db;
@@ -417,9 +418,9 @@ function make_user($username)
 	$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_attachsig, user_allowsmilies, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
 		VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
 
-	
+
 	$sql .= "1, '')";
-	
+
 	if($result = $db->sql_query($sql, BEGIN_TRANSACTION))
 	{
 		$sql = "INSERT INTO " . GROUPS_TABLE . " (group_id, group_name, group_description, group_single_user, group_moderator)
@@ -430,7 +431,7 @@ function make_user($username)
 				VALUES ($new_user_id, $new_group_id, 0)";
 			if($result = $db->sql_query($sql, END_TRANSACTION))
 			{
-				
+
 				// SUCCESS.
 				return true;
 			}

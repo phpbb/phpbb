@@ -31,7 +31,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $auth, $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
@@ -62,10 +62,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$this->language->expects($this->any())
 			->method('lang')
 			->will($this->returnArgument(0));
-		$user = $this->user = $this->createMock('\phpbb\user', array(), array(
-			$this->language,
-			'\phpbb\datetime'
-		));
+		$user = $this->user = $this->createMock('\phpbb\user');
 
 		$this->user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 

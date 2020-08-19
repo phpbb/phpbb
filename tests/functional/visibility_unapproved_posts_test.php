@@ -162,7 +162,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$this->create_user('unapproved_posts_test_user#2');
 		$this->login('unapproved_posts_test_user#2');
 
-		$this->add_lang('posting', 'viewtopic', 'mcp');
+		$this->add_lang(['posting', 'viewtopic', 'mcp']);
 
 		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");

@@ -24,7 +24,7 @@ class schema_generator_test extends phpbb_test_case
 	/** @var \phpbb\db\migration\schema_generator */
 	protected $generator;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 

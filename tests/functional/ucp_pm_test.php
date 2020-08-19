@@ -16,7 +16,7 @@
 */
 class phpbb_functional_ucp_pm_test extends phpbb_functional_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->login();

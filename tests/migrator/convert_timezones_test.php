@@ -13,7 +13,7 @@
 
 class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 {
-	protected $notifications, $db, $container, $user, $config, $auth, $cache;
+	protected $db;
 
 	public function getDataSet()
 	{

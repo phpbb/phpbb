@@ -327,7 +327,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$empty_forums = array_merge($empty_forums, array_diff($ids, $not_empty_forums));
 
-		foreach ($empty_forums as $void => $forum_id)
+		foreach ($empty_forums as $forum_id)
 		{
 			$update_sql[$forum_id][] = 'forum_last_post_id = 0';
 			$update_sql[$forum_id][] = "forum_last_post_subject = ''";
@@ -838,7 +838,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	global $user, $db, $template, $auth;
 	global $phpbb_root_path, $phpbb_dispatcher, $phpEx;
 
-	$topic_ids = $forum_ids = $draft_rows = array();
+	$topic_ids = $draft_rows = array();
 
 	// Load those drafts not connected to forums/topics
 	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
@@ -1619,7 +1619,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$data_ary['topic_title'] = truncate_string($data_ary['topic_title'], 120);
 
 	// Collect some basic information about which tables and which rows to update/insert
-	$sql_data = $topic_row = array();
+	$sql_data = array();
 	$poster_id = ($mode == 'edit') ? $data_ary['poster_id'] : (int) $user->data['user_id'];
 
 	// Retrieve some additional information if not present
@@ -2098,7 +2098,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		$space_taken = $files_added = 0;
 		$orphan_rows = array();
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
@@ -2120,7 +2120,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$db->sql_freeresult($result);
 		}
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			if ($attach_row['is_orphan'] && !isset($orphan_rows[$attach_row['attach_id']]))
 			{

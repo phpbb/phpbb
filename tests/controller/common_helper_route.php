@@ -41,7 +41,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
@@ -125,7 +125,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -151,7 +151,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', false);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', dirname(__FILE__) . '/');
 		$this->auth = new \phpbb\auth\auth();
 		$this->cache = new \phpbb\cache\driver\dummy();
 		$this->db = $this->new_dbal();

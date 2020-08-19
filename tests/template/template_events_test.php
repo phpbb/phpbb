@@ -149,7 +149,6 @@ Zeta test event in all',
 			$phpEx
 		);
 
-		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader('');
@@ -160,7 +159,7 @@ Zeta test event in all',
 			$cache_path,
 			$this->extension_manager,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

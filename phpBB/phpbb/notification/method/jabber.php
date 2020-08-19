@@ -59,7 +59,7 @@ class jabber extends \phpbb\notification\method\messenger_base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param type_interface $notification_type	An optional instance of a notification type. If provided, this
+	* @param type_interface|null $notification_type	An optional instance of a notification type. If provided, this
 	*											method additionally checks if the type provides an email template.
 	* @return bool
 	*/

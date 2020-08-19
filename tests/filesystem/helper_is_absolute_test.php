@@ -16,7 +16,7 @@ use phpbb\filesystem\helper as filesystem_helper;
 class phpbb_filesystem_helper_is_absolute_test extends phpbb_test_case
 {
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 	}

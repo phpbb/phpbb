@@ -83,7 +83,7 @@ class style_update extends \phpbb\db\migration\migration
 			// Set prosilver to default style
 			$this->config->set('default_style', $style_id);
 		}
-		else if (empty($styles) && empty($available_styles))
+		else if (empty($styles) && empty($style_paths))
 		{
 			throw new \RuntimeException('No valid styles available');
 		}

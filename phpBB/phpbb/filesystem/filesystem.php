@@ -31,7 +31,7 @@ class filesystem implements filesystem_interface
 	/**
 	 * Stores current working directory
 	 *
-	 * @var string|bool		current working directory or false if it cannot be recovered
+	 * @var string|bool|null		current working directory or false if it cannot be recovered
 	 */
 	protected $working_directory;
 

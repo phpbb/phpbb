@@ -16,7 +16,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	/** @var \phpbb\event\php_exporter */
 	protected $exporter;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->exporter = new \phpbb\event\php_exporter(dirname(__FILE__) . '/fixtures/');

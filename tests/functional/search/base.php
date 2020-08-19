@@ -16,6 +16,8 @@
 */
 abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 {
+	protected $search_backend;
+
 	protected function assert_search_found($keywords, $posts_found, $words_highlighted)
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);

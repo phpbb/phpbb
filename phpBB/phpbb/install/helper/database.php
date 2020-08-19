@@ -388,6 +388,7 @@ class database
 							OR PARAMETER = 'NLS_CHARACTERSET'";
 					$result = $db->sql_query($sql);
 
+					$stats = [];
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$stats[$row['parameter']] = $row['value'];

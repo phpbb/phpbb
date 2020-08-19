@@ -32,7 +32,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/thumbnail.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
 
@@ -50,14 +50,11 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		));
 
 		$this->db = $this->db = $this->new_dbal();
-		$this->user = $this->createMock('\phpbb\user', array(), array(
-				new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-				'\phpbb\datetime')
-		);
+		$this->user = $this->createMock('\phpbb\user');
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 
-		$this->cache = $this->createMock('\phpbb\cache\service', array(), array(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx));
+		$this->cache = $this->createMock('\phpbb\cache\service');
 		$this->cache->expects(self::any())->method('obtain_attach_extensions')->will(self::returnValue(array(
 			'png' => array('display_cat' => ATTACHMENT_CATEGORY_IMAGE),
 			'txt' => array('display_cat' => ATTACHMENT_CATEGORY_NONE),

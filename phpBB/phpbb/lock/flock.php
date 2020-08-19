@@ -27,7 +27,7 @@ class flock
 
 	/**
 	* File pointer for the lock file
-	* @var string
+	* @var string|bool
 	*/
 	private $lock_fp;
 
@@ -41,7 +41,7 @@ class flock
 	public function __construct($path)
 	{
 		$this->path = $path;
-		$this->lock_fp = null;
+		$this->lock_fp = false;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class flock
 		{
 			@flock($this->lock_fp, LOCK_UN);
 			fclose($this->lock_fp);
-			$this->lock_fp = null;
+			$this->lock_fp = false;
 		}
 	}
 }

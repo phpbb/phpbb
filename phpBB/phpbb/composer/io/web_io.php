@@ -26,7 +26,7 @@ class web_io extends BufferIO implements io_interface
 	 * @param language					$language	Language object
 	 * @param string					$input		Input string
 	 * @param int						$verbosity	Verbosity level
-	 * @param OutputFormatterInterface	$formatter	Output formatter
+	 * @param OutputFormatterInterface|null	$formatter	Output formatter
 	 */
 	public function __construct(language $language, $input = '', $verbosity = StreamOutput::VERBOSITY_NORMAL, OutputFormatterInterface $formatter = null)
 	{

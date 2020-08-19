@@ -16,7 +16,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 	protected $db;
 	protected $buffer;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

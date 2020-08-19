@@ -62,7 +62,7 @@ class reset_password
 	/** @var user */
 	protected $user;
 
-	/** @var array phpBB DB table names */
+	/** @var string Users table name */
 	protected $users_table;
 
 	/** @var string phpBB root path */

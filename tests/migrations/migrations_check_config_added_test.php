@@ -48,6 +48,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			$this->php_ext,
 			$this->table_prefix,
 			[],
+			[],
 			new \phpbb\db\migration\helper()
 		);
 		$this->container->set('migrator', $this->migrator);

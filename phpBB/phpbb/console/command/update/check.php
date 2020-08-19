@@ -29,7 +29,7 @@ class check extends \phpbb\console\command\command
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \Symfony\Component\DependencyInjection\ContainerBuilder */
+	/** @var ContainerInterface */
 	protected $phpbb_container;
 	/**
 	 * @var language

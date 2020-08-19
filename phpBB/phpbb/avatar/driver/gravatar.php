@@ -114,7 +114,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['width'] <= 0))
+			if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['height'] <= 0))
 			{
 				$error[] = 'AVATAR_NO_SIZE';
 				return false;

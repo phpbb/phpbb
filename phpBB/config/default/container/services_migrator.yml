@@ -44,11 +44,8 @@ services:
         class: phpbb\db\migration\tool\module
         arguments:
             - '@dbal.conn'
-            - '@cache'
             - '@user'
             - '@module.manager'
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '%tables.modules%'
         tags:
             - { name: migrator.tool }

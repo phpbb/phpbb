@@ -15,8 +15,6 @@ require_once(dirname(__FILE__) . '/attachments_mock_feed.php');
 
 class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 {
-	protected $filesystem;
-
 	/** @var \phpbb_feed_attachments_mock_feed */
 	protected $attachments_mocks_feed;
 
@@ -25,11 +23,10 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/../extension/fixtures/extensions.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$this->filesystem = new \phpbb\filesystem();
 		$config = new \phpbb\config\config(array());
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(

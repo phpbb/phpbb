@@ -32,22 +32,15 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	*/
 	protected $db;
 
-	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface	$db		Database object
-	* @param \phpbb\user			$user	User object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db)
 	{
 		$this->db = $db;
-		$this->user = $user;
 	}
 
 	/**

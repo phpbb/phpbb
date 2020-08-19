@@ -31,11 +31,6 @@ class add_modules extends \phpbb\install\task_base
 	protected $db;
 
 	/**
-	 * @var \phpbb\extension\manager
-	 */
-	protected $extension_manager;
-
-	/**
 	 * @var \phpbb\install\helper\iohandler\iohandler_interface
 	 */
 	protected $iohandler;
@@ -154,7 +149,6 @@ class add_modules extends \phpbb\install\task_base
 	{
 		$this->config				= $config;
 		$this->db					= $container->get('dbal.conn');
-		$this->extension_manager	= $container->get('ext.manager');
 		$this->iohandler			= $iohandler;
 		$this->module_manager		= $container->get('module.manager');
 

@@ -26,7 +26,7 @@ class factory
 	protected $container;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 */
 	protected $environment;
 

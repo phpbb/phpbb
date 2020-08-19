@@ -93,7 +93,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = $this->test_path . '/templates';
 
-		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader('');
@@ -104,7 +103,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

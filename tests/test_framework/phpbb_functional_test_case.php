@@ -75,7 +75,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return array();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -524,9 +524,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new style
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
-	* @param string $parent_style_id Parent style id. Default = 1
+	* @param int $parent_style_id Parent style id. Default = 1
 	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
 	*/
 	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
@@ -600,7 +600,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Remove temporary style created by add_style()
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
 	*/
 	protected function delete_style($style_id, $style_path)
@@ -720,10 +720,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -757,10 +754,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -806,7 +800,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie);
+		foreach ($cookies as $cookie)
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
@@ -855,7 +849,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$cookies = self::$cookieJar->all();
 
 				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-				foreach ($cookies as $cookie);
+				foreach ($cookies as $cookie)
 				{
 					if (substr($cookie->getName(), -4) == '_sid')
 					{

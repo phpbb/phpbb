@@ -66,34 +66,29 @@ class filespec_storage
 	/** @var upload Instance of upload class  */
 	public $upload;
 
-	/** @var \bantu\IniGetWrapper\IniGetWrapper ini_get() wrapper class */
-	protected $php_ini;
-
 	/** @var \FastImageSize\FastImageSize */
 	protected $imagesize;
 
 	/** @var language Language class */
 	protected $language;
 
-	/** @var \phpbb\plupload\plupload The plupload object */
+	/** @var \phpbb\plupload\plupload|null The plupload object */
 	protected $plupload;
 
-	/** @var \phpbb\mimetype\guesser phpBB Mimetype guesser */
+	/** @var \phpbb\mimetype\guesser|null phpBB Mimetype guesser */
 	protected $mimetype_guesser;
 
 	/**
 	 * File upload class
 	 *
 	 * @param language					$language Language
-	 * @param \bantu\IniGetWrapper\IniGetWrapper			$php_ini ini_get() wrapper
 	 * @param \FastImageSize\FastImageSize $imagesize Imagesize class
-	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
-	 * @param \phpbb\plupload\plupload	$plupload Plupload
+	 * @param \phpbb\mimetype\guesser|null	$mimetype_guesser Mime type guesser
+	 * @param \phpbb\plupload\plupload|null	$plupload Plupload
 	 */
-	public function __construct(language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(language $language, \FastImageSize\FastImageSize $imagesize, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->language = $language;
-		$this->php_ini = $php_ini;
 		$this->imagesize = $imagesize;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;

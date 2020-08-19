@@ -39,6 +39,9 @@ class md_exporter
 	/** @var array */
 	protected $events;
 
+	/** @var array */
+	protected $events_by_file;
+
 	/**
 	* @param string $phpbb_root_path
 	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
@@ -203,7 +206,7 @@ class md_exporter
 			if (!$this->version_is_filtered($since))
 			{
 				$is_filtered = false;
-				foreach ($changes as $version => $null)
+				foreach (array_keys($changes) as $version)
 				{
 					if ($this->version_is_filtered($version))
 					{

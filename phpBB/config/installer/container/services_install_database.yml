@@ -27,7 +27,6 @@ services:
         arguments:
             - '@installer.helper.config'
             - '@installer.helper.database'
-            - '@filesystem'
             - '%core.root_path%'
         tags:
             - { name: install_database_install, order: 30 }

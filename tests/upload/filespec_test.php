@@ -15,7 +15,6 @@ class phpbb_filespec_test extends phpbb_test_case
 {
 	const TEST_COUNT = 100;
 	const PREFIX = 'phpbb_';
-	const MAX_STR_LEN = 50;
 	const UPLOAD_MAX_FILESIZE = 1000;
 
 	private $config;
@@ -27,6 +26,8 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
+
+	protected $mimetype_guesser;
 
 	protected function setUp(): void
 	{
@@ -374,7 +375,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_move_file($tmp_name, $realname, $mime_type, $extension, $error, $expected)
 	{
 		// Global $phpbb_root_path and $phpEx are required by phpbb_chmod
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path;
 		$this->phpbb_root_path = '';
 
 		$upload = new phpbb_mock_fileupload();

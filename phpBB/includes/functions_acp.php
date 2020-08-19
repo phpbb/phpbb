@@ -152,8 +152,11 @@ function adm_page_header($page_title)
 function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth;
-	global $phpbb_root_path;
-	global $request, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpbb_container;
+	global $phpbb_dispatcher;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
@@ -175,7 +178,7 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	phpbb_check_and_display_sql_report($request, $auth, $db);
+	$controller_helper->display_sql_report();
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
@@ -707,6 +710,7 @@ function validate_range($value_ary, &$error)
 /**
 * Inserts new config display_vars into an exisiting display_vars array
 * at the given position.
+* Used by extensions.
 *
 * @param array $display_vars An array of existing config display vars
 * @param array $add_config_vars An array of new config display vars

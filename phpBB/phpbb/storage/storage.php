@@ -18,7 +18,7 @@ use phpbb\db\driver\driver_interface as db;
 use phpbb\storage\exception\exception;
 
 /**
- * @internal Experimental
+ * Experimental
  */
 class storage
 {

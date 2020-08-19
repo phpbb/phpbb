@@ -175,7 +175,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*
 	* @param string $name Name of the variable to set
 	* @param mixed $value Value to set to the variable
-	* @return mixed
 	*/
 	protected function set_data($name, $value)
 	{
