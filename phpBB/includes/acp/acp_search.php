@@ -53,7 +53,7 @@ class acp_search
 		global $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx;
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = $request->is_set_post('submit');
 
 		if ($submit && !check_link_hash($request->variable('hash', ''), 'acp_search'))
 		{
@@ -245,13 +245,13 @@ class acp_search
 		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
 
-		if (isset($_POST['cancel']))
+		if ($request->is_set_post('cancel'))
 		{
 			$action = '';
 			$this->state = array();
 			$this->save_state();
 		}
-		$submit = $request->is_set_post('submit', false);
+		$submit = $request->is_set_post('submit');
 
 		if (!check_link_hash($request->variable('hash', ''), 'acp_search') && in_array($action, array('create', 'delete')))
 		{
