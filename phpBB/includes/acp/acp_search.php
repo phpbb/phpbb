@@ -300,7 +300,7 @@ class acp_search
 
 				case 'create':
 					// pass a reference to acp_search so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
+					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create&hash=" . generate_link_hash('acp_search'), false)))
 					{
 						$this->state = array('');
 						$this->save_state();
