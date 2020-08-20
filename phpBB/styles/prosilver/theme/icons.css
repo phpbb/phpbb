@@ -50,12 +50,17 @@ span + .o-icon {
 
 blockquote cite:before,
 .uncited:before {
-	content: "\f10d"; /* Font Awesome quote-left */
+	font-size: 36px;
+	vertical-align: bottom;
+	display: inline-block;
+	margin-top: 8px;
+	margin-bottom: -8px;
+	content: "\201C";
 }
 
 .rtl blockquote cite:before,
 .rtl .uncited:before {
-	content: "\f10e"; /* Font Awesome quote-right */
+	content: "\201D";
 }
 
 .c-forum-row-icon,
