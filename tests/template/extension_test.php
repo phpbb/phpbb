@@ -431,8 +431,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_USER'		=> 'User icon',
 				],
-				'<svg class="o-icon o-icon-svg svg-404 my-class" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-labelledby="icon_user-123456789" role="img">
-					<title id="icon_user-123456789">User icon</title>
+				'<svg class="o-icon o-icon-svg svg-404 my-class" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-labelledby="{unique_id}" role="img">
+					<title id="{unique_id}">User icon</title>
 					<g fill="none" fill-rule="evenodd">
 						<path fill="#D8D8D8" d="M0 0h512v512H0z"></path>
 						<path fill="#979797" fill-rule="nonzero" d="M8 6.586l496 496v2.828L8 9.414z"></path>
@@ -453,8 +453,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PHONE'	=> 'Phone icon',
 				],
-				'<svg class="o-icon o-icon-svg svg-phone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-labelledby="icon_phone-123456789" role="img">
-					<title id="icon_phone-123456789">Phone icon</title>
+				'<svg class="o-icon o-icon-svg svg-phone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-labelledby="{unique_id}" role="img">
+					<title id="{unique_id}">Phone icon</title>
 					<path fill="none" d="M0 0h24v24H0z"></path>
 					<path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"></path>
 				</svg>',
@@ -474,8 +474,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<svg class="o-icon o-icon-svg svg-pencil my-svg-class" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" aria-labelledby="icon_pencil-123456789" role="img" data-ajax="my_ajax_callback">
-					<title id="icon_pencil-123456789">Pencil icon</title>
+				'<svg class="o-icon o-icon-svg svg-pencil my-svg-class" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" aria-labelledby="{unique_id}" role="img" data-ajax="my_ajax_callback">
+					<title id="{unique_id}">Pencil icon</title>
 					<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
 					<path d="M0 0h24v24H0z" fill="none"></path>
 				</svg>',
@@ -491,8 +491,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'attributes'	=> [],
 				],
 				[],
-				'<svg class="o-icon o-icon-svg svg-404" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-labelledby="just_a_title-123456789" role="img">
-					<title id="just_a_title-123456789">Just a title</title>
+				'<svg class="o-icon o-icon-svg svg-404" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-labelledby="{unique_id}" role="img">
+					<title id="{unique_id}">Just a title</title>
 					<g fill="none" fill-rule="evenodd">
 						<path fill="#D8D8D8" d="M0 0h512v512H0z"></path>
 						<path fill="#979797" fill-rule="nonzero" d="M8 6.586l496 496v2.828L8 9.414z"></path>
@@ -545,8 +545,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		 */
 		if ($vars['type'] === 'svg' || $vars['icon'] === 'user')
 		{
-			$prefix = strtolower(str_replace(' ', '_', $vars['title'])) . '-';
-			$output = preg_replace('/' . $prefix . '\d+/', $prefix . '123456789', $output);
+			if (preg_match('#<title id="([a-z0-9]+)">#', $output, $unique_id))
+			{
+				$expected = str_replace('{unique_id}', $unique_id[1], $expected);
+			}
 		}
 
 		$this->assertEquals($expected, $output, "Testing {$file}");

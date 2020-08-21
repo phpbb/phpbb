@@ -374,10 +374,8 @@ input.disabled {
 --------------------------------------------- */
 .search-header {
 	border-radius: 4px;
-	display: block;
 	float: right;
-	margin-top: 30px;
-	margin-right: 5px;
+	margin: 16px;
 }
 
 .search-header .inputbox {

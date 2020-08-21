@@ -5,100 +5,131 @@
 /* Global module setup
 ---------------------------------------- */
 
-/* Renamed version of .fa class for agnostic usage of icon fonts.
- * Just change the name of the font after the 14/1 to the name of
- * the font you wish to use.
- */
-.icon,
-.button .icon,
-blockquote cite:before,
-.uncited:before {
-	font-family: FontAwesome;
+/* Globaly fix svg colors */
+svg {
+	fill: currentColor;
+}
+
+.o-icon {
+	vertical-align: middle !important;
+	width: 14px;
+	height: 14px;
+	margin-top: -4px;
+}
+
+.o-icon-src-mdi,
+.o-icon-src-ic {
+	width: 18px;
+	height: 18px;
+}
+
+.o-icon-src-fa {
+	padding: 2px;
+}
+
+.o-icon-font {
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
 	font-size: 14px;
 	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
+	-webkit-font-smoothing: antialiased;
 	line-height: 1;
+	vertical-align: baseline;
 	display: inline-block;
 	/* stylelint-disable order/properties-order */
 	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
 	/* stylelint-enable order/properties-order */
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
-.icon:before {
-	padding-right: 2px;
-}
-
-.button .icon:before {
-	padding-right: 0;
-}
-
-/* Icon size classes - Default size is 14px, use these for small variations */
-
-.icon.icon-xl {
-	font-size: 20px;
-}
-
-.icon.icon-lg {
-	font-size: 16px;
-}
-
-.icon.icon-md {
-	font-size: 10px;
-}
-
-.icon.icon-sm {
-	font-size: 8px;
-}
-
-/* icon modifiers */
-.icon-tiny {
-	font-size: 16px;
-	vertical-align: text-bottom;
-	width: 12px;
-	-webkit-transform: scale(0.65, 0.75);
-	transform: scale(0.65, 0.75);
-}
-
-.arrow-right .icon {
-	float: right;
-}
-
-.arrow-left:hover .icon {
-	margin-right: 5px;
-	margin-left: -5px;
-}
-
-.arrow-left .icon {
-	float: left;
-}
-
-.arrow-right:hover .icon {
-	margin-right: -5px;
-	margin-left: 5px;
-}
-
-.post-buttons .dropdown-contents .icon {
-	float: right;
-	margin-left: 5px;
-}
-
-.alert_close .icon:before {
-	border-radius: 50%;
-	display: block;
-	width: 11px;
-	height: 12px;
-	padding: 0;
+.o-icon + span,
+span + .o-icon {
+	padding-left: 4px;
 }
 
 blockquote cite:before,
 .uncited:before {
-	content: "\f10d"; /* Font Awesome quote-left */
+	font-size: 36px;
+	vertical-align: bottom;
+	display: inline-block;
+	margin-top: 8px;
+	margin-bottom: -8px;
+	content: "\201C";
 }
 
 .rtl blockquote cite:before,
 .rtl .uncited:before {
-	content: "\f10e"; /* Font Awesome quote-right */
+	content: "\201D";
+}
+
+.c-forum-row-icon,
+.c-notification-check-icon {
+	width: 20px;
+	height: 20px;
+	margin-top: 0;
+}
+
+.row-item-link {
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 32px;
+	height: 32px;
+	margin-top: -17px;
+	margin-left: 9px;
+}
+
+.row-item-link-mine {
+	background-color: #b353c6;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	position: absolute;
+	z-index: 101;
+	left: 32px;
+	display: block;
+	float: left;
+	width: 8px;
+	height: 8px;
+}
+
+.row-item-sub {
+	position: absolute;
+	z-index: 101;
+	bottom: 3px;
+	left: 4px;
+	display: block;
+	float: left;
+	width: 16px;
+	height: 16px;
+}
+
+.alert_close .o-icon {
+	width: 18px;
+	height: 18px;
+}
+
+/* Contact icons
+---------------------------------------- */
+.contact-icon {
+	background-repeat: no-repeat;
+	display: block;
+	width: 24px;
+	height: 24px;
+}
+
+.c-button-icon {
+	margin-top: 0;
+}
+
+.c-subscribe-icon {
+	display: none !important;
+}
+
+.c-subscribe-icon.is-active {
+	display: inline !important;
 }
