@@ -25,6 +25,7 @@ use phpbb\feed\helper as feed_helper;
 use phpbb\controller\helper as controller_helper;
 use phpbb\symfony_request;
 use phpbb\user;
+use phpbb\language\language;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -88,6 +89,11 @@ class feed
 	protected $php_ext;
 
 	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
 	 * Constructor
 	 *
 	 * @param Environment $twig
@@ -100,9 +106,10 @@ class feed
 	 * @param user $user
 	 * @param auth $auth
 	 * @param dispatcher_interface $phpbb_dispatcher
+	 * @param language $language
 	 * @param string $php_ext
 	 */
-	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
+	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, language $language, $php_ext)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;
@@ -114,6 +121,7 @@ class feed
 		$this->auth = $auth;
 		$this->php_ext = $php_ext;
 		$this->template = $twig;
+		$this->language = $language;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
 
@@ -296,6 +304,7 @@ class feed
 	{
 		$feed_updated_time = 0;
 		$item_vars = array();
+		$this->language->add_lang('viewtopic');
 
 		$board_url = $this->feed_helper->get_board_url();
 

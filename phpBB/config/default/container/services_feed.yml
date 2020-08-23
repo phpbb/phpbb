@@ -12,11 +12,13 @@ services:
             - '@user'
             - '@auth'
             - '@dispatcher'
+            - '@language'
             - '%core.php_ext%'
 
     feed.helper:
         class: phpbb\feed\helper
         arguments:
+            - '@auth'
             - '@config'
             - '@service_container'
             - '@path_helper'
