@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\path_helper;
 use phpbb\textformatter\s9e\renderer;
 use phpbb\user;
+use phpbb\auth\auth;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -39,17 +40,22 @@ class helper
 	/** @var user */
 	protected $user;
 
+	/** @var auth */
+	protected $auth;
+
 	/**
 	 * Constructor
 	 *
+	 * @param	auth				$auth			Auth object
 	 * @param	config				$config			Config object
 	 * @param	ContainerInterface	$container		Service container object
 	 * @param	path_helper			$path_helper 	Path helper object
 	 * @param	renderer			$renderer		TextFormatter renderer object
 	 * @param	user				$user			User object
 	 */
-	public function __construct(config $config, ContainerInterface $container, path_helper $path_helper, renderer $renderer, user $user)
+	public function __construct(auth $auth, config $config, ContainerInterface $container, path_helper $path_helper, renderer $renderer, user $user)
 	{
+		$this->auth = $auth;
 		$this->config = $config;
 		$this->container = $container;
 		$this->path_helper = $path_helper;
@@ -119,6 +125,8 @@ class helper
 		$this->renderer->configure_quote_helper($this->container->get('feed.quote_helper'));
 
 		$this->renderer->set_smilies_path($this->get_board_url() . '/' . $this->config['smilies_path']);
+
+		$this->renderer->configure_user($this->user, $this->config, $this->auth);
 
 		$content = generate_text_for_display($content, $uid, $bitfield, $options);
 
