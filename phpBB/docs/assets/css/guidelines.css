@@ -1,0 +1,43 @@
+body {
+	counter-reset: h2;
+}
+
+h2 {
+	font-size: 2em;
+	font-weight: bold;
+	counter-reset: h3;
+	counter-increment: h2;
+}
+
+h3 {
+	font-size: 1.3em;
+	color: #28313f;
+	counter-reset: h4;
+	counter-increment: h3;
+}
+
+h4 {
+	margin-top: 10px;
+	counter-increment: h4;
+}
+
+h2 a:before { content: counter(h2) "."; }
+h3 a:before { content: counter(h2) "." counter(h3)}
+h4 a:before { content: counter(h2) "." counter(h3) "." counter(h4); }
+
+h2 a:link,
+h2 a:visited,
+h3 a:link,
+h3 a:visited,
+h4 a:link,
+h4 a:visited {
+	font-size: 0.9em;
+	color: #ccc;
+	margin-right: 4px;
+}
+
+h2 a:hover,
+h3 a:hover,
+h4 a:hover {
+	color: #333;
+}
