@@ -290,27 +290,17 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		case 'time':
 		case 'number':
 		case 'range':
-			$max = '';
-			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
-			if ( isset($tpl_type[2]) )
-			{
-				$max = (int) $tpl_type[2];
-			}
+			$min = isset($tpl_type[1]) ? (int) $tpl_type[1] : false;
+			$max = isset($tpl_type[2]) ? (int) $tpl_type[2] : false;
 
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (( $min !== false ) ? ' min="' . $min . '"' : '') . (( $max !== false ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
 		break;
 
 		case 'dimension':
-			$max = '';
+			$min = isset($tpl_type[1]) ? (int) $tpl_type[1] : false;
+			$max = isset($tpl_type[2]) ? (int) $tpl_type[2] : false;
 
-			$min = (int) $tpl_type[1];
-
-			if ( isset($tpl_type[2]) )
-			{
-				$max = (int) $tpl_type[2];
-			}
-
-			$tpl = '<input id="' . $key . '" type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
+			$tpl = '<input id="' . $key . '" type="number"' . (( $min !== false ) ? ' min="' . $min . '"' : '') . (( $max !== false ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':
