@@ -730,7 +730,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		'S_HAS_ATTACHMENTS'				=> count($attachment_data),
 		'FILESIZE'						=> $config['max_filesize'],
 		'FILE_COMMENT'					=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
-		'MAX_ATTACHMENT_FILESIZE'		=> $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])),
+		'MAX_ATTACHMENT_FILESIZE'		=> $config['max_filesize'] > 0 ? $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])) : '',
 	));
 
 	if (count($attachment_data))
