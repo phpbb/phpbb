@@ -26,7 +26,7 @@ class error_collector
 	 * the error_reporting() function will be used to determine which errors
 	 * the collector will keep.
 	 *
-	 * @see PHPBB3-13306
+	 * @see https://tracker.phpbb.com/browse/PHPBB3-13306
 	 * @param int|null $error_types
 	 */
 	function __construct($error_types = null)
