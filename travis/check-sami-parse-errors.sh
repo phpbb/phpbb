@@ -16,19 +16,5 @@ NOTESTS=$3
 
 if [ "$NOTESTS" == '1' ]
 then
-	# Workarounds for
-	# https://github.com/fabpot/Sami/issues/116
-	# and
-	# https://github.com/fabpot/Sami/issues/117
-	errors=$(
-		unbuffer phpBB/vendor/bin/sami.php parse build/sami-checkout.conf.php -v | \
-		sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" | \
-		grep "ERROR: " | \
-		tee /dev/tty | \
-		wc -l
-	)
-	if [ "$errors" != "0" ]
-	then
-		exit 1
-	fi
+	phpBB/vendor/bin/doctum.php parse build/doctum-checkout.conf.php -v
 fi
