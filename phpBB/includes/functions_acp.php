@@ -442,13 +442,27 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 		switch ($validator[$type])
 		{
 			case 'url':
-				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
-
-				if (!empty($cfg_array[$config_name]) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $cfg_array[$config_name]))
+			case 'csv':
+				if ($validator[$type] == 'url')
 				{
-					$error[] = $language->lang('URL_INVALID', $language->lang($config_definition['lang']));
-				}
+					$cfg_array[$config_name] = trim($cfg_array[$config_name]);
 
+					if (!empty($cfg_array[$config_name]) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $cfg_array[$config_name]))
+					{
+						$error[] = $language->lang('URL_INVALID', $language->lang($config_definition['lang']));
+					}
+				}
+				else if ($validator[$type] == 'csv')
+				{
+					// Validate comma separated values
+					$unfiltered_array = explode(',', $cfg_array[$config_name]);
+					$filtered_array = array_filter($unfiltered_array);
+					if (!empty($filtered_array) && count($unfiltered_array) !== count($filtered_array))
+					{
+						$error[] = $language->lang('CSV_INVALID', $language->lang($config_definition['lang']));
+					}
+
+				}
 			// no break here
 
 			case 'string':
