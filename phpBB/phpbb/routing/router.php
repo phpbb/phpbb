@@ -86,16 +86,22 @@ class router implements RouterInterface
 	protected $debug_url_generator;
 
 	/**
+	 * @var string
+	 */
+	protected $debug_url_matcher;
+
+	/**
 	 * Construct method
 	 *
-	 * @param ContainerInterface			$container				DI container
-	 * @param resources_locator_interface	$resources_locator		Resources locator
-	 * @param LoaderInterface				$loader					Resources loader
-	 * @param string						$php_ext				PHP file extension
-	 * @param string						$cache_dir				phpBB cache directory
-	 * @param string						$debug_url_generator	Debug url generator
+	 * @param ContainerInterface $container DI container
+	 * @param resources_locator_interface $resources_locator Resources locator
+	 * @param LoaderInterface $loader Resources loader
+	 * @param string $php_ext PHP file extension
+	 * @param string $cache_dir phpBB cache directory
+	 * @param string $debug_url_generator Debug url generator
+	 * @param string $debug_url_matcher Debug url matcher
 	 */
-	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, $php_ext, $cache_dir, $debug_url_generator)
+	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, string $php_ext, string $cache_dir, string $debug_url_generator, string $debug_url_matcher)
 	{
 		$this->container			= $container;
 		$this->resources_locator	= $resources_locator;
@@ -104,6 +110,7 @@ class router implements RouterInterface
 		$this->context				= new RequestContext();
 		$this->cache_dir			= $cache_dir;
 		$this->debug_url_generator	= $debug_url_generator;
+		$this->debug_url_matcher    = $debug_url_matcher;
 	}
 
 	/**
@@ -207,7 +214,7 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->container->getParameter('debug.url_matcher'));
+			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->debug_url_matcher);
 			if (!$cache->isFresh())
 			{
 				$dumper = new PhpMatcherDumper($this->get_routes());

@@ -8,6 +8,7 @@ services:
             - '%core.php_ext%'
             - '%core.cache_dir%'
             - '%debug.url_generator%'
+            - '%debug.url_matcher%'
 
     router.listener:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener
