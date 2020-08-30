@@ -17,45 +17,45 @@ class remove_profilefield_aol extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array(
+		return [
 			'\phpbb\db\migration\data\v400\v400',
-		);
+		];
 	}
 
 	public function update_schema()
 	{
-		return array(
-			'drop_columns'	=> array(
-				$this->table_prefix . 'profile_fields_data'			=> array(
+		return [
+			'drop_columns'	=> [
+				$this->table_prefix . 'profile_fields_data'			=> [
 					'pf_phpbb_aol',
-				),
-			),
-		);
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
-			'add_columns'	=> array(
-				$this->table_prefix . 'profile_fields_data'			=> array(
-					'pf_phpbb_aol'		=> array('VCHAR', ''),
-				),
-			),
-		);
+		return [
+			'add_columns'	=> [
+				$this->table_prefix . 'profile_fields_data'			=> [
+					'pf_phpbb_aol'		=> ['VCHAR', ''],
+				],
+			],
+		];
 	}
 
 	public function update_data()
 	{
-		return array(
-			array('custom', array(array($this, 'delete_custom_profile_field_data'))),
-		);
+		return [
+			['custom', [[$this, 'delete_custom_profile_field_data']]],
+		];
 	}
 
 	public function revert_data()
 	{
-		return array(
-			array('custom', array(array($this, 'create_custom_field'))),
-		);
+		return [
+			['custom', [[$this, 'create_custom_field']]],
+		];
 	}
 
 	public function delete_custom_profile_field_data()
@@ -88,7 +88,7 @@ class remove_profilefield_aol extends \phpbb\db\migration\migration
 		$max_field_order = (int) $this->db->sql_fetchfield('max_field_order');
 		$this->db->sql_freeresult($result);
 
-		$sql_ary = array(
+		$sql_ary = [
 			'field_name'			=> 'phpbb_aol',
 			'field_type'			=> 'profilefields.type.string',
 			'field_ident'			=> 'phpbb_aol',
@@ -112,7 +112,7 @@ class remove_profilefield_aol extends \phpbb\db\migration\migration
 			'field_contact_desc'	=> '',
 			'field_contact_url'		=> '',
 			'field_order'			=> $max_field_order + 1,
-		);
+		];
 
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
@@ -126,13 +126,13 @@ class remove_profilefield_aol extends \phpbb\db\migration\migration
 		$lang_name = 'AOL';
 		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
 		{
-			$insert_buffer->insert(array(
+			$insert_buffer->insert([
 				'field_id'				=> (int) $field_id,
 				'lang_id'				=> (int) $lang_id,
 				'lang_name'				=> $lang_name,
 				'lang_explain'			=> '',
 				'lang_default_value'	=> '',
-			));
+			]);
 		}
 		$this->db->sql_freeresult($result);
 
