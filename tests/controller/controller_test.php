@@ -48,7 +48,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true);
+		$router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true, true);
 		$routes = $router->get_routes();
 
 		// This will need to be updated if any new routes are defined

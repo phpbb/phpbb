@@ -41,6 +41,7 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('memory')->defaultValue(false)->end()
 						->booleanNode('show_errors')->defaultValue(false)->end()
 						->booleanNode('url_generator')->defaultValue(false)->end()
+						->booleanNode('url_matcher')->defaultValue(false)->end()
 					->end()
 				->end()
 				->arrayNode('twig')

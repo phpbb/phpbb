@@ -12,6 +12,7 @@ core:
         memory: true
         show_errors: true
         url_generator: true
+        url_matcher: true
 
     twig:
         debug: true
