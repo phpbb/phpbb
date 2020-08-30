@@ -23,7 +23,7 @@ use phpbb\install\helper\container_factory;
 use phpbb\install\helper\database;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\install\sequential_task;
-use phpbb\search\fulltext_native;
+use phpbb\search\backend\fulltext_native;
 use phpbb\user;
 
 class create_search_index extends database_task
@@ -127,16 +127,14 @@ class create_search_index extends database_task
 
 		$this->posts_table = $container->get_parameter('tables.posts');
 
-		$this->error = false;
+		// Esto se cargara por servicio abajo
 		$this->search_indexer = new fulltext_native(
-			$this->error,
-			$this->phpbb_root_path,
-			$this->php_ext,
-			$this->auth,
 			$this->config,
 			$this->db,
+			$this->phpbb_dispatcher,
 			$this->user,
-			$this->phpbb_dispatcher
+			$this->phpbb_root_path,
+			$this->php_ext
 		);
 
 		parent::__construct($this->conn, $iohandler, true);
@@ -150,6 +148,7 @@ class create_search_index extends database_task
 		// Make sure fulltext native load update is set
 		$this->config->set('fulltext_native_load_upd', 1);
 
+		// TODO: Replace this with create_index() when it don't depend on acp
 		try
 		{
 			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id FROM ' . $this->posts_table;
