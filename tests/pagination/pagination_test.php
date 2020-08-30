@@ -42,7 +42,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
-		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', dirname(__FILE__) . '/');
+		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true);
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
