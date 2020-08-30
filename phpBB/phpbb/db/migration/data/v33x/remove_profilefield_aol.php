@@ -15,10 +15,15 @@ namespace phpbb\db\migration\data\v400;
 
 class remove_profilefield_aol extends \phpbb\db\migration\migration
 {
+	public function effectively_installed()
+	{
+		return !$this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_phpbb_aol');
+	}
+
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v400\v400',
+			'\phpbb\db\migration\data\v33x\v331',
 		];
 	}
 
