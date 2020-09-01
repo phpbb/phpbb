@@ -16,5 +16,6 @@ NOTESTS=$3
 
 if [ "$NOTESTS" == '1' ]
 then
-	phpBB/vendor/bin/doctum.php parse build/doctum-checkout.conf.php -v
+	(cd phpBB/vendor/bin/ && curl -O https://doctum.long-term.support/releases/latest/doctum.phar && chmod +x doctum.phar)
+	php phpBB/vendor/bin/doctum.phar parse build/doctum-checkout.conf.php -v
 fi
