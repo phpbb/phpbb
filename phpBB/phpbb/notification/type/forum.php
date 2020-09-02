@@ -1,54 +1,54 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\notification\type;
 
 /**
-* Forum notifications class
-* This class handles notifications for replies to a topic in a forum user subscribed to
-*/
+ * Forum notifications class
+ * This class handles notifications for replies to a topic in a forum user subscribed to
+ */
 
 class forum extends \phpbb\notification\type\post
 {
 	/**
-	* Get notification type name
-	*
-	* @return string
-	*/
+	 * Get notification type name
+	 *
+	 * @return string
+	 */
 	public function get_type()
 	{
 		return 'notification.type.forum';
 	}
 
 	/**
-	* Notification option data (for outputting to the user)
-	*
-	* @var bool|array False if the service should use it's default data
-	* 					Array of data (including keys 'id', 'lang', and 'group')
-	*/
+	 * Notification option data (for outputting to the user)
+	 *
+	 * @var bool|array False if the service should use its default data
+	 * 					Array of data (including keys 'id', 'lang', and 'group')
+	 */
 	static public $notification_option = [
 		'lang'	=> 'NOTIFICATION_TYPE_FORUM',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	];
 
 	/**
-	* Find the users who want to receive notifications
-	*
-	* @param array $post Data from submit_post
-	* @param array $options Options for finding users for notification
-	*
-	* @return array
-	*/
+	 * Find the users who want to receive notifications
+	 *
+	 * @param array $post Data from submit_post
+	 * @param array $options Options for finding users for notification
+	 *
+	 * @return array
+	 */
 	public function find_users_for_notification($post, $options = [])
 	{
 		$options = array_merge([
@@ -76,7 +76,8 @@ class forum extends \phpbb\notification\type\post
 			return [];
 		}
 
-		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
+		// Try to find the users who already have been notified about replies and have not read them
+		// Just update their notifications
 		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), [
 			'item_parent_id'	=> static::get_item_parent_id($post),
 			'read'				=> 0,
@@ -103,20 +104,20 @@ class forum extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
-	*/
+	 * Get email template
+	 *
+	 * @return string|bool
+	 */
 	public function get_email_template()
 	{
 		return 'forum_notify';
 	}
 
 	/**
-	* Get email template variables
-	*
-	* @return array
-	*/
+	 * Get email template variables
+	 *
+	 * @return array
+	 */
 	public function get_email_template_variables()
 	{
 		if ($this->get_data('post_username'))
