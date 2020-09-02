@@ -16,6 +16,17 @@ NOTESTS=$3
 
 if [ "$NOTESTS" == '1' ]
 then
-	(cd phpBB/vendor/bin/ && curl -O https://doctum.long-term.support/releases/latest/doctum.phar && chmod +x doctum.phar)
-	php phpBB/vendor/bin/doctum.phar parse build/doctum-checkout.conf.php -v
+	if [ ! -f doctum.phar ]; then
+		# Download the latest release
+		curl -O https://doctum.long-term.support/releases/5.1/doctum.phar
+		rm -f doctum.phar.sha256
+		curl -O https://doctum.long-term.support/releases/5.1/doctum.phar.sha256
+		sha256sum --strict --check doctum.phar.sha256
+		rm -f doctum.phar.sha256
+		# You can fetch the latest (5.1.x) version code here:
+		# https://doctum.long-term.support/releases/5.1/VERSION
+	fi
+	# Show the version to inform users of the script
+	php doctum.phar --version
+	php doctum.phar parse build/doctum-checkout.conf.php -v
 fi
