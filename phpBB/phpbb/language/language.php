@@ -194,7 +194,7 @@ class language
 	}
 
 	/**
-	 * @param $key array|string		The language key we want to know more about. Can be string or array.
+	 * @param	array|string	$key	The language key we want to know more about. Can be string or array.
 	 *
 	 * @return bool		Returns whether the language key is set.
 	 */

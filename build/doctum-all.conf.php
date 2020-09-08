@@ -11,9 +11,9 @@
 *
 */
 
-require __DIR__ . '/sami-checkout.conf.php';
+require __DIR__ . '/doctum-checkout.conf.php';
 
-$config['versions'] = Sami\Version\GitVersionCollection::create(__DIR__ . '/../')
+$config['versions'] = Doctum\Version\GitVersionCollection::create(__DIR__ . '/../')
 	/*
 	This would be nice, but currently causes various problems that need
 	debugging.
@@ -30,4 +30,4 @@ $config['versions'] = Sami\Version\GitVersionCollection::create(__DIR__ . '/../'
 	->add('master')
 ;
 
-return new Sami\Sami($iterator, $config);
+return new Doctum\Doctum($iterator, $config);

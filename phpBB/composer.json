@@ -61,8 +61,7 @@
 		"squizlabs/php_codesniffer": "~3.4",
 		"symfony/browser-kit": "~3.4",
 		"symfony/css-selector": "~3.4",
-		"symfony/dom-crawler": "~3.4",
-		"sami/sami": "^4.1"
+		"symfony/dom-crawler": "~3.4"
 	},
 	"extra": {
 		"branch-alias": {

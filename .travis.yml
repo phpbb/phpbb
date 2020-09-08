@@ -47,7 +47,7 @@ before_script:
 
 script:
   - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
-  - travis/check-sami-parse-errors.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/check-doctum-parse-errors.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION $NOTESTS ./
   - travis/check-stylesheet.sh $NOTESTS

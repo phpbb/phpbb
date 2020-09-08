@@ -455,8 +455,8 @@ function phpbb_realpath($path)
  * Determine which plural form we should use.
  * For some languages this is not as simple as for English.
  *
- * @param $rule		int			ID of the plural rule we want to use, see https://area51.phpbb.com/docs/dev/3.3.x/language/plurals.html
- * @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
+ * @param	int			$rule	ID of the plural rule we want to use, see https://area51.phpbb.com/docs/dev/3.3.x/language/plurals.html
+ * @param	int|float	$number	The number we want to get the plural case for. Float numbers are floored.
  * @return	int		The plural-case we need to use for the number plural-rule combination
  *
  * @deprecated 3.2.0-dev (To be removed: 4.0.0)

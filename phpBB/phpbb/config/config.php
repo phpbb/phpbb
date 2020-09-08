@@ -20,14 +20,14 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 	/**
 	* The configuration data
-	* @var array(string => string)
+	* @var array<string,string>
 	*/
 	protected $config;
 
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param array(string => string) $config The configuration data.
+	* @param array<string,string> $config The configuration data.
 	*/
 	public function __construct(array $config)
 	{
