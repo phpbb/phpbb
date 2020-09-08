@@ -17,7 +17,8 @@ NOTESTS=$3
 if [ "$NOTESTS" == '1' ]
 then
 	if [ ! -f doctum.phar ]; then
-		# Download the latest release
+		# Download the latest (5.1.x) release if the file does not exist
+		# Remove it to update your phar
 		curl -O https://doctum.long-term.support/releases/5.1/doctum.phar
 		rm -f doctum.phar.sha256
 		curl -O https://doctum.long-term.support/releases/5.1/doctum.phar.sha256
