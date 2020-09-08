@@ -84,7 +84,7 @@ class helper
 	}
 
 	/**
-	 * @param $group_name string	The stored group name
+	 * @param	string	$group_name	The stored group name
 	 *
 	 * @return string		Group name or translated group name if it exists
 	 */

@@ -25,7 +25,7 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	private $name;
 
 	/**
-	* @var	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	Super global constant.
+	* @var string (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)	Super global constant.
 	*/
 	private $super_global;
 
@@ -39,7 +39,7 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	*
 	* @param	\phpbb\request\request_interface	$request	A request class instance holding the real super global data.
 	* @param	string					$name		Name of the super global this is a replacement for - e.g. '_GET'.
-	* @param	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	$super_global	The variable's super global constant.
+	* @param	string	$super_global	The variable's super global constant (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE).
 	*/
 	public function __construct(\phpbb\request\request_interface $request, $name, $super_global)
 	{

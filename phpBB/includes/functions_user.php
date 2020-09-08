@@ -1610,7 +1610,7 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 
 /**
 * Validate Date
-* @param String $string a date in the dd-mm-yyyy format
+* @param	string $date_string a date in the dd-mm-yyyy format
 * @return	boolean
 */
 function validate_date($date_string, $optional = false)

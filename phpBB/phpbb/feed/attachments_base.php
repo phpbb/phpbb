@@ -87,8 +87,8 @@ abstract class attachments_base extends base
 	/**
 	* Get attachments related to a given post
 	*
-	* @param $post_id  int  Post id
-	* @return mixed Attachments related to $post_id
+	* @param	int	$post_id		Post id
+	* @return	mixed	Attachments related to $post_id
 	*/
 	public function get_attachments($post_id)
 	{

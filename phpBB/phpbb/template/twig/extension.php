@@ -138,7 +138,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	* @param mixed            $item         A variable
 	* @param integer          $start        Start of the subset
 	* @param integer          $end   	     End of the subset
-	* @param Boolean          $preserveKeys Whether to preserve key or not (when the input is an array)
+	* @param boolean          $preserveKeys Whether to preserve key or not (when the input is an array)
 	*
 	* @return mixed The sliced variable
 	*/
