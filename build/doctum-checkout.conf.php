@@ -21,9 +21,11 @@ $iterator = Symfony\Component\Finder\Finder::create()
 	->notPath('#^vendor/#')
 	->notPath('data');
 
-return new Doctum\Doctum($iterator, [
+// This variable will be used and changed in doctum-all.conf.php
+$config = [
 	'title'                => 'phpBB API Documentation',
 	'build_dir'            => __DIR__ . '/api/output/%version%',
 	'cache_dir'            => __DIR__ . '/api/cache/%version%',
-	'default_opened_level' => 2,
-]);
+];
+
+return new Doctum\Doctum($iterator, $config);
