@@ -2,6 +2,7 @@
 	<div class="inner">
 
 	<p>{L_ADD_ATTACHMENT_EXPLAIN} <span class="hidden" id="drag-n-drop-message">{L_PLUPLOAD_DRAG_TEXTAREA}</span></p>
+	{% if MAX_ATTACHMENT_FILESIZE is not empty %}<p>{{ MAX_ATTACHMENT_FILESIZE }}</p>{% endif %}
 
 	<fieldset class="fields2" id="attach-panel-basic">
 	<dl>
