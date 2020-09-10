@@ -14,13 +14,13 @@
         <testsuite name="phpBB Test Suite">
             <directory suffix="_test.php">./tests</directory>
             <exclude>./tests/functional</exclude>
-            <exclude>./tests/phpbb_lint_test.php</exclude>
+            <exclude>./tests/lint_test.php</exclude>
         </testsuite>
         <testsuite name="phpBB Functional Tests">
             <directory suffix="_test.php">./tests/functional</directory>
         </testsuite>
         <testsuite name="phpBB Lint Test">
-            <file>./tests/phpbb_lint_test.php</file>
+            <file>./tests/lint_test.php</file>
         </testsuite>
     </testsuites>
 

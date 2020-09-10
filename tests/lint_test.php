@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_lint_test extends phpbb_test_case
+class lint_test extends phpbb_test_case
 {
 	static protected $php_binary;
 
