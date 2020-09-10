@@ -32,6 +32,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'notification.type.bookmark',
 			'notification.type.disapprove_post',
 			'notification.type.disapprove_topic',
+			'notification.type.forum',
 			'notification.type.pm',
 			'notification.type.post',
 			'notification.type.post_in_queue',

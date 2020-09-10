@@ -129,18 +129,6 @@ class post extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
-		$sql = 'SELECT user_id
-			FROM ' . FORUMS_WATCH_TABLE . '
-			WHERE forum_id = ' . (int) $post['forum_id'] . '
-				AND notify_status = ' . NOTIFY_YES . '
-				AND user_id <> ' . (int) $post['poster_id'];
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$users[] = (int) $row['user_id'];
-		}
-		$this->db->sql_freeresult($result);
-
 		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
 
 		if (empty($notify_users))

@@ -2400,6 +2400,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					'notification.type.quote',
 					'notification.type.bookmark',
 					'notification.type.post',
+					'notification.type.forum',
 				), $notification_data);
 			break;
 
@@ -2418,6 +2419,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					'notification.type.bookmark',
 					'notification.type.topic',
 					'notification.type.post',
+					'notification.type.forum',
 				), $notification_data);
 			break;
 		}
