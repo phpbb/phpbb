@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\migration\data\v400;
+namespace phpbb\db\migration\data\v33x;
 
 class remove_profilefield_aol extends \phpbb\db\migration\migration
 {
