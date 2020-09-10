@@ -157,7 +157,20 @@ class notification_method_email_test extends phpbb_tests_notification_base
 	public function data_notification_email()
 	{
 		return [
+			/**
+			* Normal post
+			*
+			* User => State description
+			*	2	=> Topic id=1 and id=2 subscribed, should receive a new topics post notification
+			*	3	=> Topic id=1 subscribed, should receive a new topic post notification
+			*	4	=> Topic id=1 subscribed, should receive a new topic post notification
+			*	5	=> Topic id=1 subscribed, post id=1 already notified, should receive a new topic post notification
+			*	6	=> Topic id=1 and forum id=1 subscribed, should receive a new topic/forum post notification
+			*	7	=> Forum id=1 subscribed, should NOT receive a new topic post but a forum post notification
+			*	8	=> Forum id=1 subscribed, post id=1 already notified, should NOT receive a new topic post but a forum post notification
+			*/
 			[
+				'notification.type.post',
 				[
 					'forum_id'		=> '1',
 					'post_id'		=> '2',
@@ -169,11 +182,23 @@ class notification_method_email_test extends phpbb_tests_notification_base
 					4 => ['user_id' => '4'],
 					5 => ['user_id' => '5'],
 					6 => ['user_id' => '6'],
+				],
+			],
+			[
+				'notification.type.forum',
+				[
+					'forum_id'		=> '1',
+					'post_id'		=> '3',
+					'topic_id'		=> '1',
+				],
+				[
+					6 => ['user_id' => '6'],
 					7 => ['user_id' => '7'],
 					8 => ['user_id' => '8']
 				],
 			],
 			[
+				'notification.type.post',
 				[
 					'forum_id'		=> '1',
 					'post_id'		=> '4',
@@ -181,12 +206,33 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				],
 				[
 					2 => ['user_id' => '2'],
+				],
+			],
+			[
+				'notification.type.forum',
+				[
+					'forum_id'		=> '1',
+					'post_id'		=> '5',
+					'topic_id'		=> '2',
+				],
+				[
 					6 => ['user_id' => '6'],
 					7 => ['user_id' => '7'],
 					8 => ['user_id' => '8'],
 				],
 			],
 			[
+				'notification.type.post',
+				[
+					'forum_id'		=> '2',
+					'post_id'		=> '6',
+					'topic_id'		=> '3',
+				],
+				[
+				],
+			],
+			[
+				'notification.type.forum',
 				[
 					'forum_id'		=> '2',
 					'post_id'		=> '6',
@@ -201,7 +247,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 	/**
 	 * @dataProvider data_notification_email
 	 */
-	public function test_notification_email($post_data, $expected_users)
+	public function test_notification_email($notification_type, $post_data, $expected_users)
 	{
 		$post_data = array_merge(['post_time' => 1349413322], $post_data);
 		$notification_options = [
@@ -209,21 +255,21 @@ class notification_method_email_test extends phpbb_tests_notification_base
 			'item_parent_id'	=> $post_data['topic_id'],
 		];
 
-		$notified_users = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id('notification.type.post'), $notification_options);
+		$notified_users = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
 		$this->assertEquals(0, count($notified_users), 'Assert no user has been notified yet');
 
-		$this->notifications->add_notifications('notification.type.post', $post_data);
+		$this->notifications->add_notifications($notification_type, $post_data);
 
-		$notified_users = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id('notification.type.post'), $notification_options);
+		$notified_users = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
 		$this->assertEquals($expected_users, $notified_users, 'Assert that expected users have been notified');
 
 		$post_data['post_id']++;
 		$notification_options['item_id'] = $post_data['post_id'];
 		$post_data['post_time'] = 1349413323;
 
-		$this->notifications->add_notifications('notification.type.post', $post_data);
+		$this->notifications->add_notifications($notification_type, $post_data);
 
-		$notified_users2 = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id('notification.type.post'), $notification_options);
+		$notified_users2 = $this->notification_method_email->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
 		$this->assertEquals($expected_users, $notified_users2, 'Assert that expected users stay the same after replying to same topic');
 	}
 }

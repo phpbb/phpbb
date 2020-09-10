@@ -580,6 +580,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				'notification.type.post',
 				'notification.type.approve_topic',
 				'notification.type.approve_post',
+				'notification.type.forum',
 			), false, $user->data['user_id'], $post_time);
 
 			if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -663,6 +664,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			'notification.type.bookmark',
 			'notification.type.post',
 			'notification.type.approve_post',
+			'notification.type.forum',
 		), $topic_ids, $user->data['user_id'], $post_time);
 
 		// Add 0 to forums array to mark global announcements correctly
@@ -773,6 +775,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			'notification.type.bookmark',
 			'notification.type.post',
 			'notification.type.approve_post',
+			'notification.type.forum',
 		), $topic_id, $user->data['user_id'], $post_time);
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])

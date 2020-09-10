@@ -13,11 +13,11 @@
 
 require_once dirname(__FILE__) . '/submit_post_base.php';
 
-class phpbb_notification_submit_post_type_post_test extends phpbb_notification_submit_post_base
+class phpbb_notification_submit_post_type_forum_test extends phpbb_notification_submit_post_base
 {
-	protected $item_type = 'notification.type.post';
+	protected $item_type = 'notification.type.forum';
 
-	protected function setUp(): void
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -57,7 +57,7 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 	* submit_post() Notifications test
 	*
 	* submit_post() $mode = 'reply'
-	* Notification item_type = 'post'
+	* Notification item_type = 'notification.type.forum'
 	*/
 	public function submit_post_data()
 	{
@@ -67,12 +67,12 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 			*
 			* User => State description
 			*	2	=> Poster, should NOT receive a notification
-			*	3	=> Topic subscribed, should receive a notification
-			*	4	=> Topic subscribed, but unauthed to read, should NOT receive a notification
-			*	5	=> Topic subscribed, but already notified, should NOT receive a new notification
+			*	3	=> Forum subscribed, should receive a notification
+			*	4	=> Forum subscribed, but unauthed to read, should NOT receive a notification
+			*	5	=> Forum subscribed, but already notified, should NOT receive a new notification
 			*	6	=> Topic and forum subscribed, should receive ONE notification
-			*	7	=> Forum subscribed, should NOT receive a notification
-			*	8	=> Forum subscribed, and already notified, should NOT receive a new notification
+			*	7	=> Topic subscribed, should NOT receive a notification
+			*	8	=> Topic subscribed, and already notified, should NOT receive a new notification
 			*/
 			array(
 				array(),
