@@ -11,7 +11,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_functions_user_whois_test extends phpbb_test_case
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		global $config, $phpbb_dispatcher, $user, $request, $symfony_request, $phpbb_root_path, $phpEx;
 
