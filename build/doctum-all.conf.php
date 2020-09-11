@@ -14,18 +14,6 @@
 require __DIR__ . '/doctum-checkout.conf.php';
 
 $config['versions'] = Doctum\Version\GitVersionCollection::create(__DIR__ . '/../')
-	/*
-	This would be nice, but currently causes various problems that need
-	debugging.
-	->addFromTags('release-3.0.*')
-	->add('3.0.x', '3.0-next (olympus)')
-	->addFromTags('release-3.1.*')
-	->add('3.1.x', '3.1-next (ascraeus)')
-	->add('master')
-	*/
-	->add('3.0.x')
-	->add('3.1.x')
-	->add('3.2.x')
 	->add('3.3.x')
 	->add('master')
 ;
