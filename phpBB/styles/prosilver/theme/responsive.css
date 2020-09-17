@@ -775,7 +775,7 @@
 
 @media (min-width: 701px) {
 	.postbody {
-		width: calc(100% - 200px - 1px - 1px);
+		width: calc(100% - 200px - 1px - 16px);
 	}
 
 	.postprofile {
