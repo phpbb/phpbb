@@ -2,7 +2,7 @@ services:
     cron.manager:
         class: phpbb\cron\manager
         arguments:
-            - '@cron.task_collection'
+            - '@service_container'
             - '@routing.helper'
             - '%core.root_path%'
             - '%core.php_ext%'

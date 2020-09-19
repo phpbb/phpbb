@@ -202,13 +202,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	*/
 	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -262,13 +265,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	*/
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -322,13 +328,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	*/
 	public function test_helper_url_absolute($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -382,13 +391,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	*/
 	public function test_helper_url_relative_path($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -442,13 +454,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	*/
 	public function test_helper_url_network($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -502,13 +517,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	 */
 	public function test_helper_url_absolute_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -559,13 +577,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	 */
 	public function test_helper_url_relative_path_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -619,13 +640,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	 */
 	public function test_helper_url_network_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->config = new \phpbb\config\config(['enable_mod_rewrite' => '1']);
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
@@ -668,12 +692,16 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 			'server_protocol' => $server_protocol,
 		));
 
+		$mock_container = new phpbb_mock_container_builder();
+		$mock_container->set('cron.task_collection', []);
+
 		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
+
 		$this->helper = new phpbb_mock_controller_helper(
 			$this->auth,
 			$this->cache,
 			$this->config,
-			new \phpbb\cron\manager([], $this->routing_helper, $this->root_path, 'php'),
+			new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php'),
 			$this->db,
 			$this->dispatcher,
 			$this->language,
