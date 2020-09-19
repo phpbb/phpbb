@@ -14,7 +14,7 @@
 namespace phpbb\install\module\requirements\task;
 
 /**
- * Installer task that checks if the server meats phpBB requirements
+ * Installer task that checks if the server meets phpBB requirements
  */
 class check_server_environment extends \phpbb\install\task_base
 {
@@ -70,6 +70,9 @@ class check_server_environment extends \phpbb\install\task_base
 
 		// Check for JSON support
 		$this->check_json();
+
+		// Check for mbstring support
+		$this->check_mbstring();
 
 		// XML extension support check
 		$this->check_xml();
@@ -151,6 +154,22 @@ class check_server_environment extends \phpbb\install\task_base
 		}
 
 		$this->response_helper->add_error_message('PHP_JSON_SUPPORT', 'PHP_JSON_SUPPORT_EXPLAIN');
+
+		$this->set_test_passed(false);
+	}
+
+	/**
+	 * Checks whether PHP's mbstring extension is available or not
+	 */
+	protected function check_mbstring()
+	{
+		if (@extension_loaded('mbstring'))
+		{
+			$this->set_test_passed(true);
+			return;
+		}
+
+		$this->response_helper->add_error_message('PHP_MBSTRING_SUPPORT', 'PHP_MBSTRING_SUPPORT_EXPLAIN');
 
 		$this->set_test_passed(false);
 	}
