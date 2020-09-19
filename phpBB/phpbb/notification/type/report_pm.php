@@ -60,11 +60,11 @@ class report_pm extends \phpbb\notification\type\pm
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = array(
-		'id'	=> 'notification.type.report',
-		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
+	static public $notification_option = [
+		'id'	=> 'notification.type.report_pm',
+		'lang'	=> 'NOTIFICATION_TYPE_REPORT_PM',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
-	);
+	];
 
 	/**
 	* Get the id of the parent
@@ -84,11 +84,9 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function is_available()
 	{
-		$m_approve = $this->auth->acl_getf($this->permission, true);
-
-		return (!empty($m_approve));
+		return $this->config['allow_pm_report'] &&
+			!empty($this->auth->acl_get($this->permission));
 	}
-
 
 	/**
 	* Find the users who want to receive notifications
@@ -99,11 +97,11 @@ class report_pm extends \phpbb\notification\type\pm
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($post, $options = [])
 	{
-		$options = array_merge(array(
-			'ignore_users'		=> array(),
-		), $options);
+		$options = array_merge([
+			'ignore_users'		=> [],
+		], $options);
 
 		// Global
 		$post['forum_id'] = 0;
@@ -112,7 +110,7 @@ class report_pm extends \phpbb\notification\type\pm
 
 		if (empty($auth_approve))
 		{
-			return array();
+			return [];
 		}
 
 		if (($key = array_search($this->user->data['user_id'], $auth_approve[$post['forum_id']][$this->permission])))
@@ -120,9 +118,9 @@ class report_pm extends \phpbb\notification\type\pm
 			unset($auth_approve[$post['forum_id']][$this->permission][$key]);
 		}
 
-		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, array(
+		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, [
 			'item_type'		=> static::$notification_option['id'],
-		)));
+		]));
 	}
 
 	/**
@@ -144,7 +142,7 @@ class report_pm extends \phpbb\notification\type\pm
 	{
 		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
-		return array(
+		return [
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
 			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
@@ -152,7 +150,7 @@ class report_pm extends \phpbb\notification\type\pm
 			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
 			'U_VIEW_REPORT'	=> generate_board_url() . "/mcp.{$this->php_ext}?r={$this->item_parent_id}&i=pm_reports&mode=pm_report_details",
-		);
+		];
 	}
 
 	/**
@@ -239,15 +237,16 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function users_to_query()
 	{
-		return array(
+		return [
 			$this->get_data('from_user_id'),
 			$this->get_data('reporter_id'),
-		);	}
+		];
+	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($post, $pre_create_data = [])
 	{
 		$this->set_data('reporter_id', $this->user->data['user_id']);
 		$this->set_data('reason_title', strtoupper($post['reason_title']));

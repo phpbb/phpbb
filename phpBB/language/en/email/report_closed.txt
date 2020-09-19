@@ -2,6 +2,12 @@ Subject: Report closed - "{POST_SUBJECT}"
 
 Hello {USERNAME},
 
-You are receiving this notification because the report you filed on the post "{POST_SUBJECT}" in "{TOPIC_TITLE}" at "{SITENAME}" was handled by a moderator or by an administrator. The report was afterwards closed. If you have further questions contact {CLOSER_NAME} with a personal message.
+You are receiving this notification because the report you filed on the post "{POST_SUBJECT}" by "{AUTHOR_NAME}" in "{TOPIC_TITLE}" at "{SITENAME}" was handled by a moderator or by an administrator. The report was afterwards closed. If you have further questions contact {CLOSER_NAME} with a personal message.
+
+You can view your reported post by clicking on the following link:
+
+{U_VIEW_POST}
+
+You have requested that you be notified on this event, remember that you can always choose not to be notified of closed post reports by changing the appropriate setting in your profile.
 
 {EMAIL_SIG}

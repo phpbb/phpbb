@@ -1,0 +1,13 @@
+Subject: Private message report closed - "{SUBJECT}"
+
+Hello {USERNAME},
+
+You are receiving this notification because the report you filed on the private message "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was handled by a moderator or by an administrator. The report was afterwards closed. If you have further questions contact {CLOSER_NAME} with a personal message.
+
+You can view your reported private message by clicking on the following link:
+
+{U_VIEW_MESSAGE}
+
+You have requested that you be notified on this event, remember that you can always choose not to be notified of closed private message reports by changing the appropriate setting in your profile.
+
+{EMAIL_SIG}

@@ -35,18 +35,30 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*
 	* @var string
 	*/
-	public $email_template = '';
+	public $email_template = 'report_pm_closed';
 
 	/**
 	* Language key used to output the text
 	*
 	* @var string
 	*/
-	protected $language_key = 'NOTIFICATION_REPORT_CLOSED';
+	protected $language_key = 'NOTIFICATION_REPORT_PM_CLOSED';
+
+	/**
+	* Notification option data (for outputting to the user)
+	*
+	* @var bool|array False if the service should use it's default data
+	* 					Array of data (including keys 'id', 'lang', and 'group')
+	*/
+	static public $notification_option = [
+		'id'	=> 'notification.type.report_pm_closed',
+		'lang'	=> 'NOTIFICATION_TYPE_REPORT_PM_CLOSED',
+		'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+	];
 
 	public function is_available()
 	{
-		return false;
+		return (bool) $this->config['allow_pm_report'];
 	}
 
 	/**
@@ -57,14 +69,18 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($pm, $options = array())
+	public function find_users_for_notification($pm, $options = [])
 	{
+		$options = array_merge([
+			'ignore_users'		=> [],
+		], $options);
+
 		if ($pm['reporter'] == $this->user->data['user_id'])
 		{
-			return array();
+			return [];
 		}
 
-		return array($pm['reporter'] => $this->notification_manager->get_default_methods());
+		return $this->check_user_notification_options([$pm['reporter']], $options);
 	}
 
 	/**
@@ -74,7 +90,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template()
 	{
-		return false;
+		return $this->email_template;
 	}
 
 	/**
@@ -84,17 +100,16 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template_variables()
 	{
-		return array();
-	}
+		$sender_data = $this->user_loader->get_username($this->get_data('from_user_id'), 'username');
+		$closer_data = $this->user_loader->get_username($this->get_data('closer_id'), 'username');
 
-	/**
-	* Get the url to this item
-	*
-	* @return string URL
-	*/
-	public function get_url()
-	{
-		return '';
+		return [
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($sender_data['username']),
+			'CLOSER_NAME'	=> htmlspecialchars_decode($closer_data['username']),
+			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+
+			'U_VIEW_MESSAGE'=> generate_board_url() . "/ucp.{$this->php_ext}?i=pm&amp;mode=view&amp;p={$this->item_id}",
+		];
 	}
 
 	/**
@@ -140,13 +155,13 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function users_to_query()
 	{
-		return array($this->get_data('closer_id'));
+		return [$this->get_data('closer_id')];
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($pm, $pre_create_data = array())
+	public function create_insert_array($pm, $pre_create_data = [])
 	{
 		$this->set_data('closer_id', $pm['closer_id']);
 
