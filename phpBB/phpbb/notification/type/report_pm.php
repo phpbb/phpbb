@@ -84,10 +84,9 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function is_available()
 	{
-		return !empty($this->auth->acl_get($this->permission)) &&
-			$this->config['allow_pm_report'];
+		return $this->config['allow_pm_report'] &&
+			!empty($this->auth->acl_get($this->permission));
 	}
-
 
 	/**
 	* Find the users who want to receive notifications
