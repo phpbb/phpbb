@@ -520,12 +520,17 @@ class acp_board
 			{
 				$error[] = $language->lang('AVATAR_NO_UPLOAD_PATH');
 			}
-			// Not existing or writable path will be caught on submit by config vars validation
-			// Display the warning if the directory was changed on the server afterwards
-			else if (!$submit &&
-				(!$filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']) || !$filesystem->is_writable($phpbb_root_path . $cfg_array['avatar_path'])))
+			else
 			{
-				$error[] = $language->lang('AVATAR_NO_UPLOAD_DIR');
+				$avatar_path_exists = $filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']);
+				$avatar_path_writable = $filesystem->is_writable($phpbb_root_path . $cfg_array['avatar_path']);
+
+				// Not existing or writable path will be caught on submit by validate_config_vars().
+				// Display the warning if the directory was changed on the server afterwards
+				if (!$submit && (!$avatar_path_exists || !$avatar_path_writable))
+				{
+					$error[] = $language->lang('AVATAR_NO_UPLOAD_DIR');
+				}
 			}
 		}
 
