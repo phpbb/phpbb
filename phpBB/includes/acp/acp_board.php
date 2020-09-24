@@ -512,8 +512,6 @@ class acp_board
 
 		if ($mode == 'avatar' && $cfg_array['allow_avatar_upload'])
 		{
-			$filesystem = $phpbb_container->get('filesystem');
-
 			// If avatar uploading is enabled but the path setting is empty,
 			// config variable validation is bypassed. Catch the case here
 			if (!$cfg_array['avatar_path'])
@@ -522,6 +520,7 @@ class acp_board
 			}
 			else
 			{
+				$filesystem = $phpbb_container->get('filesystem');
 				$avatar_path_exists = $filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']);
 				$avatar_path_writable = $filesystem->is_writable($phpbb_root_path . $cfg_array['avatar_path']);
 
