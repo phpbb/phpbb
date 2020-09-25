@@ -518,7 +518,7 @@ class acp_board
 			{
 				$error[] = $language->lang('AVATAR_NO_UPLOAD_PATH');
 			}
-			else
+			else if (!$submit)
 			{
 				$filesystem = $phpbb_container->get('filesystem');
 				$avatar_path_exists = $filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']);
@@ -526,7 +526,7 @@ class acp_board
 
 				// Not existing or writable path will be caught on submit by validate_config_vars().
 				// Display the warning if the directory was changed on the server afterwards
-				if (!$submit && (!$avatar_path_exists || !$avatar_path_writable))
+				if (!$avatar_path_exists || !$avatar_path_writable)
 				{
 					$error[] = $language->lang('AVATAR_NO_UPLOAD_DIR');
 				}
