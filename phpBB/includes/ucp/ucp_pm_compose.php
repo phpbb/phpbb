@@ -684,7 +684,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
 	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies')) ? true : false;
 	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img')) ? true : false;
-	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
 	$url_status		= ($config['allow_post_links']) ? true : false;
 
 	/**
@@ -726,7 +725,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			if (confirm_box(true))
 			{
 				$message_parser->message = $message;
-				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
+				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, true, $url_status);
 
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'user_id'		=> $user->data['user_id'],
@@ -872,7 +871,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		// Parse message
-		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
+		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, true, $config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
 		if (count($message_parser->warn_msg) && !$refresh)
@@ -1327,7 +1326,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'MESSAGE'				=> $message_text,
 		'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
@@ -1352,7 +1350,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 
 		'S_BBCODE_IMG'			=> $img_status,
-		'S_BBCODE_FLASH'		=> $flash_status,
 		'S_BBCODE_QUOTE'		=> true,
 		'S_BBCODE_URL'			=> $url_status,
 

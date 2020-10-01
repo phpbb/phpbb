@@ -587,10 +587,9 @@ class ucp_main
 							$bbcode_status = $auth->acl_get('u_pm_bbcode') || $auth->acl_getf_global('f_bbcode');
 							$smilies_status = $auth->acl_get('u_pm_smilies') || $auth->acl_getf_global('f_smilies');
 							$img_status = $auth->acl_get('u_pm_img') || $auth->acl_getf_global('f_img');
-							$flash_status = $auth->acl_get('u_pm_flash') || $auth->acl_getf_global('f_flash');
 
 							$message_parser->message = $draft_message;
-							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, $flash_status, true, $config['allow_post_links']);
+							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, true, $config['allow_post_links']);
 
 							$draft_row = array(
 								'draft_subject' => $draft_subject,

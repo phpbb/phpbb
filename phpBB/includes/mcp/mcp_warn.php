@@ -560,7 +560,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		$message_parser = new parse_message();
 
 		$message_parser->message = $warn_pm_body;
-		$message_parser->parse(true, true, true, false, false, true, true);
+		$message_parser->parse(true, true, true, false, true, true);
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],

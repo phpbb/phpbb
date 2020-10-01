@@ -582,7 +582,6 @@ class phpbb_test_case_helpers
 
 			$user->date_format = 'Y-m-d H:i:s';
 			$user->optionset('viewcensors', true);
-			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);
 			$user->optionset('viewsmilies', true);
 			$user->timezone = new \DateTimeZone('UTC');

@@ -1609,7 +1609,6 @@ class acp_users
 					'post_st'			=> $request->variable('post_st', ($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0),
 
 					'view_images'		=> $request->variable('view_images', $this->optionget($user_row, 'viewimg')),
-					'view_flash'		=> $request->variable('view_flash', $this->optionget($user_row, 'viewflash')),
 					'view_smilies'		=> $request->variable('view_smilies', $this->optionget($user_row, 'viewsmilies')),
 					'view_sigs'			=> $request->variable('view_sigs', $this->optionget($user_row, 'viewsigs')),
 					'view_avatars'		=> $request->variable('view_avatars', $this->optionget($user_row, 'viewavatars')),
@@ -1653,7 +1652,6 @@ class acp_users
 					if (!count($error))
 					{
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
-						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
 						$this->optionset($user_row, 'viewsigs', $data['view_sigs']);
 						$this->optionset($user_row, 'viewavatars', $data['view_avatars']);
@@ -1815,7 +1813,6 @@ class acp_users
 					'ATTACH_SIG'		=> $data['sig'],
 					'NOTIFY'			=> $data['notify'],
 					'VIEW_IMAGES'		=> $data['view_images'],
-					'VIEW_FLASH'		=> $data['view_flash'],
 					'VIEW_SMILIES'		=> $data['view_smilies'],
 					'VIEW_SIGS'			=> $data['view_sigs'],
 					'VIEW_AVATARS'		=> $data['view_avatars'],
@@ -2073,7 +2070,6 @@ class acp_users
 					$enable_urls,
 					$enable_smilies,
 					$config['allow_sig_img'],
-					$config['allow_sig_flash'],
 					true,
 					$config['allow_sig_links'],
 					'sig'
@@ -2145,7 +2141,6 @@ class acp_users
 					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
 					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
@@ -2153,7 +2148,6 @@ class acp_users
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
 

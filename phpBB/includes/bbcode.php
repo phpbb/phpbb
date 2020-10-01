@@ -353,25 +353,6 @@ class bbcode
 					);
 				break;
 
-				case BBCODE_ID_FLASH:
-					if ($user->optionget('viewflash'))
-					{
-						$this->bbcode_cache[$bbcode_id] = array(
-							'preg' => array(
-								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> $this->bbcode_tpl('flash', $bbcode_id),
-							)
-						);
-					}
-					else
-					{
-						$this->bbcode_cache[$bbcode_id] = array(
-							'preg' => array(
-								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> str_replace('$1', '$3', str_replace('$2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id, true)))
-							)
-						);
-					}
-				break;
-
 				case BBCODE_ID_ATTACH:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str'	=> array(
@@ -539,7 +520,6 @@ class bbcode
 			'color'					=> array('{COLOR}'		=> '$1', '{TEXT}'			=> '$2'),
 			'size'					=> array('{SIZE}'		=> '$1', '{TEXT}'			=> '$2'),
 			'img'					=> array('{URL}'		=> '$1'),
-			'flash'					=> array('{WIDTH}'		=> '$1', '{HEIGHT}'			=> '$2', '{URL}'	=> '$3'),
 			'url'					=> array('{URL}'		=> '$1', '{DESCRIPTION}'	=> '$2'),
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);

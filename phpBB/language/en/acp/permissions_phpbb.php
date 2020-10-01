@@ -96,7 +96,6 @@ $lang = array_merge($lang, array(
 	'ACL_U_PM_BBCODE'	=> 'Can use BBCode in private messages',
 	'ACL_U_PM_SMILIES'	=> 'Can use smilies in private messages',
 	'ACL_U_PM_IMG'		=> 'Can use [img] BBCode tag in private messages',
-	'ACL_U_PM_FLASH'	=> 'Can use [flash] BBCode tag in private messages',
 
 	'ACL_U_SENDEMAIL'	=> 'Can send emails',
 	'ACL_U_SENDIM'		=> 'Can send instant messages',
@@ -136,7 +135,6 @@ $lang = array_merge($lang, array(
 	'ACL_F_ATTACH'		=> 'Can attach files',
 	'ACL_F_ICONS'		=> 'Can use topic/post icons',
 	'ACL_F_BBCODE'		=> 'Can use BBCode',
-	'ACL_F_FLASH'		=> 'Can use [flash] BBCode tag',
 	'ACL_F_IMG'			=> 'Can use [img] BBCode tag',
 	'ACL_F_SIGS'		=> 'Can use signatures',
 	'ACL_F_SMILIES'		=> 'Can use smilies',
