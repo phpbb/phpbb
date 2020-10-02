@@ -17,18 +17,21 @@ Get your copy of phpBB, find support and lots more on [phpBB.com](https://www.ph
 
 To run an installation from the repo (and not from a pre-built package) on a local server, run the following commands:
 
-```bash
-## Fork phpbb/phpbb to your GitHub account, then create a local clone of it:
-
-git clone git://github.com/your_github_name/phpbb.git
-
-## Install phpBB's dependencies (from the root of your phpbb repo):
-
-cd phpBB
-php ../composer.phar install 
-```
+- Fork phpbb/phpbb to your GitHub account, then create a local clone of it:
+  ```
+  git clone https://github.com/your_github_name/phpbb.git
+  ```
+- Install phpBB's dependencies (from the root of your phpbb repo):
+  ```
+  cd phpBB
+  php ../composer.phar install
+  ```
 
 Alternatively, you can read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use Vagrant to develop and contribute to phpBB.
+
+## 📓 Documentation
+
+phpBB's [Development Documentation](https://area51.phpbb.com/docs/dev/index.html) contains all the information you'll need to learn about developing for phpBB's core, extensions and automated testing.
 
 ## 🔬 Automated Testing
 
