@@ -4,7 +4,7 @@ phpBB is a free open-source bulletin board written in PHP.
 
 ## 🧑🏻‍🤝🏻🧑🏽 Community
 
-Get your copy of phpBB, find support and lots more on [phpBB.com](https://www.phpbb.com)! Discuss the development on [area51](https://area51.phpbb.com/phpBB/index.php).
+Get your copy of phpBB, find support and lots more on [phpBB.com](https://www.phpbb.com). Discuss the development on [area51](https://area51.phpbb.com/phpBB/index.php).
 
 ## 👨‍💻 Contribute
 
