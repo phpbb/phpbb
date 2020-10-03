@@ -361,6 +361,12 @@ dd.option {
 	line-height: 1.4em;
 }
 
+.agreement-text {
+	font-size: 1.0em;
+	line-height: 1.4em;
+	margin-bottom: 1em;
+}
+
 dl.faq {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
