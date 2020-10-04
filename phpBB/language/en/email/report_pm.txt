@@ -2,7 +2,7 @@ Subject: Private Message report - "{SUBJECT}"
 
 Hello {USERNAME},
 
-You are receiving this notification because a Private Message titled "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was reported.
+A Private Message titled "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was reported.
 
 If you want to view the report, click the following link:
 {U_VIEW_REPORT}
