@@ -424,7 +424,7 @@ class ucp_register
 				$user_id = user_add($user_row, $cp_data);
 
 				// This should not happen, because the required variables are listed above...
-				if ($user_id === false)
+				if ((bool) $user_id === false)
 				{
 					trigger_error('NO_USER', E_USER_ERROR);
 				}
