@@ -1,4 +1,4 @@
-Subject: Topic "{TOPIC_TITLE}" needs approval
+Subject: Topic needs approval - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 

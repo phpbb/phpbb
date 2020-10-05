@@ -1,4 +1,4 @@
-Subject: Topic moderation notification - "{TOPIC_TITLE}"
+Subject: Topic needs approval - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
