@@ -510,6 +510,29 @@ class acp_board
 			}
 		}
 
+		if ($mode == 'avatar' && $cfg_array['allow_avatar_upload'])
+		{
+			// If avatar uploading is enabled but the path setting is empty,
+			// config variable validation is bypassed. Catch the case here
+			if (!$cfg_array['avatar_path'])
+			{
+				$error[] = $language->lang('AVATAR_NO_UPLOAD_PATH');
+			}
+			else if (!$submit)
+			{
+				$filesystem = $phpbb_container->get('filesystem');
+				$avatar_path_exists = $filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']);
+				$avatar_path_writable = $filesystem->is_writable($phpbb_root_path . $cfg_array['avatar_path']);
+
+				// Not existing or writable path will be caught on submit by validate_config_vars().
+				// Display the warning if the directory was changed on the server afterwards
+				if (!$avatar_path_exists || !$avatar_path_writable)
+				{
+					$error[] = $language->lang('AVATAR_NO_UPLOAD_DIR');
+				}
+			}
+		}
+
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
