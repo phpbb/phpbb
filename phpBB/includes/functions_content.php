@@ -956,7 +956,7 @@ function make_clickable($text, $server_url = false, string $class = 'postlink')
 		$element_exists = false;
 		if (isset($magic_url_match_args[$server_url]))
 		{
-			array_walk_recursive($magic_url_match_args[$server_url], function($value, $key) use (&$element_exists, $static_class)
+			array_walk_recursive($magic_url_match_args[$server_url], function($value) use (&$element_exists, $static_class)
 				{
 					if ($value == $static_class)
 					{
@@ -1010,7 +1010,7 @@ function make_clickable($text, $server_url = false, string $class = 'postlink')
 	{
 		if (preg_match($magic_args[0], $text, $matches))
 		{
-			// Only apply $class from the correcponding function call argument (excepting emails which never has a class)
+			// Only apply $class from the corresponding function call argument (excepting emails which never has a class)
 			if ($magic_args[3] != $static_class && $magic_args[1] != MAGIC_URL_EMAIL)
 			{
 				continue;
