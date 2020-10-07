@@ -428,6 +428,7 @@ class reset_password
 			'PASSWORD_RESET_ERRORS'		=> !empty($errors) ? array_map([$this->language, 'lang'], $errors) : '',
 			'S_IS_PASSWORD_RESET'		=> true,
 			'U_RESET_PASSWORD_ACTION'	=> $this->helper->route('phpbb_ucp_reset_password_controller'),
+			'L_CHANGE_PASSWORD_EXPLAIN'	=> $this->language->lang($this->config['pass_complex'] . '_EXPLAIN', $this->language->lang('CHARACTERS', (int) $this->config['min_pass_chars'])),
 			'S_HIDDEN_FIELDS'			=> build_hidden_fields([
 				'u'		=> $user_id,
 				'token'	=> $reset_token,
