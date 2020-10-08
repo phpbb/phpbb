@@ -103,7 +103,8 @@
 		"postcss-sorting": "5.0.1",
 		"stylelint": "13.2.1",
 		"stylelint-order": "4.0.0",
-		"xo": "^0.33.0"
+		"xo": "^0.33.1",
+		"yargs-parser": ">=13.1.2"
 	},
 	"dependencies": {}
 }
