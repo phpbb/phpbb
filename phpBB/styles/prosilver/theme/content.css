@@ -361,11 +361,11 @@ dd.option {
 	line-height: 1.4em;
 }
 
-.agreement-text {
+.agreement {
 	font-size: 10px;
 }
 
-.agreement-text p {
+.agreement .agreement-text {
 	line-height: 17px;
 	margin-bottom: 10px;
 }
