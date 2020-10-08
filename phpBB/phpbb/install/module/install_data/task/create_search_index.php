@@ -81,6 +81,8 @@ class create_search_index extends \phpbb\install\task_base
 		$this->language			= $container->get('language');
 		$this->phpbb_dispatcher = $container->get('dispatcher');
 		$this->user 			= $container->get('user');
+		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->php_ext			= $php_ext;
 
 		parent::__construct(true);
 	}
