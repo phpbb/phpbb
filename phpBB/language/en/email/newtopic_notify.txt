@@ -1,4 +1,4 @@
-Subject: Topic in "{FORUM_NAME}"
+Subject: New topic in "{FORUM_NAME}"
 List-Unsubscribe: <{U_STOP_WATCHING_FORUM}>
 
 Hello {USERNAME},
