@@ -81,11 +81,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		// We do the folder moving options here too, for template authors to use...
 		$s_folder_move_options = '';
-		if ($folder_id != PRIVMSGS_NO_BOX && $folder_id != PRIVMSGS_OUTBOX)
+		if ($folder_id != PRIVMSGS_NO_BOX && $folder_id != PRIVMSGS_OUTBOX && $folder_id != PRIVMSGS_DRAFTBOX)
 		{
 			foreach ($folder as $f_id => $folder_ary)
 			{
-				if ($f_id == PRIVMSGS_OUTBOX || $f_id == PRIVMSGS_SENTBOX || $f_id == $folder_id)
+				if ($f_id == PRIVMSGS_OUTBOX || $f_id == PRIVMSGS_SENTBOX || $f_id == PRIVMSGS_DRAFTBOX || $f_id == $folder_id)
 				{
 					continue;
 				}
@@ -134,8 +134,14 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
+				$can_delete_message = ($folder_id == PRIVMSGS_DRAFTBOX) || ($auth->acl_get('u_pm_delete'));
+				$can_edit_message = ($folder_id == PRIVMSGS_DRAFTBOX) ||
+					($row['folder_id'] == PRIVMSGS_OUTBOX) && $auth->acl_get('u_pm_edit');
+
 				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
+				$edit_message_url = $can_edit_message ? append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=$message_id") : '';
 				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
+				$delete_message_url  = $can_delete_message ? $remove_message_url : '';
 
 				$row_indicator = '';
 				foreach ($color_rows as $var)
@@ -177,6 +183,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
+					'U_DELETE_PM'		=> $delete_message_url,
+					'U_EDIT_PM'			=> $edit_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
 					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')

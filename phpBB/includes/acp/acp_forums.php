@@ -1559,7 +1559,7 @@ class acp_forums
 			return $errors;
 		}
 
-		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
 
 		/**
 		 * Perform additional actions before move forum content
@@ -2013,14 +2013,6 @@ class acp_forums
 		foreach ($table_ary as $table)
 		{
 			$db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
-		}
-
-		// Set forum ids to 0
-		$table_ary = array(DRAFTS_TABLE);
-
-		foreach ($table_ary as $table)
-		{
-			$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
 		}
 
 		// Adjust users post counts

@@ -146,6 +146,7 @@ $lang = array_merge($lang, array(
 	'BUTTON_FORUM_LOCKED'	=> 'Locked',
 	'BUTTON_INFORMATION'    => 'Information',
 	'BUTTON_NEW_TOPIC'		=> 'New Topic',
+	'BUTTON_LOAD_DRAFTS'	=> 'Load Drafts',
 	'BUTTON_PM'				=> 'PM',
 	'BUTTON_PM_FORWARD'		=> 'Forward',
 	'BUTTON_PM_NEW'			=> 'New PM',
@@ -217,6 +218,7 @@ $lang = array_merge($lang, array(
 		2	=> 'Downloaded %d times',
 	),
 
+	'EDIT_DRAFT'						=> 'Edit draft',
 	'EDIT_POST'							=> 'Edit post',
 	'ELLIPSIS'							=>	'…',
 	'EMAIL'								=> 'Email', // Short form for EMAIL_ADDRESS
@@ -704,6 +706,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_KEYWORDS'			=> 'Search for keywords',
 	'SEARCHING_FORUMS'			=> 'Searching forums',
 	'SEARCH_ACTIVE_TOPICS'		=> 'Active topics',
+	'SEARCH_DRAFTS'				=> 'Your drafts',
 	'SEARCH_FOR'				=> 'Search for',
 	'SEARCH_FORUM'				=> 'Search this forum…',
 	'SEARCH_NEW'				=> 'New posts',

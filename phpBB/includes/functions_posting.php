@@ -235,8 +235,8 @@ function generate_smilies($mode, $forum_id)
 	if ($mode == 'inline' && $display_link)
 	{
 		$template->assign_vars(array(
-			'S_SHOW_SMILEY_LINK' 	=> true,
-			'U_MORE_SMILIES' 		=> $base_url,
+			'S_SHOW_SMILEY_LINK'	=> true,
+			'U_MORE_SMILIES'		=> $base_url,
 		));
 	}
 
@@ -832,135 +832,6 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 //
 
 /**
-* Load Drafts
-*/
-function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $msg_id = 0)
-{
-	global $user, $db, $template, $auth;
-	global $phpbb_root_path, $phpbb_dispatcher, $phpEx;
-
-	$topic_ids = $forum_ids = $draft_rows = array();
-
-	// Load those drafts not connected to forums/topics
-	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
-	if (!$topic_id && !$forum_id)
-	{
-		$sql_and = ' AND d.forum_id = 0 AND d.topic_id = 0';
-	}
-	else
-	{
-		$sql_and = '';
-		$sql_and .= ($forum_id) ? ' AND d.forum_id = ' . (int) $forum_id : '';
-		$sql_and .= ($topic_id) ? ' AND d.topic_id = ' . (int) $topic_id : '';
-	}
-
-	$sql = 'SELECT d.*, f.forum_id, f.forum_name
-		FROM ' . DRAFTS_TABLE . ' d
-		LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = d.forum_id)
-			WHERE d.user_id = ' . $user->data['user_id'] . "
-			$sql_and
-		ORDER BY d.save_time DESC";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_id'])
-		{
-			$topic_ids[] = (int) $row['topic_id'];
-		}
-		$draft_rows[] = $row;
-	}
-	$db->sql_freeresult($result);
-
-	if (!count($draft_rows))
-	{
-		return;
-	}
-
-	$topic_rows = array();
-	if (count($topic_ids))
-	{
-		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
-			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$topic_rows[$row['topic_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-	}
-
-	/**
-	* Drafts found and their topics
-	* Edit $draft_rows in order to add or remove drafts loaded
-	*
-	* @event core.load_drafts_draft_list_result
-	* @var	array	draft_rows			The drafts query result. Includes its forum id and everything about the draft
-	* @var	array	topic_ids			The list of topics got from the topics table
-	* @var	array	topic_rows			The topics that draft_rows references
-	* @since 3.1.0-RC3
-	*/
-	$vars = array('draft_rows', 'topic_ids', 'topic_rows');
-	extract($phpbb_dispatcher->trigger_event('core.load_drafts_draft_list_result', compact($vars)));
-
-	unset($topic_ids);
-
-	$template->assign_var('S_SHOW_DRAFTS', true);
-
-	foreach ($draft_rows as $draft)
-	{
-		$link_topic = $link_forum = $link_pm = false;
-		$view_url = $title = '';
-
-		if (isset($topic_rows[$draft['topic_id']])
-			&& (
-				($topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
-				||
-				(!$topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_getf_global('f_read'))
-			))
-		{
-			$topic_forum_id = ($topic_rows[$draft['topic_id']]['forum_id']) ? $topic_rows[$draft['topic_id']]['forum_id'] : $forum_id;
-
-			$link_topic = true;
-			$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id']);
-			$title = $topic_rows[$draft['topic_id']]['topic_title'];
-
-			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
-		}
-		else if ($draft['forum_id'] && $auth->acl_get('f_read', $draft['forum_id']))
-		{
-			$link_forum = true;
-			$view_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $draft['forum_id']);
-			$title = $draft['forum_name'];
-
-			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id']);
-		}
-		else
-		{
-			// Either display as PM draft if forum_id and topic_id are empty or if access to the forums has been denied afterwards...
-			$link_pm = true;
-			$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d={$draft['draft_id']}" . (($pm_action) ? "&amp;action=$pm_action" : '') . (($msg_id) ? "&amp;p=$msg_id" : ''));
-		}
-
-		$template->assign_block_vars('draftrow', array(
-			'DRAFT_ID'		=> $draft['draft_id'],
-			'DATE'			=> $user->format_date($draft['save_time']),
-			'DRAFT_SUBJECT'	=> $draft['draft_subject'],
-
-			'TITLE'			=> $title,
-			'U_VIEW'		=> $view_url,
-			'U_INSERT'		=> $insert_url,
-
-			'S_LINK_PM'		=> $link_pm,
-			'S_LINK_TOPIC'	=> $link_topic,
-			'S_LINK_FORUM'	=> $link_forum)
-		);
-	}
-}
-
-/**
 * Topic Review
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
@@ -1183,7 +1054,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
-			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}',	1);	return	false;\">",	'</a>')	:	'',
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 			'L_DELETE_POST'		=> $l_deleted_message,
 
@@ -1264,17 +1135,27 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 	// Specify our post mode
 	$post_mode = 'delete';
-	if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && ($data['topic_posts_approved'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1))
+	if ($data['post_visibility'] == ITEM_DRAFT)
 	{
-		$post_mode = 'delete_topic';
+		if ($data['topic_first_post_id'] == $post_id)
+		{
+			$post_mode = 'delete_topic';
+		}
 	}
-	else if ($data['topic_first_post_id'] == $post_id)
+	else
 	{
-		$post_mode = 'delete_first_post';
-	}
-	else if ($data['topic_last_post_id'] == $post_id)
-	{
-		$post_mode = 'delete_last_post';
+		if (($data['topic_first_post_id'] === $data['topic_last_post_id']) && ($data['topic_posts_approved'] + $data['topic_posts_unapproved'] + $data['topic_posts_softdeleted'] == 1))
+		{
+			$post_mode = 'delete_topic';
+		}
+		else if ($data['topic_first_post_id'] == $post_id)
+		{
+			$post_mode = 'delete_first_post';
+		}
+		else if ($data['topic_last_post_id'] == $post_id)
+		{
+			$post_mode = 'delete_last_post';
+		}
 	}
 	$sql_data = array();
 	$next_post_id = false;
@@ -1609,7 +1490,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	}
 	else if ($mode == 'edit')
 	{
-		$post_mode = ($data_ary['topic_posts_approved'] + $data_ary['topic_posts_unapproved'] + $data_ary['topic_posts_softdeleted'] == 1) ? 'edit_topic' : (($data_ary['topic_first_post_id'] == $data_ary['post_id']) ? 'edit_first_post' : (($data_ary['topic_last_post_id'] == $data_ary['post_id']) ? 'edit_last_post' : 'edit'));
+		$post_mode = ($data_ary['topic_posts_approved'] + $data_ary['topic_posts_unapproved'] + $data_ary['topic_posts_softdeleted'] == 1) ? 'edit_topic' : (($data_ary['topic_first_post_id'] == $data_ary['post_id']) ? 'edit_first_post' : (($data_ary['topic_last_post_id']	==	$data_ary['post_id'])	?	'edit_last_post'	:	'edit'));
 	}
 
 	// First of all make sure the subject and topic title are having the correct length.
@@ -1621,20 +1502,29 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$sql_data = $topic_row = array();
 	$poster_id = ($mode == 'edit') ? $data_ary['poster_id'] : (int) $user->data['user_id'];
 
-	// Retrieve some additional information if not present
-	if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
+	if ($data_ary['post_visibility'] == ITEM_DRAFT)
 	{
-		$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
-			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-			WHERE t.topic_id = p.topic_id
-				AND p.post_id = ' . $data_ary['post_id'];
-		$result = $db->sql_query($sql);
-		$topic_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$data_ary['topic_visibility'] = $topic_row['topic_visibility'];
-		$data_ary['post_visibility'] = $topic_row['post_visibility'];
+		$post_visibility = ITEM_DRAFT;
 	}
+	else
+	{
+		// Retrieve some additional information if not present
+		if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
+		{
+			$sql = 'SELECT p.post_visibility, t.topic_type, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+					WHERE t.topic_id = p.topic_id
+						AND p.post_id = ' . $data_ary['post_id'];
+			$result = $db->sql_query($sql);
+			$topic_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($topic_row['post_visibility'] != ITEM_DRAFT)
+			{
+				$data_ary['topic_visibility'] = $topic_row['topic_visibility'];
+				$data_ary['post_visibility'] = $topic_row['post_visibility'];
+			}
+		}
 
 	// This variable indicates if the user is able to post or put into the queue
 	$post_visibility = ITEM_APPROVED;
@@ -1668,6 +1558,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	if (isset($data_ary['force_visibility']))
 	{
 		$post_visibility = (in_array((int) $data_ary['force_visibility'], array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED, ITEM_REAPPROVE))) ? (int) $data_ary['force_visibility'] : $post_visibility;
+	}
 	}
 
 	// Start the transaction here
@@ -1722,6 +1613,15 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					'post_edit_time'	=> $current_time,
 					'post_edit_reason'	=> $data_ary['post_edit_reason'],
 					'post_edit_user'	=> (int) $data_ary['post_edit_user'],
+				);
+
+				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
+			}
+			else if (($data_ary['post_visibility'] == ITEM_DRAFT) && ($post_mode == 'edit' ))
+			{
+				$sql_data[POSTS_TABLE]['sql']	= array(
+					'post_edit_count'	=> 1,
+					'post_edit_time'	=> $current_time,
 				);
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
@@ -1855,8 +1755,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				(($post_visibility == ITEM_DELETED) ? ', topic_posts_softdeleted = topic_posts_softdeleted + 1' : '') .
 				((!empty($data_ary['attachment_data']) || (isset($data_ary['topic_attachment']) && $data_ary['topic_attachment'])) ? ', topic_attachment = 1' : '');
 
-			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data_ary['forum_id']) && $post_visibility == ITEM_APPROVED) ? ', user_posts = user_posts + 1' : '');
-
+			if ($post_visibility != ITEM_DRAFT)
+			{
+				$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data_ary['forum_id']) && $post_visibility == ITEM_APPROVED) ? ', user_posts = user_posts + 1' : '');
+			}
 			if ($post_visibility == ITEM_APPROVED)
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts_approved = forum_posts_approved + 1';
@@ -2243,145 +2145,140 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		USERS_TABLE		=> 'user_id = ' . $poster_id
 	);
 
-	foreach ($sql_data as $table => $update_ary)
+	if ($post_visibility != ITEM_DRAFT)
 	{
-		if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
+		foreach ($sql_data as $table => $update_ary)
 		{
-			$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
+			if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
+			{
+				$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
+				$db->sql_query($sql);
+			}
+		}
+
+		// Delete topic shadows (if any exist). We do not need a shadow topic for an global announcement
+		if ($topic_type == POST_GLOBAL)
+		{
+			$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE topic_moved_id = ' . $data_ary['topic_id'];
 			$db->sql_query($sql);
 		}
-	}
-
-	// Delete topic shadows (if any exist). We do not need a shadow topic for an global announcement
-	if ($topic_type == POST_GLOBAL)
-	{
-		$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-			WHERE topic_moved_id = ' . $data_ary['topic_id'];
-		$db->sql_query($sql);
 	}
 
 	// Committing the transaction before updating search index
 	$db->sql_transaction('commit');
-
-	// Delete draft if post was loaded...
-	$draft_id = $request->variable('draft_loaded', 0);
-	if ($draft_id)
+	if ($data_ary['post_visibility'] != ITEM_DRAFT)
 	{
-		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-			WHERE draft_id = $draft_id
-				AND user_id = {$user->data['user_id']}";
-		$db->sql_query($sql);
-	}
-
-	// Index message contents
-	if ($update_search_index && $data_ary['enable_indexing'])
-	{
-		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = $config['search_type'];
-
-		if (!class_exists($search_type))
+		// Index message contents
+		if ($update_search_index && $data_ary['enable_indexing'])
 		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
+			// Select the search method and do some additional checks to ensure it can actually be utilised
+			$search_type = $config['search_type'];
+
+			if (!class_exists($search_type))
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
+
+			$error = false;
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+
+			if ($error)
+			{
+				trigger_error($error);
+			}
+
+			$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
 		}
 
-		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
+		// Topic Notification, do not change if moderator is changing other users posts...
+		if ($user->data['user_id'] == $poster_id)
 		{
-			trigger_error($error);
+			if (!$data_ary['notify_set'] && $data_ary['notify'])
+			{
+				$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
+					VALUES (' . $user->data['user_id'] . ', ' . $data_ary['topic_id'] . ')';
+				$db->sql_query($sql);
+			}
+			else if (($config['email_enable'] || $config['jab_enable']) && $data_ary['notify_set'] && !$data_ary['notify'])
+			{
+				$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'] . '
+							AND topic_id = ' . $data_ary['topic_id'];
+				$db->sql_query($sql);
+			}
 		}
 
-		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
-	}
-
-	// Topic Notification, do not change if moderator is changing other users posts...
-	if ($user->data['user_id'] == $poster_id)
-	{
-		if (!$data_ary['notify_set'] && $data_ary['notify'])
+		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 		{
-			$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
-				VALUES (' . $user->data['user_id'] . ', ' . $data_ary['topic_id'] . ')';
-			$db->sql_query($sql);
+			// Mark this topic as posted to
+			markread('post', $data_ary['forum_id'], $data_ary['topic_id']);
 		}
-		else if (($config['email_enable'] || $config['jab_enable']) && $data_ary['notify_set'] && !$data_ary['notify'])
+
+		// Mark this topic as read
+		// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
+		markread('topic', $data_ary['forum_id'], $data_ary['topic_id'], time());
+
+		//
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
-				WHERE user_id = ' . $user->data['user_id'] . '
-					AND topic_id = ' . $data_ary['topic_id'];
-			$db->sql_query($sql);
+			$sql = 'SELECT mark_time
+				FROM ' . FORUMS_TRACK_TABLE . '
+					WHERE user_id = ' . $user->data['user_id'] . '
+						AND forum_id = ' . $data_ary['forum_id'];
+			$result = $db->sql_query($sql);
+			$f_mark_time = (int) $db->sql_fetchfield('mark_time');
+			$db->sql_freeresult($result);
 		}
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			$f_mark_time = false;
+		}
+
+		if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			// Update forum info
+			$sql = 'SELECT forum_last_post_time
+				FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $data_ary['forum_id'];
+			$result = $db->sql_query($sql);
+			$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
+			$db->sql_freeresult($result);
+
+			update_forum_tracking_info($data_ary['forum_id'], $forum_last_post_time, $f_mark_time, false);
+		}
+
+		// If a username was supplied or the poster is a guest, we will use the supplied username.
+		// Doing it this way we can use "...post by guest-username..." in notifications when
+		// "guest-username" is supplied or ommit the username if it is not.
+		$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
+
+		// Send Notifications
+		$notification_data = array_merge($data_ary, array(
+			'topic_title'		=> (isset($data_ary['topic_title'])) ? $data_ary['topic_title'] : $subject,
+			'post_username'		=> $username,
+			'poster_id'			=> $poster_id,
+			'post_text'			=> $data_ary['message'],
+			'post_time'			=> $current_time,
+			'post_subject'		=> $subject,
+		));
+
+		/**
+			* This event allows you to modify the notification data upon submission
+			*
+			* @event core.modify_submit_notification_data
+			* @var	array	notification_data	The notification data to be inserted in to the database
+		* @var	array	data_ary			The data array with a lot of the post submission data
+		* @var  string	mode				The posting mode
+			* @var	int		poster_id			The poster id
+		* @since 3.2.4-RC1
+		*/
+		$vars = array('notification_data', 'data_ary', 'mode', 'poster_id');
+		extract($phpbb_dispatcher->trigger_event('core.modify_submit_notification_data', compact($vars)));
+
+		/* @var $phpbb_notifications \phpbb\notification\manager */
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
 	}
-
-	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
-	{
-		// Mark this topic as posted to
-		markread('post', $data_ary['forum_id'], $data_ary['topic_id']);
-	}
-
-	// Mark this topic as read
-	// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
-	markread('topic', $data_ary['forum_id'], $data_ary['topic_id'], time());
-
-	//
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
-	{
-		$sql = 'SELECT mark_time
-			FROM ' . FORUMS_TRACK_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'] . '
-				AND forum_id = ' . $data_ary['forum_id'];
-		$result = $db->sql_query($sql);
-		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
-		$db->sql_freeresult($result);
-	}
-	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
-	{
-		$f_mark_time = false;
-	}
-
-	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
-	{
-		// Update forum info
-		$sql = 'SELECT forum_last_post_time
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $data_ary['forum_id'];
-		$result = $db->sql_query($sql);
-		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
-		$db->sql_freeresult($result);
-
-		update_forum_tracking_info($data_ary['forum_id'], $forum_last_post_time, $f_mark_time, false);
-	}
-
-	// If a username was supplied or the poster is a guest, we will use the supplied username.
-	// Doing it this way we can use "...post by guest-username..." in notifications when
-	// "guest-username" is supplied or ommit the username if it is not.
-	$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
-
-	// Send Notifications
-	$notification_data = array_merge($data_ary, array(
-		'topic_title'		=> (isset($data_ary['topic_title'])) ? $data_ary['topic_title'] : $subject,
-		'post_username'		=> $username,
-		'poster_id'			=> $poster_id,
-		'post_text'			=> $data_ary['message'],
-		'post_time'			=> $current_time,
-		'post_subject'		=> $subject,
-	));
-
-	/**
-	* This event allows you to modify the notification data upon submission
-	*
-	* @event core.modify_submit_notification_data
-	* @var	array	notification_data	The notification data to be inserted in to the database
-	* @var	array	data_ary			The data array with a lot of the post submission data
-	* @var 	string	mode				The posting mode
-	* @var	int		poster_id			The poster id
-	* @since 3.2.4-RC1
-	*/
-	$vars = array('notification_data', 'data_ary', 'mode', 'poster_id');
-	extract($phpbb_dispatcher->trigger_event('core.modify_submit_notification_data', compact($vars)));
-
-	/* @var $phpbb_notifications \phpbb\notification\manager */
-	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($post_visibility == ITEM_APPROVED)
 	{
@@ -2474,7 +2371,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			break;
 		}
 	}
-	else if ($post_visibility == ITEM_DELETED)
+	else if (($post_visibility == ITEM_DELETED) || ($post_visibility == ITEM_DRAFT))
 	{
 		switch ($mode)
 		{
@@ -2490,7 +2387,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		}
 	}
 
-	$params = $add_anchor = '';
+	if ($post_visibility == ITEM_DRAFT)
+	{
+		$url = "{$phpbb_root_path}posting.$phpEx";
+		$url = append_sid($url, 'f=' . $data_ary['forum_id'] . '&amp;p=' . $data_ary['post_id'] . '&amp;mode=edit');
+	}
+	else
+	{
+		$params = $add_anchor = '';
 
 	if ($post_visibility == ITEM_APPROVED ||
 		($auth->acl_get('m_softdelete', $data_ary['forum_id']) && $post_visibility == ITEM_DELETED) ||
@@ -2515,15 +2419,15 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$poll = $poll_ary;
 	$data = $data_ary;
 	/**
-	* This event is used for performing actions directly after a post or topic
-	* has been submitted. When a new topic is posted, the topic ID is
-	* available in the $data array.
-	*
-	* The only action that can be done by altering data made available to this
-	* event is to modify the return URL ($url).
-	*
-	* @event core.submit_post_end
-	* @var	string	mode				Variable containing posting mode value
+		* This event is used for performing actions directly after a post or topic
+		* has been submitted. When a new topic is posted, the topic ID is
+		* available in the $data array.
+		*
+		* The only action that can be done by altering data made available to this
+		* event is to modify the return URL ($url).
+		*
+		* @event core.submit_post_end
+		* @var	string	mode				Variable containing posting mode value
 	* @var	string	subject				Variable containing post subject value
 	* @var	string	username			Variable containing post author name
 	* @var	int		topic_type			Variable containing topic type value
@@ -2535,10 +2439,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	* @var	string	url					The "Return to topic" URL
 	*
 	* @since 3.1.0-a3
-	* @changed 3.1.0-RC3 Added vars mode, subject, username, topic_type,
-	*		poll, update_message, update_search_index
-	*/
-	$vars = array(
+		* @changed 3.1.0-RC3 Added vars mode, subject, username, topic_type,
+		*		poll, update_message, update_search_index
+		*/
+		$vars = array(
 		'mode',
 		'subject',
 		'username',
@@ -2555,6 +2459,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$poll_ary = $poll;
 	unset($data);
 	unset($poll);
+	}
 
 	return $url;
 }
@@ -2739,7 +2644,11 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 	extract($phpbb_dispatcher->trigger_event('core.handle_post_delete_conditions', compact($vars)));
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($force_delete_allowed || ($is_soft && $force_softdelete_allowed) || $auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
+	if ($force_delete_allowed ||
+		 ($is_soft && $force_softdelete_allowed) || $auth->acl_get("m_$perm_check", $forum_id) ||
+		 ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time()	-	($config['delete_time']	*	60)	||	!$config['delete_time']))	||
+		 ($post_data['post_visibility'] == ITEM_DRAFT && $post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && !$post_data['post_edit_locked'])
+	   )
 	{
 		$s_hidden_fields = array(
 			'p'		=> $post_id,
@@ -2812,7 +2721,14 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 			global $template;
 
 			$can_delete = $force_delete_allowed || ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id)));
-			$can_softdelete = $force_softdelete_allowed || ($auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id)));
+			if ($post_data['post_visibility'] == ITEM_DRAFT)
+			{
+				$can_softdelete = false;
+			}
+			else
+			{
+				$can_softdelete = $force_softdelete_allowed || ($auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id)));
+			}
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
@@ -2822,7 +2738,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 			));
 
 			$l_confirm = 'DELETE_POST';
-			if ($post_data['post_visibility'] == ITEM_DELETED)
+			if (($post_data['post_visibility'] == ITEM_DELETED) || ($post_data['post_visibility'] == ITEM_DRAFT))
 			{
 				$l_confirm .= '_PERMANENTLY';
 				$s_hidden_fields['delete_permanent'] = '1';

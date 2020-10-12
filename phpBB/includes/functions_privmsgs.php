@@ -181,14 +181,23 @@ function get_folder($user_id, $folder_id = false)
 	}
 	$db->sql_freeresult($result);
 
+	$folder[PRIVMSGS_DRAFTBOX] = array(
+		'folder_name'		=> $user->lang['PM_DRAFTBOX'],
+		'folder_id_name'	=> 'draftbox',
+		'num_messages'		=> $num_messages[PRIVMSGS_DRAFTBOX],
+		'unread_messages'	=> $num_messages[PRIVMSGS_DRAFTBOX]  // by definition all draft messages are unread
+	);
+
 	$folder[PRIVMSGS_OUTBOX] = array(
 		'folder_name'		=> $user->lang['PM_OUTBOX'],
+		'folder_id_name'	=> 'outbox',
 		'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
 		'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
 	);
 
 	$folder[PRIVMSGS_SENTBOX] = array(
 		'folder_name'		=> $user->lang['PM_SENTBOX'],
+		'folder_id_name'	=> 'sentbox',
 		'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
 		'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
 	);
@@ -196,15 +205,13 @@ function get_folder($user_id, $folder_id = false)
 	// Define Folder Array for template designers (and for making custom folders usable by the template too)
 	foreach ($folder as $f_id => $folder_ary)
 	{
-		$folder_id_name = ($f_id == PRIVMSGS_INBOX) ? 'inbox' : (($f_id == PRIVMSGS_OUTBOX) ? 'outbox' : 'sentbox');
-
 		$template->assign_block_vars('folder', array(
 			'FOLDER_ID'			=> $f_id,
 			'FOLDER_NAME'		=> $folder_ary['folder_name'],
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
 			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
 
-			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id_name),
+			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_ary['folder_id_name']),
 
 			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
@@ -1596,7 +1603,7 @@ function get_folder_status($folder_id, $folder)
 /**
 * Submit PM
 */
-function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
+function submit_pm($mode, $subject, &$data_ary, $local_box = PRIVMSGS_OUTBOX)
 {
 	global $db, $auth, $config, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
 
@@ -1682,7 +1689,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			$db->sql_freeresult($result);
 		}
 
-		if (!count($recipients))
+		if (($local_box != PRIVMSGS_DRAFTBOX) && !count($recipients))
 		{
 			trigger_error('NO_RECIPIENT');
 		}
@@ -1690,6 +1697,11 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 
 	// First of all make sure the subject are having the correct length.
 	$subject = truncate_string($subject);
+
+	if (($local_box == PRIVMSGS_DRAFTBOX) && ($subject == ''))
+	{
+		trigger_error('NO_SUBJECT');
+	}
 
 	$db->sql_transaction('begin');
 
@@ -1699,14 +1711,16 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 	{
 		case 'reply':
 		case 'quote':
-			$root_level = ($data_ary['reply_from_root_level']) ? $data_ary['reply_from_root_level'] : $data_ary['reply_from_msg_id'];
+			if ($local_box != PRIVMSGS_DRAFTBOX)
+			{
+				$root_level = ($data_ary['reply_from_root_level']) ? $data_ary['reply_from_root_level'] : $data_ary['reply_from_msg_id'];
 
-			// Set message_replied switch for this user
-			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-				SET pm_replied = 1
-				WHERE user_id = ' . $data_ary['from_user_id'] . '
-					AND msg_id = ' . $data_ary['reply_from_msg_id'];
-
+				// Set message_replied switch for this user
+				$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+					SET pm_replied = 1
+					WHERE user_id = ' . $data_ary['from_user_id'] . '
+						AND msg_id = ' . $data_ary['reply_from_msg_id'];
+			}
 		// no break
 
 		case 'forward':
@@ -1718,6 +1732,27 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 				'icon_id'			=> $data_ary['icon_id'],
 				'author_ip'			=> $data_ary['from_user_ip'],
 				'message_time'		=> $current_time,
+				'enable_bbcode'		=> $data_ary['enable_bbcode'],
+				'enable_smilies'	=> $data_ary['enable_smilies'],
+				'enable_magic_url'	=> $data_ary['enable_urls'],
+				'enable_sig'		=> $data_ary['enable_sig'],
+				'message_subject'	=> $subject,
+				'message_text'		=> $data_ary['message'],
+				'message_attachment'=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
+				'bbcode_uid'		=> $data_ary['bbcode_uid'],
+				'to_address'		=> implode(':', $to),
+				'bcc_address'		=> implode(':', $bcc),
+				'message_reported'	=> 0,
+			);
+		break;
+
+		case 'submit_draft':
+			$sql_data = array(
+				'icon_id'			=> $data_ary['icon_id'],
+				'message_time'	=> $current_time,
+				'message_edit_count' => 0,
+				'message_edit_reason' => '',
 				'enable_bbcode'		=> $data_ary['enable_bbcode'],
 				'enable_smilies'	=> $data_ary['enable_smilies'],
 				'enable_magic_url'	=> $data_ary['enable_urls'],
@@ -1745,7 +1780,9 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 				'message_text'		=> $data_ary['message'],
 				'message_attachment'=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
-				'bbcode_uid'		=> $data_ary['bbcode_uid']
+				'bbcode_uid'		=> $data_ary['bbcode_uid'],
+				'to_address'		=> implode(':', $to),
+				'bcc_address'		=> implode(':', $bcc),
 			);
 		break;
 	}
@@ -1764,6 +1801,11 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 				WHERE msg_id = ' . $data_ary['msg_id'];
 			$db->sql_query($sql);
 		}
+		else if ($mode == 'submit_draft')
+		{
+			$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_data) . '
+				WHERE msg_id = ' . $data_ary['msg_id'];
+		}
 	}
 
 	if ($mode != 'edit')
@@ -1774,44 +1816,59 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 		}
 		unset($sql);
 
-		$sql_ary = array();
-		foreach ($recipients as $user_id => $type)
+		if ($local_box == PRIVMSGS_DRAFTBOX)
 		{
-			$sql_ary[] = array(
-				'msg_id'		=> (int) $data_ary['msg_id'],
-				'user_id'		=> (int) $user_id,
-				'author_id'		=> (int) $data_ary['from_user_id'],
-				'folder_id'		=> PRIVMSGS_NO_BOX,
-				'pm_new'		=> 1,
-				'pm_unread'		=> 1,
-				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0
-			);
-		}
-
-		$db->sql_multi_insert(PRIVMSGS_TO_TABLE, $sql_ary);
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '
-			WHERE ' . $db->sql_in_set('user_id', array_keys($recipients));
-		$db->sql_query($sql);
-
-		// Put PM into outbox
-		if ($put_in_outbox)
-		{
+			// for drafts, the statuses pm_replied pm_replied etc describe how the message was created, not actions after it was sent
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'msg_id'		=> (int) $data_ary['msg_id'],
 				'user_id'		=> (int) $data_ary['from_user_id'],
 				'author_id'		=> (int) $data_ary['from_user_id'],
-				'folder_id'		=> PRIVMSGS_OUTBOX,
-				'pm_new'		=> 0,
-				'pm_unread'		=> 0,
-				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
+				'folder_id'		=> PRIVMSGS_DRAFTBOX,
+				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0,
+				'pm_replied'	=> ($mode == 'reply') ? 1 : 0))
 			);
+		}
+		else
+		{
+			$sql_ary = array();
+			foreach ($recipients as $user_id => $type)
+			{
+				$sql_ary[] = array(
+					'msg_id'		=> (int) $data_ary['msg_id'],
+					'user_id'		=> (int) $user_id,
+					'author_id'		=> (int) $data_ary['from_user_id'],
+					'folder_id'		=> PRIVMSGS_NO_BOX,
+					'pm_new'		=> 1,
+					'pm_unread'		=> 1,
+					'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0
+				);
+			}
+
+			$db->sql_multi_insert(PRIVMSGS_TO_TABLE, $sql_ary);
+
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '
+				WHERE ' . $db->sql_in_set('user_id', array_keys($recipients));
+			$db->sql_query($sql);
+
+			// Put PM into outbox
+			if ($local_box == PRIVMSGS_OUTBOX)
+			{
+				$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'msg_id'		=> (int) $data_ary['msg_id'],
+					'user_id'		=> (int) $data_ary['from_user_id'],
+					'author_id'		=> (int) $data_ary['from_user_id'],
+					'folder_id'		=> PRIVMSGS_OUTBOX,
+					'pm_new'		=> 0,
+					'pm_unread'		=> 0,
+					'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
+				);
+			}
 		}
 	}
 
 	// Set user last post time
-	if ($mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward' || $mode == 'post')
+	if (($local_box == PRIVMSGS_OUTBOX) && ($mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward' || $mode == 'post' || $mode == 'submit_draft'))
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lastpost_time = $current_time
@@ -1898,13 +1955,12 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 		}
 	}
 
-	// Delete draft if post was loaded...
-	$draft_id = $request->variable('draft_loaded', 0);
-	if ($draft_id)
+	// Delete draft if post was submitted...
+	if ($mode == 'submit_draft')
 	{
-		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-			WHERE draft_id = $draft_id
-				AND user_id = " . $data_ary['from_user_id'];
+		$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
+			WHERE folder_id = ' . PRIVMSGS_DRAFTBOX . '
+				AND msg_id = ' . $data_ary['msg_id'];
 		$db->sql_query($sql);
 	}
 

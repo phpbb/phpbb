@@ -64,13 +64,27 @@ class ucp_pm
 		// Folder directly specified?
 		$folder_specified = $request->variable('folder', '');
 
-		if (!in_array($folder_specified, array('inbox', 'outbox', 'sentbox')))
+		switch ($folder_specified)
 		{
-			$folder_specified = (int) $folder_specified;
-		}
-		else
-		{
-			$folder_specified = ($folder_specified == 'inbox') ? PRIVMSGS_INBOX : (($folder_specified == 'outbox') ? PRIVMSGS_OUTBOX : PRIVMSGS_SENTBOX);
+			case 'inbox';
+				$folder_specified = PRIVMSGS_INBOX;
+				break;
+
+			case 'outbox';
+				$folder_specified = PRIVMSGS_OUTBOX;
+				break;
+
+			case 'sentbox';
+				$folder_specified = PRIVMSGS_SENTBOX;
+				break;
+
+			case 'draftbox';
+				$folder_specified = PRIVMSGS_DRAFTBOX;
+				break;
+
+			default:
+				$folder_specified = (int) $folder_specified;
+				break;
 		}
 
 		if (!$folder_specified)
@@ -127,28 +141,6 @@ class ucp_pm
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
 				$tpl_file = 'ucp_pm_options';
-			break;
-
-			case 'drafts':
-
-				get_folder($user->data['user_id']);
-				$this->p_name = 'pm';
-
-				if (!class_exists('ucp_main'))
-				{
-					include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
-				}
-
-				$module = new ucp_main($this);
-				$module->u_action = $this->u_action;
-				$module->main($id, $mode);
-
-				$this->tpl_name = $module->tpl_name;
-				$this->page_title = 'UCP_PM_DRAFTS';
-
-				unset($module);
-				return;
-
 			break;
 
 			case 'view':
@@ -378,7 +370,7 @@ class ucp_pm
 					'U_SENTBOX'				=> $this->u_action . '&amp;folder=sentbox',
 					'U_CREATE_FOLDER'		=> $this->u_action . '&amp;mode=options',
 					'U_CURRENT_FOLDER'		=> $this->u_action . '&amp;folder=' . $folder_id,
-					'U_MARK_ALL'			=> $this->u_action . '&amp;folder=' . $folder_id . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_pms_read'),
+					'U_MARK_ALL'			=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX || $folder_id == PRIVMSGS_DRAFTBOX) ? '' : $this->u_action . '&amp;folder=' . $folder_id . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_pms_read'),
 
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,

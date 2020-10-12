@@ -576,7 +576,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		$db->sql_freeresult($result);
 	}
 
-	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, TOPICS_TRACK_TABLE);
 
 	/**
 	 * Perform additional actions before topics move

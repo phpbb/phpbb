@@ -540,19 +540,4 @@
 			<value>2</value>
 		</row>
 	</table>
-	<table name="phpbb_drafts">
-		<column>user_id</column>
-		<column>draft_message</column>
-		<column>draft_id</column>
-		<row>
-			<value>2</value>
-			<value></value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>3</value>
-			<value></value>
-			<value>2</value>
-		</row>
-	</table>
 </dataset>

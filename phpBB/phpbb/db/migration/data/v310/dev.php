@@ -413,7 +413,7 @@ class dev extends \phpbb\db\migration\container_aware_migration
 			$this->sql_query($sql);
 
 			// Update some forum_ids
-			$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+			$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, $table_prefix . 'drafts', TOPICS_TRACK_TABLE);
 			foreach ($table_ary as $table)
 			{
 				$sql = "UPDATE $table

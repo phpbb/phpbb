@@ -21,10 +21,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 	public function get_visibility_sql_data()
 	{
 		return array(
-			// data set 0: display_unapproved_posts=false, moderator, can see all posts
+			// data set 0: allow_drafts=false, display_unapproved_posts=false, moderator, can see all posts
 			array(
 				'phpbb_posts',
 				0,
+				false,
 				false,
 				'post', 1, '',
 				array(
@@ -37,10 +38,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 4),
 				),
 			),
-			// data set 1: display_unapproved_posts=false, normal user, cannot see any unapproved posts
+			// data set 1: allow_drafts=false, display_unapproved_posts=false, normal user, cannot see any unapproved posts
 			array(
 				'phpbb_posts',
 				0,
+				false,
 				false,
 				'post', 1, '',
 				array(
@@ -49,10 +51,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 2),
 				),
 			),
-			// data set 2: display_unapproved_posts=false, moderator, can see all topics
+			// data set 2: display_unapproved_posts=false, moderator, can see all topics except draft
 			array(
 				'phpbb_topics',
 				0,
+				false,
 				false,
 				'topic', 1, '',
 				array(
@@ -65,10 +68,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('topic_id' => 4),
 				),
 			),
-			// data set 3: display_unapproved_posts=false, normal user, cannot see unapproved posts topic
+			// data set 3: allow_drafts=false, display_unapproved_posts=false, normal user, cannot see unapproved posts topic
 			array(
 				'phpbb_topics',
 				0,
+				false,
 				false,
 				'topic', 1, '',
 				array(),
@@ -76,11 +80,12 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('topic_id' => 2),
 				),
 			),
-			// data set 4: display_unapproved_posts=true, guest user, cannot see unapproved posts
+			// data set 4: allow_drafts=false, display_unapproved_posts=true, guest user, cannot see unapproved posts
 			array(
 				'phpbb_posts',
 				1,
-				true,
+                true,
+				false,
 				'post', 1, '',
 				array(
 				),
@@ -88,10 +93,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 2),
 				),
 			),
-			// data set 5: display_unapproved_posts=true, guest user, cannot see unapproved posts topic
+			// data set 5: allow_drafts=false, display_unapproved_posts=true, guest user, cannot see unapproved posts topic
 			array(
 				'phpbb_topics',
 				1,
+                false,
 				true,
 				'topic', 1, '',
 				array(),
@@ -99,10 +105,50 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('topic_id' => 2),
 				),
 			),
-			// data set 6: display_unapproved_posts=true, normal user, can see own unapproved posts
+			// data set 6: allow_drafts=false, normal user, does not see own draft posts
 			array(
 				'phpbb_posts',
 				0,
+				false,
+				false,
+				'post', 1, '',
+				array(),
+				array(
+					array('post_id' => 2),
+				),
+			),
+			// data set 7: allow_drafts=true, normal user, can see own draft topic
+			array(
+				'phpbb_topics',
+				0,
+                true,
+				false,
+				'topic', 1, '',
+				array(),
+				array(
+					array('topic_id' => 2),
+					array('topic_id' => 5),
+				),
+			),
+			// data set 8: allow_drafts=true, normal user, can see own draft posts
+			array(
+				'phpbb_posts',
+				0,
+                true,
+				false,
+				'post', 1, '',
+				array(),
+				array(
+					array('post_id' => 2),
+					array('post_id' => 5),
+					array('post_id' => 6),
+				),
+			),
+			// data set 9: allow_drafts=false, display_unapproved_posts=true, normal user, can see own unapproved posts
+			array(
+				'phpbb_posts',
+				0,
+                false,
 				true,
 				'post', 1, '',
 				array(),
@@ -111,10 +157,11 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('post_id' => 2),
 				),
 			),
-			// data set 7: display_unapproved_posts=true, normal user, can see own unapproved posts topic
+			// data set 10: allow_drafts=0, display_unapproved_posts=true, normal user, can see own unapproved posts topic
 			array(
 				'phpbb_topics',
 				0,
+				false,
 				true,
 				'topic', 1, '',
 				array(),
@@ -123,13 +170,50 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 					array('topic_id' => 2),
 				),
 			),
+			// data set 11: allow_drafts=true, moderator, can see own draft topic
+			array(
+				'phpbb_topics',
+				0,
+                true,
+				false,
+				'topic', 1, '',
+				array(
+					array('m_approve', 1, true),
+				),
+				array(
+					array('topic_id' => 1),
+					array('topic_id' => 2),
+					array('topic_id' => 3),
+					array('topic_id' => 4),
+					array('topic_id' => 5),
+				),
+			),
+			// data set 12: allow_drafts=true, moderator, can see own draft posts
+			array(
+				'phpbb_posts',
+				0,
+                true,
+				false,
+				'post', 1, '',
+				array(
+					array('m_approve', 1, true),
+				),
+				array(
+					array('post_id' => 1),
+					array('post_id' => 2),
+					array('post_id' => 3),
+					array('post_id' => 4),
+					array('post_id' => 5),
+					array('post_id' => 6),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider get_visibility_sql_data
 	*/
-	public function test_get_visibility_sql($table, $user_id, $display_unapproved, $mode, $forum_id, $table_alias, $permissions, $expected)
+	public function test_get_visibility_sql($table, $user_id, $allow_drafts, $display_unapproved, $mode, $forum_id, $table_alias, $permissions, $expected)
 	{
 		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
 
@@ -154,7 +238,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 
 		$sql = 'SELECT ' . $mode . '_id
 			FROM ' . $table . '
-			WHERE ' . $content_visibility->get_visibility_sql($mode, $forum_id, $table_alias) . '
+			WHERE ' . $content_visibility->get_visibility_sql($mode, $forum_id, $table_alias, $allow_drafts) . '
 			ORDER BY ' . $mode . '_id ASC';
 		$result = $db->sql_query($sql);
 

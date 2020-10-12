@@ -58,7 +58,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$to_user_id		= $request->variable('u', 0);
 	$to_group_id	= $request->variable('g', 0);
 	$msg_id			= $request->variable('p', 0);
-	$draft_id		= $request->variable('d', 0);
 
 	// Reply to all triggered (quote/reply)
 	$reply_to_all	= $request->variable('reply_to_all', 0);
@@ -67,7 +66,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	$preview	= (isset($_POST['preview'])) ? true : false;
 	$save		= (isset($_POST['save'])) ? true : false;
-	$load		= (isset($_POST['load'])) ? true : false;
 	$cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 	$delete		= (isset($_POST['delete'])) ? true : false;
 
@@ -76,9 +74,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$add_to		= (isset($_REQUEST['add_to'])) ? true : false;
 	$add_bcc	= (isset($_REQUEST['add_bcc'])) ? true : false;
 
-	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load
+	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || $save
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
-	$submit = $request->is_set_post('post') && !$refresh && !$preview;
+	$submit = $request->is_set_post('post') && !$refresh && !$preview && !$save;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
 	$select_single = ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
@@ -130,47 +128,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
 
 	// Output PM_TO box if message composing
-	if ($action != 'edit')
-	{
-		// Add groups to PM box
-		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
-		{
-			$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
-				FROM ' . GROUPS_TABLE . ' g';
-
-			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-			{
-				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-					ON (
-						g.group_id = ug.group_id
-						AND ug.user_id = ' . $user->data['user_id'] . '
-						AND ug.user_pending = 0
-					)
-					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
-			}
-
-			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
-
-			$sql .= 'g.group_receive_pm = 1
-				ORDER BY g.group_type DESC, g.group_name ASC';
-			$result = $db->sql_query($sql);
-
-			$group_options = '';
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
-			}
-			$db->sql_freeresult($result);
-		}
-
-		$template->assign_vars(array(
-			'S_SHOW_PM_BOX'		=> true,
-			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
-		));
-	}
-
 	$sql = '';
 	$folder_id = 0;
 
@@ -226,11 +183,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				trigger_error('NO_MESSAGE');
 			}
 
-			// check for outbox (not read) status, we do not allow editing if one user already having the message
+			// check for outbox/draftbox (not read) status, we do not allow editing if one user already having the message
 			$sql = 'SELECT p.*, t.folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
 				WHERE t.user_id = ' . $user->data['user_id'] . '
-					AND t.folder_id = ' . PRIVMSGS_OUTBOX . "
+					AND t.folder_id IN (' . PRIVMSGS_OUTBOX . ', ' . PRIVMSGS_DRAFTBOX . ")
 					AND t.msg_id = $msg_id
 					AND t.msg_id = p.msg_id";
 		break;
@@ -308,6 +265,47 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$result = $db->sql_query($sql);
 		$post = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if ($action != 'edit')
+		{
+			// Add groups to PM box
+			if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
+			{
+				$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
+					FROM ' . GROUPS_TABLE . ' g';
+
+				if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+				{
+					$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+						ON (
+							g.group_id = ug.group_id
+							AND ug.user_id = ' . $user->data['user_id'] . '
+							AND ug.user_pending = 0
+						)
+						WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+				}
+
+				$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+				$sql .= 'g.group_receive_pm = 1
+					ORDER BY g.group_type DESC, g.group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$group_options = '';
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . ($row['group_colour'] ? ' style="color: #' . $row['group_colour'] . '"' : '') . '>' . $group_helper->get_name($row['group_name'])	.	'</option>';
+				}
+				$db->sql_freeresult($result);
+			}
+
+			$template->assign_vars(array(
+				'S_SHOW_PM_BOX'		=> true,
+				'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
+				'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
+				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
+			));
+		}
 
 		/**
 		* Alter the row of the post being quoted when composing a private message
@@ -655,27 +653,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_urls	= true;
 	}
 
-	$drafts = false;
-
-	// User own some drafts?
-	if ($auth->acl_get('u_savedrafts') && $action != 'delete')
-	{
-		$sql = 'SELECT draft_id
-			FROM ' . DRAFTS_TABLE . '
-			WHERE forum_id = 0
-				AND topic_id = 0
-				AND user_id = ' . $user->data['user_id'] .
-				(($draft_id) ? " AND draft_id <> $draft_id" : '');
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($row)
-		{
-			$drafts = true;
-		}
-	}
-
 	if ($action == 'edit')
 	{
 		$message_parser->bbcode_uid = $bbcode_uid;
@@ -687,116 +664,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
 	$url_status		= ($config['allow_post_links']) ? true : false;
 
-	// Save Draft
-	if ($save && $auth->acl_get('u_savedrafts'))
+	if ($submit || $preview || $refresh || $save)
 	{
-		$subject = $request->variable('subject', '', true);
-		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
-		$message = $request->variable('message', '', true);
-
-		/**
-		 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
-		 * Using their Numeric Character Reference's Hexadecimal notation.
-		 */
-		$subject = utf8_encode_ucr($subject);
-
-		if ($subject && $message)
-		{
-			if (confirm_box(true))
-			{
-				$message_parser->message = $message;
-				$message_parser->parse($bbcode_status, $url_status, $smilies_status, $img_status, $flash_status, true, $url_status);
-
-				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'user_id'		=> $user->data['user_id'],
-					'topic_id'		=> 0,
-					'forum_id'		=> 0,
-					'save_time'		=> $current_time,
-					'draft_subject'	=> $subject,
-					'draft_message'	=> $message_parser->message,
-					)
-				);
-				$db->sql_query($sql);
-
-				/** @var \phpbb\attachment\manager $attachment_manager */
-				$attachment_manager = $phpbb_container->get('attachment.manager');
-				$attachment_manager->delete('attach', array_column($message_parser->attachment_data, 'attach_id'));
-
-				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
-
-				meta_refresh(3, $redirect_url);
-				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
-
-				trigger_error($message);
-			}
-			else
-			{
-				$s_hidden_fields = build_hidden_fields(array(
-					'mode'		=> $mode,
-					'action'	=> $action,
-					'save'		=> true,
-					'subject'	=> $subject,
-					'message'	=> $message,
-					'u'			=> $to_user_id,
-					'g'			=> $to_group_id,
-					'p'			=> $msg_id,
-					'attachment_data' => $message_parser->attachment_data,
-				));
-				$s_hidden_fields .= build_address_field($address_list);
-
-				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
-			}
-		}
-		else
-		{
-			if (utf8_clean_string($subject) === '')
-			{
-				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
-			}
-
-			if (utf8_clean_string($message) === '')
-			{
-				$error[] = $user->lang['TOO_FEW_CHARS'];
-			}
-		}
-
-		unset($subject, $message);
-	}
-
-	// Load Draft
-	if ($draft_id && $auth->acl_get('u_savedrafts'))
-	{
-		$sql = 'SELECT draft_subject, draft_message
-			FROM ' . DRAFTS_TABLE . "
-			WHERE draft_id = $draft_id
-				AND topic_id = 0
-				AND forum_id = 0
-				AND user_id = " . $user->data['user_id'];
-		$result = $db->sql_query_limit($sql, 1);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$message_parser->message = $row['draft_message'];
-			$message_subject = $row['draft_subject'];
-
-			$template->assign_var('S_DRAFT_LOADED', true);
-		}
-		else
-		{
-			$draft_id = 0;
-		}
-		$db->sql_freeresult($result);
-	}
-
-	// Load Drafts
-	if ($load && $drafts)
-	{
-		load_drafts(0, 0, $id, $action, $msg_id);
-	}
-
-	if ($submit || $preview || $refresh)
-	{
-		if (($submit || $preview) && !check_form_key('ucp_pm_compose'))
+		if (($submit || $preview || $save) && !check_form_key('ucp_pm_compose'))
 		{
 			$error[] = $user->lang['FORM_INVALID'];
 		}
@@ -917,7 +787,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_after', compact($vars)));
 
 		// Store message, sync counters
-		if (!count($error) && $submit)
+		if (!count($error) && ($submit || $save))
 		{
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
@@ -946,11 +816,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$subject = utf8_encode_ucr($subject);
 
 			// ((!$message_subject) ? $subject : $message_subject)
-			$msg_id = submit_pm($action, $subject, $pm_data);
+			$msg_id = submit_pm(($folder_id == PRIVMSGS_DRAFTBOX && $submit) ? 'submit_draft' : $action, $subject, $pm_data, ($save) ? PRIVMSGS_DRAFTBOX : PRIVMSGS_OUTBOX);
 
 			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
 			$inbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
 			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
+			$draftbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=draftbox');
 
 			$folder_url = '';
 			if (($folder_id > 0) && isset($user_folders[$folder_id]))
@@ -958,8 +829,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
 			}
 
-			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
-			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
+			$return_box_url = ($save) ? $draftbox_folder_url : (($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url);
+			$return_box_lang = ($save) ? 'PM_DRAFTBOX' : (($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX');
 
 			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
 			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
@@ -1289,7 +1160,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	$s_hidden_fields = (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
-	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
@@ -1325,8 +1195,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
 		'S_LINKS_ALLOWED'		=> $url_status,
 		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
-		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $action != 'edit') ? true : false,
-		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
+		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && ($action != 'edit') || ($folder_id == PRIVMSGS_DRAFTBOX)) ? true : false,
 		'S_FORM_ENCTYPE'		=> $form_enctype,
 		'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 

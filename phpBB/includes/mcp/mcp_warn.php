@@ -569,7 +569,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 			'address_list'			=> array('u' => array($user_row['user_id'] => 'to')),
 		);
 
-		submit_pm('post', $warn_pm_subject, $pm_data, false);
+		submit_pm('post', $warn_pm_subject, $pm_data, PRIVMSGS_NO_BOX);
 	}
 
 	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, [$user_row['username']]);

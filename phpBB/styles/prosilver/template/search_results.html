@@ -102,7 +102,17 @@
 								<a href="{searchresults.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
 									<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
 								</a>
+							<!-- ENDIF -->    		
+							<!-- IF not S_IS_BOT and searchresults.U_VIEW_TOPIC -->			
+								<ul class="post-buttons">
+									<li>
+										<a href="{searchresults.U_VIEW_TOPIC}" title="{L_JUMP_TO_TOPIC}" class="button button-icon-only">
+											<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
+										</a>
+									</li>
+								</ul>
 							<!-- ENDIF -->
+
 							<br />
 							<!-- EVENT topiclist_row_topic_title_after -->
 
@@ -186,30 +196,48 @@
 			<dt class="author">{L_POST_BY_AUTHOR} <!-- EVENT search_results_post_author_username_prepend -->{searchresults.POST_AUTHOR_FULL}<!-- EVENT search_results_post_author_username_append --></dt>
 			<dd class="search-result-date">{searchresults.POST_DATE}</dd>
 			<dd>{L_FORUM}{L_COLON} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></dd>
+        <!-- IF searchresults.TOPIC_REPLIES >= 0 -->
 			<dd>{L_TOPIC}{L_COLON} <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
+	    <!-- ENDIF -->
 			<!-- EVENT search_results_topic_title_after -->
+        <!-- IF not searchresults.U_VIEW_DRAFT -->
 			<dd>{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
 			<dd>{L_VIEWS}{L_COLON} <strong>{searchresults.TOPIC_VIEWS}</strong></dd>
+	    <!-- ENDIF -->
 			<!-- EVENT search_results_postprofile_after -->
 		</dl>
 
 		<div class="postbody">
-			<h3><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></h3>
+			<h3><a href=<!-- IF searchresults.U_VIEW_DRAFT -->"{searchresults.U_VIEW_DRAFT}"<!-- ELSE -->"{searchresults.U_VIEW_POST}"<!-- ENDIF -->>{searchresults.POST_SUBJECT}</a></h3>
+    		<!-- IF not S_IS_BOT and (searchresults.U_VIEW_POST or searchresults.U_EDIT or searchresults.U_DELETE) -->			
+				<ul class="post-buttons">
+				<!-- IF searchresults.U_VIEW_POST -->
+					<li>
+						<a href="{searchresults.U_VIEW_POST}" title="{L_JUMP_TO_POST}" class="button button-icon-only">
+							<i class="icon fa-arrow-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_VIEW}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF searchresults.U_EDIT -->
+					<li>
+						<a href="{searchresults.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
+							<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF searchresults.U_DELETE -->
+					<li>
+						<a href="{searchresults.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
+							<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_DELETE}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				</ul>
+    		<!-- ENDIF -->
 			<div class="content">{searchresults.MESSAGE}</div>
 			<!-- EVENT search_results_content_after -->
 		</div>
 	<!-- ENDIF -->
-
-	<!-- IF not searchresults.S_IGNORE_POST -->
-		<ul class="searchresults">
-			<li>
-				<a href="{searchresults.U_VIEW_POST}" class="arrow-{S_CONTENT_FLOW_END}">
-					<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_JUMP_TO_POST}</span>
-				</a>
-			</li>
-		</ul>
-	<!-- ENDIF -->
-
 			</div>
 		</div>
 		<!-- EVENT search_results_post_after -->

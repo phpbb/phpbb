@@ -113,10 +113,6 @@ $lang = array_merge($lang, array(
 	'DISABLE_SMILIES'			=> 'Disable smilies',
 	'DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed.',
-	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your draft will be deleted after submitting this post.',
-	'DRAFT_LOADED_PM'			=> 'Draft loaded into message area, you may want to finish your private message now.<br />Your draft will be deleted after submitting this private message.',
-	'DRAFT_SAVED'				=> 'Draft successfully saved.',
-	'DRAFT_TITLE'				=> 'Draft title',
 
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMPTY_FILEUPLOAD'			=> 'The uploaded file is empty.',
@@ -141,9 +137,6 @@ $lang = array_merge($lang, array(
 	'IMAGES_ARE_ON'				=> '[img] is <em>ON</em>',
 	'INVALID_FILENAME'			=> '%s is an invalid filename.',
 
-	'LOAD'						=> 'Load',
-	'LOAD_DRAFT'				=> 'Load draft',
-	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be cancelled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
 	'LOGIN_EXPLAIN_BUMP'		=> 'You need to login in order to bump topics within this forum.',
 	'LOGIN_EXPLAIN_DELETE'		=> 'You need to login in order to delete posts within this forum.',
 	'LOGIN_EXPLAIN_SOFT_DELETE'	=> 'You need to login in order to soft-delete posts within this forum.',
@@ -240,7 +233,6 @@ $lang = array_merge($lang, array(
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',
-	'SAVE_DRAFT_CONFIRM'		=> 'Please note that saved drafts only include the subject and the message, any other element will be removed. Do you want to save your draft now?',
 	'SMILIES'					=> 'Smilies',
 	'SMILIES_ARE_OFF'			=> 'Smilies are <em>OFF</em>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <em>ON</em>',
@@ -281,7 +273,7 @@ $lang = array_merge($lang, array(
 	'USER_CANNOT_FORUM_POST'	=> 'You are not able to do posting operations on this forum due to the forum type not supporting it.',
 
 	'VIEW_MESSAGE'				=> '%sView your submitted message%s',
-	'VIEW_PRIVATE_MESSAGE'		=> '%sView your submitted private message%s',
+	'VIEW_PRIVATE_MESSAGE'		=> '%sView this private message%s',
 
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1$d %2$s.',
 	'WRONG_SIZE'				=> 'The image must be at least %1$s wide, %2$s high and at most %3$s wide and %4$s high. The submitted image is %5$s wide and %6$s high.',

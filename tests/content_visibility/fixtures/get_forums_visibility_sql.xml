@@ -3,67 +3,92 @@
 	<table name="phpbb_topics">
 		<column>topic_id</column>
 		<column>forum_id</column>
+		<column>topic_poster</column>
 		<column>topic_visibility</column>
 		<column>topic_title</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved topic</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>1</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved topic</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>1</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted topic</value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>2</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved topic</value>
 		</row>
 		<row>
 			<value>5</value>
 			<value>2</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved topic</value>
 		</row>
 		<row>
 			<value>6</value>
 			<value>2</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted topic</value>
 		</row>
 		<row>
 			<value>7</value>
 			<value>3</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved topic</value>
 		</row>
 		<row>
 			<value>8</value>
 			<value>3</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved topic</value>
 		</row>
 		<row>
 			<value>9</value>
 			<value>3</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted topic</value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft topic</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>1</value>
+			<value>2</value>
+			<value>4</value>
+			<value>Draft topic other user</value>
 		</row>
 	</table>
 	<table name="phpbb_posts">
 		<column>post_id</column>
 		<column>topic_id</column>
 		<column>forum_id</column>
+		<column>poster_id</column>
 		<column>post_visibility</column>
 		<column>post_text</column>
 		<row>
@@ -71,63 +96,104 @@
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved first post in topic</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>2</value>
 			<value>1</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved post</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>3</value>
 			<value>1</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted post</value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>4</value>
 			<value>2</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved first post in topic</value>
 		</row>
 		<row>
 			<value>5</value>
 			<value>5</value>
 			<value>2</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved post</value>
 		</row>
 		<row>
 			<value>6</value>
 			<value>6</value>
 			<value>2</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeleted post</value>
 		</row>
 		<row>
 			<value>7</value>
 			<value>7</value>
 			<value>3</value>
 			<value>0</value>
-			<value>Unapproved</value>
+			<value>0</value>
+			<value>Unapproved first post in topic</value>
 		</row>
 		<row>
 			<value>8</value>
 			<value>8</value>
 			<value>3</value>
+			<value>0</value>
 			<value>1</value>
-			<value>Approved</value>
+			<value>Approved post</value>
 		</row>
 		<row>
 			<value>9</value>
 			<value>9</value>
 			<value>3</value>
+			<value>0</value>
 			<value>2</value>
-			<value>Softdeleted</value>
+			<value>Softdeletedpost </value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post in new topic</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Draft post in approved topic</value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>2</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+			<value>Unapproved subsequent post in topic</value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>2</value>
+			<value>1</value>
+			<value>2</value>
+			<value>4</value>
+			<value>Draft post other user</value>
 		</row>
 	</table>
 </dataset>
