@@ -729,6 +729,28 @@ $url_status		= ($config['allow_post_links']) ? true : false;
 $flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && $config['allow_post_flash']) ? true : false;
 $quote_status	= true;
 
+/**
+ * Adds an opportunity to rewrite in posting content statuses with extensions
+ *
+ * @event core.posting_content_statuses_settings
+ *
+ * @var bool bbcode_status
+ * @var bool smilies_status
+ * @var bool img_status
+ * @var bool url_status
+ * @var bool flash_status
+ * @var bool quote_status
+ */
+$vars = [
+	'bbcode_status',
+	'smilies_status',
+	'img_status',
+	'url_status',
+	'flash_status',
+	'quote_status',
+];
+extract($phpbb_dispatcher->trigger_event('core.posting_content_statuses_settings', compact($vars)));
+
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
