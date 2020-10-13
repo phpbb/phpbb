@@ -362,10 +362,12 @@ dd.option {
 }
 
 .agreement {
-	font-size: 10px;
+	font-size: 12px;
+	line-height: 17px;
+	margin-bottom: 10px;
 }
 
-.agreement .agreement-text {
+.agreement-text {
 	line-height: 17px;
 	margin-bottom: 10px;
 }
