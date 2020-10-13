@@ -687,6 +687,26 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
 	$url_status		= ($config['allow_post_links']) ? true : false;
 
+	/**
+	 * Adds an opportunity to rewrite in private messages content statuses with extensions
+	 *
+	 * @event core.pm_content_statuses_settings
+	 *
+	 * @var bool bbcode_status
+	 * @var bool smilies_status
+	 * @var bool img_status
+	 * @var bool url_status
+	 * @var bool flash_status
+	 */
+	$vars = [
+		'bbcode_status',
+		'smilies_status',
+		'img_status',
+		'url_status',
+		'flash_status',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.pm_content_statuses_settings', compact($vars)));
+
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
