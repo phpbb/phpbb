@@ -118,7 +118,7 @@ class acp_storage
 
 				$options = $this->get_provider_options($this->get_current_provider($storage_name));
 
-				if (isset($options['path']))
+				if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
 				{
 					$path = $this->get_new_definition($storage_name, 'path');
 
@@ -188,7 +188,7 @@ class acp_storage
 			$storage_name = $storage->get_name();
 			$options = $this->get_provider_options($this->get_current_provider($storage_name));
 
-			if (isset($options['path']))
+			if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
 			{
 				$path = $this->get_current_definition($storage_name, 'path');
 
