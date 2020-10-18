@@ -49,6 +49,9 @@ class acp_storage
 	public $page_title;
 
 	/** @var string */
+	public $phpbb_root_path;
+
+	/** @var string */
 	public $tpl_name;
 
 	/** @var string */
@@ -60,7 +63,7 @@ class acp_storage
 	 */
 	public function main($id, $mode)
 	{
-		global $phpbb_container, $phpbb_dispatcher;
+		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path;
 
 		$this->config = $phpbb_container->get('config');
 		$this->filesystem = $phpbb_container->get('filesystem');
@@ -70,6 +73,7 @@ class acp_storage
 		$this->user = $phpbb_container->get('user');
 		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
 		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
+		$this->phpbb_root_path = $phpbb_root_path;
 
 		// Add necesary language files
 		$this->lang->add_lang(['acp/storage']);
@@ -91,8 +95,6 @@ class acp_storage
 	 */
 	public function overview($id, $mode)
 	{
-		global $phpbb_root_path;
-
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
 
@@ -118,19 +120,7 @@ class acp_storage
 
 				$options = $this->get_provider_options($this->get_current_provider($storage_name));
 
-				if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
-				{
-					$path = $this->get_new_definition($storage_name, 'path');
-
-					if (empty($path))
-					{
-						$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'));
-					}
-					else if (!$this->filesystem->is_writable($phpbb_root_path . $path) || !$this->filesystem->exists($phpbb_root_path . $path))
-					{
-						$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'));
-					}
-				}
+				$this->validate_path($storage_name, $options, $messages);
 
 				$modified = false;
 
@@ -188,19 +178,7 @@ class acp_storage
 			$storage_name = $storage->get_name();
 			$options = $this->get_provider_options($this->get_current_provider($storage_name));
 
-			if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
-			{
-				$path = $this->get_current_definition($storage_name, 'path');
-
-				if (empty($path))
-				{
-					$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'));
-				}
-				else if (!$this->filesystem->is_writable($phpbb_root_path . $path) || !$this->filesystem->exists($phpbb_root_path . $path))
-				{
-					$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'));
-				}
-			}
+			$this->validate_path($storage_name, $options, $messages);
 
 			try
 			{
@@ -374,6 +352,31 @@ class acp_storage
 		foreach (array_keys($new_options) as $definition)
 		{
 			$this->config->set('storage\\' . $storage_name . '\\config\\' . $definition, $this->get_new_definition($storage_name, $definition));
+		}
+	}
+
+	/**
+	 * Validates path
+	 *
+	 * @param string $storage_name Storage name
+	 * @param array $options Storage provider configuration keys
+	 * @param array $messages Error messages array
+	 * @return array $messages Reference to messages array
+	 */
+	protected function validate_path($storage_name, $options, &$messages)
+	{
+		if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
+		{
+			$path = $this->request->is_set_post('submit') ? $this->get_new_definition($storage_name, 'path') : $this->get_current_definition($storage_name, 'path');
+
+			if (empty($path))
+			{
+				$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
+			}
+			else if (!$this->filesystem->is_writable($this->phpbb_root_path . $path) || !$this->filesystem->exists($this->phpbb_root_path . $path))
+			{
+				$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
+			}
 		}
 	}
 }
