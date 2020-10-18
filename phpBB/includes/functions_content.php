@@ -1010,7 +1010,7 @@ function make_clickable($text, $server_url = false, string $class = 'postlink')
 		if (preg_match($magic_args[0], $text, $matches))
 		{
 			// Only apply $class from the corresponding function call argument (excepting emails which never has a class)
-			if ($magic_args[3] != $static_class && $magic_args[1] != MAGIC_URL_EMAIL)
+			if ($magic_args[1] != MAGIC_URL_EMAIL && $magic_args[3] != $static_class)
 			{
 				continue;
 			}
