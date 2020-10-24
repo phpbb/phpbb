@@ -1,6 +1,6 @@
 /**
 *
-* phpBB © Copyright phpBB Limited 2003-2019
+* phpBB © Copyright phpBB Limited 2003-2020
 * https://www.phpbb.com
 *
 * phpBB is free software. You can redistribute it and/or modify it

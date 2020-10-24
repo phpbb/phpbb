@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v331">Changes since 3.3.1</a></li>
 		<li><a href="#v331rc1">Changes since 3.3.1-RC1</a></li>
 		<li><a href="#v330">Changes since 3.3.0</a></li>
 		<li><a href="#v330rc1">Changes since 3.3.0-RC1</a></li>
@@ -151,6 +152,49 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v331"></a><h3>Changes since 3.3.1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16366">PHPBB3-16366</a>] - Language dictionaries other than common.php are unavailable to BBCode templates in feeds</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16488">PHPBB3-16488</a>] - ACP build_cfg_template does not support 0 as minimum value</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16512">PHPBB3-16512</a>] - make_clickable() function does not apply custom classes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16525">PHPBB3-16525</a>] - Database backup generates a general error with PostgreSQL 12+</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16526">PHPBB3-16526</a>] - Not proper handled comma-separated ACP configuration values</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16532">PHPBB3-16532</a>] - Example post is stored as invalid XML</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16544">PHPBB3-16544</a>] - topic_notify.txt is wrongly used for forum subscriptions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16565">PHPBB3-16565</a>] - Circular dependencies when cron task depends on controller.helper</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16568">PHPBB3-16568</a>] - Problem with drop-down menu</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16569">PHPBB3-16569</a>] - Massive margin between posts when zoomed out in browser</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16583">PHPBB3-16583</a>] - Reset button in create search index not working</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16588">PHPBB3-16588</a>] - Update docs links from 3.2.x to 3.3.x</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16593">PHPBB3-16593</a>] - Undefined properties in create_search_index install task</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16597">PHPBB3-16597</a>] - Doctum can't build docs on branches older than 3.3.x</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16602">PHPBB3-16602</a>] - phpBB cannot be installed and/or run without iconv or mbstring</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16605">PHPBB3-16605</a>] - SQL Registration errors do not trigger an error correctly</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15300">PHPBB3-15300</a>] - Maximum attachment filesize is nowhere mentioned</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16208">PHPBB3-16208</a>] - No option for email for &quot;Notify me&quot; when a reported post is dealt with</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16430">PHPBB3-16430</a>] - Permission ordering</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16472">PHPBB3-16472</a>] - Remove PhantomJS UI tests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16527">PHPBB3-16527</a>] - Add role_exists to migration tools</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16533">PHPBB3-16533</a>] - Add core and template events to customize UCP login keys management module</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16556">PHPBB3-16556</a>] - Remove purposeless &lt;Files &quot;*&quot;&gt; from .htaccess</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16557">PHPBB3-16557</a>] - Support piping tracker XML to build_changelog.php</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16562">PHPBB3-16562</a>] - Add explanation for password complexity when resetting password</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16604">PHPBB3-16604</a>] - Display error message if avatar upload folder is not writable</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16608">PHPBB3-16608</a>] - Modernize README</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16612">PHPBB3-16612</a>] - Restructure HTML for agreement, coppa, terms etc. </li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15594">PHPBB3-15594</a>] - The deprecated AOL contact field should be removed</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16571">PHPBB3-16571</a>] - Update s9e TextFormatter</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16580">PHPBB3-16580</a>] - Update rendering tests to match actual Prosilver</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16616">PHPBB3-16616</a>] - Update composer dependencies to latest versions</li>
+			</ul>
+
 			<a name="v331rc1"></a><h3>Changes since 3.3.1-RC1</h3>
 			<h4>Bug</h4>
 			<ul>
