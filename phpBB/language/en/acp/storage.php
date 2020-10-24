@@ -68,4 +68,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email for %s of %s.',
 	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long for %s of %s.',
 	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available for %s of %s.',
+
+	'STORAGE_PATH_NOT_EXISTS'		=> '“%1$s” path does not exist or is not writable.',
+	'STORAGE_PATH_NOT_SET'			=> '“%1$s” path is not set.',
 ));
