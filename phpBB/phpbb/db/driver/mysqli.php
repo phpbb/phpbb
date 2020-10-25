@@ -489,4 +489,12 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			break;
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_quote($msg)
+	{
+		return '`' . $msg . '`';
+	}
 }

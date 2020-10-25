@@ -76,4 +76,12 @@ abstract class mssql_base extends \phpbb\db\driver\driver
 	{
 		return $data;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_quote($msg)
+	{
+		return '"' . $msg . '"';
+	}
 }
