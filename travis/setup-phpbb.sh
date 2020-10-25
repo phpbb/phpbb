@@ -14,6 +14,7 @@ set -x
 DB=$1
 TRAVIS_PHP_VERSION=$2
 NOTESTS=$3
+MYSQL8=$4
 
 if [ "$NOTESTS" == '1' ]
 then
@@ -24,6 +25,11 @@ fi
 if [ "$DB" == "mariadb" ]
 then
 	travis/setup-mariadb.sh
+fi
+
+if [ "$MYSQL8" == '1' ]
+then
+	travis/setup-mysql8.sh
 fi
 
 if [ "$NOTESTS" != '1' ]

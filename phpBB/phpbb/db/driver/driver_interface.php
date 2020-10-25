@@ -464,4 +464,12 @@ interface driver_interface
 	* @return string	A SQL statement like: "IN (1, 2, 3, 4)" or "= 1"
 	*/
 	public function sql_in_set($field, $array, $negate = false, $allow_empty_set = false);
+
+	/**
+	* Quote identifiers used in sql query
+	*
+	* @param	string	$msg	String to be quoted
+	* @return	string		Quoted version of $msg
+	*/
+	public function sql_quote($msg);
 }
