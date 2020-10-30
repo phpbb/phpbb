@@ -88,7 +88,7 @@ class language_file_helper
 			throw new \DomainException('INVALID_LANGUAGE_PACK');
 		}
 
-		$authors = array();
+		$authors = [];
 		if (isset($data['authors']))
 		{
 			foreach ($data['authors'] as $author)
@@ -100,13 +100,13 @@ class language_file_helper
 			}
 		}
 
-		return array(
+		return [
 			'iso'			=> $data['extra']['language-iso'],
 			'name'			=> $data['extra']['english-name'],
 			'local_name'	=> $data['extra']['local-name'],
 			'author'		=> implode(', ', $authors),
 			'version'		=> $data['version'],
 			'phpbb_version'	=> $data['extra']['phpbb-version'],
-		);
+		];
 	}
 }
