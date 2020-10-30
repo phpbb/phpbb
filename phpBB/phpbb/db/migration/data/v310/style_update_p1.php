@@ -78,7 +78,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 					$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
 					if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
 					{
-						// 3.1 & 3.2 style
+						// 3.1 - 3.3 style
 						$available_styles[] = $fileinfo->getFilename();
 					}
 				}
@@ -86,9 +86,9 @@ class style_update_p1 extends \phpbb\db\migration\migration
 				{
 					$json = file_get_contents($fileinfo->getPathname() . '/composer.json');
 					$style_data = sanitizer::decode($json);
-					if (isset($style_data['extra']['phpbb-version']) && version_compare($style_data['extra']['phpbb-version'], '3.3.0-dev', '>='))
+					if (isset($style_data['extra']['phpbb-version']) && version_compare($style_data['extra']['phpbb-version'], '4.0.0-dev', '>='))
 					{
-						// 3.3 style
+						// 4.x style
 						$available_styles[] = $fileinfo->getFilename();
 					}
 				}
