@@ -69,7 +69,7 @@ class language_file_helper
 	 * @param string $path
 	 * @return array
 	 */
-	public function get_language_data_from_composer_file($path)
+	public function get_language_data_from_composer_file(string $path)
 	{
 		$json_data = file_get_contents($path);
 		return $this->get_language_data_from_json(sanitizer::decode($json_data));
