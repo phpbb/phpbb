@@ -227,7 +227,6 @@ class jabber
 		if ($this->connected())
 		{
 			$xml = trim($xml);
-			$this->add_to_log('SEND: '. $xml);
 			return fwrite($this->connection, $xml);
 		}
 		else
@@ -338,7 +337,6 @@ class jabber
 
 		if ($data != '')
 		{
-			$this->add_to_log('RECV: '. $data);
 			return $this->xmlize($data);
 		}
 		else
@@ -701,7 +699,7 @@ class jabber
 
 			default:
 				// hm...don't know this response
-				$this->add_to_log('Notice: Unknown server response (' . key($xml) . ')');
+				$this->add_to_log('Notice: Unknown server response');
 				return false;
 			break;
 		}
