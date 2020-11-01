@@ -207,7 +207,7 @@ class jabber
 	*/
 	function login()
 	{
-		if (!count($this->features))
+		if (empty($this->features))
 		{
 			$this->add_to_log('Error: No feature information from server available.');
 			return false;
@@ -417,7 +417,7 @@ class jabber
 		{
 			// or even multiple elements of the same type?
 			// array('message' => array(0 => ..., 1 => ...))
-			if (count(reset($xml)) > 1)
+			if (is_array(reset($xml)) && count(reset($xml)) > 1)
 			{
 				foreach (reset($xml) as $value)
 				{
@@ -443,7 +443,7 @@ class jabber
 				}
 
 				$second_time = isset($this->session['id']);
-				$this->session['id'] = $xml['stream:stream'][0]['@']['id'];
+				$this->session['id'] = isset($xml['stream:stream'][0]['@']['id']) ? $xml['stream:stream'][0]['@']['id'] : '';
 
 				if ($second_time)
 				{
