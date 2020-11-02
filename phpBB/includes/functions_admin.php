@@ -2832,15 +2832,13 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 
 /**
 * Get database size
-* Currently only mysql and mssql are supported
 */
 function get_database_size()
 {
-	global $db, $user, $table_prefix;
+	global $db, $user;
 
 	$database_size = false;
 
-	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
 	switch ($db->get_sql_layer())
 	{
 		case 'mysqli':
@@ -2853,35 +2851,25 @@ function get_database_size()
 			{
 				$version = $row['mysql_version'];
 
-				if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version))
+				$db_name = $db->get_db_name();
+
+				$sql = 'SHOW TABLE STATUS
+					FROM ' . $db_name;
+				$result = $db->sql_query($sql, 7200);
+
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria#', $version)) ? "`{$db->get_db_name()}`" : $db->get_db_name();
-
-					$sql = 'SHOW TABLE STATUS
-						FROM ' . $db_name;
-					$result = $db->sql_query($sql, 7200);
-
-					$database_size = 0;
-					while ($row = $db->sql_fetchrow($result))
+					if (isset($row['Engine'])
+						&& ($row['Engine'] == ('MyISAM' || 'InnoDB' || 'Aria'))
+					)
 					{
-						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB' || $row['Engine'] == 'Aria')))
-						{
-							if ($table_prefix != '')
-							{
-								if (strpos($row['Name'], $table_prefix) !== false)
-								{
-									$database_size += $row['Data_length'] + $row['Index_length'];
-								}
-							}
-							else
-							{
-								$database_size += $row['Data_length'] + $row['Index_length'];
-							}
-						}
+						$database_size += $row['Data_length'] + $row['Index_length'];
 					}
-					$db->sql_freeresult($result);
 				}
+
+				$db->sql_freeresult($result);
 			}
+
 		break;
 
 		case 'sqlite3':
