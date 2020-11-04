@@ -207,7 +207,7 @@ class jabber
 	*/
 	function login()
 	{
-		if (!count($this->features))
+		if (empty($this->features))
 		{
 			$this->add_to_log('Error: No feature information from server available.');
 			return false;
@@ -227,7 +227,6 @@ class jabber
 		if ($this->connected())
 		{
 			$xml = trim($xml);
-			$this->add_to_log('SEND: '. $xml);
 			return fwrite($this->connection, $xml);
 		}
 		else
@@ -338,7 +337,6 @@ class jabber
 
 		if ($data != '')
 		{
-			$this->add_to_log('RECV: '. $data);
 			return $this->xmlize($data);
 		}
 		else
@@ -419,7 +417,7 @@ class jabber
 		{
 			// or even multiple elements of the same type?
 			// array('message' => array(0 => ..., 1 => ...))
-			if (count(reset($xml)) > 1)
+			if (is_array(reset($xml)) && count(reset($xml)) > 1)
 			{
 				foreach (reset($xml) as $value)
 				{
@@ -445,7 +443,7 @@ class jabber
 				}
 
 				$second_time = isset($this->session['id']);
-				$this->session['id'] = $xml['stream:stream'][0]['@']['id'];
+				$this->session['id'] = isset($xml['stream:stream'][0]['@']['id']) ? $xml['stream:stream'][0]['@']['id'] : '';
 
 				if ($second_time)
 				{
@@ -701,7 +699,7 @@ class jabber
 
 			default:
 				// hm...don't know this response
-				$this->add_to_log('Notice: Unknown server response (' . key($xml) . ')');
+				$this->add_to_log('Notice: Unknown server response');
 				return false;
 			break;
 		}
