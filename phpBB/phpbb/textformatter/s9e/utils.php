@@ -31,7 +31,7 @@ class utils implements \phpbb\textformatter\utils_interface
 		// Insert a space before <s> and <e> then remove formatting
 		$xml = preg_replace('#<[es]>#', ' $0', $xml);
 
-		return \s9e\TextFormatter\Utils::removeFormatting($xml);
+		return utf8_htmlspecialchars(\s9e\TextFormatter\Utils::removeFormatting($xml));
 	}
 
 	/**
