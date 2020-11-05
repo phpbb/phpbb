@@ -2849,9 +2849,9 @@ function get_database_size()
 
 			if ($row)
 			{
-				$version = $row['mysql_version'];
-
-				$db_name = $db->get_db_name();
+				$version		= $row['mysql_version'];
+				$mysql_engine	= ['MyISAM', 'InnoDB', 'Aria'];
+				$db_name		= $db->get_db_name();
 
 				$sql = 'SHOW TABLE STATUS
 					FROM ' . $db_name;
@@ -2860,7 +2860,7 @@ function get_database_size()
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if (isset($row['Engine'])
-						&& ($row['Engine'] == ('MyISAM' || 'InnoDB' || 'Aria'))
+						&& in_array($row['Engine'], $mysql_engine)
 					)
 					{
 						$database_size += $row['Data_length'] + $row['Index_length'];
