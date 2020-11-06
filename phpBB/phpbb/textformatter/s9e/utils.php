@@ -15,6 +15,9 @@ namespace phpbb\textformatter\s9e;
 
 /**
 * Text manipulation utilities
+*
+* In this implementation, "plain text" refers to regular text as it would be inputted by a user.
+* "Parsed text" is XML suitable to be reinserted into the database.
 */
 class utils implements \phpbb\textformatter\utils_interface
 {
@@ -31,7 +34,7 @@ class utils implements \phpbb\textformatter\utils_interface
 		// Insert a space before <s> and <e> then remove formatting
 		$xml = preg_replace('#<[es]>#', ' $0', $xml);
 
-		return utf8_htmlspecialchars(\s9e\TextFormatter\Utils::removeFormatting($xml));
+		return \s9e\TextFormatter\Utils::removeFormatting($xml);
 	}
 
 	/**

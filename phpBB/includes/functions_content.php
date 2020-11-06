@@ -532,7 +532,7 @@ function strip_bbcode(&$text, $uid = '')
 
 	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$text = $phpbb_container->get('text_formatter.utils')->clean_formatting($text);
+		$text = utf8_htmlspecialchars($phpbb_container->get('text_formatter.utils')->clean_formatting($text));
 	}
 	else
 	{

@@ -61,12 +61,16 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				'Plain text'
 			),
 			array(
+				'<t>Plain &amp; boring</t>',
+				'Plain & boring'
+			),
+			array(
 				"<t>Multi<br/>\nline</t>",
 				"Multi\nline"
 			),
 			array(
-				'<r><B><s>[b]</s>bold<e>[/b]</e></B></r>',
-				' bold '
+				'<r><B><s>[b]</s>bold<e>[/b]</e></B> &amp; <I><s>[i]</s>italic<e>[/i]</e></I></r>',
+				' bold  &  italic '
 			)
 		);
 	}
