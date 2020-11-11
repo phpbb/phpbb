@@ -33,7 +33,8 @@ class sanitizer
 	{
 		if (!empty($data))
 		{
-			$json_sanitizer = function (&$value) {
+			$json_sanitizer = function (&$value)
+			{
 				$type_cast_helper = new type_cast_helper();
 				$type_cast_helper->set_var($value, $value, gettype($value), true);
 			};
