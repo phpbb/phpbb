@@ -1097,28 +1097,28 @@ class acp_styles
 	{
 		$style['_shown'] = true;
 
-		$row = array(
+		$row = [
 			// Style data
 			'STYLE_INVALID'	=> true,
 			'STYLE_NAME'	=> $this->language->lang('INVALID_STYLE_MESSAGE', $style['style_path']),
-		);
+		];
 
 		$this->template->assign_block_vars('styles_list', $row);
 
-		$this->template->assign_block_vars('styles_list.actions', array(
+		$this->template->assign_block_vars('styles_list.actions', [
 			'HTML'		=> $this->language->lang('CANNOT_BE_INSTALLED')
-		));
+		]);
 
 		// Increase counters
 		if (!isset($this->style_counters))
 		{
-			$this->style_counters = array(
+			$this->style_counters = [
 				'total'		=> 0,
 				'active'	=> 0,
 				'inactive'	=> 0,
 				'caninstall'	=> 0,
 				'cannotinstall'	=> 0
-			);
+			];
 		}
 		$this->style_counters['cannotinstall']++;
 		$this->style_counters['total']++;
@@ -1132,11 +1132,10 @@ class acp_styles
 	*/
 	protected function welcome_message($title, $description)
 	{
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_TITLE'	=> $this->language->lang($title),
 			'L_EXPLAIN'	=> $this->language->is_set($description) ? $this->language->lang($description) : ''
-			)
-		);
+		]);
 	}
 
 	/**
