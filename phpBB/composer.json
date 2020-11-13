@@ -29,7 +29,7 @@
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"bantu/ini-get-wrapper": "~1.0",
-		"composer/package-versions-deprecated": "1.11.99.1",
+		"composer/package-versions-deprecated": "^1.11",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~6.3",
 		"lusitanian/oauth": "^0.8.1",
