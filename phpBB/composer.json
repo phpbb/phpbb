@@ -31,7 +31,7 @@
 		"bantu/ini-get-wrapper": "~1.0",
 		"composer/composer": "^2.0",
 		"composer/installers": "^1.9",
-		"composer/package-versions-deprecated": "1.11.99.1",
+		"composer/package-versions-deprecated": "^1.11",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~6.3",
 		"lusitanian/oauth": "^0.8.1",
