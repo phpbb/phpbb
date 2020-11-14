@@ -64,43 +64,32 @@ class phpbb_help_manager_test extends phpbb_test_case
 	 */
 	public function test_add_block($block_name, $switch, $questions, $switch_expected)
 	{
-		$this->language->expects($this->at(0))
-			->method('lang')
-			->with($block_name)
-			->willReturn(strtoupper($block_name));
-		$lang_call_count = 1;
+		$question_ary = $question_ary_upper = $template_call_args = [];
 		foreach ($questions as $question => $answer)
 		{
-			$this->language->expects($this->at($lang_call_count))
-				->method('lang')
-				->with($question)
-				->willReturn(strtoupper($question));
-			$lang_call_count++;
-
-			$this->language->expects($this->at($lang_call_count))
-				->method('lang')
-				->with($answer)
-				->willReturn(strtoupper($answer));
-			$lang_call_count++;
-		}
-
-		$this->template->expects($this->at(0))
-			->method('assign_block_vars')
-			->with('faq_block', array(
-				'BLOCK_TITLE' => strtoupper($block_name),
-				'SWITCH_COLUMN' => $switch_expected,
-			));
-		$template_call_count = 1;
-		foreach ($questions as $question => $answer)
-		{
-			$this->template->expects($this->at($template_call_count))
-				->method('assign_block_vars')
-				->with('faq_block.faq_row', array(
+			$question_ary = array_merge($question_ary, [[$question], [$answer]]);
+			$question_ary_upper = array_merge($question_ary_upper, [strtoupper($question), strtoupper($answer)]);
+			$template_call_args = array_merge($template_call_args, [['faq_block.faq_row', [
 					'FAQ_QUESTION' => strtoupper($question),
 					'FAQ_ANSWER' => strtoupper($answer),
-				));
-			$template_call_count++;
+				]
+			]]);
 		}
+
+		$this->language->expects($this->exactly(count($questions)*2 + 1))
+			->method('lang')
+			->withConsecutive([$block_name], ...$question_ary)
+			->will($this->onConsecutiveCalls(strtoupper($block_name), ...$question_ary_upper));
+
+		$this->template->expects($this->exactly(count($questions) + 1))
+			->method('assign_block_vars')
+			->withConsecutive(
+				['faq_block', [
+					'BLOCK_TITLE' => strtoupper($block_name),
+					'SWITCH_COLUMN' => $switch_expected,
+				]],
+				...$template_call_args
+			);
 
 		$this->manager->add_block($block_name, $switch, $questions);
 
@@ -110,8 +99,8 @@ class phpbb_help_manager_test extends phpbb_test_case
 	public function add_question_data()
 	{
 		return array(
-			array('abc', false, false),
-			array('def', true, true),
+			array('question1', 'answer1'),
+			array('question2', 'answer2'),
 		);
 	}
 
@@ -123,14 +112,13 @@ class phpbb_help_manager_test extends phpbb_test_case
 	 */
 	public function test_add_question($question, $answer)
 	{
-		$this->language->expects($this->at(0))
+		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->with($question)
-			->willReturn(strtoupper($question));
-		$this->language->expects($this->at(1))
-			->method('lang')
-			->with($answer)
-			->willReturn(strtoupper($answer));
+			->withConsecutive(
+				[$question],
+				[$answer]
+			)
+			->will($this->onConsecutiveCalls(strtoupper($question), strtoupper($answer)));
 
 		$this->template->expects($this->once())
 			->method('assign_block_vars')
@@ -144,41 +132,33 @@ class phpbb_help_manager_test extends phpbb_test_case
 
 	public function test_add_block_double_switch()
 	{
-		$block_name = 'abc';
-		$switch_expected = true;
+		$block_name = ['abc', 'def'];
+		$switch_expected = [true, false];
 
-		$this->language->expects($this->at(0))
+		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->with($block_name)
-			->willReturn(strtoupper($block_name));
+			->withConsecutive([$block_name[0]], [$block_name[1]])
+			->will($this->onConsecutiveCalls(strtoupper($block_name[0]), strtoupper($block_name[1])));
 
-		$this->template->expects($this->at(0))
+		$this->template->expects($this->exactly(2))
 			->method('assign_block_vars')
-			->with('faq_block', array(
-				'BLOCK_TITLE' => strtoupper($block_name),
-				'SWITCH_COLUMN' => $switch_expected,
-			));
+			->withConsecutive(
+				['faq_block', [
+					'BLOCK_TITLE' => strtoupper($block_name[0]),
+					'SWITCH_COLUMN' => $switch_expected[0],
+				]],
+				['faq_block', [
+					'BLOCK_TITLE' => strtoupper($block_name[1]),
+					'SWITCH_COLUMN' => $switch_expected[1],
+				]]
+		
+			);
 
-		$this->manager->add_block($block_name, true);
+		$this->manager->add_block($block_name[0], true);
 		$this->assertTrue($this->manager->switched_column());
 
 		// Add a second block with switch
-		$block_name = 'def';
-		$switch_expected = false;
-
-		$this->language->expects($this->at(0))
-			->method('lang')
-			->with($block_name)
-			->willReturn(strtoupper($block_name));
-
-		$this->template->expects($this->at(0))
-			->method('assign_block_vars')
-			->with('faq_block', array(
-				'BLOCK_TITLE' => strtoupper($block_name),
-				'SWITCH_COLUMN' => $switch_expected,
-			));
-
-		$this->manager->add_block($block_name, true);
+		$this->manager->add_block($block_name[1], true);
 		$this->assertTrue($this->manager->switched_column());
 	}
 }

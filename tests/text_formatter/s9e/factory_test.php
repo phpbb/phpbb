@@ -288,22 +288,13 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	{
 		$this->dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$this->dispatcher
-			->expects($this->at(0))
+			->expects($this->exactly(2))
 			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_configure_before',
-				$this->callback(array($this, 'configure_event_callback'))
+			->withConsecutive(
+				['core.text_formatter_s9e_configure_before', $this->callback(array($this, 'configure_event_callback'))],
+				['core.text_formatter_s9e_configure_after', $this->callback(array($this, 'configure_event_callback'))]
 			)
 			->will($this->returnArgument(1));
-		$this->dispatcher
-			->expects($this->at(1))
-			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_configure_after',
-				$this->callback(array($this, 'configure_event_callback'))
-			)
-			->will($this->returnArgument(1));
-
 		$this->get_factory()->get_configurator();
 	}
 
