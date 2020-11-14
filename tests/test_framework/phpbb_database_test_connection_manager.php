@@ -393,12 +393,16 @@ class phpbb_database_test_connection_manager
 				{
 					$this->pdo->beginTransaction();
 				}
-				else if ($query === 'commit')
+				else if ($query === 'commit' && $this->pdo->inTransaction())
 				{
 					$this->pdo->commit();
 				}
 				else
 				{
+					if (!$this->pdo->inTransaction())
+					{
+						$this->pdo->beginTransaction();
+					}
 					$this->pdo->exec($query);
 				}
 			}
