@@ -88,8 +88,8 @@ class phpbb_test_case extends TestCase
 	 * PHPUnit deprecates several methods and properties in its recent versions
 	 * Provide BC layer to be able to test in multiple environment settings
 	 */
-    public function expectException(string $exception): void
-    {
+	public function expectException(string $exception): void
+	{
 		if (version_compare(self::$phpunit_version, '9.0', '>='))
 		{
 			switch ($exception) {
@@ -124,8 +124,8 @@ class phpbb_test_case extends TestCase
 	 * PHPUnit deprecates several methods and properties in its recent versions
 	 * Provide BC layer to be able to test in multiple environment settings
 	 */
-    public static function assertFileNotExists(string $filename, string $message = ''): void
-    {
+	public static function assertFileNotExists(string $filename, string $message = ''): void
+	{
 		if (version_compare(self::$phpunit_version, '9.0', '>='))
 		{
 			parent::assertFileDoesNotExist($filename, $message);
