@@ -438,22 +438,6 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			->expects($this->any())
 			->method('trigger_event')
 			->will($this->returnArgument(1));
-		$dispatcher
-			->expects($this->at(1))
-			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_render_before',
-				$this->callback(array($this, 'render_before_event_callback'))
-			)
-			->will($this->returnArgument(1));
-		$dispatcher
-			->expects($this->at(2))
-			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_render_after',
-				$this->callback(array($this, 'render_after_event_callback'))
-			)
-			->will($this->returnArgument(1));
 
 		$renderer = new \phpbb\textformatter\s9e\renderer(
 			$container->get('cache.driver'),
@@ -462,6 +446,16 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			$container->get('text_formatter.s9e.factory'),
 			$dispatcher
 		);
+
+		$dispatcher
+			->expects($this->exactly(2))
+			->method('trigger_event')
+			->withConsecutive(
+				['core.text_formatter_s9e_render_before', $this->callback(array($this, 'render_before_event_callback'))],
+				['core.text_formatter_s9e_render_after', $this->callback(array($this, 'render_after_event_callback'))]
+			)
+			->will($this->returnArgument(1));
+
 		$renderer->render('<t>...</t>');
 	}
 
