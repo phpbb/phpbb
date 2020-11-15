@@ -2842,33 +2842,23 @@ function get_database_size()
 	switch ($db->get_sql_layer())
 	{
 		case 'mysqli':
-			$sql = 'SELECT VERSION() AS mysql_version';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$mysql_engine	= ['MyISAM', 'InnoDB', 'Aria'];
 
-			if ($row)
+			$db_name		= $db->get_db_name();
+
+			$sql = 'SHOW TABLE STATUS
+				FROM ' . $db_name;
+			$result = $db->sql_query($sql, 7200);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$version		= $row['mysql_version'];
-				$mysql_engine	= ['MyISAM', 'InnoDB', 'Aria'];
-				$db_name		= $db->get_db_name();
-
-				$sql = 'SHOW TABLE STATUS
-					FROM ' . $db_name;
-				$result = $db->sql_query($sql, 7200);
-
-				while ($row = $db->sql_fetchrow($result))
+				if (isset($row['Engine']) && in_array($row['Engine'], $mysql_engine))
 				{
-					if (isset($row['Engine'])
-						&& in_array($row['Engine'], $mysql_engine)
-					)
-					{
-						$database_size += $row['Data_length'] + $row['Index_length'];
-					}
+					$database_size += $row['Data_length'] + $row['Index_length'];
 				}
-
-				$db->sql_freeresult($result);
 			}
+
+			$db->sql_freeresult($result);
 
 		break;
 
