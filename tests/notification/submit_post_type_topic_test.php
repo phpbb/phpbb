@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 {
 	protected $item_type = 'notification.type.topic';
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -135,9 +135,10 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 		$this->db->sql_freeresult($result);
 
 		$result = $this->db->sql_query(
-			'SELECT *
-			FROM ' . POSTS_TABLE . '
-			WHERE post_id = ' . $reply_id);
+			'SELECT p.*, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_last_post_id
+			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+			WHERE p.topic_id = t.topic_id
+				AND p.post_id = ' . $reply_id);
 		$reply_edit_data = array_merge($this->post_data, $this->db->sql_fetchrow($result), array(
 			'force_approved_state'	=> false,
 			'post_edit_reason'		=> 'PHPBB3-12370',

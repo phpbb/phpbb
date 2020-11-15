@@ -23,7 +23,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 	* @access public
 	* @return null
 	*/
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -61,6 +61,8 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 			'lang_id'	 	 => 1,
 			'lang_name'      => 'field',
 			'field_required' => false,
+			'field_show_novalue'	=> null,
+			'field_novalue'			=> null,
 		);
 	}
 

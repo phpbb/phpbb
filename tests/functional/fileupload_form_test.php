@@ -18,14 +18,14 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 {
 	private $path;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)
@@ -143,7 +143,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$crawler = $this->upload_file('valid.jpg', 'image/jpeg');
 
 		// Ensure there was no error message rendered
-		$this->assertNotContains('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
+		$this->assertStringNotContainsString('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
 
 		// Also the file name should be in the first row of the files table
 		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name')->eq(1)->text());

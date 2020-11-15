@@ -26,7 +26,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		'foo/bar/language/en/',
 	);
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -34,14 +34,14 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass()
+	static public function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
 		self::$helper->restore_original_ext_dir();
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -52,7 +52,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 
@@ -67,9 +67,9 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$crawler = self::request('GET', 'index.php');
 
 		// language from language/en/common.php
-		$this->assertNotContains('Skip to content', $crawler->filter('.skiplink')->text());
+		$this->assertStringNotContainsString('Skip to content', $crawler->filter('.skiplink')->text());
 
 		// language from ext/foo/bar/language/en/foo_global.php
-		$this->assertContains('Overwritten by foo', $crawler->filter('.skiplink')->text());
+		$this->assertStringContainsString('Overwritten by foo', $crawler->filter('.skiplink')->text());
 	}
 }

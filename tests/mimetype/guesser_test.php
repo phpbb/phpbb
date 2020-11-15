@@ -27,7 +27,7 @@ class guesser_test extends \phpbb_test_case
 
 	protected $fileinfo_supported = false;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path;
 
@@ -123,11 +123,10 @@ class guesser_test extends \phpbb_test_case
 
 	/**
 	* @dataProvider data_incorrect_guessers
-	*
-	* @expectedException \LogicException
 	*/
 	public function test_incorrect_guesser($guessers)
 	{
+		$this->expectException(\LogicException::class);
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 	}
 

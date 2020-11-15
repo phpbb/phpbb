@@ -22,7 +22,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		return implode('-', func_get_args());
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

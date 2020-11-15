@@ -17,7 +17,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	protected $path_helper;
 	protected $phpbb_root_path = '';
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

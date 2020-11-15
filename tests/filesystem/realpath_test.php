@@ -18,7 +18,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -27,7 +27,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 		self::$filesystem_own_realpath->setAccessible(true);
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

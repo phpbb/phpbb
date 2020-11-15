@@ -33,6 +33,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$user->data['user_id'] = 2;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$config = new \phpbb\config\config(array(

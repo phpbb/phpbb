@@ -38,11 +38,21 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		// Get session here so that config is mocked correctly
 		$this->session = $this->session_factory->get_session($this->db);
+		$this->session->data['user_id'] = ANONYMOUS; // Don't get into the session_kill() procedure
+		$this->session->lang = [
+			'BOARD_BAN_TIME'	=> 'BOARD_BAN_TIME',
+			'BOARD_BAN_PERM'	=> 'BOARD_BAN_PERM',
+			'BOARD_BAN_REASON'	=> 'BOARD_BAN_REASON',
+			'BAN_TRIGGERED_BY_EMAIL'	=> 'BAN_TRIGGERED_BY_EMAIL',
+			'BAN_TRIGGERED_BY_IP'		=> 'BAN_TRIGGERED_BY_IP',
+			'BAN_TRIGGERED_BY_USER'		=> 'BAN_TRIGGERED_BY_USER',
+		];
+
 		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
@@ -60,7 +70,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		parent::tearDown();
 		// Set cache back to what it was before the test changed it

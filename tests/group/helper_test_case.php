@@ -116,7 +116,7 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		$this->group_helper = new \phpbb\group\helper($auth, $cache_service, $config, $lang, $phpbb_dispatcher, $path_helper, $user);
 	}
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->setup_engine();
 	}

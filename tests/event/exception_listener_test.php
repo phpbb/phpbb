@@ -94,7 +94,7 @@ class exception_listener extends phpbb_test_case
 
 		if (isset($expected['content']))
 		{
-			$this->assertContains($expected['content'], $response->getContent());
+			$this->assertStringContainsString($expected['content'], $response->getContent());
 		}
 	}
 }

@@ -24,7 +24,7 @@ class schema_generator_test extends phpbb_test_case
 	/** @var \phpbb\db\migration\schema_generator */
 	protected $generator;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -46,11 +46,9 @@ class schema_generator_test extends phpbb_test_case
 		return $this->generator;
 	}
 
-	/**
-	 * @expectedException \UnexpectedValueException
-	 */
 	public function test_check_dependencies_fail()
 	{
+		$this->expectException(\UnexpectedValueException::class);
 		$this->get_schema_generator(array('\phpbb\db\migration\data\v310\forgot_password'));
 
 		$this->generator->get_schema();

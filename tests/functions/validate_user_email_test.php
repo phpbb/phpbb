@@ -38,6 +38,7 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->user = new phpbb\user($language, '\phpbb\datetime');
+		$this->user->data['user_email'] = '';
 		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 

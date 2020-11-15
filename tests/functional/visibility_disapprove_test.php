@@ -60,7 +60,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$post = $this->create_topic($this->data['forums']['Disapprove Test #1'], 'Disapprove Test Topic #1', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Disapprove Test Topic #1', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Disapprove Test Topic #1', $crawler->filter('html')->text());
 		$this->data['topics']['Disapprove Test Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Disapprove Test Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -83,7 +83,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$post2 = $this->create_post($this->data['forums']['Disapprove Test #1'], $post['topic_id'], 'Re: Disapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertNotContains('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
 
 		$this->assert_forum_details($this->data['forums']['Disapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -99,7 +99,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$post = $this->create_topic($this->data['forums']['Disapprove Test #1'], 'Disapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Disapprove Test #1']}&sid={$this->sid}");
 
-		$this->assertNotContains('Disapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Disapprove Test Topic #2', $crawler->filter('html')->text());
 
 		$this->assert_forum_details($this->data['forums']['Disapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -155,8 +155,8 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Disapprove Test Topic #1', $crawler->filter('html')->text());
-		$this->assertContains('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Disapprove Test Topic #1', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('DISAPPROVE'))->form();
 		$crawler = self::submit($form);
@@ -176,11 +176,11 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertContains('viewtopic.php?f=' . $this->data['forums']['Disapprove Test #1'] . '&t=' . $this->data['topics']['Disapprove Test Topic #1'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?f=' . $this->data['forums']['Disapprove Test #1'] . '&t=' . $this->data['topics']['Disapprove Test Topic #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Disapprove Test Topic #1', $crawler->filter('html')->text());
-		$this->assertNotContains('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Disapprove Test Topic #1', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
 	}
 
 	public function test_disapprove_topic()
@@ -214,7 +214,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$this->add_lang('viewtopic');
 		$this->add_lang('mcp');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #2']}&sid={$this->sid}");
-		$this->assertContains('Disapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Disapprove Test Topic #2', $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('DISAPPROVE'))->form();
 		$crawler = self::submit($form);
@@ -234,11 +234,11 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertContains('viewforum.php?f=' . $this->data['forums']['Disapprove Test #1'], $link_url);
+		$this->assertStringContainsString('viewforum.php?f=' . $this->data['forums']['Disapprove Test #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #2']}&sid={$this->sid}", array(), false);
 		self::assert_response_html(404);
-		$this->assertNotContains('Disapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Disapprove Test Topic #2', $crawler->filter('html')->text());
 	}
 
 	protected function assert_forum_details($forum_id, $details, $additional_error_message = '')

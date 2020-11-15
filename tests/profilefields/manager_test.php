@@ -39,7 +39,7 @@ class manager_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/manager.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -66,6 +66,8 @@ class manager_test extends phpbb_database_test_case
 		$language	= new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$collection = new \phpbb\di\service_collection($container);
 		$user		= new \phpbb\user($language, '\phpbb\datetime');
+		$user->data['user_id'] = 2;
+		$user->ip = '';
 
 		$this->log	= new \phpbb\log\log($this->db, $user, $auth, $dispatcher, $phpbb_root_path, 'adm/', $phpEx, $table_prefix . 'log');
 

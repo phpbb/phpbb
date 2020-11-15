@@ -13,7 +13,7 @@
 
 class phpbb_class_loader_test extends \phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_class_loader;
 		$phpbb_class_loader->unregister();
@@ -22,7 +22,7 @@ class phpbb_class_loader_test extends \phpbb_test_case
 		$phpbb_class_loader_ext->unregister();
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		global $phpbb_class_loader_ext;
 		$phpbb_class_loader_ext->register();

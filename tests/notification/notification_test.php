@@ -160,6 +160,8 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_subject'	=> 'Re: test-title',
 			'forum_id'		=> 2,
 			'forum_name'	=> 'Your first forum',
+			'post_username'	=> '',
+			'post_text'		=> 'test text',
 		));
 
 		$this->db->sql_query('INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
@@ -176,6 +178,8 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_subject'	=> 'Re: test-title',
 			'forum_id'		=> 2,
 			'forum_name'	=> 'Your first forum',
+			'post_username'	=> '',
+			'post_text'		=> 'test text',
 		));
 
 		$this->notifications->delete_subscription('test');
@@ -267,6 +271,9 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_subject'	=> 'Re: test-title2', // change post_subject
 			'forum_id'		=> 3, // change forum_id
 			'forum_name'	=> 'Your second forum', // change forum_name
+			'post_username'	=> '',
+			'post_text'		=> 'test text2',
+			'post_time'		=> 1349413325,
 		));
 
 		$this->assert_notifications(

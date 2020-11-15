@@ -13,7 +13,7 @@
 
 class migrations_check_config_added_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path;
 

@@ -13,7 +13,7 @@
 
 class phpbb_error_collector_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -28,7 +28,8 @@ class phpbb_error_collector_test extends phpbb_test_case
 		$collector->install();
 
 		// Cause a warning
-		1/0; $line = __LINE__;
+		// Division by zero was promoted to fatal error and throws DivisionByZeroError exception in PHP 8+
+		version_compare(PHP_VERSION, '8', '>=') ? '1b'['0xFF'] : 1/0; $line = __LINE__;
 
 		$collector->uninstall();
 
@@ -39,7 +40,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 
 		// Unfortunately $error_contents will contain the full path here,
 		// because the tests directory is outside of phpbb root path.
-		$this->assertStringStartsWith('Errno 2: Division by zero at ', $error_contents);
+		$this->assertStringStartsWith(version_compare(PHP_VERSION, '8', '>=') ? 'Errno 2: Illegal string offset "0xFF" at ' : 'Errno 2: Division by zero at ', $error_contents);
 		$this->assertStringEndsWith(" line $line", $error_contents);
 	}
 
@@ -49,16 +50,19 @@ class phpbb_error_collector_test extends phpbb_test_case
 		$collector->install();
 
 		// Cause a warning
-		1/0; $line = __LINE__;
+		// Division by zero was promoted to fatal error and throws DivisionByZeroError exception in PHP 8+
+		version_compare(PHP_VERSION, '8', '>=') ? '1b'['0xFF'] : 1/0; $line = __LINE__;
 
-		// Cause a notice
-		$array = array(0 => 'value');
-		$value = $array[1]; $line2 = __LINE__;
+		// Cause a "Notice: unserialize(): Error at offset 0 of 27 bytes in ..."
+		// "Undefined array index" used earlier was promoted to warning in PHP 8.0,
+		// see https://github.com/php/php-src/commit/c48b745f0090c944e77c1fbcfb6c4df3b54356ad
+		unserialize("obvious non-serialized data"); $line2 = __LINE__;
 
 		$collector->uninstall();
 
 		// The notice should not be collected
-		$this->assertEmpty($collector->errors[1]);
+		$this->assertFalse(isset($collector->errors[1]));
+		$this->assertEquals(count($collector->errors), 1);
 
 		list($errno, $msg_text, $errfile, $errline) = $collector->errors[0];
 		$error_contents = $collector->format_errors();
@@ -67,7 +71,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 
 		// Unfortunately $error_contents will contain the full path here,
 		// because the tests directory is outside of phpbb root path.
-		$this->assertStringStartsWith('Errno 2: Division by zero at ', $error_contents);
+		$this->assertStringStartsWith(version_compare(PHP_VERSION, '8', '>=') ? 'Errno 2: Illegal string offset "0xFF" at ' : 'Errno 2: Division by zero at ', $error_contents);
 		$this->assertStringEndsWith(" line $line", $error_contents);
 	}
 }

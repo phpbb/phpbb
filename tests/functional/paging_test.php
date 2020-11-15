@@ -27,17 +27,17 @@ class phpbb_functional_paging_test extends phpbb_functional_test_case
 			$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test post no' . $post_id . ' posted by the testing framework.');
 		}
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
-		$this->assertContains('post no4', $crawler->text());
-		$this->assertNotContains('post no16', $crawler->text());
+		$this->assertStringContainsString('post no4', $crawler->text());
+		$this->assertStringNotContainsString('post no16', $crawler->text());
 
 		$next_link = $crawler->filter('.pagination > ul > li.next > a')->attr('href');
 		$crawler = self::request('GET', $next_link);
-		$this->assertNotContains('post no4', $crawler->text());
-		$this->assertContains('post no16', $crawler->text());
+		$this->assertStringNotContainsString('post no4', $crawler->text());
+		$this->assertStringContainsString('post no16', $crawler->text());
 
 		$prev_link = $crawler->filter('.pagination > ul > li.previous > a')->attr('href');
 		$crawler = self::request('GET', $prev_link);
-		$this->assertContains('post no4', $crawler->text());
-		$this->assertNotContains('post no16', $crawler->text());
+		$this->assertStringContainsString('post no4', $crawler->text());
+		$this->assertStringNotContainsString('post no16', $crawler->text());
 	}
 }

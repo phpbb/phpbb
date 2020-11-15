@@ -94,10 +94,12 @@ class phpbb_session_testable_facade
 		$this->session_factory->merge_config_data($config_overrides);
 		// Bots
 		$this->session_factory->merge_cache_data(array('_bots' => $bot_overrides));
-		global $request;
+		global $request, $symfony_request, $phpbb_filesystem, $phpbb_root_path;
 		$session = $this->session_factory->get_session($this->db);
 		$session->browser = $user_agent;
 		$session->ip = $ip_address;
+		$session->page = $session->extract_current_page($phpbb_root_path);
+
 		// Uri sid
 		if ($uri_sid)
 		{

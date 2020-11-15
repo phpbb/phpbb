@@ -21,23 +21,31 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 
 	public static function select_auth_method_data()
 	{
-		return array(
-			array('acp_board_valid', '<option value="acp_board_valid" selected="selected" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'),
-			array('acp_board_invalid', '<option value="acp_board_valid" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'),
-		);
+		return [
+			['acp_board_valid', '<option value="acp_board_valid" selected="selected" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'],
+			['acp_board_invalid', '<option value="acp_board_valid" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'],
+		];
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
-		global $phpbb_container;
+		global $phpbb_container, $config;
 		$phpbb_container = new phpbb_mock_container_builder();
+		$config = new \phpbb\config\config([]);
 
-		$phpbb_container->set('auth.provider_collection', array(
-				'auth.provider.acp_board_valid'		=> new phpbb\auth\provider\acp\board_valid,
-				'auth.provider.acp_board_invalid'	=> new phpbb\auth\provider\acp\board_invalid,
-		));
+		// Create auth provider service collection
+		$auth_provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
+		$phpbb_container->set('auth.provider_collection', $auth_provider_collection);
+
+		// Create auth provider services
+		$phpbb_container->set('auth.provider.acp_board_valid', new phpbb\auth\provider\acp\board_valid);
+		$phpbb_container->set('auth.provider.acp_board_invalid', new phpbb\auth\provider\acp\board_invalid);
+
+		// Add auth provider servives to the service collection
+		$auth_provider_collection->add('auth.provider.acp_board_valid');
+		$auth_provider_collection->add('auth.provider.acp_board_invalid');
 
 		$this->acp_board = new acp_board();
 	}

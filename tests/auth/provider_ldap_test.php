@@ -21,7 +21,7 @@ class phpbb_auth_provider_ldap_test extends phpbb_database_test_case
 
 	protected $user;
 
-	protected function setup() : void
+	protected function setUp() : void
 	{
 		parent::setUp();
 

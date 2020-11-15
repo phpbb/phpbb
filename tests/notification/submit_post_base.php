@@ -39,6 +39,9 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		'bbcode_bitfield'	=> '',
 		'bbcode_uid'		=> '',
 		'post_edit_locked'	=> false,
+		'notify_set'		=> 0,
+		'notify'			=> false,
+		'forum_name'		=> 'Test forum name',
 		//'force_approved_state'	=> 1,
 	);
 
@@ -47,7 +50,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_' . $this->item_type . '.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -102,6 +105,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			'username'		=> 'user-name',
 			'is_registered'	=> true,
 			'user_colour'	=> '',
+			'user_lastmark'	=> 0,
 		);
 
 		// Request

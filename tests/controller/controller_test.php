@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class phpbb_controller_controller_test extends phpbb_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
@@ -107,7 +107,10 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			array(new foo\controller(), array(), array()),
 			array(array(new foo\controller(), 'handle_fail'), array(), array(), '\phpbb\controller\exception', 'CONTROLLER_ARGUMENT_VALUE_MISSING'),
 			array('', array(), array(), '\ReflectionException', 'Function () does not exist'),
-			array(new phpbb\controller\foo, array(), array(), '\ReflectionException', 'Method __invoke does not exist'),
+			// Before PHP 8: 'Method __invoke does not exist'
+			// As of PHP 8: 'Method phpbb\controller\foo::__invoke() does not exist'
+			array(new phpbb\controller\foo, array(), array(), '\ReflectionException', 
+				'Method ' . (version_compare(PHP_VERSION, '8', '>=') ? 'phpbb\controller\foo::__invoke()' : '__invoke') . ' does not exist'),
 		);
 	}
 

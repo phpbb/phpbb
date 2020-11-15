@@ -22,7 +22,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	* @access public
 	* @return null
 	*/
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $request, $user, $cache, $phpbb_root_path, $phpEx;
 
@@ -53,6 +53,10 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 			'lang_name'        => 'field',
 			'field_required'   => false,
 			'field_validation' => '.*',
+			'field_show_novalue'	=> null,
+			'field_novalue'    	=> null,
+			'field_minlen'		=> null,
+			'field_maxlen'		=> null,
 		);
 	}
 

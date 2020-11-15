@@ -21,7 +21,7 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	/** @var phpbb_mock_extension_manager */
 	protected $extension_manager;
 
-	public static function setUpBeforeClass()
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -30,7 +30,7 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 		self::$reflection_method_get_migration_file_list->setAccessible(true);
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$container = new phpbb_mock_container_builder();
 		$migrator = new phpbb_mock_migrator();

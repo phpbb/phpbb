@@ -59,7 +59,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 		if ($this->has($id))
 		{
 			$service = $this->services[$id];
-			if (is_array($service) && is_callable($service[0]))
+			if (is_array($service) && isset($service[0]) && is_callable($service[0]))
 			{
 				return call_user_func_array($service[0], $service[1]);
 			}

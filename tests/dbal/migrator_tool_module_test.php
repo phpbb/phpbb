@@ -21,7 +21,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator_module.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		// Need global $db, $user for delete_module function in acp_modules
 		global $phpbb_root_path, $phpEx, $skip_add_log, $db, $user, $phpbb_log;
