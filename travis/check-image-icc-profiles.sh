@@ -16,6 +16,6 @@ NOTESTS=$3
 
 if [ "$NOTESTS" == '1' ]
 then
-	find . -type f -a -iregex '.*\.\(gif\|jpg\|jpeg\|png\)$' -a -not -wholename '*vendor/*' | \
+	find . -type f -a -iregex '.*\.\(gif\|jpg\|jpeg\|png\)$' -a -not -wholename '*vendor/*'  -a -not -wholename '*ext/*' | \
 		parallel --gnu --keep-order 'phpBB/develop/strip_icc_profiles.sh {}'
 fi
