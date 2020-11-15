@@ -83,7 +83,7 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 		}
 		catch (Exception $e)
 		{
-			$this->assertContains($expected, $crawler->text());
+			$this->assertStringContainsString($expected, $crawler->text());
 		}
 
 		if ($delete)

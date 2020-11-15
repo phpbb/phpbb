@@ -31,7 +31,7 @@ class phpbb_cache_memory extends \phpbb\cache\driver\memory
 	*/
 	function _read($var)
 	{
-		return $this->data[$var];
+		return $this->data[$var] ?? false;
 	}
 
 	/**

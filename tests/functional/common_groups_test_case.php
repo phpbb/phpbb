@@ -47,9 +47,9 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 
 		$crawler = self::request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
-		$this->assertContains($this->lang('ALLOW_REMOTE_UPLOAD'), $crawler->text());
-		$this->assertContains($this->lang('ALLOW_AVATARS'), $crawler->text());
-		$this->assertContains($this->lang('ALLOW_LOCAL'), $crawler->text());
+		$this->assertStringContainsString($this->lang('ALLOW_REMOTE_UPLOAD'), $crawler->text());
+		$this->assertStringContainsString($this->lang('ALLOW_AVATARS'), $crawler->text());
+		$this->assertStringContainsString($this->lang('ALLOW_LOCAL'), $crawler->text());
 
 		// Now start setting the needed settings
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
@@ -57,7 +57,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 		$form['config[allow_avatar_remote]']->select(1);
 		$form['config[allow_avatar_remote_upload]']->select(1);
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->text());
+		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->text());
 	}
 
 	public function groups_manage_test_data()
@@ -82,7 +82,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 		$form = $this->get_group_manage_form();
 		$form['group_colour']->setValue($input);
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang($expected), $crawler->text());
+		$this->assertStringContainsString($this->lang($expected), $crawler->text());
 	}
 
 	public function group_avatar_min_max_data()
@@ -112,6 +112,6 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 		$form['avatar_driver']->setValue($avatar_type);
 		$form[$form_name]->setValue($input);
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang($expected), $crawler->text());
+		$this->assertStringContainsString($this->lang($expected), $crawler->text());
 	}
 }

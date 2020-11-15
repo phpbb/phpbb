@@ -60,7 +60,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #1', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
 		$this->data['topics']['Unapproved Posts Test Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Unapproved Posts Test Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -83,7 +83,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$post2 = $this->create_post($this->data['forums']['Unapproved Posts Test #1'], $post['topic_id'], 'Re: Unapproved Posts Test Topic #1-#2', 'This is a test post posted by the testing framework.', [], 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
-		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
@@ -99,7 +99,7 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #2', 'This is a test topic posted by the testing framework.', [], 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
 
-		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 
 		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
@@ -149,13 +149,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringNotContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
 		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
-		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
 
 		// another user
@@ -166,13 +166,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringNotContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
 		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
-		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 	}
 
 	public function test_view_unapproved_post_enabled()
@@ -212,18 +212,18 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 		// should be able to see topic 1 and unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
 		// should be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 
 		// should be able to see post in topic 2
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #2']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #2', $crawler->filter('#page-body')->text());
-		$this->assertContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #2', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 		$this->logout();
 
 		// another user
@@ -235,13 +235,13 @@ class phpbb_functional_visibility_unapproved_test extends phpbb_functional_test_
 
 		// should be able to see topic 1 but not unapproved post
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
-		$this->assertNotContains('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
-		$this->assertNotContains('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
+		$this->assertStringContainsString('Unapproved Posts Test Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringNotContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->assertStringNotContainsString('This post is not visible to other users until it has been approved', $crawler->filter('#page-body')->text());
 
 		// should not be able to see topic 2
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
-		$this->assertNotContains('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->assertStringNotContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
 		$this->logout();
 	}
 

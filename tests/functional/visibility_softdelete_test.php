@@ -81,7 +81,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$post = $this->create_topic($this->data['forums']['Soft Delete #1'], 'Soft Delete Topic #1', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('html')->text());
 		$this->data['topics']['Soft Delete Topic #1'] = (int) $post['topic_id'];
 		$this->data['posts']['Soft Delete Topic #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -99,7 +99,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$post2 = $this->create_post($this->data['forums']['Soft Delete #1'], $post['topic_id'], 'Re: Soft Delete Topic #1-#2', 'This is a test post posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?p={$post2['post_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Soft Delete Topic #1-#2', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Re: Soft Delete Topic #1-#2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Soft Delete Topic #1-#2'] = (int) $post2['post_id'];
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
@@ -116,7 +116,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$post3 = $this->create_post($this->data['forums']['Soft Delete #1'], $post['topic_id'], 'Re: Soft Delete Topic #1-#3', 'This is another test post posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?p={$post3['post_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Soft Delete Topic #1-#3', $crawler->filter('html')->text());
+		$this->assertStringContainsString('Re: Soft Delete Topic #1-#3', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Soft Delete Topic #1-#3'] = (int) $post3['post_id'];
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
@@ -177,7 +177,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		), 'after softdelete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
 	}
 
 	public function test_softdelete_post_no_m_delete()
@@ -227,7 +227,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		), 'after softdelete without m_delete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
 	}
 
 	public function test_move_softdeleted_post()
@@ -278,8 +278,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('TOPIC_MOVED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete #2', $crawler->filter('.navlinks')->text());
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Soft Delete #2', $crawler->filter('.navlinks')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 0,
@@ -350,8 +350,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete #2', $crawler->filter('.navlinks')->text());
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Soft Delete #2', $crawler->filter('.navlinks')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 0,
@@ -422,8 +422,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('TOPIC_MOVED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete #1', $crawler->filter('.navlinks')->text());
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Soft Delete #1', $crawler->filter('.navlinks')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 0,
@@ -496,8 +496,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('POST_RESTORED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete #1', $crawler->filter('.navlinks')->text());
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Soft Delete #1', $crawler->filter('.navlinks')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -575,8 +575,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('TOPIC_SPLIT_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
-		$this->assertNotContains('Re: Soft Delete Topic #1-#2', $crawler->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringNotContainsString('Re: Soft Delete Topic #1-#2', $crawler->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -601,7 +601,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		// Assert new topic title is indexed as well
 		$this->add_lang('search');
 		self::request('GET', "search.php?keywords=bang&sid={$this->sid}");
-		$this->assertContains(sprintf($this->lang['FOUND_SEARCH_MATCHES'][1], 1), self::get_content());
+		$this->assertStringContainsString(sprintf($this->lang['FOUND_SEARCH_MATCHES'][1], 1), self::get_content());
 	}
 
 	public function test_move_topic_back()
@@ -689,7 +689,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('POSTS_MERGED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
+		$this->assertStringContainsString('Soft Delete Topic #1', $crawler->filter('h2')->text());
 		$this->assertContainsLang('POST_DELETED_ACTION', $crawler->filter('body')->text());
 		$this->assertContainsLang('BOOKMARK_TOPIC_REMOVE', $crawler->filter('body')->text());
 

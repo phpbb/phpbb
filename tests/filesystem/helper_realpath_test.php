@@ -17,7 +17,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 {
 	protected static $filesystem_helper_phpbb_own_realpath;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

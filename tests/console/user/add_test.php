@@ -93,7 +93,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 		));
 
 		$this->assertNotEquals(null, $this->get_user_id('foo'));
-		$this->assertContains('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
 	}
 
 	public function test_add_dialog()
@@ -113,7 +113,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 		));
 
 		$this->assertNotEquals(null, $this->get_user_id('bar'));
-		$this->assertContains('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
 
 	}
 
@@ -130,8 +130,8 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 			'--email'		=> 'foo'
 		));
 
-		$this->assertContains('USERNAME_TAKEN', $command_tester->getDisplay());
-		$this->assertContains('TOO_SHORT', $command_tester->getDisplay());
-		$this->assertContains('EMAIL_INVALID', $command_tester->getDisplay());
+		$this->assertStringContainsString('USERNAME_TAKEN', $command_tester->getDisplay());
+		$this->assertStringContainsString('TOO_SHORT', $command_tester->getDisplay());
+		$this->assertStringContainsString('EMAIL_INVALID', $command_tester->getDisplay());
 	}
 }

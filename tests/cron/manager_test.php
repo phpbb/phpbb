@@ -21,7 +21,7 @@ require_once dirname(__FILE__) . '/tasks/simple_should_not_run.php';
 class phpbb_cron_manager_test extends \phpbb_test_case
 {
 	protected $manager;
-	protected $tast_name;
+	protected $task_name;
 
 	protected function setUp(): void
 	{

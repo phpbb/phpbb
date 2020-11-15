@@ -31,7 +31,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		parent::tearDown();
 	}
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -39,7 +39,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass()
+	static public function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
@@ -63,9 +63,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	public function test_extensions_list()
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#main')->text());
-		$this->assertContains('phpBB 3.1 Extension Testing', $crawler->filter('#main')->text());
-		$this->assertContains('Details', $crawler->filter('#main')->text());
+		$this->assertStringContainsString($this->lang('EXTENSIONS_EXPLAIN'), $crawler->filter('#main')->text());
+		$this->assertStringContainsString('phpBB 3.1 Extension Testing', $crawler->filter('#main')->text());
+		$this->assertStringContainsString('Details', $crawler->filter('#main')->text());
 	}
 
 	public function test_extensions_details()
@@ -73,15 +73,15 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo%2Fbar&sid=' . $this->sid);
 
 		// Test whether the details are displayed
-		$this->assertContains($this->lang('CLEAN_NAME'), $crawler->filter('#main')->text());
-		$this->assertContains('foo/bar', $crawler->filter('#meta_name')->text());
+		$this->assertStringContainsString($this->lang('CLEAN_NAME'), $crawler->filter('#main')->text());
+		$this->assertStringContainsString('foo/bar', $crawler->filter('#meta_name')->text());
 
-		$this->assertContains($this->lang('PHP_VERSION'), $crawler->filter('#main')->text());
-		$this->assertContains('>=5.3', $crawler->filter('#require_php')->text());
+		$this->assertStringContainsString($this->lang('PHP_VERSION'), $crawler->filter('#main')->text());
+		$this->assertStringContainsString('>=5.3', $crawler->filter('#require_php')->text());
 		// Details should be html escaped
 		// However, text() only returns the displayed text, so HTML Special Chars are decoded.
 		// So we test this directly on the content of the response.
-		$this->assertContains('<span id="require_php">&gt;=5.3</span>', $this->get_content());
+		$this->assertStringContainsString('<span id="require_php">&gt;=5.3</span>', $this->get_content());
 	}
 
 	public function test_extensions_details_notexists()
@@ -89,6 +89,6 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=not%2Fexists&sid=' . $this->sid);
 
 		// Error message because the files do not exist
-		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('#main')->text());
+		$this->assertStringContainsString($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('#main')->text());
 	}
 }

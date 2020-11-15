@@ -25,7 +25,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	static protected $language_reflection_lang;
 
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

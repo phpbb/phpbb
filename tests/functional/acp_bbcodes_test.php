@@ -38,10 +38,10 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 
 		$html = $crawler->filter('#preview')->html();
-		$this->assertContains('<div>a</div>', $html);
-		$this->assertContains('<div>b</div>', $html);
-		$this->assertContains('<div>c</div>', $html);
-		$this->assertContains('<div>d</div>', $html);
+		$this->assertStringContainsString('<div>a</div>', $html);
+		$this->assertStringContainsString('<div>b</div>', $html);
+		$this->assertStringContainsString('<div>c</div>', $html);
+		$this->assertStringContainsString('<div>d</div>', $html);
 	}
 
 	/**

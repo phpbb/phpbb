@@ -531,6 +531,14 @@ class phpbb_test_case_helpers
 		if ($container->has('user'))
 		{
 			$user = $container->get('user');
+
+			// Set default required user data if not set
+			$user->data['is_bot'] = $user->data['is_bot'] ?? false;
+			$user->data['is_registered'] = $user->data['is_registered'] ?? false;
+			$user->data['style_id'] = $user->data['style_id'] ?? 1;
+			$user->data['user_id'] = $user->data['user_id'] ?? ANONYMOUS;
+			$user->data['user_options'] = $user->data['user_options'] ?? 230271;
+			$user->style['style_id'] = $user->style['style_id'] ?? 1;
 		}
 		else
 		{
@@ -545,6 +553,14 @@ class phpbb_test_case_helpers
 			     ->method('format_date')
 			     ->will($this->test_case->returnCallback(__CLASS__ . '::format_date'));
 
+			// Set default required user data
+			$user->data['is_bot'] = false;
+			$user->data['is_registered'] = false;
+			$user->data['style_id'] = 1;
+			$user->data['user_id'] = ANONYMOUS;
+			$user->data['user_options'] = 230271;
+			$user->style['style_id'] = 1;
+
 			$user->date_format = 'Y-m-d H:i:s';
 			$user->optionset('viewcensors', true);
 			$user->optionset('viewflash', true);
@@ -554,11 +570,6 @@ class phpbb_test_case_helpers
 			$container->set('user', $user);
 		}
 		$user->add_lang('common');
-
-		if (!isset($user->style))
-		{
-			$user->style = array('style_id' => 1);
-		}
 
 		// Create and register a quote_helper
 		$quote_helper = new \phpbb\textformatter\s9e\quote_helper(

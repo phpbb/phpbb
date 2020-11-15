@@ -51,7 +51,10 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->data = array('user_lang' => 'en');
+		$user->data = [
+			'user_id'	=> 1,
+			'user_lang' => 'en',
+		];
 		$lang->add_lang('common');
 
 		$user_loader = new phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);

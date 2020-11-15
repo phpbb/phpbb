@@ -32,7 +32,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$form->setValues($values);
 
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
+		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 	}
 
 	public function test_inbox_full()
@@ -41,12 +41,12 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$message_id = $this->create_private_message('Test private message #1', 'This is a test private message sent by the testing framework.', array(2));
 
 		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
-		$this->assertContains($this->lang('UCP_PM_VIEW'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('UCP_PM_VIEW'), $crawler->filter('html')->text());
 
 		$message_id = $this->create_private_message('Test private message #2', 'This is a test private message sent by the testing framework.', array(2));
 
 		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
-		$this->assertContains($this->lang('NO_AUTH_READ_HOLD_MESSAGE'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('NO_AUTH_READ_HOLD_MESSAGE'), $crawler->filter('html')->text());
 	}
 
 	public function test_restore_config()
@@ -64,7 +64,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$form->setValues($values);
 
 		$crawler = self::submit($form);
-		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
+		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 	}
 
 	public function test_quote_post()
@@ -105,6 +105,6 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
 
-		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
+		$this->assertStringContainsString($expected, $crawler->filter('textarea#message')->text());
 	}
 }

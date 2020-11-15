@@ -15,7 +15,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 {
 	protected $cache;
 	protected $version_helper;
-	
+
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -353,13 +353,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -367,9 +373,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -379,13 +389,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1-a2',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.0',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1-a2',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -393,13 +409,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -407,9 +429,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -419,13 +445,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.0-a2',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.0-a2',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -439,14 +471,18 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'			=> false,
 						'security'		=> '1.0.1',
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'			=> false,
 					'security'		=> '1.0.1',
 				),
 			),
@@ -456,14 +492,18 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'			=> false,
 						'security'		=> '1.0.0',
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'			=> false,
 					'security'		=> '1.0.0',
 				),
 			),
@@ -473,14 +513,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
+						'eol'			=> false,
 						'security'		=> '1.1.0',
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			// Latest 1.0 release is EOL
@@ -490,13 +535,18 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
 						'eol'			=> true,
+						'security'	=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			// All are EOL -- somewhat undefined behavior
@@ -506,10 +556,12 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
 						'eol'			=> true,
+						'security'		=> false,
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
 						'eol'			=> true,
+						'security'		=> false,
 					),
 				),
 				array(),
@@ -560,10 +612,14 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -572,6 +628,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -582,10 +640,14 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -594,6 +656,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -605,10 +669,14 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -617,6 +685,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -627,10 +697,14 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -639,6 +713,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -649,10 +725,14 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -661,6 +741,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -672,13 +754,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.0.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -687,9 +775,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -700,9 +792,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -713,13 +809,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -728,13 +830,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -743,9 +851,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),
@@ -757,13 +869,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -772,13 +890,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -787,13 +911,19 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(
 					'current'		=> '1.1.1',
+					'eol'		=> false,
+					'security'	=> false,
 				),
 			),
 			array(
@@ -802,9 +932,13 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'3.1'	=> array(
 						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 					'3.2'	=> array(
 						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
 					),
 				),
 				array(),

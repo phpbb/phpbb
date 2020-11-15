@@ -53,7 +53,7 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		));
 
 		$this->assertNull($this->get_user_id('Test'));
-		$this->assertContains('USER_DELETED', $command_tester->getDisplay());
+		$this->assertStringContainsString('USER_DELETED', $command_tester->getDisplay());
 	}
 
 	public function test_delete_non_user()
@@ -70,7 +70,7 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 			'--delete-posts'	=> false,
 		));
 
-		$this->assertContains('NO_USER', $command_tester->getDisplay());
+		$this->assertStringContainsString('NO_USER', $command_tester->getDisplay());
 	}
 
 	public function test_delete_cancel()

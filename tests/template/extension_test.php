@@ -29,10 +29,13 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$this->lang = $lang = new \phpbb\language\language($lang_loader);
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user->style['style_path'] = 'chameleon';
+		$this->user->style['style_parent_id'] = 0;
 
 		global $auth, $request, $symfony_request, $user;
 		$user = new phpbb_mock_user();
 		$user->optionset('user_id', 2);
+		$user->style['style_path'] = '';
+		$user->data['user_id'] = 2;
 		$auth = $this->getMockBuilder('phpbb\auth\auth')
 			->disableOriginalConstructor()
 			->setMethods(['acl_get'])

@@ -101,15 +101,19 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function test_options($adapter_method, $adapter_arg, $concrete_method, $concrete_arg)
 	{
 		$mock = $this->getMockBuilder('s9e\\TextFormatter\\Parser')
-		             ->setMethods(array($concrete_method))
+		             ->setMethods([$concrete_method])
 		             ->disableOriginalConstructor()
 		             ->getMock();
-		foreach ((array) $concrete_arg as $i => $concrete_arg)
-		{
-			$mock->expects($this->at($i))
-			     ->method($concrete_method)
-			     ->with($concrete_arg);
-		}
+
+		$concrete_args = (array) $concrete_arg;
+		array_walk($concrete_args, function(&$value)
+			{
+				$value = (array) $value;
+			}
+		);
+		$mock->expects($this->exactly(count($concrete_args)))
+			->method($concrete_method)
+			->withConsecutive(...$concrete_args);
 
 		$cache = new phpbb_mock_cache;
 		$cache->put('_foo_parser', $mock);
@@ -141,11 +145,11 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			),
 			array(
 				'disable_magic_url', null,
-				'disablePlugin',     array('Autoemail', 'Autolink')
+				'disablePlugin',     ['Autoemail', 'Autolink']
 			),
 			array(
 				'disable_smilies', null,
-				'disablePlugin',   'Emoticons'
+				'disablePlugin',   ['Emoticons', 'Emoji']
 			),
 			array(
 				'enable_bbcode', 'url',
@@ -157,11 +161,11 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			),
 			array(
 				'enable_magic_url', null,
-				'enablePlugin',     array('Autoemail', 'Autolink')
+				'enablePlugin',     ['Autoemail', 'Autolink']
 			),
 			array(
 				'enable_smilies', null,
-				'enablePlugin',   'Emoticons'
+				'enablePlugin',   ['Emoticons', 'Emoji']
 			)
 		);
 	}
@@ -207,22 +211,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			->expects($this->any())
 			->method('trigger_event')
 			->will($this->returnArgument(1));
-		$dispatcher
-			->expects($this->at(1))
-			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_parse_before',
-				$this->callback(array($this, 'parse_before_event_callback'))
-			)
-			->will($this->returnArgument(1));
-		$dispatcher
-			->expects($this->at(2))
-			->method('trigger_event')
-			->with(
-				'core.text_formatter_s9e_parse_after',
-				$this->callback(array($this, 'parse_after_event_callback'))
-			)
-			->will($this->returnArgument(1));
 
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$container->get('cache.driver'),
@@ -230,6 +218,16 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			$container->get('text_formatter.s9e.factory'),
 			$dispatcher
 		);
+
+		$dispatcher
+			->expects($this->exactly(2))
+			->method('trigger_event')
+			->withConsecutive(
+				['core.text_formatter_s9e_parse_before', $this->callback(array($this, 'parse_before_event_callback'))],
+				['core.text_formatter_s9e_parse_after', $this->callback(array($this, 'parse_after_event_callback'))]
+			)
+			->will($this->returnArgument(1));
+
 		$parser->parse('...');
 	}
 

@@ -102,6 +102,7 @@ class phpbb_files_types_local_test extends phpbb_test_case
 			array(
 				'foo',
 				array(
+					'realname'		=> null,
 					'tmp_name'		=> 'foo',
 					'size'			=> 500,
 					'type'			=> 'image/png',
@@ -110,13 +111,17 @@ class phpbb_files_types_local_test extends phpbb_test_case
 			),
 			array(
 				'none',
-				false,
+				array(
+					'realname'		=> null,
+					'size'			=> null,
+					'type'			=> null,
+				),
 				array('PHP_SIZE_OVERRUN'),
 			),
 			array(
 				'tests/upload/fixture/png',
 				array(
-					'realname'			=> 'foo.png',
+					'realname'		=> 'foo.png',
 					'size'			=> 500,
 					'type'			=> 'image/png',
 					'local_mode'	=> true,
@@ -150,7 +155,6 @@ class phpbb_files_types_local_test extends phpbb_test_case
 		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request);
 		$upload->set_allowed_extensions(array('png'));
 		$type_local->set_upload($upload);
-
 
 		$file = $type_local->upload($filename, $upload_ary);
 		$this->assertSame($expected, $file->error);
