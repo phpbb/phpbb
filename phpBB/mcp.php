@@ -134,7 +134,7 @@ if (!$auth->acl_getf_global('m_'))
 	* @var	bool		allow_user						Boolean holding if the user can access the mcp
 	* @var	int			forum_id						The current forum ID
 	* @var	int			topic_id						The current topic ID
-	* @since 3.3.2-RC1
+	* @since 3.3.3-RC1
 	*/
 	$vars = array(
 		'user_quickmod_actions',

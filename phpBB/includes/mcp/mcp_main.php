@@ -895,7 +895,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	* @var	string	soft_delete_reason		The reason we're soft deleting
 	* @var	string	action					The current delete action
 	* @var	array	check_permission		The array with a permission to check for, can be set to false to not check them
-	* @since 3.3.2-RC1
+	* @since 3.3.3-RC1
 	*/
 	$vars = array(
 		'topic_ids',
@@ -1028,13 +1028,13 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		* This event allows you to modify the hidden form fields when deleting topics
 		*
 		* @event core.mcp_delete_topic_modify_hidden_fields
-		* @var	string	l_confirm				The mode we are deleting in (DELETE_TOPIC(S), DELETE_TOPIC(S)_PERMANENTLY)
+		* @var	string	l_confirm				The confirmation text language variable (DELETE_TOPIC(S), DELETE_TOPIC(S)_PERMANENTLY)
 		* @var	array	s_hidden_fields			The array holding the hidden form fields
 		* @var	array	topic_ids				The array of topic IDs to be deleted
 		* @var	int		forum_id				The current forum ID
 		* @var	bool	only_softdeleted		If the topic_ids are all soft deleted, this is true
 		* @var	bool	only_shadow				If the topic_ids are all shadow topics, this is true
-		* @since 3.3.2-RC1
+		* @since 3.3.3-RC1
 		*/
 		$vars = array(
 			'l_confirm',
