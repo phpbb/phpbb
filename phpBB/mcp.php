@@ -125,6 +125,26 @@ if (!$auth->acl_getf_global('m_'))
 		}
 	}
 
+	/**
+	* Allow modification of the permissions to access the mcp file
+	*
+	* @event core.mcp_modify_permissions
+	* @var	array		user_quickmod_actions			Array holding the quickmod actions and their respectiev permissions
+	* @var	bool		quickmod						Whether or not the action is performed via QuickMod
+	* @var	bool		allow_user						Boolean holding if the user can access the mcp
+	* @var	int			forum_id						The current forum ID
+	* @var	int			topic_id						The current topic ID
+	* @since 3.3.3-RC1
+	*/
+	$vars = array(
+		'user_quickmod_actions',
+		'quickmod',
+		'allow_user',
+		'forum_id',
+		'topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_modify_permissions', compact($vars)));
+
 	if (!$allow_user)
 	{
 		send_status_line(403, 'Forbidden');
