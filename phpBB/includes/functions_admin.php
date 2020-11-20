@@ -2843,8 +2843,8 @@ function get_database_size()
 	{
 		case 'mysqli':
 			$mysql_engine	= ['MyISAM', 'InnoDB', 'Aria'];
-
 			$db_name		= $db->get_db_name();
+			$database_size	= 0;
 
 			$sql = 'SHOW TABLE STATUS
 				FROM ' . $db_name;
@@ -2859,6 +2859,8 @@ function get_database_size()
 			}
 
 			$db->sql_freeresult($result);
+
+			$database_size = $database_size ? $database_size : false;
 
 		break;
 
