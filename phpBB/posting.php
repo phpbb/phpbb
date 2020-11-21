@@ -732,7 +732,7 @@ $quote_status	= true;
 /**
  * Event to override message BBCode status indications
  *
- * @event core.posting_modify_bbcode_status_indications
+ * @event core.posting_modify_bbcode_status
  *
  * @var bool	bbcode_status	BBCode status
  * @var bool	smilies_status	Smilies status
@@ -750,7 +750,7 @@ $vars = [
 	'flash_status',
 	'quote_status',
 ];
-extract($phpbb_dispatcher->trigger_event('core.posting_modify_bbcode_status_indications', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_bbcode_status', compact($vars)));
 
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))

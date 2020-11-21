@@ -690,7 +690,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	/**
 	 * Event to override private message BBCode status indications
 	 *
-	 * @event core.ucp_pm_compose_modify_bbcode_status_indications
+	 * @event core.ucp_pm_compose_modify_bbcode_status
 	 *
 	 * @var bool	bbcode_status	BBCode status
 	 * @var bool	smilies_status	Smilies status
@@ -706,7 +706,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'flash_status',
 		'url_status',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status_indications', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status', compact($vars)));
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
