@@ -730,16 +730,17 @@ $flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && $conf
 $quote_status	= true;
 
 /**
- * Adds an opportunity to rewrite in posting content statuses with extensions
+ * Event to override message BBCode status indications
  *
- * @event core.posting_content_statuses_settings
+ * @event core.posting_modify_bbcode_status_indications
  *
- * @var bool bbcode_status
- * @var bool smilies_status
- * @var bool img_status
- * @var bool url_status
- * @var bool flash_status
- * @var bool quote_status
+ * @var bool	bbcode_status	BBCode status
+ * @var bool	smilies_status	Smilies status
+ * @var bool	img_status		Image BBCode status
+ * @var bool	url_status		URL BBCode status
+ * @var bool	flash_status	Flash BBCode status
+ * @var bool	quote_status	Quote BBCode status
+ * @since 3.3.3-RC1
  */
 $vars = [
 	'bbcode_status',
@@ -749,7 +750,7 @@ $vars = [
 	'flash_status',
 	'quote_status',
 ];
-extract($phpbb_dispatcher->trigger_event('core.posting_content_statuses_settings', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_bbcode_status_indications', compact($vars)));
 
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))

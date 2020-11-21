@@ -688,24 +688,25 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$url_status		= ($config['allow_post_links']) ? true : false;
 
 	/**
-	 * Adds an opportunity to rewrite in private messages content statuses with extensions
+	 * Event to override private message BBCode status indications
 	 *
-	 * @event core.pm_content_statuses_settings
+	 * @event core.ucp_pm_compose_modify_bbcode_status_indications
 	 *
-	 * @var bool bbcode_status
-	 * @var bool smilies_status
-	 * @var bool img_status
-	 * @var bool url_status
-	 * @var bool flash_status
+	 * @var bool	bbcode_status	BBCode status
+	 * @var bool	smilies_status	Smilies status
+	 * @var bool	img_status		Image BBCode status
+	 * @var bool	flash_status	Flash BBCode status
+	 * @var bool	url_status		URL BBCode status
+	 * @since 3.3.3-RC1
 	 */
 	$vars = [
 		'bbcode_status',
 		'smilies_status',
 		'img_status',
-		'url_status',
 		'flash_status',
+		'url_status',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.pm_content_statuses_settings', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status_indications', compact($vars)));
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
