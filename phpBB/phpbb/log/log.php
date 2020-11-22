@@ -694,6 +694,16 @@ class log implements \phpbb\log\log_interface
 						$log_data_ary = array_merge($log_data_ary, array_fill(0, $num_args - count($log_data_ary), ''));
 					}
 
+					if (strpos($row['log_operation'], 'LOG_BAN_') === 0)
+					{
+						// Derive readable duration for BAN logs
+						$ban_end_text = array(0 => $this->user->lang['PERMANENT'], 30 => $this->user->lang['30_MINS'], 60 => $this->user->lang['1_HOUR'], 360 => $this->user->lang['6_HOURS'], 1440 => $this->user->lang['1_DAY'], 10080 => $this->user->lang['7_DAYS'], 20160 => $this->user->lang['2_WEEKS'], 40320 => $this->user->lang['1_MONTH']);
+						$ban_len = $log_data_ary[2];
+						$ban_len_other = $log_data_ary[3];
+						$ban_duration = ($ban_len != -1) ? $ban_end_text[$ban_len] : $this->user->lang['UNTIL'] . ' ' . $ban_len_other;
+						$log_data_ary[2] = $ban_duration;
+					}
+
 					$lang_arguments = array_merge(array($log[$i]['action']), $log_data_ary);
 					$log[$i]['action'] = call_user_func_array(array($this->user, 'lang'), $lang_arguments);
 
