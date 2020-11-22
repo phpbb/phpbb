@@ -12,7 +12,7 @@ set -e
 set -x
 
 sudo apt-get update
-sudo apt-get install -y nginx realpath
+sudo apt-get install -y nginx coreutils
 
 sudo service nginx stop
 
@@ -25,13 +25,13 @@ APP_SOCK=$(realpath "$DIR")/php-app.sock
 NGINX_PHP_CONF="$DIR/nginx-php.conf"
 
 # php-fpm
-PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
+PHP_FPM_BIN="/usr/sbin/php-fpm$CI_PHP_VERSION"
 PHP_FPM_CONF="$DIR/php-fpm.conf"
 
 echo "
 	[global]
 
-	[travis]
+	[ci]
 	user = $USER
 	group = $USER
 	listen = $APP_SOCK

@@ -34,11 +34,6 @@ fi
 
 if [ "$NOTESTS" != '1' ]
 then
-	travis/setup-php-extensions.sh
-fi
-
-if [ "$NOTESTS" != '1' ]
-then
 	travis/setup-webserver.sh
 fi
 

@@ -21,23 +21,23 @@ jobs:
                 db:
                     - mysql:5.6
                     - mysql:5.7
-                    - mysql:8.0
-                    - postgres:9.5
-                    - postgres:9.6
-                    - postgres:10
-                    - postgres:11
-                    - postgres:12
-                    - postgres:13
-                    - sqlite3
+#                    - mysql:8.0
+#                    - postgres:9.5
+#                    - postgres:9.6
+#                    - postgres:10
+#                    - postgres:11
+#                    - postgres:12
+#                    - postgres:13
+#                    - sqlite3
 
         name: PHP${{ matrix.php }} - ${{ matrix.db }}
 
         services:
             mysql:
-                if: startsWith(${{ matrix.db }}, 'mysql')
                 image: ${{ matrix.db }}
                 env:
                     MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                    MYSQL_DATABASE: phpbb_tests
                 ports:
                     - 3306:3306
                 options: >-
@@ -46,18 +46,18 @@ jobs:
                     --health-timeout=5s
                     --health-retries=3
 
-            postgres:
-                if: startsWith(${{ matrix.db }}, 'postgres')
-                image: ${{ matrix.db }}
-                env:
-                    POSTGRES_PASSWORD: postgres
-                ports:
-                    - 5432:5432
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
+#            postgres:
+#                if: startsWith(${{ matrix.db }}, 'postgres')
+#                image: ${{ matrix.db }}
+#                env:
+#                    POSTGRES_PASSWORD: postgres
+#                ports:
+#                    - 5432:5432
+#                options: >-
+#                    --health-cmd pg_isready
+#                    --health-interval 10s
+#                    --health-timeout 5s
+#                    --health-retries 5
             redis:
                 image: redis
                 options: >-
@@ -78,14 +78,21 @@ jobs:
                   db=$(echo "${MATRIX_DB%%:*}")
                   echo "::set-output name=db::$db"
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extension: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, pdo_mysqli, intl, gd, exif, iconv
+                  coverage: none
+
             - name: Setup environment for phpBB
               env:
                   DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
+                  CI_PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: 0
                   MYSQL8: ${{ matrix.db }} == 'mysql:8.0'
               run: |
-                  travis/setup-phpbb.sh $DB PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
+                  travis/setup-phpbb.sh $DB CI_PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
 
             - name: Setup database
               env:
