@@ -2562,6 +2562,20 @@ ucp_pm_history_row_message_author_username_prepend
 * Since: 3.2.8-RC1
 * Purpose: Prepend information to message author username of member
 
+ucp_pm_viewmessage_author_full_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.3.3-RC1
+* Purpose: Add content right after the message author when viewing a private message
+
+ucp_pm_viewmessage_author_full_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.3.3-RC1
+* Purpose: Add content right before the message author when viewing a private message
+
 ucp_pm_viewmessage_avatar_after
 ===
 * Locations:
