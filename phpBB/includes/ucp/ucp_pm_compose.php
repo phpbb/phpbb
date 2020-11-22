@@ -687,6 +687,27 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
 	$url_status		= ($config['allow_post_links']) ? true : false;
 
+	/**
+	 * Event to override private message BBCode status indications
+	 *
+	 * @event core.ucp_pm_compose_modify_bbcode_status
+	 *
+	 * @var bool	bbcode_status	BBCode status
+	 * @var bool	smilies_status	Smilies status
+	 * @var bool	img_status		Image BBCode status
+	 * @var bool	flash_status	Flash BBCode status
+	 * @var bool	url_status		URL BBCode status
+	 * @since 3.3.3-RC1
+	 */
+	$vars = [
+		'bbcode_status',
+		'smilies_status',
+		'img_status',
+		'flash_status',
+		'url_status',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status', compact($vars)));
+
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
