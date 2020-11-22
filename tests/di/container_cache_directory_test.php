@@ -28,8 +28,6 @@ namespace
 		{
 			$this->phpbb_root_path = dirname(__FILE__) . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
-			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
-			$this->builder->with_config($this->config_php);
 
 			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
 			if (is_file($this->filename))
@@ -48,6 +46,8 @@ namespace
 			// The file cache driver will now write to a new directory.
 			$_SERVER['PHPBB____core__cache_dir'] = $new_cache_directory;
 
+			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
+			$this->builder->with_config($this->config_php);
 			$container = $this->builder->get_container();
 
 			$this->assertEquals($container->getParameter('core.cache_dir'), $new_cache_directory);
@@ -60,7 +60,7 @@ namespace
 		 */
 		public function test_container_and_autoload_cache()
 		{
-			$default_cache_directory = $this->phpbb_root_path . 'fixtures/cache/test';
+			$default_cache_directory = $this->phpbb_root_path . 'fixtures/cache/test/';
 
 			// Make sure our test directory will be empty.
 			if (is_dir($default_cache_directory))
