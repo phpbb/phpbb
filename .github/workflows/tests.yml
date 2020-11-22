@@ -1,0 +1,108 @@
+name: Tests
+
+on:
+    push:
+        branches:
+            - 3.3.x
+            - master
+            - task/github-actions
+    pull_request:
+        branches:
+            - 3.3.x
+            - master
+
+jobs:
+    unit-tests:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                php: [7.4, 7.3, 7.2]
+                db:
+                    - mysql:5.6
+                    - mysql:5.7
+                    - mysql:8.0
+                    - postgres:9.5
+                    - postgres:9.6
+                    - postgres:10
+                    - postgres:11
+                    - postgres:12
+                    - postgres:13
+                    - sqlite3
+
+        name: PHP${{ matrix.php }} - ${{ matrix.db }}
+
+        services:
+            mysql:
+                if: startsWith(${{ matrix.db }}, 'mysql')
+                image: ${{ matrix.db }}
+                env:
+                    MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=3
+
+            postgres:
+                if: startsWith(${{ matrix.db }}, 'postgres')
+                image: ${{ matrix.db }}
+                env:
+                    POSTGRES_PASSWORD: postgres
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - id: database-type
+              env:
+                  MATRIX_DB: ${{ matrix.db }}
+              run: |
+                  db=$(echo "${MATRIX_DB%%:*}")
+                  echo "::set-output name=db::$db"
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: 0
+                  MYSQL8: ${{ matrix.db }} == 'mysql:8.0'
+              run: |
+                  travis/setup-phpbb.sh $DB PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: 0
+              run: |
+                  travis/setup-database.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Run unit tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --verbose --stop-on-error
+
+        # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+        # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+        # - name: Run test suite
+        #   run: composer run-script test
