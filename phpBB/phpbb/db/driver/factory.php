@@ -412,6 +412,14 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function sql_quote($expression)
+	{
+		return $this->get_driver()->sql_quote($expression);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function sql_like_expression($expression)
 	{
 		return $this->get_driver()->sql_like_expression($expression);

@@ -120,9 +120,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		{
 			$sql = 'SELECT module_id
 				FROM ' . $this->modules_table . "
-				WHERE module_class = '" . $this->db->sql_escape($class) . "'
+				WHERE module_class = " . $this->db->sql_quote($class) . "
 					$parent_sql
-					AND " . ((is_numeric($module)) ? 'module_id = ' . (int) $module : "module_langname = '" . $this->db->sql_escape($module) . "'");
+					AND " . ((is_numeric($module)) ? 'module_id = ' . (int) $module : "module_langname = " . $this->db->sql_quote($module));
 			$result = $this->db->sql_query($sql);
 			$module_id = $this->db->sql_fetchfield('module_id');
 			$this->db->sql_freeresult($result);
@@ -274,24 +274,24 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 					$sql = 'SELECT left_id
 					FROM ' . $this->modules_table . "
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND parent_id = " . (int) $parent . "
-						AND module_langname = '" . $this->db->sql_escape($before_langname) . "'"
-						. (($before_mode) ? " AND module_mode = '" . $this->db->sql_escape($before_mode) . "'" : '');
+						AND module_langname = " . $this->db->sql_quote($before_langname)
+						. (($before_mode) ? " AND module_mode = " . $this->db->sql_quote($before_mode) : '');
 					$result = $this->db->sql_query($sql);
 					$to_left = (int) $this->db->sql_fetchfield('left_id');
 					$this->db->sql_freeresult($result);
 
 					$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND left_id >= $to_left
 						AND left_id < {$module_data['left_id']}";
 					$this->db->sql_query($sql);
 
 					$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = $to_left, right_id = " . ($to_left + 1) . "
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND module_id = {$module_data['module_id']}";
 					$this->db->sql_query($sql);
 				}
@@ -311,24 +311,24 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 					$sql = 'SELECT right_id
 					FROM ' . $this->modules_table . "
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND parent_id = " . (int) $parent . "
-						AND module_langname = '" . $this->db->sql_escape($after_langname) . "'"
-						. (($after_mode) ? " AND module_mode = '" . $this->db->sql_escape($after_mode) . "'" : '');
+						AND module_langname = " . $this->db->sql_quote($after_langname)
+						. (($after_mode) ? " AND module_mode = " . $this->db->sql_quote($after_mode) : '');
 					$result = $this->db->sql_query($sql);
 					$to_right = (int) $this->db->sql_fetchfield('right_id');
 					$this->db->sql_freeresult($result);
 
 					$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND left_id >= $to_right
 						AND left_id < {$module_data['left_id']}";
 					$this->db->sql_query($sql);
 
 					$sql = 'UPDATE ' . $this->modules_table . '
 					SET left_id = ' . ($to_right + 1) . ', right_id = ' . ($to_right + 2) . "
-					WHERE module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_class = " . $this->db->sql_quote($class) . "
 						AND module_id = {$module_data['module_id']}";
 					$this->db->sql_query($sql);
 				}
@@ -405,8 +405,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			{
 				$sql = 'SELECT module_id
 					FROM ' . $this->modules_table . "
-					WHERE module_langname = '" . $this->db->sql_escape($module) . "'
-						AND module_class = '" . $this->db->sql_escape($class) . "'
+					WHERE module_langname = " . $this->db->sql_quote($module) . "
+						AND module_class = " . $this->db->sql_quote($class) . "
 						$parent_sql";
 				$result = $this->db->sql_query($sql);
 				while ($module_id = $this->db->sql_fetchfield('module_id'))

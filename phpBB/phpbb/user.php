@@ -715,7 +715,7 @@ class user extends \phpbb\session
 
 		$sql = 'SELECT lang_id
 			FROM ' . LANG_TABLE . "
-			WHERE lang_iso = '" . $db->sql_escape($this->lang_name) . "'";
+			WHERE lang_iso = " . $db->sql_quote($this->lang_name);
 		$result = $db->sql_query($sql);
 		$this->lang_id = (int) $db->sql_fetchfield('lang_id');
 		$db->sql_freeresult($result);
@@ -849,7 +849,7 @@ class user extends \phpbb\session
 			FROM ' . FORUMS_TABLE . ' f
 			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa
 				ON (fa.forum_id = f.forum_id
-					AND fa.session_id = '" . $db->sql_escape($this->session_id) . "')
+					AND fa.session_id = " . $db->sql_quote($this->session_id) . ")
 			WHERE f.forum_password <> ''";
 		$result = $db->sql_query($sql);
 

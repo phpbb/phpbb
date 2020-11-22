@@ -386,7 +386,7 @@ class session
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
-				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
+				WHERE s.session_id = " . $db->sql_quote($this->session_id) . "
 					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
@@ -604,7 +604,7 @@ class session
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
 					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 					AND k.user_id = u.user_id
-					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
+					AND k.key_id = " . $db->sql_quote(md5($this->cookie_data['k']));
 			$result = $db->sql_query($sql);
 			$user_data = $db->sql_fetchrow($result);
 
@@ -765,7 +765,7 @@ class session
 
 		$sql = 'DELETE
 			FROM ' . SESSIONS_TABLE . '
-			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
+			WHERE session_id = ' . $db->sql_quote($this->session_id) . '
 				AND session_user_id = ' . ANONYMOUS;
 
 		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
@@ -848,7 +848,7 @@ class session
 				$this->data['user_form_salt'] = unique_id();
 				// Update the form key
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\'
+					SET user_form_salt = ' . $db->sql_quote($this->data['user_form_salt']) . '
 					WHERE user_id = ' . (int) $this->data['user_id'];
 				$db->sql_query($sql);
 			}
@@ -896,7 +896,7 @@ class session
 		global $SID, $_SID, $db, $phpbb_container, $phpbb_dispatcher;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
+			WHERE session_id = " . $db->sql_quote($this->session_id) . "
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 
@@ -940,7 +940,7 @@ class session
 			{
 				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 					WHERE user_id = ' . (int) $this->data['user_id'] . "
-						AND key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
+						AND key_id = " . $db->sql_quote(md5($this->cookie_data['k']));
 				$db->sql_query($sql);
 			}
 
@@ -1013,7 +1013,7 @@ class session
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = " . $db->sql_quote($row['session_page']) . "
 				WHERE user_id = " . (int) $row['session_user_id'];
 			$db->sql_query($sql);
 
@@ -1492,7 +1492,7 @@ class session
 			$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . (int) $user_id . "
-					AND key_id = '" . $db->sql_escape(md5($key)) . "'";
+					AND key_id = " . $db->sql_quote(md5($key));
 		}
 		else
 		{
@@ -1533,7 +1533,7 @@ class session
 		if ($row)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = " . $db->sql_quote($row['session_page']) . "
 				WHERE user_id = " . (int) $user_id;
 			$db->sql_query($sql);
 		}
@@ -1541,7 +1541,7 @@ class session
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
-		$sql_where .= ($user_id === (int) $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
+		$sql_where .= ($user_id === (int) $this->data['user_id']) ? " AND session_id <> " . $db->sql_quote($this->session_id) : '';
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE $sql_where";
@@ -1602,7 +1602,7 @@ class session
 		global $db;
 		$sql = 'UPDATE ' . SESSIONS_TABLE . '
 			SET session_admin = 0
-			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
+			WHERE session_id = ' . $db->sql_quote($this->session_id);
 		$db->sql_query($sql);
 	}
 
@@ -1619,7 +1619,7 @@ class session
 		$session_id = ($session_id) ? $session_id : $this->session_id;
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
-			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
+			WHERE session_id = " . $db->sql_quote($session_id);
 		$db->sql_query($sql);
 
 		/**

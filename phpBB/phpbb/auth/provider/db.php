@@ -89,7 +89,7 @@ class db extends \phpbb\auth\provider\base
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $this->db->sql_escape($username_clean) . "'";
+			WHERE username_clean = " . $this->db->sql_quote($username_clean);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -102,7 +102,7 @@ class db extends \phpbb\auth\provider\base
 				WHERE attempt_time > ' . (time() - (int) $this->config['ip_login_limit_time']);
 			if ($this->config['ip_login_limit_use_forwarded'])
 			{
-				$sql .= " AND attempt_forwarded_for = '" . $this->db->sql_escape($this->user->forwarded_for) . "'";
+				$sql .= " AND attempt_forwarded_for = " . $this->db->sql_quote($this->user->forwarded_for);
 			}
 			else
 			{
@@ -185,7 +185,7 @@ class db extends \phpbb\auth\provider\base
 
 				// Update the password in the users table to the new format
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_password = '" . $this->db->sql_escape($hash) . "'
+					SET user_password = " . $this->db->sql_quote($hash) . "
 					WHERE user_id = {$row['user_id']}";
 				$this->db->sql_query($sql);
 

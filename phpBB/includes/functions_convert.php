@@ -1150,7 +1150,7 @@ function user_group_auth($group, $select_query, $use_src_db)
 
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = '" . $db->sql_escape(strtoupper($group)) . "'";
+		WHERE group_name = " . $db->sql_quote(strtoupper($group));
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id');
 	$db->sql_freeresult($result);
@@ -1499,7 +1499,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		{
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . "
-				WHERE group_name = '" . $db->sql_escape(strtoupper($ug_id)) . "'";
+				WHERE group_name = " . $db->sql_quote(strtoupper($ug_id));
 			$result = $db->sql_query_limit($sql, 1);
 			$id = (int) $db->sql_fetchfield('group_id');
 			$db->sql_freeresult($result);
@@ -1525,7 +1525,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		{
 			$sql = 'SELECT role_id
 				FROM ' . ACL_ROLES_TABLE . "
-				WHERE role_name = 'ROLE_" . $db->sql_escape($acl_list) . "'";
+				WHERE role_name = " . $db->sql_quote('ROLE_' . $acl_list);
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

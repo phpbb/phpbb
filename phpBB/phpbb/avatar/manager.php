@@ -336,7 +336,7 @@ class manager
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $result) . "
-				WHERE user_avatar = '" . $db->sql_escape($avatar_data['avatar']) . "'";
+				WHERE user_avatar = " . $db->sql_quote($avatar_data['avatar']);
 			$db->sql_query($sql);
 		}
 

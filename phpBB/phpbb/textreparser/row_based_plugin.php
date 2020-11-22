@@ -110,7 +110,7 @@ abstract class row_based_plugin extends base
 		$columns = $this->get_columns();
 
 		$sql = 'UPDATE ' . $this->table . '
-			SET ' . $columns['text'] . " = '" . $this->db->sql_escape($record['text']) . "'
+			SET ' . $columns['text'] . " = " . $this->db->sql_quote($record['text']) . "
 			WHERE " . $columns['id'] . ' = ' . $record['id'];
 		$this->db->sql_query($sql);
 	}

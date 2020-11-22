@@ -1859,7 +1859,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
+					SET attach_comment = " . $db->sql_quote($attach_row['attach_comment']) . "
 					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
 						AND is_orphan = 0';
 				$db->sql_query($sql);

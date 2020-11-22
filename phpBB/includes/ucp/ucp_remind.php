@@ -58,8 +58,8 @@ class ucp_remind
 			$sql_array = array(
 				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
 				'FROM'		=> array(USERS_TABLE => 'u'),
-				'WHERE'		=> "user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'" .
-					(!empty($username) ? " AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : ''),
+				'WHERE'		=> "user_email_hash = " . $db->sql_quote(phpbb_email_hash($email)) .
+					(!empty($username) ? " AND username_clean = " . $db->sql_quote(utf8_clean_string($username)) : ''),
 			);
 
 			/**
@@ -136,7 +136,7 @@ class ucp_remind
 				$passwords_manager = $phpbb_container->get('passwords.manager');
 
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_newpasswd = '" . $db->sql_escape($passwords_manager->hash($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
+					SET user_newpasswd = " . $db->sql_quote($passwords_manager->hash($user_password)) . ", user_actkey = " . $db->sql_quote($user_actkey) . "
 					WHERE user_id = " . $user_row['user_id'];
 				$db->sql_query($sql);
 

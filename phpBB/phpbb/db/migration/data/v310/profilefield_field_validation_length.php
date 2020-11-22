@@ -71,8 +71,8 @@ class profilefield_field_validation_length extends \phpbb\db\migration\migration
 		foreach ($this->validation_options_new as $validation_type => $regex)
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "profile_fields
-				SET field_validation = '" . $this->db->sql_escape($this->validation_options_new[$validation_type]) . "'
-				WHERE field_validation = '" . $this->db->sql_escape($this->validation_options_old[$validation_type]) . "'";
+				SET field_validation = " . $this->db->sql_quote($this->validation_options_new[$validation_type]) . "
+				WHERE field_validation = " . $this->db->sql_quote($this->validation_options_old[$validation_type]);
 			$this->sql_query($sql);
 		}
 	}
@@ -82,8 +82,8 @@ class profilefield_field_validation_length extends \phpbb\db\migration\migration
 		foreach ($this->validation_options_new as $validation_type => $regex)
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "profile_fields
-				SET field_validation = '" . $this->db->sql_escape($this->validation_options_old[$validation_type]) . "'
-				WHERE field_validation = '" . $this->db->sql_escape($this->validation_options_new[$validation_type]) . "'";
+				SET field_validation = " . $this->db->sql_quote($this->validation_options_old[$validation_type]) . "
+				WHERE field_validation = " . $this->db->sql_quote($this->validation_options_new[$validation_type]);
 			$this->sql_query($sql);
 		}
 	}

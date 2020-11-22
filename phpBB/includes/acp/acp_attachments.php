@@ -416,7 +416,7 @@ class acp_attachments
 						{
 							$sql = 'SELECT extension_id
 								FROM ' . EXTENSIONS_TABLE . "
-								WHERE extension = '" . $db->sql_escape($add_extension) . "'";
+								WHERE extension = " . $db->sql_quote($add_extension);
 							$result = $db->sql_query($sql);
 
 							if ($row = $db->sql_fetchrow($result))
@@ -536,7 +536,7 @@ class acp_attachments
 					{
 						$sql = 'SELECT group_id
 							FROM ' . EXTENSION_GROUPS_TABLE . "
-							WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($new_group_name)) . "'";
+							WHERE LOWER(group_name) = " . $db->sql_quote(utf8_strtolower($new_group_name));
 						if ($group_id)
 						{
 							$sql .= ' AND group_id <> ' . $group_id;

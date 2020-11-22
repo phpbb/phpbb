@@ -653,7 +653,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 				$item_parents = serialize($parents);
 
 				$sql = 'UPDATE ' . $this->table_name . '
-					SET ' . $this->column_item_parents . " = '" . $this->db->sql_escape($item_parents) . "'
+					SET ' . $this->column_item_parents . " = " . $this->db->sql_quote($item_parents) . "
 					WHERE " . $this->column_parent_id . ' = ' . (int) $item[$this->column_parent_id];
 				$this->db->sql_query($sql);
 			}

@@ -152,7 +152,7 @@ class base
 			{
 				$sql = 'SELECT search_time
 					FROM ' . SEARCH_RESULTS_TABLE . '
-					WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
+					WHERE search_key = ' . $db->sql_quote($search_key);
 				$result = $db->sql_query($sql);
 
 				if (!$db->sql_fetchrow($result))
@@ -226,7 +226,7 @@ class base
 
 			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
 				SET search_time = ' . time() . '
-				WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
+				WHERE search_key = ' . $db->sql_quote($search_key);
 			$db->sql_query($sql);
 		}
 

@@ -71,7 +71,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
+		WHERE s.session_id = " . $db->sql_quote($session_id) . "
 			AND	u.user_id = s.session_user_id";
 	$result = $db->sql_query($sql);
 

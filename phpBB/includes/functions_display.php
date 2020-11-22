@@ -120,7 +120,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	{
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(FORUMS_ACCESS_TABLE => 'fa'),
-			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . $db->sql_escape($user->session_id) . "'"
+			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = " . $db->sql_quote($user->session_id)
 		);
 
 		$sql_array['SELECT'] .= ', fa.user_id';
@@ -874,7 +874,7 @@ function get_forum_parents(&$forum_data)
 			$forum_data['forum_parents'] = serialize($forum_parents);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . $db->sql_escape($forum_data['forum_parents']) . "'
+				SET forum_parents = " . $db->sql_quote($forum_data['forum_parents']) . "
 				WHERE parent_id = " . $forum_data['parent_id'];
 			$db->sql_query($sql);
 		}

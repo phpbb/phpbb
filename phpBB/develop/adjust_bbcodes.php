@@ -46,7 +46,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		$bitfield = $message_parser->bbcode_bitfield;
 
-		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig_bbcode_bitfield = '" . $db->sql_escape($bitfield) . "'
+		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig_bbcode_bitfield = " . $db->sql_quote($bitfield) . "
 			WHERE user_id = " . $row['user_id'];
 		$db->sql_query($sql);
 
@@ -96,7 +96,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		$bitfield = $message_parser->bbcode_bitfield;
 
-		$sql = 'UPDATE ' . POSTS_TABLE . " SET bbcode_bitfield = '" . $db->sql_escape($bitfield) . "'
+		$sql = 'UPDATE ' . POSTS_TABLE . " SET bbcode_bitfield = " . $db->sql_quote($bitfield) . "
 			WHERE post_id = " . $row['post_id'];
 		$db->sql_query($sql);
 
@@ -144,7 +144,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		$bitfield = $message_parser->bbcode_bitfield;
 
-		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET bbcode_bitfield = '" . $db->sql_escape($bitfield) . "'
+		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET bbcode_bitfield = " . $db->sql_quote($bitfield) . "
 			WHERE msg_id = " . $row['msg_id'];
 		$db->sql_query($sql);
 

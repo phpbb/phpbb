@@ -35,7 +35,7 @@ while ($row = $db->sql_fetchrow($result))
 	$echos++;
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
-		SET user_email_hash = '" . $db->sql_escape(phpbb_email_hash($row['user_email'])) . "'
+		SET user_email_hash = " . $db->sql_quote(phpbb_email_hash($row['user_email'])) . "
 		WHERE user_id = " . (int) $row['user_id'];
 	$db->sql_query($sql);
 

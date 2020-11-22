@@ -654,7 +654,7 @@ class acp_icons
 								}
 
 								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . "
-									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'";
+									WHERE $field_sql = " . $db->sql_quote($replace_sql);
 								$db->sql_query($sql);
 							}
 							else

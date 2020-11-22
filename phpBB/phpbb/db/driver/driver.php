@@ -370,12 +370,20 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
+	function sql_quote($expression)
+	{
+		return "'" . $this->sql_escape($expression) . "'";
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function sql_like_expression($expression)
 	{
 		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
 		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
-		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
+		return $this->_sql_like_expression('LIKE ' . $this->sql_quote($expression) );
 	}
 
 	/**
@@ -386,7 +394,7 @@ abstract class driver implements driver_interface
 		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
 		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
-		return $this->_sql_not_like_expression('NOT LIKE \'' . $this->sql_escape($expression) . '\'');
+		return $this->_sql_not_like_expression('NOT LIKE ' . $this->sql_quote($expression));
 	}
 
 	/**
@@ -688,7 +696,7 @@ abstract class driver implements driver_interface
 		}
 		else if (is_string($var))
 		{
-			return "'" . $this->sql_escape($var) . "'";
+			return $this->sql_quote($var);
 		}
 		else
 		{

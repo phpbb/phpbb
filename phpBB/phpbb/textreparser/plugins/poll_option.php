@@ -66,7 +66,7 @@ class poll_option extends \phpbb\textreparser\base
 	protected function save_record(array $record)
 	{
 		$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . "
-			SET poll_option_text = '" . $this->db->sql_escape($record['text']) . "'
+			SET poll_option_text = " . $this->db->sql_quote($record['text']) . "
 			WHERE topic_id = " . $record['topic_id'] . '
 				AND poll_option_id = ' . $record['poll_option_id'];
 		$this->db->sql_query($sql);

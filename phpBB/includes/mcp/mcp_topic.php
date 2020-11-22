@@ -598,7 +598,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 		// Change topic title of first post
 		$sql = 'UPDATE ' . POSTS_TABLE . "
-			SET post_subject = '" . $db->sql_escape($subject) . "'
+			SET post_subject = " . $db->sql_quote($subject) . "
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
 

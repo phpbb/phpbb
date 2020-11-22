@@ -140,7 +140,7 @@ class acp_modules
 
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = " . $db->sql_quote($this->module_class) . "
 						AND module_id = $module_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -153,7 +153,7 @@ class acp_modules
 
 				$sql = 'UPDATE ' . MODULES_TABLE . '
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = " . $db->sql_quote($this->module_class) . "
 						AND module_id = $module_id";
 				$db->sql_query($sql);
 
@@ -176,7 +176,7 @@ class acp_modules
 
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = " . $db->sql_quote($this->module_class) . "
 						AND module_id = $module_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -493,7 +493,7 @@ class acp_modules
 		$sql = 'SELECT *
 			FROM ' . MODULES_TABLE . "
 			WHERE parent_id = {$this->parent_id}
-				AND module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND module_class = " . $db->sql_quote($this->module_class) . "
 			ORDER BY left_id";
 		$result = $db->sql_query($sql);
 
@@ -601,7 +601,7 @@ class acp_modules
 
 		$sql = 'SELECT module_id, module_enabled, module_basename, parent_id, module_langname, left_id, right_id, module_auth
 			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = " . $db->sql_quote($this->module_class) . "
 			ORDER BY left_id ASC";
 		$result = $db->sql_query($sql);
 

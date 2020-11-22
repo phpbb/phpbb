@@ -97,7 +97,7 @@ class acp_users
 		{
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+				WHERE username_clean = " . $db->sql_quote(utf8_clean_string($username));
 			$result = $db->sql_query($sql);
 			$user_id = (int) $db->sql_fetchfield('user_id');
 			$db->sql_freeresult($result);
@@ -388,7 +388,7 @@ class acp_users
 								if ($user_row['user_type'] == USER_NORMAL || empty($user_activation_key))
 								{
 									$sql = 'UPDATE ' . USERS_TABLE . "
-										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
+										SET user_actkey = " . $db->sql_quote($user_actkey) . "
 										WHERE user_id = $user_id";
 									$db->sql_query($sql);
 								}
@@ -1428,7 +1428,7 @@ class acp_users
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($user->data['user_lang']) . "'";
+					WHERE lang_iso = " . $db->sql_quote($user->data['user_lang']);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);

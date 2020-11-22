@@ -85,7 +85,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			{
 				$sql = 'SELECT folder_name
 					FROM ' . PRIVMSGS_FOLDER_TABLE . "
-					WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
+					WHERE folder_name = " . $db->sql_quote($folder_name) . "
 						AND user_id = " . $user->data['user_id'];
 				$result = $db->sql_query_limit($sql, 1);
 				$row = $db->sql_fetchrow($result);
@@ -157,7 +157,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			}
 
 			$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . "
-				SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
+				SET folder_name = " . $db->sql_quote($new_folder_name) . "
 				WHERE folder_id = $rename_folder_id
 					AND user_id = {$user->data['user_id']}";
 			$db->sql_query($sql);
@@ -745,7 +745,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($rule_string)) . "'";
+					WHERE username_clean = " . $db->sql_quote(utf8_clean_string($rule_string));
 				$result = $db->sql_query($sql);
 				$rule_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);

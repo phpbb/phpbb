@@ -755,7 +755,7 @@ class oauth extends \phpbb\auth\provider\base
 
 		// Remove the link
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_account_assoc . "
-			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
+			WHERE provider = " . $this->db->sql_quote($link_data['oauth_service']) . "
 				AND user_id = " . (int) $user_id;
 		$this->db->sql_query($sql);
 

@@ -51,13 +51,13 @@ while ($row = $db->sql_fetchrow($result))
 	if ($new_avatar_name !== false)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_avatar = '" . $db->sql_escape($new_avatar_name) . "'
-			WHERE user_avatar = '" . $db->sql_escape($row['group_avatar']) . "' 
+			SET user_avatar = " . $db->sql_quote($new_avatar_name) . "
+			WHERE user_avatar = " . $db->sql_quote($row['group_avatar']) . "
 			AND user_avatar_type = " . AVATAR_UPLOAD;
 		$db->sql_query($sql);
 		
 		$sql = 'UPDATE ' . GROUPS_TABLE . "
-			SET group_avatar = '" . $db->sql_escape($new_avatar_name) . "'
+			SET group_avatar = " . $db->sql_quote($new_avatar_name) . "
 			WHERE group_id = {$row['group_id']}";
 		$db->sql_query($sql);
 	}
@@ -95,7 +95,7 @@ while ($row = $db->sql_fetchrow($result))
 	if ($new_avatar_name !== false)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_avatar = '" . $db->sql_escape($new_avatar_name) . "'
+			SET user_avatar = " . $db->sql_quote($new_avatar_name) . "
 			WHERE user_id = {$row['user_id']}";
 		$db->sql_query($sql);
 	}

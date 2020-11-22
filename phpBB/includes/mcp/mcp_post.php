@@ -77,7 +77,7 @@ function mcp_post_details($id, $mode, $action)
 			if ($action == 'chgposter')
 			{
 				$username = $request->variable('username', '', true);
-				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+				$sql_where = "username_clean = " . $db->sql_quote(utf8_clean_string($username));
 			}
 			else
 			{
@@ -385,7 +385,7 @@ function mcp_post_details($id, $mode, $action)
 		// Get other users who've posted under this IP
 		$sql = 'SELECT poster_id, COUNT(poster_id) as postings
 			FROM ' . POSTS_TABLE . "
-			WHERE poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
+			WHERE poster_ip = " . $db->sql_quote($post_info['poster_ip']) . "
 				AND poster_id <> " . (int) $post_info['poster_id'] . "
 			GROUP BY poster_id
 			ORDER BY postings DESC, poster_id ASC";
@@ -528,7 +528,7 @@ function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $po
 {
 	$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users
 		FROM ' . POSTS_TABLE . "
-		WHERE poster_ip = '" . $db->sql_escape($poster_ip) . "'";
+		WHERE poster_ip = " . $db->sql_quote($poster_ip);
 	$result = $db->sql_query($sql);
 	$num_users = (int) $db->sql_fetchfield('num_users');
 	$db->sql_freeresult($result);

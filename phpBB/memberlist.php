@@ -494,7 +494,7 @@ switch ($mode)
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u'
 			),
-			'WHERE'		=> (($username) ? "u.username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "u.user_id = $user_id"),
+			'WHERE'		=> (($username) ? "u.username_clean = " . $db->sql_quote(utf8_clean_string($username)) : "u.user_id = $user_id"),
 		);
 
 		/**

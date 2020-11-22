@@ -75,7 +75,7 @@ class timezone extends \phpbb\db\migration\migration
 			$converted_timezone = $this->convert_phpbb30_timezone($timezone[0], $timezone[1]);
 
 			$sql = 'UPDATE ' . $this->table_prefix . "users
-				SET user_timezone = '" . $this->db->sql_escape($converted_timezone) . "'
+				SET user_timezone = " . $this->db->sql_quote($converted_timezone) . "
 				WHERE " . $this->db->sql_in_set('user_id', $user_ids);
 			$this->sql_query($sql);
 		}

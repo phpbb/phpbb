@@ -94,7 +94,7 @@ class p_master
 			// Get modules
 			$sql = 'SELECT *
 				FROM ' . MODULES_TABLE . "
-				WHERE module_class = '" . $db->sql_escape($this->p_class) . "'
+				WHERE module_class = " . $db->sql_quote($this->p_class) . "
 				ORDER BY left_id ASC";
 			$result = $db->sql_query($sql);
 

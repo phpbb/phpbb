@@ -45,7 +45,7 @@ $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$db->sql_query("UPDATE {$table_prefix}posts SET post_text = '" . $db->sql_escape(str_replace('{SMILE_PATH}', '{SMILIES_PATH}', $row['post_text'])) . "' WHERE post_id = " . $row['post_id']);
+	$db->sql_query("UPDATE {$table_prefix}posts SET post_text = " . $db->sql_quote(str_replace('{SMILE_PATH}', '{SMILIES_PATH}', $row['post_text'])) . " WHERE post_id = " . $row['post_id']);
 }
 $db->sql_freeresult($result);
 

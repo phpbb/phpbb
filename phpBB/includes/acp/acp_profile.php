@@ -176,7 +176,7 @@ class acp_profile
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+					WHERE lang_iso = " . $db->sql_quote($config['default_lang']);
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
@@ -555,7 +555,7 @@ class acp_profile
 					{
 						$sql = 'SELECT field_ident
 							FROM ' . PROFILE_FIELDS_TABLE . "
-							WHERE field_ident = '" . $db->sql_escape($cp->vars['field_ident']) . "'";
+							WHERE field_ident = " . $db->sql_quote($cp->vars['field_ident']);
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
@@ -1255,7 +1255,7 @@ class acp_profile
 		foreach ($where_fields as $key => $value)
 		{
 			$check_key = (!$check_key) ? $key : $check_key;
-			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : (int) $value);
+			$where_sql[] = $key . ' = ' . ((is_string($value)) ? $db->sql_quote($value) : (int) $value);
 		}
 
 		if (!count($where_sql))

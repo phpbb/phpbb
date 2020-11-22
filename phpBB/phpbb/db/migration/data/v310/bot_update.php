@@ -35,7 +35,7 @@ class bot_update extends \phpbb\db\migration\migration
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $this->db->sql_escape($bot_name_clean) . "'";
+			WHERE username_clean = " . $this->db->sql_quote($bot_name_clean);
 		$result = $this->db->sql_query($sql);
 		$bing_already_added = (bool) $this->db->sql_fetchfield('user_id');
 		$this->db->sql_freeresult($result);
@@ -122,7 +122,7 @@ class bot_update extends \phpbb\db\migration\migration
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . '
 				WHERE user_type = ' . USER_IGNORE . "
-					AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($bot_name)) . "'";
+					AND username_clean = " . $this->db->sql_quote(utf8_clean_string($bot_name));
 			$result = $this->db->sql_query($sql);
 			$bot_user_id = (int) $this->db->sql_fetchfield('user_id');
 			$this->db->sql_freeresult($result);
@@ -140,7 +140,7 @@ class bot_update extends \phpbb\db\migration\migration
 				else
 				{
 					$sql = 'UPDATE ' . BOTS_TABLE . "
-						SET bot_agent = '" .  $this->db->sql_escape($bot_agent) . "'
+						SET bot_agent = " .  $this->db->sql_quote($bot_agent) . "
 						WHERE user_id = $bot_user_id";
 					$this->sql_query($sql);
 				}

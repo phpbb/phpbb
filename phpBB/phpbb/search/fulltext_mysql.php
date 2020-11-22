@@ -597,7 +597,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE MATCH ($sql_match) AGAINST ('" . $this->db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
+			WHERE MATCH ($sql_match) AGAINST (" . $this->db->sql_quote(htmlspecialchars_decode($this->search_query)) . " IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
 		$this->db->sql_return_on_error(true);

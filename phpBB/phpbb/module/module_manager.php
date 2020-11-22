@@ -84,7 +84,7 @@ class module_manager
 
 		$sql = 'SELECT *
 			FROM ' . $this->modules_table . "
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND module_id = $module_id";
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -205,8 +205,8 @@ class module_manager
 		$sql = 'SELECT m2.*
 			FROM ' . $this->modules_table . ' m1
 			LEFT JOIN ' . $this->modules_table . " m2 ON ($condition)
-			WHERE m1.module_class = '" . $this->db->sql_escape($module_class) . "'
-				AND m2.module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE m1.module_class = " . $this->db->sql_quote($module_class) . "
+				AND m2.module_class = " . $this->db->sql_quote($module_class) . "
 				AND m1.module_id = $module_id
 			ORDER BY m2.left_id";
 		$result = $this->db->sql_query($sql);
@@ -254,7 +254,7 @@ class module_manager
 			{
 				$sql = 'SELECT left_id, right_id
 					FROM ' . $this->modules_table . "
-					WHERE module_class = '" . $this->db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = " . $this->db->sql_quote($module_data['module_class']) . "
 						AND module_id = " . (int) $module_data['parent_id'];
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
@@ -271,13 +271,13 @@ class module_manager
 
 				$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $this->db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = " . $this->db->sql_quote($module_data['module_class']) . "
 						AND left_id > {$row['right_id']}";
 				$this->db->sql_query($sql);
 
 				$sql = 'UPDATE ' . $this->modules_table . "
 					SET right_id = right_id + 2
-					WHERE module_class = '" . $this->db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = " . $this->db->sql_quote($module_data['module_class']) . "
 						AND {$row['left_id']} BETWEEN left_id AND right_id";
 				$this->db->sql_query($sql);
 
@@ -288,7 +288,7 @@ class module_manager
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
 					FROM ' . $this->modules_table . "
-					WHERE module_class = '" . $this->db->sql_escape($module_data['module_class']) . "'";
+					WHERE module_class = " . $this->db->sql_quote($module_data['module_class']);
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -327,7 +327,7 @@ class module_manager
 
 			$sql = 'UPDATE ' . $this->modules_table . '
 				SET ' . $this->db->sql_build_array('UPDATE', $update_ary) . "
-				WHERE module_class = '" . $this->db->sql_escape($module_data['module_class']) . "'
+				WHERE module_class = " . $this->db->sql_quote($module_data['module_class']) . "
 					AND module_id = " . (int) $module_data['module_id'];
 			$this->db->sql_query($sql);
 		}
@@ -364,7 +364,7 @@ class module_manager
 		// Resync parents
 		$sql = 'UPDATE ' . $this->modules_table . "
 			SET right_id = right_id - $diff
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND left_id < " . (int) $from_data['right_id'] . '
 				AND right_id > ' . (int) $from_data['right_id'];
 		$this->db->sql_query($sql);
@@ -372,7 +372,7 @@ class module_manager
 		// Resync righthand side of tree
 		$sql = 'UPDATE ' . $this->modules_table . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND left_id > " . (int) $from_data['right_id'];
 		$this->db->sql_query($sql);
 
@@ -383,7 +383,7 @@ class module_manager
 			// Resync new parents
 			$sql = 'UPDATE ' . $this->modules_table . "
 				SET right_id = right_id + $diff
-				WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+				WHERE module_class = " . $this->db->sql_quote($module_class) . "
 					AND " . (int) $to_data['right_id'] . ' BETWEEN left_id AND right_id
 					AND ' . $this->db->sql_in_set('module_id', $moved_ids, true);
 			$this->db->sql_query($sql);
@@ -391,7 +391,7 @@ class module_manager
 			// Resync the righthand side of the tree
 			$sql = 'UPDATE ' . $this->modules_table . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff
-				WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+				WHERE module_class = " . $this->db->sql_quote($module_class) . "
 					AND left_id > " . (int) $to_data['right_id'] . '
 					AND ' . $this->db->sql_in_set('module_id', $moved_ids, true);
 			$this->db->sql_query($sql);
@@ -411,7 +411,7 @@ class module_manager
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . $this->modules_table . "
-				WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+				WHERE module_class = " . $this->db->sql_quote($module_class) . "
 					AND " . $this->db->sql_in_set('module_id', $moved_ids, true);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
@@ -422,7 +422,7 @@ class module_manager
 
 		$sql = 'UPDATE ' . $this->modules_table . "
 			SET left_id = left_id $diff, right_id = right_id $diff
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND " . $this->db->sql_in_set('module_id', $moved_ids);
 		$this->db->sql_query($sql);
 	}
@@ -451,7 +451,7 @@ class module_manager
 		// If not move
 		$diff = 2;
 		$sql = 'DELETE FROM ' . $this->modules_table . "
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND module_id = $module_id";
 		$this->db->sql_query($sql);
 
@@ -461,13 +461,13 @@ class module_manager
 		// Resync tree
 		$sql = 'UPDATE ' . $this->modules_table . "
 			SET right_id = right_id - $diff
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND left_id < {$row['right_id']} AND right_id > {$row['right_id']}";
 		$this->db->sql_query($sql);
 
 		$sql = 'UPDATE ' . $this->modules_table . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND left_id > {$row['right_id']}";
 		$this->db->sql_query($sql);
 	}
@@ -494,7 +494,7 @@ class module_manager
 		 */
 		$sql = 'SELECT module_id, left_id, right_id, module_langname
 			FROM ' . $this->modules_table . "
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND parent_id = " . (int) $module_row['parent_id'] . '
 				AND ' . (($action == 'move_up') ? 'right_id < ' . (int) $module_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $module_row['left_id'] . ' ORDER BY left_id ASC');
 		$result = $this->db->sql_query_limit($sql, $steps);
@@ -552,7 +552,7 @@ class module_manager
 				WHEN right_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
 			END
-			WHERE module_class = '" . $this->db->sql_escape($module_class) . "'
+			WHERE module_class = " . $this->db->sql_quote($module_class) . "
 				AND left_id BETWEEN {$left_id} AND {$right_id}
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$this->db->sql_query($sql);

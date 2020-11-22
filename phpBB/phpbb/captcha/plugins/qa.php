@@ -74,7 +74,7 @@ class qa
 		// try the user's lang first
 		$sql = 'SELECT question_id
 			FROM ' . $this->table_captcha_questions . "
-			WHERE lang_iso = '" . $db->sql_escape($user->lang_name) . "'";
+			WHERE lang_iso = " . $db->sql_quote($user->lang_name);
 		$result = $db->sql_query($sql, 3600);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -90,7 +90,7 @@ class qa
 
 			$sql = 'SELECT question_id
 				FROM ' . $this->table_captcha_questions . "
-				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+				WHERE lang_iso = " . $db->sql_quote($config['default_lang']);
 			$result = $db->sql_query($sql, 7200);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -158,7 +158,7 @@ class qa
 
 		$sql = 'SELECT COUNT(question_id) AS question_count
 			FROM ' . $this->table_captcha_questions . "
-			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+			WHERE lang_iso = " . $db->sql_quote($config['default_lang']);
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -255,7 +255,7 @@ class qa
 		{
 			$sql = 'SELECT question_text
 				FROM ' . $this->table_captcha_questions . "
-				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+				WHERE lang_iso = " . $db->sql_quote($config['default_lang']);
 			$result = $db->sql_query_limit($sql, 1);
 			if ($row = $db->sql_fetchrow($result))
 			{
@@ -474,8 +474,8 @@ class qa
 
 		$sql = 'UPDATE ' . $this->table_qa_confirm . '
 			SET question_id = ' . (int) $this->question . "
-			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
+			WHERE confirm_id = " . $db->sql_quote($this->confirm_id) . "
+				AND session_id = " . $db->sql_quote($user->session_id);
 		$db->sql_query($sql);
 
 		$this->load_answer();
@@ -495,8 +495,8 @@ class qa
 		$sql = 'UPDATE ' . $this->table_qa_confirm . '
 			SET question_id = ' . (int) $this->question . ",
 				attempts = attempts + 1
-			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
+			WHERE confirm_id = " . $db->sql_quote($this->confirm_id) . "
+				AND session_id = " . $db->sql_quote($user->session_id);
 		$db->sql_query($sql);
 
 		$this->load_answer();
@@ -513,8 +513,8 @@ class qa
 		$sql = 'SELECT confirm_id
 			FROM ' . $this->table_qa_confirm . "
 			WHERE
-				session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND lang_iso = '" . $db->sql_escape($this->question_lang) . "'
+				session_id = " . $db->sql_quote($user->session_id) . "
+				AND lang_iso = " . $db->sql_quote($this->question_lang) . "
 				AND confirm_type = " . $this->type;
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
@@ -543,9 +543,9 @@ class qa
 		$sql = 'SELECT con.question_id, attempts, question_text, strict
 			FROM ' . $this->table_qa_confirm . ' con, ' . $this->table_captcha_questions . " qes
 			WHERE con.question_id = qes.question_id
-				AND confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND qes.lang_iso = '" . $db->sql_escape($this->question_lang) . "'
+				AND confirm_id = " . $db->sql_quote($this->confirm_id) . "
+				AND session_id = " . $db->sql_quote($user->session_id) . "
+				AND qes.lang_iso = " . $db->sql_quote($this->question_lang) . "
 				AND confirm_type = " . $this->type;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -611,7 +611,7 @@ class qa
 		global $db, $user;
 
 		$sql = 'DELETE FROM ' . $this->table_qa_confirm . "
-			WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+			WHERE session_id = " . $db->sql_quote($user->session_id) . "
 				AND confirm_type = " . (int) $this->type;
 		$db->sql_query($sql);
 
@@ -1024,7 +1024,7 @@ class qa
 		{
 			$sql = 'SELECT question_id
 				FROM ' . $this->table_captcha_questions . "
-				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'
+				WHERE lang_iso = " . $db->sql_quote($config['default_lang']) . "
 					AND  question_id <> " .  (int) $question_id;
 			$result = $db->sql_query_limit($sql, 1);
 			$question = $db->sql_fetchrow($result);

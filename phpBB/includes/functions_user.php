@@ -147,8 +147,8 @@ function user_update_name($old_name, $new_name)
 		foreach ($field_ary as $id_field => $name_field)
 		{
 			$sql = "UPDATE $table
-				SET $name_field = '" . $db->sql_escape($new_name) . "'
-				WHERE $name_field = '" . $db->sql_escape($old_name) . "'
+				SET $name_field = " . $db->sql_quote($new_name) . "
+				WHERE $name_field = " . $db->sql_quote($old_name) . "
 					AND $id_field <> " . ANONYMOUS;
 			$db->sql_query($sql);
 		}
@@ -606,22 +606,22 @@ function user_delete($mode, $user_ids, $retain_username = true)
 				{
 					// When we delete these users and retain the posts, we must assign all the data to the guest user
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
-						SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+						SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = " . $db->sql_quote($post_username) . ", forum_last_poster_colour = ''
 						WHERE forum_last_poster_id = $user_id";
 					$db->sql_query($sql);
 
 					$sql = 'UPDATE ' . POSTS_TABLE . '
-						SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+						SET poster_id = ' . ANONYMOUS . ", post_username = " . $db->sql_quote($post_username) . "
 						WHERE poster_id = $user_id";
 					$db->sql_query($sql);
 
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+						SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = " . $db->sql_quote($post_username) . ", topic_first_poster_colour = ''
 						WHERE topic_poster = $user_id";
 					$db->sql_query($sql);
 
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+						SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = " . $db->sql_quote($post_username) . ", topic_last_poster_colour = ''
 						WHERE topic_last_poster_id = $user_id";
 					$db->sql_query($sql);
 
@@ -1695,7 +1695,7 @@ function validate_language_iso_name($lang_iso)
 
 	$sql = 'SELECT lang_id
 		FROM ' . LANG_TABLE . "
-		WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
+		WHERE lang_iso = " . $db->sql_quote($lang_iso);
 	$result = $db->sql_query($sql);
 	$lang_id = (int) $db->sql_fetchfield('lang_id');
 	$db->sql_freeresult($result);
@@ -1794,7 +1794,7 @@ function validate_username($username, $allowed_username = false, $allow_all_name
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
-		WHERE username_clean = '" . $db->sql_escape($clean_username) . "'";
+		WHERE username_clean = " . $db->sql_quote($clean_username);
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1806,7 +1806,7 @@ function validate_username($username, $allowed_username = false, $allow_all_name
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
+		WHERE LOWER(group_name) = " . $db->sql_quote(utf8_strtolower($username));
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -2436,7 +2436,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 			// Since we may update the name too, we need to do this on other tables too...
 			$sql = 'UPDATE ' . MODERATOR_CACHE_TABLE . "
-				SET group_name = '" . $db->sql_escape($sql_ary['group_name']) . "'
+				SET group_name = " . $db->sql_quote($sql_ary['group_name']) . "
 				WHERE group_id = $group_id";
 			$db->sql_query($sql);
 
@@ -2575,7 +2575,7 @@ function group_correct_avatar($group_id, $old_entry)
 	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
 	{
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
-			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
+			SET group_avatar = ' . $db->sql_quote($new_entry) . "
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
 	}
@@ -2592,7 +2592,7 @@ function avatar_remove_db($avatar_name)
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
 		user_avatar_type = ''
-		WHERE user_avatar = '" . $db->sql_escape($avatar_name) . '\'';
+		WHERE user_avatar = " . $db->sql_quote($avatar_name);
 	$db->sql_query($sql);
 }
 
@@ -3052,7 +3052,7 @@ function remove_default_avatar($group_id, $user_ids)
 			user_avatar_width = 0,
 			user_avatar_height = 0
 		WHERE group_id = " . (int) $group_id . "
-			AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
+			AND user_avatar = " . $db->sql_quote($row['group_avatar']) . "
 			AND " . $db->sql_in_set('user_id', $user_ids);
 
 	$db->sql_query($sql);
@@ -3298,7 +3298,7 @@ function group_validate_groupname($group_id, $group_name)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($group_name)) . "'";
+		WHERE LOWER(group_name) = " . $db->sql_quote(utf8_strtolower($group_name));
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -3416,17 +3416,17 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	{
 		// Update any cached colour information for these users
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			SET forum_last_poster_colour = " . $db->sql_quote($sql_ary['user_colour']) . "
 			WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
-			SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			SET topic_first_poster_colour = " . $db->sql_quote($sql_ary['user_colour']) . "
 			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
 		$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
-			SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			SET topic_last_poster_colour = " . $db->sql_quote($sql_ary['user_colour']) . "
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 

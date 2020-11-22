@@ -448,4 +448,19 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	{
 		$this->query_options = $options;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_quote($expression)
+	{
+		if (mb_check_encoding($expression, 'ASCII'))
+		{
+			return "'" . $this->sql_escape($expression) . "'";
+		}
+		else
+		{
+			return "N'" . $this->sql_escape($expression) . "'";
+		}
+	}
 }

@@ -108,7 +108,7 @@ class apache extends \phpbb\auth\provider\base
 
 			$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $this->db->sql_escape($php_auth_user) . "'";
+				WHERE username = " . $this->db->sql_quote($php_auth_user);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -169,7 +169,7 @@ class apache extends \phpbb\auth\provider\base
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $this->db->sql_escape($php_auth_user) . "'";
+				WHERE username = " . $this->db->sql_quote($php_auth_user);
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
@@ -189,7 +189,7 @@ class apache extends \phpbb\auth\provider\base
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
+				WHERE username_clean = " . $this->db->sql_quote(utf8_clean_string($php_auth_user));
 			$result = $this->db->sql_query($sql);
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);

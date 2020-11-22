@@ -2184,7 +2184,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		'S_AJAX_REQUEST'	=> $request->is_ajax(),
 	));
 
-	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
+	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = " . $db->sql_quote($confirm_key) . "
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
 
@@ -2550,7 +2550,7 @@ function login_forum_box($forum_data)
 		FROM ' . FORUMS_ACCESS_TABLE . '
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
 			AND user_id = ' . $user->data['user_id'] . "
-			AND session_id = '" . $db->sql_escape($user->session_id) . "'";
+			AND session_id = " . $db->sql_quote($user->session_id);
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);

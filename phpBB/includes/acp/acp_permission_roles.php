@@ -172,8 +172,8 @@ class acp_permission_roles
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
-						WHERE role_type = '" . $db->sql_escape($permission_type) . "'
-							AND role_name = '" . $db->sql_escape($role_name) . "'";
+						WHERE role_type = " . $db->sql_quote($permission_type) . "
+							AND role_name = " . $db->sql_quote($role_name);
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -202,7 +202,7 @@ class acp_permission_roles
 						// Get maximum role order for inserting a new role...
 						$sql = 'SELECT MAX(role_order) as max_order
 							FROM ' . ACL_ROLES_TABLE . "
-							WHERE role_type = '" . $db->sql_escape($permission_type) . "'";
+							WHERE role_type = " . $db->sql_quote($permission_type);
 						$result = $db->sql_query($sql);
 						$max_order = (int) $db->sql_fetchfield('max_order');
 						$db->sql_freeresult($result);
@@ -388,7 +388,7 @@ class acp_permission_roles
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
 					SET role_order = ' . $order_total . " - role_order
-					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+					WHERE role_type = " . $db->sql_quote($permission_type) . "
 						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
 
@@ -406,7 +406,7 @@ class acp_permission_roles
 		// By default, check that role_order is valid and fix it if necessary
 		$sql = 'SELECT role_id, role_order
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = " . $db->sql_quote($permission_type) . "
 			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 
@@ -431,7 +431,7 @@ class acp_permission_roles
 		// Select existing roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = " . $db->sql_quote($permission_type) . "
 			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 

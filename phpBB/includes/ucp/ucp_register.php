@@ -350,7 +350,7 @@ class ucp_register
 
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name = '" . $db->sql_escape($group_name) . "'
+					WHERE group_name = " . $db->sql_quote($group_name) . "
 						AND group_type = " . GROUP_SPECIAL;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);

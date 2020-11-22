@@ -349,11 +349,11 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = " . $db->sql_quote($row['post_subject']);
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = " . $db->sql_quote($row['user_colour']);
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = " . (($row['poster_id'] == ANONYMOUS) ? $db->sql_quote($row['post_username']) : $db->sql_quote($row['username']));
 		}
 		$db->sql_freeresult($result);
 	}
@@ -2027,11 +2027,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$config->increment('num_posts', 1, false);
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data_ary['post_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = " . $db->sql_quote($subject);
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . $current_time;
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $user->data['user_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')) . "'";
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($user->data['user_colour']) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = " . $db->sql_quote((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''));
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = " . $db->sql_quote($user->data['user_colour']);
 		}
 
 		unset($sql_data[POSTS_TABLE]['sql']);
@@ -2098,7 +2098,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				else if ($poll_ary['poll_options'][$i] != $cur_poll_options[$i])
 				{
 					$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . "
-						SET poll_option_text = '" . $db->sql_escape($poll_ary['poll_options'][$i]) . "'
+						SET poll_option_text = " . $db->sql_quote($poll_ary['poll_options'][$i]) . "
 						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . '
 							AND topic_id = ' . $data_ary['topic_id'];
 					$db->sql_query($sql);
@@ -2168,7 +2168,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
+					SET attach_comment = " . $db->sql_quote($attach_row['attach_comment']) . "
 					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
 						AND is_orphan = 0';
 				$db->sql_query($sql);
@@ -2230,12 +2230,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		if ($post_visibility == ITEM_APPROVED || $data_ary['topic_visibility'] == $post_visibility)
 		{
 			// only the subject can be changed from edit
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = " . $db->sql_quote($subject);
 
 			// Maybe not only the subject, but also changing anonymous usernames. ;)
 			if ($data_ary['poster_id'] == ANONYMOUS)
 			{
-				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
+				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = " . $db->sql_quote($username);
 			}
 
 			if ($post_visibility == ITEM_APPROVED)
@@ -2255,13 +2255,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					// the post's subject changed
 					if ($row['forum_last_post_subject'] !== $subject)
 					{
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = " . $db->sql_quote($subject);
 					}
 
 					// Update the user name if poster is anonymous... just in case a moderator changed it
 					if ($data_ary['poster_id'] == ANONYMOUS)
 					{
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = " . $db->sql_quote($username);
 					}
 				}
 			}
@@ -2635,10 +2635,10 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 	$sql = 'UPDATE ' . FORUMS_TABLE . "
 		SET forum_last_post_id = " . $post_data['topic_last_post_id'] . ",
 			forum_last_poster_id = " . $post_data['topic_last_poster_id'] . ",
-			forum_last_post_subject = '" . $db->sql_escape($post_data['topic_last_post_subject']) . "',
+			forum_last_post_subject = " . $db->sql_quote($post_data['topic_last_post_subject']) . ",
 			forum_last_post_time = $bump_time,
-			forum_last_poster_name = '" . $db->sql_escape($post_data['topic_last_poster_name']) . "',
-			forum_last_poster_colour = '" . $db->sql_escape($post_data['topic_last_poster_colour']) . "'
+			forum_last_poster_name = " . $db->sql_quote($post_data['topic_last_poster_name']) . ",
+			forum_last_poster_colour = " . $db->sql_quote($post_data['topic_last_poster_colour']) . "
 		WHERE forum_id = $forum_id";
 	$db->sql_query($sql);
 

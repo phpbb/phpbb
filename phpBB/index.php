@@ -146,7 +146,7 @@ if ($show_birthdays)
 	$leap_year_birthdays = '';
 	if ($now['mday'] == 28 && $now['mon'] == 2 && !$time->format('L'))
 	{
-		$leap_year_birthdays = " OR u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', 29, 2)) . "%'";
+		$leap_year_birthdays = " OR u.user_birthday LIKE " . $db->sql_quote(sprintf('%2d-%2d-', 29, 2) . '%');
 	}
 
 	$sql_ary = array(
@@ -161,7 +161,7 @@ if ($show_birthdays)
 			),
 		),
 		'WHERE' => "(b.ban_id IS NULL OR b.ban_exclude = 1)
-			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)
+			AND (u.user_birthday LIKE " . $db->sql_quote(sprintf('%2d-%2d-', $now['mday'], $now['mon']) . '%') . " $leap_year_birthdays)
 			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')',
 	);
 

@@ -92,7 +92,7 @@ class acp_reasons
 					{
 						$sql = 'SELECT reason_id
 							FROM ' . REPORTS_REASONS_TABLE . "
-							WHERE reason_title = '" . $db->sql_escape($reason_row['reason_title']) . "'";
+							WHERE reason_title = " . $db->sql_quote($reason_row['reason_title']);
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);

@@ -454,7 +454,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		$sql = 'SELECT user_id, method, notify
 			FROM ' . $this->user_notifications_table . '
 			WHERE ' . $this->db->sql_in_set('user_id', $user_ids) . "
-				AND item_type = '" . $this->db->sql_escape($options['item_type']) . "'
+				AND item_type = " . $this->db->sql_quote($options['item_type']) . "
 				AND item_id = " . (int) $options['item_id'];
 		$result = $this->db->sql_query($sql);
 

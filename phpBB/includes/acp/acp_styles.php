@@ -905,7 +905,7 @@ class acp_styles
 		if ($update)
 		{
 			$sql = 'UPDATE ' . STYLES_TABLE . "
-				SET style_parent_tree = '" . $this->db->sql_escape($parent_tree) . "'
+				SET style_parent_tree = " . $this->db->sql_quote($parent_tree) . "
 				WHERE style_parent_id = {$parent_id}";
 			$this->db->sql_query($sql);
 			$updated = true;
@@ -1260,7 +1260,7 @@ class acp_styles
 		// Check if style has child styles
 		$sql = 'SELECT style_id
 			FROM ' . STYLES_TABLE . '
-			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
+			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = " . $this->db->sql_quote($path);
 		$result = $this->db->sql_query($sql);
 
 		$conflict = $this->db->sql_fetchrow($result);

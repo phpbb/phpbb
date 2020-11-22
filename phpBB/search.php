@@ -168,7 +168,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			trigger_error($user->lang('TOO_FEW_AUTHOR_CHARS', (int) $config['min_search_author_chars']));
 		}
 
-		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " username_clean = " . $db->sql_quote(utf8_clean_string($author));
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
@@ -182,7 +182,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		$db->sql_freeresult($result);
 
-		$sql_where = (strpos($author, '*') !== false) ? ' post_username ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " post_username = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		$sql_where = (strpos($author, '*') !== false) ? ' post_username ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " post_username = " . $db->sql_quote(utf8_clean_string($author));
 
 		$sql = 'SELECT 1 as guest_post
 			FROM ' . POSTS_TABLE . "
@@ -195,7 +195,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if ($found_guest_post)
 		{
 			$author_id_ary[] = ANONYMOUS;
-			$sql_author_match = (strpos($author, '*') !== false) ? ' ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+			$sql_author_match = (strpos($author, '*') !== false) ? ' ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " = " . $db->sql_quote(utf8_clean_string($author));
 		}
 
 		if (!count($author_id_ary))
@@ -234,7 +234,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, f.forum_flags, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
-			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
+			AND fa.session_id = " . $db->sql_quote($user->session_id) . ")
 		$not_in_fid
 		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
@@ -1357,7 +1357,7 @@ $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, f.enable_indexing, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
 	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
-		AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
+		AND fa.session_id = " . $db->sql_quote($user->session_id) . ")
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);
 

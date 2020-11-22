@@ -148,78 +148,78 @@ class add_config_settings extends \phpbb\install\task_base
 				VALUES ('board_startdate', '$current_time')",
 
 			'INSERT INTO ' . $this->config_table . " (config_name, config_value)
-				VALUES ('default_lang', '" . $this->db->sql_escape($this->install_config->get('default_lang')) . "')",
+				VALUES ('default_lang', " . $this->db->sql_quote($this->install_config->get('default_lang')) . ")",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('server_name')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('server_name')) . "
 				WHERE config_name = 'server_name'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('server_port')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('server_port')) . "
 				WHERE config_name = 'server_port'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('board_email')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('board_email')) . "
 				WHERE config_name = 'board_email'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('board_email')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('board_email')) . "
 				WHERE config_name = 'board_contact'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($cookie_domain) . "'
+				SET config_value = " . $this->db->sql_quote($cookie_domain) . "
 				WHERE config_name = 'cookie_domain'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->language->lang('default_dateformat')) . "'
+				SET config_value = " . $this->db->sql_quote($this->language->lang('default_dateformat')) . "
 				WHERE config_name = 'default_dateformat'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('email_enable')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('email_enable')) . "
 				WHERE config_name = 'email_enable'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_delivery')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_delivery')) . "
 				WHERE config_name = 'smtp_delivery'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_host')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_host')) . "
 				WHERE config_name = 'smtp_host'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_port')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_port')) . "
 				WHERE config_name = 'smtp_port'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_auth')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_auth')) . "
 				WHERE config_name = 'smtp_auth_method'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_user')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_user')) . "
 				WHERE config_name = 'smtp_username'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_pass')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('smtp_pass')) . "
 				WHERE config_name = 'smtp_password'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('cookie_secure')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('cookie_secure')) . "
 				WHERE config_name = 'cookie_secure'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('force_server_vars')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('force_server_vars')) . "
 				WHERE config_name = 'force_server_vars'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('script_path')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('script_path')) . "
 				WHERE config_name = 'script_path'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('server_protocol')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('server_protocol')) . "
 				WHERE config_name = 'server_protocol'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('admin_name')) . "
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $this->config_table . "
@@ -231,35 +231,35 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'plupload_salt'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('board_name')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('board_name')) . "
 				WHERE config_name = 'sitename'",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->install_config->get('board_description')) . "'
+				SET config_value = " . $this->db->sql_quote($this->install_config->get('board_description')) . "
 				WHERE config_name = 'site_desc'",
 
 			'UPDATE ' . $this->user_table . "
-				SET username = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "',
+				SET username = " . $this->db->sql_quote($this->install_config->get('admin_name')) . ",
 					user_password='" . $this->password_manager->hash($this->install_config->get('admin_passwd')) . "',
-					user_ip = '" . $this->db->sql_escape($user_ip) . "',
-					user_lang = '" . $this->db->sql_escape($this->install_config->get('user_language', 'en')) . "',
-					user_email='" . $this->db->sql_escape($this->install_config->get('board_email')) . "',
-					user_dateformat='" . $this->db->sql_escape($this->language->lang('default_dateformat')) . "',
+					user_ip = " . $this->db->sql_quote($user_ip) . ",
+					user_lang = " . $this->db->sql_quote($this->install_config->get('user_language', 'en')) . ",
+					user_email=" . $this->db->sql_quote($this->install_config->get('board_email')) . ",
+					user_dateformat=" . $this->db->sql_quote($this->language->lang('default_dateformat')) . ",
 					user_email_hash = " . $this->db->sql_escape(phpbb_email_hash($this->install_config->get('board_email'))) . ",
-					username_clean = '" . $this->db->sql_escape(utf8_clean_string($this->install_config->get('admin_name'))) . "'
+					username_clean = " . $this->db->sql_quote(utf8_clean_string($this->install_config->get('admin_name'))) . "
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $this->moderator_cache_table . "
-				SET username = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "'
+				SET username = " . $this->db->sql_quote($this->install_config->get('admin_name')) . "
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $this->forums_table . "
-				SET forum_last_poster_name = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "'
+				SET forum_last_poster_name = " . $this->db->sql_quote($this->install_config->get('admin_name')) . "
 				WHERE forum_last_poster_name = 'Admin'",
 
 			'UPDATE ' . $this->topics_table . "
-				SET topic_first_poster_name = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "',
-				topic_last_poster_name = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "'
+				SET topic_first_poster_name = " . $this->db->sql_quote($this->install_config->get('admin_name')) . ",
+				topic_last_poster_name = " . $this->db->sql_quote($this->install_config->get('admin_name')) . "
 				WHERE topic_first_poster_name = 'Admin'
 					OR topic_last_poster_name = 'Admin'",
 
@@ -267,7 +267,7 @@ class add_config_settings extends \phpbb\install\task_base
 				SET user_regdate = $current_time",
 
 			'UPDATE ' . $this->posts_table . "
-				SET post_time = $current_time, poster_ip = '" . $this->db->sql_escape($user_ip) . "'",
+				SET post_time = $current_time, poster_ip = " . $this->db->sql_quote($user_ip),
 
 			'UPDATE ' . $this->topics_table . "
 				SET topic_time = $current_time, topic_last_post_time = $current_time",
@@ -276,7 +276,7 @@ class add_config_settings extends \phpbb\install\task_base
 				SET forum_last_post_time = $current_time",
 
 			'UPDATE ' . $this->config_table . "
-				SET config_value = '" . $this->db->sql_escape($this->db->sql_server_info(true)) . "'
+				SET config_value = " . $this->db->sql_quote($this->db->sql_server_info(true)) . "
 				WHERE config_name = 'dbms_version'",
 		);
 
@@ -307,7 +307,7 @@ class add_config_settings extends \phpbb\install\task_base
 		$cookie_name .= strtolower($rand_str);
 
 		$sql_ary[] = 'UPDATE ' . $this->config_table . "
-			SET config_value = '" . $this->db->sql_escape($cookie_name) . "'
+			SET config_value = " . $this->db->sql_quote($cookie_name) . "
 			WHERE config_name = 'cookie_name'";
 
 		// Disable avatars if upload directory is not writable

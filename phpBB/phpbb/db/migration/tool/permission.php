@@ -82,7 +82,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 
 		$sql = 'SELECT auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option = '" . $this->db->sql_escape($auth_option) . "'"
+			WHERE auth_option = " . $this->db->sql_quote($auth_option)
 				. $type_sql;
 		$result = $this->db->sql_query($sql);
 
@@ -133,7 +133,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			);
 			$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE auth_option = '" . $this->db->sql_escape($auth_option) . "'";
+				WHERE auth_option = " . $this->db->sql_quote($auth_option);
 			$this->db->sql_query($sql);
 		}
 		else
@@ -208,7 +208,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		}
 		$sql = 'SELECT auth_option_id, is_global, is_local
 			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option = '" . $this->db->sql_escape($auth_option) . "'" .
+			WHERE auth_option = " . $this->db->sql_quote($auth_option) .
 				$type_sql;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
@@ -253,7 +253,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
+			WHERE role_name = " . $this->db->sql_quote($role_name);
 		$this->db->sql_query($sql);
 		$role_id = (int) $this->db->sql_fetchfield('role_id');
 
@@ -264,7 +264,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 
 		$sql = 'SELECT MAX(role_order) AS max_role_order
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $this->db->sql_escape($role_type) . "'";
+			WHERE role_type = " . $this->db->sql_quote($role_type);
 		$this->db->sql_query($sql);
 		$role_order = (int) $this->db->sql_fetchfield('max_role_order');
 		$role_order = (!$role_order) ? 1 : $role_order + 1;
@@ -292,7 +292,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($old_role_name) . "'";
+			WHERE role_name = " . $this->db->sql_quote($old_role_name);
 		$this->db->sql_query($sql);
 		$role_id = (int) $this->db->sql_fetchfield('role_id');
 
@@ -302,8 +302,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		}
 
 		$sql = 'UPDATE ' . ACL_ROLES_TABLE . "
-			SET role_name = '" . $this->db->sql_escape($new_role_name) . "'
-			WHERE role_name = '" . $this->db->sql_escape($old_role_name) . "'";
+			SET role_name = " . $this->db->sql_quote($new_role_name) . "
+			WHERE role_name = " . $this->db->sql_quote($old_role_name);
 		$this->db->sql_query($sql);
 	}
 
@@ -317,7 +317,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = '" . $this->db->sql_escape($role_name) . "'";
+			WHERE role_name = " . $this->db->sql_quote($role_name);
 		$this->db->sql_query($sql);
 		$role_id = (int) $this->db->sql_fetchfield('role_id');
 
@@ -383,7 +383,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			case 'role':
 				$sql = 'SELECT role_id
 					FROM ' . ACL_ROLES_TABLE . "
-					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
+					WHERE role_name = " . $this->db->sql_quote($name);
 				$this->db->sql_query($sql);
 				$role_id = (int) $this->db->sql_fetchfield('role_id');
 
@@ -406,7 +406,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			case 'group':
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
+					WHERE group_name = " . $this->db->sql_quote($name);
 				$this->db->sql_query($sql);
 				$group_id = (int) $this->db->sql_fetchfield('group_id');
 
@@ -541,7 +541,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			case 'role':
 				$sql = 'SELECT role_id
 					FROM ' . ACL_ROLES_TABLE . "
-					WHERE role_name = '" . $this->db->sql_escape($name) . "'";
+					WHERE role_name = " . $this->db->sql_quote($name);
 				$this->db->sql_query($sql);
 				$role_id = (int) $this->db->sql_fetchfield('role_id');
 
@@ -559,7 +559,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			case 'group':
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name = '" . $this->db->sql_escape($name) . "'";
+					WHERE group_name = " . $this->db->sql_quote($name);
 				$this->db->sql_query($sql);
 				$group_id = (int) $this->db->sql_fetchfield('group_id');
 

@@ -110,7 +110,7 @@ class release_3_0_1_rc1 extends \phpbb\db\migration\migration
 
 				$sql = 'UPDATE ' . SMILIES_TABLE . '
 					SET smiley_width = ' . $width . ', smiley_height = ' . $height . "
-					WHERE smiley_url = '" . $this->db->sql_escape($smiley) . "'";
+					WHERE smiley_url = " . $this->db->sql_quote($smiley);
 
 				$this->sql_query($sql);
 			}

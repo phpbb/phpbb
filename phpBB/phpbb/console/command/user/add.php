@@ -264,7 +264,7 @@ class add extends command
 	{
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $this->db->sql_escape('REGISTERED') . "'
+			WHERE group_name = " . $this->db->sql_quote('REGISTERED') . "
 				AND group_type = " . GROUP_SPECIAL;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);

@@ -439,7 +439,7 @@ class auth
 			$userdata['user_permissions'] = $hold_str;
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "',
+				SET user_permissions = " . $db->sql_quote($userdata['user_permissions']) . ",
 					user_perm_from = 0
 				WHERE user_id = " . $userdata['user_id'];
 			$db->sql_query($sql);
@@ -584,7 +584,7 @@ class auth
 		$sql = 'SELECT a.auth_role_id, a.' . $sql_id . ', a.forum_id
 			FROM ' . (($user_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE) . ' a, ' . ACL_ROLES_TABLE . " r
 			WHERE a.auth_role_id = r.role_id
-				AND r.role_type = '" . $db->sql_escape($role_type) . "'
+				AND r.role_type = " . $db->sql_quote($role_type) . "
 				$sql_ug
 				$sql_forum
 			ORDER BY r.role_order ASC";
@@ -961,7 +961,7 @@ class auth
 
 				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+					WHERE username_clean = " . $db->sql_quote(utf8_clean_string($username));
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1040,7 +1040,7 @@ class auth
 					{
 						// the login array is used because the user ids do not differ for re-authentication
 						$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-							WHERE session_id = '" . $db->sql_escape($old_session_id) . "'
+							WHERE session_id = " . $db->sql_quote($old_session_id) . "
 							AND session_user_id = {$login['user_row']['user_id']}";
 						$db->sql_query($sql);
 					}
@@ -1080,7 +1080,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = "AND $key = '" . $db->sql_escape($auth_options) . "'";
+				$sql_opts = "AND $key = " . $db->sql_quote($auth_options);
 			}
 		}
 		else
@@ -1111,7 +1111,7 @@ class auth
 					}
 					else
 					{
-						$sql[] = $key . " = '" . $db->sql_escape($option) . "'";
+						$sql[] = $key . " = " . $db->sql_quote($option);
 					}
 				}
 
