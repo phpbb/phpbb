@@ -333,12 +333,6 @@ $template->assign_block_vars('navlinks', array(
 	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
 ));
 
-// Load and execute the relevant module
-$module->load_active();
-
-// Assign data to the template engine for the list of modules
-$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
-
 // Generate urls for letting the moderation control panel being accessed in different modes
 $template->assign_vars(array(
 	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
@@ -346,6 +340,12 @@ $template->assign_vars(array(
 	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
 	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
 ));
+
+// Load and execute the relevant module
+$module->load_active();
+
+// Assign data to the template engine for the list of modules
+$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title());
