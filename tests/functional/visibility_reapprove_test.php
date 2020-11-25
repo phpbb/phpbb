@@ -226,7 +226,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertStringContainsString('viewtopic.php?t=' . $this->data['topic']['Reapprove Test Topic #2'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?t=' . $this->data['topics']['Reapprove Test Topic #2'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}");
 		$this->assertStringContainsString('Reapprove Test Topic #2', $crawler->filter('h2')->text());
