@@ -686,7 +686,7 @@ class acp_main
 		)
 		{
 			// World-Writable? (000x)
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($config_ref) & 0x0002));
 		}
 
 		$this->php_ini = $phpbb_container->get('php_ini');
