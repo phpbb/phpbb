@@ -681,7 +681,7 @@ class acp_main
 
 		$config_ref = $phpbb_root_path . 'config.' . $phpEx;
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx)
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($config_ref)
 			&& (function_exists('is_writable') ? is_writable($config_ref) : $phpbb_filesystem->is_writable($config_ref))
 		)
 		{
