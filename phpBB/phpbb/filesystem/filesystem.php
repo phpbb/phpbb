@@ -613,8 +613,11 @@ class filesystem implements filesystem_interface
 			}
 			else
 			{
-				if (is_writable($file))
+				$handle = @fopen($file, 'c');
+
+				if (is_resource($handle))
 				{
+					fclose($handle);
 					return true;
 				}
 			}
