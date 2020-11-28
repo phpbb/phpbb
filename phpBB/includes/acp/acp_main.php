@@ -682,7 +682,7 @@ class acp_main
 		// We define the variable so we avoid redundancies
 		$config_ref = $phpbb_root_path . 'config.' . $phpEx;
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($config_ref) && $phpbb_filesystem->is_writable($config_ref))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($config_ref))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($config_ref) & 0x0002));
