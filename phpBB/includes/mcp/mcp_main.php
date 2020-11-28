@@ -1573,15 +1573,15 @@ function mcp_fork_topic($topic_ids)
 				* @var	array	sql_ary			SQL Array with the post's data
 				* @var	array	row				Post data
 				* @var	array	counter			Array with post counts
-				* @since 3.2.6-RC1
+				* @since 3.3.3-RC1
 				*/
-				$vars = array(
+				$vars = [
 					'new_topic_id',
 					'to_forum_id',
 					'sql_ary',
 					'row',
 					'counter',
-				);
+				];
 				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_post_sql', compact($vars)));
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();

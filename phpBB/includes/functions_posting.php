@@ -356,12 +356,12 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		* @event core.update_post_info_modify_posts_sql
 		* @var	string	type				The table being updated (forum or topic)
 		* @var	array	sql_ary				SQL array to get some of the last posts' data
-		* @since 3.2.6-RC1
+		* @since 3.3.3-RC1
 		*/
-		$vars = array(
+		$vars = [
 			'type',
 			'sql_ary',
-		);
+		];
 		extract($phpbb_dispatcher->trigger_event('core.update_post_info_modify_posts_sql', compact($vars)));
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -385,14 +385,15 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		* @var	string	type				The table being updated (forum or topic)
 		* @var	array	rowset				Array with the posts data
 		* @var	array	update_sql			Array with SQL data to update the forums or topics table with
-		* @since 3.2.6-RC1
+		* @since 3.3.3-RC1
 		*/
-		$vars = array(
+		$vars = [
 			'type',
 			'rowset',
 			'update_sql',
-		);
+		];
 		extract($phpbb_dispatcher->trigger_event('core.update_post_info_modify_sql', compact($vars)));
+		unset($rowset);
 	}
 	unset($empty_forums, $ids, $last_post_ids);
 

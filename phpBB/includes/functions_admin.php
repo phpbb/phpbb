@@ -1841,9 +1841,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				*
 				* @event core.sync_forum_last_post_info_sql
 				* @var	array	sql_ary		SQL array with some post and user data from the last posts list
-				* @since 3.2.6-RC1
+				* @since 3.3.3-RC1
 				*/
-				$vars = array('sql_ary');
+				$vars = ['sql_ary'];
 				extract($phpbb_dispatcher->trigger_event('core.sync_forum_last_post_info_sql', compact($vars)));
 				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -1894,13 +1894,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			* @var	array	forum_data		Array with data to update for all forum ids
 			* @var	array	post_info		Array with some post and user data from the last posts list
 			* @var	array	fieldnames		Array with the partial column names that are being updated
-			* @since 3.2.6-RC1
+			* @since 3.3.3-RC1
 			*/
-			$vars = array(
+			$vars = [
 				'forum_data',
 				'post_info',
 				'fieldnames',
-			);
+			];
 			extract($phpbb_dispatcher->trigger_event('core.sync_modify_forum_data', compact($vars)));
 			unset($post_info);
 
@@ -2082,19 +2082,19 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					AND u.user_id = p.poster_id',
 			);
 
-			$custom_fieldnames = array();
+			$custom_fieldnames = [];
 			/**
 			* Event to modify the SQL array to get the post and user data from all topics' last posts
 			*
 			* @event core.sync_topic_last_post_info_sql
 			* @var	array	sql_ary					SQL array with some post and user data from the last posts list
 			* @var	array	custom_fieldnames		Empty array for custom fieldnames to update the topics_table with
-			* @since 3.2.6-RC1
+			* @since 3.3.1-RC1
 			*/
-			$vars = array(
+			$vars = [
 				'sql_ary',
 				'custom_fieldnames',
-			);
+			];
 			extract($phpbb_dispatcher->trigger_event('core.sync_topic_last_post_info_sql', compact($vars)));
 			$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -2126,13 +2126,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				* @var	array	topic_data		Array with the topics' data we are syncing
 				* @var	array	row				Array with some of the current user and post data
 				* @var	int		topic_id		The current topic_id of $row
-				* @since 3.2.6-RC1
+				* @since 3.3.1-RC1
 				*/
-				$vars = array(
+				$vars = [
 					'topic_data',
 					'row',
 					'topic_id',
-				);
+				];
 				extract($phpbb_dispatcher->trigger_event('core.sync_modify_topic_data', compact($vars)));
 			}
 			$db->sql_freeresult($result);
@@ -2251,6 +2251,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// Add custom fieldnames
 			$fieldnames = array_merge($fieldnames, $custom_fieldnames);
+			unset($custom_fieldnames);
 
 			if ($sync_extra)
 			{
