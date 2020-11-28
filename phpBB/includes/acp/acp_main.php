@@ -679,17 +679,17 @@ class acp_main
 			}
 		}
 
-		$config_ref = $phpbb_root_path . 'config.' . $phpEx;
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($config_ref))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
 		{
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) $phpbb_filesystem->is_writable($config_ref));
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) $phpbb_filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx));
 		}
 
-		$this->php_ini = $phpbb_container->get('php_ini');
-		$func_overload = $this->php_ini->getNumeric('mbstring.func_overload');
-		$encoding_translation = $this->php_ini->getString('mbstring.encoding_translation');
-		$http_input = $this->php_ini->getString('mbstring.http_input');
-		$http_output = $this->php_ini->getString('mbstring.http_output');
+		$this->php_ini			= $phpbb_container->get('php_ini');
+		$func_overload			= $this->php_ini->getNumeric('mbstring.func_overload');
+		$encoding_translation	= $this->php_ini->getString('mbstring.encoding_translation');
+		$http_input				= $this->php_ini->getString('mbstring.http_input');
+		$http_output			= $this->php_ini->getString('mbstring.http_output');
+
 		if (extension_loaded('mbstring'))
 		{
 			$template->assign_vars(array(
