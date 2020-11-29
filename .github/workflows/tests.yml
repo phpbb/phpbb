@@ -14,27 +14,52 @@ on:
 jobs:
     unit-tests:
         runs-on: ubuntu-latest
-
         strategy:
             matrix:
-                php: [7.4, 7.3, 7.2]
-                db:
-                    - mysql:5.6
-                    - mysql:5.7
-#                    - mysql:8.0
-#                    - postgres:9.5
-#                    - postgres:9.6
-#                    - postgres:10
-#                    - postgres:11
-#                    - postgres:12
-#                    - postgres:13
-#                    - sqlite3
+                include:
+#                    - php: 7.1
+#                      db: "none"
+#                      NOTESTS: 1
+#                    - php: 7.1
+#                      db: "mariadb:10.1"
+#                    - php: 7.1
+#                      db: "mariadb:10.2"
+#                    - php: 7.1
+#                      db: "mariadb:10.3"
+#                    - php: 7.1
+#                      db: "mariadb:10.4"
+#                    - php: 7.1
+#                      db: "mariadb:10.5"
+#                    - php: 7.1
+#                      db: "postgres:9.5"
+                    - php: 7.1
+                      db: "postgres:10"
+#                    - php: 7.1
+#                      db: "postgres:11"
+#                    - php: 7.1
+#                      db: "postgres:12"
+#                    - php: 7.1
+#                      db: "postgres:13"
+#                    - php: 7.1
+#                      db: "sqlite3"
+                    - php: 7.1
+                      db: "mysql:5.6"
+                    - php: 7.1
+                      db: "mysql:5.7"
+#                    - php: 7.1
+#                      db: "mysql:8.0"
+#                    - php: 7.2
+#                      db: "mysql:5.7"
+#                    - php: 7.3
+#                      db: "mysql:5.7"
+#                    - php: 7.4
+#                      db: "mysql:5.7"
 
-        name: PHP${{ matrix.php }} - ${{ matrix.db }}
+        name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         services:
             mysql:
-                image: ${{ matrix.db }}
+                image: ${{ matrix.db != 'mysql:5.6' && matrix.db != 'mysql:5.7' && matrix.db != 'mysql:8.0' && 'mysql:5.7' || matrix.db }}
                 env:
                     MYSQL_ALLOW_EMPTY_PASSWORD: yes
                     MYSQL_DATABASE: phpbb_tests
@@ -46,18 +71,20 @@ jobs:
                     --health-timeout=5s
                     --health-retries=3
 
-#            postgres:
-#                if: startsWith(${{ matrix.db }}, 'postgres')
-#                image: ${{ matrix.db }}
-#                env:
-#                    POSTGRES_PASSWORD: postgres
-#                ports:
-#                    - 5432:5432
-#                options: >-
-#                    --health-cmd pg_isready
-#                    --health-interval 10s
-#                    --health-timeout 5s
-#                    --health-retries 5
+            postgres:
+                image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && 'postgres:10' || matrix.db }}
+                env:
+                    POSTGRES_HOST: localhost
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                ports:
+                    - 5432:5432
+                options: >-
+                    -v /var/run/postgresql:/var/run/postgresql
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
             redis:
                 image: redis
                 options: >-
@@ -65,6 +92,8 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
+                ports:
+                    - 6379:6379
 
 
         steps:
@@ -82,7 +111,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extension: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, pdo_mysqli, intl, gd, exif, iconv
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, pdo_mysqli, intl, gd, exif, iconv
                   coverage: none
 
             - name: Setup environment for phpBB
