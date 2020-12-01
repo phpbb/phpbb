@@ -65,7 +65,7 @@ class event extends \Twig\Node\Node
 
 					// We set the namespace lookup order to be this extension first, then the main path
 					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
-					->write("\$this->env->loadTemplate('@{$ext_namespace}/{$location}.html')->display(\$context);\n")
+					->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
 					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
 				;
 			}

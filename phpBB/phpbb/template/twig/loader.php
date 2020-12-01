@@ -99,9 +99,9 @@ class loader extends \Twig\Loader\FilesystemLoader
 	 *
 	 * {@inheritdoc}
 	 */
-	public function addPath($path, $namespace = self::MAIN_NAMESPACE)
+	public function addPath($path, $namespace = self::MAIN_NAMESPACE) : void
 	{
-		return parent::addPath(filesystem_helper::realpath($path), $namespace);
+		parent::addPath(filesystem_helper::realpath($path), $namespace);
 	}
 
 	/**

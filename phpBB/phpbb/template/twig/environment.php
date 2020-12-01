@@ -181,7 +181,7 @@ class environment extends \Twig\Environment
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render($name, array $context = [])
+	public function render($name, array $context = []) : string
 	{
 		return $this->display_with_assets($name, $context);
 	}
@@ -189,7 +189,7 @@ class environment extends \Twig\Environment
 	/**
 	 * {@inheritdoc}
 	 */
-	public function display($name, array $context = [])
+	public function display($name, array $context = []) : void
 	{
 		echo $this->display_with_assets($name, $context);
 	}
@@ -259,12 +259,13 @@ class environment extends \Twig\Environment
 	/**
 	* Loads a template by name.
 	*
+	* @param string  $cls   The template class associated with the given template name
 	* @param string  $name  The template name
 	* @param integer $index The index if it is an embedded template
 	* @return \Twig\Template A template instance representing the given template name
 	* @throws \Twig\Error\LoaderError
 	*/
-	public function loadTemplate($name, $index = null)
+	public function loadTemplate(string $cls, string $name, int $index = null) : \Twig\Template
 	{
 		if (strpos($name, '@') === false)
 		{
@@ -274,10 +275,10 @@ class environment extends \Twig\Environment
 				{
 					if ($namespace === '__main__')
 					{
-						return parent::loadTemplate($name, $index);
+						return parent::loadTemplate($cls, $name, $index);
 					}
 
-					return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
+					return parent::loadTemplate($this->getTemplateClass('@' . $namespace . '/' . $name), '@' . $namespace . '/' . $name, $index);
 				}
 				catch (\Twig\Error\LoaderError $e)
 				{
@@ -289,7 +290,7 @@ class environment extends \Twig\Environment
 		}
 		else
 		{
-			return parent::loadTemplate($name, $index);
+			return parent::loadTemplate($cls, $name, $index);
 		}
 	}
 

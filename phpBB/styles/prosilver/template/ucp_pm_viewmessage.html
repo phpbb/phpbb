@@ -32,12 +32,12 @@
 					<!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->
 					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
 				</div>
-				{% spaceless %}
+				{% apply spaceless %}
 					{% EVENT ucp_pm_viewmessage_author_full_before %}
 					{MESSAGE_AUTHOR_FULL}
 					{% EVENT ucp_pm_viewmessage_author_full_after %}
 					<!-- IF S_ONLINE -->  {{ Icon('iconify', 'fa:circle', lang('ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
-				{% endspaceless %}
+				{% endapply %}
 			</dt>
 
 			<!-- EVENT ucp_pm_viewmessage_rank_before -->
