@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     avatar.manager:
         class: phpbb\avatar\manager
         arguments:

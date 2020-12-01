@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     language.helper.language_file:
         class: phpbb\language\language_file_helper
         arguments:

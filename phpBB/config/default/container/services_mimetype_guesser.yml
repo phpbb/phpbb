@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -7,12 +9,12 @@ services:
             - { name: service_collection, tag: mimetype.guessers }
 
     mimetype.fileinfo_mimetype_guesser:
-        class: Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser
+        class: Symfony\Component\Mime\FileinfoMimeTypeGuesser
         tags:
             - { name: mimetype.guessers }
 
     mimetype.filebinary_mimetype_guesser:
-        class: Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser
+        class: Symfony\Component\Mime\FileBinaryMimeTypeGuesser
         tags:
             - { name: mimetype.guessers }
 

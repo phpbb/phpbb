@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     content.visibility:
         class: phpbb\content_visibility
         arguments:

@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     installer.obtain_data.update_options:
         class: phpbb\install\module\obtain_data\task\obtain_update_settings
         arguments:

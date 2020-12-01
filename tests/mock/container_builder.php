@@ -195,7 +195,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	{
 	}
 
-	public function isFrozen()
+	public function isCompiled()
 	{
 		return false;
 	}

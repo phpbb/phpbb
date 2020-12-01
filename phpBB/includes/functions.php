@@ -4189,7 +4189,7 @@ function garbage_collection()
 		* @event core.garbage_collection
 		* @since 3.1.0-a1
 		*/
-		$phpbb_dispatcher->dispatch('core.garbage_collection');
+		$phpbb_dispatcher->trigger_event('core.garbage_collection');
 	}
 
 	// Unload cache, must be done before the DB connection if closed

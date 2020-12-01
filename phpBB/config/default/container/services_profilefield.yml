@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     profilefields.manager:
         class: phpbb\profilefields\manager
         arguments:

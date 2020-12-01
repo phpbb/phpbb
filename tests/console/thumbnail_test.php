@@ -50,7 +50,8 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		));
 
 		$this->db = $this->db = $this->new_dbal();
-		$this->user = $this->createMock('\phpbb\user');
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 

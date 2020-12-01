@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     phpbb.installer.controller.welcome:
         class: phpbb\install\controller\installer_index
         arguments:

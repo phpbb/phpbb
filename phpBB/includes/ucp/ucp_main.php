@@ -262,7 +262,7 @@ class ucp_main
 				 * @event core.ucp_main_subscribed_post_data
 				 * @since 3.1.10-RC1
 				 */
-				$phpbb_dispatcher->dispatch('core.ucp_main_subscribed_post_data');
+				$phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_post_data');
 
 				if ($unwatch)
 				{

@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\config;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -76,12 +77,12 @@ class set_atomic extends command
 		if ($this->config->set_atomic($key, $old_value, $new_value, $use_cache))
 		{
 			$io->success($this->user->lang('CLI_CONFIG_SET_SUCCESS', $key));
-			return 0;
+			return symfony_command::SUCCESS;
 		}
 		else
 		{
 			$io->error($this->user->lang('CLI_CONFIG_SET_FAILURE', $key));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 	}
 }

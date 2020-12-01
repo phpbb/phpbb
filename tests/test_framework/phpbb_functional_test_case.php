@@ -1017,12 +1017,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_status_code($status_code = 200)
 	{
-		if ($status_code != self::$client->getResponse()->getStatus() &&
-			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatus()))
+		if ($status_code != self::$client->getResponse()->getStatusCode() &&
+			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatusCode()))
 		{
 			self::fail("Encountered unexpected server error:\n" . self::$client->getResponse()->getContent());
 		}
-		self::assertEquals($status_code, self::$client->getResponse()->getStatus(), 'HTTP status code does not match');
+		self::assertEquals($status_code, self::$client->getResponse()->getStatusCode(), 'HTTP status code does not match');
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)

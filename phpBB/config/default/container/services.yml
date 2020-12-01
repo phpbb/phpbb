@@ -36,6 +36,8 @@ imports:
     - { resource: parameters.yml }
 
 services:
+    _defaults: { public: true }
+
     cache:
         class: phpbb\cache\service
         arguments:

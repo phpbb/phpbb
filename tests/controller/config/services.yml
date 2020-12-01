@@ -1,3 +1,4 @@
 services:
+    _defaults: { public: true }
     core_foo.controller:
         class: phpbb\controller\foo

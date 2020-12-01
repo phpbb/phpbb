@@ -117,13 +117,4 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$user_id = $row ? $row['user_id'] : null;
 		return $user_id;
 	}
-
-	public function getInputStream($input)
-	{
-		$stream = fopen('php://memory', 'r+', false);
-		fputs($stream, $input);
-		rewind($stream);
-
-		return $stream;
-	}
 }

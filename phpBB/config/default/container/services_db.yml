@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     dbal.conn:
         class: phpbb\db\driver\factory
         arguments:

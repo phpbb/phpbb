@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\reparser;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -67,6 +68,6 @@ class list_all extends \phpbb\console\command\command
 		$io->section($this->user->lang('CLI_DESCRIPTION_REPARSER_AVAILABLE'));
 		$io->listing($this->reparser_names);
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 }

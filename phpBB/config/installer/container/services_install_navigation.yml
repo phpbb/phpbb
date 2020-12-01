@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     installer.navigation.provider:
         class: phpbb\install\helper\navigation\navigation_provider
         arguments:

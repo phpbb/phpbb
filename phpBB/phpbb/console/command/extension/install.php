@@ -16,6 +16,7 @@ namespace phpbb\console\command\extension;
 use phpbb\composer\extension_manager;
 use phpbb\composer\io\console_io;
 use phpbb\language\language;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -83,7 +84,7 @@ class install extends \phpbb\console\command\command
 		if (!$this->manager->check_requirements())
 		{
 			$io->error($this->language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
@@ -98,6 +99,6 @@ class install extends \phpbb\console\command\command
 
 		$io->success($this->language->lang('EXTENSIONS_INSTALLED'));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 }

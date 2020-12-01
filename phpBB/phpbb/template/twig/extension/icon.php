@@ -14,8 +14,9 @@
 namespace phpbb\template\twig\extension;
 
 use phpbb\template\twig\environment;
+use Twig\Extension\AbstractExtension;
 
-class icon extends \Twig\Extension\AbstractExtension
+class icon extends AbstractExtension
 {
 	/** @var \phpbb\user */
 	protected $user;

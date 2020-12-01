@@ -18,6 +18,7 @@ use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
 use phpbb\user_loader;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -122,7 +123,7 @@ class delete extends command
 			if ($user_row['user_id'] == ANONYMOUS)
 			{
 				$io->error($this->language->lang('NO_USER'));
-				return 1;
+				return symfony_command::FAILURE;
 			}
 
 			if (!function_exists('user_delete'))
@@ -137,7 +138,7 @@ class delete extends command
 			$io->success($this->language->lang('USER_DELETED'));
 		}
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

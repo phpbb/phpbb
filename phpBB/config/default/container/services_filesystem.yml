@@ -2,6 +2,8 @@ parameters:
     core.filesystem.cache_temp_dir: '%core.cache_dir%tmp/'
 
 services:
+    _defaults: { public: true }
+
     filesystem:
         class: phpbb\filesystem\filesystem
 

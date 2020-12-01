@@ -12,12 +12,16 @@
 */
 namespace phpbb\console\command\extension;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class show extends command
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -26,6 +30,16 @@ class show extends command
 		;
 	}
 
+	/**
+	 * Executes the command extension:show.
+	 *
+	 * Lists all extensions in the database and on the filesystem
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
@@ -50,5 +64,7 @@ class show extends command
 		$purged = array_diff($all, $enabled, $disabled);
 		$io->section($this->user->lang('CLI_EXTENSIONS_AVAILABLE'));
 		$io->listing($purged);
+
+		return symfony_command::SUCCESS;
 	}
 }

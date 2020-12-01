@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     phpbb.feed.controller:
         class: phpbb\feed\controller\feed
         arguments:

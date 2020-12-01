@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     module.manager:
         class: phpbb\module\module_manager
         arguments:

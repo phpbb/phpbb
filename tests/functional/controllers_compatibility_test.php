@@ -58,7 +58,7 @@ class phpbb_functional_controllers_compatibility_test extends phpbb_functional_t
 			$location = substr($location, 0, -1);
 		}
 
-		$this->assertEquals(301, self::$client->getResponse()->getStatus());
+		$this->assertEquals(301, self::$client->getResponse()->getStatusCode());
 		$this->assertStringEndsWith($to, $location);
 	}
 }

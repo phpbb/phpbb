@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     installer.update_filesystem.check_task:
         class: phpbb\install\module\update_filesystem\task\file_check
         arguments:

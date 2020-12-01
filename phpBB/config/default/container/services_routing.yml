@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     router:
         class: phpbb\routing\router
         arguments:

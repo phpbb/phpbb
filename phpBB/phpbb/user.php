@@ -342,7 +342,7 @@ class user extends \phpbb\session
 		* @event core.user_setup_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.user_setup_after');
+		$phpbb_dispatcher->trigger_event('core.user_setup_after');
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))

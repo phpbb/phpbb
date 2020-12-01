@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\thumbnail;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -90,7 +91,7 @@ class delete extends \phpbb\console\command\command
 		if ($nb_missing_thumbnails === 0)
 		{
 			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_DELETE'));
-			return 0;
+			return symfony_command::SUCCESS;
 		}
 
 		$sql = 'SELECT attach_id, physical_filename, extension, real_filename, mimetype
@@ -105,7 +106,7 @@ class delete extends \phpbb\console\command\command
 		$progress->start();
 
 		$thumbnail_deleted = array();
-		$return = 0;
+		$return = symfony_command::SUCCESS;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$thumbnail_path = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
@@ -124,7 +125,7 @@ class delete extends \phpbb\console\command\command
 			}
 			else
 			{
-				$return = 1;
+				$return = symfony_command::FAILURE;
 				$progress->setMessage('<error>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
 			}
 

@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
     console.installer.command_collection:
         class: phpbb\di\service_collection
         arguments:

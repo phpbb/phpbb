@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\config;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -55,7 +56,7 @@ class set extends command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return void
+	* @return int
 	* @see \phpbb\config\config::set()
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
@@ -69,5 +70,7 @@ class set extends command
 		$this->config->set($key, $value, $use_cache);
 
 		$io->success($this->user->lang('CLI_CONFIG_SET_SUCCESS', $key));
+
+		return symfony_command::SUCCESS;
 	}
 }

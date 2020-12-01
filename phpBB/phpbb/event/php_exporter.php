@@ -203,16 +203,20 @@ class php_exporter
 			{
 				$event_line = false;
 				$found_trigger_event = strpos($this->file_lines[$i], 'dispatcher->trigger_event(');
+				$found_use_vars = strpos($this->file_lines[$i], ', compact($vars)');
 				$arguments = array();
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
 					$this->set_current_event($this->get_event_name($event_line, false), $event_line);
 
-					// Find variables of the event
-					$arguments = $this->get_vars_from_array();
-					$doc_vars = $this->get_vars_from_docblock();
-					$this->validate_vars_docblock_array($arguments, $doc_vars);
+					if ($found_use_vars)
+					{
+						// Find variables of the event
+						$arguments = $this->get_vars_from_array();
+						$doc_vars = $this->get_vars_from_docblock();
+						$this->validate_vars_docblock_array($arguments, $doc_vars);
+					}
 				}
 				else
 				{
@@ -346,10 +350,10 @@ class php_exporter
 		}
 		else
 		{
-			$regex = '#extract\(\$[a-z](?:[a-z0-9_]|->)*';
+			$regex = '#(?:extract\()?\$[a-z](?:[a-z0-9_]|->)*';
 			$regex .= '->trigger_event\((\[)?';
 			$regex .= '\'' . $this->preg_match_event_name() . '(?(1)\', \'(?2))+\'';
-			$regex .= '(?(1)\]), compact\(\$vars\)\)\);#';
+			$regex .= '(?(1)\])(?:, compact\(\$vars\)\))?\);#';
 		}
 
 		$match = array();

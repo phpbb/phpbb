@@ -14,6 +14,7 @@
 namespace phpbb\console\command\reparser;
 
 use phpbb\exception\runtime_exception;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -157,7 +158,7 @@ class reparse extends \phpbb\console\command\command
 
 		$this->reparse_lock->release();
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

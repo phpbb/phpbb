@@ -1,4 +1,6 @@
 services:
+    _defaults: { public: true }
+
 # ----- Auth management -----
     auth:
         class: phpbb\auth\auth

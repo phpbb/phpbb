@@ -17,6 +17,7 @@ use phpbb\composer\exception\managed_with_error_exception;
 use phpbb\composer\io\console_io;
 use phpbb\composer\manager_interface;
 use phpbb\language\language;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -75,7 +76,7 @@ class manage extends \phpbb\console\command\command
 		if (!$this->manager->check_requirements())
 		{
 			$io->error($this->language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
@@ -89,11 +90,11 @@ class manage extends \phpbb\console\command\command
 		catch (managed_with_error_exception $e)
 		{
 			$io->warning($this->language->lang_array($e->getMessage(), $e->get_parameters()));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		$io->success($this->language->lang('EXTENSION_MANAGED_SUCCESS', $extension));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 }

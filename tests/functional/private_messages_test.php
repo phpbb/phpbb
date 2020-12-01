@@ -85,7 +85,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 	public function test_quote_pm()
 	{
 		$text     = 'This is a test private message sent by the testing framework.';
-		$expected = "(\\[quote=admin msg_id=\\d+ time=\\d+ user_id=2\\]\n" . $text . "\n\\[/quote\\])";
+		$expected = "(\[quote=admin msg_id=[\d]+ time=[\d]+ user_id=2\]\s?" . $text . "\s?\[\/quote\])";
 
 		$this->login();
 		$message_id = $this->create_private_message('Test', $text, array(2));
@@ -98,13 +98,13 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 	public function test_quote_forward()
 	{
 		$text     = 'This is a test private message sent by the testing framework.';
-		$expected = "[quote=admin]\n" . $text . "\n[/quote]";
+		$expected = "(\[quote=admin\]\s?" . $text . "\s?\[\/quote\])";
 
 		$this->login();
 		$message_id = $this->create_private_message('Test', $text, array(2));
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
 
-		$this->assertStringContainsString($expected, $crawler->filter('textarea#message')->text());
+		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
 	}
 }

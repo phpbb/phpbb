@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\cache;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -72,7 +73,7 @@ class purge extends \phpbb\console\command\command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return void
+	* @return int
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -87,5 +88,7 @@ class purge extends \phpbb\console\command\command
 
 		$io = new SymfonyStyle($input, $output);
 		$io->success($this->user->lang('PURGE_CACHE_SUCCESS'));
+
+		return symfony_command::SUCCESS;
 	}
 }
