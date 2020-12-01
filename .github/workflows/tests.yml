@@ -24,8 +24,8 @@ jobs:
 #                      db: "mariadb:10.1"
 #                    - php: 7.1
 #                      db: "mariadb:10.2"
-#                    - php: 7.1
-#                      db: "mariadb:10.3"
+                    - php: 7.1
+                      db: "mariadb:10.3"
 #                    - php: 7.1
 #                      db: "mariadb:10.4"
 #                    - php: 7.1
@@ -59,7 +59,7 @@ jobs:
 
         services:
             mysql:
-                image: ${{ matrix.db != 'mysql:5.6' && matrix.db != 'mysql:5.7' && matrix.db != 'mysql:8.0' && 'mysql:5.7' || matrix.db }}
+                image: ${{ matrix.db != 'mysql:5.6' && matrix.db != 'mysql:5.7' && matrix.db != 'mysql:8.0' && matrix.db != 'mariadb:10.1' && matrix.db != 'mariadb:10.2' && matrix.db != 'mariadb:10.3' && matrix.db != 'mariadb:10.4' && matrix.db != 'mariadb:10.5' && 'mysql:5.7' || matrix.db }}
                 env:
                     MYSQL_ALLOW_EMPTY_PASSWORD: yes
                     MYSQL_DATABASE: phpbb_tests
