@@ -22,6 +22,15 @@ then
 	travis/setup-unbuffer.sh
 fi
 
+if [ "$DB" == "mariadb" ]
+then
+	ls -l /var/run | grep -i mysqld
+
+	if [ ! -f "/var/run/mysqld/mysqld.sock" ]; then
+		ln -s /srv/docker/sockets/mariadb/mysqld.sock /var/run/mysqld/mysqld.sock
+	fi
+fi
+
 if [ "$MYSQL8" == '1' ]
 then
 	travis/setup-mysql8.sh
