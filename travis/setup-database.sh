@@ -30,8 +30,3 @@ if [ "$TRAVIS_PHP_VERSION" == "5.6" -a "$DB" == "mysql" ]
 then
 	mysql -e 'SET GLOBAL storage_engine=MyISAM;'
 fi
-
-if [ "$DB" == "mariadb" ]
-then
-	mysql -e 'create database IF NOT EXISTS phpbb_tests;'
-fi

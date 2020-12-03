@@ -66,7 +66,6 @@ jobs:
                 ports:
                     - 3306:3306
                 options: >-
-                    -v /srv/docker/sockets/mariadb:/var/run/mysqld
                     --health-cmd="mysqladmin ping"
                     --health-interval=10s
                     --health-timeout=5s
