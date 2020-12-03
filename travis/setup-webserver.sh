@@ -25,7 +25,7 @@ APP_SOCK=$(realpath "$DIR")/php-app.sock
 NGINX_PHP_CONF="$DIR/nginx-php.conf"
 
 # php-fpm
-PHP_FPM_BIN="/usr/sbin/php-fpm$CI_PHP_VERSION"
+PHP_FPM_BIN="/usr/sbin/php-fpm$PHP_VERSION"
 PHP_FPM_CONF="$DIR/php-fpm.conf"
 
 echo "

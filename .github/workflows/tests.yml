@@ -20,8 +20,8 @@ jobs:
                     - php: 7.1
                       db: "none"
                       NOTESTS: 1
-#                    - php: 7.1
-#                      db: "mariadb:10.1"
+                    - php: 7.1
+                      db: "mariadb:10.1"
 #                    - php: 7.1
 #                      db: "mariadb:10.2"
 #                    - php: 7.1
@@ -54,8 +54,8 @@ jobs:
 #                      db: "mysql:5.7"
 #                    - php: 7.4
 #                      db: "mysql:5.7"
-#                    - php: 8.0
-#                      db: "mysql:5.7"
+                    - php: '8.0'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -119,17 +119,17 @@ jobs:
             - name: Setup environment for phpBB
               env:
                   DB: ${{steps.database-type.outputs.db}}
-                  CI_PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
                   MYSQL8: ${{ matrix.db }} == 'mysql:8.0'
               run: |
-                  travis/setup-phpbb.sh $DB CI_PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
+                  travis/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
 
             - name: Setup database
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
               run: |
                   travis/setup-database.sh $DB $PHP_VERSION $NOTESTS
 
@@ -137,7 +137,7 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
               if: ${{ matrix.NOTESTS == 1 }}
               run: |
                   travis/phing-sniff.sh $DB $PHP_VERSION $NOTESTS
@@ -146,7 +146,7 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
               if: ${{ matrix.NOTESTS == 1 }}
               run: |
                   travis/check-doctum-parse-errors.sh $DB $PHP_VERSION $NOTESTS
@@ -155,16 +155,16 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
               if: ${{ matrix.NOTESTS == 1 }}
               run: |
                   travis/check-image-icc-profiles.sh $DB $PHP_VERSION $NOTESTS
 
-            - name: Check image ICC profiles
+            - name: Check executable files
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
               if: ${{ matrix.NOTESTS == 1 }}
               run: |
                   travis/check-executable-files.sh $DB $PHP_VERSION $NOTESTS ./
