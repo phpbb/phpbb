@@ -24,38 +24,38 @@ jobs:
 #                      db: "mariadb:10.1"
 #                    - php: 7.1
 #                      db: "mariadb:10.2"
-                    - php: 7.1
-                      db: "mariadb:10.3"
+#                    - php: 7.1
+#                      db: "mariadb:10.3"
 #                    - php: 7.1
 #                      db: "mariadb:10.4"
 #                    - php: 7.1
 #                      db: "mariadb:10.5"
 #                    - php: 7.1
 #                      db: "postgres:9.5"
-                    - php: 7.1
-                      db: "postgres:10"
+#                    - php: 7.1
+#                      db: "postgres:10"
 #                    - php: 7.1
 #                      db: "postgres:11"
 #                    - php: 7.1
 #                      db: "postgres:12"
 #                    - php: 7.1
 #                      db: "postgres:13"
-                    - php: 7.1
-                      db: "sqlite3"
-                    - php: 7.1
-                      db: "mysql:5.6"
-                    - php: 7.1
-                      db: "mysql:5.7"
-                    - php: 7.1
-                      db: "mysql:8.0"
+#                    - php: 7.1
+#                      db: "sqlite3"
+#                    - php: 7.1
+#                      db: "mysql:5.6"
+#                    - php: 7.1
+#                      db: "mysql:5.7"
+#                    - php: 7.1
+#                      db: "mysql:8.0"
 #                    - php: 7.2
 #                      db: "mysql:5.7"
 #                    - php: 7.3
 #                      db: "mysql:5.7"
 #                    - php: 7.4
 #                      db: "mysql:5.7"
-                    - php: 8.0
-                      db: "mysql:5.7"
+#                    - php: 8.0
+#                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -120,7 +120,7 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   CI_PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: 0
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
                   MYSQL8: ${{ matrix.db }} == 'mysql:8.0'
               run: |
                   travis/setup-phpbb.sh $DB CI_PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
@@ -129,15 +129,65 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: 0
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
               run: |
                   travis/setup-database.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Phing sniff
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+              if: ${{ matrix.NOTESTS == 1 }}
+              run: |
+                  travis/phing-sniff.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Check doctum parse errors
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+              if: ${{ matrix.NOTESTS == 1 }}
+              run: |
+                  travis/check-doctum-parse-errors.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Check image ICC profiles
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+              if: ${{ matrix.NOTESTS == 1 }}
+              run: |
+                  travis/check-image-icc-profiles.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Check image ICC profiles
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: ${{ matrix.NOTESTS != 1 && 0 || 1 }}
+              if: ${{ matrix.NOTESTS == 1 }}
+              run: |
+                  travis/check-executable-files.sh $DB $PHP_VERSION $NOTESTS ./
+
+            - name: Lint tests
+              if: ${{ matrix.SLOWTESTS != 1 && steps.database-type.outputs.db == 'mysql' }}
+              run: phpBB/vendor/bin/phpunit tests/lint_test.php
 
             - name: Run unit tests
               env:
                   DB: ${{steps.database-type.outputs.db}}
+              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --verbose --stop-on-error
+
+            - name: Slow tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              if: ${{ matrix.SLOWTESTS == 1 }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow
+
+            # @todo: Add commit message check
 
         # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
         # Docs: https://getcomposer.org/doc/articles/scripts.md
