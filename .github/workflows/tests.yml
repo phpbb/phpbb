@@ -17,42 +17,43 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: 7.1
+                    - php: '7.1'
                       db: "none"
                       NOTESTS: 1
-                    - php: 7.1
+                    - php: '7.1'
                       db: "mariadb:10.1"
-#                    - php: 7.1
-#                      db: "mariadb:10.2"
-#                    - php: 7.1
-#                      db: "mariadb:10.3"
-#                    - php: 7.1
-#                      db: "mariadb:10.4"
-#                    - php: 7.1
-#                      db: "mariadb:10.5"
-#                    - php: 7.1
-#                      db: "postgres:9.5"
-#                    - php: 7.1
-#                      db: "postgres:10"
-#                    - php: 7.1
-#                      db: "postgres:11"
-#                    - php: 7.1
-#                      db: "postgres:12"
-#                    - php: 7.1
-#                      db: "postgres:13"
-#                    - php: 7.1
-#                      db: "sqlite3"
-#                    - php: 7.1
-#                      db: "mysql:5.6"
-#                    - php: 7.1
-#                      db: "mysql:5.7"
-#                    - php: 7.2
-#                      db: "mysql:5.7"
-#                    - php: 7.3
-#                      db: "mysql:5.7"
-#                    - php: 7.4
-#                      db: "mysql:5.7"
-                    - php: 7.4
+                    - php: '7.1'
+                      db: "mariadb:10.2"
+                    - php: '7.1'
+                      db: "mariadb:10.3"
+                    - php: '7.1'
+                      db: "mariadb:10.4"
+                    - php: '7.1'
+                      db: "mariadb:10.5"
+                    - php: '7.1'
+                      db: "postgres:9.5"
+                    - php: '7.1'
+                      db: "postgres:10"
+                    - php: '7.1'
+                      db: "postgres:11"
+                    - php: '7.1'
+                      db: "postgres:12"
+                    - php: '7.1'
+                      db: "postgres:13"
+                    - php: '7.1'
+                      db: "sqlite3"
+                    - php: '7.1'
+                      db: "mysql:5.6"
+                      MYISAM: 1
+                    - php: '7.1'
+                      db: "mysql:5.7"
+                    - php: '7.2'
+                      db: "mysql:5.7"
+                    - php: '7.3'
+                      db: "mysql:5.7"
+                    - php: '7.4'
+                      db: "mysql:5.7"
+                    - php: '7.4'
                       db: "mysql:8.0"
                     - php: '8.0'
                       db: "mysql:5.7"
@@ -132,8 +133,9 @@ jobs:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
+                  MYISAM: ${{ matrix.MYISAM != 1 && '0' || '1' }}
               run: |
-                  travis/setup-database.sh $DB $PHP_VERSION $NOTESTS
+                  travis/setup-database.sh $DB $PHP_VERSION $NOTESTS $MYISAM
 
             - name: Phing sniff
               env:
