@@ -13,52 +13,54 @@ on:
 
 jobs:
     unit-tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-18.04
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
-                      db: "none"
-                      NOTESTS: 1
-                    - php: '7.1'
-                      db: "mariadb:10.1"
-                    - php: '7.1'
-                      db: "mariadb:10.2"
-                    - php: '7.1'
-                      db: "mariadb:10.3"
-                    - php: '7.1'
-                      db: "mariadb:10.4"
-                    - php: '7.1'
-                      db: "mariadb:10.5"
-                    - php: '7.1'
-                      db: "postgres:9.5"
-                    - php: '7.1'
-                      db: "postgres:10"
-                    - php: '7.1'
-                      db: "postgres:11"
-                    - php: '7.1'
-                      db: "postgres:12"
-                    - php: '7.1'
-                      db: "postgres:13"
-                    - php: '7.1'
-                      db: "sqlite3"
-                    - php: '7.1'
-                      db: "mysql:5.6"
-                      MYISAM: 1
-                    - php: '7.1'
-                      db: "mysql:5.7"
+#                    - php: '7.1'
+#                      db: "none"
+#                      NOTESTS: 1
+#                    - php: '7.1'
+#                      db: "mariadb:10.1"
+#                    - php: '7.1'
+#                      db: "mariadb:10.2"
+#                    - php: '7.1'
+#                      db: "mariadb:10.3"
+#                    - php: '7.1'
+#                      db: "mariadb:10.4"
+#                    - php: '7.1'
+#                      db: "mariadb:10.5"
+#                    - php: '7.1'
+#                      db: "postgres:9.5"
+#                    - php: '7.1'
+#                      db: "postgres:10"
+#                    - php: '7.1'
+#                      db: "postgres:11"
+#                    - php: '7.1'
+#                      db: "postgres:12"
+#                    - php: '7.1'
+#                      db: "postgres:13"
+#                    - php: '7.1'
+#                      db: "sqlite3"
+#                    - php: '7.1'
+#                      db: "mysql:5.6"
+#                      MYISAM: 1
+#                    - php: '7.1'
+#                      db: "mysql:5.7"
                     - php: '7.2'
-                      db: "mysql:5.7"
-                    - php: '7.3'
-                      db: "mysql:5.7"
-                    - php: '7.4'
-                      db: "mysql:5.7"
-                    - php: '7.4'
-                      db: "mysql:8.0"
-                    - php: '8.0'
-                      db: "mysql:5.7"
-                    - php: '8.1'
-                      db: "mysql:5.7"
+                      db: "mcr.microsoft.com/mssql/server:2017-latest"
+#                    - php: '7.2'
+#                      db: "mysql:5.7"
+#                    - php: '7.3'
+#                      db: "mysql:5.7"
+#                    - php: '7.4'
+#                      db: "mysql:5.7"
+#                    - php: '7.4'
+#                      db: "mysql:8.0"
+#                    - php: '8.0'
+#                      db: "mysql:5.7"
+#                    - php: '8.1'
+#                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -90,6 +92,21 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
+
+            mssql:
+                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2017-latest' && matrix.db != 'mcr.microsoft.com/mssql/server:2019-latest' && 'mcr.microsoft.com/mssql/server:2017-latest' || matrix.db }}
+                env:
+                    SA_PASSWORD: "Pssw0rd_12"
+                    ACCEPT_EULA: "y"
+                ports:
+                    - 1433:1433
+                options: >-
+                    --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_CI_AS\" || exit 1"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                    --health-start-period 10s
+
             redis:
                 image: redis
                 options: >-
@@ -109,14 +126,19 @@ jobs:
               env:
                   MATRIX_DB: ${{ matrix.db }}
               run: |
-                  db=$(echo "${MATRIX_DB%%:*}")
+                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2017-latest' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-latest' ]
+                  then
+                      db='mssql'
+                  else
+                      db=$(echo "${MATRIX_DB%%:*}")
+                  fi
                   echo "::set-output name=db::$db"
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv
                   coverage: none
 
             - name: Setup environment for phpBB
