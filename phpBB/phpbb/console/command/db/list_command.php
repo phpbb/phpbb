@@ -85,13 +85,13 @@ class list_command extends \phpbb\console\command\db\migration_command
 		if (!empty($available))
 		{
 			$io->listing($available);
-			return symfony_command::SUCCESS;
 		}
 		else
 		{
 			$io->text($this->user->lang('CLI_MIGRATIONS_EMPTY'));
 			$io->newLine();
-			return symfony_command::FAILURE;
 		}
+
+		return symfony_command::SUCCESS;
 	}
 }

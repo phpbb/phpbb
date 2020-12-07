@@ -50,7 +50,7 @@ class show extends command
 		if (empty($all))
 		{
 			$io->note($this->user->lang('CLI_EXTENSION_NOT_FOUND'));
-			return 3;
+			return symfony_command::FAILURE;
 		}
 
 		$enabled = array_keys($this->manager->all_enabled());

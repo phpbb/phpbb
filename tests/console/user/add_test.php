@@ -106,7 +106,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 
 		$this->assertEquals(2, $this->get_user_id('Admin'));
 
-		$command_tester->setInputs(['bar\npassword\npassword\nbar@test.com']);
+		$command_tester->setInputs(['bar', 'password', 'password', 'bar@test.com']);
 
 		$command_tester->execute(array(
 			'command'		=> $this->command_name,

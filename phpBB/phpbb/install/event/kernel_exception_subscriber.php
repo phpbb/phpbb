@@ -20,7 +20,7 @@ use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -60,11 +60,11 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	/**
 	 * This listener is run when the KernelEvents::EXCEPTION event is triggered
 	 *
-	 * @param GetResponseForExceptionEvent	$event
+	 * @param ExceptionEvent	$event
 	 */
-	public function on_kernel_exception(GetResponseForExceptionEvent $event)
+	public function on_kernel_exception(ExceptionEvent $event)
 	{
-		$exception = $event->getException();
+		$exception = $event->getThrowable();
 		$message = $exception->getMessage();
 
 		if ($exception instanceof exception_interface)

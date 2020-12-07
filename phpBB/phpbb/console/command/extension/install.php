@@ -73,7 +73,7 @@ class install extends \phpbb\console\command\command
 	*
 	* @param InputInterface $input
 	* @param OutputInterface $output
-	* @return integer
+	* @return int
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{

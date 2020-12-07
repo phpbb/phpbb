@@ -99,7 +99,7 @@ class check extends \phpbb\console\command\command
 			if (!($stability == 'stable') && !($stability == 'unstable'))
 			{
 				$io->error($this->language->lang('CLI_ERROR_INVALID_STABILITY', $stability));
-				return 3;
+				return symfony_command::FAILURE;
 			}
 		}
 
