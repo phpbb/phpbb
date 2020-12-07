@@ -13,6 +13,8 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\storage\exception\exception;
+
 interface adapter_interface
 {
 	/**
@@ -28,7 +30,7 @@ interface adapter_interface
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file cannot be written
+	 * @throws exception		When the file cannot be written
 	 */
 	public function put_contents($path, $content);
 
@@ -37,7 +39,7 @@ interface adapter_interface
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When cannot read file contents
+	 * @throws exception	When cannot read file contents
 	 *
 	 * @return string	Returns file contents
 	 *
@@ -58,7 +60,7 @@ interface adapter_interface
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception		When removal fails.
+	 * @throws exception		When removal fails.
 	 */
 	public function delete($path);
 
@@ -68,7 +70,7 @@ interface adapter_interface
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception		When file/directory cannot be renamed
+	 * @throws exception		When file/directory cannot be renamed
 	 */
 	public function rename($path_orig, $path_dest);
 
@@ -78,7 +80,7 @@ interface adapter_interface
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file cannot be copied
+	 * @throws exception		When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest);
 
@@ -92,10 +94,10 @@ interface adapter_interface
 	 */
 	public function get_link($path);
 
-	/*
+	/**
 	 * Get space available in bytes
 	 *
-	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
+	 * @throws exception		When unable to retrieve available storage space
 	 *
 	 * @return float	Returns available space
 	 */

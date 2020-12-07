@@ -87,8 +87,13 @@ class local implements adapter_interface, stream_interface
 
 	/**
 	 * Constructor
+	 *
+	 * @param filesystem $filesystem
+	 * @param FastImageSize $imagesize
+	 * @param guesser $mimetype_guesser
+	 * @param string $phpbb_root_path
 	 */
-	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
+	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, string $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->imagesize = $imagesize;
@@ -267,7 +272,8 @@ class local implements adapter_interface, stream_interface
 	 * Get the path to the file, appending subdirectories for directory depth
 	 * if $dir_depth > 0.
 	 *
-	 * @param string	$path	The file path
+	 * @param string $path The file path
+	 * @return string
 	 */
 	protected function get_path($path)
 	{
@@ -293,7 +299,8 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * To be used in other PR
 	 *
-	 * @param string	$path	The file path
+	 * @param string $path The file path
+	 * @return string
 	 */
 	protected function get_filename($path)
 	{
@@ -346,6 +353,8 @@ class local implements adapter_interface, stream_interface
 	 * @throws exception		When cannot get size
 	 *
 	 * @return array Properties
+	 * @throws exception		When cannot get size
+	 *
 	 */
 	public function file_size($path)
 	{
