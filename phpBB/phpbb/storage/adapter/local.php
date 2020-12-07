@@ -22,7 +22,7 @@ use phpbb\mimetype\guesser;
 use FastImageSize\FastImageSize;
 
 /**
- * @internal Experimental
+ * Experimental
  */
 class local implements adapter_interface, stream_interface
 {
