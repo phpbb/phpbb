@@ -230,8 +230,9 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function ensure_directory_exists($path)
 	{
-		$path = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
-		$path = filesystem_helper::make_path_relative($path, $this->root_path);
+		$absolute_root_path = filesystem_helper::realpath($this->root_path) . DIRECTORY_SEPARATOR;
+		$path = dirname($absolute_root_path . $this->get_path($path) . $this->get_filename($path));
+		$path = filesystem_helper::make_path_relative($path, $absolute_root_path);
 
 		if (!$this->exists($path))
 		{
@@ -254,11 +255,11 @@ class local implements adapter_interface, stream_interface
 
 			do
 			{
-				$parts = explode('/', $path);
+				$parts = explode(DIRECTORY_SEPARATOR, $path);
 				$parts = array_slice($parts, 0, -1);
-				$path = implode('/', $parts);
+				$path = implode(DIRECTORY_SEPARATOR, $parts);
 			}
-			while ($path && @rmdir($dirpath . '/' . $path));
+			while ($path && @rmdir($dirpath . DIRECTORY_SEPARATOR . $path));
 		}
 	}
 

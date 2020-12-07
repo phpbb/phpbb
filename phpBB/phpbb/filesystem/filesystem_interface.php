@@ -239,7 +239,7 @@ interface filesystem_interface
 	 * Try to resolve realpath when PHP's realpath is not available, or
 	 * known to be buggy.
 	 *
-	 * @param string	$path	Path to resolve
+	 * @param ?string	$path	Path to resolve
 	 *
 	 * @return string	Resolved path
 	 */

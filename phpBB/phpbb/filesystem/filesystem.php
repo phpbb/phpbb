@@ -600,7 +600,7 @@ class filesystem implements filesystem_interface
 	 *
 	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
 	 *
-	 * @param string	$path
+	 * @param ?string	$path
 	 * @return bool|string
 	 */
 	protected function phpbb_own_realpath($path)
