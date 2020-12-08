@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     phpbb.help.manager:
         class: phpbb\help\manager
         arguments:

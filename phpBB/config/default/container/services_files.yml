@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     files.factory:
         class: phpbb\files\factory
         arguments:

@@ -1,4 +1,3 @@
 services:
-    _defaults: { public: true }
     foo_foo.controller:
         class: foo\foo\controller\controller

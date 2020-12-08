@@ -1,8 +1,6 @@
 # Twig extensions not needed by the installer
 
 services:
-    _defaults: { public: true }
-
     template.twig.extensions.icon:
         class: phpbb\template\twig\extension\icon
         arguments:

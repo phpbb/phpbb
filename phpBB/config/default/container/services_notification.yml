@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     notification_manager:
         class: phpbb\notification\manager
         arguments:

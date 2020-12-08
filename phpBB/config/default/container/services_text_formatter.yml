@@ -4,8 +4,6 @@ parameters:
     text_formatter.cache.renderer.key: _text_formatter_renderer
 
 services:
-    _defaults: { public: true }
-
     text_formatter.acp_utils:
         class: phpbb\textformatter\s9e\acp_utils
         arguments:

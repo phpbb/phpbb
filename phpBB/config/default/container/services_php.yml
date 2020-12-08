@@ -1,5 +1,3 @@
 services:
-    _defaults: { public: true }
-
     php_ini:
         class: bantu\IniGetWrapper\IniGetWrapper

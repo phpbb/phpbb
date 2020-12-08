@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.update_database.update_task:
         class: phpbb\install\module\update_database\task\update
         arguments:

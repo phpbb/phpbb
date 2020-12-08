@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     text_reparser.manager:
         class: phpbb\textreparser\manager
         arguments:

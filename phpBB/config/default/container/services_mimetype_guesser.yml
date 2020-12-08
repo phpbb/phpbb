@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:

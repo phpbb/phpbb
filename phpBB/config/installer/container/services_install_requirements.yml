@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.requirements.check_filesystem:
         class: phpbb\install\module\requirements\task\check_filesystem
         arguments:

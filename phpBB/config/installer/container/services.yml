@@ -9,8 +9,6 @@ imports:
     - { resource: ../../default/container/services_twig.yml }
 
 services:
-    _defaults: { public: true }
-
     cache.driver:
         class: '%cache.driver.class%'
         arguments:

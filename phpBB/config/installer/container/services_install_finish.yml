@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.install_finish.populate_migrations:
         class: phpbb\install\module\install_finish\task\populate_migrations
         arguments:

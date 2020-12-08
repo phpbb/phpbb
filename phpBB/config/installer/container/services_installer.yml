@@ -15,8 +15,6 @@ imports:
     - { resource: services_update_requirements.yml }
 
 services:
-    _defaults: { public: true }
-
 # -------- Installer helpers ------------------------
     installer.helper.config:
         class: phpbb\install\helper\config

@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     acl.permissions:
         class: phpbb\permissions
         arguments:

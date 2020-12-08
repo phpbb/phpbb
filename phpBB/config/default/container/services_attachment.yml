@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     attachment.delete:
         class: phpbb\attachment\delete
         shared: false

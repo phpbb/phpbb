@@ -2,7 +2,6 @@ parameters:
     other_config: true
 
 services:
-    _defaults: { public: true }
     config.php:
         synthetic: true
 

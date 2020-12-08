@@ -1,5 +1,4 @@
 services:
-    _defaults: { public: true }
 
 # Storages
     storage.attachment:

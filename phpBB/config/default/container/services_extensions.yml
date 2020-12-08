@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     ext.manager:
         class: phpbb\extension\manager
         arguments:

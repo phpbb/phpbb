@@ -2,8 +2,6 @@ parameters:
     core.template.cache_path: '%core.cache_dir%twig/'
 
 services:
-    _defaults: { public: true }
-
     template.twig.environment:
         class: phpbb\template\twig\environment
         arguments:

@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     console.exception_subscriber:
         class: phpbb\console\exception_subscriber
         arguments:

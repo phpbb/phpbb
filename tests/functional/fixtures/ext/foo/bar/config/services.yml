@@ -1,5 +1,4 @@
 services:
-    _defaults: { public: true }
     foo_bar.controller:
         class: foo\bar\controller\controller
         arguments:

@@ -5,7 +5,6 @@ parameters:
     tables.acl_roles: '%core.table_prefix%acl_roles'
 
 services:
-    _defaults: { public: true }
     config.php:
         synthetic: true
 

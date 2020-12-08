@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.install_filesystem.create_config_file:
         class: phpbb\install\module\install_filesystem\task\create_config_file
         arguments:

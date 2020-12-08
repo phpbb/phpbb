@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
 # ----- Migrator -----
     migrator:
         class: phpbb\db\migrator

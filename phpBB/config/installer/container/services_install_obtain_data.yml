@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.obtain_data.obtain_admin_data:
         class: phpbb\install\module\obtain_data\task\obtain_admin_data
         arguments:

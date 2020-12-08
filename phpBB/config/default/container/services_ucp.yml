@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     phpbb.ucp.controller.reset_password:
         class: phpbb\ucp\controller\reset_password
         arguments:

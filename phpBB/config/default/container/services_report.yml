@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
 # ----- Report controller -----
     phpbb.report.controller:
         class: phpbb\report\controller\report

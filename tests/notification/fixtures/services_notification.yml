@@ -2,7 +2,6 @@ imports:
     - { resource: ../../../phpBB/config/default/container/services_notification.yml }
 
 services:
-    _defaults: { public: true }
     notification_manager:
         synthetic: true
 

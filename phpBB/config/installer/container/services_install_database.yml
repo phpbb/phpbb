@@ -1,6 +1,4 @@
 services:
-    _defaults: { public: true }
-
     installer.install_database.create_schema_file:
         class: phpbb\install\module\install_database\task\create_schema_file
         arguments:

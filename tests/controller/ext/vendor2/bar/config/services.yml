@@ -1,4 +1,3 @@
 services:
-    _defaults: { public: true }
     bar.controller:
         class: bar\controller

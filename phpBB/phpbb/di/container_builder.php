@@ -198,6 +198,9 @@ class container_builder
 
 				$this->container = $this->create_container($this->container_extensions);
 
+				// Mark all services public
+				$this->container->addCompilerPass(new pass\markpublic_pass());
+
 				// Easy collections through tags
 				$this->container->addCompilerPass(new pass\collection_pass());
 
