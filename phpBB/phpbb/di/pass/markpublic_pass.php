@@ -23,15 +23,24 @@ class markpublic_pass implements CompilerPassInterface
 {
 	/**
 	* Modify the container before it is passed to the rest of the code
+	* Mark services as public by default unless they were explicitly marked as private
 	*
 	* @param ContainerBuilder $container ContainerBuilder object
 	* @return null
 	*/
 	public function process(ContainerBuilder $container)
 	{
-		foreach ($container->getDefinitions() as $definition)
+		$service_definitions = $container->getDefinitions();
+		foreach ($service_definitions as $definition)
 		{
-			if ($definition->isPrivate())
+			$changes = $definition->getChanges();
+
+			/* Check if service definition contains explicit 'public' key (changed default state)
+			 * If it does and the service is private, then service was explicitly marked as private
+			 * Don't mark it as public then
+			 */
+			$definition_override_public = isset($changes['public']) && $changes['public'];
+			if (!$definition_override_public && $definition->isPrivate())
 			{
 				$definition->setPublic(true);
 			}
@@ -39,7 +48,10 @@ class markpublic_pass implements CompilerPassInterface
 
 		foreach ($container->getAliases() as $alias)
 		{
-			if ($alias->isPrivate())
+			$aliased_service_id = $alias->__toString();
+
+			// Only mark alias as public if original service is public too
+			if ($service_definitions[$aliased_service_id]->isPublic() && $alias->isPrivate())
 			{
 				$alias->setPublic(true);
 			}
