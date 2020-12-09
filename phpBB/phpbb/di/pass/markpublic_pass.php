@@ -36,5 +36,13 @@ class markpublic_pass implements CompilerPassInterface
 				$definition->setPublic(true);
 			}
 		}
+
+		foreach ($container->getAliases() as $alias)
+		{
+			if ($alias->isPrivate())
+			{
+				$alias->setPublic(true);
+			}
+		}
 	}
 }

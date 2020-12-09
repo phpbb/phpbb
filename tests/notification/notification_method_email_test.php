@@ -129,6 +129,9 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		);
 
 		$phpbb_container->set('notification_manager', $this->notifications);
+
+		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
+
 		$phpbb_container->compile();
 
 		$this->notifications->setDependencies($this->auth, $this->config);

@@ -198,9 +198,6 @@ class container_builder
 
 				$this->container = $this->create_container($this->container_extensions);
 
-				// Mark all services public
-				$this->container->addCompilerPass(new pass\markpublic_pass());
-
 				// Easy collections through tags
 				$this->container->addCompilerPass(new pass\collection_pass());
 
@@ -219,6 +216,9 @@ class container_builder
 				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 				$this->inject_custom_parameters();
+
+				// Mark all services public
+				$this->container->addCompilerPass(new pass\markpublic_pass());
 
 				if ($this->compile_container)
 				{
