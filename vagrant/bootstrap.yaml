@@ -24,6 +24,9 @@ sites:
 databases:
     - phpbb
 
+features:
+    - mariadb: true
+
 # blackfire:
 #     - id: foo
 #       token: bar
