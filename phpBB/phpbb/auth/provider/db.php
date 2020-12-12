@@ -151,22 +151,25 @@ class db extends base
 			$attempts = 0;
 		}
 
+		// Display a custom message for reCaptcha v3
+		$login_error_attempts = $this->config['captcha_plugin'] === 'core.captcha.plugins.recaptcha_v3' ? 'LOGIN_ERROR_ATTEMPTS_RECAPTCHA_V3' : 'LOGIN_ERROR_ATTEMPTS';
+
 		if (!$row)
 		{
 			if ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max'])
 			{
-				return array(
+				return [
 					'status'		=> LOGIN_ERROR_ATTEMPTS,
-					'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
-					'user_row'		=> array('user_id' => ANONYMOUS),
-				);
+					'error_msg'		=> $login_error_attempts,
+					'user_row'		=> ['user_id' => ANONYMOUS],
+				];
 			}
 
-			return array(
-				'status'	=> LOGIN_ERROR_USERNAME,
-				'error_msg'	=> 'LOGIN_ERROR_USERNAME',
-				'user_row'	=> array('user_id' => ANONYMOUS),
-			);
+			return [
+				'status'		=> LOGIN_ERROR_USERNAME,
+				'error_msg'		=> 'LOGIN_ERROR_USERNAME',
+				'user_row'		=> ['user_id' => ANONYMOUS],
+			];
 		}
 
 		$show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) ||
@@ -181,11 +184,11 @@ class db extends base
 			$vc_response = $captcha->validate($row);
 			if ($vc_response)
 			{
-				return array(
+				return [
 					'status'		=> LOGIN_ERROR_ATTEMPTS,
-					'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
+					'error_msg'		=> $login_error_attempts,
 					'user_row'		=> $row,
-				);
+				];
 			}
 			else
 			{

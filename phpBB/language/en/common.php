@@ -397,6 +397,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_CONFIRMATION'				=> 'Confirmation of login',
 	'LOGIN_CONFIRM_EXPLAIN'				=> 'To prevent brute forcing accounts the board requires you to enter a confirmation code after a maximum amount of failed logins. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.', // unused
 	'LOGIN_ERROR_ATTEMPTS'				=> 'You exceeded the maximum allowed number of login attempts. In addition to your username and password you now also have to pass the CAPTCHA test.',
+	'LOGIN_ERROR_ATTEMPTS_RECAPTCHA_V3'	=> 'You have exceeded the maximum number of login attempts allowed.<br>In addition to your username and password the invisible reCAPTCHA v3 will be used to authenticate your session.',
 	'LOGIN_ERROR_EXTERNAL_AUTH_APACHE'	=> 'You have not been authenticated by Apache.',
 	'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST'	=> 'A non-existent OAuth service has been requested.',
 	'LOGIN_ERROR_PASSWORD'				=> 'You have specified an incorrect password. Please check your password and try again. If you continue to have problems please contact the %sBoard Administrator%s.',
