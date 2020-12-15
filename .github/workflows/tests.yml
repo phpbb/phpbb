@@ -49,6 +49,7 @@ jobs:
 #                      db: "mysql:5.7"
                     - php: '7.2'
                       db: "mcr.microsoft.com/mssql/server:2017-latest"
+                      db_alias: 'MSSQL 2017'
 #                    - php: '7.2'
 #                      db: "mysql:5.7"
 #                    - php: '7.3'
@@ -62,7 +63,7 @@ jobs:
 #                    - php: '8.1'
 #                      db: "mysql:5.7"
 
-        name: PHP ${{ matrix.php }} - ${{ matrix.db }}
+        name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mysql:
