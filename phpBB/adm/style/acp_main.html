@@ -78,6 +78,13 @@
 				<p>{L_ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN}</p>
 			</div>
 		<!-- ENDIF -->
+
+		{% if S_DEFAULT_CHARSET_FAIL %}
+			<div class="errorbox">
+				<h3>{{ lang('ERROR_DEFAULT_CHARSET') }}</h3>
+				<p>{{ lang('ERROR_DEFAULT_CHARSET_EXPLAIN') }}</p>
+			</div>
+		{% endif %}
 	<!-- ENDIF -->
 
 	<!-- IF S_WRITABLE_CONFIG -->
