@@ -163,6 +163,13 @@ jobs:
               run: |
                   travis/setup-database.sh $DB $PHP_VERSION $NOTESTS $MYISAM
 
+            - name: Setup LDAP
+              env:
+                  SLOWTESTS: ${{ matrix.SLOWTESTS }}
+              if: ${{ matrix.SLOWTESTS == 1 }}
+              run: |
+                  travis/setup-ldap.sh $SLOWTESTS
+
             - name: Phing sniff
               env:
                   DB: ${{steps.database-type.outputs.db}}
