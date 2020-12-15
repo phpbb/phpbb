@@ -217,6 +217,13 @@ jobs:
               run: |
                   phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow
 
+            - name: Check commit message
+              env:
+                  BRANCH: ${{ github.event.pull_request.base.ref }}
+                  PR_SHA: ${{ github.event.pull_request.head.sha }}
+              if: ${{ matrix.NOTESTS == 1 && github.event.pull_request.head.sha != '' && github.event.pull_request.base.ref != '' }}
+              run: |
+                  git remote set-branches --add origin $BRANCH && git fetch && git-tools/commit-msg-hook-range.sh origin/$BRANCH..$PR_SHA
             # @todo: Add commit message check
 
         # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
