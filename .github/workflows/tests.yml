@@ -20,51 +20,54 @@ jobs:
                     - php: '7.1'
                       db: "none"
                       NOTESTS: 1
-#                    - php: '7.1'
-#                      db: "mariadb:10.1"
-#                    - php: '7.1'
-#                      db: "mariadb:10.2"
-#                    - php: '7.1'
-#                      db: "mariadb:10.3"
-#                    - php: '7.1'
-#                      db: "mariadb:10.4"
-#                    - php: '7.1'
-#                      db: "mariadb:10.5"
-#                    - php: '7.1'
-#                      db: "postgres:9.5"
-#                    - php: '7.1'
-#                      db: "postgres:10"
-#                    - php: '7.1'
-#                      db: "postgres:11"
-#                    - php: '7.1'
-#                      db: "postgres:12"
-#                    - php: '7.1'
-#                      db: "postgres:13"
-#                    - php: '7.1'
-#                      db: "sqlite3"
+                    - php: '7.1'
+                      db: "mariadb:10.1"
+                    - php: '7.1'
+                      db: "mariadb:10.2"
+                    - php: '7.1'
+                      db: "mariadb:10.3"
+                    - php: '7.1'
+                      db: "mariadb:10.4"
+                    - php: '7.1'
+                      db: "mariadb:10.5"
+                    - php: '7.1'
+                      db: "postgres:9.5"
+                    - php: '7.1'
+                      db: "postgres:10"
+                    - php: '7.1'
+                      db: "postgres:11"
+                    - php: '7.1'
+                      db: "postgres:12"
+                    - php: '7.1'
+                      db: "postgres:13"
+                    - php: '7.1'
+                      db: "sqlite3"
                     - php: '7.1'
                       db: "mysql:5.6"
                       SLOWTESTS: 1
-#                    - php: '7.1'
-#                      db: "mysql:5.6"
-#                      MYISAM: 1
-#                    - php: '7.1'
-#                      db: "mysql:5.7"
+                    - php: '7.1'
+                      db: "mysql:5.6"
+                      MYISAM: 1
+                    - php: '7.1'
+                      db: "mysql:5.7"
                     - php: '7.2'
                       db: "mcr.microsoft.com/mssql/server:2017-latest"
                       db_alias: 'MSSQL 2017'
-#                    - php: '7.2'
-#                      db: "mysql:5.7"
-#                    - php: '7.3'
-#                      db: "mysql:5.7"
-#                    - php: '7.4'
-#                      db: "mysql:5.7"
-#                    - php: '7.4'
-#                      db: "mysql:8.0"
-#                    - php: '8.0'
-#                      db: "mysql:5.7"
-#                    - php: '8.1'
-#                      db: "mysql:5.7"
+                    - php: '7.2'
+                      db: "mcr.microsoft.com/mssql/server:2019-latest"
+                      db_alias: 'MSSQL 2019'
+                    - php: '7.2'
+                      db: "mysql:5.7"
+                    - php: '7.3'
+                      db: "mysql:5.7"
+                    - php: '7.4'
+                      db: "mysql:5.7"
+                    - php: '7.4'
+                      db: "mysql:8.0"
+                    - php: '8.0'
+                      db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -231,10 +234,3 @@ jobs:
               if: ${{ matrix.NOTESTS == 1 && github.event.pull_request.head.sha != '' && github.event.pull_request.base.ref != '' }}
               run: |
                   git remote set-branches --add origin $BRANCH && git fetch && git-tools/commit-msg-hook-range.sh origin/$BRANCH..$PR_SHA
-            # @todo: Add commit message check
-
-        # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-        # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-        # - name: Run test suite
-        #   run: composer run-script test
