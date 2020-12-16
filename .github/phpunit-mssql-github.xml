@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="true"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         verbose="true"
+         bootstrap="../tests/bootstrap.php">
+	<testsuites>
+		<testsuite name="phpBB Test Suite">
+			<directory suffix="_test.php">../tests</directory>
+			<exclude>../tests/functional</exclude>
+			<exclude>../tests/lint_test.php</exclude>
+		</testsuite>
+		<testsuite name="phpBB Functional Tests">
+			<directory suffix="_test.php">../tests/functional</directory>
+		</testsuite>
+	</testsuites>
+
+	<groups>
+		<exclude>
+			<group>slow</group>
+		</exclude>
+	</groups>
+
+	<php>
+		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\mssqlnative" />
+		<server name="PHPBB_TEST_DBHOST" value="127.0.0.1" />
+		<server name="PHPBB_TEST_DBPORT" value="" />
+		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
+		<server name="PHPBB_TEST_DBUSER" value="sa" />
+		<server name="PHPBB_TEST_DBPASSWD" value="Pssw0rd_12" />
+		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
+		<server name="PHPBB_TEST_MEMCACHED_HOST" value="localhost" />
+		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
+		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
+	</php>
+</phpunit>

@@ -12,14 +12,67 @@ on:
             - master
 
 jobs:
-    unit-tests:
+    # Basic checks, e.g. parse errors, commit messages, etc.
+    basic-checks:
         runs-on: ubuntu-18.04
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
-                      db: "none"
+                    - db: 'none'
+                      php: '7.1'
                       NOTESTS: 1
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.db }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  coverage: none
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '1'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION $NOTESTS
+
+            - name: Phing sniff
+              run: |
+                  .github/phing-sniff.sh
+
+            - name: Check doctum parse errors
+              run: |
+                  .github/check-doctum-parse-errors.sh
+
+            - name: Check image ICC profiles
+              run: |
+                  .github/check-image-icc-profiles.sh
+
+            - name: Check executable files
+              run: |
+                  .github/check-executable-files.sh ./
+
+            - name: Check commit message
+              env:
+                  BRANCH: ${{ github.event.pull_request.base.ref }}
+                  PR_SHA: ${{ github.event.pull_request.head.sha }}
+              if: ${{ github.event.pull_request.head.sha != '' && github.event.pull_request.base.ref != '' }}
+              run: |
+                  git remote set-branches --add origin $BRANCH && git fetch && git-tools/commit-msg-hook-range.sh origin/$BRANCH..$PR_SHA
+
+    # Tests for MySQL and MariaDB
+    mysql-tests:
+        runs-on: ubuntu-18.04
+        strategy:
+            matrix:
+                include:
                     - php: '7.1'
                       db: "mariadb:10.1"
                     - php: '7.1'
@@ -30,20 +83,6 @@ jobs:
                       db: "mariadb:10.4"
                     - php: '7.1'
                       db: "mariadb:10.5"
-                    - php: '7.1'
-                      db: "postgres:9.5"
-                    - php: '7.1'
-                      db: "postgres:9.6"
-                    - php: '7.1'
-                      db: "postgres:10"
-                    - php: '7.1'
-                      db: "postgres:11"
-                    - php: '7.1'
-                      db: "postgres:12"
-                    - php: '7.1'
-                      db: "postgres:13"
-                    - php: '7.1'
-                      db: "sqlite3"
                     - php: '7.1'
                       db: "mysql:5.6"
                       db_alias: "MySQL Slow Tests"
@@ -56,12 +95,6 @@ jobs:
                       db: "mysql:5.6"
                     - php: '7.1'
                       db: "mysql:5.7"
-                    - php: '7.2'
-                      db: "mcr.microsoft.com/mssql/server:2017-latest"
-                      db_alias: 'MSSQL 2017'
-                    - php: '7.2'
-                      db: "mcr.microsoft.com/mssql/server:2019-latest"
-                      db_alias: 'MSSQL 2019'
                     - php: '7.2'
                       db: "mysql:5.7"
                     - php: '7.3'
@@ -79,7 +112,7 @@ jobs:
 
         services:
             mysql:
-                image: ${{ matrix.db != 'mysql:5.6' && matrix.db != 'mysql:5.7' && matrix.db != 'mysql:8.0' && matrix.db != 'mariadb:10.1' && matrix.db != 'mariadb:10.2' && matrix.db != 'mariadb:10.3' && matrix.db != 'mariadb:10.4' && matrix.db != 'mariadb:10.5' && 'mysql:5.7' || matrix.db }}
+                image: ${{ matrix.db }}
                 env:
                     MYSQL_ALLOW_EMPTY_PASSWORD: yes
                     MYSQL_DATABASE: phpbb_tests
@@ -91,6 +124,95 @@ jobs:
                     --health-timeout=5s
                     --health-retries=3
 
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 6379:6379
+
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - id: database-type
+              env:
+                  MATRIX_DB: ${{ matrix.db }}
+              run: |
+                  db=$(echo "${MATRIX_DB%%:*}")
+                  echo "::set-output name=db::$db"
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  coverage: none
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  MYISAM: ${{ matrix.MYISAM != 1 && '0' || '1' }}
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Setup LDAP
+              if: ${{ matrix.SLOWTESTS == 1 }}
+              run: |
+                  .github/setup-ldap.sh
+
+            - name: Lint tests
+              if: ${{ matrix.SLOWTESTS != 1 && steps.database-type.outputs.db == 'mysql' }}
+              run: phpBB/vendor/bin/phpunit tests/lint_test.php
+
+            - name: Run unit tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
+
+            - name: Slow tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              if: ${{ matrix.SLOWTESTS == 1 }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --group slow
+
+    # Tests for PostgreSQL
+    postgres-tests:
+        runs-on: ubuntu-18.04
+        strategy:
+            matrix:
+                include:
+                    - php: '7.1'
+                      db: "postgres:9.5"
+                    - php: '7.1'
+                      db: "postgres:9.6"
+                    - php: '7.1'
+                      db: "postgres:10"
+                    - php: '7.1'
+                      db: "postgres:11"
+                    - php: '7.1'
+                      db: "postgres:12"
+                    - php: '7.1'
+                      db: "postgres:13"
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.db }}
+
+        services:
             postgres:
                 image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && 'postgres:10' || matrix.db }}
                 env:
@@ -106,6 +228,74 @@ jobs:
                     --health-timeout 5s
                     --health-retries 5
 
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 6379:6379
+
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - id: database-type
+              env:
+                  MATRIX_DB: ${{ matrix.db }}
+              run: |
+                  db=$(echo "${MATRIX_DB%%:*}")
+                  echo "::set-output name=db::$db"
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  coverage: none
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Run unit tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
+
+    # Other database types, namely sqlite3 and mssql
+    other-tests:
+        runs-on: ubuntu-18.04
+        strategy:
+            matrix:
+                include:
+                    - php: '7.1'
+                      db: "sqlite3"
+                    - php: '7.2'
+                      db: "mcr.microsoft.com/mssql/server:2017-latest"
+                      db_alias: 'MSSQL 2017'
+                    - php: '7.2'
+                      db: "mcr.microsoft.com/mssql/server:2019-latest"
+                      db_alias: 'MSSQL 2019'
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
+
+        services:
             mssql:
                 image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2017-latest' && matrix.db != 'mcr.microsoft.com/mssql/server:2019-latest' && 'mcr.microsoft.com/mssql/server:2017-latest' || matrix.db }}
                 env:
@@ -158,85 +348,19 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
                   PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-                  MYSQL8: ${{ matrix.db }} == 'mysql:8.0'
+                  NOTESTS: '0'
               run: |
-                  travis/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} ${MYSQL8:-0}
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
 
             - name: Setup database
               env:
                   DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-                  MYISAM: ${{ matrix.MYISAM != 1 && '0' || '1' }}
+                  MYISAM: '0'
               run: |
-                  travis/setup-database.sh $DB $PHP_VERSION $NOTESTS $MYISAM
-
-            - name: Setup LDAP
-              env:
-                  SLOWTESTS: ${{ matrix.SLOWTESTS }}
-              if: ${{ matrix.SLOWTESTS == 1 }}
-              run: |
-                  travis/setup-ldap.sh $SLOWTESTS
-
-            - name: Phing sniff
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-              if: ${{ matrix.NOTESTS == 1 }}
-              run: |
-                  travis/phing-sniff.sh $DB $PHP_VERSION $NOTESTS
-
-            - name: Check doctum parse errors
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-              if: ${{ matrix.NOTESTS == 1 }}
-              run: |
-                  travis/check-doctum-parse-errors.sh $DB $PHP_VERSION $NOTESTS
-
-            - name: Check image ICC profiles
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-              if: ${{ matrix.NOTESTS == 1 }}
-              run: |
-                  travis/check-image-icc-profiles.sh $DB $PHP_VERSION $NOTESTS
-
-            - name: Check executable files
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-                  PHP_VERSION: ${{ matrix.php }}
-                  NOTESTS: ${{ matrix.NOTESTS != 1 && '0' || '1' }}
-              if: ${{ matrix.NOTESTS == 1 }}
-              run: |
-                  travis/check-executable-files.sh $DB $PHP_VERSION $NOTESTS ./
-
-            - name: Lint tests
-              if: ${{ matrix.SLOWTESTS != 1 && steps.database-type.outputs.db == 'mysql' }}
-              run: phpBB/vendor/bin/phpunit tests/lint_test.php
+                  .github/setup-database.sh $DB $MYISAM
 
             - name: Run unit tests
               env:
                   DB: ${{steps.database-type.outputs.db}}
-              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --verbose --stop-on-error
-
-            - name: Slow tests
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-              if: ${{ matrix.SLOWTESTS == 1 }}
-              run: |
-                  phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow
-
-            - name: Check commit message
-              env:
-                  BRANCH: ${{ github.event.pull_request.base.ref }}
-                  PR_SHA: ${{ github.event.pull_request.head.sha }}
-              if: ${{ matrix.NOTESTS == 1 && github.event.pull_request.head.sha != '' && github.event.pull_request.base.ref != '' }}
-              run: |
-                  git remote set-branches --add origin $BRANCH && git fetch && git-tools/commit-msg-hook-range.sh origin/$BRANCH..$PR_SHA
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
