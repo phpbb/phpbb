@@ -15,9 +15,10 @@ SLOWTESTS=$1
 
 if [ "$SLOWTESTS" == '1' ]
 then
-	sudo apt-get -y install ldap-utils slapd php-ldap
-	mkdir /tmp/slapd
-	slapd -f travis/ldap/slapd.conf -h ldap://localhost:3389 &
+	sudo apt-get -y install ldap-utils slapd
+	mkdir /var/tmp/slapd
+	cp travis/ldap/slapd.conf /var/tmp/slapd/slapd.conf
+	slapd -d 256 -d 128 -f /var/tmp/slapd/slapd.conf -h ldap://localhost:3389 &
 	sleep 3
 	ldapadd -h localhost:3389 -D "cn=admin,dc=example,dc=com" -w adminadmin -f travis/ldap/base.ldif
 fi
