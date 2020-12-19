@@ -12,7 +12,7 @@ set -e
 set -x
 
 sudo apt-get update
-sudo apt-get install -y nginx coreutils
+sudo apt-get install -y nginx realpath
 
 sudo service nginx stop
 
@@ -25,28 +25,13 @@ APP_SOCK=$(realpath "$DIR")/php-app.sock
 NGINX_PHP_CONF="$DIR/nginx-php.conf"
 
 # php-fpm
-PHP_FPM_BIN="/usr/sbin/php-fpm$PHP_VERSION"
+PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
 PHP_FPM_CONF="$DIR/php-fpm.conf"
-
-if [ ! -f $PHP_FPM_BIN ] && [ "$PHP_VERSION" == '8.1' ] && [ -f "/usr/bin/php-fpm" ]
-then
-	PHP_FPM_BIN="/usr/bin/php-fpm"
-fi
-
-if [ ! -f $PHP_FPM_BIN ] && [ "$PHP_VERSION" != '8.1' ]
-then
-	sudo apt-get install php$PHP_VERSION-fpm php$PHP_VERSION-cli php$PHP_VERSION-dom \
-						php$PHP_VERSION-curl php$PHP_VERSION-xml php$PHP_VERSION-mbstring \
-						php$PHP_VERSION-zip php$PHP_VERSION-mysql php$PHP_VERSION-sqlite3 \
-						php$PHP_VERSION-intl php$PHP_VERSION-gd php$PHP_VERSION-pgsql
-	sudo service php$PHP_VERSION-fpm start
-	sudo service php$PHP_VERSION-fpm status
-fi
 
 echo "
 	[global]
 
-	[ci]
+	[travis]
 	user = $USER
 	group = $USER
 	listen = $APP_SOCK
