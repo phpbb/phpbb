@@ -5,6 +5,7 @@ on:
         branches:
             - 3.3.x
             - master
+            - ticket/16659
     pull_request:
         branches:
             - 3.3.x
