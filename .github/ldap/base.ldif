@@ -1,0 +1,41 @@
+dn: dc=example,dc=com
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: example
+dc: example
+
+dn: ou=foo,dc=example,dc=com
+objectClass: organizationalUnit
+ou: foo
+
+dn: cn=admin,dc=example,dc=com
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: admin
+description: LDAP administrator
+userPassword:: e1NTSEF9NytMR2gveUxTMzdsc3RRd1V1dENZSVA0TWdYdm9SdDY=
+
+dn: ou=group,dc=example,dc=com
+objectClass: organizationalUnit
+ou: group
+
+dn: cn=admin,ou=foo,dc=example,dc=com
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+loginShell: /bin/bash
+homeDirectory: /home/admin
+uid: admin
+cn: admin
+uidNumber: 10000
+gidNumber: 10000
+sn: admin
+mail: admin@example.com
+userPassword:: e1NTSEF9WHpueGZURHZZc21JSkl6czdMVXBjdCtWYTA1dlMzVlQ=
+
+dn: cn=admin,ou=group,dc=example,dc=com
+objectClass: posixGroup
+gidNumber: 10000
+cn: admin
