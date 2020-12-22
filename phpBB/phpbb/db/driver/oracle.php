@@ -45,30 +45,30 @@ class oracle extends \phpbb\db\driver\driver
 
 		if ($new_link)
 		{
-			if (!function_exists('ocinlogon'))
+			if (!function_exists('oci_new_connect'))
 			{
-				$this->connect_error = 'ocinlogon function does not exist, is oci extension installed?';
+				$this->connect_error = 'oci_new_connect function does not exist, is oci extension installed?';
 				return $this->sql_error('');
 			}
-			$this->db_connect_id = @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8');
+			$this->db_connect_id = @oci_new_connect($this->user, $sqlpassword, $connect, 'UTF8');
 		}
 		else if ($this->persistency)
 		{
-			if (!function_exists('ociplogon'))
+			if (!function_exists('oci_pconnect'))
 			{
-				$this->connect_error = 'ociplogon function does not exist, is oci extension installed?';
+				$this->connect_error = 'oci_pconnect function does not exist, is oci extension installed?';
 				return $this->sql_error('');
 			}
-			$this->db_connect_id = @ociplogon($this->user, $sqlpassword, $connect, 'UTF8');
+			$this->db_connect_id = @oci_pconnect($this->user, $sqlpassword, $connect, 'UTF8');
 		}
 		else
 		{
-			if (!function_exists('ocilogon'))
+			if (!function_exists('oci_connect'))
 			{
-				$this->connect_error = 'ocilogon function does not exist, is oci extension installed?';
+				$this->connect_error = 'oci_connect function does not exist, is oci extension installed?';
 				return $this->sql_error('');
 			}
-			$this->db_connect_id = @ocilogon($this->user, $sqlpassword, $connect, 'UTF8');
+			$this->db_connect_id = @oci_connect($this->user, $sqlpassword, $connect, 'UTF8');
 		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
@@ -101,7 +101,7 @@ class oracle extends \phpbb\db\driver\driver
 			$cache->put('oracle_version', $this->sql_server_version);
 		}
 */
-		$this->sql_server_version = @ociserverversion($this->db_connect_id);
+		$this->sql_server_version = @oci_server_version($this->db_connect_id);
 
 		return $this->sql_server_version;
 	}
@@ -119,11 +119,11 @@ class oracle extends \phpbb\db\driver\driver
 			break;
 
 			case 'commit':
-				return @ocicommit($this->db_connect_id);
+				return @oci_commit($this->db_connect_id);
 			break;
 
 			case 'rollback':
-				return @ocirollback($this->db_connect_id);
+				return @oci_rollback($this->db_connect_id);
 			break;
 		}
 
@@ -405,14 +405,14 @@ class oracle extends \phpbb\db\driver\driver
 					break;
 				}
 
-				$this->query_result = @ociparse($this->db_connect_id, $query);
+				$this->query_result = @oci_parse($this->db_connect_id, $query);
 
 				foreach ($array as $key => $value)
 				{
-					@ocibindbyname($this->query_result, $key, $array[$key], -1);
+					@oci_bind_by_name($this->query_result, $key, $array[$key], -1);
 				}
 
-				$success = @ociexecute($this->query_result, OCI_DEFAULT);
+				$success = @oci_execute($this->query_result, OCI_DEFAULT);
 
 				if (!$success)
 				{
@@ -481,7 +481,7 @@ class oracle extends \phpbb\db\driver\driver
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->query_result) ? @ocirowcount($this->query_result) : false;
+		return ($this->query_result) ? @oci_num_rows($this->query_result) : false;
 	}
 
 	/**
@@ -503,10 +503,7 @@ class oracle extends \phpbb\db\driver\driver
 
 		if ($query_id)
 		{
-			$row = array();
-			$result = ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
-
-			if (!$result || !$row)
+			if (!$row = oci_fetch_array($query_id, OCI_ASSOC + OCI_RETURN_NULLS))
 			{
 				return false;
 			}
@@ -558,7 +555,7 @@ class oracle extends \phpbb\db\driver\driver
 		}
 
 		// Reset internal pointer
-		@ociexecute($query_id, OCI_DEFAULT);
+		@oci_execute($query_id, OCI_DEFAULT);
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
 		for ($i = 0; $i < $rownum; $i++)
@@ -584,17 +581,17 @@ class oracle extends \phpbb\db\driver\driver
 			if (preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
 				$query = 'SELECT ' . $tablename[1] . '_seq.currval FROM DUAL';
-				$stmt = @ociparse($this->db_connect_id, $query);
+				$stmt = @oci_parse($this->db_connect_id, $query);
 				if ($stmt)
 				{
-					$success = @ociexecute($stmt, OCI_DEFAULT);
+					$success = @oci_execute($stmt, OCI_DEFAULT);
 
 					if ($success)
 					{
-						$temp_result = ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
-						ocifreestatement($stmt);
+						$temp_array = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+						oci_free_statement($stmt);
 
-						if ($temp_result)
+						if (!empty($temp_array))
 						{
 							return $temp_array['CURRVAL'];
 						}
@@ -630,7 +627,7 @@ class oracle extends \phpbb\db\driver\driver
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return ocifreestatement($query_id);
+			return oci_free_statement($query_id);
 		}
 
 		return false;
@@ -683,11 +680,11 @@ class oracle extends \phpbb\db\driver\driver
 	*/
 	function _sql_error()
 	{
-		if (function_exists('ocierror'))
+		if (function_exists('oci_error'))
 		{
-			$error = @ocierror();
-			$error = (!$error) ? @ocierror($this->query_result) : $error;
-			$error = (!$error) ? @ocierror($this->db_connect_id) : $error;
+			$error = @oci_error();
+			$error = (!$error) ? @oci_error($this->query_result) : $error;
+			$error = (!$error) ? @oci_error($this->db_connect_id) : $error;
 
 			if ($error)
 			{
@@ -715,7 +712,7 @@ class oracle extends \phpbb\db\driver\driver
 	*/
 	function _sql_close()
 	{
-		return @ocilogoff($this->db_connect_id);
+		return @oci_close($this->db_connect_id);
 	}
 
 	/**
@@ -734,11 +731,10 @@ class oracle extends \phpbb\db\driver\driver
 				$sql = "SELECT table_name
 					FROM USER_TABLES
 					WHERE table_name LIKE '%PLAN_TABLE%'";
-				$stmt = ociparse($this->db_connect_id, $sql);
-				ociexecute($stmt);
-				$result = array();
+				$stmt = oci_parse($this->db_connect_id, $sql);
+				oci_execute($stmt);
 
-				if (ocifetchinto($stmt, $result, OCI_ASSOC + OCI_RETURN_NULLS))
+				if ($result = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS))
 				{
 					$table = $result['TABLE_NAME'];
 
@@ -746,17 +742,17 @@ class oracle extends \phpbb\db\driver\driver
 					$statement_id = substr(md5($query), 0, 30);
 
 					// Remove any stale plans
-					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
-					ociexecute($stmt2);
-					ocifreestatement($stmt2);
+					$stmt2 = oci_parse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					oci_execute($stmt2);
+					oci_free_statement($stmt2);
 
 					// Explain the plan
 					$sql = "EXPLAIN PLAN
 						SET STATEMENT_ID = '$statement_id'
 						FOR $query";
-					$stmt2 = ociparse($this->db_connect_id, $sql);
-					ociexecute($stmt2);
-					ocifreestatement($stmt2);
+					$stmt2 = oci_parse($this->db_connect_id, $sql);
+					oci_execute($stmt2);
+					oci_free_statement($stmt2);
 
 					// Get the data from the plan
 					$sql = "SELECT operation, options, object_name, object_type, cardinality, cost
@@ -764,24 +760,23 @@ class oracle extends \phpbb\db\driver\driver
 						START WITH id = 0 AND statement_id = '$statement_id'
 						CONNECT BY PRIOR id = parent_id
 							AND statement_id = '$statement_id'";
-					$stmt2 = ociparse($this->db_connect_id, $sql);
-					ociexecute($stmt2);
+					$stmt2 = oci_parse($this->db_connect_id, $sql);
+					oci_execute($stmt2);
 
-					$row = array();
-					while (ocifetchinto($stmt2, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+					while ($row = oci_fetch_array($stmt2, OCI_ASSOC + OCI_RETURN_NULLS))
 					{
 						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 					}
 
-					ocifreestatement($stmt2);
+					oci_free_statement($stmt2);
 
 					// Remove the plan we just made, we delete them on request anyway
-					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
-					ociexecute($stmt2);
-					ocifreestatement($stmt2);
+					$stmt2 = oci_parse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					oci_execute($stmt2);
+					oci_free_statement($stmt2);
 				}
 
-				ocifreestatement($stmt);
+				oci_free_statement($stmt);
 
 				if ($html_table)
 				{
@@ -794,19 +789,19 @@ class oracle extends \phpbb\db\driver\driver
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1];
 
-				$result = @ociparse($this->db_connect_id, $query);
+				$result = @oci_parse($this->db_connect_id, $query);
 				if ($result)
 				{
-					$success = @ociexecute($result, OCI_DEFAULT);
+					$success = @oci_execute($result, OCI_DEFAULT);
 					if ($success)
 					{
-						$row = array();
+						array();
 
-						while (ocifetchinto($result, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+						while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS))
 						{
 							// Take the time spent on parsing rows into account
 						}
-						@ocifreestatement($result);
+						@oci_free_statement($result);
 					}
 				}
 
