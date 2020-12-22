@@ -18,7 +18,7 @@ path="${root}phpBB/ext/${extname}/"
 
 # The following variables MUST NOT contain any wildcard
 # Directories to skip
-directories_skipped="-path ${path}develop -o -path ${path}vendor"
+directories_skipped="-path ${path}develop -o -path ${path}vendor -o -path ${path}.git"
 
 # Files to skip
 files_skipped="-false"
