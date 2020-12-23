@@ -582,7 +582,20 @@ class acp_board
 					continue;
 				}
 
-				$config->set($config_name, $config_value);
+				$config_name_ary = ['sitename', 'site_desc', 'site_home_text', 'board_index_text', 'board_disable_msg'];
+
+				if (in_array($config_name, $config_name_ary))
+				{
+					/**
+					 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+					 * Using their Numeric Character Reference's Hexadecimal notation.
+					 */
+					$config->set($config_name, utf8_encode_ucr($config_value));
+				}
+				else
+				{
+					$config->set($config_name, $config_value);
+				}
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
