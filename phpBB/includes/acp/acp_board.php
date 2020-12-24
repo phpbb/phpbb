@@ -584,6 +584,16 @@ class acp_board
 
 				$config_name_ary = ['sitename', 'site_desc', 'site_home_text', 'board_index_text', 'board_disable_msg'];
 
+				/**
+				 * Event to manage the array of emoji-enabled configurations
+				 *
+				 * @event core.acp_board_config_emoji_enabled
+				 * @var array	config_name_ary		Array of config names to process
+				 * @since 3.3.3-RC1
+				 */
+				$vars = ['config_name_ary'];
+				extract($phpbb_dispatcher->trigger_event('core.acp_board_config_emoji_enabled', compact($vars)));
+
 				if (in_array($config_name, $config_name_ary))
 				{
 					/**
