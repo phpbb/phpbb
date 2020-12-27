@@ -363,3 +363,86 @@ jobs:
                   DB: ${{steps.database-type.outputs.db}}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
+
+    # Test with IIS & PostgreSQL on Windows
+    windows-tests:
+        runs-on: windows-2016
+        strategy:
+            matrix:
+                include:
+                    - php: '7.4'
+                      db: "postgres"
+
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
+
+        steps:
+            - name: Prepare git for Windows
+              run: |
+                  git config --system core.autocrlf false
+                  git config --system core.eol lf
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, intl, gd, exif, iconv, pgsql, pdo_pgsql
+                  ini-values: upload_tmp_dir=${{ runner.temp }}, sys_temp_dir=${{ runner.temp }}
+                  coverage: none
+
+            - name: Setup environment for phpBB
+              env:
+                  GITHUB_WORKSPACE: ${{ github.workspace }}
+                  TEMP_DIR: ${{ runner.temp }}
+              run: |
+                  Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole, IIS-WebServer, IIS-CommonHttpFeatures, IIS-ManagementConsole, IIS-HttpErrors, IIS-HttpRedirect, IIS-WindowsAuthentication, IIS-StaticContent, IIS-DefaultDocument, IIS-HttpCompressionStatic, IIS-DirectoryBrowsing, IIS-WebServerManagementTools, IIS-CGI -All
+                  Set-Service wuauserv -StartupType Manual
+                  (Get-Content ${env:GITHUB_WORKSPACE}\phpBB\web.config).replace("<configuration>", "<configuration>`n`t<system.web>`n`t`t<customErrors mode=`"Off`"/>`n`t</system.web>") | Set-Content ${env:GITHUB_WORKSPACE}\phpBB\web.config
+                  (Get-Content ${env:GITHUB_WORKSPACE}\phpBB\web.config).replace("`t</system.webServer>", "`t`t<httpErrors errorMode=`"Detailed`" />`n`t</system.webServer>") | Set-Content ${env:GITHUB_WORKSPACE}\phpBB\web.config
+                  choco install urlrewrite -y
+                  Import-Module WebAdministration
+                  New-WebSite -Name 'phpBBTest' -PhysicalPath "${env:GITHUB_WORKSPACE}\phpBB" -Force
+                  $session = Get-PSSession -Name WinPSCompatSession
+                  $sb = {Set-ItemProperty 'IIS:\Sites\phpBBTest' -name Bindings -value @{protocol='http';bindingInformation='*:80:phpbb.test'}}
+                  Invoke-Command -Scriptblock $sb -Session $session
+                  $sb = {Set-WebConfigurationProperty -filter /system.WebServer/security/authentication/AnonymousAuthentication -name enabled -value true -location "IIS:\Sites\phpBBTest"}
+                  Invoke-Command -Scriptblock $sb -Session $session
+                  Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`r`n127.0.0.1`tphpbb.test" -Force
+                  [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";%windir%\system32\inetsrv")
+                  echo Setup FAST-CGI configuration
+                  Add-WebConfiguration -Filter /system.webServer/fastCgi -PSPath IIS:\ -Value @{fullpath="C:\tools\php\php-cgi.exe"}
+                  echo Setup FACT-CGI handler
+                  New-WebHandler -Name "PHP-FastCGI" -Path "*.php" -Modules FastCgiModule -ScriptProcessor "C:\tools\php\php-cgi.exe" -Verb '*' -ResourceType Either
+                  iisreset
+                  NET START W3SVC
+                  mkdir "${env:GITHUB_WORKSPACE}\phpBB\cache\test"
+                  mkdir "${env:GITHUB_WORKSPACE}\phpBB\cache\installer"
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\cache" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\files" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\store" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\images\avatars\upload" /grant Users:F /T
+                  $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("IIS_IUSRS", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+                  $acl = Get-ACL "${env:TEMP_DIR}"
+                  $acl.AddAccessRule($accessRule)
+                  Set-ACL -Path "${env:TEMP_DIR}" -ACLObject $acl
+                  cd ${env:GITHUB_WORKSPACE}\phpBB
+                  php ..\composer.phar install
+                  cd ..
+            - name: Setup database
+              run: |
+                  $postgreSqlSvc = Get-Service "postgresql*"
+                  Set-Service $postgreSqlSvc.Name -StartupType manual
+                  $postgreSqlSvc.Start()
+                  try {
+                    (Get-Service "postgresql*").Start()
+                  } catch  {
+                    $_ | select *
+                  }
+                  [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";${env:PGBIN}")
+                  $env:PGPASSWORD = 'root'
+                  psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
+                  psql -c 'create database phpbb_tests;' -U postgres
+            - name: Run unit tests
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error
