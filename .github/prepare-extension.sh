@@ -17,6 +17,6 @@ EXTNAME=$1
 mkdir --parents phpBB/ext/$EXTNAME
 cp -R ../tmp/* phpBB/ext/$EXTNAME
 
-# Move the extensions .github/phpunit-*-travis.xml files in place
+# Move the test files for extensions in place
 cp -R .github/*.xml phpBB/ext/$EXTNAME/.github
 cp -R .github/*.sh phpBB/ext/$EXTNAME/.github

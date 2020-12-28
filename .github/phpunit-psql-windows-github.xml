@@ -27,9 +27,15 @@
 	</groups>
 
 	<php>
+		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\postgres"/>
+		<server name="PHPBB_TEST_DBHOST" value="localhost" />
+		<server name="PHPBB_TEST_DBPORT" value="5432" />
+		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
+		<server name="PHPBB_TEST_DBUSER" value="postgres" />
+		<server name="PHPBB_TEST_DBPASSWD" value="root" />
 		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
 		<server name="PHPBB_TEST_MEMCACHED_HOST" value="localhost" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
-		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
+		<server name="PHPBB_FUNCTIONAL_URL" value="http://phpbb.test/" />
 	</php>
 </phpunit>
