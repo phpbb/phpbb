@@ -15,6 +15,11 @@
 * @ignore
 */
 define('IN_PHPBB', true);
+/**
+* First Characters Limit
+* @ignore
+*/
+define('FIRST_CHARACTERS_LIMIT', 50);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
@@ -1170,18 +1175,55 @@ switch ($mode)
 			}
 		}
 
-		$first_char = $request->variable('first_char', '');
+		$users_first_characters = $cache->get('users_first_characters');
+		// Setting sunstring SQL function
+		$substring_function = 'substr';
+		if (substr($db->get_sql_layer(),0,5) === 'mssql')
+		{
+			$substring_function = 'substring';
+		}
+		// Rebuild $users_first_characters
+		if ($users_first_characters === false)
+		{
+			$users_first_characters = array();
+
+			if ($db->get_sql_layer() === 'mssql_odbc')
+			{
+				// `mssql_odbc` does not store UTF8 strings correctly, so SQL string functions does not work correctly
+				for ($i = 97; $i < 123; $i++)
+				{
+					$users_first_characters[chr($i)] = chr($i - 32);
+				}
+			}
+			else
+			{
+				$sql = 'SELECT ' . $substring_function . '(username_clean,1,1) first_char, count(*) count_users
+					FROM ' . USERS_TABLE . '
+					WHERE ' . $db->sql_in_set('user_type', $user_types) . '
+					GROUP BY ' . $substring_function . '(username_clean,1,1)
+					ORDER BY count_users DESC, first_char';
+
+				$result = $db-> sql_query_limit($sql, FIRST_CHARACTERS_LIMIT);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$users_first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
+				}
+				$db->sql_freeresult($result);
+				ksort($users_first_characters);
+			}
+
+			$cache->put('users_first_characters',$users_first_characters);
+		}
+
+		$first_char = $request->variable('first_char', '', true);
 
 		if ($first_char == 'other')
 		{
-			for ($i = 97; $i < 123; $i++)
-			{
-				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->get_any_char());
-			}
+			$sql_where .= ' AND ' . $db->sql_in_set($substring_function . '(u.username_clean,1,1) ', array_keys($users_first_characters), true);
 		}
 		else if ($first_char)
 		{
-			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->get_any_char());
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(mb_substr($first_char, 0, 1) . $db->get_any_char());
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1399,13 +1441,11 @@ switch ($mode)
 		$u_first_char_params = implode('&amp;', $u_first_char_params);
 		$u_first_char_params .= ($u_first_char_params) ? '&amp;' : '';
 
-		$first_characters = array();
-		$first_characters[''] = $user->lang['ALL'];
-		for ($i = 97; $i < 123; $i++)
+		$first_characters = array('' => $user->lang['ALL']) + $users_first_characters;
+		if ((count($first_characters) > FIRST_CHARACTERS_LIMIT) || ($db->get_sql_layer() === 'mssql_odbc'))
 		{
-			$first_characters[chr($i)] = chr($i - 32);
+			$first_characters['other'] =  $user->lang['OTHER'];
 		}
-		$first_characters['other'] = $user->lang['OTHER'];
 
 		$first_char_block_vars = [];
 
@@ -1415,7 +1455,7 @@ switch ($mode)
 				'DESC'			=> $desc,
 				'VALUE'			=> $char,
 				'S_SELECTED'	=> ($first_char == $char) ? true : false,
-				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
+				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . urlencode($char)) . '#memberlist',
 			];
 		}
 

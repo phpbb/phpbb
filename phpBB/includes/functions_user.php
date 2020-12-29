@@ -172,6 +172,7 @@ function user_update_name($old_name, $new_name)
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$cache->destroy('users_first_characters');
 }
 
 /**
@@ -295,6 +296,14 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	$db->sql_query($sql);
 
 	$user_id = $db->sql_nextid();
+
+	//	Check users_first_characters
+	$cache = $phpbb_container->get('cache.driver');
+	$users_first_characters = $cache->get('users_first_characters');
+	if (($users_first_characters !== false) && (! array_key_exists(mb_substr($username_clean, 0, 1), $users_first_characters)))
+	{
+		$cache->destroy('users_first_characters');
+	}
 
 	// Insert Custom Profile Fields
 	if ($cp_data !== false && count($cp_data))
@@ -707,6 +716,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_return_on_error();
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$cache->destroy('users_first_characters');
 
 	// Change user_id to anonymous for posts edited by this user
 	$sql = 'UPDATE ' . POSTS_TABLE . '
