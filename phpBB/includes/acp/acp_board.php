@@ -582,7 +582,14 @@ class acp_board
 					continue;
 				}
 
-				$config_name_ary = ['sitename', 'site_desc', 'site_home_text', 'board_index_text', 'board_disable_msg'];
+				// Array of emoji-enabled configurations
+				$config_name_ary = [
+					'sitename',
+					'site_desc',
+					'site_home_text',
+					'board_index_text',
+					'board_disable_msg',
+				];
 
 				/**
 				 * Event to manage the array of emoji-enabled configurations
