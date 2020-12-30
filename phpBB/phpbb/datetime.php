@@ -117,13 +117,23 @@ class datetime extends \DateTime
 					if ($day !== false)
 					{
 						// Format using the short formatting and finally swap out the relative token placeholder with the correct value
-						return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
+						return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->user->lang['datetime'][$day], strtr(substr(preg_replace_callback("/(\P{Latin})([AP]M|[ap]m)(\P{Latin})/u",
+								function ($matches)
+								{
+									global $user;
+									return $matches[1].($user->lang($matches[2])).$matches[3];
+						}, parent::format($format['format_short']) . ' '), 0 , -1), $format['lang']));
 					}
 				}
 			}
 		}
 
-		return strtr(parent::format($format['format_long']), $format['lang']);
+		return strtr(substr(preg_replace_callback("/(\P{Latin})([AP]M|[ap]m)(\P{Latin})/u",
+				function ($matches)
+				{
+					global $user;
+					return $matches[1].($user->lang($matches[2])).$matches[3];
+		}, parent::format($format['format_long']) . ' '), 0 , -1), $format['lang']);
 	}
 
 	/**
