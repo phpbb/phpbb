@@ -24,16 +24,23 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 	*/
 	public function register()
 	{
-		return array(T_USE);
+		return [T_USE];
 	}
 
-	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $line)
+	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $stack_pointer)
 	{
+		$found_name = ltrim($found_name, '\\');
+		$full_name = ltrim($full_name, '\\');
 
 		if ($found_name === $full_name)
 		{
 			$error = 'Either use statement or full name must be used.';
-			$phpcsFile->addError($error, $line, 'FullName');
+			$phpcsFile->addError($error, $stack_pointer, 'FullName');
+
+			if (strpos($phpcsFile->getFilename(), 'cron/manager.php') !== false)
+			{
+				print("$found_name, $full_name, $short_name}\n");
+			}
 		}
 
 		if ($found_name === $short_name)
@@ -99,7 +106,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) ? true : $ok;
+				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) || $ok;
 			}
 		}
 
@@ -114,7 +121,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 			$paamayim_nekudotayim_class_name = trim($phpcsFile->getTokensAsString($paamayim_nekudotayim_class_name_start + 1, ($paamayim_nekudotayim_class_name_end - $paamayim_nekudotayim_class_name_start)));
 
-			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) ? true : $ok;
+			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) || $ok;
 		}
 
 		// Checks in implements
@@ -133,7 +140,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 				$implements_class_name = trim($phpcsFile->getTokensAsString($implements_class_name_start, ($implements_class_name_end - $implements_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) ? true : $ok;
+				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) || $ok;
 			}
 		}
 
@@ -141,7 +148,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 		while (($docblock = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($old_docblock + 1))) !== false)
 		{
 			$old_docblock = $docblock;
-			$ok = $this->checkDocblock($phpcsFile, $docblock, $tokens, $class_name_full, $class_name_short) ? true : $ok;
+			$ok = $this->checkDocblock($phpcsFile, $docblock, $tokens, $class_name_full, $class_name_short) || $ok;
 		}
 
 		// Checks in type hinting
@@ -154,7 +161,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$params = $phpcsFile->getMethodParameters($function_declaration);
 			foreach ($params as $param)
 			{
-				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) ? true : $ok;
+				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 			}
 		}
 
@@ -169,7 +176,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 			$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
 
-			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) ? true : $ok;
+			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) || $ok;
 		}
 
 		if (!$ok)
@@ -247,7 +254,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$classes = explode('|', str_replace('[]', '', $classes));
 			foreach ($classes as $class)
 			{
-				$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tokens[$tag + 2]['line']) ? true : $ok;
+				$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tag + 2) || $ok;
 			}
 		}
 
