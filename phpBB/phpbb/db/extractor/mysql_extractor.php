@@ -87,7 +87,7 @@ class mysql_extractor extends base_extractor
 	*
 	* @param	string	$table_name	name of the database table
 	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
+	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function write_data_mysqli($table_name)
 	{
@@ -177,7 +177,7 @@ class mysql_extractor extends base_extractor
 	*
 	* @param	string	$table_name	name of the database table
 	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
+	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function new_write_table($table_name)
 	{
@@ -202,7 +202,7 @@ class mysql_extractor extends base_extractor
 	*
 	* @param	string	$table_name	name of the database table
 	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
+	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function old_write_table($table_name)
 	{

@@ -37,7 +37,7 @@ class handler_factory
 	 *
 	 * @param string	$type
 	 * @return \phpbb\report\report_handler_interface
-	 * @throws \phpbb\report\exception\factory_invalid_argument_exception if $type is not valid
+	 * @throws factory_invalid_argument_exception if $type is not valid
 	 */
 	public function get_instance($type)
 	{

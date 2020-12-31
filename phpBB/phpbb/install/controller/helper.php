@@ -40,7 +40,7 @@ class helper
 	protected $installer_config;
 
 	/**
-	 * @var \phpbb\language\language
+	 * @var language
 	 */
 	protected $language;
 
@@ -50,37 +50,37 @@ class helper
 	protected $language_cookie;
 
 	/**
-	 * @var \phpbb\language\language_file_helper
+	 * @var language_file_helper
 	 */
 	protected $lang_helper;
 
 	/**
-	 * @var \phpbb\install\helper\navigation\navigation_provider
+	 * @var navigation_provider
 	 */
 	protected $navigation_provider;
 
 	/**
-	 * @var \phpbb\template\template
+	 * @var template
 	 */
 	protected $template;
 
 	/**
-	 * @var \phpbb\path_helper
+	 * @var path_helper
 	 */
 	protected $path_helper;
 
 	/**
-	 * @var \phpbb\request\request
+	 * @var request
 	 */
 	protected $phpbb_request;
 
 	/**
-	 * @var \phpbb\symfony_request
+	 * @var symfony_request
 	 */
 	protected $request;
 
 	/**
-	 * @var \phpbb\routing\router
+	 * @var router
 	 */
 	protected $router;
 

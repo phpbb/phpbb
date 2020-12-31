@@ -36,7 +36,7 @@ class notify_user extends \phpbb\install\task_base
 	protected $auth;
 
 	/**
-	 * @var \phpbb\config\db
+	 * @var db
 	 */
 	protected $config;
 

@@ -76,7 +76,7 @@ class module_manager
 	 *
 	 * @return array	Array of data fetched from the database
 	 *
-	 * @throws \phpbb\module\exception\module_not_found_exception	When there is no module with $module_id
+	 * @throws module_not_found_exception	When there is no module with $module_id
 	 */
 	public function get_module_row($module_id, $module_class)
 	{
@@ -243,7 +243,7 @@ class module_manager
 	 *
 	 * @param array	&$module_data	The module data
 	 *
-	 * @throws \phpbb\module\exception\module_not_found_exception	When parent module or the category is not exist
+	 * @throws module_not_found_exception	When parent module or the category is not exist
 	 */
 	public function update_module_data(&$module_data)
 	{
@@ -340,8 +340,8 @@ class module_manager
 	 * @param int		$to_parent_id	ID of the target parent module
 	 * @param string	$module_class	Class of the module (acp, ucp, mcp etc...)
 	 *
-	 * @throws \phpbb\module\exception\module_not_found_exception	If the module specified to move modules from does not
-	 * 																have any children.
+	 * @throws module_not_found_exception	If the module specified to move modules from does not
+	 * 										have any children.
 	 */
 	public function move_module($from_module_id, $to_parent_id, $module_class)
 	{
@@ -433,7 +433,7 @@ class module_manager
 	 * @param int		$module_id		ID of the module to delete
 	 * @param string	$module_class	Class of the module (acp, ucp, mcp etc...)
 	 *
-	 * @throws \phpbb\module\exception\module_exception	When the specified module cannot be removed
+	 * @throws module_exception	When the specified module cannot be removed
 	 */
 	public function delete_module($module_id, $module_class)
 	{
@@ -482,7 +482,7 @@ class module_manager
 	 *
 	 * @return string	Returns the language name of the module
 	 *
-	 * @throws \phpbb\module\exception\module_not_found_exception	When the specified module does not exists
+	 * @throws module_not_found_exception	When the specified module does not exists
 	 */
 	public function move_module_by($module_row, $module_class, $action = 'move_up', $steps = 1)
 	{

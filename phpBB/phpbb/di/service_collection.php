@@ -21,7 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class service_collection extends \ArrayObject
 {
 	/**
-	* @var \Symfony\Component\DependencyInjection\ContainerInterface
+	* @var ContainerInterface
 	*/
 	protected $container;
 

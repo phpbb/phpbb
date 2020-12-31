@@ -25,7 +25,7 @@ class bbcode_merger
 	protected $configurator;
 
 	/**
-	* @param \phpbb\textformatter\s9e\factory $factory
+	* @param factory $factory
 	*/
 	public function __construct(factory $factory)
 	{

@@ -26,17 +26,17 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 class cron_runner_listener implements EventSubscriberInterface
 {
 	/**
-	 * @var \phpbb\lock\db
+	 * @var db
 	 */
 	private $cron_lock;
 
 	/**
-	 * @var \phpbb\cron\manager
+	 * @var manager
 	 */
 	private $cron_manager;
 
 	/**
-	 * @var \phpbb\request\request_interface
+	 * @var request_interface
 	 */
 	private $request;
 

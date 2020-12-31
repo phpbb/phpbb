@@ -54,7 +54,7 @@ class factory
 	 *
 	 * @return \phpbb\install\helper\iohandler\iohandler_interface
 	 *
-	 * @throws \phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception
+	 * @throws iohandler_not_implemented_exception
 	 * 		When the specified iohandler_interface does not exists
 	 */
 	public function get()

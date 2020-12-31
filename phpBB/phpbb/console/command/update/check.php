@@ -26,11 +26,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class check extends \phpbb\console\command\command
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerBuilder */
 	protected $phpbb_container;
+
 	/**
 	 * @var language
 	 */

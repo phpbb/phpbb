@@ -98,7 +98,7 @@ class install extends \phpbb\console\command\command
 	{
 		$this->iohandler_factory->set_environment('cli');
 
-		/** @var \phpbb\install\helper\iohandler\cli_iohandler $iohandler */
+		/** @var cli_iohandler $iohandler */
 		$iohandler = $this->iohandler_factory->get();
 		$style = new SymfonyStyle($input, $output);
 		$iohandler->set_style($style, $output);

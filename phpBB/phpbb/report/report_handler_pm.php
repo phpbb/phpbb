@@ -22,7 +22,7 @@ class report_handler_pm extends report_handler
 {
 	/**
 	 * {@inheritdoc}
-	 * @throws \phpbb\report\exception\pm_reporting_disabled_exception when PM reporting is disabled on the board
+	 * @throws pm_reporting_disabled_exception when PM reporting is disabled on the board
 	 */
 	public function add_report($id, $reason_id, $report_text, $user_notify)
 	{
@@ -92,7 +92,7 @@ class report_handler_pm extends report_handler
 
 	/**
 	 * {@inheritdoc}
-	 * @throws \phpbb\report\exception\pm_reporting_disabled_exception when PM reporting is disabled on the board
+	 * @throws pm_reporting_disabled_exception when PM reporting is disabled on the board
 	 */
 	public function validate_report_request($id)
 	{
