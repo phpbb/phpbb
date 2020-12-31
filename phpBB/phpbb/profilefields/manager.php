@@ -259,7 +259,10 @@ class manager
 			 * Replace Emoji and other 4bit UTF-8 chars not allowed by MySQL
 			 * with their Numeric Character Reference's Hexadecimal notation.
 			 */
-			$cp_data['pf_' . $row['field_ident']] = utf8_encode_ucr($cp_data['pf_' . $row['field_ident']]);
+			if (is_string($cp_data['pf_' . $row['field_ident']]))
+			{
+				$cp_data['pf_' . $row['field_ident']] = utf8_encode_ucr($cp_data['pf_' . $row['field_ident']]);
+			}
 
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
