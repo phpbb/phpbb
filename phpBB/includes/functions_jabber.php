@@ -263,14 +263,13 @@ class jabber
 		if ($use_ssl)
 		{
 			$remote_socket = 'ssl://' . $server . ':' . $port;
-
-			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
-			$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
 		}
 		else
 		{
 			$remote_socket = $server . ':' . $port;
 		}
+		// Set ssl context options, see http://php.net/manual/en/context.ssl.php
+		$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
 
 		$socket_context = stream_context_create($options);
 
