@@ -29,18 +29,18 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $stack_pointer)
 	{
-		$found_name = ltrim($found_name, '\\');
+		$found_name_normalized = ltrim($found_name, '\\');
 		$full_name = ltrim($full_name, '\\');
 
-		if ($found_name === $full_name)
+		$is_global = ($full_name === $short_name);
+		$unnecessarily_fully_qualified = ($is_global)
+			? ($found_name_normalized !== $found_name && $found_name_normalized === $short_name)
+			: ($found_name_normalized === $full_name);
+
+		if ($unnecessarily_fully_qualified)
 		{
 			$error = 'Either use statement or full name must be used.';
 			$phpcsFile->addError($error, $stack_pointer, 'FullName');
-
-			if (strpos($phpcsFile->getFilename(), 'cron/manager.php') !== false)
-			{
-				print("$found_name, $full_name, $short_name}\n");
-			}
 		}
 
 		if ($found_name === $short_name)
