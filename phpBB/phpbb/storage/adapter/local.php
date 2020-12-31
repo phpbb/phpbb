@@ -29,21 +29,21 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * Filesystem component
 	 *
-	 * @var \phpbb\filesystem\filesystem
+	 * @var filesystem
 	 */
 	protected $filesystem;
 
 	/**
 	 * FastImageSize
 	 *
-	 * @var \FastImageSize\FastImageSize
+	 * @var FastImageSize
 	 */
 	protected $imagesize;
 
 	/**
 	 * Mimetype Guesser component
 	 *
-	 * @var \phpbb\mimetype\guesser
+	 * @var guesser
 	 */
 	protected $mimetype_guesser;
 
@@ -209,7 +209,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The directory path
 	 *
-	 * @throws \phpbb\storage\exception\exception	On any directory creation failure
+	 * @throws exception	On any directory creation failure
 	 */
 	protected function create_dir($path)
 	{
@@ -342,7 +342,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The file
 	 *
-	 * @throws \phpbb\storage\exception\exception		When cannot get size
+	 * @throws exception		When cannot get size
 	 *
 	 * @return array Properties
 	 */

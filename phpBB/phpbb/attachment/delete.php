@@ -13,10 +13,10 @@
 
 namespace phpbb\attachment;
 
-use \phpbb\config\config;
-use \phpbb\db\driver\driver_interface;
-use \phpbb\event\dispatcher;
-use \phpbb\storage\storage;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher;
+use phpbb\storage\storage;
 
 /**
  * Attachment delete class

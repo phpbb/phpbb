@@ -28,13 +28,13 @@ class storage
 	protected $adapter;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var db
 	 */
 	protected $db;
 
 	/**
 	 * Cache driver
-	 * @var \phpbb\cache\driver\driver_interface
+	 * @var cache
 	 */
 	protected $cache;
 
@@ -56,8 +56,8 @@ class storage
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\db\driver\driver_interface	$db
-	 * @param \phpbb\cache\driver\driver_interface	$cache
+	 * @param db								$db
+	 * @param cache								$cache
 	 * @param \phpbb\storage\adapter_factory	$factory
 	 * @param string							$storage_name
 	 * @param string							$storage_table
@@ -102,8 +102,8 @@ class storage
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file already exists
-	 * 													When the file cannot be written
+	 * @throws exception	When the file already exists
+	 * 						When the file cannot be written
 	 */
 	public function put_contents($path, $content)
 	{
@@ -121,8 +121,8 @@ class storage
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the file doesn't exist
-	 * 													When cannot read file contents
+	 * @throws exception	When the file doesn't exist
+	 * 						When cannot read file contents
 	 *
 	 * @return string	Returns file contents
 	 *
@@ -155,8 +155,8 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception		When removal fails
-	 *													When the file doesn't exist
+	 * @throws exception	When removal fails
+	 *						When the file doesn't exist
 	 */
 	public function delete($path)
 	{
@@ -175,9 +175,9 @@ class storage
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
-	 *													When target exists
-	 * 													When file/directory cannot be renamed
+	 * @throws exception	When the file doesn't exist
+	 *						When target exists
+	 * 						When file/directory cannot be renamed
 	 */
 	public function rename($path_orig, $path_dest)
 	{
@@ -201,9 +201,9 @@ class storage
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
-	 *													When target exists
-	 * 													When the file cannot be copied
+	 * @throws exception	When the file doesn't exist
+	 *						When target exists
+	 * 						When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest)
 	{
@@ -226,8 +226,8 @@ class storage
 	 *
 	 * @param string	$path	File to read
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file doesn't exist
-	 *													When unable to open file
+	 * @throws exception	When the file doesn't exist
+	 *						When unable to open file
 	 *
 	 * @return resource	Returns a file pointer
 	 */
@@ -262,8 +262,8 @@ class storage
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file exist
-	 *													When target file cannot be created
+	 * @throws exception	When the file exist
+	 *						When target file cannot be created
 	 */
 	public function write_stream($path, $resource)
 	{
@@ -484,7 +484,7 @@ class storage
 	/**
 	 * Get space available in bytes
 	 *
-	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
+	 * @throws exception		When unable to retrieve available storage space
 	 *
 	 * @return float	Returns available space
 	 */

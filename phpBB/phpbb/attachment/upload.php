@@ -14,14 +14,14 @@
 namespace phpbb\attachment;
 
 use phpbb\auth\auth;
-use \phpbb\cache\service;
-use \phpbb\config\config;
-use \phpbb\event\dispatcher;
-use \phpbb\language\language;
-use \phpbb\plupload\plupload;
-use \phpbb\storage\storage;
-use \phpbb\filesystem\temp;
-use \phpbb\user;
+use phpbb\cache\service;
+use phpbb\config\config;
+use phpbb\event\dispatcher;
+use phpbb\language\language;
+use phpbb\plupload\plupload;
+use phpbb\storage\storage;
+use phpbb\filesystem\temp;
+use phpbb\user;
 
 /**
  * Attachment upload class
