@@ -681,9 +681,8 @@ class acp_main
 
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
 		{
-			$phpbb_config_file = $phpbb_root_path . 'config.' . $phpEx;
-
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) $phpbb_filesystem->is_writable($phpbb_config_file) || (@fileperms($phpbb_config_file) & 0x0002));
+			// World-Writable? (000x)
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
 		}
 
 		$this->php_ini			= $phpbb_container->get('php_ini');
