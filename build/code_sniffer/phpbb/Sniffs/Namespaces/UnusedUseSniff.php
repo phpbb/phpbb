@@ -86,6 +86,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$class_name_short = $tokens[$class_name_end - 1]['content'];
 		}
 
+		if ($class_name_full[0] === '\\')
+		{
+			$phpcsFile->addError("There must not be a leading '\\' in use statements.", $stackPtr, 'Malformed');
+		}
+
 		$ok = false;
 
 		// Checks in simple statements (new, instanceof and extends)
