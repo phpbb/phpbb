@@ -14,7 +14,7 @@
 namespace phpbb\controller;
 
 use phpbb\auth\auth;
-use \phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\cache\driver\driver_interface as cache_interface;
 use phpbb\config\config;
 use phpbb\cron\manager;
 use phpbb\db\driver\driver_interface;

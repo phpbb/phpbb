@@ -13,7 +13,7 @@
 
 namespace phpbb\db\driver;
 
-use \Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
 * Database Abstraction Layer
