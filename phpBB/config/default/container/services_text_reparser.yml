@@ -73,6 +73,7 @@ services:
         class: phpbb\textreparser\plugins\poll_option
         arguments:
             - '@dbal.conn'
+            - '%tables.poll_options%'
         calls:
             - [set_name, [poll_option]]
         tags:
