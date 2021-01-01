@@ -14,7 +14,7 @@
 namespace phpbb\avatar\driver;
 
 use bantu\IniGetWrapper\IniGetWrapper;
-use \phpbb\storage\exception\exception as storage_exception;
+use phpbb\storage\exception\exception as storage_exception;
 
 /**
 * Handles avatars uploaded to the board

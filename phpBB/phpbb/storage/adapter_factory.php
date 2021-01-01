@@ -20,26 +20,26 @@ use phpbb\storage\exception\exception;
 class adapter_factory
 {
 	/**
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\di\service_collection
+	 * @var service_collection
 	 */
 	protected $adapters;
 
 	/**
-	 * @var \phpbb\di\service_collection
+	 * @var service_collection
 	 */
 	protected $providers;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config				$config
-	 * @param \phpbb\di\service_collection		$adapters
-	 * @param \phpbb\di\service_collection		$providers
+	 * @param config				$config
+	 * @param service_collection	$adapters
+	 * @param service_collection	$providers
 	 */
 	public function __construct(config $config, service_collection $adapters, service_collection $providers)
 	{

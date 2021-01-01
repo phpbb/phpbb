@@ -30,7 +30,7 @@ class manage extends \phpbb\console\command\command
 	protected $manager;
 
 	/**
-	 * @var \phpbb\language\language
+	 * @var language
 	 */
 	protected $language;
 

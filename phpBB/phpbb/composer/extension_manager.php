@@ -29,12 +29,12 @@ use phpbb\filesystem\filesystem;
 class extension_manager extends manager
 {
 	/**
-	 * @var \phpbb\extension\manager
+	 * @var manager
 	 */
 	protected $extension_manager;
 
 	/**
-	 * @var \phpbb\filesystem\filesystem
+	 * @var filesystem
 	 */
 	protected $filesystem;
 

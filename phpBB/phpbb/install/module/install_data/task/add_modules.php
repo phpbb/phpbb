@@ -31,7 +31,7 @@ class add_modules extends \phpbb\install\task_base
 	protected $db;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 

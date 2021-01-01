@@ -19,7 +19,7 @@ use phpbb\storage\adapter\adapter_interface;
 class file_info
 {
 	/**
-	 * @var \phpbb\storage\adapter\adapter_interface
+	 * @var adapter_interface
 	 */
 	protected $adapter;
 
