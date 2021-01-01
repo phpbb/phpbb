@@ -613,13 +613,10 @@ class filesystem implements filesystem_interface
 			}
 			else
 			{
-				$handle = @fopen($file, 'c');
+				$handle = new \SplFileInfo($file);
 
-				if (is_resource($handle))
-				{
-					fclose($handle);
-					return true;
-				}
+				// Returns TRUE if writable, FALSE otherwise
+				return $handle->isWritable();
 			}
 		}
 		else

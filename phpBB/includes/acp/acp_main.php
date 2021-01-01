@@ -679,17 +679,18 @@ class acp_main
 			}
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && $phpbb_filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
 		}
 
-		$this->php_ini = $phpbb_container->get('php_ini');
-		$func_overload = $this->php_ini->getNumeric('mbstring.func_overload');
-		$encoding_translation = $this->php_ini->getString('mbstring.encoding_translation');
-		$http_input = $this->php_ini->getString('mbstring.http_input');
-		$http_output = $this->php_ini->getString('mbstring.http_output');
+		$this->php_ini			= $phpbb_container->get('php_ini');
+		$func_overload			= $this->php_ini->getNumeric('mbstring.func_overload');
+		$encoding_translation	= $this->php_ini->getString('mbstring.encoding_translation');
+		$http_input				= $this->php_ini->getString('mbstring.http_input');
+		$http_output			= $this->php_ini->getString('mbstring.http_output');
+
 		if (extension_loaded('mbstring'))
 		{
 			$template->assign_vars(array(
