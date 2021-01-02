@@ -13,7 +13,7 @@
 
 namespace phpbb\attachment;
 
-use \phpbb\db\driver\driver_interface;
+use phpbb\db\driver\driver_interface;
 
 /**
  * Attachment resync class

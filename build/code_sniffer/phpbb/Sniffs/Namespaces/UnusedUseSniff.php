@@ -19,21 +19,34 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 */
 class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 {
+	const FIND = [
+		T_NS_SEPARATOR,
+		T_STRING,
+		T_WHITESPACE,
+	];
+
 	/**
 	* {@inheritdoc}
 	*/
 	public function register()
 	{
-		return array(T_USE);
+		return [T_USE];
 	}
 
-	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $line)
+	protected function check(File $phpcsFile, $found_name, $full_name, $short_name, $stack_pointer)
 	{
+		$found_name_normalized = ltrim($found_name, '\\');
+		$full_name = ltrim($full_name, '\\');
 
-		if ($found_name === $full_name)
+		$is_global = ($full_name === $short_name);
+		$unnecessarily_fully_qualified = ($is_global)
+			? ($found_name_normalized !== $found_name && $found_name_normalized === $short_name)
+			: ($found_name_normalized === $full_name);
+
+		if ($unnecessarily_fully_qualified)
 		{
 			$error = 'Either use statement or full name must be used.';
-			$phpcsFile->addError($error, $line, 'FullName');
+			$phpcsFile->addError($error, $stack_pointer, 'FullName');
 		}
 
 		if ($found_name === $short_name)
@@ -58,27 +71,50 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 		$class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($stackPtr + 1));
 
-		$find = array(
-			T_NS_SEPARATOR,
-			T_STRING,
-			T_WHITESPACE,
-		);
-
-		$class_name_end = $phpcsFile->findNext($find, ($stackPtr + 1), null, true);
+		$class_name_end = $phpcsFile->findNext(self::FIND, ($stackPtr + 1), null, true);
 
 		$aliasing_as_position = $phpcsFile->findNext(T_AS, $class_name_end, null, false, null, true);
 		if ($aliasing_as_position !== false)
 		{
 			$alias_position = $phpcsFile->findNext(T_STRING, $aliasing_as_position, null, false, null, true);
-			$class_name_short = $tokens[$alias_position]['content'];
-			$class_name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
+			$name_short = $tokens[$alias_position]['content'];
+			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
 		}
 		else
 		{
-			$class_name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start));
-			$class_name_short = $tokens[$class_name_end - 1]['content'];
+			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start));
+			$name_short = $tokens[$class_name_end - 1]['content'];
 		}
 
+		if ($tokens[$class_name_start]['content'] === 'function'
+			&& $tokens[$class_name_start + 1]['code'] === T_WHITESPACE)
+		{
+			$class_name_start += 2;
+			$name_full = $phpcsFile->getTokensAsString(
+				$class_name_start,
+				($class_name_end - $class_name_start - (int) ($aliasing_as_position !== false))
+			);
+			$ok = $this->findFunctionUsage($phpcsFile, $stackPtr, $tokens, $name_full, $name_short);
+		}
+		else
+		{
+			$ok = $this->findClassUsage($phpcsFile, $stackPtr, $tokens, $name_full, $name_short);
+		}
+
+		if ($name_full[0] === '\\')
+		{
+			$phpcsFile->addError("There must not be a leading '\\' in use statements.", $stackPtr, 'Malformed');
+		}
+
+		if (!$ok)
+		{
+			$error = 'There must not be unused USE statements.';
+			$phpcsFile->addError($error, $stackPtr, 'Unused');
+		}
+	}
+
+	private function findClassUsage(File $phpcsFile, $stackPtr, $tokens, $class_name_full, $class_name_short)
+	{
 		$ok = false;
 
 		// Checks in simple statements (new, instanceof and extends)
@@ -95,11 +131,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 					continue;
 				}
 
-				$simple_class_name_end = $phpcsFile->findNext($find, ($simple_statement + 1), null, true);
+				$simple_class_name_end = $phpcsFile->findNext(self::FIND, ($simple_statement + 1), null, true);
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) ? true : $ok;
+				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) || $ok;
 			}
 		}
 
@@ -109,12 +145,12 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 		{
 			$old_paamayim_nekudotayim = $paamayim_nekudotayim;
 
-			$paamayim_nekudotayim_class_name_start = $phpcsFile->findPrevious($find, $paamayim_nekudotayim - 1, null, true);
+			$paamayim_nekudotayim_class_name_start = $phpcsFile->findPrevious(self::FIND, $paamayim_nekudotayim - 1, null, true);
 			$paamayim_nekudotayim_class_name_end = $paamayim_nekudotayim - 1;
 
 			$paamayim_nekudotayim_class_name = trim($phpcsFile->getTokensAsString($paamayim_nekudotayim_class_name_start + 1, ($paamayim_nekudotayim_class_name_end - $paamayim_nekudotayim_class_name_start)));
 
-			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) ? true : $ok;
+			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) || $ok;
 		}
 
 		// Checks in implements
@@ -129,11 +165,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 				$old_implemented_class = $implemented_class;
 
 				$implements_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($implemented_class - 1));
-				$implements_class_name_end = $phpcsFile->findNext($find, ($implemented_class - 1), null, true);
+				$implements_class_name_end = $phpcsFile->findNext(self::FIND, ($implemented_class - 1), null, true);
 
 				$implements_class_name = trim($phpcsFile->getTokensAsString($implements_class_name_start, ($implements_class_name_end - $implements_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) ? true : $ok;
+				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) || $ok;
 			}
 		}
 
@@ -141,7 +177,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 		while (($docblock = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($old_docblock + 1))) !== false)
 		{
 			$old_docblock = $docblock;
-			$ok = $this->checkDocblock($phpcsFile, $docblock, $tokens, $class_name_full, $class_name_short) ? true : $ok;
+			$ok = $this->checkDocblock($phpcsFile, $docblock, $tokens, $class_name_full, $class_name_short) || $ok;
 		}
 
 		// Checks in type hinting
@@ -154,7 +190,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$params = $phpcsFile->getMethodParameters($function_declaration);
 			foreach ($params as $param)
 			{
-				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) ? true : $ok;
+				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 			}
 		}
 
@@ -165,18 +201,81 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$old_catch = $catch;
 
 			$caught_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $catch + 1);
-			$caught_class_name_end = $phpcsFile->findNext($find, $caught_class_name_start + 1, null, true);
+			$caught_class_name_end = $phpcsFile->findNext(self::FIND, $caught_class_name_start + 1, null, true);
 
 			$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
 
-			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) ? true : $ok;
+			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) || $ok;
 		}
 
-		if (!$ok)
+		return $ok;
+	}
+
+	private function findFunctionUsage(File $phpcsFile, $stackPtr, $tokens, $name_full, $name_short)
+	{
+		$ok = false;
+		$position = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $stackPtr + 1);
+		while ($position !== false)
 		{
-			$error = 'There must not be unused USE statements.';
-			$phpcsFile->addError($error, $stackPtr, 'Unused');
+			$function_name_end = $position;
+			$found_start = 1 + $phpcsFile->findPrevious(
+				[T_NS_SEPARATOR, T_STRING, T_WHITESPACE],
+				$function_name_end - 1,
+				null,
+				true
+			);
+
+			$position = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $position + 1);
+			if ($found_start === null)
+			{
+				continue;
+			}
+
+			$function_name_start = $found_start;
+
+			// Trim the output.
+			while ($tokens[$function_name_start]['code'] === T_WHITESPACE && $function_name_start < $function_name_end)
+			{
+				++$function_name_start;
+			}
+
+			while ($tokens[$function_name_end]['code'] === T_WHITESPACE && $function_name_end > $function_name_start)
+			{
+				--$function_name_end;
+			}
+
+			$function_name_length = $function_name_end - $function_name_start;
+
+			// Filter out control structures, built in type constructors, etc.
+			if ($function_name_length <= 0)
+			{
+				continue;
+			}
+
+			// This doesn't seem to be valid PHP, where is the opening tag?
+			if ($found_start === 0)
+			{
+				continue;
+			}
+
+			$previous_token = $found_start - 1;
+			$filter = [
+				T_FUNCTION, // Function declaration
+				T_OBJECT_OPERATOR, // Method call
+				T_DOUBLE_COLON, // Static method call
+			];
+
+			// Filter out calls to methods and function declarations.
+			if (in_array($tokens[$previous_token]['code'], $filter))
+			{
+				continue;
+			}
+
+			$function_name = $phpcsFile->getTokensAsString($function_name_start, $function_name_length);
+			$ok = $this->check($phpcsFile, $function_name, $name_full, $name_short, $function_name_start) || $ok;
 		}
+
+		return $ok;
 	}
 
 	/**
@@ -247,7 +346,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$classes = explode('|', str_replace('[]', '', $classes));
 			foreach ($classes as $class)
 			{
-				$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tokens[$tag + 2]['line']) ? true : $ok;
+				$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tag + 2) || $ok;
 			}
 		}
 

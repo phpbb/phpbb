@@ -59,7 +59,7 @@ class upload
 	/** @var \bantu\IniGetWrapper\IniGetWrapper ini_get() wrapper */
 	protected $php_ini;
 
-	/** @var \phpbb\language\language Language class */
+	/** @var language Language class */
 	protected $language;
 
 	/** @var request_interface Request class */

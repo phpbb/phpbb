@@ -136,7 +136,7 @@ class sqlite3_extractor extends base_extractor
 	* Writes closing line(s) to database backup
 	*
 	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
+	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	public function write_end()
 	{

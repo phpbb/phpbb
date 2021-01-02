@@ -13,7 +13,7 @@
 
 namespace phpbb\language;
 
-use \phpbb\language\exception\language_file_not_found;
+use phpbb\language\exception\language_file_not_found;
 
 /**
  * Language file loader

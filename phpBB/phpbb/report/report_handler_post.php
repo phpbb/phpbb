@@ -28,7 +28,7 @@ class report_handler_post extends report_handler
 
 	/**
 	 * {@inheritdoc}
-	 * @throws \phpbb\report\exception\report_permission_denied_exception when the user does not have permission to report the post
+	 * @throws report_permission_denied_exception when the user does not have permission to report the post
 	 */
 	public function add_report($id, $reason_id, $report_text, $user_notify)
 	{
@@ -89,7 +89,7 @@ class report_handler_post extends report_handler
 
 	/**
 	 * {@inheritdoc}
-	 * @throws \phpbb\report\exception\report_permission_denied_exception when the user does not have permission to report the post
+	 * @throws report_permission_denied_exception when the user does not have permission to report the post
 	 */
 	public function validate_report_request($id)
 	{

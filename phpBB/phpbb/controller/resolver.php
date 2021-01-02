@@ -64,7 +64,7 @@ class resolver implements ControllerResolverInterface
 	/**
 	* Load a controller callable
 	*
-	* @param \Symfony\Component\HttpFoundation\Request $request Symfony Request object
+	* @param Request $request Symfony Request object
 	* @return bool|Callable Callable or false
 	* @throws \phpbb\controller\exception
 	*/
@@ -119,7 +119,7 @@ class resolver implements ControllerResolverInterface
 	* and should match the parameters of the method you are using as your
 	* controller.
 	*
-	* @param \Symfony\Component\HttpFoundation\Request $request Symfony Request object
+	* @param Request $request Symfony Request object
 	* @param mixed $controller A callable (controller class, method)
 	* @return array An array of arguments to pass to the controller
 	* @throws \phpbb\controller\exception

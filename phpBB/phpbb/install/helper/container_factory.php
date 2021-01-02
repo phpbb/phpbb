@@ -35,7 +35,7 @@ class container_factory
 	protected $php_ext;
 
 	/**
-	 * @var \phpbb\request\request
+	 * @var request
 	 */
 	protected $request;
 
@@ -78,7 +78,7 @@ class container_factory
 	 * @return \Symfony\Component\DependencyInjection\ContainerInterface|Object	phpBB's dependency injection container
 	 * 																			or the service specified in $service_name
 	 *
-	 * @throws \phpbb\install\exception\cannot_build_container_exception							When container cannot be built
+	 * @throws cannot_build_container_exception														When container cannot be built
 	 * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException			If the service is not defined
 	 * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException	When a circular reference is detected
 	 * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException			When the service is not defined
@@ -101,7 +101,7 @@ class container_factory
 	 *
 	 * @return mixed
 	 *
-	 * @throws \phpbb\install\exception\cannot_build_container_exception	When container cannot be built
+	 * @throws cannot_build_container_exception	When container cannot be built
 	 */
 	public function get_parameter($param_name)
 	{
@@ -117,7 +117,7 @@ class container_factory
 	/**
 	 * Build dependency injection container
 	 *
-	 * @throws \phpbb\install\exception\cannot_build_container_exception	When container cannot be built
+	 * @throws cannot_build_container_exception	When container cannot be built
 	 */
 	protected function build_container()
 	{

@@ -230,7 +230,7 @@ class database
 	 *
 	 * @return bool|array	true if table prefix is valid, array of errors otherwise
 	 *
-	 * @throws \phpbb\install\exception\invalid_dbms_exception When $dbms is not a valid
+	 * @throws invalid_dbms_exception When $dbms is not a valid
 	 */
 	public function validate_table_prefix($dbms, $table_prefix)
 	{
