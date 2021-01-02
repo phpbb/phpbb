@@ -280,7 +280,7 @@ class acp_database
 								}
 								catch (\Exception $e)
 								{
-									trigger_error($user->lang['BACKUP_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+									trigger_error($user->lang['BACKUP_DELETE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 								}
 
 								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
