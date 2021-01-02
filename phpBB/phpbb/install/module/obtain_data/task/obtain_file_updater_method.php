@@ -28,12 +28,12 @@ class obtain_file_updater_method extends task_base
 	protected $available_methods;
 
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $installer_config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 

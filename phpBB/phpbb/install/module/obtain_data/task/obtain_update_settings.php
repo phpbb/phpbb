@@ -21,12 +21,12 @@ use phpbb\install\task_base;
 class obtain_update_settings extends task_base
 {
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $installer_config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 

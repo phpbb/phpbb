@@ -129,7 +129,7 @@ class twig extends \phpbb\template\base
 	*
 	* @return array Style tree, most specific first
 	*
-	* @throws \phpbb\template\exception\user_object_not_available	When user service was not set
+	* @throws user_object_not_available	When user service was not set
 	*/
 	public function get_user_style()
 	{

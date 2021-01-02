@@ -13,7 +13,7 @@
 
 namespace phpbb\report\exception;
 
-use \phpbb\exception\runtime_exception;
+use phpbb\exception\runtime_exception;
 
 class factory_invalid_argument_exception extends runtime_exception
 {

@@ -80,8 +80,6 @@ class manager
 	* and puts them into $this->tasks.
 	*
 	* @param array|\Traversable $tasks		Array of instances of \phpbb\cron\task\task
-	*
-	* @return null
 	*/
 	public function load_tasks($tasks)
 	{
@@ -94,8 +92,6 @@ class manager
 	/**
 	* Loads registered tasks from the container, wraps them
 	* and puts them into $this->tasks.
-	*
-	* @return null
 	*/
 	public function load_tasks_from_container()
 	{
@@ -116,7 +112,7 @@ class manager
 	*
 	* If no tasks are ready, null is returned.
 	*
-	* @return \phpbb\cron\task\wrapper|null
+	* @return wrapper|null
 	*/
 	public function find_one_ready_task()
 	{
@@ -161,7 +157,7 @@ class manager
 	* Web runner uses this method to resolve names to tasks.
 	*
 	* @param string				$name Name of the task to look up.
-	* @return \phpbb\cron\task\wrapper	A wrapped task corresponding to the given name, or null.
+	* @return wrapper	A wrapped task corresponding to the given name, or null.
 	*/
 	public function find_task($name)
 	{
@@ -193,7 +189,7 @@ class manager
 	* Wraps a task inside an instance of \phpbb\cron\task\wrapper.
 	*
 	* @param  \phpbb\cron\task\task 			$task The task.
-	* @return \phpbb\cron\task\wrapper	The wrapped task.
+	* @return wrapper	The wrapped task.
 	*/
 	public function wrap_task(\phpbb\cron\task\task $task)
 	{

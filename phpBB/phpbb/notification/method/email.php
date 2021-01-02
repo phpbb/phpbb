@@ -108,7 +108,7 @@ class email extends \phpbb\notification\method\messenger_base
 	{
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->notification_emails_table);
 
-		/** @var \phpbb\notification\type\type_interface $notification */
+		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			$data = self::clean_data($notification->get_insert_array());

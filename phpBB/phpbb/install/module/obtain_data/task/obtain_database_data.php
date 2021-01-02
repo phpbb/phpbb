@@ -108,7 +108,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	 *
 	 * @param bool $use_request_data Whether to use submited data
 	 *
-	 * @throws \phpbb\install\exception\user_interaction_required_exception When the user is required to provide data
+	 * @throws user_interaction_required_exception When the user is required to provide data
 	 */
 	protected function request_form_data($use_request_data = false)
 	{

@@ -399,7 +399,7 @@ class language
 	 *
 	 * @return int	The plural-case we need to use for the number plural-rule combination
 	 *
-	 * @throws \phpbb\language\exception\invalid_plural_rule_exception	When $force_rule has an invalid value
+	 * @throws invalid_plural_rule_exception	When $force_rule has an invalid value
 	 */
 	public function get_plural_form($number, $force_rule = false)
 	{
