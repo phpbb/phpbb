@@ -24,7 +24,7 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\poll_option($this->db);
+		return new \phpbb\textreparser\plugins\poll_option($this->db, POLL_OPTIONS_TABLE);
 	}
 
 	protected function get_rows()
