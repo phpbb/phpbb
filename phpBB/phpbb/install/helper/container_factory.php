@@ -135,12 +135,6 @@ class container_factory
 			throw new cannot_build_container_exception();
 		}
 
-		$phpbb_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
-		$phpbb_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
-
-		// For BC with functions that we need during install
-		global $phpbb_container, $table_prefix;
-
 		$disable_super_globals = $this->request->super_globals_disabled();
 
 		// This is needed because container_builder::get_env_parameters() uses $_SERVER
@@ -148,6 +142,12 @@ class container_factory
 		{
 			$this->request->enable_super_globals();
 		}
+
+		$phpbb_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
+		$phpbb_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
+
+		// For BC with functions that we need during install
+		global $phpbb_container, $table_prefix;
 
 		$other_config_path = $this->phpbb_root_path . 'install/update/new/config';
 		$config_path = (is_dir($other_config_path)) ? $other_config_path : $this->phpbb_root_path . 'config';
