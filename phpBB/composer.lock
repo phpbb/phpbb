@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "569d46cb51aed67c281b0425c2fc0381",
+    "content-hash": "28a6c105dc6e78c65f88c1926eb8b1b7",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -42,16 +42,16 @@
         },
         {
             "name": "chita/topological_sort",
-            "version": "v1.0.2",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CHItA/TopologicalSort.git",
-                "reference": "36918dd6b1f48d9deeccf84289184c9e5e91ef4b"
+                "reference": "34ed1f8459b597ec49bf6dd04a6f837691bb2d5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CHItA/TopologicalSort/zipball/36918dd6b1f48d9deeccf84289184c9e5e91ef4b",
-                "reference": "36918dd6b1f48d9deeccf84289184c9e5e91ef4b",
+                "url": "https://api.github.com/repos/CHItA/TopologicalSort/zipball/34ed1f8459b597ec49bf6dd04a6f837691bb2d5d",
+                "reference": "34ed1f8459b597ec49bf6dd04a6f837691bb2d5d",
                 "shasum": ""
             },
             "require": {
@@ -61,14 +61,6 @@
                 "phpunit/phpunit": "^7.0"
             },
             "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CHItA\\TopologicalSort\\": "src/"
-                },
-                "files": [
-                    "src/TopologicalSort.php"
-                ]
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
@@ -82,9 +74,9 @@
             "description": "Topological sort function",
             "support": {
                 "issues": "https://github.com/CHItA/TopologicalSort/issues",
-                "source": "https://github.com/CHItA/TopologicalSort/tree/v1.0.2"
+                "source": "https://github.com/CHItA/TopologicalSort/tree/v2.0.1"
             },
-            "time": "2020-12-31T15:47:10+00:00"
+            "time": "2021-01-03T12:12:53+00:00"
         },
         {
             "name": "composer/ca-bundle",

@@ -116,6 +116,7 @@ class schema_generator
 
 		try
 		{
+			require_once __DIR__ . '/../../../vendor/chita/topological_sort/src/TopologicalSort.php';
 			topologicalSort($migrations, $edges, true, $apply_for_each, $filter);
 		}
 		catch (LogicException $e)
