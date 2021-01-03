@@ -21,15 +21,15 @@ class recaptcha_v3 extends captcha_abstract
 	/**
 	 * Possible request methods to verify the token.
 	 */
-	const CURL   = 'curl';
-	const POST   = 'post';
-	const SOCKET = 'socket';
+	const CURL			= 'curl';
+	const POST			= 'post';
+	const SOCKET		= 'socket';
 
 	/**
 	 * Possible domain names to load the script and verify the token.
 	 */
-	const GOOGLE    = 'google.com';
-	const RECAPTCHA = 'recaptcha.net';
+	const GOOGLE		= 'google.com';
+	const RECAPTCHA		= 'recaptcha.net';
 
 	/** @var array CAPTCHA types mapped to their action */
 	static protected $actions = [
@@ -139,8 +139,7 @@ class recaptcha_v3 extends captcha_abstract
 
 		$language->add_lang('captcha_recaptcha');
 
-		return ($config->offsetGet('recaptcha_v3_key') ?? false)
-			&& ($config->offsetGet('recaptcha_v3_secret') ?? false);
+		return ($config->offsetGet('recaptcha_v3_key') ?? false) && ($config->offsetGet('recaptcha_v3_secret') ?? false);
 	}
 
 	/**
@@ -162,8 +161,9 @@ class recaptcha_v3 extends captcha_abstract
 		 */
 		global $config, $language, $phpbb_log, $request, $template, $user;
 
-		$module->tpl_name = 'captcha_recaptcha_v3_acp';
-		$module->page_title = 'ACP_VC_SETTINGS';
+		$module->tpl_name		= 'captcha_recaptcha_v3_acp';
+		$module->page_title		= 'ACP_VC_SETTINGS';
+		$recaptcha_v3_method	= $request->variable('recaptcha_v3_method', '', true);
 
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
@@ -175,10 +175,15 @@ class recaptcha_v3 extends captcha_abstract
 				trigger_error($language->lang('FORM_INVALID') . adm_back_link($module->u_action), E_USER_WARNING);
 			}
 
+			if (empty($recaptcha_v3_method))
+			{
+				trigger_error($language->lang('EMPTY_RECAPTCHA_V3_REQUEST_METHOD') . adm_back_link($module->u_action), E_USER_WARNING);
+			}
+
 			$config->set('recaptcha_v3_key', $request->variable('recaptcha_v3_key', '', true));
 			$config->set('recaptcha_v3_secret', $request->variable('recaptcha_v3_secret', '', true));
 			$config->set('recaptcha_v3_domain', $request->variable('recaptcha_v3_domain', '', true));
-			$config->set('recaptcha_v3_method', $request->variable('recaptcha_v3_method', '', true));
+			$config->set('recaptcha_v3_method', $recaptcha_v3_method);
 
 			foreach (self::$actions as $action)
 			{
@@ -208,7 +213,7 @@ class recaptcha_v3 extends captcha_abstract
 			'RECAPTCHA_V3_DOMAIN'		=> $config['recaptcha_v3_domain'] ?? self::GOOGLE,
 			'RECAPTCHA_V3_DOMAINS'		=> [self::GOOGLE, self::RECAPTCHA],
 
-			'RECAPTCHA_V3_METHOD'		=> $config['recaptcha_v3_method'] ?? self::POST,
+			'RECAPTCHA_V3_METHOD'		=> $config['recaptcha_v3_method'] ?? '',
 			'RECAPTCHA_V3_METHODS'		=> [
 				self::POST		=> ini_get('allow_url_fopen') && function_exists('file_get_contents'),
 				self::CURL		=> extension_loaded('curl') && function_exists('curl_init'),
