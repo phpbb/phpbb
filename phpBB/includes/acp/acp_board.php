@@ -665,7 +665,7 @@ class acp_board
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
 				$method = basename($cfg_array['auth_method']);
-				if (array_key_exists('auth.provider.' . $method, $auth_providers))
+				if (array_key_exists('auth.provider.' . $method, (array) $auth_providers))
 				{
 					$provider = $auth_providers['auth.provider.' . $method];
 					if ($error = $provider->init())
