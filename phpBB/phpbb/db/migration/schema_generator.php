@@ -90,11 +90,11 @@ class schema_generator
 	*
 	* @return array An array describing the database schema.
 	*
-	* @throws UnexpectedValueException  If a migration tries to use an undefined schema change.
+	* @throws UnexpectedValueException	If a migration tries to use an undefined schema change.
 	* @throws UnexpectedValueException	If a dependency can't be resolved or there are circular
 	* 									dependencies between migrations.
 	*/
-	public function get_schema()
+	public function get_schema() : array
 	{
 		if (!empty($this->tables))
 		{
@@ -316,7 +316,7 @@ class schema_generator
 	 *
 	 * @return Closure|null The value transformation callback or null if it is not needed.
 	 */
-	private static function get_value_transform(string $change_type, string $schema_type)
+	private static function get_value_transform(string $change_type, string $schema_type) : ?Closure
 	{
 		if ($change_type !== 'add')
 		{
