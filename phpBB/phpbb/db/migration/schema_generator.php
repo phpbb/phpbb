@@ -20,13 +20,15 @@ use phpbb\db\driver\driver_interface;
 use phpbb\db\migrator;
 use phpbb\db\tools\tools_interface;
 use UnexpectedValueException;
-use function CHItA\TopologicalSort\topologicalSort;
+use CHItA\TopologicalSort\TopologicalSort;
 
 /**
 * The schema generator generates the schema based on the existing migrations
 */
 class schema_generator
 {
+	use TopologicalSort;
+
 	/** @var config */
 	protected $config;
 
@@ -116,8 +118,7 @@ class schema_generator
 
 		try
 		{
-			require_once __DIR__ . '/../../../vendor/chita/topological_sort/src/TopologicalSort.php';
-			topologicalSort($migrations, $edges, true, $apply_for_each, $filter);
+			$this->topologicalSort($migrations, $edges, true, $apply_for_each, $filter);
 		}
 		catch (LogicException $e)
 		{
