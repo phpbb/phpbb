@@ -24,7 +24,17 @@ COMMIT_MSG_HOOK_FATAL=$(git config --bool phpbb.hooks.commit-msg.fatal 2> /dev/n
 git config phpbb.hooks.commit-msg.fatal true
 
 EXIT_STATUS=0
-for COMMIT_HASH in $(git rev-list --no-merges "$COMMIT_RANGE")
+
+COMMIT_HASHES=$(git rev-list --no-merges "$COMMIT_RANGE")
+
+# If any message have been returned instead of commit hashes list
+# send a non-zero exit status upstream.
+if ! [[ "$COMMIT_HASHES" =~ ^[0-9a-f]{5,40} ]]
+then
+	EXIT_STATUS=1
+fi
+
+for COMMIT_HASH in $COMMIT_HASHES
 do
 	echo "Inspecting commit message of commit $COMMIT_HASH"
 
