@@ -544,7 +544,7 @@ function parseDocument($container) {
 			}
 			// Copy the list items to the dropdown
 			if (!copied1) {
-				var $clones1 = $linksFirst.clone();
+				var $clones1 = $linksFirst.clone(true);
 				$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 				if ($this.hasClass('post-buttons')) {
