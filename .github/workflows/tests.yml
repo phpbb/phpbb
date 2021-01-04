@@ -34,6 +34,22 @@ jobs:
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
                   coverage: none
 
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+
             - name: Setup environment for phpBB
               env:
                   DB: ${{ matrix.db }}
@@ -152,6 +168,22 @@ jobs:
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
                   coverage: none
 
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+
             - name: Setup environment for phpBB
               env:
                   DB: ${{steps.database-type.outputs.db}}
@@ -256,6 +288,22 @@ jobs:
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
                   coverage: none
 
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+
             - name: Setup environment for phpBB
               env:
                   DB: ${{steps.database-type.outputs.db}}
@@ -343,6 +391,22 @@ jobs:
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
                   coverage: none
 
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+
             - name: Setup environment for phpBB
               env:
                   DB: ${{steps.database-type.outputs.db}}
@@ -390,6 +454,21 @@ jobs:
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, intl, gd, exif, iconv, pgsql, pdo_pgsql
                   ini-values: upload_tmp_dir=${{ runner.temp }}, sys_temp_dir=${{ runner.temp }}
                   coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  $major_version="${{ matrix.php }}".substring(0,1)
+                  echo "::set-output name=version::$major_version"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
