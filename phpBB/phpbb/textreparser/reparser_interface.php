@@ -37,7 +37,26 @@ interface reparser_interface
 	public function set_name($name);
 
 	/**
+	* Reparse all records that match given criteria
+	*
+	* Available criteria passed as $config:
+	*  - filter-callback:    a callback that accepts a record as argument and returns a boolean
+	*  - filter-text-like:   a SQL LIKE predicate applied on the text, if applicable, e.g. '<r%'
+	*  - filter-text-regexp: a PCRE regexp that matches against the text
+	*  - range-min:          lowest record ID
+	*  - range-max:          highest record ID
+	*
+	* If a record does not match all criteria, it will generally be skipped. However, not all
+	* reparsers may support all kinds of filters and some non-matching records may be reparsed.
+	*
+	* @param array $config
+	*/
+	public function reparse(array $config = []): void;
+
+	/**
 	* Reparse all records in given range
+	*
+	* @deprecated 4.0.0
 	*
 	* @param integer $min_id Lower bound
 	* @param integer $max_id Upper bound

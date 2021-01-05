@@ -29,13 +29,18 @@ class poll_title extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records_by_range_query($min_id, $max_id)
+	protected function get_records_sql(array $config): string
 	{
 		$sql = 'SELECT t.topic_id AS id, t.poll_title AS text, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.bbcode_uid
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-			WHERE t.topic_id BETWEEN ' . $min_id . ' AND ' . $max_id .'
-				AND t.poll_start > 0
+			WHERE t.poll_start > 0
 				AND p.post_id = t.topic_first_post_id';
+
+		$where = $this->get_where_clauses($config, 't.topic_id', 't.poll_title');
+		if (!empty($where))
+		{
+			$sql .= "\nAND " . implode("\nAND ", $where);
+		}
 
 		return $sql;
 	}

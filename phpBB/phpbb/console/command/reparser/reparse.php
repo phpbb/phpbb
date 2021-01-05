@@ -94,6 +94,24 @@ class reparse extends \phpbb\console\command\command
 				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_DRY_RUN')
 			)
 			->addOption(
+				'filter-callback',
+				null,
+				InputOption::VALUE_OPTIONAL,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_FILTER_CALLBACK')
+			)
+			->addOption(
+				'filter-text-like',
+				null,
+				InputOption::VALUE_OPTIONAL,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_FILTER_TEXT_LIKE')
+			)
+			->addOption(
+				'filter-text-regexp',
+				null,
+				InputOption::VALUE_OPTIONAL,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_FILTER_TEXT_REGEXP')
+			)
+			->addOption(
 				'resume',
 				null,
 				InputOption::VALUE_NONE,
@@ -162,6 +180,29 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
+	* Return the record filter set for this command
+	*
+	* @see \phpbb\textreparser\reparser_interface::reparse_range()
+	*
+	* @return array
+	*/
+	protected function get_filter(): array
+	{
+		$filter         = [];
+		$filter_options = ['filter-callback', 'filter-text-like', 'filter-text-regexp'];
+		foreach ($filter_options as $filter_option)
+		{
+			$value = $this->get_option($filter_option);
+			if ($value !== null)
+			{
+				$filter[$filter_option] = $value;
+			}
+		}
+
+		return $filter;
+	}
+
+	/**
 	* Get an option value, adjusted for given reparser
 	*
 	* Will use the last saved value if --resume is set and the option was not specified
@@ -221,6 +262,9 @@ class reparse extends \phpbb\console\command\command
 		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', $reparser->get_name()));
 		$progress->start();
 
+		// Initialize the record filter
+		$filter = $this->get_filter();
+
 		// Start from $max and decrement $current by $size until we reach $min
 		$current = $max;
 		while ($current >= $min)
@@ -229,12 +273,22 @@ class reparse extends \phpbb\console\command\command
 			$end   = max($min, $current);
 
 			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', $reparser->get_name(), $start, $end));
-			$reparser->reparse_range($start, $end);
+
+			$range = ['range-min' => $start, 'range-max' => $end];
+			$reparser->reparse($filter + $range);
 
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);
 
-			$this->reparser_manager->update_resume_data($name, $min, $current, $size, !$this->input->getOption('dry-run'));
+			$this->reparser_manager->update_resume_data(
+				$name,
+				$filter + [
+					'range-min'  => $min,
+					'range-max'  => $current,
+					'range-size' => $size
+				],
+				!$this->input->getOption('dry-run')
+			);
 		}
 		$progress->finish();
 

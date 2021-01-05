@@ -23,5 +23,29 @@
 			<value><![CDATA[<r><IMG src="img.png"><s>[IMG]</s>img.png<e>[/IMG]</e></IMG></r>]]></value>
 			<value></value>
 		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>[b]foo123[/b]</value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>[b]bar456[/b]</value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>[b]baz789[/b]</value>
+			<value></value>
+		</row>
 	</table>
 </dataset>
