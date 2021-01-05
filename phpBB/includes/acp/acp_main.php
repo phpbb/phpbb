@@ -690,16 +690,22 @@ class acp_main
 		$encoding_translation	= $this->php_ini->getString('mbstring.encoding_translation');
 		$http_input				= $this->php_ini->getString('mbstring.http_input');
 		$http_output			= $this->php_ini->getString('mbstring.http_output');
+		$default_charset		= $this->php_ini->getString('default_charset');
 
 		if (extension_loaded('mbstring'))
 		{
-			$template->assign_vars(array(
+			/**
+			 * “mbstring.http_input” and “mbstring.http_output” are deprecated as of PHP 5.6.0
+			 * @link https://www.php.net/manual/mbstring.configuration.php#ini.mbstring.http-input
+			 */
+			$template->assign_vars([
 				'S_MBSTRING_LOADED'						=> true,
 				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> $func_overload && ($func_overload & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> $http_input && !in_array($http_input, array('pass', '')),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> $http_output && !in_array($http_output, array('pass', '')),
-			));
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !empty($http_input),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !empty($http_output),
+				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== 'UTF-8',
+			]);
 		}
 
 		// Fill dbms version if not yet filled
