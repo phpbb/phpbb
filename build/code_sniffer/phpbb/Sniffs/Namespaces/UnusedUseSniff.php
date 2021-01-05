@@ -208,6 +208,30 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) || $ok;
 		}
 
+		$old_use = $stackPtr;
+		while (($use = $phpcsFile->findNext(T_USE, ($old_use + 1))) !== false)
+		{
+			$old_use = $use;
+
+			// Needs to be inside a class and must not be inside a function scope.
+			if (!$phpcsFile->hasCondition($use, [T_CLASS, T_TRAIT]) || $phpcsFile->hasCondition($use, T_FUNCTION))
+			{
+				continue;
+			}
+
+			$next = $phpcsFile->findNext(T_WHITESPACE, ($use + 1), null, true, null, true);
+			if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS)
+			{
+				continue;
+			}
+
+			$class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $use + 1, null, false, null, true);
+			$class_name_end = $phpcsFile->findNext(self::FIND, $class_name_start + 1, null, true, null, true);
+			$found_name = trim($phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start)));
+
+			$ok = $this->check($phpcsFile, $found_name, $class_name_full, $class_name_short, $use) || $ok;
+		}
+
 		return $ok;
 	}
 
@@ -263,6 +287,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 				T_FUNCTION, // Function declaration
 				T_OBJECT_OPERATOR, // Method call
 				T_DOUBLE_COLON, // Static method call
+				T_NEW, // Constructors
 			];
 
 			// Filter out calls to methods and function declarations.
