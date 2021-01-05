@@ -17,7 +17,7 @@
 	<entry>
 		{% if not row.author is empty %}<author><name><![CDATA[{{ row.author }}]]></name></author>{% endif %}
 
-		<updated>{% if not row.updated is empty %}{{ row.updated }} {% else %}{{ row.published }}{% endif %}</updated>
+		<updated>{% if not row.updated is empty %}{{ row.updated }}{% else %}{{ row.published }}{% endif %}</updated>
 
 		{% if not row.published is empty %}<published>{{ row.published }}</published>{% endif %}
 
