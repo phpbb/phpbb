@@ -48,10 +48,8 @@ class markpublic_pass implements CompilerPassInterface
 
 		foreach ($container->getAliases() as $alias)
 		{
-			$aliased_service_id = $alias->__toString();
-
 			// Only mark alias as public if original service is public too
-			if ($service_definitions[$aliased_service_id]->isPublic() && $alias->isPrivate())
+			if ($service_definitions[(string) $alias]->isPublic() && $alias->isPrivate())
 			{
 				$alias->setPublic(true);
 			}
