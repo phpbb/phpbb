@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b38b54a0e735586afaf2788716cc2535",
+    "content-hash": "5039b83cb8ee1def8a7f60edcf6b6890",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -39,6 +39,49 @@
                 "source": "https://github.com/bantuXorg/php-ini-get-wrapper/tree/v1.0.1"
             },
             "time": "2014-09-15T13:12:35+00:00"
+        },
+        {
+            "name": "chita/topological_sort",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CHItA/TopologicalSort.git",
+                "reference": "9e0401c712d0c7cf012f264cc105669844d2479e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CHItA/TopologicalSort/zipball/9e0401c712d0c7cf012f264cc105669844d2479e",
+                "reference": "9e0401c712d0c7cf012f264cc105669844d2479e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CHItA\\TopologicalSort\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Máté Bartus",
+                    "email": "mate.bartus@gmail.com"
+                }
+            ],
+            "description": "Topological sort function",
+            "support": {
+                "issues": "https://github.com/CHItA/TopologicalSort/issues",
+                "source": "https://github.com/CHItA/TopologicalSort/tree/v3.0.1"
+            },
+            "time": "2021-01-04T21:31:59+00:00"
         },
         {
             "name": "composer/ca-bundle",
