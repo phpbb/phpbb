@@ -77,9 +77,10 @@ jobs:
                   .github/check-executable-files.sh ./
 
             - name: Check commit message
+              env:
+                  BRANCH: ${{ github.event.pull_request.base.sha }}
+              if: github.event_name == 'pull_request'
               run: |
-                  # Get previous merge commit to get commit range from
-                  export BRANCH=$(git rev-list --merges -n 1 HEAD^1)
                   git-tools/commit-msg-hook-range.sh $BRANCH..$GITHUB_SHA
 
     # Tests for MySQL and MariaDB
