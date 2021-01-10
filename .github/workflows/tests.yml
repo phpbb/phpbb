@@ -79,10 +79,9 @@ jobs:
             - name: Check commit message
               env:
                   BRANCH: ${{ github.event.pull_request.base.sha }}
-                  PR_SHA: ${{ github.event.pull_request.head.sha }}
-              if: github.event.pull_request.head.sha != '' && github.event.pull_request.base.sha != ''
+              if: github.event_name == 'pull_request'
               run: |
-                  git-tools/commit-msg-hook-range.sh $BRANCH..$PR_SHA
+                  git-tools/commit-msg-hook-range.sh $BRANCH..$GITHUB_SHA
 
     # Tests for MySQL and MariaDB
     mysql-tests:
