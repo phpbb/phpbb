@@ -45,7 +45,6 @@
 		"symfony/finder": "~3.4",
 		"symfony/http-foundation": "~3.4",
 		"symfony/http-kernel": "~3.4",
-		"symfony/polyfill-intl-idn": "~1.17.0",
 		"symfony/process": "^3.4",
 		"symfony/proxy-manager-bridge": "~3.4",
 		"symfony/routing": "~3.4",
