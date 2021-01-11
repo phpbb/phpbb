@@ -2743,3 +2743,24 @@ fieldset.permissions .padding {
 .acp-icon {
 	font-size: 1.5em;
 }
+
+.acp-icon-move-up,
+.acp-icon-move-down {
+	color: #4ba5de;
+}
+
+.acp-icon-settings {
+	color: #62c046;
+}
+
+.acp-icon-delete {
+	color: #d74558;
+}
+
+.acp-icon-resync {
+	color: #f69934;
+}
+
+.acp-icon-disabled {
+	color: #d0d0d0;
+}
