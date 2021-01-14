@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v332">Changes since 3.3.2</a></li>
 		<li><a href="#v331">Changes since 3.3.1</a></li>
 		<li><a href="#v331rc1">Changes since 3.3.1-RC1</a></li>
 		<li><a href="#v330">Changes since 3.3.0</a></li>
@@ -153,6 +154,54 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v332"></a><h3>Changes since 3.3.2</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16178">PHPBB3-16178</a>] - Container_builder and Container don't use the same cache_dir when cache dir is overridden via env parameter</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16535">PHPBB3-16535</a>] - Migration from phpBB 2.0.x broken with MySQL 8.x</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16582">PHPBB3-16582</a>] - SQL error when saving profile with empty custom field of type &quot;Numbers&quot;</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16619">PHPBB3-16619</a>] - Spelling on non-existant</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16629">PHPBB3-16629</a>] - ACP get_database_size() fails on MySql 8.0.xx</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16630">PHPBB3-16630</a>] - Preserve the text manipulation API</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16640">PHPBB3-16640</a>] - MCP link not showing in menubar</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16641">PHPBB3-16641</a>] - Failure in config.php validation in ACP (Windows) - PHP 8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16646">PHPBB3-16646</a>] - PHP fatal error while installing</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16648">PHPBB3-16648</a>] - &quot;Access to undeclared static property&quot; error on setExpectedTriggerError() tests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16653">PHPBB3-16653</a>] - Recaptcha v3 - Request method is set even though that default isn't actually available</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16656">PHPBB3-16656</a>] - Outdated check in code for mbstring http_input &amp; output</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16665">PHPBB3-16665</a>] - Fix Emoji for strings in board settings + new event</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16666">PHPBB3-16666</a>] - Windows tests in github actions can't write file in postgres</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16667">PHPBB3-16667</a>] - Remove unused create_schema install task</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16670">PHPBB3-16670</a>] - OAuth provider unique secret and key check fails on PHP 8 </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16673">PHPBB3-16673</a>] - Invalid Atom feed</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16677">PHPBB3-16677</a>] - Event handlers inside dropdown containers not working in mobile view</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16679">PHPBB3-16679</a>] - Login form should respect setting for &quot;Allow password reset&quot;</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15722">PHPBB3-15722</a>] - Allow forum topicrow pagination to use topicrow values</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16538">PHPBB3-16538</a>] - Add MySQL 8 tests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16549">PHPBB3-16549</a>] - Use PHPUnit 9.3+ for PHP 8.0+ tests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16606">PHPBB3-16606</a>] - UCP_PM_VIEWMESSAGE.HTML Event Request</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16607">PHPBB3-16607</a>] - Oracle DBAL driver uses obsoleted PHP OCI8 aliases and functions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16617">PHPBB3-16617</a>] - Add events to modify content status variables</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16632">PHPBB3-16632</a>] - Update composer to version 2</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16636">PHPBB3-16636</a>] - Add PHP 8.0 builds to TravisCI</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16659">PHPBB3-16659</a>] - Use Github Actions instead of TravisCI and AppVeyor</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16661">PHPBB3-16661</a>] - Clean up github actions tasks after merge</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16675">PHPBB3-16675</a>] - Restore checking commit messages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16676">PHPBB3-16676</a>] - Make Github actions cache composer dependendencies</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16678">PHPBB3-16678</a>] - Add support for Traits in code sniffer</li>
+			</ul>
+			<h4>New Feature</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15951">PHPBB3-15951</a>] - Add core events to core.mcp_delete_topic_modify_*</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16633">PHPBB3-16633</a>] - Update pull request template after end of life of 3.2</li>
+			</ul>
+
 			<a name="v331"></a><h3>Changes since 3.3.1</h3>
 			<h4>Bug</h4>
 			<ul>
