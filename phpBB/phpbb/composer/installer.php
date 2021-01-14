@@ -22,7 +22,7 @@ use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
 use Composer\Repository\ComposerRepository;
 use Composer\Semver\Constraint\ConstraintInterface;
-use Composer\Util\RemoteFilesystem;
+use Composer\Util\HttpDownloader;
 use phpbb\composer\io\null_io;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
@@ -301,21 +301,21 @@ class installer
 			{
 				try
 				{
-					if ($repository instanceof ComposerRepository && $repository->hasProviders())
+					if ($repository instanceof ComposerRepository)
 					{
 						// Special case for packagist which exposes an api to retrieve all packages of a given type.
 						// For the others composer repositories with providers we can't do anything. It would be too slow.
 
-						$r        = new \ReflectionObject($repository);
-						$repo_url = $r->getProperty('url');
+						$repositoryReflection = new \ReflectionObject($repository);
+						$repo_url = $repositoryReflection->getProperty('url');
 						$repo_url->setAccessible(true);
 
-						if ($repo_url->getValue($repository) === 'http://packagist.org')
+						if ($repo_url->getValue($repository) === 'https://repo.packagist.org')
 						{
-							$url      = 'https://packagist.org/packages/list.json?type=' . $type;
-							$rfs      = new RemoteFilesystem($io);
-							$hostname = parse_url($url, PHP_URL_HOST) ?: $url;
-							$json     = $rfs->getContents($hostname, $url, false);
+							$url = 'https://packagist.org/packages/list.json?type=' . $type;
+							$composer_config = new \Composer\Config([]);
+							$downloader = new HttpDownloader($io, $composer_config);
+							$json = $downloader->get($url)->getBody();
 
 							/** @var \Composer\Package\PackageInterface $package */
 							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
