@@ -975,7 +975,7 @@ class acp_styles
 
 		$style['_shown'] = true;
 
-		$style_cfg = $this->read_style_cfg($style['style_path']);
+		$style_cfg = $this->read_style_composer_file($style['style_path']);
 
 		// Generate template variables
 		$actions = array();
@@ -983,8 +983,8 @@ class acp_styles
 			// Style data
 			'STYLE_ID'				=> $style['style_id'],
 			'STYLE_NAME'			=> htmlspecialchars($style['style_name'], ENT_COMPAT),
-			'STYLE_VERSION'			=> $style_cfg['style_version'] ?? '-',
-			'STYLE_PHPBB_VERSION'	=> $this->read_style_composer_file($style['style_path'])['extra']['phpbb-version'],
+			'STYLE_VERSION'			=> $style_cfg['version'] ?? '-',
+			'STYLE_PHPBB_VERSION'	=> $style_cfg['extra']['phpbb-version'] ?? '',
 			'STYLE_PATH'			=> htmlspecialchars($style['style_path'], ENT_COMPAT),
 			'STYLE_COPYRIGHT'		=> strip_tags($style['style_copyright']),
 			'STYLE_ACTIVE'			=> $style['style_active'],
@@ -1196,7 +1196,7 @@ class acp_styles
 	protected function read_style_composer_file($dir)
 	{
 		// This should never happen, we give them a red warning because of its relevance.
-		if (!file_exists($this->styles_path . $dir . '/style.json'))
+		if (!file_exists($this->styles_path . $dir . '/composer.json'))
 		{
 			trigger_error($this->language->lang('NO_STYLE_CFG', $dir), E_USER_WARNING);
 		}
