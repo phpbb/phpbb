@@ -965,7 +965,7 @@ class acp_styles
 	* @param array $style style row
 	* @param int $level style inheritance level
 	*/
-	protected function list_style(&$style, $level)
+	protected function list_style(array &$style, int $level) : void
 	{
 		// Mark row as shown
 		if (!empty($style['_shown']))
@@ -978,8 +978,8 @@ class acp_styles
 		$style_cfg = $this->read_style_composer_file($style['style_path']);
 
 		// Generate template variables
-		$actions = array();
-		$row = array(
+		$actions = [];
+		$row = [
 			// Style data
 			'STYLE_ID'				=> $style['style_id'],
 			'STYLE_NAME'			=> htmlspecialchars($style['style_name'], ENT_COMPAT),
@@ -991,19 +991,19 @@ class acp_styles
 
 			// Additional data
 			'DEFAULT'			=> ($style['style_id'] && $style['style_id'] == $this->default_style),
-			'USERS'				=> (isset($style['_users'])) ? $style['_users'] : '',
+			'USERS'				=> $style['_users'] ?? '',
 			'LEVEL'				=> $level,
 			'PADDING'			=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
 			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path'], ENT_COMPAT) . '/',
 
 			// Comment to show below style
-			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',
+			'COMMENT'		=> $style['_note'] ?? '',
 
 			// The following variables should be used by hooks to add custom HTML code
 			'EXTRA'			=> '',
 			'EXTRA_OPTIONS'	=> ''
-		);
+		];
 
 		// Status specific data
 		if ($style['style_id'])
@@ -1011,59 +1011,51 @@ class acp_styles
 			// Style is installed
 
 			// Details
-			$actions[] = array(
+			$actions[] = [
 				'U_ACTION'	=> $this->u_action . '&amp;action=details&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->language->lang('DETAILS')
-			);
+			];
 
-			// Activate/Deactive
+			// Activate/Deactivate
 			$action_name = ($style['style_active'] ? 'de' : '') . 'activate';
 
-			$actions[] = array(
+			$actions[] = [
 				'U_ACTION'	=> $this->u_action . '&amp;action=' . $action_name . '&amp;hash=' . generate_link_hash($action_name) . '&amp;id=' . $style['style_id'],
 				'L_ACTION'	=> $this->language->lang('STYLE_' . ($style['style_active'] ? 'DE' : '') . 'ACTIVATE')
-			);
-
-/*			// Export
-			$actions[] = array(
-				'U_ACTION'	=> $this->u_action . '&amp;action=export&amp;hash=' . generate_link_hash('export') . '&amp;id=' . $style['style_id'],
-				'L_ACTION'	=> $this->user->lang['EXPORT']
-			); */
+			];
 
 			if ($style['style_name'] !== 'prosilver')
 			{
 				// Uninstall
-				$actions[] = array(
+				$actions[] = [
 					'U_ACTION'	=> $this->u_action . '&amp;action=uninstall&amp;hash=' . generate_link_hash('uninstall') . '&amp;id=' . $style['style_id'],
 					'L_ACTION'	=> $this->language->lang('STYLE_UNINSTALL')
-				);
+				];
 			}
 
 			// Preview
-			$actions[] = array(
+			$actions[] = [
 				'U_ACTION'	=> append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'style=' . $style['style_id']),
 				'L_ACTION'	=> $this->language->lang('PREVIEW')
-			);
+			];
 		}
 		else
 		{
 			// Style is not installed
 			if (empty($style['_available']))
 			{
-				$actions[] = array(
+				$actions[] = [
 					'HTML'		=> $this->language->lang('CANNOT_BE_INSTALLED')
-				);
+				];
 			}
 			else
 			{
-				$actions[] = array(
+				$actions[] = [
 					'U_ACTION'	=> $this->u_action . '&amp;action=install&amp;hash=' . generate_link_hash('install') . '&amp;dir=' . urlencode($style['style_path']),
 					'L_ACTION'	=> $this->language->lang('INSTALL_STYLE')
-				);
+				];
 			}
 		}
-
-		// todo: add hook
 
 		// Assign template variables
 		$this->template->assign_block_vars('styles_list', $row);
@@ -1076,13 +1068,13 @@ class acp_styles
 		$counter = ($style['style_id']) ? ($style['style_active'] ? 'active' : 'inactive') : (empty($style['_available']) ? 'cannotinstall' : 'caninstall');
 		if (!isset($this->style_counters))
 		{
-			$this->style_counters = array(
+			$this->style_counters = [
 				'total'		=> 0,
 				'active'	=> 0,
 				'inactive'	=> 0,
 				'caninstall'	=> 0,
 				'cannotinstall'	=> 0
-				);
+			];
 		}
 		$this->style_counters[$counter]++;
 		$this->style_counters['total']++;
