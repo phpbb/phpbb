@@ -32,7 +32,6 @@ use phpbb\user;
 class acp_language
 {
 	var $u_action;
-	var $main_files;
 
 	var $language_file = '';
 	var $language_directory = '';
