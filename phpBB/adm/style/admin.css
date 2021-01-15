@@ -2738,11 +2738,11 @@ fieldset.permissions .padding {
 	height: 1em;
 	width: 1em;
 }
-/* stylelint-enable declaration-property-unit-whitelist */
 
 .acp-icon {
 	font-size: 1.5em;
 }
+/* stylelint-enable declaration-property-unit-whitelist */
 
 .acp-icon-move-up,
 .acp-icon-move-down {
