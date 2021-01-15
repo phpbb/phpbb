@@ -69,7 +69,7 @@ class language_file_helper
 	 * @param string $path
 	 * @return array
 	 */
-	public function get_language_data_from_composer_file(string $path)
+	public function get_language_data_from_composer_file(string $path): array
 	{
 		$json_data = file_get_contents($path);
 		return $this->get_language_data_from_json(sanitizer::decode($json_data));
@@ -81,7 +81,7 @@ class language_file_helper
 	 * @param array $data
 	 * @return array
 	 */
-	protected function get_language_data_from_json(array $data)
+	protected function get_language_data_from_json(array $data): array
 	{
 		if (!isset($data['extra']['language-iso']) || !isset($data['extra']['english-name']) || !isset($data['extra']['local-name']))
 		{
