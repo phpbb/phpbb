@@ -2847,7 +2847,7 @@ function get_database_size()
 			$database_size	= 0;
 
 			$sql = 'SHOW TABLE STATUS
-				FROM ' . $db_name;
+				FROM ' . $db->sql_quote($db_name);
 			$result = $db->sql_query($sql, 7200);
 
 			while ($row = $db->sql_fetchrow($result))
