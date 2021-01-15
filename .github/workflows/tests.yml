@@ -5,10 +5,14 @@ on:
         branches:
             - 3.3.x
             - master
+            - 'prep-release-*'
+        tags:
+            - 'release-*'
     pull_request:
         branches:
             - 3.3.x
             - master
+            - 'prep-release-*'
 
 jobs:
     # Basic checks, e.g. parse errors, commit messages, etc.
