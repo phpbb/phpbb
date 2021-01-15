@@ -2900,37 +2900,18 @@ function get_database_size()
 		break;
 
 		case 'postgres':
-			$sql = "SELECT proname
-				FROM pg_proc
-				WHERE proname = 'pg_database_size'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$database = $db->get_db_name();
 
-			if ($row['proname'] == 'pg_database_size')
+			if (strpos($database, '.') !== false)
 			{
-				$database = $db->get_db_name();
-				if (strpos($database, '.') !== false)
-				{
-					list($database, ) = explode('.', $database);
-				}
-
-				$sql = "SELECT oid
-					FROM pg_database
-					WHERE datname = '$database'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$oid = $row['oid'];
-
-				$sql = 'SELECT pg_database_size(' . $oid . ') as size';
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$database_size = $row['size'];
+				$database = explode('.', $database)[0];
 			}
+
+			$sql = "SELECT pg_database_size('" . $database . "') AS dbsize";
+			$result = $db->sql_query($sql, 7200);
+			$row = $db->sql_fetchrow($result);
+			$database_size = !empty($row['dbsize']) ? $row['dbsize'] : false;
+			$db->sql_freeresult($result);
 		break;
 
 		case 'oracle':
