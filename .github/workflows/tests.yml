@@ -80,6 +80,10 @@ jobs:
               run: |
                   .github/check-executable-files.sh ./
 
+            - name: Check stylesheets
+              run: |
+                  .github/check-stylesheet.sh
+
             - name: Check commit message
               env:
                   BRANCH: ${{ github.event.pull_request.base.sha }}
