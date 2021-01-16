@@ -17,6 +17,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Driver\Statement as DriverStmt;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
 use phpbb\db\doctrine\connection_factory;
 use phpbb\install\helper\config;
@@ -68,6 +69,27 @@ abstract class database_task extends task_base
 		{
 			$this->report_error($e->getMessage());
 		}
+	}
+
+	/**
+	 * Run a query and return the result object.
+	 *
+	 * @param string $sql SQL query.
+	 *
+	 * @return Result|null Result of the query.
+	 */
+	protected function query(string $sql) : ?Result
+	{
+		try
+		{
+			return $this->conn->executeQuery($sql);
+		}
+		catch (Exception $e)
+		{
+			$this->report_error($e->getMessage());
+		}
+
+		return null;
 	}
 
 	/**
@@ -130,6 +152,25 @@ abstract class database_task extends task_base
 		{
 			$this->report_error($e->getMessage());
 		}
+	}
+
+	/**
+	 * Returns the last insert ID.
+	 *
+	 * @return string|null The last insert ID.
+	 */
+	protected function get_last_insert_id() : ?string
+	{
+		try
+		{
+			return $this->conn->lastInsertId();
+		}
+		catch (Exception $e)
+		{
+			$this->report_error($e->getMessage());
+		}
+
+		return null;
 	}
 
 	/**

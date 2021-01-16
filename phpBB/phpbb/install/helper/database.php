@@ -47,7 +47,7 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql_odbc'=>	array(
+		'mssql_odbc'	=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
@@ -57,7 +57,7 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssqlnative'		=> array(
+		'mssqlnative'	=> array(
 			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',

@@ -12,8 +12,8 @@ services:
         arguments:
             - '@installer.helper.container_factory'
             - '@installer.helper.config'
+            - '@installer.helper.database'
             - '@installer.helper.iohandler'
-            - '%core.root_path%'
         tags:
             - { name: install_finish, order: 2 }
 

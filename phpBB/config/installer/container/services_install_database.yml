@@ -37,7 +37,6 @@ services:
             - '@installer.helper.database'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
-            - '@installer.helper.container_factory'
             - '@language'
             - '%core.root_path%'
         tags:
@@ -46,6 +45,7 @@ services:
     installer.install_database.add_config_settings:
         class: phpbb\install\module\install_database\task\add_config_settings
         arguments:
+            - '@installer.helper.database'
             - '@filesystem'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
@@ -54,6 +54,17 @@ services:
             - '%core.root_path%'
         tags:
             - { name: install_database_install, order: 5 }
+
+    installer.install_database.update_user_and_post_data:
+        class: phpbb\install\module\install_database\task\update_user_and_post_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.container_factory'
+            - '@installer.helper.database'
+            - '@installer.helper.iohandler'
+            - '@language'
+        tags:
+            - { name: install_database_install, order: 6 }
 
     installer.module.install_database_collection:
         class: phpbb\di\ordered_service_collection

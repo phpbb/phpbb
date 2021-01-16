@@ -13,35 +13,38 @@
 
 namespace phpbb\install\module\install_database\task;
 
-use phpbb\install\exception\resource_limit_reached_exception;
+use Doctrine\DBAL\Connection;
+use phpbb\install\database_task;
+use phpbb\install\helper\config;
+use phpbb\install\helper\database;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use phpbb\install\sequential_task;
+use phpbb\language\language;
 
 /**
  * Create database schema
  */
-class add_default_data extends \phpbb\install\task_base
+class add_default_data extends database_task
 {
+	use sequential_task;
+
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var Connection
 	 */
 	protected $db;
 
 	/**
-	 * @var \phpbb\install\helper\database
+	 * @var database
 	 */
 	protected $database_helper;
 
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
-	 */
-	protected $iohandler;
-
-	/**
-	 * @var \phpbb\language\language
+	 * @var language
 	 */
 	protected $language;
 
@@ -53,28 +56,25 @@ class add_default_data extends \phpbb\install\task_base
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\database						$db_helper	Installer's database helper
-	 * @param \phpbb\install\helper\config							$config		Installer config
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler	Installer's input-output handler
-	 * @param \phpbb\install\helper\container_factory				$container	Installer's DI container
-	 * @param \phpbb\language\language								$language	Language service
-	 * @param string												$root_path	Root path of phpBB
+	 * @param database				$db_helper	Installer's database helper
+	 * @param config				$config		Installer config
+	 * @param iohandler_interface	$iohandler	Installer's input-output handler
+	 * @param language				$language	Language service
+	 * @param string				$root_path	Root path of phpBB
 	 */
-	public function __construct(\phpbb\install\helper\database $db_helper,
-								\phpbb\install\helper\config $config,
-								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-								\phpbb\install\helper\container_factory $container,
-								\phpbb\language\language $language,
-								$root_path)
+	public function __construct(database $db_helper,
+								config $config,
+								iohandler_interface $iohandler,
+								language $language,
+								string $root_path)
 	{
-		$this->db				= $container->get('dbal.conn.driver');
+		$this->db 				= self::get_doctrine_connection($db_helper, $config);
 		$this->database_helper	= $db_helper;
 		$this->config			= $config;
-		$this->iohandler		= $iohandler;
 		$this->language			= $language;
 		$this->phpbb_root_path	= $root_path;
 
-		parent::__construct(true);
+		parent::__construct($this->db, $iohandler, true);
 	}
 
 	/**
@@ -82,8 +82,6 @@ class add_default_data extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
-		$this->db->sql_return_on_error(true);
-
 		$table_prefix = $this->config->get('table_prefix');
 		$dbms = $this->config->get('dbms');
 		$dbms_info = $this->database_helper->get_available_dbms($dbms);
@@ -98,53 +96,55 @@ class add_default_data extends \phpbb\install\task_base
 		$sql_query = $this->database_helper->remove_comments($sql_query);
 		$sql_query = $this->database_helper->split_sql_file($sql_query, $dbms_info[$dbms]['DELIM']);
 
-		$i = $this->config->get('add_default_data_index', 0);
-		$total = count($sql_query);
-		$sql_query = array_slice($sql_query, $i);
+		$this->execute($this->config, $sql_query);
+	}
 
-		foreach ($sql_query as $sql)
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function execute_step($key, $value) : void
+	{
+		$sql = trim($value);
+		switch ($sql)
 		{
-			if (!$this->db->sql_query($sql))
-			{
-				$error = $this->db->sql_error($this->db->get_sql_error_sql());
-				$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
-			}
+			case 'BEGIN':
+				$this->db->beginTransaction();
+			break;
 
-			$i++;
+			case 'COMMIT':
+				$this->db->commit();
+			break;
 
-			// Stop execution if resource limit is reached
-			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
-			{
-				break;
-			}
-		}
-
-		$this->config->set('add_default_data_index', $i);
-
-		if ($i < $total)
-		{
-			throw new resource_limit_reached_exception();
+			default:
+				$this->exec_sql($sql);
+			break;
 		}
 	}
 
 	/**
 	 * Process DB specific SQL
 	 *
+	 * @param string $query
+	 *
 	 * @return string
 	 */
-	protected function replace_dbms_specific_sql($query)
+	protected function replace_dbms_specific_sql(string $query) : string
 	{
-		if ($this->db instanceof \phpbb\db\driver\mssql_base)
+		$dbms = $this->config->get('dbms');
+		switch ($dbms)
 		{
-			$query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $query);
-		}
-		else if ($this->db instanceof \phpbb\db\driver\postgres)
-		{
-			$query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $query);
-		}
-		else if ($this->db instanceof \phpbb\db\driver\mysql_base)
-		{
-			$query = str_replace('\\', '\\\\', $query);
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $query);
+			break;
+
+			case 'postgres':
+				$query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $query);
+			break;
+
+			case 'mysqli':
+				$query = str_replace('\\', '\\\\', $query);
+			break;
 		}
 
 		return $query;
@@ -156,11 +156,15 @@ class add_default_data extends \phpbb\install\task_base
 	 * @param array	$matches
 	 * @return string
 	 */
-	public function lang_replace_callback($matches)
+	public function lang_replace_callback(array $matches) : string
 	{
 		if (!empty($matches[1]))
 		{
-			return $this->db->sql_escape($this->language->lang($matches[1]));
+			$translation = $this->language->lang($matches[1]);
+
+			// This is might not be secure, but these queries should not be malicious anyway.
+			$quoted = $this->db->quote($translation) ?: '\'' . addcslashes($translation, '\'') . '\'';
+			return substr($quoted, 1, -1);
 		}
 
 		return '';
@@ -169,7 +173,7 @@ class add_default_data extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	static public function get_step_count() : int
 	{
 		return 1;
 	}
@@ -177,7 +181,7 @@ class add_default_data extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_task_lang_name()
+	public function get_task_lang_name() : string
 	{
 		return 'TASK_ADD_DEFAULT_DATA';
 	}

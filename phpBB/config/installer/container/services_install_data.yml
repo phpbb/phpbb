@@ -2,23 +2,36 @@ services:
     installer.install_data.add_languages:
         class: phpbb\install\module\install_data\task\add_languages
         arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.database'
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
             - '@language.helper.language_file'
         tags:
             - { name: install_data_install, order: 1 }
 
+    installer.install_data.add_languages_to_profile_fields:
+        class: phpbb\install\module\install_data\task\setup_languages
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.database'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.container_factory'
+        tags:
+            - { name: install_data_install, order: 2 }
+
     installer.install_data.add_bots:
         class: phpbb\install\module\install_data\task\add_bots
         arguments:
             - '@installer.helper.config'
+            - '@installer.helper.database'
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
             - '@language'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
-            - { name: install_data_install, order: 2 }
+            - { name: install_data_install, order: 3 }
 
     installer.install_data.add_modules:
         class: phpbb\install\module\install_data\task\add_modules
@@ -27,17 +40,19 @@ services:
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
         tags:
-            - { name: install_data_install, order: 3 }
+            - { name: install_data_install, order: 4 }
 
     installer.install_data.create_search_index:
         class: phpbb\install\module\install_data\task\create_search_index
         arguments:
-            - '@config'
+            - '@installer.helper.config'
+            - '@installer.helper.database'
             - '@installer.helper.container_factory'
+            - '@installer.helper.iohandler'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
-            - { name: install_data_install, order: 4 }
+            - { name: install_data_install, order: 5 }
 
     installer.module.data_install_collection:
         class: phpbb\di\ordered_service_collection

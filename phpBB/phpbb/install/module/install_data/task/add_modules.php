@@ -141,7 +141,7 @@ class add_modules extends \phpbb\install\task_base
 	/**
 	 * Constructor
 	 *
-	 * @parma config				$config		Installer's config
+	 * @param config				$config		Installer's config
 	 * @param iohandler_interface	$iohandler	Installer's input-output handler
 	 * @param container_factory		$container	Installer's DI container
 	 */

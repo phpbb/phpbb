@@ -294,6 +294,7 @@ $lang = array_merge($lang, array(
 
 	// Install database
 	'TASK_ADD_CONFIG_SETTINGS'			=> 'Adding configuration settings',
+	'TASK_UPDATE_POSTS'					=> 'Adding default forums, topics and posts',
 	'TASK_ADD_DEFAULT_DATA'				=> 'Adding default settings to the database',
 	'TASK_CREATE_DATABASE_SCHEMA_FILE'	=> 'Creating database schema file',
 	'TASK_SETUP_DATABASE'				=> 'Setting up database',
@@ -302,6 +303,7 @@ $lang = array_merge($lang, array(
 	// Install data
 	'TASK_ADD_BOTS'				=> 'Registering bots',
 	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
+	'TASK_SET_LANGUAGES'		=> 'Adding language profile fields',
 	'TASK_ADD_MODULES'			=> 'Installing modules',
 	'TASK_CREATE_SEARCH_INDEX'	=> 'Creating search index',
 
