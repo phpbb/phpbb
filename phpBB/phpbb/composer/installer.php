@@ -14,6 +14,7 @@
 namespace phpbb\composer;
 
 use Composer\Composer;
+use Composer\DependencyResolver\Request as composer_request;
 use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
@@ -159,7 +160,7 @@ class installer
 		$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 		$install = \Composer\Installer::create($io, $composer);
 
-		$composer->getDownloadManager()->setOutputProgress(false);
+		$composer->getInstallationManager()->setOutputProgress(false);
 
 		$install
 			->setVerbose(true)
@@ -167,8 +168,8 @@ class installer
 			->setPreferDist(true)
 			->setDevMode(false)
 			->setUpdate(true)
-			->setUpdateWhitelist($whitelist)
-			->setWhitelistDependencies(false)
+			->setUpdateAllowList($whitelist)
+			->setUpdateAllowTransitiveDependencies(composer_request::UPDATE_ONLY_LISTED)
 			->setIgnorePlatformRequirements(false)
 			->setOptimizeAutoloader(true)
 			->setDumpAutoloader(true)
