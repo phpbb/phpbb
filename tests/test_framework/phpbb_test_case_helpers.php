@@ -154,7 +154,7 @@ class phpbb_test_case_helpers
 			extract($config_php_file->get_all());
 
 			$config = array_merge($config, array(
-				'dbms'		=> $config_php_file->convert_30_dbms_to_31($dbms),
+				'dbms'		=> \phpbb\config_php_file::convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -196,7 +196,7 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $config_php_file->convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? \phpbb\config_php_file::convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',

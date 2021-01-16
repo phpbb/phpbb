@@ -30,9 +30,7 @@ class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 	public function test_convert_30_dbms_to_31($input)
 	{
 		$expected = "phpbb\\db\\driver\\$input";
-
-		$config_php_file = new \phpbb\config_php_file('', '');
-		$output = $config_php_file->convert_30_dbms_to_31($input);
+		$output = \phpbb\config_php_file::convert_30_dbms_to_31($input);
 
 		$this->assertEquals($expected, $output);
 	}

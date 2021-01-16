@@ -182,6 +182,7 @@ $lang = array_merge($lang, array(
 	'CONGRATULATIONS'		=> 'Congratulations to',
 	'CONNECTION_FAILED'		=> 'Connection failed.',
 	'CONNECTION_SUCCESS'	=> 'Connection was successful!',
+	'DB_CONNECTION_FAILED'	=> 'Connecting to the database failed.',
 	'CONTACT'				=> 'Contact',
 	'CONTACT_USER'			=> 'Contact %s',
 	'CONTACT_US'			=> 'Contact us',

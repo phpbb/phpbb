@@ -22,7 +22,7 @@ jobs:
             matrix:
                 include:
                     - db: 'none'
-                      php: '7.1'
+                      php: '7.3'
                       NOTESTS: 1
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -37,7 +37,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv
                   coverage: none
 
             - name: Get Composer Cache Directory
@@ -95,30 +95,26 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mariadb:10.1"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mariadb:10.2"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mariadb:10.3"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mariadb:10.4"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mariadb:10.5"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mysql:5.6"
                       db_alias: "MySQL Slow Tests"
                       SLOWTESTS: 1
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mysql:5.6"
                       db_alias: "MyISAM Tests"
                       MYISAM: 1
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "mysql:5.6"
-                    - php: '7.1'
-                      db: "mysql:5.7"
-                    - php: '7.2'
-                      db: "mysql:5.7"
                     - php: '7.3'
                       db: "mysql:5.7"
                     - php: '7.4'
@@ -172,7 +168,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, mysqli, pdo, pdo_mysql, ldap
                   coverage: none
 
             - name: Get Composer Cache Directory
@@ -235,17 +231,17 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:9.5"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:9.6"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:10"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:11"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:12"
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "postgres:13"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -292,7 +288,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pgsql, pdo, pdo_pgsql
                   coverage: none
 
             - name: Get Composer Cache Directory
@@ -338,12 +334,12 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
+                    - php: '7.3'
                       db: "sqlite3"
-                    - php: '7.2'
+                    - php: '7.3'
                       db: "mcr.microsoft.com/mssql/server:2017-latest"
                       db_alias: 'MSSQL 2017'
-                    - php: '7.2'
+                    - php: '7.3'
                       db: "mcr.microsoft.com/mssql/server:2019-latest"
                       db_alias: 'MSSQL 2019'
 
@@ -395,7 +391,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, sqlsrv, pdo, pdo_sqlsrv
                   coverage: none
 
             - name: Get Composer Cache Directory
