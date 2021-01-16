@@ -3014,8 +3014,33 @@ fieldset.permissions .permissions-switch {
 	overflow-x: scroll;
 }
 
+.acp-icon {
+	font-size: 1.5em;
+}
+
 /* stylelint-enable selector-max-id */
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
 /* stylelint-enable declaration-property-unit-blacklist */
 /* stylelint-enable declaration-property-unit-whitelist */
+
+.acp-icon-move-up,
+.acp-icon-move-down {
+	color: #4ba5de;
+}
+
+.acp-icon-settings {
+	color: #62c046;
+}
+
+.acp-icon-delete {
+	color: #d74558;
+}
+
+.acp-icon-resync {
+	color: #f69934;
+}
+
+.acp-icon-disabled {
+	color: #d0d0d0;
+}
