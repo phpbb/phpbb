@@ -5,7 +5,7 @@ services:
             - '@installer.helper.config'
             - '@installer.helper.container_factory'
         tags:
-            - { name: install_finish, order: 10 }
+            - { name: install_finish, order: 1 }
 
     installer.install_finish.install_extensions:
         class: phpbb\install\module\install_finish\task\install_extensions
@@ -15,7 +15,7 @@ services:
             - '@installer.helper.iohandler'
             - '%core.root_path%'
         tags:
-            - { name: install_finish, order: 20 }
+            - { name: install_finish, order: 2 }
 
     installer.install_finish.notify_user:
         class: phpbb\install\module\install_finish\task\notify_user
@@ -26,7 +26,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
-            - { name: install_finish, order: 30 }
+            - { name: install_finish, order: 3 }
 
     installer.module.install_finish_collection:
         class: phpbb\di\ordered_service_collection
@@ -41,4 +41,4 @@ services:
         arguments:
             - '@installer.module.install_finish_collection'
         tags:
-            - { name: installer_install_module, order: 60 }
+            - { name: installer_install_module, order: 6 }
