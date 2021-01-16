@@ -254,5 +254,10 @@ function parse_document(container)
 		});
 
 		$('#configlist').closest('.send-stats-data-row').addClass('send-stats-data-hidden');
+
+		// Do not underline actions icons on hover (could not be done via CSS)
+		$('.actions a:has(i.acp-icon)').mouseover(function () {
+			$(this).css("text-decoration", "none");
+		});
 	});
 })(jQuery);
