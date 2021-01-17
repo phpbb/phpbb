@@ -244,4 +244,29 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->install_ext('vendor/moo');
 		$this->uninstall_ext('vendor/moo');
 	}
+
+	public function test_extensions_catalog()
+	{
+		// Access extensions catalog main page
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		$this->assertContainsLang('BROWSE_EXTENSIONS_DATABASE', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(0)->text());
+		$this->assertContainsLang('SETTINGS', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(1)->text());
+
+		$form = $crawler->selectButton('Submit')->form();
+		$form['minimum_stability']->select('dev');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('div[class="successbox"] > p')->text());
+
+		// Revisit extensions catalog main page after configuration change
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		// Ensure catalog has 20 records (by default) in extensions list
+		$records_per_page = 20;
+		$this->assertEquals($records_per_page, $crawler->filter('tbody > tr > td > strong')->count());
+		$this->assertNotEmpty($crawler->filter('tbody > tr > td > strong')->eq(0)->text());
+		$this->assertNotEmpty($crawler->filter('tbody > tr > td > strong')->eq($records_per_page - 1)->text());
+	}
 }

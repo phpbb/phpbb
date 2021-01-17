@@ -507,6 +507,10 @@ jobs:
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\cache" /grant Users:F /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\files" /grant Users:F /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\store" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\ext" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\vendor-ext" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\composer-ext.json" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\composer-ext.lock" /grant Users:F /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\images\avatars\upload" /grant Users:F /T
                   $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("IIS_IUSRS", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
                   $acl = Get-ACL "${env:TEMP_DIR}"
