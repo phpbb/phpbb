@@ -14,6 +14,7 @@
 namespace phpbb;
 
 use phpbb\exception\version_check_exception;
+use phpbb\json\sanitizer as json_sanitizer;
 
 /**
  * Class to handle version checking and comparison
@@ -390,7 +391,7 @@ class version_helper
 			}
 
 			// Sanitize any data we retrieve from a server
-			$info = json\sanitizer::decode($info);
+			$info = json_sanitizer::decode($info);
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{

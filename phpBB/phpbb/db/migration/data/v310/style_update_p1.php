@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-use phpbb\json\sanitizer;
+use phpbb\json\sanitizer as json_sanitizer;
 
 class style_update_p1 extends \phpbb\db\migration\migration
 {
@@ -85,7 +85,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 				else if (file_exists($fileinfo->getPathname() . '/composer.json'))
 				{
 					$json = file_get_contents($fileinfo->getPathname() . '/composer.json');
-					$style_data = sanitizer::decode($json);
+					$style_data = json_sanitizer::decode($json);
 					if (isset($style_data['extra']['phpbb-version']) && version_compare($style_data['extra']['phpbb-version'], '4.0.0-dev', '>='))
 					{
 						// 4.x style

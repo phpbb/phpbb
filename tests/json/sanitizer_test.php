@@ -11,7 +11,7 @@
  *
  */
 
-use phpbb\json\sanitizer;
+use phpbb\json\sanitizer as json_sanitizer;
 
 class phpbb_json_sanitizer_test extends phpbb_test_case
 {
@@ -30,6 +30,6 @@ class phpbb_json_sanitizer_test extends phpbb_test_case
 	 */
 	public function test_decode_data($input, $output)
 	{
-		$this->assertEquals($output, sanitizer::decode($input));
+		$this->assertEquals($output, json_sanitizer::decode($input));
 	}
 }

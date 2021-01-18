@@ -13,7 +13,8 @@
 
 namespace phpbb\language;
 
-use phpbb\json\sanitizer;
+use DomainException;
+use phpbb\json\sanitizer as json_sanitizer;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -55,7 +56,7 @@ class language_file_helper
 		foreach ($finder as $file)
 		{
 			$json = $file->getContents();
-			$data = sanitizer::decode($json);
+			$data = json_sanitizer::decode($json);
 
 			$available_languages[] = $this->get_language_data_from_json($data);
 		}
@@ -72,7 +73,7 @@ class language_file_helper
 	public function get_language_data_from_composer_file(string $path): array
 	{
 		$json_data = file_get_contents($path);
-		return $this->get_language_data_from_json(sanitizer::decode($json_data));
+		return $this->get_language_data_from_json(json_sanitizer::decode($json_data));
 	}
 
 	/**
