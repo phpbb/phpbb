@@ -30,9 +30,9 @@ class language_file_helper
 	/**
 	 * Constructor
 	 *
-	 * @param string	$phpbb_root_path	Path to phpBB's root
+	 * @param string $phpbb_root_path Path to phpBB's root
 	 */
-	public function __construct($phpbb_root_path)
+	public function __construct(string $phpbb_root_path)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
@@ -41,8 +41,11 @@ class language_file_helper
 	 * Returns available languages
 	 *
 	 * @return array
+	 *
+	 * @throws DomainException When one of the languages in language directory
+	 *						could not be loaded or have invalid composer.json data
 	 */
-	public function get_available_languages()
+	public function get_available_languages() : array
 	{
 		// Find available language packages
 		$finder = new Finder();
@@ -69,8 +72,10 @@ class language_file_helper
 	 *
 	 * @param string $path
 	 * @return array
+	 *
+	 * @throws DomainException When unable to language data from composer.json
 	 */
-	public function get_language_data_from_composer_file(string $path): array
+	public function get_language_data_from_composer_file(string $path) : array
 	{
 		$json_data = file_get_contents($path);
 		return $this->get_language_data_from_json(json_sanitizer::decode($json_data));
@@ -81,12 +86,14 @@ class language_file_helper
 	 *
 	 * @param array $data
 	 * @return array
+	 *
+	 * @throws DomainException When composer.json data is invalid for language files
 	 */
-	protected function get_language_data_from_json(array $data): array
+	protected function get_language_data_from_json(array $data) : array
 	{
 		if (!isset($data['extra']['language-iso']) || !isset($data['extra']['english-name']) || !isset($data['extra']['local-name']))
 		{
-			throw new \DomainException('INVALID_LANGUAGE_PACK');
+			throw new DomainException('INVALID_LANGUAGE_PACK');
 		}
 
 		$authors = [];
