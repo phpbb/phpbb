@@ -191,7 +191,7 @@ class acp_language
 
 				try
 				{
-					$lang_cfg = $this->language_helper->get_language_data_from_composer_file("{$this->phpbb_root_path}language/$lang_iso/composer.json");
+					$lang_cfg = $this->language_helper->get_language_data_from_composer_file($this->phpbb_root_path . 'language/' . $lang_iso . '/composer.json');
 				}
 				catch (\DomainException $e)
 				{
@@ -243,7 +243,7 @@ class acp_language
 
 						if (file_exists($this->phpbb_root_path . 'language/' . $lang_iso . '/' . $relative_path))
 						{
-							if (substr($relative_path, 0 - strlen($this->php_ext)) === $this->php_ext)
+							if (substr($relative_path, -strlen($this->php_ext)) === $this->php_ext)
 							{
 								$missing_vars = $this->compare_language_files($this->config['default_lang'], $lang_iso, $relative_path);
 
