@@ -205,7 +205,7 @@ class acp_styles
 		{
 			if (in_array($dir, $this->reserved_style_names))
 			{
-				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
+				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir, ENT_COMPAT));
 				continue;
 			}
 
@@ -225,12 +225,12 @@ class acp_styles
 					$found = true;
 					$installed_names[] = $style['style_name'];
 					$installed_dirs[] = $style['style_path'];
-					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
+					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name'], ENT_COMPAT));
 				}
 			}
 			if (!$found)
 			{
-				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
+				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir, ENT_COMPAT));
 			}
 		}
 
@@ -598,7 +598,7 @@ class acp_styles
 		{
 			$this->template->assign_block_vars('parent_styles', array(
 				'STYLE_ID'		=> $row['style_id'],
-				'STYLE_NAME'	=> htmlspecialchars($row['style_name']),
+				'STYLE_NAME'	=> htmlspecialchars($row['style_name'], ENT_COMPAT),
 				'LEVEL'			=> $row['level'],
 				'SPACER'		=> str_repeat('&nbsp; ', $row['level']),
 				)
@@ -609,9 +609,9 @@ class acp_styles
 		$this->template->assign_vars(array(
 			'S_STYLE_DETAILS'	=> true,
 			'STYLE_ID'			=> $style['style_id'],
-			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
-			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
-			'STYLE_VERSION'		=> htmlspecialchars($style_cfg['style_version']),
+			'STYLE_NAME'		=> htmlspecialchars($style['style_name'], ENT_COMPAT),
+			'STYLE_PATH'		=> htmlspecialchars($style['style_path'], ENT_COMPAT),
+			'STYLE_VERSION'		=> htmlspecialchars($style_cfg['style_version'], ENT_COMPAT),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],
@@ -657,7 +657,7 @@ class acp_styles
 		{
 			if (empty($style['_shown']))
 			{
-				$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($style['style_parent_tree']));
+				$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($style['style_parent_tree'], ENT_COMPAT));
 				$this->list_style($style, 0);
 			}
 		}
@@ -826,7 +826,7 @@ class acp_styles
 				{
 					// Parent style is not installed yet
 					$style['_available'] = false;
-					$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($parent));
+					$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($parent, ENT_COMPAT));
 				}
 			}
 
@@ -966,10 +966,10 @@ class acp_styles
 		$row = array(
 			// Style data
 			'STYLE_ID'				=> $style['style_id'],
-			'STYLE_NAME'			=> htmlspecialchars($style['style_name']),
+			'STYLE_NAME'			=> htmlspecialchars($style['style_name'], ENT_COMPAT),
 			'STYLE_VERSION'			=> $style_cfg['style_version'] ?? '-',
 			'STYLE_PHPBB_VERSION'	=> $style_cfg['phpbb_version'],
-			'STYLE_PATH'			=> htmlspecialchars($style['style_path']),
+			'STYLE_PATH'			=> htmlspecialchars($style['style_path'], ENT_COMPAT),
 			'STYLE_COPYRIGHT'		=> strip_tags($style['style_copyright']),
 			'STYLE_ACTIVE'			=> $style['style_active'],
 
@@ -979,7 +979,7 @@ class acp_styles
 			'LEVEL'				=> $level,
 			'PADDING'			=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
-			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
+			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path'], ENT_COMPAT) . '/',
 
 			// Comment to show below style
 			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',

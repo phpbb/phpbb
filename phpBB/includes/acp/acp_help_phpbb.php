@@ -90,7 +90,7 @@ class acp_help_phpbb
 
 			if (!empty($response))
 			{
-				$decoded_response = json_decode(htmlspecialchars_decode($response), true);
+				$decoded_response = json_decode(htmlspecialchars_decode($response, ENT_COMPAT), true);
 
 				if ($decoded_response && isset($decoded_response['status']) && $decoded_response['status'] == 'ok')
 				{
@@ -126,7 +126,7 @@ class acp_help_phpbb
 			}
 
 			$template->assign_block_vars('providers', array(
-				'NAME'	=> htmlspecialchars($provider),
+				'NAME'	=> htmlspecialchars($provider, ENT_COMPAT),
 			));
 
 			foreach ($data as $key => $value)

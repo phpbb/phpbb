@@ -488,7 +488,7 @@ class auth_admin extends \phpbb\auth\auth
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN'], ENT_COMPAT) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -585,7 +585,7 @@ class auth_admin extends \phpbb\auth\auth
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN'], ENT_COMPAT) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')

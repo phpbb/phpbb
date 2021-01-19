@@ -164,8 +164,8 @@ class pm extends \phpbb\notification\type\base
 		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
 		return array(
-			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
-			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username'], ENT_COMPAT),
+			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject')), ENT_COMPAT),
 
 			'U_VIEW_MESSAGE'			=> generate_board_url() . '/ucp.' . $this->php_ext . "?i=pm&mode=view&p={$this->item_id}",
 		);

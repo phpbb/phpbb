@@ -506,7 +506,7 @@ class bbcode_firstpass extends bbcode
 				}
 
 				// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
-				$code = htmlspecialchars_decode($code);
+				$code = htmlspecialchars_decode($code, ENT_COMPAT);
 				$code = highlight_string($code, true);
 
 				$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');

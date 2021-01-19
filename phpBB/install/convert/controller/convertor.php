@@ -506,7 +506,7 @@ class convertor
 			{
 				/** @var \phpbb\db\driver\driver_interface $src_db */
 				$src_db = new $src_dbms();
-				$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, false, true);
+				$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd, ENT_COMPAT), $src_dbname, $src_dbport, false, true);
 				$same_db = false;
 			}
 			else

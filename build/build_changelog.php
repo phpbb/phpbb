@@ -45,7 +45,7 @@ foreach ($xml->xpath('//item') as $item)
 	$keyUrl = 'https://tracker.phpbb.com/browse/' . $key;
 	$keyLink = '<a href="' . $keyUrl . '">' . $key . '</a>';
 
-	$value = str_replace($key, $keyLink, htmlspecialchars($item->title));
+	$value = str_replace($key, $keyLink, htmlspecialchars($item->title, ENT_COMPAT));
 	$value = str_replace(']', '] -', $value);
 
 	$types[(string) $item->type][$key] = $value;

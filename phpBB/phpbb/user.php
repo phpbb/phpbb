@@ -326,7 +326,7 @@ class user extends \phpbb\session
 
 			if (is_string($default_value))
 			{
-				$this->style[$key] = htmlspecialchars($this->style[$key]);
+				$this->style[$key] = htmlspecialchars($this->style[$key], ENT_COMPAT);
 			}
 		}
 

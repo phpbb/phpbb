@@ -759,7 +759,7 @@ class acp_attachments
 									continue;
 								}
 
-								$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
+								$filename_list .= '<option value="' . htmlspecialchars($img, ENT_COMPAT) . '"' . $selected . '>' . htmlspecialchars($img, ENT_COMPAT) . '</option>';
 							}
 						}
 

@@ -1510,7 +1510,7 @@ function user_ipwhois($ip)
 		$ipwhois = (empty($buffer)) ? $ipwhois : $buffer;
 	}
 
-	$ipwhois = htmlspecialchars($ipwhois);
+	$ipwhois = htmlspecialchars($ipwhois, ENT_COMPAT);
 
 	// Magic URL ;)
 	return trim(make_clickable($ipwhois, false, ''));
@@ -1572,11 +1572,11 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 		return false;
 	}
 
-	if ($min && utf8_strlen(htmlspecialchars_decode($string)) < $min)
+	if ($min && utf8_strlen(htmlspecialchars_decode($string, ENT_COMPAT)) < $min)
 	{
 		return 'TOO_SHORT';
 	}
-	else if ($max && utf8_strlen(htmlspecialchars_decode($string)) > $max)
+	else if ($max && utf8_strlen(htmlspecialchars_decode($string, ENT_COMPAT)) > $max)
 	{
 		return 'TOO_LONG';
 	}
