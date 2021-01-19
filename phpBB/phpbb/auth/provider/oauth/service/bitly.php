@@ -78,7 +78,7 @@ class bitly extends base
 		}
 
 		// Return the unique identifier returned from bitly
-		return $result['data']['login'];
+		return $result['data']['login'] ?? throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
 	}
 
 	/**
@@ -102,6 +102,6 @@ class bitly extends base
 		}
 
 		// Return the unique identifier
-		return $result['data']['login'];
+		return $result['data']['login'] ?? throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
 	}
 }
