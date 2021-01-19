@@ -77,6 +77,7 @@ class bitly extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}
 
+		// Prevent SQL error
 		if (!isset($result['data']['login']))
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
@@ -106,6 +107,7 @@ class bitly extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}
 
+		// Prevent SQL error
 		if (!isset($result['data']['login']))
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
