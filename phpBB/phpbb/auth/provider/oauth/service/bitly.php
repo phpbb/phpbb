@@ -77,8 +77,13 @@ class bitly extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}
 
+		if (!isset($result['data']['login']))
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
+		}
+
 		// Return the unique identifier returned from bitly
-		return $result['data']['login'] ?? throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
+		return $result['data']['login'];
 	}
 
 	/**
@@ -101,7 +106,12 @@ class bitly extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}
 
+		if (!isset($result['data']['login']))
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
+		}
+
 		// Return the unique identifier
-		return $result['data']['login'] ?? throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
+		return $result['data']['login'];
 	}
 }
