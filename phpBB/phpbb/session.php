@@ -1555,7 +1555,7 @@ class session
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
-		$sql_where .= ($user_id === (int) $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
+		$sql_where .= (isset($this->data['user_id']) && $user_id === (int) $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE $sql_where";
@@ -1563,7 +1563,7 @@ class session
 
 		// We're changing the password of the current user and they have a key
 		// Lets regenerate it to be safe
-		if ($user_id === (int) $this->data['user_id'] && $this->cookie_data['k'])
+		if (isset($this->data['user_id']) && $user_id === (int) $this->data['user_id'] && $this->cookie_data['k'])
 		{
 			$this->set_login_key($user_id);
 		}
