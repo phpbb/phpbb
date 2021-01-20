@@ -1468,6 +1468,12 @@ class convertor
 									$value = array($value);
 								}
 
+								// Add ENT_COMPAT default flag to html specialchars/entities functions, see PHPBB3-16690
+								if (in_array($execution, ['htmlspecialchars', 'htmlentities', 'htmlspecialchars_decode', 'html_entitity_decode']))
+								{
+									$value[] = ENT_COMPAT;
+								}
+
 								$value = call_user_func_array($execution, $value);
 							}
 							else if (strpos($type, 'execute') === 0)
@@ -1515,6 +1521,12 @@ class convertor
 								if (!is_array($value))
 								{
 									$value = array($value);
+								}
+
+								// Add ENT_COMPAT default flag to html specialchars/entities functions, see PHPBB3-16690
+								if (in_array($execution, ['htmlspecialchars', 'htmlentities', 'htmlspecialchars_decode', 'html_entitity_decode']))
+								{
+									$value[] = ENT_COMPAT;
 								}
 
 								$value = call_user_func_array($execution, $value);
