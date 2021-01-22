@@ -418,7 +418,7 @@ class ajax_iohandler extends iohandler_base
 
 		if ($msg !== null)
 		{
-			$link_properties['msg'] = htmlspecialchars_decode($this->language->lang($msg));
+			$link_properties['msg'] = htmlspecialchars_decode($this->language->lang($msg), ENT_COMPAT);
 		}
 
 		$this->download[] = $link_properties;

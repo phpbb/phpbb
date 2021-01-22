@@ -120,8 +120,8 @@ class notify_user extends \phpbb\install\task_base
 			$messenger->to($this->config['board_email'], $this->install_config->get('admin_name'));
 			$messenger->anti_abuse_headers($this->config, $this->user);
 			$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($this->install_config->get('admin_name')),
-					'PASSWORD'		=> htmlspecialchars_decode($this->install_config->get('admin_passwd')))
+					'USERNAME'		=> htmlspecialchars_decode($this->install_config->get('admin_name'), ENT_COMPAT),
+					'PASSWORD'		=> htmlspecialchars_decode($this->install_config->get('admin_passwd'), ENT_COMPAT))
 			);
 			$messenger->send(NOTIFY_EMAIL);
 		}

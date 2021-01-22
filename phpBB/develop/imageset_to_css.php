@@ -290,7 +290,7 @@ function dump_code($code, $filename = 'file.txt')
 	$list = explode("\n", $code);
 	$height = 15 * count($list);
 	echo ' [ <a href="?download=', $hash, '">download</a> <a href="javascript:void(0);" onclick="document.getElementById(\'code-', $hash, '\').style.height = \'', $height, 'px\'; this.style.display = \'none\'; return false;">expand</a> ]<br />';
-	echo '<textarea id="code-', $hash, '" onfocus="this.select();" style="width: 98%; height: 200px;">', htmlspecialchars($code), '</textarea><br />';
+	echo '<textarea id="code-', $hash, '" onfocus="this.select();" style="width: 98%; height: 200px;">', htmlspecialchars($code, ENT_COMPAT), '</textarea><br />';
 }
 
 function css($list, $path = './', $bidi = false)

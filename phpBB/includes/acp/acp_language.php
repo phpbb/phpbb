@@ -274,7 +274,7 @@ class acp_language
 
 				$lang_pack = array(
 					'iso'		=> $lang_iso,
-					'name'		=> trim(htmlspecialchars($file[0])),
+					'name'		=> trim(htmlspecialchars($file[0], ENT_COMPAT)),
 					'local_name'=> trim(htmlspecialchars($file[1], ENT_COMPAT, 'UTF-8')),
 					'author'	=> trim(htmlspecialchars($file[2], ENT_COMPAT, 'UTF-8'))
 				);
@@ -420,7 +420,7 @@ class acp_language
 			foreach ($new_ary as $iso => $lang_ary)
 			{
 				$template->assign_block_vars('notinst', array(
-					'ISO'			=> htmlspecialchars($lang_ary['iso']),
+					'ISO'			=> htmlspecialchars($lang_ary['iso'], ENT_COMPAT),
 					'LOCAL_NAME'	=> htmlspecialchars($lang_ary['local_name'], ENT_COMPAT, 'UTF-8'),
 					'NAME'			=> htmlspecialchars($lang_ary['name'], ENT_COMPAT, 'UTF-8'),
 					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']) . '&amp;hash=' . generate_link_hash('acp_language'))

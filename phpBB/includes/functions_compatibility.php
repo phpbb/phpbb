@@ -758,7 +758,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
-			$username = htmlspecialchars_decode($request->server($k));
+			$username = htmlspecialchars_decode($request->server($k), ENT_COMPAT);
 			break;
 		}
 	}
@@ -768,7 +768,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
-			$password = htmlspecialchars_decode($request->server($k));
+			$password = htmlspecialchars_decode($request->server($k), ENT_COMPAT);
 			break;
 		}
 	}

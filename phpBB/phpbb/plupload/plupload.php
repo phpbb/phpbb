@@ -163,7 +163,7 @@ class plupload
 			'S_PLUPLOAD'		=> true,
 			'FILTERS'			=> $filters,
 			'CHUNK_SIZE'		=> $chunk_size,
-			'S_PLUPLOAD_URL'	=> htmlspecialchars_decode($s_action),
+			'S_PLUPLOAD_URL'	=> htmlspecialchars_decode($s_action, ENT_COMPAT),
 			'MAX_ATTACHMENTS'	=> $max_files,
 			'ATTACH_ORDER'		=> ($this->config['display_order']) ? 'asc' : 'desc',
 			'L_TOO_MANY_ATTACHMENTS'	=> $this->user->lang('TOO_MANY_ATTACHMENTS', $max_files),

@@ -118,7 +118,7 @@ class reset_password
 		if (!$this->config['allow_password_reset'])
 		{
 			throw new http_exception(Response::HTTP_OK, 'UCP_PASSWORD_RESET_DISABLED', [
-				'<a href="mailto:' . htmlspecialchars($this->config['board_contact']) . '">',
+				'<a href="mailto:' . htmlspecialchars($this->config['board_contact'], ENT_COMPAT) . '">',
 				'</a>'
 			]);
 		}
@@ -265,7 +265,7 @@ class reset_password
 				$messenger->anti_abuse_headers($this->config, $this->user);
 
 				$messenger->assign_vars([
-						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
+						'USERNAME'			=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT),
 						'U_RESET_PASSWORD'	=> generate_board_url(true) . $this->helper->route('phpbb_ucp_reset_password_controller', [
 							'u'		=> $user_row['user_id'],
 							'token'	=> $reset_token,

@@ -209,7 +209,7 @@ class activate extends command
 			$messenger->set_addresses($user_row);
 			$messenger->anti_abuse_headers($this->config, $this->user);
 			$messenger->assign_vars(array(
-					'USERNAME'	=> htmlspecialchars_decode($user_row['username']))
+					'USERNAME'	=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT))
 			);
 
 			$messenger->send(NOTIFY_EMAIL);

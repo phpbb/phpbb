@@ -117,7 +117,7 @@ class metadata_manager
 	 */
 	public function sanitize_json(&$value, $key)
 	{
-		$value = htmlspecialchars($value);
+		$value = htmlspecialchars($value, ENT_COMPAT);
 	}
 
 	/**

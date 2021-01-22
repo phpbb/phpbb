@@ -312,9 +312,9 @@ class add extends command
 		$messenger->to($this->data['email'], $this->data['username']);
 		$messenger->anti_abuse_headers($this->config, $this->user);
 		$messenger->assign_vars(array(
-			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-			'USERNAME'    => htmlspecialchars_decode($this->data['username']),
-			'PASSWORD'    => htmlspecialchars_decode($this->data['new_password']),
+			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename']), ENT_COMPAT),
+			'USERNAME'    => htmlspecialchars_decode($this->data['username'], ENT_COMPAT),
+			'PASSWORD'    => htmlspecialchars_decode($this->data['new_password'], ENT_COMPAT),
 			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
 		);
 

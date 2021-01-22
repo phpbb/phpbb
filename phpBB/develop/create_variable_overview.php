@@ -220,7 +220,7 @@ foreach ($files_to_parse as $file_num => $data)
 			{
 				$_var = str_replace(array('{', '}'), array('', ''), $var);
 				$lang_references[$_var][] = $data['single_filename'];
-				$lang_data .= '<li>' . $var . '<br>' . "\n" . ((isset($lang[$_var])) ? htmlspecialchars(str_replace("\\'", "'", $lang[$_var])) : '<span style="color:red">No Language Variable available</span>') . '<br></li><br>' . "\n";
+				$lang_data .= '<li>' . $var . '<br>' . "\n" . ((isset($lang[$_var])) ? htmlspecialchars(str_replace("\\'", "'", $lang[$_var]), ENT_COMPAT) : '<span style="color:red">No Language Variable available</span>') . '<br></li><br>' . "\n";
 			}
 		}
 		$lang_data .= '</ul>';

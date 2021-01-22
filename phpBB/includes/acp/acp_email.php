@@ -205,7 +205,7 @@ class acp_email
 				$email_template = 'admin_send_email';
 				$template_data = array(
 					'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
-					'MESSAGE'		=> htmlspecialchars_decode($message),
+					'MESSAGE'		=> htmlspecialchars_decode($message, ENT_COMPAT),
 				);
 				$generate_log_entry = true;
 
@@ -252,7 +252,7 @@ class acp_email
 
 					$messenger->anti_abuse_headers($config, $user);
 
-					$messenger->subject(htmlspecialchars_decode($subject));
+					$messenger->subject(htmlspecialchars_decode($subject, ENT_COMPAT));
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars($template_data);

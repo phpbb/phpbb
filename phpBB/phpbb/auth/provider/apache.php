@@ -73,7 +73,7 @@ class apache extends base
 	 */
 	public function init()
 	{
-		if (!$this->request->is_set('PHP_AUTH_USER', request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER')))
+		if (!$this->request->is_set('PHP_AUTH_USER', request_interface::SERVER) || $this->user->data['username'] !== htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'), ENT_COMPAT))
 		{
 			return $this->language->lang('APACHE_SETUP_BEFORE_USE');
 		}
@@ -113,8 +113,8 @@ class apache extends base
 			);
 		}
 
-		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'));
-		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'));
+		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'), ENT_COMPAT);
+		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'), ENT_COMPAT);
 
 		if (!empty($php_auth_user) && !empty($php_auth_pw))
 		{
@@ -180,8 +180,8 @@ class apache extends base
 			return array();
 		}
 
-		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'));
-		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'));
+		$php_auth_user = htmlspecialchars_decode($this->request->server('PHP_AUTH_USER'), ENT_COMPAT);
+		$php_auth_pw = htmlspecialchars_decode($this->request->server('PHP_AUTH_PW'), ENT_COMPAT);
 
 		if (!empty($php_auth_user) && !empty($php_auth_pw))
 		{
