@@ -63,7 +63,7 @@ class add_languages extends \phpbb\install\task_base
 			$lang_pack = array(
 				'lang_iso'			=> $lang_info['iso'],
 				'lang_dir'			=> $lang_info['iso'],
-				'lang_english_name'	=> htmlspecialchars($lang_info['name']),
+				'lang_english_name'	=> htmlspecialchars($lang_info['name'], ENT_COMPAT),
 				'lang_local_name'	=> htmlspecialchars($lang_info['local_name'], ENT_COMPAT, 'UTF-8'),
 				'lang_author'		=> htmlspecialchars($lang_info['author'], ENT_COMPAT, 'UTF-8'),
 			);

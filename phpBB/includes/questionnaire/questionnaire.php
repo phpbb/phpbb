@@ -150,11 +150,11 @@ class phpbb_questionnaire_system_data_provider
 
 		// Start discovering the IPV4 server address, if available
 		// Try apache, IIS, fall back to 0.0.0.0
-		$server_address = htmlspecialchars_decode($request->server('SERVER_ADDR', $request->server('LOCAL_ADDR', '0.0.0.0')));
+		$server_address = htmlspecialchars_decode($request->server('SERVER_ADDR', $request->server('LOCAL_ADDR', '0.0.0.0')), ENT_COMPAT);
 
 		return array(
 			'os'	=> PHP_OS,
-			'httpd'	=> htmlspecialchars_decode($request->server('SERVER_SOFTWARE')),
+			'httpd'	=> htmlspecialchars_decode($request->server('SERVER_SOFTWARE'), ENT_COMPAT),
 			// we don't want the real IP address (for privacy policy reasons) but only
 			// a network address to see whether your installation is running on a private or public network.
 			'private_ip'	=> $this->is_private_ip($server_address),

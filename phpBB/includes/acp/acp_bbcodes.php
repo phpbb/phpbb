@@ -62,7 +62,7 @@ class acp_bbcodes
 				}
 
 				$bbcode_match = $row['bbcode_match'];
-				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
+				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl'], ENT_COMPAT);
 				$display_on_posting = $row['display_on_posting'];
 				$bbcode_helpline = $row['bbcode_helpline'];
 			break;
@@ -86,7 +86,7 @@ class acp_bbcodes
 				$display_on_posting = $request->variable('display_on_posting', 0);
 
 				$bbcode_match = $request->variable('bbcode_match', '');
-				$bbcode_tpl = htmlspecialchars_decode($request->variable('bbcode_tpl', '', true));
+				$bbcode_tpl = htmlspecialchars_decode($request->variable('bbcode_tpl', '', true), ENT_COMPAT);
 				$bbcode_helpline = $request->variable('bbcode_helpline', '', true);
 			break;
 		}
@@ -334,7 +334,7 @@ class acp_bbcodes
 						'action'				=> $action,
 						'bbcode'				=> $bbcode_id,
 						'bbcode_match'			=> $bbcode_match,
-						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl),
+						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl, ENT_COMPAT),
 						'bbcode_helpline'		=> $bbcode_helpline,
 						'display_on_posting'	=> $display_on_posting,
 						)))

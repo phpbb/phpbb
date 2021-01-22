@@ -111,10 +111,10 @@ class report_post_closed extends \phpbb\notification\type\post
 		$closer_username = $this->user_loader->get_username($this->get_data('closer_id'), 'username');
 
 		return [
-			'AUTHOR_NAME'	=> htmlspecialchars_decode($post_username),
-			'CLOSER_NAME'	=> htmlspecialchars_decode($closer_username),
-			'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
-			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($post_username, ENT_COMPAT),
+			'CLOSER_NAME'	=> htmlspecialchars_decode($closer_username, ENT_COMPAT),
+			'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($this->get_data('post_subject')), ENT_COMPAT),
+			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 
 			'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
 		];

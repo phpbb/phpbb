@@ -133,8 +133,8 @@ class group_request extends \phpbb\notification\type\base
 		$user_data = $this->user_loader->get_user($this->item_id);
 
 		return array(
-			'GROUP_NAME'		   		=> htmlspecialchars_decode($this->get_data('group_name')),
-			'REQUEST_USERNAME' 	   		=> htmlspecialchars_decode($user_data['username']),
+			'GROUP_NAME'		   		=> htmlspecialchars_decode($this->get_data('group_name'), ENT_COMPAT),
+			'REQUEST_USERNAME' 	   		=> htmlspecialchars_decode($user_data['username'], ENT_COMPAT),
 
 			'U_PENDING'			  		=> generate_board_url() . "/ucp.{$this->php_ext}?i=groups&mode=manage&action=list&g={$this->item_parent_id}",
 			'U_GROUP'					=> generate_board_url() . "/memberlist.{$this->php_ext}?mode=group&g={$this->item_parent_id}",

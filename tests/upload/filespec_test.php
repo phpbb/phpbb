@@ -530,7 +530,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$type_cast_helper->set_var($upload_name, $filename, 'string', true, true);
 		$filespec = $this->get_filespec(array('name'=> $upload_name));
 
-		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename))), $filespec->get('uploadname'));
+		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename, ENT_COMPAT))), $filespec->get('uploadname'));
 	}
 
 	public function test_is_uploaded()

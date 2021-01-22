@@ -99,8 +99,8 @@ class ucp_resend
 				$messenger->anti_abuse_headers($config, $user);
 
 				$messenger->assign_vars(array(
-					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
-					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
+					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
+					'USERNAME'		=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT),
 					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
 
@@ -134,7 +134,7 @@ class ucp_resend
 					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->assign_vars(array(
-						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
+						'USERNAME'			=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
 						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);

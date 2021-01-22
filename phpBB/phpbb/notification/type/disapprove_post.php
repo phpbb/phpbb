@@ -120,7 +120,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	public function get_email_template_variables()
 	{
 		return array_merge(parent::get_email_template_variables(), array(
-			'REASON'	=> htmlspecialchars_decode($this->get_data('disapprove_reason')),
+			'REASON'	=> htmlspecialchars_decode($this->get_data('disapprove_reason'), ENT_COMPAT),
 		));
 	}
 

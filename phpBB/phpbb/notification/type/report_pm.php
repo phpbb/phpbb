@@ -143,11 +143,11 @@ class report_pm extends \phpbb\notification\type\pm
 		$user_data = $this->user_loader->get_user($this->get_data('from_user_id'));
 
 		return [
-			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
-			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username'], ENT_COMPAT),
+			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject')), ENT_COMPAT),
 
 			/** @deprecated	3.2.6-RC1	(to be removed in 4.0.0) use {SUBJECT} instead in report_pm.txt */
-			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+			'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($this->get_data('message_subject')), ENT_COMPAT),
 
 			'U_VIEW_REPORT'	=> generate_board_url() . "/mcp.{$this->php_ext}?r={$this->item_parent_id}&i=pm_reports&mode=pm_report_details",
 		];

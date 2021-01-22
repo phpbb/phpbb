@@ -132,7 +132,7 @@ class convertor
 			$dbms = $convert->src_dbms;
 			/** @var \phpbb\db\driver\driver $src_db */
 			$src_db = new $dbms();
-			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, htmlspecialchars_decode($convert->src_dbpasswd), $convert->src_dbname, $convert->src_dbport, false, true);
+			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, htmlspecialchars_decode($convert->src_dbpasswd, ENT_COMPAT), $convert->src_dbname, $convert->src_dbport, false, true);
 			$same_db = false;
 		}
 		else
@@ -763,7 +763,7 @@ class convertor
 										{
 											if (!$db->sql_query($insert_query . $waiting_sql))
 											{
-												$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+												$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 											}
 										}
 
@@ -782,7 +782,7 @@ class convertor
 
 								if (!$db->sql_query($insert_sql))
 								{
-									$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+									$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 								}
 								$db->sql_return_on_error(false);
 
@@ -817,7 +817,7 @@ class convertor
 						foreach ($waiting_rows as $waiting_sql)
 						{
 							$db->sql_query($insert_query . $waiting_sql);
-							$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true)), __LINE__, __FILE__, true);
+							$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 						}
 
 						$db->sql_return_on_error(false);
@@ -1468,6 +1468,12 @@ class convertor
 									$value = array($value);
 								}
 
+								// Add ENT_COMPAT default flag to html specialchars/entities functions, see PHPBB3-16690
+								if (in_array($execution, ['htmlspecialchars', 'htmlentities', 'htmlspecialchars_decode', 'html_entitity_decode']))
+								{
+									$value[] = ENT_COMPAT;
+								}
+
 								$value = call_user_func_array($execution, $value);
 							}
 							else if (strpos($type, 'execute') === 0)
@@ -1515,6 +1521,12 @@ class convertor
 								if (!is_array($value))
 								{
 									$value = array($value);
+								}
+
+								// Add ENT_COMPAT default flag to html specialchars/entities functions, see PHPBB3-16690
+								if (in_array($execution, ['htmlspecialchars', 'htmlentities', 'htmlspecialchars_decode', 'html_entitity_decode']))
+								{
+									$value[] = ENT_COMPAT;
 								}
 
 								$value = call_user_func_array($execution, $value);

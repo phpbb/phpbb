@@ -130,7 +130,7 @@ class acp_inactive
 								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
-									'USERNAME'	=> htmlspecialchars_decode($row['username']))
+									'USERNAME'	=> htmlspecialchars_decode($row['username'], ENT_COMPAT))
 								);
 
 								$messenger->send(NOTIFY_EMAIL);
@@ -224,7 +224,7 @@ class acp_inactive
 							$messenger->anti_abuse_headers($config, $user);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> htmlspecialchars_decode($row['username']),
+								'USERNAME'		=> htmlspecialchars_decode($row['username'], ENT_COMPAT),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
 								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
