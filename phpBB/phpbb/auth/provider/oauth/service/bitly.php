@@ -77,6 +77,12 @@ class bitly extends base
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}
 
+		// Prevent SQL error
+		if (!isset($result['data']['login']))
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
+		}
+
 		// Return the unique identifier returned from bitly
 		return $result['data']['login'];
 	}
@@ -99,6 +105,12 @@ class bitly extends base
 		catch (\OAuth\Common\Exception\Exception $e)
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
+
+		// Prevent SQL error
+		if (!isset($result['data']['login']))
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
 		}
 
 		// Return the unique identifier
