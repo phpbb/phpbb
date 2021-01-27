@@ -14,6 +14,7 @@
 namespace phpbb;
 
 use phpbb\exception\version_check_exception;
+use phpbb\json\sanitizer as json_sanitizer;
 
 /**
  * Class to handle version checking and comparison
@@ -389,17 +390,8 @@ class version_helper
 				throw new version_check_exception($error_string);
 			}
 
-			$info = json_decode($info, true);
-
 			// Sanitize any data we retrieve from a server
-			if (!empty($info))
-			{
-				$json_sanitizer = function (&$value, $key) {
-					$type_cast_helper = new \phpbb\request\type_cast_helper();
-					$type_cast_helper->set_var($value, $value, gettype($value), true);
-				};
-				array_walk_recursive($info, $json_sanitizer);
-			}
+			$info = json_sanitizer::decode($info);
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{

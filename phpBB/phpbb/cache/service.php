@@ -13,6 +13,8 @@
 
 namespace phpbb\cache;
 
+use phpbb\json\sanitizer as json_sanitizer;
+
 /**
 * Class for grabbing/handling cached entries
 */
@@ -344,7 +346,7 @@ class service
 			$parsed_array = array();
 		}
 
-		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/composer.json';
 
 		if (!file_exists($filename))
 		{
@@ -354,7 +356,8 @@ class service
 		if (!isset($parsed_array['filetime']) || (($this->config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 		{
 			// Re-parse cfg file
-			$parsed_array = parse_cfg_file($filename);
+			$json = file_get_contents($filename);
+			$parsed_array = json_sanitizer::decode($json);
 			$parsed_array['filetime'] = @filemtime($filename);
 
 			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);
