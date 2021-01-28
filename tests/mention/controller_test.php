@@ -668,16 +668,15 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 	 */
 	public function test_handle($keyword, $topic_id, $expected_result)
 	{
-		$this->request->expects($this->at(1))
-					  ->method('variable')
-					  ->with('keyword', '', true)
-					  ->willReturn($keyword)
-		;
-		$this->request->expects($this->at(2))
-					  ->method('variable')
-					  ->with('topic_id', 0)
-					  ->willReturn($topic_id)
-		;
+		$this->request->expects($this->atLeast(2))
+			->method('variable')
+			->withConsecutive(
+				['keyword', '', true],
+				['topic_id', 0])
+			->willReturnOnConsecutiveCalls(
+				$keyword,
+				$topic_id
+			);
 		$data = json_decode($this->controller->handle()->getContent(), true);
 		$this->assertEquals($expected_result, $data);
 	}
