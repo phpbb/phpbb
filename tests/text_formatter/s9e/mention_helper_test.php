@@ -96,7 +96,7 @@ class mention_helper_test extends phpbb_database_test_case
 	public function test_inject_metadata($incoming_xml, $expected_profile_substring)
 	{
 		$result = $this->mention_helper->inject_metadata($incoming_xml);
-		$this->assertContains($expected_profile_substring, $result);
+		$this->assertStringContainsString($expected_profile_substring, $result);
 	}
 
 	public function get_mentioned_user_ids_data()
