@@ -111,7 +111,24 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('request', $request);
-		$phpbb_container->set('group_helper', new \phpbb\group\helper($lang));
+		$phpbb_container->set('group_helper', new \phpbb\group\helper(
+			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
+			$cache,
+			$config,
+			new \phpbb\language\language(
+				new phpbb\language\language_file_loader($phpbb_root_path, $phpEx)
+			),
+			new phpbb_mock_event_dispatcher(),
+			new \phpbb\path_helper(
+				new \phpbb\symfony_request(
+					new phpbb_mock_request()
+				),
+				$this->getMockBuilder('\phpbb\request\request')->disableOriginalConstructor()->getMock(),
+				$phpbb_root_path,
+				$phpEx
+			),
+			$user
+		));
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set(
 			'text_formatter.s9e.mention_helper',
