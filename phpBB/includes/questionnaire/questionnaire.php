@@ -326,7 +326,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'cookie_secure' => true,
 			'coppa_enable' => true,
 			'database_gc' => true,
-			'dbms_version' => true,
 			'default_dateformat' => true,
 			'default_lang' => true,
 			'display_last_edited' => true,
