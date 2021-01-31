@@ -3,7 +3,7 @@ List-Unsubscribe: <{U_STOP_WATCHING_FORUM}>
 
 Hello {USERNAME},
 
-The "{FORUM_NAME}" received a new reply to the topic"{TOPIC_TITLE}"<!-- IF AUTHOR_NAME != '' --> by {AUTHOR_NAME}<!-- ENDIF --> since your last visit at "{SITENAME}". No more notifications will be sent until you visit the topic.
+The "{FORUM_NAME}" received a new reply to the topic"{TOPIC_TITLE}"<!-- IF AUTHOR_NAME != '' --> by {AUTHOR_NAME}<!-- ENDIF --> since your last visit to "{SITENAME}". No more notifications will be sent until you visit the topic.
 {U_NEWEST_POST}
 
 If you want to view the topic, click the following link:
