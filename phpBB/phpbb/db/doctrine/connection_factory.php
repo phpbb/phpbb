@@ -35,7 +35,7 @@ class connection_factory
 	 * @return Connection Doctrine DBAL connection.
 	 *
 	 * @throws runtime_exception		If the database connection could not be established.
-	 * @throws InvalidArgumentException	If $driver_name is not a valid phpBB database driver.
+	 * @throws InvalidArgumentException	If the provided driver name is not a valid phpBB database driver.
 	 */
 	public static function get_connection(config_php_file $config) : Connection
 	{
@@ -69,7 +69,7 @@ class connection_factory
 	 * @return Connection Doctrine DBAL connection.
 	 *
 	 * @throws runtime_exception		If the database connection could not be established.
-	 * @throws InvalidArgumentException	If $driver_name is not a valid phpBB database driver.
+	 * @throws InvalidArgumentException	If $driver is not a valid phpBB database driver.
 	 */
 	public static function get_connection_from_params(
 		string $driver,

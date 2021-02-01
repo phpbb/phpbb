@@ -28,6 +28,7 @@
 		"php": "^7.3 || ^8.0",
 		"ext-json": "*",
 		"ext-mbstring": "*",
+		"ext-pdo": "*",
 		"bantu/ini-get-wrapper": "~1.0",
 		"chita/topological_sort": "^3.0",
 		"composer/composer": "^2.0",

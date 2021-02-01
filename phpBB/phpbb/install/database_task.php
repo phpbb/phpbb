@@ -29,14 +29,10 @@ use phpbb\install\helper\iohandler\iohandler_interface;
  */
 abstract class database_task extends task_base
 {
-	/**
-	 * @var Connection
-	 */
+	/** @var Connection */
 	private $conn;
 
-	/**
-	 * @var iohandler_interface
-	 */
+	/** @var iohandler_interface */
 	private $io;
 
 	/**

@@ -68,7 +68,7 @@ class add_default_data extends database_task
 								language $language,
 								string $root_path)
 	{
-		$this->db 				= self::get_doctrine_connection($db_helper, $config);
+		$this->db				= self::get_doctrine_connection($db_helper, $config);
 		$this->database_helper	= $db_helper;
 		$this->config			= $config;
 		$this->language			= $language;

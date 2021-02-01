@@ -41,23 +41,23 @@ trait driver_convertor
 			case 'mssql_odbc':
 			case 'mssqlnative':
 				$name = 'pdo_sqlsrv';
-				break;
+			break;
 
 			case 'mysqli':
 				$name = 'pdo_mysql';
-				break;
+			break;
 
 			case 'oracle':
 				$name = 'oci8';
-				break;
+			break;
 
 			case 'postgres':
 				$name = 'pdo_pgsql';
-				break;
+			break;
 
 			case 'sqlite3':
 				$name = 'pdo_sqlite';
-				break;
+			break;
 
 			default:
 				throw new InvalidArgumentException('Invalid phpBB database driver provided: ' . $driver_name);
