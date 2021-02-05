@@ -99,7 +99,8 @@ class update_hashes extends \phpbb\console\command\command
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$new_hash = $this->passwords_manager->hash($row['user_password'], array($this->default_type));
+			$old_hash = preg_replace('/^\$CP\$/', '', $row['user_password']);
+			$new_hash = $this->passwords_manager->hash($old_hash, array($this->default_type));
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_password = '" . $this->db->sql_escape($new_hash) . "'
