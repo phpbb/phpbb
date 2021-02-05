@@ -1027,7 +1027,7 @@ if (count($topic_list))
 
 		$template->assign_block_vars('topicrow', $topic_row);
 
-		$pagination->generate_template_pagination($topic_row['U_VIEW_TOPIC'], 'topicrow.pagination', 'start', $topic_row['REPLIES'] + 1, $config['posts_per_page'], 1, true, true);
+		$pagination->generate_template_pagination($topic_row['U_VIEW_TOPIC'], 'topicrow.pagination', 'start', (int) $topic_row['REPLIES'] + 1, $config['posts_per_page'], 1, true, true);
 
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
