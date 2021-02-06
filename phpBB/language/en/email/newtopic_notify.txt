@@ -11,6 +11,5 @@ If you want to view the new topic, click the following link:
 
 If you no longer wish to watch this forum click the following link:
 {U_STOP_WATCHING_FORUM}
-Or click the "Unsubscribe forum" link found at the bottom of the forum above.
 
 {EMAIL_SIG}

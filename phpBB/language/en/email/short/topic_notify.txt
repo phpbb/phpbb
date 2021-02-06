@@ -9,6 +9,5 @@ If you want to view the newest post made since your last visit, click the follow
 
 If you no longer wish to watch this topic click the following link:
 {U_STOP_WATCHING_TOPIC}
-Or click the "Unsubscribe topic" link found at the bottom of the topic above.
 
 {EMAIL_SIG}

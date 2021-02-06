@@ -3,7 +3,7 @@ List-Unsubscribe: <{U_STOP_WATCHING_FORUM}>
 
 Hello {USERNAME},
 
-The "{FORUM_NAME}" received a new reply to the topic"{TOPIC_TITLE}"<!-- IF AUTHOR_NAME != '' --> by {AUTHOR_NAME}<!-- ENDIF --> since your last visit to "{SITENAME}". No more notifications will be sent until you visit the topic.
+The "{FORUM_NAME}" received a new reply to the topic "{TOPIC_TITLE}"<!-- IF AUTHOR_NAME != '' --> by {AUTHOR_NAME}<!-- ENDIF --> since your last visit to "{SITENAME}". No more notifications will be sent until you visit the topic.
 {U_NEWEST_POST}
 
 If you want to view the topic, click the following link:
@@ -14,6 +14,5 @@ If you want to view the forum, click the following link:
 
 If you no longer wish to watch this forum click the following link:
 {U_STOP_WATCHING_FORUM}
-Or click the "Unsubscribe forum" link found at the bottom of the forum above.
 
 {EMAIL_SIG}

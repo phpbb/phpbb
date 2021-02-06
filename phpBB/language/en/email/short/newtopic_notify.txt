@@ -7,6 +7,5 @@ The forum "{FORUM_NAME}" received a new topic "{TOPIC_TITLE}"<!-- IF AUTHOR_NAME
 
 If you no longer wish to watch this forum click the following link:
 {U_STOP_WATCHING_FORUM}
-Or click the "Unsubscribe forum" link found at the bottom of the forum above.
 
 {EMAIL_SIG}
