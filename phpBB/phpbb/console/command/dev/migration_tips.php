@@ -54,11 +54,11 @@ class migration_tips extends \phpbb\console\command\command
 			}
 		}
 
-		$output->writeln("\t\tarray(");
+		$output->writeln("\t\t[");
 		foreach ($tips as $migration)
 		{
 			$output->writeln("\t\t\t'{$migration}',");
 		}
-		$output->writeln("\t\t);");
+		$output->writeln("\t\t];");
 	}
 }
