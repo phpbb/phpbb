@@ -296,8 +296,10 @@ class upload
 	 */
 	protected function check_disk_space()
 	{
-		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
+		if (function_exists('disk_free_space'))
 		{
+			$free_space = disk_free_space($this->phpbb_root_path);
+
 			if ($free_space <= $this->file->get('filesize'))
 			{
 				if ($this->auth->acl_get('a_'))
@@ -314,6 +316,16 @@ class upload
 
 				return false;
 			}
+		}
+		else
+		{
+			$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FREE_SPACE');
+
+			$this->file_data['post_attach'] = false;
+
+			$this->file->remove();
+
+			return false;
 		}
 
 		return true;
