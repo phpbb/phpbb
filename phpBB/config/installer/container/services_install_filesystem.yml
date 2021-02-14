@@ -10,7 +10,7 @@ services:
             - '%core.php_ext%'
             - '%installer.create_config_file.options%'
         tags:
-            - { name: install_filesystem_install, order: 10 }
+            - { name: install_filesystem_install, order: 1 }
 
     installer.module.install_filesystem_collection:
         class: phpbb\di\ordered_service_collection
@@ -25,4 +25,4 @@ services:
         arguments:
             - '@installer.module.install_filesystem_collection'
         tags:
-            - { name: installer_install_module, order: 30 }
+            - { name: installer_install_module, order: 3 }

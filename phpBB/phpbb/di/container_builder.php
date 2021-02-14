@@ -572,7 +572,7 @@ class container_builder
 		{
 			if ($this->dbal_connection === null)
 			{
-				$dbal_driver_class = $this->config_php_file->convert_30_dbms_to_31($this->config_php_file->get('dbms'));
+				$dbal_driver_class = \phpbb\config_php_file::convert_30_dbms_to_31($this->config_php_file->get('dbms'));
 				/** @var \phpbb\db\driver\driver_interface $dbal_connection */
 				$this->dbal_connection = new $dbal_driver_class();
 				$this->dbal_connection->sql_connect(

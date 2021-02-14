@@ -71,7 +71,7 @@ class convertor
 		require_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require_once($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
+		$dbms = \phpbb\config_php_file::convert_30_dbms_to_31($dbms);
 
 		/** @var \phpbb\db\driver\driver_interface $db */
 		$db = new $dbms();

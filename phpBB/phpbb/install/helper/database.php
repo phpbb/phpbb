@@ -41,24 +41,27 @@ class database
 			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
+			'DOCTRINE'		=> ['pdo_mysql'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql_odbc'=>	array(
+		'mssql_odbc'	=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
+			'DOCTRINE'		=> ['pdo_sqlsrv'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssqlnative'		=> array(
+		'mssqlnative'	=> array(
 			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
+			'DOCTRINE'		=> ['pdo_sqlsrv'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
 			'AVAILABLE'		=> true,
@@ -77,6 +80,7 @@ class database
 			'LABEL'			=> 'PostgreSQL 8.3+',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
+			'DOCTRINE'		=> ['pdo_pgsql'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\postgres',
 			'AVAILABLE'		=> true,
@@ -86,6 +90,7 @@ class database
 			'LABEL'			=> 'SQLite3',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite3',
+			'DOCTRINE'		=> ['pdo_sqlite'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\sqlite3',
 			'AVAILABLE'		=> true,
@@ -164,6 +169,33 @@ class database
 				}
 
 				continue;
+			}
+
+			if (array_key_exists('DOCTRINE', $db_array))
+			{
+				$available = false;
+				foreach ($db_array['DOCTRINE'] as $dll)
+				{
+					if (@extension_loaded($dll))
+					{
+						$available = true;
+						break;
+					}
+				}
+
+				if (!$available)
+				{
+					if ($return_unavailable)
+					{
+						$available_dbms[$db_name]['AVAILABLE'] = false;
+					}
+					else
+					{
+						unset($available_dbms[$db_name]);
+					}
+
+					continue;
+				}
 			}
 
 			$any_dbms_available = true;

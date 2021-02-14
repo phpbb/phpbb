@@ -690,12 +690,6 @@ class acp_main
 			]);
 		}
 
-		// Fill dbms version if not yet filled
-		if (empty($config['dbms_version']))
-		{
-			$config->set('dbms_version', $db->sql_server_info(true));
-		}
-
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
 	}

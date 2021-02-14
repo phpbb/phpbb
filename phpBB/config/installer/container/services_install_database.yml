@@ -9,7 +9,7 @@ services:
             - '%core.php_ext%'
             - '%tables%'
         tags:
-            - { name: install_database_install, order: 10 }
+            - { name: install_database_install, order: 1 }
 
     installer.install_database.set_up_database:
         class: phpbb\install\module\install_database\task\set_up_database
@@ -20,7 +20,7 @@ services:
             - '@installer.helper.iohandler'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 20 }
+            - { name: install_database_install, order: 2 }
 
     installer.install_database.add_tables:
         class: phpbb\install\module\install_database\task\add_tables
@@ -29,7 +29,7 @@ services:
             - '@installer.helper.database'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 30 }
+            - { name: install_database_install, order: 3 }
 
     installer.install_database.add_default_data:
         class: phpbb\install\module\install_database\task\add_default_data
@@ -37,15 +37,15 @@ services:
             - '@installer.helper.database'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
-            - '@installer.helper.container_factory'
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 40 }
+            - { name: install_database_install, order: 4 }
 
     installer.install_database.add_config_settings:
         class: phpbb\install\module\install_database\task\add_config_settings
         arguments:
+            - '@installer.helper.database'
             - '@filesystem'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
@@ -53,7 +53,18 @@ services:
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 50 }
+            - { name: install_database_install, order: 5 }
+
+    installer.install_database.update_user_and_post_data:
+        class: phpbb\install\module\install_database\task\update_user_and_post_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.container_factory'
+            - '@installer.helper.database'
+            - '@installer.helper.iohandler'
+            - '@language'
+        tags:
+            - { name: install_database_install, order: 6 }
 
     installer.module.install_database_collection:
         class: phpbb\di\ordered_service_collection
@@ -68,4 +79,4 @@ services:
         arguments:
             - '@installer.module.install_database_collection'
         tags:
-            - { name: installer_install_module, order: 40 }
+            - { name: installer_install_module, order: 4 }
