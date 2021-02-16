@@ -181,10 +181,10 @@ class token_storage implements TokenStorageInterface
 	{
 		$this->cachedToken = null;
 
-		$sql = 'DELETE FROM ' . $this->oauth_token_table . ' 
+		$sql = 'DELETE FROM ' . $this->oauth_token_table . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'];
 
-		if ((int) $this->user->data['user_id'] === ANONYMOUS)
+		if ((int) $this->user->data['user_id'] === ANONYMOUS && isset($this->user->data['session_id']))
 		{
 			$sql .= " AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'";
 		}
@@ -504,7 +504,7 @@ class token_storage implements TokenStorageInterface
 	 */
 	protected function get_access_token_row($data)
 	{
-		$sql = 'SELECT oauth_token 
+		$sql = 'SELECT oauth_token
 			FROM ' . $this->oauth_token_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
 		$result = $this->db->sql_query($sql);
@@ -523,7 +523,7 @@ class token_storage implements TokenStorageInterface
 	 */
 	protected function get_state_row($data)
 	{
-		$sql = 'SELECT oauth_state 
+		$sql = 'SELECT oauth_state
 			FROM ' . $this->oauth_state_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
 		$result = $this->db->sql_query($sql);
