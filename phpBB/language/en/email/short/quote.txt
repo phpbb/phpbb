@@ -1,20 +1,13 @@
-Subject: Topic reply notification - "{TOPIC_TITLE}"
+Subject: Quoted in "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
-You are receiving this notification because "{AUTHOR_NAME}" quoted you in the topic "{TOPIC_TITLE}" at "{SITENAME}". You can use the following link to view the reply made.
+"{AUTHOR_NAME}" quoted you in the topic "{TOPIC_TITLE}" at "{SITENAME}".
 
 If you want to view the quoted post, click the following link:
 {U_VIEW_POST}
 
-If you want to view the topic, click the following link:
-{U_TOPIC}
-
-If you want to view the forum, click the following link:
-{U_FORUM}
-
 If you no longer wish to receive updates about replies quoting you, please update your notification settings here:
-
 {U_NOTIFICATION_SETTINGS}
 
 {EMAIL_SIG}

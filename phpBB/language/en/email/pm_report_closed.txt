@@ -2,6 +2,8 @@ Subject: Report closed - "{PM_SUBJECT}"
 
 Hello {USERNAME},
 
-You are receiving this notification because the report you filed regarding the private message "{PM_SUBJECT}" at "{SITENAME}" has been tended to by a moderator or administrator. The report is now closed. If you have further questions, please contact {CLOSER_NAME} by private message.
+The report you filed regarding the private message "{PM_SUBJECT}" at "{SITENAME}" has been tended to by a moderator or administrator. The report is now closed.
+
+If you have further questions, please contact {CLOSER_NAME} by private message.
 
 {EMAIL_SIG}

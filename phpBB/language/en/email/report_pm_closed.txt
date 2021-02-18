@@ -2,7 +2,7 @@ Subject: Private message report closed - "{SUBJECT}"
 
 Hello {USERNAME},
 
-You are receiving this notification because the report you filed on the private message "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was handled by a moderator or by an administrator. The report was afterwards closed. If you have further questions contact {CLOSER_NAME} with a personal message.
+The report you filed on the private message "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was handled by a moderator or by an administrator. The report was afterwards closed. If you have further questions contact {CLOSER_NAME} with a private message.
 
 You can view your reported private message by clicking on the following link:
 
