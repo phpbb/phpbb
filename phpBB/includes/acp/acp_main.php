@@ -704,7 +704,7 @@ class acp_main
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
 				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !empty($http_input),
 				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !empty($http_output),
-				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== 'UTF-8',
+				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && strtolower($default_charset) !== 'utf-8',
 			]);
 		}
 
