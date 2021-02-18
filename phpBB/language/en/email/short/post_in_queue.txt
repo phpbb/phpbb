@@ -1,8 +1,8 @@
-Subject: Post moderation notification - "{TOPIC_TITLE}"
+Subject: Post needs aprroval - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
-You are receiving this notification because the post "{POST_SUBJECT}" at "{SITENAME}" needs approval.
+The post "{POST_SUBJECT}" at "{SITENAME}" needs approval.
 
 If you want to view the post, click the following link:
 {U_VIEW_POST}

@@ -1,9 +1,8 @@
-Subject: New private message has arrived
+Subject: New private message
 
 Hello {USERNAME},
 
-You have received a new private message from "{AUTHOR_NAME}" to your account on "{SITENAME}" with the following subject:
-
+A new private message from "{AUTHOR_NAME}" to your account on "{SITENAME}" with the following subject has arrived:
 {SUBJECT}
 
 You can view your new message by clicking on the following link:
