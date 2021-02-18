@@ -1661,7 +1661,7 @@ class session
 		}
 
 		// Do not update the session page for ajax requests, so the view online still works as intended
-		$page_changed = $this->update_session_page && $this->data['session_page'] != $this->page['page'] && !$request->is_ajax();
+		$page_changed = $this->update_session_page && (!isset($this->data['session_page']) || $this->data['session_page'] != $this->page['page']) && !$request->is_ajax();
 
 		// Only update session DB a minute or so after last update or if page changes
 		if ($this->time_now - (isset($this->data['session_time']) ? $this->data['session_time'] : 0) > 60 || $page_changed)
