@@ -962,6 +962,11 @@ $lang = array_merge($lang, array(
 		'Oct'		=> 'Oct',
 		'Nov'		=> 'Nov',
 		'Dec'		=> 'Dec',
+
+		'AMsmall'	=> 'am',
+		'PMsmall'	=> 'pm',
+		'AM'		=> 'AM',
+		'PM'		=> 'PM',
 	),
 
 	// Timezones can be translated. We use this for the Etc/GMT timezones here,

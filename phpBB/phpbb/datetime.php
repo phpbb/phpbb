@@ -66,6 +66,7 @@ class datetime extends \DateTime
 			$format = preg_replace('/([^\\\])S/','$1', $format);
 		}
 
+		$format		= preg_replace('/([^\\\])a/','$1A\s\m\a\l\l', $format);
 		$format		= self::format_cache($format, $this->user);
 		$relative	= ($format['is_short'] && !$force_absolute);
 		$now		= new self($this->user, 'now', $this->user->timezone);
