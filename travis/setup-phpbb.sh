@@ -46,6 +46,7 @@ cd phpBB
 php ../composer.phar install --dev --no-interaction
 if [[ "$TRAVIS_PHP_VERSION" =~ ^nightly$ || "$TRAVIS_PHP_VERSION" =~ ^8 ]]
 then
-	php ../composer.phar require phpunit/phpunit:^9.3 --update-with-all-dependencies --ignore-platform-reqs --no-interaction
+	php ../composer.phar remove phpunit/dbunit --dev --update-with-dependencies \
+	&& php ../composer.phar require symfony/yaml:~4.4 misantron/dbunit:~5.0 phpunit/phpunit:^9.3 --dev --update-with-all-dependencies --ignore-platform-reqs
 fi
 cd ..

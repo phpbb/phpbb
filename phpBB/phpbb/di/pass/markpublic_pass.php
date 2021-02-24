@@ -26,7 +26,7 @@ class markpublic_pass implements CompilerPassInterface
 	* Mark services as public by default unless they were explicitly marked as private
 	*
 	* @param ContainerBuilder $container ContainerBuilder object
-	* @return null
+	* @return void
 	*/
 	public function process(ContainerBuilder $container)
 	{

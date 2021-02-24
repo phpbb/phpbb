@@ -63,7 +63,7 @@
 		"laravel/homestead": "~10.17",
 		"misantron/dbunit": "~5.0",
 		"phing/phing": "~2.4",
-		"phpunit/phpunit": "^8.5 || ^9.3",
+		"phpunit/phpunit": "^9.0",
 		"squizlabs/php_codesniffer": "~3.4",
 		"symfony/browser-kit": "~5.2",
 		"symfony/css-selector": "~5.2",
