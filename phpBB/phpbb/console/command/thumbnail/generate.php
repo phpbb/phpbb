@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\thumbnail;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -107,7 +108,7 @@ class generate extends \phpbb\console\command\command
 		if ($nb_missing_thumbnails === 0)
 		{
 			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE'));
-			return 0;
+			return symfony_command::SUCCESS;
 		}
 
 		$extensions = $this->cache->obtain_attach_extensions(true);
@@ -168,7 +169,7 @@ class generate extends \phpbb\console\command\command
 		$io->newLine(2);
 		$io->success($this->user->lang('CLI_THUMBNAIL_GENERATING_DONE'));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

@@ -84,7 +84,7 @@ class acp_storage
 		 * @event core.acp_storage_load
 		 * @since 3.3.0-a1
 		 */
-		$phpbb_dispatcher->dispatch('core.acp_storage_load');
+		$phpbb_dispatcher->trigger_event('core.acp_storage_load');
 
 		$this->overview($id, $mode);
 	}

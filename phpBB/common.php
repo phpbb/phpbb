@@ -156,4 +156,4 @@ if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload
 * @event core.common
 * @since 3.1.0-a1
 */
-$phpbb_dispatcher->dispatch('core.common');
+$phpbb_dispatcher->trigger_event('core.common');

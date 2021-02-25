@@ -201,6 +201,9 @@ class container_builder
 				// Easy collections through tags
 				$this->container->addCompilerPass(new pass\collection_pass());
 
+				// Mark all services public
+				$this->container->addCompilerPass(new pass\markpublic_pass());
+
 				// Event listeners "phpBB style"
 				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
 

@@ -212,6 +212,18 @@ class helper
 	 */
 	public static function make_path_relative($end_path, $start_path)
 	{
+		// Ensure paths are absolute as passing relative paths to the
+		// Symsony's Filesystem::makePathRelative() method is removed since Symfony 4.0
+		if (!self::is_absolute_path($end_path))
+		{
+			$end_path = self::phpbb_own_realpath($end_path);
+		}
+
+		if (!self::is_absolute_path($start_path))
+		{
+			$start_path = self::phpbb_own_realpath($start_path);
+		}
+
 		return self::get_symfony_filesystem()->makePathRelative($end_path, $start_path);
 	}
 

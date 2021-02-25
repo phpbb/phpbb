@@ -14,6 +14,7 @@
 namespace phpbb\console\command\extension;
 
 use phpbb\composer\manager_interface;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -52,7 +53,7 @@ class list_available extends \phpbb\console\command\command
 	*
 	* @param InputInterface $input
 	* @param OutputInterface $output
-	* @return integer
+	* @return int
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -68,6 +69,6 @@ class list_available extends \phpbb\console\command\command
 
 		$io->listing($extensions);
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 }

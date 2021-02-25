@@ -26,8 +26,8 @@ class container_configuration implements ConfigurationInterface
 	 */
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('core');
+		$treeBuilder = new TreeBuilder('core');
+		$rootNode = $treeBuilder->getRootNode();
 		$rootNode
 			->children()
 				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()

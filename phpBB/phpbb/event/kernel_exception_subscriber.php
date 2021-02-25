@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 
 class kernel_exception_subscriber implements EventSubscriberInterface
@@ -65,12 +65,12 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	/**
 	* This listener is run when the KernelEvents::EXCEPTION event is triggered
 	*
-	* @param GetResponseForExceptionEvent $event
+	* @param ExceptionEvent $event
 	* @return null
 	*/
-	public function on_kernel_exception(GetResponseForExceptionEvent $event)
+	public function on_kernel_exception(ExceptionEvent $event)
 	{
-		$exception = $event->getException();
+		$exception = $event->getThrowable();
 
 		$message = $exception->getMessage();
 		$this->type_caster->set_var($message, $message, 'string', true, false);

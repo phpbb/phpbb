@@ -20,9 +20,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
+use Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper;
+use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
+use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
+use Symfony\Component\Routing\Matcher\CompiledUrlMatcher;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
@@ -217,19 +219,12 @@ class router implements RouterInterface
 			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->debug_url_matcher);
 			if (!$cache->isFresh())
 			{
-				$dumper = new PhpMatcherDumper($this->get_routes());
-
-				$options = array(
-					'class'      => 'phpbb_url_matcher',
-					'base_class' => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
-				);
-
-				$cache->write($dumper->dump($options), $this->get_routes()->getResources());
+				$dumper = new CompiledUrlMatcherDumper($this->get_routes());
+				$cache->write($dumper->dump(), $this->get_routes()->getResources());
 			}
 
-			require_once($cache->getPath());
-
-			$this->matcher = new \phpbb_url_matcher($this->context);
+			$compiled_routes = require_once($cache->getPath());
+			$this->matcher = new CompiledUrlMatcher($compiled_routes, $this->context);
 		}
 		catch (IOException $e)
 		{
@@ -272,19 +267,12 @@ class router implements RouterInterface
 			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->debug_url_generator);
 			if (!$cache->isFresh())
 			{
-				$dumper = new PhpGeneratorDumper($this->get_routes());
-
-				$options = array(
-					'class'      => 'phpbb_url_generator',
-					'base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
-				);
-
-				$cache->write($dumper->dump($options), $this->get_routes()->getResources());
+				$dumper = new CompiledUrlGeneratorDumper($this->get_routes());
+				$cache->write($dumper->dump(), $this->get_routes()->getResources());
 			}
 
-			require_once($cache->getPath());
-
-			$this->generator = new \phpbb_url_generator($this->context);
+			$compiled_routes = require_once($cache->getPath());
+			$this->generator = new CompiledUrlGenerator($compiled_routes, $this->context);
 		}
 		catch (IOException $e)
 		{

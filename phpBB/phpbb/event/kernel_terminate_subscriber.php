@@ -15,7 +15,7 @@ namespace phpbb\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class kernel_terminate_subscriber implements EventSubscriberInterface
 {
@@ -24,10 +24,10 @@ class kernel_terminate_subscriber implements EventSubscriberInterface
 	* This comes after a Response has been sent to the server; this is
 	* primarily cleanup stuff.
 	*
-	* @param PostResponseEvent $event
+	* @param TerminateEvent $event
 	* @return void
 	*/
-	public function on_kernel_terminate(PostResponseEvent $event)
+	public function on_kernel_terminate(TerminateEvent $event)
 	{
 		garbage_collection();
 

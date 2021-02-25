@@ -1152,7 +1152,7 @@ function display_custom_bbcodes()
 	* @event core.display_custom_bbcodes
 	* @since 3.1.0-a1
 	*/
-	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
+	$phpbb_dispatcher->trigger_event('core.display_custom_bbcodes');
 }
 
 /**

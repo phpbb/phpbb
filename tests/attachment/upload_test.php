@@ -93,8 +93,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 		$guessers = array(
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \Symfony\Component\Mime\FileinfoMimeTypeGuesser(),
+			new \Symfony\Component\Mime\FileBinaryMimeTypeGuesser(),
 			new \phpbb\mimetype\content_guesser(),
 			new \phpbb\mimetype\extension_guesser(),
 		);

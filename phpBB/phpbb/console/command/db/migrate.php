@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\db;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use phpbb\db\output_handler\log_wrapper_migrator_output_handler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,6 +42,9 @@ class migrate extends \phpbb\console\command\db\migration_command
 		$this->language->add_lang(array('common', 'install', 'migrator'));
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -49,6 +53,16 @@ class migrate extends \phpbb\console\command\db\migration_command
 		;
 	}
 
+	/**
+	 * Executes the command db:migrate.
+	 *
+	 * Updates the database by applying migrations
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
@@ -71,7 +85,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 			{
 				$io->error($e->getLocalisedMessage($this->user));
 				$this->finalise_update();
-				return 1;
+				return symfony_command::FAILURE;
 			}
 		}
 
@@ -82,5 +96,6 @@ class migrate extends \phpbb\console\command\db\migration_command
 
 		$this->finalise_update();
 		$io->success($this->language->lang('INLINE_UPDATE_SUCCESSFUL'));
+		return symfony_command::SUCCESS;
 	}
 }

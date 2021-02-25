@@ -13,7 +13,9 @@
 
 namespace phpbb\template\twig\extension;
 
-class avatar extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+
+class avatar extends AbstractExtension
 {
 	/**
 	 * Get the name of this extension

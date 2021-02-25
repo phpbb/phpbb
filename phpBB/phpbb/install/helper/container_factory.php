@@ -161,7 +161,7 @@ class container_factory
 
 		// Setting request is required for the compatibility globals as those are generated from
 		// this container
-		if (!$this->container->isFrozen())
+		if (!$this->container->isCompiled())
 		{
 			$this->container->register('request')->setSynthetic(true);
 			$this->container->register('language')->setSynthetic(true);

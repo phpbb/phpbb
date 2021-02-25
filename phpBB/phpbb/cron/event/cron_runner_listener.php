@@ -18,7 +18,7 @@ use phpbb\lock\db;
 use phpbb\request\request_interface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 /**
  * Event listener that executes cron tasks, after the response was served
@@ -57,9 +57,9 @@ class cron_runner_listener implements EventSubscriberInterface
 	/**
 	 * Runs the cron job after the response was sent
 	 *
-	 * @param PostResponseEvent	$event	The event
+	 * @param TerminateEvent	$event	The event
 	 */
-	public function on_kernel_terminate(PostResponseEvent $event)
+	public function on_kernel_terminate(TerminateEvent $event)
 	{
 		$request = $event->getRequest();
 		$controller_name = $request->get('_route');
