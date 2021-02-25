@@ -702,9 +702,9 @@ class acp_main
 				'S_MBSTRING_LOADED'						=> true,
 				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> $func_overload && ($func_overload & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !empty($http_input),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !empty($http_output),
-				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && strtolower($default_charset) !== 'utf-8',
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> $http_input !== null && !in_array(strtolower($http_input), array('utf-8', '')),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> $http_output !== null && !in_array(strtolower($http_output), array('utf-8', '')),
+				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && !in_array(strtolower($default_charset), array('utf-8', '')),
 			]);
 		}
 
