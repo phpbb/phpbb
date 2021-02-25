@@ -364,6 +364,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		</xsl:choose>';
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
+		// Add an alias to ensure red heart will become Twemoji'd, even though Unicode says it doesn't have Emoji_Presentation attribute.
+		$configurator->Emoji->aliases["\u{2764}"] = "\u{2764}\u{FE0F}";
+
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
 		*
