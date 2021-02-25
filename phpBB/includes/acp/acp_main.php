@@ -702,9 +702,9 @@ class acp_main
 				'S_MBSTRING_LOADED'						=> true,
 				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> $func_overload && ($func_overload & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> $http_input !== null && !in_array(strtolower($http_input), array('utf-8', '')),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> $http_output !== null && !in_array(strtolower($http_output), array('utf-8', '')),
-				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && !in_array(strtolower($default_charset), array('utf-8', '')),
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> $this->warn_if_not_utf8($http_input),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> $this->warn_if_not_utf8($http_output),
+				'S_DEFAULT_CHARSET_FAIL'				=> $this->warn_if_not_utf8($default_charset),
 			]);
 		}
 
@@ -716,5 +716,35 @@ class acp_main
 
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
+	}
+	
+	/**
+	* Wrapper for checking IniGetWrapper::getString return value for "effectively UTF-8".
+	*
+	* Since PHP 5.6.x, PHP wants mbstring.http_input and mbstring.http_output to be blank,
+	* so that they will inherit default_charset.  IniGetWrapper::getString itself returns
+	* NULL if a setting did not exist.  But we can also see PHP itself return an empty string
+	* when the PHP.INI contains no reference to one of these settings.
+	*
+	* So we're going to account for three cases here, and consider that "all of them mean
+	* we're about to get the UTF-8 encoding behavior that phpBB requires."  First is for
+	* either NULL or an empty string, either of which would represent a system configured
+	* per PHP documentation to "leave this setting blank."
+	*
+	* But we will also accept "UTF-8" or "utf-8".  Not just because this is explicitly required
+	* for checking default_charset, but also because if either mbstring.http_input or
+	* mbstring.http_output were explicitly configured to this, phpBB is still getting the
+	* "PHP will use UTF-8" behavior intended.  Creating a warning "just because they didn't
+	* get there with a blank value" doesn't make things better, and may not be a setting
+	* that the user can change in order to eliminate the unnecessary warning.
+	* 
+	* @param string $config		Value returned from IniGetWrapper::getString() to be examined.
+	*
+	* @return bool				True (warning should be presented) if the configuration value
+	*							was not effecitvely "UTF-8".  Else false (no warning to be shown).
+	*/
+	function warn_if_not_utf8($config)
+	{
+		return ($config !== null) && (!in_array(strtolower($config), ['utf-8', '']));
 	}
 }
