@@ -659,6 +659,10 @@ function create_thumbnail($source, $destination, $mimetype)
 				case IMG_WBMP:
 					$image = @imagecreatefromwbmp($source);
 				break;
+
+				case IMG_WEBP:
+					$image = @imagecreatefromwebp($source);
+				break;
 			}
 
 			if (empty($image))
@@ -709,6 +713,10 @@ function create_thumbnail($source, $destination, $mimetype)
 
 				case IMG_WBMP:
 					imagewbmp($new_image, $destination);
+				break;
+
+				case IMG_WEBP:
+					imagewebp($new_image, $destination);
 				break;
 			}
 
