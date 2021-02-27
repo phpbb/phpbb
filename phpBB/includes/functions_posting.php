@@ -552,7 +552,7 @@ function get_supported_image_types($type = false)
 		else
 		{
 			$new_type = array();
-			$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP);
+			$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP, IMG_WEBP);
 
 			foreach ($go_through_types as $check_type)
 			{
