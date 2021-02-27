@@ -936,16 +936,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "2.8.1",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "2ac2ab8c28849311424a78ea21a8368423053ce3"
+                "reference": "46ff5bf0a660caae4291f19a50bc742d93b6bf3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/2ac2ab8c28849311424a78ea21a8368423053ce3",
-                "reference": "2ac2ab8c28849311424a78ea21a8368423053ce3",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/46ff5bf0a660caae4291f19a50bc742d93b6bf3e",
+                "reference": "46ff5bf0a660caae4291f19a50bc742d93b6bf3e",
                 "shasum": ""
             },
             "require": {
@@ -972,7 +972,7 @@
             },
             "type": "library",
             "extra": {
-                "version": "2.8.1"
+                "version": "2.8.3"
             },
             "autoload": {
                 "psr-4": {
@@ -1004,9 +1004,9 @@
             ],
             "support": {
                 "issues": "https://github.com/s9e/TextFormatter/issues",
-                "source": "https://github.com/s9e/TextFormatter/tree/2.8.1"
+                "source": "https://github.com/s9e/TextFormatter/tree/2.8.3"
             },
-            "time": "2020-12-27T17:14:06+00:00"
+            "time": "2021-02-10T23:46:49+00:00"
         },
         {
             "name": "symfony/config",
