@@ -542,6 +542,11 @@ function get_supported_image_types($type = false)
 				case IMAGETYPE_WBMP:
 					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
+
+				// WEBP
+				case IMAGETYPE_WEBP:
+					$new_type = ($format & IMG_WEBP) ? IMG_WEBP : false;
+				break;
 			}
 		}
 		else
