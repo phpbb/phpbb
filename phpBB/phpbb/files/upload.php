@@ -362,27 +362,28 @@ class upload
 	 */
 	static public function image_types()
 	{
-		$result = array(
-			IMAGETYPE_GIF		=> array('gif'),
-			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
-			IMAGETYPE_PNG		=> array('png'),
-			IMAGETYPE_SWF		=> array('swf'),
-			IMAGETYPE_PSD		=> array('psd'),
-			IMAGETYPE_BMP		=> array('bmp'),
-			IMAGETYPE_TIFF_II	=> array('tif', 'tiff'),
-			IMAGETYPE_TIFF_MM	=> array('tif', 'tiff'),
-			IMAGETYPE_JPC		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_IFF		=> array('iff'),
-			IMAGETYPE_WBMP		=> array('wbmp'),
-			IMAGETYPE_XBM		=> array('xbm'),
-		);
+		$result = [
+			IMAGETYPE_GIF		=> ['gif'],
+			IMAGETYPE_JPEG		=> ['jpg', 'jpeg'],
+			IMAGETYPE_PNG		=> ['png'],
+			IMAGETYPE_SWF		=> ['swf'],
+			IMAGETYPE_PSD		=> ['psd'],
+			IMAGETYPE_BMP		=> ['bmp'],
+			IMAGETYPE_TIFF_II	=> ['tif', 'tiff'],
+			IMAGETYPE_TIFF_MM	=> ['tif', 'tiff'],
+			IMAGETYPE_JPC		=> ['jpg', 'jpeg'],
+			IMAGETYPE_JP2		=> ['jpg', 'jpeg'],
+			IMAGETYPE_JPX		=> ['jpg', 'jpeg'],
+			IMAGETYPE_JB2		=> ['jpg', 'jpeg'],
+			IMAGETYPE_IFF		=> ['iff'],
+			IMAGETYPE_WBMP		=> ['wbmp'],
+			IMAGETYPE_XBM		=> ['xbm'],
+			IMAGETYPE_WEBP		=> ['webp'],
+		];
 
 		if (defined('IMAGETYPE_SWC'))
 		{
-			$result[IMAGETYPE_SWC] = array('swc');
+			$result[IMAGETYPE_SWC] = ['swc'];
 		}
 
 		return $result;
