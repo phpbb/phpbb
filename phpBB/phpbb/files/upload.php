@@ -378,6 +378,7 @@ class upload
 			IMAGETYPE_IFF		=> array('iff'),
 			IMAGETYPE_WBMP		=> array('wbmp'),
 			IMAGETYPE_XBM		=> array('xbm'),
+			IMAGETYPE_WEBP		=> ['webp'],
 		);
 
 		if (defined('IMAGETYPE_SWC'))
