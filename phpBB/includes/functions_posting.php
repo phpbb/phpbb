@@ -551,8 +551,8 @@ function get_supported_image_types($type = false)
 		}
 		else
 		{
-			$new_type = array();
-			$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP, IMG_WEBP);
+			$new_type = [];
+			$go_through_types = [IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP, IMG_WEBP];
 
 			foreach ($go_through_types as $check_type)
 			{
@@ -563,14 +563,14 @@ function get_supported_image_types($type = false)
 			}
 		}
 
-		return array(
+		return [
 			'gd'		=> ($new_type) ? true : false,
 			'format'	=> $new_type,
 			'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1
-		);
+		];
 	}
 
-	return array('gd' => false);
+	return ['gd' => false];
 }
 
 /**
