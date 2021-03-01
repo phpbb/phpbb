@@ -542,12 +542,17 @@ function get_supported_image_types($type = false)
 				case IMAGETYPE_WBMP:
 					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
+
+				// WEBP
+				case IMAGETYPE_WEBP:
+					$new_type = ($format & IMG_WEBP) ? IMG_WEBP : false;
+				break;
 			}
 		}
 		else
 		{
-			$new_type = array();
-			$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP);
+			$new_type = [];
+			$go_through_types = [IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP, IMG_WEBP];
 
 			foreach ($go_through_types as $check_type)
 			{
@@ -558,14 +563,14 @@ function get_supported_image_types($type = false)
 			}
 		}
 
-		return array(
+		return [
 			'gd'		=> ($new_type) ? true : false,
 			'format'	=> $new_type,
 			'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1
-		);
+		];
 	}
 
-	return array('gd' => false);
+	return ['gd' => false];
 }
 
 /**
@@ -659,6 +664,10 @@ function create_thumbnail($source, $destination, $mimetype)
 				case IMG_WBMP:
 					$image = @imagecreatefromwbmp($source);
 				break;
+
+				case IMG_WEBP:
+					$image = @imagecreatefromwebp($source);
+				break;
 			}
 
 			if (empty($image))
@@ -709,6 +718,10 @@ function create_thumbnail($source, $destination, $mimetype)
 
 				case IMG_WBMP:
 					imagewbmp($new_image, $destination);
+				break;
+
+				case IMG_WEBP:
+					imagewebp($new_image, $destination);
 				break;
 			}
 
