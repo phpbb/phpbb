@@ -123,8 +123,8 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.0'
                       db: "mysql:5.7"
-                    # - php: '8.1' ## Disabled since currently unstable
-                    #   db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -151,7 +151,6 @@ jobs:
                     --health-retries 5
                 ports:
                     - 6379:6379
-
 
         steps:
             - name: Checkout repository
@@ -271,7 +270,6 @@ jobs:
                     --health-retries 5
                 ports:
                     - 6379:6379
-
 
         steps:
             - name: Checkout repository
