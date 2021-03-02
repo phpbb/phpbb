@@ -28,9 +28,15 @@ NGINX_PHP_CONF="$DIR/nginx-php.conf"
 PHP_FPM_BIN="/usr/sbin/php-fpm$PHP_VERSION"
 PHP_FPM_CONF="$DIR/php-fpm.conf"
 
-if [ ! -f $PHP_FPM_BIN ] && [ "$PHP_VERSION" == '8.1' ] && [ -f "/usr/bin/php-fpm" ]
+if [ "$PHP_VERSION" == '8.1' ]
 then
-	PHP_FPM_BIN="/usr/bin/php-fpm"
+	if [ -f "/usr/sbin/php-fpm8.0" ]
+	then
+		PHP_FPM_BIN="/usr/sbin/php-fpm8.0"
+	elif [ ! -f $PHP_FPM_BIN ] && [ -f "/usr/bin/php-fpm" ]
+	then
+		PHP_FPM_BIN="/usr/bin/php-fpm"
+	fi
 fi
 
 if [ ! -f $PHP_FPM_BIN ] && [ "$PHP_VERSION" != '8.1' ]
