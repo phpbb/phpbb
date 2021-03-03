@@ -23,7 +23,7 @@ class includeparser extends \Twig\TokenParser\IncludeTokenParser
 	*
 	* @return \Twig\Node\Node A Twig\Node instance
 	*/
-	public function parse(\Twig\Token $token)
+	public function parse(\Twig\Token $token) : \Twig\Node\Node
 	{
 		$expr = $this->parser->getExpressionParser()->parseExpression();
 
@@ -37,7 +37,7 @@ class includeparser extends \Twig\TokenParser\IncludeTokenParser
 	*
 	* @return string The tag name
 	*/
-	public function getTag()
+	public function getTag() : string
 	{
 		return 'INCLUDE';
 	}

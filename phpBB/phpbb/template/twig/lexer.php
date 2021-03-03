@@ -15,7 +15,7 @@ namespace phpbb\template\twig;
 
 class lexer extends \Twig\Lexer
 {
-	public function tokenize(\Twig\Source $source)
+	public function tokenize(\Twig\Source $source) : \Twig\TokenStream
 	{
 		$code = $source->getCode();
 		$filename = $source->getName();

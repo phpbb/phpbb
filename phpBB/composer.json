@@ -56,7 +56,7 @@
 		"symfony/routing": "~5.2",
 		"symfony/twig-bridge": "~5.2",
 		"symfony/yaml": "~5.2",
-		"twig/twig": "^1.0 || ^2.0"
+		"twig/twig": "^3.0"
 	},
 	"require-dev": {
 		"fabpot/goutte": "~3.2",
