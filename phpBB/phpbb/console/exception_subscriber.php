@@ -52,6 +52,12 @@ class exception_subscriber implements EventSubscriberInterface
 
 			$event->setError($exception);
 		}
+
+		// If the exception has an exit code of 0, Symfony will suppress it by default which we don't want
+		if ($event->getExitCode() === 0 && $original_exception->getCode() === 0)
+		{
+			$event->setExitCode(1);
+		}
 	}
 
 	static public function getSubscribedEvents()
