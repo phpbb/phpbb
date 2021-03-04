@@ -29,7 +29,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
+		$this->cache_dir = __DIR__ . '/tmp/cache/';
 
 		if (file_exists($this->cache_dir))
 		{

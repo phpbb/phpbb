@@ -38,7 +38,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
+		return $this->createXMLDataSet(__DIR__ . '/../fixtures/empty.xml');
 	}
 
 	protected function setUp(): void

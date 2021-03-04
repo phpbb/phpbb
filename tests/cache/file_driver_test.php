@@ -26,7 +26,7 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 	{
 		parent::setUp();
 
-		$this->cache_dir = dirname(__FILE__) . '/../tmp/cache/';
+		$this->cache_dir = __DIR__ . '/../tmp/cache/';
 
 		if (file_exists($this->cache_dir))
 		{

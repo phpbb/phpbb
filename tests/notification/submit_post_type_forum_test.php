@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/submit_post_base.php';
+require_once __DIR__ . '/submit_post_base.php';
 
 class phpbb_notification_submit_post_type_forum_test extends phpbb_notification_submit_post_base
 {

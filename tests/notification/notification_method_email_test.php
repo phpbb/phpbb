@@ -15,7 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-require_once dirname(__FILE__) . '/base.php';
+require_once __DIR__ . '/base.php';
 
 class notification_method_email_test extends phpbb_tests_notification_base
 {
@@ -24,7 +24,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/email_notification.type.post.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/email_notification.type.post.xml');
 	}
 
 	protected function get_notification_methods()
@@ -257,7 +257,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				'post_username' => '',
 				'forum_name' => '',
 			],
-			
+
 			$post_data);
 		$notification_options = [
 			'item_id'			=> $post_data['post_id'],
