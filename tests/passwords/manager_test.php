@@ -25,7 +25,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$config =  new \phpbb\config\config(array());
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
 		$request = new phpbb_mock_request(array(), array(), array(), array(), array('password' => 'töst'));
-		$phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
+		$phpbb_root_path = __DIR__ . '/../../phpBB/';
 		$php_ext = 'php';
 
 		$this->passwords_drivers = array(

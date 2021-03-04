@@ -64,7 +64,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/../dbal/fixtures/migrator.xml');
+		return $this->createXMLDataSet(__DIR__ . '/../dbal/fixtures/migrator.xml');
 	}
 
 	public function get_callable_from_step_provider()

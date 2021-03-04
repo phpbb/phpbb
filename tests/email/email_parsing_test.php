@@ -55,7 +55,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$user->data['user_lang'] = 'en';
 		$phpbb_container->set('user', $user);
 		$extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',

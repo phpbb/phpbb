@@ -15,7 +15,7 @@ class phpbb_dbal_cross_join_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/massmail_crossjoin.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/massmail_crossjoin.xml');
 	}
 
 	public function test_cross_join()

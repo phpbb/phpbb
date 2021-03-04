@@ -15,7 +15,7 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/language_select.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/language_select.xml');
 	}
 
 	static public function language_select_data()

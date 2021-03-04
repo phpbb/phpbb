@@ -262,7 +262,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db,
 			$config,
 			self::$config['table_prefix'] . 'ext',
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			$phpEx,
 			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);

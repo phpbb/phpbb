@@ -191,4 +191,3 @@ foreach ($iterator as $file)
 		file_put_contents($file->getPathname(), $code);
 	}
 }
-

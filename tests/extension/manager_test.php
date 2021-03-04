@@ -11,10 +11,10 @@
 *
 */
 
-require_once dirname(__FILE__) . '/ext/vendor2/bar/ext.php';
-require_once dirname(__FILE__) . '/ext/vendor2/foo/ext.php';
-require_once dirname(__FILE__) . '/ext/vendor3/foo/ext.php';
-require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
+require_once __DIR__ . '/ext/vendor2/bar/ext.php';
+require_once __DIR__ . '/ext/vendor2/foo/ext.php';
+require_once __DIR__ . '/ext/vendor3/foo/ext.php';
+require_once __DIR__ . '/ext/vendor/moo/ext.php';
 
 class phpbb_extension_manager_test extends phpbb_database_test_case
 {
@@ -23,7 +23,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/extensions.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/extensions.xml');
 	}
 
 	protected function setUp(): void
@@ -178,7 +178,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$db,
 			$config,
 			'phpbb_ext',
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			$php_ext,
 			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
 		);

@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/common_helper_route.php';
+require_once __DIR__ . '/common_helper_route.php';
 
 class phpbb_controller_helper_route_other_app_test extends phpbb_controller_common_helper_route
 {

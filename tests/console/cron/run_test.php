@@ -15,7 +15,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cron\run;
 
-require_once dirname(__FILE__) . '/tasks/simple.php';
+require_once __DIR__ . '/tasks/simple.php';
 
 class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 {
@@ -29,7 +29,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/config.xml');
 	}
 
 	protected function setUp(): void

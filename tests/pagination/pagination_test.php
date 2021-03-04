@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../template/template_test_case.php';
+require_once __DIR__ . '/../template/template_test_case.php';
 
 class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 {
@@ -36,17 +36,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 
-		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
+		$manager = new phpbb_mock_extension_manager(__DIR__ . '/', array());
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
+			new \phpbb\routing\file_locator(__DIR__ . '/')
 		);
-		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $manager);
 
 		$mock_container = new phpbb_mock_container_builder();
 		$mock_container->set('cron.task_collection', []);
 
-		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true, true);
+		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);

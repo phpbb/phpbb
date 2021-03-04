@@ -15,7 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_posting.php';
 
 abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
@@ -47,7 +47,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/submit_post_' . $this->item_type . '.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/submit_post_' . $this->item_type . '.xml');
 	}
 
 	protected function setUp(): void

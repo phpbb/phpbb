@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_transfer.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_transfer.php';
 
 /**
 * @group slow

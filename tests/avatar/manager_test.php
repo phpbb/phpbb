@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/driver/foobar.php';
+require_once __DIR__ . '/driver/foobar.php';
 
 class phpbb_avatar_manager_test extends \phpbb_database_test_case
 {
@@ -25,7 +25,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/users.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/users.xml');
 	}
 
 	protected function setUp(): void

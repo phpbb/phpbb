@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_download.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_download.php';
 
 class phpbb_download_http_user_agent_test extends phpbb_test_case
 {

@@ -24,7 +24,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -45,10 +45,10 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
+			new \phpbb\routing\file_locator(__DIR__ . '/')
 		);
-		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true, true);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 		$routes = $router->get_routes();
 
 		// This will need to be updated if any new routes are defined
@@ -85,7 +85,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	{
 		$container = $this->get_foo_container();
 
-		$resolver = new \phpbb\controller\resolver($container, dirname(__FILE__) . '/');
+		$resolver = new \phpbb\controller\resolver($container, __DIR__ . '/');
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 
@@ -109,7 +109,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			array('', array(), array(), '\ReflectionException', 'Function () does not exist'),
 			// Before PHP 8: 'Method __invoke does not exist'
 			// As of PHP 8: 'Method phpbb\controller\foo::__invoke() does not exist'
-			array(new phpbb\controller\foo, array(), array(), '\ReflectionException', 
+			array(new phpbb\controller\foo, array(), array(), '\ReflectionException',
 				'Method ' . (version_compare(PHP_VERSION, '8', '>=') ? 'phpbb\controller\foo::__invoke()' : '__invoke') . ' does not exist'),
 		);
 	}
@@ -121,7 +121,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	{
 		$container = $this->get_foo_container();
 
-		$resolver = new \phpbb\controller\resolver($container, dirname(__FILE__) . '/');
+		$resolver = new \phpbb\controller\resolver($container, __DIR__ . '/');
 		$symfony_request = new Request();
 
 		foreach ($set_attributes as $name => $value)

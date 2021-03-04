@@ -34,7 +34,7 @@ $mode = $request->variable('mode', '');
 $modules = find_modules($phpbb_root_path . 'language/en');
 
 $kkeys = $keys = array();
-$langdir = dirname(__FILE__);
+$langdir = __DIR__;
 
 if (isset($lang))
 {
