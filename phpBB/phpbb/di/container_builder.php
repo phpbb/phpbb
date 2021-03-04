@@ -478,6 +478,12 @@ class container_builder
 				}
 			}
 
+			// Make sure phpBB's autoloader is used before the extension autoloaders
+			if (count($extensions))
+			{
+				$autoloaders .= "require('" . $this->phpbb_root_path . "vendor/autoload.php');";
+			}
+
 			$configCache = new ConfigCache($this->get_autoload_filename(), false);
 			$configCache->write($autoloaders);
 
