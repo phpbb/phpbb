@@ -1573,7 +1573,7 @@ function mcp_fork_topic($topic_ids)
 				* @var	array	sql_ary			SQL Array with the post's data
 				* @var	array	row				Post data
 				* @var	array	counter			Array with post counts
-				* @since 3.3.3-RC1
+				* @since 3.3.4-RC1
 				*/
 				$vars = [
 					'new_topic_id',
