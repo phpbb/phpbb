@@ -125,6 +125,8 @@ class create_search_index extends database_task
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 
+		$this->posts_table = $container->get_parameter('tables.posts');
+
 		$this->error = false;
 		$this->search_indexer = new fulltext_native(
 			$this->error,
