@@ -10,7 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_modules.php';
+require_once __DIR__ . '/../../phpBB/includes/acp/acp_modules.php';
 
 /**
 * @group functional
@@ -30,7 +30,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		parent::setUpBeforeClass();
 
 		self::$helper = new phpbb_test_case_helpers(__CLASS__);
-		self::$helper->copy_ext_fixtures(dirname(__FILE__) . '/fixtures/ext/', self::$fixtures);
+		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
 	}
 
 	static public function tearDownAfterClass(): void
@@ -51,7 +51,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 
 		$db = $this->get_db();
 		$cache = $this->get_cache_driver();
-		$modules = new \phpbb\module\module_manager($cache, $db, $this->phpbb_extension_manager, MODULES_TABLE, dirname(__FILE__) . '/../../phpBB/', 'php');
+		$modules = new \phpbb\module\module_manager($cache, $db, $this->phpbb_extension_manager, MODULES_TABLE, __DIR__ . '/../../phpBB/', 'php');
 
 		$sql = 'SELECT module_id
 			FROM ' . MODULES_TABLE . "

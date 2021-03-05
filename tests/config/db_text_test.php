@@ -18,7 +18,7 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config_text.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/config_text.xml');
 	}
 
 	protected function setUp(): void

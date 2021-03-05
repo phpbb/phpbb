@@ -13,7 +13,7 @@
 
 namespace
 {
-	require_once dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/di/extension.php';
+	require_once __DIR__ . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
 	class phpbb_di_container_test extends \phpbb_test_case
 	{
@@ -28,7 +28,7 @@ namespace
 
 		protected function setUp(): void
 		{
-			$this->phpbb_root_path = dirname(__FILE__) . '/';
+			$this->phpbb_root_path = __DIR__ . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
 			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
 			$this->builder->with_config($this->config_php);
@@ -162,10 +162,10 @@ namespace phpbb\extension
 		public function all_enabled($phpbb_relative = true)
 		{
 			return array(
-				'vendor/enabled' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled/',
-				'vendor/enabled-2' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled-2/',
-				'vendor/enabled-3' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled-3/',
-				'vendor/enabled_4' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/',
+				'vendor/enabled' => __DIR__ . '/fixtures/ext/vendor/enabled/',
+				'vendor/enabled-2' => __DIR__ . '/fixtures/ext/vendor/enabled-2/',
+				'vendor/enabled-3' => __DIR__ . '/fixtures/ext/vendor/enabled-3/',
+				'vendor/enabled_4' => __DIR__ . '/fixtures/ext/vendor/enabled_4/',
 			);
 		}
 	}

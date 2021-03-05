@@ -11,7 +11,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/mcp/mcp_post.php';
+require_once __DIR__ . '/../../phpBB/includes/mcp/mcp_post.php';
 
 class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 {
@@ -20,7 +20,7 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/post_ip.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/post_ip.xml');
 	}
 
 	protected function setUp(): void

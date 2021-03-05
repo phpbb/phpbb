@@ -20,7 +20,7 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/config.xml');
 	}
 
 	protected function setUp(): void

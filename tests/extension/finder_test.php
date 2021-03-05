@@ -21,7 +21,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -106,7 +106,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
-			dirname(__FILE__) . '/ext/vendor2/foo/type/',
+			__DIR__ . '/ext/vendor2/foo/type/',
 		), $dirs);
 	}
 
@@ -118,9 +118,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
-			dirname(__FILE__) . '/ext/vendor2/foo/sub/type/',
-			dirname(__FILE__) . '/ext/vendor2/foo/type/',
-			dirname(__FILE__) . '/ext/vendor2/foo/typewrong/',
+			__DIR__ . '/ext/vendor2/foo/sub/type/',
+			__DIR__ . '/ext/vendor2/foo/type/',
+			__DIR__ . '/ext/vendor2/foo/typewrong/',
 		), $dirs);
 	}
 
@@ -224,7 +224,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	{
 		$files = $this->finder
 			->extension_directory('/type')
-			->find_from_extension('vendor2/foo', dirname(__FILE__) . '/ext/vendor2/foo/');
+			->find_from_extension('vendor2/foo', __DIR__ . '/ext/vendor2/foo/');
 		$classes = $this->finder->get_classes_from_files($files);
 
 		sort($classes);
@@ -243,7 +243,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), __DIR__ . '/', $cache, 'php', '_custom_cache_name');
 		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$files = $finder->suffix('_class.php')->get_files();
 
@@ -284,7 +284,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		$finder = new \phpbb\finder(
 			new \phpbb\filesystem\filesystem(),
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			new phpbb_mock_cache(array(
 				'_ext_finder' => array(
 					md5(serialize($query)) => array('file_name' => 'extension'),
@@ -300,7 +300,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($classes);
 		$this->assertEquals(
-			array(dirname(__FILE__) . '/file_name'),
+			array(__DIR__ . '/file_name'),
 			$classes
 		);
 	}

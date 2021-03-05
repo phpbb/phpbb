@@ -55,7 +55,7 @@ class lint_test extends phpbb_test_case
 
 	public function lint_data()
 	{
-		return $this->check(dirname(__FILE__) . '/..');
+		return $this->check(__DIR__ . '/..');
 	}
 
 	protected function check($root)
@@ -81,16 +81,16 @@ class lint_test extends phpbb_test_case
 				continue;
 			}
 			if (is_dir($path) && !in_array($path, array(
-					dirname(__FILE__) . '/../.git',
-					dirname(__FILE__) . '/../build/new_version',
-					dirname(__FILE__) . '/../build/old_versions',
-					dirname(__FILE__) . '/../phpBB/cache',
-					dirname(__FILE__) . '/../phpBB/ext',
-					dirname(__FILE__) . '/../phpBB/store',
+					__DIR__ . '/../.git',
+					__DIR__ . '/../build/new_version',
+					__DIR__ . '/../build/old_versions',
+					__DIR__ . '/../phpBB/cache',
+					__DIR__ . '/../phpBB/ext',
+					__DIR__ . '/../phpBB/store',
 					// PHP Fatal error:  Cannot declare class Container because the name is already in use in /var/www/projects/phpbb3/tests/../phpBB/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/php/services1-1.php on line 20
 					// https://gist.github.com/e003913ffd493da63cbc
-					dirname(__FILE__) . '/../phpBB/vendor',
-					dirname(__FILE__) . '/../node_modules',
+					__DIR__ . '/../phpBB/vendor',
+					__DIR__ . '/../node_modules',
 				)))
 			{
 				$files = array_merge($files, $this->check($path));

@@ -33,7 +33,7 @@ class phpbb_class_loader_test extends \phpbb_test_case
 
 	public function test_resolve_path()
 	{
-		$prefix = dirname(__FILE__) . '/';
+		$prefix = __DIR__ . '/';
 		$class_loader = new \phpbb\class_loader('phpbb\\', $prefix . 'phpbb/');
 
 		$prefix .= 'phpbb/';
@@ -68,7 +68,7 @@ class phpbb_class_loader_test extends \phpbb_test_case
 		);
 		$cache = new phpbb_mock_cache($cache_map);
 
-		$prefix = dirname(__FILE__) . '/';
+		$prefix = __DIR__ . '/';
 		$class_loader = new \phpbb\class_loader('phpbb\\', $prefix . 'phpbb/', 'php', $cache);
 		$class_loader_ext = new \phpbb\class_loader('\\', $prefix . 'phpbb/', 'php', $cache);
 

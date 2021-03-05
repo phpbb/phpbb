@@ -45,7 +45,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function set_phpbb_root_path($filesystem)
 	{
-		$this->phpbb_root_path = $filesystem->clean_path(dirname(__FILE__) . '/../../phpBB/');
+		$this->phpbb_root_path = $filesystem->clean_path(__DIR__ . '/../../phpBB/');
 	}
 
 	public function test_get_web_root_path()

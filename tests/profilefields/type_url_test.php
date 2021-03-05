@@ -11,9 +11,9 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
+require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
+require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_profilefield_type_url_test extends phpbb_test_case
 {

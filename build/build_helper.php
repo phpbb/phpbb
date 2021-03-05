@@ -43,10 +43,10 @@ class build_package
 		$_before = $this->versions[count($this->versions) - 2];
 
 		$this->locations = array(
-			'new_version'	=> dirname(dirname(__FILE__)) . '/phpBB/',
-			'old_versions'	=> dirname(__FILE__) . '/old_versions/',
-			'root'			=> dirname(__FILE__) . '/',
-			'package_dir'	=> dirname(__FILE__) . '/new_version/'
+			'new_version'	=> dirname(__DIR__) . '/phpBB/',
+			'old_versions'	=> __DIR__ . '/old_versions/',
+			'root'			=> __DIR__ . '/',
+			'package_dir'	=> __DIR__ . '/new_version/'
 		);
 
 		$this->package_infos = array(

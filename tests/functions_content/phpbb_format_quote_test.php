@@ -11,7 +11,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/message_parser.php';
+require_once __DIR__ . '/../../phpBB/includes/message_parser.php';
 
 class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 {

@@ -11,7 +11,7 @@
 *
 */
 
-require_once(dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php');
+require_once(__DIR__ . '/../../phpBB/includes/functions_admin.php');
 
 class phpbb_attachment_delete_test extends \phpbb_database_test_case
 {
@@ -37,7 +37,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/resync.xml');
 	}
 
 	protected function setUp(): void

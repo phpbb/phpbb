@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/common_groups_test_case.php';
+require_once __DIR__ . '/common_groups_test_case.php';
 
 /**
 * @group functional

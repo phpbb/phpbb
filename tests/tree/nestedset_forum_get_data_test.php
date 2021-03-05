@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/nestedset_forum_base.php';
+require_once __DIR__ . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_nestedset_forum_base
 {

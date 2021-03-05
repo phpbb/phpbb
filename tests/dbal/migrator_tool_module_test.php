@@ -11,14 +11,14 @@
 *
 */
 
-require_once dirname(__FILE__) . '/ext/foo/bar/acp/acp_test_info.php';
-require_once dirname(__FILE__) . '/ext/foo/bar/ucp/ucp_test_info.php';
+require_once __DIR__ . '/ext/foo/bar/acp/acp_test_info.php';
+require_once __DIR__ . '/ext/foo/bar/ucp/ucp_test_info.php';
 
 class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator_module.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator_module.xml');
 	}
 
 	protected function setUp(): void
@@ -43,7 +43,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		// Correctly set the root path for this test to this directory, so the classes can be found
-		$phpbb_root_path = dirname(__FILE__) . '/';
+		$phpbb_root_path = __DIR__ . '/';
 
 		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 		$module_manager = new \phpbb\module\module_manager($cache, $this->db, $phpbb_extension_manager, MODULES_TABLE, $phpbb_root_path, $phpEx);

@@ -11,7 +11,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/helper_test_case.php';
+require_once __DIR__ . '/helper_test_case.php';
 
 class phpbb_group_helper_get_rank_test extends phpbb_group_helper_test_case
 {

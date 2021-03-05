@@ -17,7 +17,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_log.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/delete_log.xml');
 	}
 
 	protected function setUp(): void
