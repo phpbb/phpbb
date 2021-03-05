@@ -46,7 +46,6 @@ $lang = array_merge($lang, array(
 	'ATTACH_COMMENT_NO_EMOJIS'	=> 'The attachment comment contains forbidden characters (Emoji).',
 	'ATTACH_DISK_FULL'			=> 'There is not enough free disk space to post this attachment.',
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
-	'ATTACH_DISK_FREE_SPACE'	=> 'Sorry, the PHP <samp>disk_free_space</samp> function is disabled in this system.',
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
 	'BBCODE_A_HELP'				=> 'Inline uploaded attachment: [attachment=]filename.ext[/attachment]',

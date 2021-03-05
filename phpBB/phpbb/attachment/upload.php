@@ -317,16 +317,6 @@ class upload
 				return false;
 			}
 		}
-		else
-		{
-			$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FREE_SPACE');
-
-			$this->file_data['post_attach'] = false;
-
-			$this->file->remove();
-
-			return false;
-		}
 
 		return true;
 	}
