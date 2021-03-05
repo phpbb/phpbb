@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/template_test_case.php';
+require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 {
@@ -45,7 +45,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 		);
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor4/bar' => array(
 					'ext_name' => 'vendor4/bar',

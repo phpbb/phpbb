@@ -11,8 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/container_builder.php';
-require_once dirname(__FILE__) . '/../mock/auth_provider.php';
+require_once __DIR__ . '/../mock/container_builder.php';
+require_once __DIR__ . '/../mock/auth_provider.php';
 
 /**
 * This class exists to setup an instance of phpbb's session class for testing.

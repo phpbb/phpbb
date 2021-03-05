@@ -136,15 +136,15 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path);
 		$file->set_upload_ary(array(
 				'size'	=> 50,
-				'tmp_name'	=> dirname(__FILE__) . '/fixture/disallowed',
+				'tmp_name'	=> __DIR__ . '/fixture/disallowed',
 				'name'		=> 'disallowed.jpg',
 				'type'		=> 'image/jpg'
 			))
 			->set_upload_namespace($upload);
-		file_put_contents(dirname(__FILE__) . '/fixture/disallowed', '<body>' . file_get_contents(dirname(__FILE__) . '/fixture/jpg'));
+		file_put_contents(__DIR__ . '/fixture/disallowed', '<body>' . file_get_contents(__DIR__ . '/fixture/jpg'));
 		$upload->common_checks($file);
 		$this->assertEquals('DISALLOWED_CONTENT', $file->error[0]);
-		unlink(dirname(__FILE__) . '/fixture/disallowed');
+		unlink(__DIR__ . '/fixture/disallowed');
 	}
 
 	public function test_common_checks_invalid_filename()

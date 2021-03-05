@@ -11,7 +11,7 @@
  *
  */
 
-require_once(dirname(__FILE__) . '/attachments_mock_feed.php');
+require_once(__DIR__ . '/attachments_mock_feed.php');
 
 class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 {
@@ -20,7 +20,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/../extension/fixtures/extensions.xml');
+		return $this->createXMLDataSet(__DIR__ . '/../extension/fixtures/extensions.xml');
 	}
 
 	protected function setUp(): void

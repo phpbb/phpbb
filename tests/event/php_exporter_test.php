@@ -19,7 +19,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->exporter = new \phpbb\event\php_exporter(dirname(__FILE__) . '/fixtures/');
+		$this->exporter = new \phpbb\event\php_exporter(__DIR__ . '/fixtures/');
 	}
 
 	static public function crawl_php_file_data()

@@ -17,7 +17,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/user_list_trim.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/user_list_trim.xml');
 	}
 
 	protected function setUp(): void

@@ -10,7 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once dirname(__FILE__) . '/../mock/sql_insert_buffer.php';
+require_once __DIR__ . '/../mock/sql_insert_buffer.php';
 
 class phpbb_notification_convert_test extends phpbb_database_test_case
 {
@@ -18,7 +18,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/convert.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/convert.xml');
 	}
 
 	protected function setUp(): void

@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/phpbb_database_connection_odbc_pdo_wrapper.php';
+require_once __DIR__ . '/phpbb_database_connection_odbc_pdo_wrapper.php';
 
 class phpbb_database_test_connection_manager
 {
@@ -177,7 +177,7 @@ class phpbb_database_test_connection_manager
 	{
 		$this->ensure_connected(__METHOD__);
 
-		$directory = dirname(__FILE__) . '/../../phpBB/install/schemas/';
+		$directory = __DIR__ . '/../../phpBB/install/schemas/';
 		$this->load_schema_from_file($directory, $db);
 	}
 

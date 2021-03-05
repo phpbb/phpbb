@@ -15,13 +15,13 @@
 // http://forums.devshed.com/php-development-5/apc-problem-561290.html
 // http://php.net/manual/en/apc.configuration.php
 
-require_once dirname(__FILE__) . '/common_test_case.php';
+require_once __DIR__ . '/common_test_case.php';
 
 class phpbb_cache_apcu_driver_test extends phpbb_cache_common_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/config.xml');
 	}
 
 	static public function setUpBeforeClass(): void

@@ -38,7 +38,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/../fixtures/empty.xml');
+		return $this->createXMLDataSet(__DIR__ . '/../fixtures/empty.xml');
 	}
 
 	protected function setUp(): void
@@ -46,7 +46,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -137,7 +137,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -148,10 +148,10 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		);
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
+			new \phpbb\routing\file_locator(__DIR__ . '/')
 		);
-		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', dirname(__FILE__) . '/', true, true);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 		$this->auth = new \phpbb\auth\auth();
 		$this->cache = new \phpbb\cache\driver\dummy();
 		$this->db = $this->new_dbal();

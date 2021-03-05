@@ -13,7 +13,7 @@
 
 use OAuth\OAuth2\Token\StdOAuth2Token;
 
-require_once dirname(__FILE__) . '/phpbb_not_a_token.php';
+require_once __DIR__ . '/phpbb_not_a_token.php';
 
 class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_case
 {
@@ -53,7 +53,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/oauth_tokens.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/oauth_tokens.xml');
 	}
 
 	public static function retrieveAccessToken_data()

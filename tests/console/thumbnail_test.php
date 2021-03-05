@@ -29,7 +29,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/thumbnail.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/thumbnail.xml');
 	}
 
 	protected function setUp(): void
@@ -68,10 +68,10 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
-		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
-		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
-		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/thumb_test_png_2');
-		copy(dirname(__FILE__) . '/fixtures/txt.txt', $this->phpbb_root_path . 'files/test_txt');
+		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
+		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
+		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/thumb_test_png_2');
+		copy(__DIR__ . '/fixtures/txt.txt', $this->phpbb_root_path . 'files/test_txt');
 	}
 
 	protected function tearDown(): void

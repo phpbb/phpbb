@@ -15,7 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-require_once dirname(__FILE__) . '/manager_helper.php';
+require_once __DIR__ . '/manager_helper.php';
 
 abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 {
