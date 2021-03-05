@@ -298,7 +298,7 @@ class upload
 	{
 		if (function_exists('disk_free_space'))
 		{
-			$free_space = disk_free_space($this->phpbb_root_path);
+			$free_space = @disk_free_space($this->phpbb_root_path);
 
 			if ($free_space <= $this->file->get('filesize'))
 			{
