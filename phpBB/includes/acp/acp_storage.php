@@ -11,6 +11,17 @@
 *
 */
 
+use phpbb\config\db as config;
+use phpbb\config\db_text as config_text;
+use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
+use phpbb\language\language;
+use phpbb\log\log_interface;
+use phpbb\path_helper;
+use phpbb\request\request;
+use phpbb\template\template;
+use phpbb\user;
+
 /**
 * @ignore
 */
@@ -21,37 +32,40 @@ if (!defined('IN_PHPBB'))
 
 class acp_storage
 {
-	/** @var \phpbb\config\config $config */
+	/** @var config $config */
 	protected $config;
 
-	/** @var \phpbb\config\db_text $config_text */
+	/** @var config_text $config_text */
 	protected $config_text;
 
-	/** @var \phpbb\db\driver\driver_interface $db */
+	/** @var driver_interface $db */
 	protected $db;
 
-	/** @var \phpbb\language\language $log */
+	/** @var language $log */
 	protected $lang;
 
-	/** @var \phpbb\log\log_interface $log */
+	/** @var log_interface $log */
 	protected $log;
 
-	/** @var \phpbb\path_helper $path_helper */
+	/** @var path_helper $path_helper */
 	protected $path_helper;
 
-	/** @var \phpbb\request\request */
+	/** @var request */
 	protected $request;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\di\service_collection */
+	/** @var user */
+	protected $user;
+
+	/** @var service_collection */
 	protected $adapter_collection;
 
-	/** @var \phpbb\di\service_collection */
+	/** @var service_collection */
 	protected $provider_collection;
 
-	/** @var \phpbb\di\service_collection */
+	/** @var service_collection */
 	protected $storage_collection;
 
 	/** @var \phpbb\filesystem\filesystem */
@@ -422,7 +436,10 @@ class acp_storage
 		]);
 	}
 
-	protected function display_progress_bar()
+	/**
+	 * Display progress bar
+	 */
+	protected function display_progress_bar() : void
 	{
 		adm_page_header($this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'));
 		$this->template->set_filenames(array(
@@ -435,7 +452,12 @@ class acp_storage
 		adm_page_footer();
 	}
 
-	function close_popup_js()
+	/**
+	 * Get JS code for closing popup
+	 *
+	 * @return string Popup JS code
+	 */
+	function close_popup_js() : string
 	{
 		return "<script type=\"text/javascript\">\n" .
 			"// <![CDATA[\n" .
@@ -444,7 +466,10 @@ class acp_storage
 			"</script>\n";
 	}
 
-	protected function save_state()
+	/**
+	 * Save state of storage update
+	 */
+	protected function save_state() : void
 	{
 		$state = $this->state;
 
@@ -456,7 +481,10 @@ class acp_storage
 		$this->config_text->set('storage_update_state', json_encode($state));
 	}
 
-	protected function load_state()
+	/**
+	 * Load state of storage update
+	 */
+	protected function load_state() : void
 	{
 		$state = json_decode($this->config_text->get('storage_update_state'), true);
 
@@ -474,7 +502,7 @@ class acp_storage
 	 * @param string $storage_name Storage name
 	 * @return string The current provider
 	 */
-	protected function get_current_provider($storage_name)
+	protected function get_current_provider(string $storage_name) : string
 	{
 		return $this->config['storage\\' . $storage_name . '\\provider'];
 	}
@@ -485,7 +513,7 @@ class acp_storage
 	 * @param string $provider Provider class
 	 * @return array Adapter definitions
 	 */
-	protected function get_provider_options($provider)
+	protected function get_provider_options(string $provider) : array
 	{
 		return $this->provider_collection->get_by_class($provider)->get_options();
 	}
@@ -497,7 +525,7 @@ class acp_storage
 	 * @param string $definition Definition
 	 * @return string Definition value
 	 */
-	protected function get_current_definition($storage_name, $definition)
+	protected function get_current_definition(string $storage_name, string $definition) : string
 	{
 		return $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
 	}
@@ -508,7 +536,7 @@ class acp_storage
 	 * @param string $storage_name Storage name
 	 * @param array $messages Reference to messages array
 	 */
-	protected function validate_data($storage_name, &$messages)
+	protected function validate_data(string $storage_name, array &$messages)
 	{
 		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
 
@@ -547,6 +575,8 @@ class acp_storage
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
+					// no break
+
 				case 'text':
 				case 'password':
 					$maxlength = isset($definition_value['maxlength']) ? $definition_value['maxlength'] : 255;
@@ -554,14 +584,15 @@ class acp_storage
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
-					break;
+				break;
+
 				case 'radio':
 				case 'select':
 					if (!in_array($value, array_values($definition_value['options'])))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
 					}
-					break;
+				break;
 			}
 		}
 	}
@@ -571,7 +602,7 @@ class acp_storage
 	 *
 	 * @param string $storage_name Storage name
 	 */
-	protected function update_storage_config($storage_name)
+	protected function update_storage_config(string $storage_name) : void
 	{
 		$current_options = $this->get_provider_options($this->get_current_provider($storage_name));
 
@@ -598,10 +629,10 @@ class acp_storage
 	 *
 	 * @param string $storage_name Storage name
 	 * @param array $options Storage provider configuration keys
-	 * @param array $messages Reference to error messages array
+	 * @param array $messages Error messages array
 	 * @return void
 	 */
-	protected function validate_path($storage_name, $options, &$messages)
+	protected function validate_path(string $storage_name, array $options, array &$messages) : void
 	{
 		if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
 		{
@@ -618,7 +649,14 @@ class acp_storage
 		}
 	}
 
-	protected function get_current_adapter($storage_name)
+	/**
+	 * Get current storage adapter
+	 *
+	 * @param string $storage_name Storage adapter name
+	 *
+	 * @return object Storage adapter instance
+	 */
+	protected function get_current_adapter(string $storage_name): object
 	{
 		static $adapters = [];
 
@@ -645,7 +683,14 @@ class acp_storage
 		return $adapters[$storage_name];
 	}
 
-	protected function get_new_adapter($storage_name)
+	/**
+	 * Get new storage adapter
+	 *
+	 * @param string $storage_name
+	 *
+	 * @return object Storage adapter instance
+	 */
+	protected function get_new_adapter(string $storage_name) : object
 	{
 		static $adapters = [];
 
