@@ -352,4 +352,16 @@ class recaptcha_v3 extends captcha_abstract
 
 		return $language->lang('RECAPTCHA_INCORRECT');
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_login_error_attempts(): string
+	{
+		global $language;
+
+		$language->add_lang('captcha_recaptcha');
+
+		return 'RECAPTCHA_V3_LOGIN_ERROR_ATTEMPTS';
+	}
 }
