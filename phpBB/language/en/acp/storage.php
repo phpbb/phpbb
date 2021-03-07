@@ -57,7 +57,7 @@ $lang = array_merge($lang, array(
 	'CONTINUE_UPDATING'						=> 'Continue previous update process',
 	'CONTINUE_UPDATING_EXPLAIN'				=> 'An update process has been started. In order to access the storage settings page you will have to complete it or cancel it.',
 	'STORAGE_UPDATE_REDIRECT'				=> 'Files of %1$s (%2$d/%3$d) are being moved.<br>',
-	'STORAGE_UPDATE_REMOVE_REDIRECT'		=> 'Files of old %s (%d/%d) are being removed.<br />',
+	'STORAGE_UPDATE_REMOVE_REDIRECT'		=> 'Files of old %1$s (%2$d/%3$d) are being removed.<br>',
 
 	// Template progress bar
 	'STORAGE_UPDATE_IN_PROGRESS'			=> 'Storage update in progress',
