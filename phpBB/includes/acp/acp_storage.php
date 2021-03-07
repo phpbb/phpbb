@@ -605,7 +605,7 @@ class acp_storage
 	{
 		if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
 		{
-			$path = $this->request->is_set_post('submit') ? $this->get_new_definition($storage_name, 'path') : $this->get_current_definition($storage_name, 'path');
+			$path = $this->request->is_set_post('submit') ? $this->request->variable([$storage_name, 'path'], '') : $this->get_current_definition($storage_name, 'path');
 
 			if (empty($path))
 			{
