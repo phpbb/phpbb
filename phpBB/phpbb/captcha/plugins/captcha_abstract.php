@@ -387,4 +387,15 @@ abstract class captcha_abstract
 	* @return string the name of the class used to generate the captcha
 	*/
 	abstract function get_generator_class();
+
+	/**
+	 * Get language variable for error message when CAPTCHA is being shown due
+	 * to exceeding the maximum number of login attempts
+	 *
+	 * @return string
+	 */
+	public function get_login_error_attempts(): string
+	{
+		return 'LOGIN_ERROR_ATTEMPTS';
+	}
 }
