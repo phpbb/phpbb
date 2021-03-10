@@ -112,6 +112,10 @@ class helper
 			$context->setHttpsPort($this->config['server_port']);
 			$context->setBaseUrl(rtrim($this->config['script_path'], '/'));
 		}
+		else
+		{
+			$context->setBaseUrl($this->symfony_request->getBasePath());
+		}
 
 		$script_name = $this->symfony_request->getScriptName();
 		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
