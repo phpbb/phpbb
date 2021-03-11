@@ -383,6 +383,7 @@ function getCaretPosition(txtarea) {
 
 	return caretPos;
 }
+/* import Tribute from './jquery.tribute'; */
 
 (function($) {
 	'use strict';
@@ -411,6 +412,7 @@ function getCaretPosition(txtarea) {
 		let cachedNames = [];
 		let cachedAll = [];
 		let cachedSearchKey = 'name';
+		let tribute = null;
 
 		/**
 		 * Get default avatar
@@ -418,7 +420,11 @@ function getCaretPosition(txtarea) {
 		 * @returns {string} Default avatar svg code
 		 */
 		function defaultAvatar(type) {
-			return (type === 'group') ? '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>' : '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></svg>';
+			if (type === 'group') {
+				return '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>';
+			} else {
+				return '<svg class="mention-media-avatar" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24"><path fill-rule="evenodd" d="M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></svg>';
+			}
 		}
 
 		/**
@@ -452,15 +458,19 @@ function getCaretPosition(txtarea) {
 		 */
 		function getMatchedNames(query, items, searchKey) {
 			let i;
-			let len;
-			let _results = [];
-			for (i = 0, len = items.length; i < len; i++) {
+			let itemsLength;
+			let matchedNames = [];
+			for (i = 0, itemsLength = items.length; i < itemsLength; i++) {
 				let item = items[i];
-				if (String(item[searchKey]).toLowerCase().indexOf(query.toLowerCase()) === 0) {
-					_results.push(item);
+				if (isItemMatched(query, item, searchKey)) {
+					matchedNames.push(item);
 				}
 			}
-			return _results;
+			return matchedNames;
+		}
+
+		function isItemMatched(query, item, searchKey) {
+			return String(item[searchKey]).toLowerCase().indexOf(query.toLowerCase()) === 0;
 		}
 
 		/**
@@ -481,7 +491,7 @@ function getCaretPosition(txtarea) {
 			}
 
 			let cachedKeyword = getCachedKeyword(query),
-				cachedNamesForQuery = (cachedKeyword != null) ? cachedNames[cachedKeyword] : null;
+				cachedNamesForQuery = (cachedKeyword !== null) ? cachedNames[cachedKeyword] : null;
 
 			/*
 			* Use cached values when we can:
@@ -514,6 +524,45 @@ function getCaretPosition(txtarea) {
 		};
 
 		this.handle = function(textarea) {
+			tribute = new Tribute({
+				trigger: '@',
+				allowSpaces: true,
+				containerClass: 'mention-container',
+				selectClass: 'cur',
+				itemClass: 'mention-item',
+				menuItemTemplate: function (data) {
+					const itemData = data.original;
+					let avatar = (itemData.avatar.img) ? "<span class='mention-media-avatar'>" + itemData.avatar.img + "</span>" : defaultAvatar(itemData.avatar.type),
+						rank = (itemData.rank) ? "<span class='mention-rank'>" + itemData.rank + "</span>" : '';
+					return "<span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + itemData.name + rank + "</span>";
+				},
+				selectTemplate: function (item) {
+					return '[mention=' + item.original.type + ':' + item.original.id + ']' + item.original.name + '[/mention]';
+				},
+				menuItemLimit: mentionNamesLimit,
+				values: function (text, cb) {
+					remoteFilter(text, users => cb(users));
+				},
+				noMatchTemplate: function (t) {
+					console.log('No match:');
+					console.log(t);
+				},
+				lookup: function (element, mentionText) {
+					return element.hasOwnProperty('name') ? element.name : '';
+				}
+			});
+
+			tribute.attach($(textarea));
+
+			/*
+			var tribute = new Tribute({
+				values: [
+					{ key: "Phil Heartman", value: "pheartman" },
+					{ key: "Gordon Ramsey", value: "gramsey" }
+				]
+			});
+			 */
+/*
 			$(textarea).atwho({
 				at: "@",
 				acceptSpaceBar: true,
@@ -600,6 +649,7 @@ function getCaretPosition(txtarea) {
 					}
 				}
 			});
+ */
 		};
 	}
 	phpbb.mentions = new Mentions();
@@ -642,4 +692,3 @@ function getCaretPosition(txtarea) {
 		});
 	});
 })(jQuery);
-

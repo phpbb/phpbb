@@ -13,7 +13,7 @@
 
 /* Mention dropdown
 ---------------------------------------- */
-.atwho-view { /* mention-container */
+.mention-container { /* mention-container */
 	text-align: left;
 	border-radius: 2px;
 	position: absolute;
@@ -21,7 +21,7 @@
 	transition: all 0.2s ease;
 }
 
-.atwho-view-ul { /* mention-list */
+.mention-container ul { /* mention-list */
 	overflow: auto; /* placed here for list to scroll with arrow key press */
 	max-height: 200px;
 	margin: 0;
