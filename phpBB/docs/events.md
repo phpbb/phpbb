@@ -986,20 +986,6 @@ mcp_forum_actions_before
 * Since: 3.1.11-RC1
 * Purpose: Add some information before actions fieldset
 
-mcp_forum_topic_author_username_append
-===
-* Locations:
-    + styles/prosilver/template/mcp_forum.html
-* Since: 3.2.12-RC1
-* Purpose: Append information to topic author username of member
-
-mcp_forum_topic_author_username_prepend
-===
-* Locations:
-    + styles/prosilver/template/mcp_forum.html
-* Since: 3.2.12-RC1
-* Purpose: Prepend information to topic author username of member
-
 mcp_forum_last_post_author_username_append
 ===
 * Locations:
@@ -1013,6 +999,20 @@ mcp_forum_last_post_author_username_prepend
     + styles/prosilver/template/mcp_forum.html (2)
 * Since: 3.2.12-RC1
 * Purpose: Prepend information to last post author username of member
+
+mcp_forum_topic_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.2.12-RC1
+* Purpose: Append information to topic author username of member
+
+mcp_forum_topic_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.2.12-RC1
+* Purpose: Prepend information to topic author username of member
 
 mcp_forum_topic_title_after
 ===
