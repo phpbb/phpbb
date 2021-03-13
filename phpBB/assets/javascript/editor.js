@@ -562,7 +562,7 @@ function getCaretPosition(txtarea) {
 		}
 
 		/**
-		 * atwho.js remoteFilter callback filter function
+		 * remoteFilter callback filter function
 		 * @param {string} query Query string
 		 * @param {function} callback Callback function for filtered items
 		 */

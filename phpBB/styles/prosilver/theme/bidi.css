@@ -374,7 +374,7 @@
 
 /* Mention dropdown
 ---------------------------------------- */
-.rtl .atwho-view { /* mention-container */
+.rtl .mention-container { /* mention-container */
 	text-align: right;
 }
 

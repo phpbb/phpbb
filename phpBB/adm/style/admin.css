@@ -1676,7 +1676,9 @@ fieldset.submit-buttons legend {
 	font-weight: bold;
 }
 
-.atwho-view { /* mention-container */
+.mention-container { /* mention-container */
+	overflow: auto; /* placed here for list to scroll with arrow key press */
+	max-height: 200px;
 	text-align: left;
 	background-color: #ffffff;
 	border-radius: 2px;
@@ -1689,13 +1691,11 @@ fieldset.submit-buttons legend {
 	transition: all 0.2s ease;
 }
 
-.rtl .atwho-view { /* mention-container */
+.rtl .mention-container { /* mention-container */
 	text-align: right;
 }
 
-.atwho-view-ul { /* mention-list */
-	overflow: auto; /* placed here for list to scroll with arrow key press */
-	max-height: 200px;
+.mention-container ul { /* mention-list */
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
