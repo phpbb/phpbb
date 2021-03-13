@@ -469,8 +469,96 @@ function getCaretPosition(txtarea) {
 			return matchedNames;
 		}
 
+		/**
+		 * Return whether item is matched by query
+		 *
+		 * @param {string} query Search query string
+		 * @param {MentionsData} item Mentions data item
+		 * @param {string }searchKey Key to use for matching items
+		 * @return {boolean} True if items is matched, false otherwise
+		 */
 		function isItemMatched(query, item, searchKey) {
 			return String(item[searchKey]).toLowerCase().indexOf(query.toLowerCase()) === 0;
+		}
+
+		/**
+		 * Filter items by search query
+		 *
+		 * @param {string} query Search query string
+		 * @param {Object.<number, MentionsData>} items List of {@link MentionsData} items
+		 * @return {Object.<number, MentionsData>} List of {@link MentionsData} items filtered with query and by searchKey
+		 */
+		function itemFilter(query, items) {
+			let i;
+			let len;
+			let highestPriorities = {u: 1, g: 1};
+			let _unsorted = {u: {}, g: {}};
+			let _exactMatch = [];
+			let _results = [];
+
+			// Reduce the items array to the relevant ones
+			items = getMatchedNames(query, items, 'name');
+
+			// Group names by their types and calculate priorities
+			for (i = 0, len = items.length; i < len; i++) {
+				let item = items[i];
+
+				// Check for unsupported type - in general, this should never happen
+				if (!_unsorted[item.type]) {
+					continue;
+				}
+
+				// Current user doesn't want to mention themselves with "@" in most cases -
+				// do not waste list space with their own name
+				if (item.type === 'u' && item.id === String(mentionUserId)) {
+					continue;
+				}
+
+				// Exact matches should not be prioritised - they always come first
+				if (item.name === query) {
+					_exactMatch.push(items[i]);
+					continue;
+				}
+
+				// If the item hasn't been added yet - add it
+				if (!_unsorted[item.type][item.id]) {
+					_unsorted[item.type][item.id] = item;
+					continue;
+				}
+
+				// Priority is calculated as the sum of priorities from different sources
+				_unsorted[item.type][item.id].priority += parseFloat(item.priority.toString());
+
+				// Calculate the highest priority - we'll give it to group names
+				highestPriorities[item.type] = Math.max(highestPriorities[item.type], _unsorted[item.type][item.id].priority);
+			}
+
+			// All types of names should come at the same level of importance,
+			// otherwise they will be unlikely to be shown
+			// That's why we normalize priorities and push names to a single results array
+			$.each(['u', 'g'], function(key, type) {
+				if (_unsorted[type]) {
+					$.each(_unsorted[type], function(name, value) {
+						// Normalize priority
+						value.priority /= highestPriorities[type];
+
+						// Add item to all results
+						_results.push(value);
+					});
+				}
+			});
+
+			// Sort names by priorities - higher values come first
+			_results = _results.sort(function(a, b) {
+				return b.priority - a.priority;
+			});
+
+			// Exact match is the most important - should come above anything else
+			$.each(_exactMatch, function(name, value) {
+				_results.unshift(value);
+			});
+
+			return _results;
 		}
 
 		/**
@@ -531,125 +619,26 @@ function getCaretPosition(txtarea) {
 				selectClass: 'cur',
 				itemClass: 'mention-item',
 				menuItemTemplate: function (data) {
-					const itemData = data.original;
+					const itemData = data;
 					let avatar = (itemData.avatar.img) ? "<span class='mention-media-avatar'>" + itemData.avatar.img + "</span>" : defaultAvatar(itemData.avatar.type),
 						rank = (itemData.rank) ? "<span class='mention-rank'>" + itemData.rank + "</span>" : '';
 					return "<span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + itemData.name + rank + "</span>";
 				},
 				selectTemplate: function (item) {
-					return '[mention=' + item.original.type + ':' + item.original.id + ']' + item.original.name + '[/mention]';
+					return '[mention=' + item.type + ':' + item.id + ']' + item.name + '[/mention]';
 				},
 				menuItemLimit: mentionNamesLimit,
 				values: function (text, cb) {
 					remoteFilter(text, users => cb(users));
 				},
-				noMatchTemplate: function (t) {
-					console.log('No match:');
-					console.log(t);
-				},
-				lookup: function (element, mentionText) {
+				lookup: function (element) {
 					return element.hasOwnProperty('name') ? element.name : '';
 				}
 			});
 
+			tribute.search.filter = itemFilter;
+
 			tribute.attach($(textarea));
-
-			/*
-			var tribute = new Tribute({
-				values: [
-					{ key: "Phil Heartman", value: "pheartman" },
-					{ key: "Gordon Ramsey", value: "gramsey" }
-				]
-			});
-			 */
-/*
-			$(textarea).atwho({
-				at: "@",
-				acceptSpaceBar: true,
-				displayTpl: function(data) {
-					let avatar = (data.avatar.img) ? "<span class='mention-media-avatar'>" + data.avatar.img + "</span>" : defaultAvatar(data.avatar.type),
-						rank = (data.rank) ? "<span class='mention-rank'>" + data.rank + "</span>" : '';
-					return "<li class='mention-item'><span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + data.name + rank + "</span></li>";
-				},
-				insertTpl: "[mention=${type}:${id}]${name}[/mention]",
-				limit: mentionNamesLimit,
-				callbacks: {
-					remoteFilter: remoteFilter,
-					sorter: function(query, items, searchKey) {
-						let i;
-						let len;
-						let highestPriorities = {u: 1, g: 1};
-						let _unsorted = {u: {}, g: {}};
-						let _exactMatch = [];
-						let _results = [];
-
-						// Reduce the items array to the relevant ones
-						items = getMatchedNames(query, items, searchKey);
-
-						// Group names by their types and calculate priorities
-						for (i = 0, len = items.length; i < len; i++) {
-							let item = items[i];
-
-							// Check for unsupported type - in general, this should never happen
-							if (!_unsorted[item.type]) {
-								continue;
-							}
-
-							// Current user doesn't want to mention themselves with "@" in most cases -
-							// do not waste list space with their own name
-							if (item.type === 'u' && item.id === String(mentionUserId)) {
-								continue;
-							}
-
-							// Exact matches should not be prioritised - they always come first
-							if (item.name === query) {
-								_exactMatch.push(items[i]);
-								continue;
-							}
-
-							// If the item hasn't been added yet - add it
-							if (!_unsorted[item.type][item.id]) {
-								_unsorted[item.type][item.id] = item;
-								continue;
-							}
-
-							// Priority is calculated as the sum of priorities from different sources
-							_unsorted[item.type][item.id].priority += parseFloat(item.priority.toString());
-
-							// Calculate the highest priority - we'll give it to group names
-							highestPriorities[item.type] = Math.max(highestPriorities[item.type], _unsorted[item.type][item.id].priority);
-						}
-
-						// All types of names should come at the same level of importance,
-						// otherwise they will be unlikely to be shown
-						// That's why we normalize priorities and push names to a single results array
-						$.each(['u', 'g'], function(key, type) {
-							if (_unsorted[type]) {
-								$.each(_unsorted[type], function(name, value) {
-									// Normalize priority
-									value.priority /= highestPriorities[type];
-
-									// Add item to all results
-									_results.push(value);
-								});
-							}
-						});
-
-						// Sort names by priorities - higher values come first
-						_results = _results.sort(function(a, b) {
-							return b.priority - a.priority;
-						});
-
-						// Exact match is the most important - should come above anything else
-						$.each(_exactMatch, function(name, value) {
-							_results.unshift(value);
-						});
-
-						return _results;
-					}
-				}
-			});
- */
 		};
 	}
 	phpbb.mentions = new Mentions();
