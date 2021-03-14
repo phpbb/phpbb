@@ -65,7 +65,7 @@
 					<!-- EVENT topiclist_row_topic_title_after -->
 					<div class="responsive-show" style="display: none;">
 						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
-						{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; {topicrow.LAST_POST_TIME}<br />
+						{L_LAST_POST} {L_POST_BY_AUTHOR} {% EVENT mcp_forum_last_post_author_username_prepend %}{topicrow.LAST_POST_AUTHOR_FULL}{% EVENT mcp_forum_last_post_author_username_append %} &laquo; {topicrow.LAST_POST_TIME}<br />
 					</div>
 					<span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span>
 
@@ -87,14 +87,14 @@
 					<div class="responsive-hide">
 						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
 						{% EVENT topiclist_row_topic_by_author_before %}
-						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+						{L_POST_BY_AUTHOR} {% EVENT mcp_forum_topic_author_username_prepend %}{topicrow.TOPIC_AUTHOR_FULL}{% EVENT mcp_forum_topic_author_username_append %} &raquo; {topicrow.FIRST_POST_TIME}
 						{% EVENT topiclist_row_topic_by_author_after %}
 					</div>
 					<!-- EVENT topiclist_row_append -->
 					</div>
 				</dt>
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
-				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}<br />{topicrow.LAST_POST_TIME}</span></dd>
+				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {% EVENT mcp_forum_last_post_author_username_prepend %}{topicrow.LAST_POST_AUTHOR_FULL}{% EVENT mcp_forum_last_post_author_username_append %}<br />{topicrow.LAST_POST_TIME}</span></dd>
 				<!-- IF not S_MERGE_SELECT -->
 				<dd class="mark">
 					<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->

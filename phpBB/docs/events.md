@@ -986,6 +986,34 @@ mcp_forum_actions_before
 * Since: 3.1.11-RC1
 * Purpose: Add some information before actions fieldset
 
+mcp_forum_last_post_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html (2)
+* Since: 3.3.4-RC1
+* Purpose: Append information to last post author username of member
+
+mcp_forum_last_post_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html (2)
+* Since: 3.3.4-RC1
+* Purpose: Prepend information to last post author username of member
+
+mcp_forum_topic_author_username_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.3.4-RC1
+* Purpose: Append information to topic author username of member
+
+mcp_forum_topic_author_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.3.4-RC1
+* Purpose: Prepend information to topic author username of member
+
 mcp_forum_topic_title_after
 ===
 * Locations:
@@ -2279,6 +2307,13 @@ search_results_post_before
 * Since: 3.1.0-b3
 * Purpose: Add data before search result posts
 
+search_results_post_subject_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.4-RC1
+* Purpose: Add data before search result posts subject
+
 search_results_postprofile_after
 ===
 * Locations:
@@ -2327,6 +2362,20 @@ search_results_topic_before
     + styles/prosilver/template/search_results.html
 * Since: 3.1.0-b4
 * Purpose: Add data before search result topics
+
+search_results_topic_header_lastpost_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.4-RC1
+* Purpose: Add header column(s) after `lastpost` column in search result topics
+
+search_results_topic_row_lastpost_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.4-RC1
+* Purpose: Add data column(s) after `lastpost` column in search result topics
 
 search_results_topic_title_after
 ===
