@@ -166,12 +166,13 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	if ($config['load_db_lastread'])
 	{
-		$read_tracking_join = ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')';
-		$read_tracking_select = ', tt.mark_time';
+		$sql_read_tracking['LEFT_JOIN'][] = ['FROM' => [TOPICS_TRACK_TABLE => 'tt'], 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']];
+		$sql_read_tracking['SELECT'] = ', tt.mark_time';
 	}
 	else
 	{
-		$read_tracking_join = $read_tracking_select = '';
+		$sql_read_tracking['LEFT_JOIN'] = [];
+		$sql_read_tracking['SELECT'] = '';
 	}
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -209,10 +210,31 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	}
 	$db->sql_freeresult($result);
 
-	$sql = "SELECT t.*$read_tracking_select
-		FROM " . TOPICS_TABLE . " t $read_tracking_join
-		WHERE " . $db->sql_in_set('t.topic_id', $topic_list, false, true);
+	$sql_ary = [
+		'SELECT'	=> 't.*' . $sql_read_tracking['SELECT'],
+		'FROM'		=> [TOPICS_TABLE => 't'],
+		'LEFT_JOIN'	=> $sql_read_tracking['LEFT_JOIN'],
+		'WHERE'		=> $db->sql_in_set('t.topic_id', $topic_list, false, true),
+	];
 
+	/**
+	* Event to modify SQL query before MCP forum topic data is queried
+	*
+	* @event core.mcp_forum_topic_data_modify_sql
+	* @var	array	sql_ary		SQL query array to get the MCP forum topic data
+	* @var	int		forum_id	The forum ID
+	* @var	array	topic_list	The array of MCP forum topic IDs
+	*
+	* @since 3.3.4-RC1
+	*/
+	$vars = [
+		'sql_ary',
+		'forum_id',
+		'topic_list',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.mcp_forum_topic_data_modify_sql', compact($vars)));
+
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 	while ($row_ary = $db->sql_fetchrow($result))
 	{
