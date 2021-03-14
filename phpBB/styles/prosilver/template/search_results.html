@@ -69,6 +69,7 @@
 					<dd class="posts">{L_REPLIES}</dd>
 					<dd class="views">{L_VIEWS}</dd>
 					<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
+					{% EVENT search_results_topic_header_lastpost_after %}
 				</dl>
 			</li>
 		</ul>
@@ -169,6 +170,7 @@
 							<br /><time datetime="{searchresults.LAST_POST_TIME_RFC3339}">{searchresults.LAST_POST_TIME}</time>
 						</span>
 					</dd>
+					{% EVENT search_results_topic_row_lastpost_after %}
 				</dl>
 			</li>
 			<!-- EVENT search_results_topic_after -->
@@ -210,6 +212,7 @@
 		</dl>
 
 		<div class="postbody">
+			{% EVENT search_results_post_subject_before %}
 			<h3><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></h3>
 			<div class="content">{searchresults.MESSAGE}</div>
 			<!-- EVENT search_results_content_after -->
