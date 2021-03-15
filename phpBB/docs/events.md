@@ -2265,6 +2265,13 @@ search_results_header_before
 * Since: 3.1.4-RC1
 * Purpose: Add content before the header of the search results.
 
+search_results_jumpbox_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.4-RC1
+* Purpose: Add content before the jumpbox of the search results.
+
 search_results_last_post_author_username_append
 ===
 * Locations:
