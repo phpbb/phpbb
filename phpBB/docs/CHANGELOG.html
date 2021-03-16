@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v333">Changes since 3.3.3</a></li>
 		<li><a href="#v332">Changes since 3.3.2</a></li>
 		<li><a href="#v331">Changes since 3.3.1</a></li>
 		<li><a href="#v331rc1">Changes since 3.3.1-RC1</a></li>
@@ -154,6 +155,43 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v333"></a><h3>Changes since 3.3.3</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16655">PHPBB3-16655</a>] - Suppress &quot;you now also have to pass the CAPTCHA test&quot; message for invisible CAPTCHAs</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16685">PHPBB3-16685</a>] - SQL error in ACP if database name contains a dash</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16690">PHPBB3-16690</a>] - Changing default argument in htmlspecialchars* functions causes test fail</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16691">PHPBB3-16691</a>] - Illegal string offset 'username' on MCP PM report pages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16696">PHPBB3-16696</a>] - Unsupported operand types in viewforum.php - PHP8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16697">PHPBB3-16697</a>] - Unable to login after conversion from phpBB2</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16698">PHPBB3-16698</a>] - Check for default char set in includes/acp_main.php checks only for 'UTF-8'</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16705">PHPBB3-16705</a>] - File upload fails with PHP 8 - Error parsing server response</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16706">PHPBB3-16706</a>] - Undefined array key when user is banned</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16707">PHPBB3-16707</a>] - Disable unstable PHP 8.1 builds on Github Actions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16719">PHPBB3-16719</a>] - PHP notice/warning on installation</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15392">PHPBB3-15392</a>] - Change dirname(__FILE__) to __DIR__ everywhere</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16589">PHPBB3-16589</a>] - Change wording of e-mail templates to decrease word count</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16620">PHPBB3-16620</a>] - Output short array syntax in dev:migration-tips</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16660">PHPBB3-16660</a>] - Remove or Rename &quot;Reset&quot; Button in &quot;Reset Password&quot; Dialogue </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16681">PHPBB3-16681</a>] - Replace action icons with font icons</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16684">PHPBB3-16684</a>] - GitHub Actions should run on newly created tag and release branches</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16686">PHPBB3-16686</a>] - Simplify get_database_size() SQL query for PostgreSQL</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16689">PHPBB3-16689</a>] - Bitly oauth SQL error if identifier is null</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16709">PHPBB3-16709</a>] - Update s9e/text-formatter to latest release</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16710">PHPBB3-16710</a>] - Allow WEBP images in attachments</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16712">PHPBB3-16712</a>] - Implement thumbnails for WEBP images in attachments</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16724">PHPBB3-16724</a>] - Add some template events</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16725">PHPBB3-16725</a>] - Add MCP core event</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16728">PHPBB3-16728</a>] - Add search result template event</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16726">PHPBB3-16726</a>] - Update composer packages to latest versions</li>
+			</ul>
+
 			<a name="v332"></a><h3>Changes since 3.3.2</h3>
 			<h4>Bug</h4>
 			<ul>
