@@ -38,6 +38,7 @@ else
 	$xml = simplexml_load_string(file_get_contents($url));
 }
 
+$types = [];
 foreach ($xml->xpath('//item') as $item)
 {
 	$key = (string) $item->key;
@@ -51,17 +52,20 @@ foreach ($xml->xpath('//item') as $item)
 	$types[(string) $item->type][$key] = $value;
 }
 
-ksort($types);
-foreach ($types as $type => $tickets)
+if (count($types))
 {
-	echo "<h4>$type</h4>\n";
-	echo "<ul>\n";
-
-	uksort($tickets, 'strnatcasecmp');
-
-	foreach ($tickets as $ticket)
+	ksort($types);
+	foreach ($types as $type => $tickets)
 	{
-		echo "<li>$ticket</li>\n";
+		echo "<h4>$type</h4>\n";
+		echo "<ul>\n";
+
+		uksort($tickets, 'strnatcasecmp');
+
+		foreach ($tickets as $ticket)
+		{
+			echo "<li>$ticket</li>\n";
+		}
+		echo "</ul>\n";
 	}
-	echo "</ul>\n";
 }
