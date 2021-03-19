@@ -16,7 +16,6 @@
  */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
-if (!defined('PHPBB_ENVIRONMENT'))
 
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
