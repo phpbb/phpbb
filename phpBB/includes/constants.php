@@ -247,7 +247,10 @@ define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');
 define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');
 define('BOTS_TABLE',				$table_prefix . 'bots');
-@define('CONFIG_TABLE',				$table_prefix . 'config');
+if (!defined('CONFIG_TABLE'))
+{
+	define('CONFIG_TABLE',			$table_prefix . 'config');
+}
 define('CONFIG_TEXT_TABLE',			$table_prefix . 'config_text');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
