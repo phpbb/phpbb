@@ -47,7 +47,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		parent::setUpBeforeClass();
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
-		self::$root_url = self::$config['phpbb_functional_url'];
 
 		// Important: this is used both for installation and by
 		// test cases for querying the tables.
@@ -59,6 +58,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
+
+		self::$root_url = self::$config['phpbb_functional_url'];
 
 		if (!self::$already_installed)
 		{

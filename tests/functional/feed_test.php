@@ -1417,7 +1417,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
 					foreach ($attachments as $i => $attachment)
 					{
-						$url = self::$root_url . "download/attachment/{$attachment['id']}";
+						$url = self::$root_url . "app.php/download/attachment/{$attachment['id']}";
 						$string = "Attachment #{$i}";
 
 						if ($attachment['displayed'])
