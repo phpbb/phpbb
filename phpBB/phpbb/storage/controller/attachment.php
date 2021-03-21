@@ -45,7 +45,7 @@ class attachment extends controller
 	/** @var dispatcher_interface */
 	protected $dispatcher;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var request */
@@ -122,8 +122,8 @@ class attachment extends controller
 
 		$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 
-		if (!$attachment['in_message'] && !$this->config['allow_attachments'] ||
-			$attachment['in_message'] && !$this->config['allow_pm_attach'])
+		if ((!$attachment['in_message'] && !$this->config['allow_attachments']) ||
+			($attachment['in_message'] && !$this->config['allow_pm_attach']))
 		{
 			throw new http_exception(404, 'ATTACHMENT_FUNCTIONALITY_DISABLED');
 		}

@@ -62,9 +62,9 @@ class controller
 	 *
 	 * @param string		$file		File path
 	 *
-	 * @throws \phpbb\exception\http_exception when can't access $file
+	 * @throws http_exception when can't access $file
 	 *
-	 * @return \Symfony\Component\HttpFoundation\StreamedResponse a Symfony response object
+	 * @return StreamedResponse a Symfony response object
 	 */
 	public function handle($file)
 	{

@@ -901,7 +901,8 @@ function parse_cfg_file($filename, $lines = false)
 	foreach ($lines as $line) {
 		$line = trim($line);
 
-		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false) {
+		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
+		{
 			continue;
 		}
 
@@ -909,15 +910,24 @@ function parse_cfg_file($filename, $lines = false)
 		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))), ENT_COMPAT);
 		$value = trim(substr($line, $delim_pos + 1));
 
-		if (in_array($value, array('off', 'false', '0'))) {
+		if (in_array($value, array('off', 'false', '0')))
+		{
 			$value = false;
-		} else if (in_array($value, array('on', 'true', '1'))) {
+		}
+		else if (in_array($value, array('on', 'true', '1')))
+		{
 			$value = true;
-		} else if (!trim($value)) {
+		}
+		else if (!trim($value))
+		{
 			$value = '';
-		} else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"')) {
+		}
+		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
+		{
 			$value = htmlspecialchars(substr($value, 1, strlen($value) - 2), ENT_COMPAT);
-		} else {
+		}
+		else
+			{
 			$value = htmlspecialchars($value, ENT_COMPAT);
 		}
 
