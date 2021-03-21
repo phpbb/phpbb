@@ -90,7 +90,7 @@ class acp_storage
 	 * @param string $id
 	 * @param string $mode
 	 */
-	public function main($id, $mode)
+	public function main(string $id, string $mode)
 	{
 		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path;
 
@@ -130,7 +130,11 @@ class acp_storage
 		}
 	}
 
-	public function settings($id, $mode)
+	/**
+	 * @param string $id
+	 * @param string $mode
+	 */
+	public function settings(string $id, string $mode)
 	{
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
@@ -145,7 +149,7 @@ class acp_storage
 		$this->load_state();
 
 		// If user cancelled to continue, remove state
-		if ($this->request->is_set_post('cancel', false))
+		if ($this->request->is_set_post('cancel'))
 		{
 			if (!check_form_key($form_key) || !check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
 			{
@@ -195,7 +199,7 @@ class acp_storage
 					$sql = 'SELECT file_id, file_path
 						FROM ' . STORAGE_TABLE . "
 						WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
-							AND file_id > " . $this->state['file_index'];
+							AND file_id > " . (int) $this->state['file_index'];
 					$result = $this->db->sql_query($sql);
 
 					while ($row = $this->db->sql_fetchrow($result))
@@ -241,7 +245,7 @@ class acp_storage
 						$sql = 'SELECT file_id, file_path
 							FROM ' . STORAGE_TABLE . "
 							WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
-								AND file_id > " . $this->state['file_index'];
+								AND file_id > " . (int) $this->state['file_index'];
 						$result = $this->db->sql_query($sql);
 
 						while ($row = $this->db->sql_fetchrow($result))
@@ -305,11 +309,6 @@ class acp_storage
 			}
 
 			$modified_storages = [];
-
-			if (!check_form_key($form_key))
-			{
-				$messages[] = $this->lang->lang('FORM_INVALID');
-			}
 
 			foreach ($this->storage_collection as $storage)
 			{
@@ -390,7 +389,7 @@ class acp_storage
 				}
 				else
 				{
-					trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(implode('<br>', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 
@@ -429,7 +428,7 @@ class acp_storage
 			'STORAGE_STATS'		=> $storage_stats,
 			'PROVIDERS' 		=> $this->provider_collection,
 
-			'ERROR_MSG'			=> implode('<br />', $messages),
+			'ERROR_MSG'			=> implode('<br>', $messages),
 			'S_ERROR'			=> !empty($messages),
 
 			'U_ACTION'			=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_storage'),
