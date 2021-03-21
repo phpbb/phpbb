@@ -894,11 +894,13 @@ function parse_cfg_file($filename, $lines = false)
 {
 	$parsed_items = array();
 
-	if ($lines === false) {
+	if ($lines === false)
+	{
 		$lines = file($filename);
 	}
 
-	foreach ($lines as $line) {
+	foreach ($lines as $line)
+	{
 		$line = trim($line);
 
 		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
@@ -927,14 +929,15 @@ function parse_cfg_file($filename, $lines = false)
 			$value = htmlspecialchars(substr($value, 1, strlen($value) - 2), ENT_COMPAT);
 		}
 		else
-			{
+		{
 			$value = htmlspecialchars($value, ENT_COMPAT);
 		}
 
 		$parsed_items[$key] = $value;
 	}
 
-	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name']) {
+	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
+	{
 		unset($parsed_items['parent']);
 	}
 

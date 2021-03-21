@@ -56,6 +56,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		$dispatcher = new phpbb_mock_event_dispatcher();
 
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
+
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMockBuilder('\phpbb\avatar\driver\foobar')
 			->setMethods(array('get_name'))
@@ -93,7 +95,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 				->setMethods(array('get_name'))
-				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $php_ini))
+				->setConstructorArgs(array($this->config, $controller_helper, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $php_ini))
 				->getMock();
 			}
 			$cur_avatar->expects($this->any())

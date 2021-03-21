@@ -14,6 +14,16 @@
 /**
 * @ignore
 */
+
+use phpbb\attachment\manager;
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\db\driver\driver_interface;
+use phpbb\filesystem\filesystem_interface;
+use phpbb\language\language;
+use phpbb\template\template;
+use phpbb\user;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -21,29 +31,32 @@ if (!defined('IN_PHPBB'))
 
 class acp_attachments
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var  \phpbb\filesystem\filesystem_interface */
+	/** @var  filesystem_interface */
 	protected $filesystem;
 
-	/** @var \phpbb\attachment\manager */
+	/** @var manager */
 	protected $attachment_manager;
+
+	/** @var helper */
+	protected $controller_helper;
 
 	public $id;
 	public $u_action;
@@ -63,6 +76,7 @@ class acp_attachments
 		$this->phpbb_container = $phpbb_container;
 		$this->filesystem = $phpbb_filesystem;
 		$this->attachment_manager = $phpbb_container->get('attachment.manager');
+		$this->controller_helper = $phpbb_container->get('controller.helper');
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -1082,8 +1096,8 @@ class acp_attachments
 						'PHYSICAL_FILENAME'	=> utf8_basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'U_FILE'			=> $this->controller_helper->route('phpbb_storage_attachment', ['id' => (int) $row['attach_id']])
+					));
 				}
 				$db->sql_freeresult($result);
 
@@ -1270,8 +1284,8 @@ class acp_attachments
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 
 						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'U_FILE'			=> $this->controller_helper->route('phpbb_storage_attachment', ['id' => $row['attach_id']])
+					));
 				}
 
 			break;

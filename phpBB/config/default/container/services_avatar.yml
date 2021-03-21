@@ -60,6 +60,7 @@ services:
         class: phpbb\avatar\driver\upload
         arguments:
             - '@config'
+            - '@controller.helper'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@storage.avatar'
