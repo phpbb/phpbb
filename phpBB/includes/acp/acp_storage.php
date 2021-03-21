@@ -181,7 +181,7 @@ class acp_storage
 			}
 
 			// If update_type is copy or move, copy files from the old to the new storage
-			if ($this->state['update_type'] >= 1)
+			if (in_array($this->state['update_type'], [STORAGE_UPDATE_TYPE_COPY, STORAGE_UPDATE_TYPE_MOVE], true))
 			{
 				$i = 0;
 				foreach ($this->state['storages'] as $storage_name => $storage_options)
@@ -228,7 +228,7 @@ class acp_storage
 				}
 
 				// If update_type is move files, remove the old files
-				if ($this->state['update_type'] == 2)
+				if ($this->state['update_type'] === STORAGE_UPDATE_TYPE_MOVE)
 				{
 					$i = 0;
 					foreach ($this->state['storages'] as $storage_name => $storage_options)
@@ -355,7 +355,7 @@ class acp_storage
 					$this->state = [
 						// Save the value of the checkbox, to remove all files from the
 						// old storage once they have been successfully moved
-						'update_type' => $this->request->variable('update_type', 0),
+						'update_type' => (int) $this->request->variable('update_type', STORAGE_UPDATE_TYPE_CONFIG),
 						'storage_index' => 0,
 						'file_index' => 0,
 						'remove_storage_index' => 0,

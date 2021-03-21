@@ -228,6 +228,11 @@ define('CAPTCHA_MAX_CHARS', 7);
 // Additional constants
 define('VOTE_CONVERTED', 127);
 
+// Storage update methods
+define('STORAGE_UPDATE_TYPE_CONFIG', 0);
+define('STORAGE_UPDATE_TYPE_COPY', 1);
+define('STORAGE_UPDATE_TYPE_MOVE', 2);
+
 // BC global FTW
 global $table_prefix;
 
