@@ -5,7 +5,7 @@
 <h1>{{ lang('STORAGE_TITLE') }}</h1>
 
 {% if S_CONTINUE_UPDATING %}
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 		/**
 		* Popup storage update progress bar
@@ -61,7 +61,6 @@
 	{% endif %}
 
 	<form id="acp_storage" method="post" action="{{ U_ACTION }}">
-
 		{% for storage in STORAGES %}
 			<fieldset>
 				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
