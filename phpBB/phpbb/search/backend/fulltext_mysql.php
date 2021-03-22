@@ -13,6 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\user;
+
 /**
 * Fulltext search for MySQL
 */
@@ -32,25 +37,25 @@ class fulltext_mysql extends base implements search_backend_interface
 
 	/**
 	 * Config object
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
 	 * User object
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
@@ -78,14 +83,14 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\db\driver\driver_interface $db Database object
-	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher Event dispatcher object
-	 * @param \phpbb\user $user User object
+	 * @param config $config Config object
+	 * @param driver_interface $db Database object
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -106,7 +111,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'MySQL Fulltext';
 	}
@@ -114,7 +119,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
@@ -122,7 +127,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return $this->common_words;
 	}
@@ -130,7 +135,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_word_length()
+	public function get_word_length(): array
 	{
 		return $this->word_length;
 	}
@@ -168,8 +173,8 @@ class fulltext_mysql extends base implements search_backend_interface
 			 * We also require https://bugs.mysql.com/bug.php?id=67004 to be
 			 * fixed for proper overall operation. Hence we require 5.6.8.
 			 */
-			|| $engine === 'InnoDB'
-			&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>=');
+			|| ($engine === 'InnoDB'
+			&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>='));
 
 		if (!$fulltext_supported)
 		{
@@ -204,7 +209,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function split_keywords(&$keywords, $terms)
+	public function split_keywords(&$keywords, $terms): bool
 	{
 		if ($terms == 'all')
 		{
@@ -340,10 +345,12 @@ class fulltext_mysql extends base implements search_backend_interface
 	}
 
 	/**
-	* Turns text into an array of words
-	* @param string $text contains post text/subject
-	*/
-	public function split_message($text)
+	 * Turns text into an array of words
+	 * @param string $text contains post text/subject
+	 *
+	 * @return array
+	 */
+	public function split_message($text): array
 	{
 		// Split words
 		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
@@ -429,7 +436,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}
@@ -679,7 +686,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}

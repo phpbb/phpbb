@@ -103,7 +103,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -364,7 +364,7 @@ class fulltext_postgres extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}
@@ -624,7 +624,7 @@ class fulltext_postgres extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}

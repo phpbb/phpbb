@@ -14,42 +14,35 @@
 namespace phpbb\search\backend;
 
 /**
-* @ignore
-*/
-define('SEARCH_RESULT_NOT_IN_CACHE', 0);
-define('SEARCH_RESULT_IN_CACHE', 1);
-define('SEARCH_RESULT_INCOMPLETE', 2);
-
-/**
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
 */
-abstract class base
+abstract class base implements search_backend_interface
 {
-	var $ignore_words = array();
-	var $match_synonym = array();
-	var $replace_synonym = array();
+	public const SEARCH_RESULT_NOT_IN_CACHE = 0;
+	public const SEARCH_RESULT_IN_CACHE = 1;
+	public const SEARCH_RESULT_INCOMPLETE = 2;
 
 	/**
-	* Retrieves cached search results
-	*
-	* @param string $search_key		an md5 string generated from all the passed search options to identify the results
-	* @param int	&$result_count	will contain the number of all results for the search (not only for the current page)
-	* @param array 	&$id_ary 		is filled with the ids belonging to the requested page that are stored in the cache
-	* @param int 	&$start			indicates the first index of the page
-	* @param int 	$per_page		number of ids each page is supposed to contain
-	* @param string $sort_dir		is either a or d representing ASC and DESC
-	*
-	* @return int SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
-	*/
-	function obtain_ids($search_key, &$result_count, &$id_ary, &$start, $per_page, $sort_dir)
+	 * Retrieves cached search results
+	 *
+	 * @param string $search_key an md5 string generated from all the passed search options to identify the results
+	 * @param int    &$result_count will contain the number of all results for the search (not only for the current page)
+	 * @param array    &$id_ary is filled with the ids belonging to the requested page that are stored in the cache
+	 * @param int    &$start indicates the first index of the page
+	 * @param int $per_page number of ids each page is supposed to contain
+	 * @param string $sort_dir is either a or d representing ASC and DESC
+	 *
+	 * @return int self::SEARCH_RESULT_NOT_IN_CACHE or self::SEARCH_RESULT_IN_CACHE or self::SEARCH_RESULT_INCOMPLETE
+	 */
+	public function obtain_ids(string $search_key, &$result_count, &$id_ary, &$start, $per_page, string $sort_dir): int
 	{
 		global $cache;
 
 		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
-			return SEARCH_RESULT_NOT_IN_CACHE;
+			return self::SEARCH_RESULT_NOT_IN_CACHE;
 		}
 		else
 		{
@@ -79,7 +72,7 @@ abstract class base
 				// the user requested a page past the last index
 				if ($start < 0)
 				{
-					return SEARCH_RESULT_NOT_IN_CACHE;
+					return self::SEARCH_RESULT_NOT_IN_CACHE;
 				}
 			}
 
@@ -103,27 +96,27 @@ abstract class base
 
 			if (!$complete)
 			{
-				return SEARCH_RESULT_INCOMPLETE;
+				return self::SEARCH_RESULT_INCOMPLETE;
 			}
-			return SEARCH_RESULT_IN_CACHE;
+			return self::SEARCH_RESULT_IN_CACHE;
 		}
 	}
 
 	/**
-	* Caches post/topic ids
-	*
-	* @param string $search_key		an md5 string generated from all the passed search options to identify the results
-	* @param string $keywords 		contains the keywords as entered by the user
-	* @param array	$author_ary		an array of author ids, if the author should be ignored during the search the array is empty
-	* @param int 	$result_count	contains the number of all results for the search (not only for the current page)
-	* @param array	&$id_ary 		contains a list of post or topic ids that shall be cached, the first element
-	* 	must have the absolute index $start in the result set.
-	* @param int	$start			indicates the first index of the page
-	* @param string $sort_dir		is either a or d representing ASC and DESC
-	*
-	* @return null
-	*/
-	function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
+	 * Caches post/topic ids
+	 *
+	 * @param string $search_key an md5 string generated from all the passed search options to identify the results
+	 * @param string $keywords contains the keywords as entered by the user
+	 * @param array $author_ary an array of author ids, if the author should be ignored during the search the array is empty
+	 * @param int $result_count contains the number of all results for the search (not only for the current page)
+	 * @param array    &$id_ary contains a list of post or topic ids that shall be cached, the first element
+	 *    must have the absolute index $start in the result set.
+	 * @param int $start indicates the first index of the page
+	 * @param string $sort_dir is either a or d representing ASC and DESC
+	 *
+	 * @return null
+	 */
+	public function save_ids(string $search_key, string $keywords, $author_ary, int $result_count, &$id_ary, int $start, string $sort_dir)
 	{
 		global $cache, $config, $db, $user;
 
@@ -224,15 +217,16 @@ abstract class base
 			$db->sql_query($sql);
 		}
 
-		unset($store);
-		unset($store_ids);
-		unset($id_range);
+		unset($store, $store_ids, $id_range);
 	}
 
 	/**
-	* Removes old entries from the search results table and removes searches with keywords that contain a word in $words.
-	*/
-	function destroy_cache($words, $authors = false)
+	 * Removes old entries from the search results table and removes searches with keywords that contain a word in $words.
+	 *
+	 * @param array $words
+	 * @param array|bool $authors
+	 */
+	public function destroy_cache($words, $authors = false): void
 	{
 		global $db, $cache, $config;
 
@@ -369,9 +363,9 @@ abstract class base
 		while (still_on_time() && $post_counter <= $acp_module->max_post_id)
 		{
 			$sql = 'SELECT post_id, poster_id, forum_id
-								FROM ' . POSTS_TABLE . '
-								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id <= ' . (int) ($post_counter + $acp_module->batch_size);
+				FROM ' . POSTS_TABLE . '
+				WHERE post_id >= ' . (int) ($post_counter + 1) . '
+					AND post_id <= ' . (int) ($post_counter + $acp_module->batch_size);
 			$result = $this->db->sql_query($sql);
 
 			$ids = $posters = $forum_ids = array();
@@ -381,7 +375,7 @@ abstract class base
 				$posters[] = $row['poster_id'];
 				$forum_ids[] = $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			$result->sql_freeresult($result);
 			$row_count += count($ids);
 
 			if (count($ids))

@@ -120,7 +120,7 @@ class fulltext_native extends base implements search_backend_interface
 	 * @param string $phpbb_root_path phpBB root path
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -589,7 +589,7 @@ class fulltext_native extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}
@@ -1053,7 +1053,7 @@ class fulltext_native extends base implements search_backend_interface
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}

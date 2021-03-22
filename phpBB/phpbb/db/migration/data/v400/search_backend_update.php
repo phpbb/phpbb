@@ -11,25 +11,37 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
+
+use phpbb\search\backend\fulltext_mysql;
+use phpbb\search\backend\fulltext_postgres;
+use phpbb\search\backend\fulltext_sphinx;
+use phpbb\search\backend\fulltext_native;
 
 class search_backend_update extends \phpbb\db\migration\migration
 {
+	static public function depends_on()
+	{
+		return [
+			'\phpbb\db\migration\data\v400\dev',
+		];
+	}
+
 	public function update_data()
 	{
 		switch ($this->config['search_type'])
 		{
 			case '\\phpbb\\search\\fulltext_mysql':
-				$new_search_type = 'phpbb\\search\\backend\\fulltext_mysql';
-				break;
+				$new_search_type = fulltext_mysql::class;
+			break;
 			case '\\phpbb\\search\\fulltext_postgres':
-				$new_search_type = 'phpbb\\search\\backend\\fulltext_postgres';
-				break;
+				$new_search_type = fulltext_postgres::class;
+			break;
 			case '\\phpbb\\search\\fulltext_sphinx':
-				$new_search_type = 'phpbb\\search\\backend\\fulltext_sphinx';
-				break;
+				$new_search_type = fulltext_sphinx::class;
+			break;
 			default:
-				$new_search_type = 'phpbb\\search\\backend\\fulltext_native';
+				$new_search_type = fulltext_native::class;
 		}
 
 		return [

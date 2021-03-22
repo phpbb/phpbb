@@ -48,7 +48,7 @@ class search_backend_factory
 	 *
 	 * @return search_backend_interface
 	 */
-	public function get($class)
+	public function get($class): search_backend_interface
 	{
 		return $this->search_backends->get_by_class($class);
 	}
@@ -58,7 +58,7 @@ class search_backend_factory
 	 *
 	 * @return search_backend_interface
 	 */
-	public function get_active()
+	public function get_active(): search_backend_interface
 	{
 		return $this->get($this->config['search_type']);
 	}

@@ -15,18 +15,19 @@ namespace phpbb\search\backend;
 
 use phpbb\auth\auth;
 use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\user;
-
-define('SPHINX_MAX_MATCHES', 20000);
-define('SPHINX_CONNECT_RETRIES', 3);
-define('SPHINX_CONNECT_WAIT_TIME', 300);
 
 /**
 * Fulltext search based on the sphinx search daemon
 */
 class fulltext_sphinx implements search_backend_interface
 {
+	protected const SPHINX_MAX_MATCHES = 20000;
+	protected const SPHINX_CONNECT_RETRIES = 3;
+	protected const SPHINX_CONNECT_WAIT_TIME = 300;
+
 	/**
 	 * Associative array holding index stats
 	 * @var array
@@ -131,14 +132,14 @@ class fulltext_sphinx implements search_backend_interface
 	 *
 	 * @param auth $auth Auth object
 	 * @param config $config Config object
-	 * @param $db
+	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
 	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 * @throws \Exception
 	 */
-	public function __construct($auth, $config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx)
+	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -684,15 +685,15 @@ class fulltext_sphinx implements search_backend_interface
 
 		$this->sphinx->SetFilter('deleted', array(0));
 
-		$this->sphinx->SetLimits((int) $start, (int) $per_page, max(SPHINX_MAX_MATCHES, (int) $start + $per_page));
+		$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
 		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
-		$retries = SPHINX_CONNECT_RETRIES;
+		$retries = self::SPHINX_CONNECT_RETRIES;
 		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
-			usleep(SPHINX_CONNECT_WAIT_TIME);
+			usleep(self::SPHINX_CONNECT_WAIT_TIME);
 			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 		}
 
@@ -715,15 +716,15 @@ class fulltext_sphinx implements search_backend_interface
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
-			$this->sphinx->SetLimits((int) $start, (int) $per_page, max(SPHINX_MAX_MATCHES, (int) $start + $per_page));
+			$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
 			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 			// Could be connection to localhost:9312 failed (errno=111,
 			// msg=Connection refused) during rotate, retry if so
-			$retries = SPHINX_CONNECT_RETRIES;
+			$retries = self::SPHINX_CONNECT_RETRIES;
 			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 			{
-				usleep(SPHINX_CONNECT_WAIT_TIME);
+				usleep(self::SPHINX_CONNECT_WAIT_TIME);
 				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 			}
 		}
