@@ -23,12 +23,12 @@ use phpbb\user;
 */
 class fulltext_native extends base implements search_backend_interface
 {
-	const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
-	const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
-	const UTF8_CJK_FIRST = "\xE4\xB8\x80";
-	const UTF8_CJK_LAST = "\xE9\xBE\xBB";
-	const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
-	const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
+	protected const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
+	protected const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
+	protected const UTF8_CJK_FIRST = "\xE4\xB8\x80";
+	protected const UTF8_CJK_LAST = "\xE9\xBE\xBB";
+	protected const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
+	protected const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
 
 	/**
 	 * Associative array holding index stats
@@ -147,6 +147,14 @@ class fulltext_native extends base implements search_backend_interface
 	public function get_name()
 	{
 		return 'phpBB Native Fulltext';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function is_available(): bool
+	{
+		return true;
 	}
 
 	/**

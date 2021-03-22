@@ -119,6 +119,14 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function is_available(): bool
+	{
+		return $this->db->get_sql_layer() == 'mysqli';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_search_query(): string
 	{
 		return $this->search_query;
@@ -147,7 +155,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	*/
 	public function init()
 	{
-		if ($this->db->get_sql_layer() != 'mysqli')
+		if (!$this->is_available())
 		{
 			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}

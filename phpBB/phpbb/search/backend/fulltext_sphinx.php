@@ -16,6 +16,7 @@ namespace phpbb\search\backend;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\user;
 
@@ -85,13 +86,13 @@ class fulltext_sphinx implements search_backend_interface
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
 	 * Database Tools object
-	 * @var \phpbb\db\tools\tools_interface
+	 * @var tools_interface
 	 */
 	protected $db_tools;
 
@@ -183,6 +184,14 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function is_available(): bool
+	{
+		return ($this->db->get_sql_layer() == 'mysqli' || $this->db->get_sql_layer() == 'postgres') && class_exists('SphinxClient');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_search_query()
 	{
 		return $this->search_query;
@@ -211,7 +220,7 @@ class fulltext_sphinx implements search_backend_interface
 	*/
 	public function init()
 	{
-		if ($this->db->get_sql_layer() != 'mysqli' && $this->db->get_sql_layer() != 'postgres')
+		if (!$this->is_available())
 		{
 			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
 		}
@@ -922,9 +931,7 @@ class fulltext_sphinx implements search_backend_interface
 	}
 
 	/**
-	* Returns an associative array containing information about the indexes
-	*
-	* @return string|bool Language string of error false otherwise
+	 * {@inheritdoc}
 	*/
 	public function index_stats()
 	{

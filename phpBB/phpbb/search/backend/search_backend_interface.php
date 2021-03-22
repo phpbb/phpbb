@@ -23,6 +23,13 @@ interface search_backend_interface
 	public function get_name();
 
 	/**
+	 * Returns if the search engine is available
+	 *
+	 * @return bool
+	 */
+	public function is_available();
+
+	/**
 	 * Returns the search_query
 	 *
 	 * @return string search query
@@ -142,7 +149,7 @@ interface search_backend_interface
 	/**
 	* Returns an associative array containing information about the indexes
 	*
-	* @return array|bool Language string of error false otherwise
+	* @return array|false Language string of error false otherwise
 	*/
 	public function index_stats();
 

@@ -56,7 +56,7 @@ class fulltext_postgres extends base implements search_backend_interface
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
@@ -132,6 +132,14 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function is_available(): bool
+	{
+		return $this->db->get_sql_layer() == 'postgres';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_search_query()
 	{
 		return $this->search_query;
@@ -170,7 +178,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	*/
 	public function init()
 	{
-		if ($this->db->get_sql_layer() != 'postgres')
+		if (!$this->is_available())
 		{
 			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
 		}
@@ -1047,7 +1055,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	}
 
 	/**
-	 * Computes the stats and store them in the $this->stats associative array
+	 * {@inheritdoc}
 	 */
 	protected function get_stats()
 	{

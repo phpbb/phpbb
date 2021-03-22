@@ -79,29 +79,29 @@ class acp_search
 
 		foreach ($search_types as $search)
 		{
-			$type = get_class($search);
+			// Only show available search backends
+			if($search->is_available()) {
 
-			$name = $search->get_name();
+				$name = $search->get_name();
 
-			$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
-			$identifier = substr($type, strrpos($type, '\\') + 1);
-			$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
+				$type = get_class($search);
 
-			if (method_exists($search, 'acp'))
-			{
-				$vars = $search->acp();
+				$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
+				$identifier = substr($type, strrpos($type, '\\') + 1);
+				$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
 
-				if (!$submit)
-				{
-					$template->assign_block_vars('backend', array(
-						'NAME'			=> $name,
-						'SETTINGS'		=> $vars['tpl'],
-						'IDENTIFIER'	=> $identifier,
-					));
-				}
-				else if (is_array($vars['config']))
-				{
-					$settings = array_merge($settings, $vars['config']);
+				if (method_exists($search, 'acp')) {
+					$vars = $search->acp();
+
+					if (!$submit) {
+						$template->assign_block_vars('backend', array(
+							'NAME' => $name,
+							'SETTINGS' => $vars['tpl'],
+							'IDENTIFIER' => $identifier,
+						));
+					} else if (is_array($vars['config'])) {
+						$settings = array_merge($settings, $vars['config']);
+					}
 				}
 			}
 		}
