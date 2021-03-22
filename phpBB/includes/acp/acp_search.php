@@ -24,8 +24,6 @@ class acp_search
 	var $u_action;
 	var $state;
 	var $search;
-	var $max_post_id;
-	var $batch_size = 100;
 
 	function main($id, $mode)
 	{
@@ -220,7 +218,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $template, $phpbb_log, $request;
+		global $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$action = $request->variable('action', '');
@@ -273,19 +271,28 @@ class acp_search
 
 			$action = &$this->state[1];
 
-			$this->max_post_id = $this->get_max_post_id();
-
 			$this->save_state();
 
 			switch ($action)
 			{
 				case 'delete':
-					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false)))
+					try
+					{
+						if ($status = $this->search->delete_index($this->state[2])) // Status is not null, so deleting is in progress....
+						{
+							// save the current state
+							$this->save_state();
+
+							$u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false);
+							meta_refresh(1, $u_action);
+							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $status['row_count'], $status['post_counter']) . $user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $status['rows_per_second']));
+						}
+					}
+					catch (Exception $e)
 					{
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+						trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 
 					$this->search->tidy();
@@ -298,13 +305,27 @@ class acp_search
 				break;
 
 				case 'create':
-					// pass a reference to acp_search so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create&hash=" . generate_link_hash('acp_search'), false)))
+					try
 					{
+						if ($status = $this->search->create_index($this->state[2])) // Status is not null, so indexing is in progress....
+						{
+							// save the current state
+							$this->save_state();
+
+							$u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create&hash=" . generate_link_hash('acp_search'), false);
+							meta_refresh(1, $u_action);
+							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $status['row_count'], $status['post_counter']) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $status['rows_per_second']));
+						}
+					}
+					catch (Exception $e)
+					{
+						// Error executing create_index
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+						trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
+
+					// Indexing have finished
 
 					$this->search->tidy();
 
@@ -419,19 +440,6 @@ class acp_search
 			"	close_waitscreen = 1;\n" .
 			"// ]]>\n" .
 			"</script>\n";
-	}
-
-	function get_max_post_id()
-	{
-		global $db;
-
-		$sql = 'SELECT MAX(post_id) as max_post_id
-			FROM '. POSTS_TABLE;
-		$result = $db->sql_query($sql);
-		$max_post_id = (int) $db->sql_fetchfield('max_post_id');
-		$db->sql_freeresult($result);
-
-		return $max_post_id;
 	}
 
 	function save_state($state = false)

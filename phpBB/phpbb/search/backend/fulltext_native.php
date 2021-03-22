@@ -1624,7 +1624,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index($acp_module, $u_action)
+	public function delete_index(int &$post_counter = null): ?array
 	{
 		$sql_queries = [];
 
@@ -1663,6 +1663,8 @@ class fulltext_native extends base implements search_backend_interface
 		{
 			$this->db->sql_query($sql_query);
 		}
+
+		return null;
 	}
 
 	/**

@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\user;
+use RuntimeException;
 
 /**
 * Fulltext search for MySQL
@@ -920,12 +921,12 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index($acp_module, $u_action)
+	public function create_index(int &$post_counter = null): ?array
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
-			return $error;
+			throw new RuntimeException($error);
 		}
 
 		if (empty($this->stats))
@@ -986,18 +987,18 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
-		return false;
+		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index($acp_module, $u_action)
+	public function delete_index(int &$post_counter = null): ?array
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
-			return $error;
+			throw new RuntimeException($error);
 		}
 
 		if (empty($this->stats))
@@ -1052,7 +1053,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
-		return false;
+		return null;
 	}
 
 	/**

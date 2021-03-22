@@ -23,6 +23,9 @@ abstract class base implements search_backend_interface
 	public const SEARCH_RESULT_IN_CACHE = 1;
 	public const SEARCH_RESULT_INCOMPLETE = 2;
 
+	// Batch size for create_index and delete_index
+	private const BATCH_SIZE = 100;
+
 	/**
 	 * Retrieves cached search results
 	 *
@@ -281,60 +284,30 @@ abstract class base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index($acp_module, $u_action)
+	public function create_index(int &$post_counter = null): ?array
 	{
-		$sql = 'SELECT forum_id, enable_indexing
-			FROM ' . FORUMS_TABLE;
-		$result = $this->db->sql_query($sql, 3600);
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
-		}
-		$this->db->sql_freeresult($result);
+		$max_post_id = $this->get_max_post_id();
+		$forums_indexing_enabled = $this->forum_ids_with_indexing_enabled();
 
 		$starttime = microtime(true);
 		$row_count = 0;
 
-		$post_counter = &$acp_module->state[2];
-		while (still_on_time() && $post_counter <= $acp_module->max_post_id)
+		while (still_on_time() && $post_counter <= $max_post_id)
 		{
-			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-				FROM ' . POSTS_TABLE . '
-				WHERE post_id >= ' . (int) ($post_counter + 1) . '
-					AND post_id <= ' . (int) ($post_counter + $acp_module->batch_size);
-			$result = $this->db->sql_query($sql);
+			$rows = $this->get_posts_between($post_counter + 1, $post_counter + self::BATCH_SIZE);
 
-			$buffer = $this->db->sql_buffer_nested_transactions();
-
-			if ($buffer)
-			{
-				$rows = $this->db->sql_fetchrowset($result);
-				$rows[] = false; // indicate end of array for while loop below
-
-				$this->db->sql_freeresult($result);
-			}
-
-			$i = 0;
-			while ($row = ($buffer ? $rows[$i++] : $this->db->sql_fetchrow($result)))
+			foreach ($rows as $row)
 			{
 				// Indexing enabled for this forum
-				if (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']])
+				if (in_array($row['forum_id'], $forums_indexing_enabled, true))
 				{
 					$this->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 				}
 				$row_count++;
 			}
-			if (!$buffer)
-			{
-				$this->db->sql_freeresult($result);
-			}
 
-			$post_counter += $acp_module->batch_size;
+			$post_counter += self::BATCH_SIZE;
 		}
-
-		// save the current state
-		$acp_module->save_state();
 
 		// pretend the number of posts was as big as the number of ids we indexed so far
 		// just an estimation as it includes deleted posts
@@ -343,39 +316,41 @@ abstract class base implements search_backend_interface
 		$this->tidy();
 		$this->config['num_posts'] = $num_posts;
 
-		if ($post_counter <= $acp_module->max_post_id)
+		if ($post_counter <= $max_post_id)
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
-			meta_refresh(1, $u_action);
-			trigger_error($this->user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $this->user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+
+			return [
+				'row_count' => $row_count,
+				'post_counter' => $post_counter,
+				'max_post_id' => $max_post_id,
+				'rows_per_second' => $rows_per_second,
+			];
 		}
+
+		return null;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index($acp_module, $u_action)
+	public function delete_index(int &$post_counter = null): ?array
 	{
+		$max_post_id = $this->get_max_post_id();
+
 		$starttime = microtime(true);
 		$row_count = 0;
-		$post_counter = &$acp_module->state[2];
-		while (still_on_time() && $post_counter <= $acp_module->max_post_id)
+		while (still_on_time() && $post_counter <= $max_post_id)
 		{
-			$sql = 'SELECT post_id, poster_id, forum_id
-				FROM ' . POSTS_TABLE . '
-				WHERE post_id >= ' . (int) ($post_counter + 1) . '
-					AND post_id <= ' . (int) ($post_counter + $acp_module->batch_size);
-			$result = $this->db->sql_query($sql);
-
+			$rows = $this->get_posts_between($post_counter + 1, $post_counter + self::BATCH_SIZE);
 			$ids = $posters = $forum_ids = array();
-			while ($row = $this->db->sql_fetchrow($result))
+			foreach ($rows as $row)
 			{
 				$ids[] = $row['post_id'];
 				$posters[] = $row['poster_id'];
 				$forum_ids[] = $row['forum_id'];
 			}
-			$result->sql_freeresult($result);
 			$row_count += count($ids);
 
 			if (count($ids))
@@ -383,18 +358,82 @@ abstract class base implements search_backend_interface
 				$this->index_remove($ids, $posters, $forum_ids);
 			}
 
-			$post_counter += $acp_module->batch_size;
+			$post_counter += self::BATCH_SIZE;
 		}
 
-		// save the current state
-		$acp_module->save_state();
-
-		if ($post_counter <= $acp_module->max_post_id)
+		if ($post_counter <= $max_post_id)
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
-			meta_refresh(1, append_sid($u_action));
-			trigger_error($this->user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $this->user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
+
+			return [
+				'row_count' => $row_count,
+				'post_counter' => $post_counter,
+				'max_post_id' => $max_post_id,
+				'rows_per_second' => $rows_per_second,
+			];
 		}
+	}
+
+	/**
+	 * Return the ids of the forums that have indexing enabled
+	 *
+	 * @return array
+	 */
+	protected function forum_ids_with_indexing_enabled(): array
+	{
+		$forums = [];
+
+		$sql = 'SELECT forum_id, enable_indexing
+			FROM ' . FORUMS_TABLE;
+		$result = $this->db->sql_query($sql, 3600);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if ((bool) $row['enable_indexing'])
+			{
+				$forums[] = $row['forum_id'];
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return $forums;
+	}
+
+	/**
+	 * Get posts between 2 ids
+	 *
+	 * @param int $initial_id
+	 * @param int $final_id
+	 * @return \Generator
+	 */
+	protected function get_posts_between(int $initial_id, int $final_id): \Generator
+	{
+		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id >= ' . $initial_id . '
+				AND post_id <= ' . $final_id;
+		$result = $this->db->sql_query($sql);
+
+		while($row = $this->db->sql_fetchrow($result))
+		{
+			yield $row;
+		}
+
+		$this->db->sql_freeresult($result);
+	}
+
+	/**
+	 * Get post with higher id
+	 */
+	protected function get_max_post_id(): int
+	{
+		$sql = 'SELECT MAX(post_id) as max_post_id
+			FROM '. POSTS_TABLE;
+		$result = $this->db->sql_query($sql);
+		$max_post_id = (int) $this->db->sql_fetchfield('max_post_id');
+		$this->db->sql_freeresult($result);
+
+		return $max_post_id;
 	}
 }

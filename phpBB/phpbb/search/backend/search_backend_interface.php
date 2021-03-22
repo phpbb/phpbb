@@ -15,9 +15,6 @@ namespace phpbb\search\backend;
 
 interface search_backend_interface
 {
-	// TODO: comprobar los pasos pr referencia
-	// TODO: eliminar acp_module de create index y delete index
-
 	/**
 	 * Returns the name of this search backend to be displayed to administrators
 	 *
@@ -148,16 +145,18 @@ interface search_backend_interface
 	/**
 	 * Create fulltext index
 	 *
-	 * @return string|bool error string is returned incase of errors otherwise false
+	 * @param int|null $post_counter
+	 * @return array|null array with current status or null if finished
 	 */
-	public function create_index($acp_module, $u_action);
+	public function create_index(int &$post_counter = null): ?array;
 
 	/**
 	 * Drop fulltext index
 	 *
-	 * @return string|bool error string is returned incase of errors otherwise false
+	 * @param int|null $post_counter
+	 * @return array|null array with current status or null if finished
 	 */
-	public function delete_index($acp_module, $u_action);
+	public function delete_index(int &$post_counter = null): ?array;
 
 	/**
 	 * Returns true if both FULLTEXT indexes exist

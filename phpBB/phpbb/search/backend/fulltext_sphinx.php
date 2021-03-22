@@ -607,21 +607,19 @@ class fulltext_sphinx implements search_backend_interface
 	}
 
 	/**
-	* Nothing needs to be destroyed
-	*/
+	 * Nothing needs to be destroyed
+	 */
 	public function tidy()
 	{
 		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**
-	* Create sphinx table
-	*
-	* @return string|bool error string is returned incase of errors otherwise false
-	*/
-	public function create_index($acp_module, $u_action)
+	 * {@inheritdoc}
+	 */
+	public function create_index(int &$post_counter = null): ?array
 	{
-		if (!$this->index_created())
+		if ($this->index_created())
 		{
 			$table_data = array(
 				'COLUMNS'	=> array(
@@ -643,30 +641,23 @@ class fulltext_sphinx implements search_backend_interface
 			$this->db->sql_query($sql);
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
-	* Drop sphinx table
-	*
-	* @return string|bool error string is returned incase of errors otherwise false
+	 * {@inheritdoc}
 	*/
-	public function delete_index($acp_module, $u_action)
+	public function delete_index(int &$post_counter = null): ?array
 	{
-		if (!$this->index_created())
-		{
-			return false;
+		if ($this->index_created()) {
+			$this->db_tools->sql_table_drop(SPHINX_TABLE);
 		}
 
-		$this->db_tools->sql_table_drop(SPHINX_TABLE);
-
-		return false;
+		return null;
 	}
 
 	/**
-	* Returns true if the sphinx table was created
-	*
-	* @return bool true if sphinx table was created
+	 * {@inheritdoc}
 	*/
 	public function index_created($allow_new_files = true)
 	{
