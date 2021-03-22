@@ -155,7 +155,8 @@ class acp_search
 				$search = $search_backend_factory->get($cfg_array['search_type']);
 				if (confirm_box(true))
 				{
-					if (!method_exists($search, 'init') || !($error = $search->init()))
+					// Initialize search backend, if $error is false means that everything is ok
+					if (!($error = $search->init()))
 					{
 						$config->set('search_type', $cfg_array['search_type']);
 

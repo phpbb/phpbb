@@ -121,38 +121,18 @@ class fulltext_mysql extends base implements search_backend_interface
 	 */
 	public function is_available(): bool
 	{
-		return $this->db->get_sql_layer() == 'mysqli';
+		// Check if we are using mysql
+		if($this->db->get_sql_layer() != 'mysqli')
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_search_query(): string
-	{
-		return $this->search_query;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_common_words(): array
-	{
-		return $this->common_words;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_word_length(): array
-	{
-		return $this->word_length;
-	}
-
-	/**
-	* Checks for correct MySQL version and stores min/max word length in the config
-	*
-	* @return string|bool Language key of the error/incompatibility occurred
-	*/
 	public function init()
 	{
 		if (!$this->is_available())
@@ -164,15 +144,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		$info = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$engine = '';
-		if (isset($info['Engine']))
-		{
-			$engine = $info['Engine'];
-		}
-		else if (isset($info['Type']))
-		{
-			$engine = $info['Type'];
-		}
+		$engine = $info['Engine'] ?? $info['Type'] ?? '';
 
 		$fulltext_supported = $engine === 'Aria' || $engine === 'MyISAM'
 			/**
@@ -182,7 +154,7 @@ class fulltext_mysql extends base implements search_backend_interface
 			 * fixed for proper overall operation. Hence we require 5.6.8.
 			 */
 			|| ($engine === 'InnoDB'
-			&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>='));
+				&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>='));
 
 		if (!$fulltext_supported)
 		{
@@ -212,6 +184,30 @@ class fulltext_mysql extends base implements search_backend_interface
 		}
 
 		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_search_query(): string
+	{
+		return $this->search_query;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_common_words(): array
+	{
+		return $this->common_words;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_word_length(): array
+	{
+		return $this->word_length;
 	}
 
 	/**

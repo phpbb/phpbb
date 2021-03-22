@@ -214,9 +214,7 @@ class fulltext_sphinx implements search_backend_interface
 	}
 
 	/**
-	* Checks permissions and paths, if everything is correct it generates the config file
-	*
-	* @return string|bool Language key of the error/incompatibility encountered, or false if successful
+	 * {@inheritdoc}
 	*/
 	public function init()
 	{

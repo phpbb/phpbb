@@ -140,6 +140,19 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function init()
+	{
+		if (!$this->is_available())
+		{
+			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_search_query()
 	{
 		return $this->search_query;
@@ -169,21 +182,6 @@ class fulltext_postgres extends base implements search_backend_interface
 	public function supports_phrase_search()
 	{
 		return $this->phrase_search;
-	}
-
-	/**
-	* Checks for correct PostgreSQL version and stores min/max word length in the config
-	*
-	* @return string|bool Language key of the error/incompatibility occurred
-	*/
-	public function init()
-	{
-		if (!$this->is_available())
-		{
-			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
-		}
-
-		return false;
 	}
 
 	/**

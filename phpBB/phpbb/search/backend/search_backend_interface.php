@@ -30,6 +30,15 @@ interface search_backend_interface
 	public function is_available();
 
 	/**
+	 * Method executed when a search backend is set from acp.
+	 *
+	 * Checks permissions and paths, if everything is correct it generates the config file
+	 *
+	 * @return string|false False if everything was ok or string with error message
+	 */
+	public function init();
+
+	/**
 	 * Returns the search_query
 	 *
 	 * @return string search query

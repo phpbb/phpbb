@@ -160,6 +160,14 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function init()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_search_query()
 	{
 		return $this->search_query;
