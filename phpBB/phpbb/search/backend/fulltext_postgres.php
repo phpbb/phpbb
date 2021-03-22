@@ -175,16 +175,6 @@ class fulltext_postgres extends base implements search_backend_interface
 	}
 
 	/**
-	 * Returns if phrase search is supported or not
-	 *
-	 * @return bool
-	 */
-	public function supports_phrase_search()
-	{
-		return $this->phrase_search;
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function split_keywords(&$keywords, $terms)
@@ -274,31 +264,6 @@ class fulltext_postgres extends base implements search_backend_interface
 		return false;
 	}
 
-	/**
-	* Turns text into an array of words
-	* @param string $text contains post text/subject
-	*/
-	public function split_message($text)
-	{
-		// Split words
-		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		$matches = array();
-		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
-		$text = $matches[1];
-
-		// remove too short or too long words
-		$text = array_values($text);
-		for ($i = 0, $n = count($text); $i < $n; $i++)
-		{
-			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $this->config['fulltext_postgres_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_postgres_max_word_len'])
-			{
-				unset($text[$i]);
-			}
-		}
-
-		return array_values($text);
-	}
 
 	/**
 	 * {@inheritdoc}
@@ -332,21 +297,21 @@ class fulltext_postgres extends base implements search_backend_interface
 		);
 
 		/**
-		* Allow changing the search_key for cached results
-		*
-		* @event core.search_postgres_by_keyword_modify_search_key
-		* @var	array	search_key_array	Array with search parameters to generate the search_key
-		* @var	string	type				Searching type ('posts', 'topics')
-		* @var	string	fields				Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
-		* @var	string	terms				Searching terms ('all', 'any')
-		* @var	int		sort_days			Time, in days, of the oldest possible post to list
-		* @var	string	sort_key			The sort type used from the possible sort types
-		* @var	int		topic_id			Limit the search to this topic_id only
-		* @var	array	ex_fid_ary			Which forums not to search on
-		* @var	string	post_visibility		Post visibility data
-		* @var	array	author_ary			Array of user_id containing the users to filter the results to
-		* @since 3.1.7-RC1
-		*/
+		 * Allow changing the search_key for cached results
+		 *
+		 * @event core.search_postgres_by_keyword_modify_search_key
+		 * @var	array	search_key_array	Array with search parameters to generate the search_key
+		 * @var	string	type				Searching type ('posts', 'topics')
+		 * @var	string	fields				Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
+		 * @var	string	terms				Searching terms ('all', 'any')
+		 * @var	int		sort_days			Time, in days, of the oldest possible post to list
+		 * @var	string	sort_key			The sort type used from the possible sort types
+		 * @var	int		topic_id			Limit the search to this topic_id only
+		 * @var	array	ex_fid_ary			Which forums not to search on
+		 * @var	string	post_visibility		Post visibility data
+		 * @var	array	author_ary			Array of user_id containing the users to filter the results to
+		 * @since 3.1.7-RC1
+		 */
 		$vars = array(
 			'search_key_array',
 			'type',
@@ -388,16 +353,16 @@ class fulltext_postgres extends base implements search_backend_interface
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
 				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
-			break;
+				break;
 
 			case 't':
 				$join_topic = true;
-			break;
+				break;
 
 			case 'f':
 				$sql_sort_table	= FORUMS_TABLE . ' f, ';
 				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-			break;
+				break;
 		}
 
 		// Build some display specific sql strings
@@ -407,53 +372,53 @@ class fulltext_postgres extends base implements search_backend_interface
 				$sql_match = 'p.post_subject';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
-			break;
+				break;
 
 			case 'msgonly':
 				$sql_match = 'p.post_text';
 				$sql_match_where = '';
-			break;
+				break;
 
 			case 'firstpost':
 				$sql_match = 'p.post_subject, p.post_text';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
-			break;
+				break;
 
 			default:
 				$sql_match = 'p.post_subject, p.post_text';
 				$sql_match_where = '';
-			break;
+				break;
 		}
 
 		$tsearch_query = $this->tsearch_query;
 
 		/**
-		* Allow changing the query used to search for posts using fulltext_postgres
-		*
-		* @event core.search_postgres_keywords_main_query_before
-		* @var	string	tsearch_query		The parsed keywords used for this search
-		* @var	int		result_count		The previous result count for the format of the query.
-		*									Set to 0 to force a re-count
-		* @var	bool	join_topic			Weather or not TOPICS_TABLE should be CROSS JOIN'ED
-		* @var	array	author_ary			Array of user_id containing the users to filter the results to
-		* @var	string	author_name			An extra username to search on (!empty(author_ary) must be true, to be relevant)
-		* @var	array	ex_fid_ary			Which forums not to search on
-		* @var	int		topic_id			Limit the search to this topic_id only
-		* @var	string	sql_sort_table		Extra tables to include in the SQL query.
-		*									Used in conjunction with sql_sort_join
-		* @var	string	sql_sort_join		SQL conditions to join all the tables used together.
-		*									Used in conjunction with sql_sort_table
-		* @var	int		sort_days			Time, in days, of the oldest possible post to list
-		* @var	string	sql_match			Which columns to do the search on.
-		* @var	string	sql_match_where		Extra conditions to use to properly filter the matching process
-		* @var	string	sort_by_sql			The possible predefined sort types
-		* @var	string	sort_key			The sort type used from the possible sort types
-		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
-		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
-		* @var	int		start				How many posts to skip in the search results (used for pagination)
-		* @since 3.1.5-RC1
-		*/
+		 * Allow changing the query used to search for posts using fulltext_postgres
+		 *
+		 * @event core.search_postgres_keywords_main_query_before
+		 * @var	string	tsearch_query		The parsed keywords used for this search
+		 * @var	int		result_count		The previous result count for the format of the query.
+		 *									Set to 0 to force a re-count
+		 * @var	bool	join_topic			Weather or not TOPICS_TABLE should be CROSS JOIN'ED
+		 * @var	array	author_ary			Array of user_id containing the users to filter the results to
+		 * @var	string	author_name			An extra username to search on (!empty(author_ary) must be true, to be relevant)
+		 * @var	array	ex_fid_ary			Which forums not to search on
+		 * @var	int		topic_id			Limit the search to this topic_id only
+		 * @var	string	sql_sort_table		Extra tables to include in the SQL query.
+		 *									Used in conjunction with sql_sort_join
+		 * @var	string	sql_sort_join		SQL conditions to join all the tables used together.
+		 *									Used in conjunction with sql_sort_table
+		 * @var	int		sort_days			Time, in days, of the oldest possible post to list
+		 * @var	string	sql_match			Which columns to do the search on.
+		 * @var	string	sql_match_where		Extra conditions to use to properly filter the matching process
+		 * @var	string	sort_by_sql			The possible predefined sort types
+		 * @var	string	sort_key			The sort type used from the possible sort types
+		 * @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
+		 * @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
+		 * @var	int		start				How many posts to skip in the search results (used for pagination)
+		 * @since 3.1.5-RC1
+		 */
 		$vars = array(
 			'tsearch_query',
 			'result_count',
@@ -833,15 +798,16 @@ class fulltext_postgres extends base implements search_backend_interface
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
-	*
-	* @param	string		$mode		contains the post mode: edit, post, reply, quote ...
-	* @param	int			$post_id	contains the post id of the post to index
-	* @param	string		$message	contains the post text of the post
-	* @param	string		$subject	contains the subject of the post to index
-	* @param	int			$poster_id	contains the user id of the poster
-	* @param	int			$forum_id	contains the forum id of parent forum of the post
-	*/
+	 * {@inheritdoc}
+	 */
+	public function supports_phrase_search(): bool
+	{
+		return $this->phrase_search;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		// Split old and new post/subject to obtain array of words
@@ -892,7 +858,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	 */
 	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache([], $author_ids);
 	}
 
 	/**
@@ -1093,6 +1059,33 @@ class fulltext_postgres extends base implements search_backend_interface
 		$this->db->sql_freeresult($result);
 
 		$this->stats['total_posts'] = $this->config['num_posts'];
+	}
+
+	/**
+	 * Turns text into an array of words
+	 * @param string $text contains post text/subject
+	 * @return array
+	 */
+	protected function split_message($text)
+	{
+		// Split words
+		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+		$text = $matches[1];
+
+		// remove too short or too long words
+		$text = array_values($text);
+		for ($i = 0, $n = count($text); $i < $n; $i++)
+		{
+			$text[$i] = trim($text[$i]);
+			if (utf8_strlen($text[$i]) < $this->config['fulltext_postgres_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_postgres_max_word_len'])
+			{
+				unset($text[$i]);
+			}
+		}
+
+		return array_values($text);
 	}
 
 	/**

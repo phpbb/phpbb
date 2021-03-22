@@ -1303,78 +1303,11 @@ class fulltext_native extends base implements search_backend_interface
 	}
 
 	/**
-	* Split a text into words of a given length
-	*
-	* The text is converted to UTF-8, cleaned up, and split. Then, words that
-	* conform to the defined length range are returned in an array.
-	*
-	* NOTE: duplicates are NOT removed from the return array
-	*
-	* @param	string	$text	Text to split, encoded in UTF-8
-	* @return	array			Array of UTF-8 words
-	*/
-	public function split_message($text)
+	 * {@inheritdoc}
+	 */
+	public function supports_phrase_search(): bool
 	{
-		$match = $words = array();
-
-		/**
-		* Taken from the original code
-		*/
-		// Do not index code
-		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
-		// BBcode
-		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
-
-		$min = $this->word_length['min'];
-
-		$isset_min = $min - 1;
-
-		/**
-		* Clean up the string, remove HTML tags, remove BBCodes
-		*/
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
-
-		while (strlen($word))
-		{
-			if (strlen($word) > 255 || strlen($word) <= $isset_min)
-			{
-				/**
-				* Words longer than 255 bytes are ignored. This will have to be
-				* changed whenever we change the length of search_wordlist.word_text
-				*
-				* Words shorter than $isset_min bytes are ignored, too
-				*/
-				$word = strtok(' ');
-				continue;
-			}
-
-			$len = utf8_strlen($word);
-
-			/**
-			* Test whether the word is too short to be indexed.
-			*
-			* Note that this limit does NOT apply to CJK and Hangul
-			*/
-			if ($len < $min)
-			{
-				/**
-				* Note: this could be optimized. If the codepoint is lower than Hangul's range
-				* we know that it will also be lower than CJK ranges
-				*/
-				if ((strncmp($word, self::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, self::UTF8_HANGUL_LAST, 3) > 0)
-					&& (strncmp($word, self::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, self::UTF8_CJK_LAST, 3) > 0)
-					&& (strncmp($word, self::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, self::UTF8_CJK_B_LAST, 4) > 0))
-				{
-					$word = strtok(' ');
-					continue;
-				}
-			}
-
-			$words[] = $word;
-			$word = strtok(' ');
-		}
-
-		return $words;
+		return false;
 	}
 
 	/**
@@ -1686,6 +1619,8 @@ class fulltext_native extends base implements search_backend_interface
 		$this->config->set('search_last_gc', time(), false);
 	}
 
+	// create_index is inherited from base.php
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -1733,14 +1668,14 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	*/
-	public function index_created()
+	public function index_created(): bool
 	{
 		if (!count($this->stats))
 		{
 			$this->get_stats();
 		}
 
-		return ($this->stats['total_words'] && $this->stats['total_matches']) ? true : false;
+		return $this->stats['total_words'] && $this->stats['total_matches'];
 	}
 
 	/**
@@ -1765,6 +1700,81 @@ class fulltext_native extends base implements search_backend_interface
 	{
 		$this->stats['total_words']		= $this->db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
 		$this->stats['total_matches']	= $this->db->get_estimated_row_count(SEARCH_WORDMATCH_TABLE);
+	}
+
+	/**
+	 * Split a text into words of a given length
+	 *
+	 * The text is converted to UTF-8, cleaned up, and split. Then, words that
+	 * conform to the defined length range are returned in an array.
+	 *
+	 * NOTE: duplicates are NOT removed from the return array
+	 *
+	 * @param	string	$text	Text to split, encoded in UTF-8
+	 * @return	array			Array of UTF-8 words
+	 */
+	protected function split_message($text)
+	{
+		$match = $words = array();
+
+		/**
+		 * Taken from the original code
+		 */
+		// Do not index code
+		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
+		// BBcode
+		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
+
+		$min = $this->word_length['min'];
+
+		$isset_min = $min - 1;
+
+		/**
+		 * Clean up the string, remove HTML tags, remove BBCodes
+		 */
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
+
+		while (strlen($word))
+		{
+			if (strlen($word) > 255 || strlen($word) <= $isset_min)
+			{
+				/**
+				 * Words longer than 255 bytes are ignored. This will have to be
+				 * changed whenever we change the length of search_wordlist.word_text
+				 *
+				 * Words shorter than $isset_min bytes are ignored, too
+				 */
+				$word = strtok(' ');
+				continue;
+			}
+
+			$len = utf8_strlen($word);
+
+			/**
+			 * Test whether the word is too short to be indexed.
+			 *
+			 * Note that this limit does NOT apply to CJK and Hangul
+			 */
+			if ($len < $min)
+			{
+				/**
+				 * Note: this could be optimized. If the codepoint is lower than Hangul's range
+				 * we know that it will also be lower than CJK ranges
+				 */
+				if ((strncmp($word, self::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, self::UTF8_HANGUL_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, self::UTF8_CJK_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, self::UTF8_CJK_B_LAST, 4) > 0))
+				{
+					$word = strtok(' ');
+					continue;
+				}
+			}
+
+			$words[] = $word;
+			$word = strtok(' ');
+		}
+
+		return $words;
 	}
 
 	/**

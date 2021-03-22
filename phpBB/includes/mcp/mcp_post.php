@@ -635,10 +635,7 @@ function change_poster(&$post_info, $userdata)
 	$search_backend_factory = $phpbb_container->get('search.backend_factory');
 	$search = $search_backend_factory->get_active();
 
-	if (method_exists($search, 'destroy_cache'))
-	{
-		$search->destroy_cache(array(), array($post_info['user_id'], $userdata['user_id']));
-	}
+	$search->index_remove([], [$post_info['user_id'], $userdata['user_id']], []);
 
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];

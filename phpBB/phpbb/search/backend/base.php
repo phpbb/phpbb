@@ -35,7 +35,7 @@ abstract class base implements search_backend_interface
 	 *
 	 * @return int self::SEARCH_RESULT_NOT_IN_CACHE or self::SEARCH_RESULT_IN_CACHE or self::SEARCH_RESULT_INCOMPLETE
 	 */
-	public function obtain_ids(string $search_key, &$result_count, &$id_ary, &$start, $per_page, string $sort_dir): int
+	protected function obtain_ids(string $search_key, &$result_count, &$id_ary, &$start, $per_page, string $sort_dir): int
 	{
 		global $cache;
 
@@ -116,7 +116,7 @@ abstract class base implements search_backend_interface
 	 *
 	 * @return null
 	 */
-	public function save_ids(string $search_key, string $keywords, $author_ary, int $result_count, &$id_ary, int $start, string $sort_dir)
+	protected function save_ids(string $search_key, string $keywords, $author_ary, int $result_count, &$id_ary, int $start, string $sort_dir)
 	{
 		global $cache, $config, $db, $user;
 
@@ -226,7 +226,7 @@ abstract class base implements search_backend_interface
 	 * @param array $words
 	 * @param array|bool $authors
 	 */
-	public function destroy_cache($words, $authors = false): void
+	protected function destroy_cache($words, $authors = false): void
 	{
 		global $db, $cache, $config;
 

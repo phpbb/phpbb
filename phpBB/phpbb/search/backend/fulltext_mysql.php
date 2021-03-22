@@ -349,34 +349,6 @@ class fulltext_mysql extends base implements search_backend_interface
 	}
 
 	/**
-	 * Turns text into an array of words
-	 * @param string $text contains post text/subject
-	 *
-	 * @return array
-	 */
-	public function split_message($text): array
-	{
-		// Split words
-		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		$matches = array();
-		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
-		$text = $matches[1];
-
-		// remove too short or too long words
-		$text = array_values($text);
-		for ($i = 0, $n = count($text); $i < $n; $i++)
-		{
-			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $this->config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
-			{
-				unset($text[$i]);
-			}
-		}
-
-		return array_values($text);
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
@@ -871,15 +843,16 @@ class fulltext_mysql extends base implements search_backend_interface
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
-	*
-	* @param	string		$mode contains the post mode: edit, post, reply, quote ...
-	* @param	int			$post_id	contains the post id of the post to index
-	* @param	string		$message	contains the post text of the post
-	* @param	string		$subject	contains the subject of the post to index
-	* @param	int			$poster_id	contains the user id of the poster
-	* @param	int			$forum_id	contains the forum id of parent forum of the post
-	*/
+	 * {@inheritdoc}
+	 */
+	public function supports_phrase_search(): bool
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		// Split old and new post/subject to obtain array of words
@@ -930,7 +903,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	 */
 	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		$this->destroy_cache(array(), array_unique($author_ids));
+		$this->destroy_cache([], array_unique($author_ids));
 	}
 
 	/**
@@ -939,7 +912,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	public function tidy()
 	{
 		// destroy too old cached search results
-		$this->destroy_cache(array());
+		$this->destroy_cache([]);
 
 		$this->config->set('search_last_gc', time(), false);
 	}
@@ -1149,6 +1122,34 @@ class fulltext_mysql extends base implements search_backend_interface
 		$this->db->sql_freeresult($result);
 
 		$this->stats['total_posts'] = empty($this->stats) ? 0 : $this->db->get_estimated_row_count(POSTS_TABLE);
+	}
+
+	/**
+	 * Turns text into an array of words
+	 * @param string $text contains post text/subject
+	 *
+	 * @return array
+	 */
+	protected function split_message($text): array
+	{
+		// Split words
+		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+		$text = $matches[1];
+
+		// remove too short or too long words
+		$text = array_values($text);
+		for ($i = 0, $n = count($text); $i < $n; $i++)
+		{
+			$text[$i] = trim($text[$i]);
+			if (utf8_strlen($text[$i]) < $this->config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
+			{
+				unset($text[$i]);
+			}
+		}
+
+		return array_values($text);
 	}
 
 	/**
