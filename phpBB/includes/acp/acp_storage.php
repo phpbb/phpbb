@@ -87,6 +87,13 @@ class acp_storage
 	protected $state;
 
 	/**
+	 * Update type constants
+	 */
+	public const STORAGE_UPDATE_TYPE_CONFIG = 0;
+	public const STORAGE_UPDATE_TYPE_COPY = 1;
+	public const STORAGE_UPDATE_TYPE_MOVE = 2;
+
+	/**
 	 * @param string $id
 	 * @param string $mode
 	 */
@@ -181,7 +188,7 @@ class acp_storage
 			}
 
 			// If update_type is copy or move, copy files from the old to the new storage
-			if (in_array($this->state['update_type'], [STORAGE_UPDATE_TYPE_COPY, STORAGE_UPDATE_TYPE_MOVE], true))
+			if (in_array($this->state['update_type'], [self::STORAGE_UPDATE_TYPE_COPY, self::STORAGE_UPDATE_TYPE_MOVE], true))
 			{
 				$i = 0;
 				foreach ($this->state['storages'] as $storage_name => $storage_options)
@@ -208,7 +215,7 @@ class acp_storage
 						{
 							$this->save_state();
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-							trigger_error($this->lang->lang('STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+							trigger_error($this->lang->lang('self::STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
 						}
 
 						$stream = $current_adapter->read_stream($row['file_path']);
@@ -228,7 +235,7 @@ class acp_storage
 				}
 
 				// If update_type is move files, remove the old files
-				if ($this->state['update_type'] === STORAGE_UPDATE_TYPE_MOVE)
+				if ($this->state['update_type'] === self::STORAGE_UPDATE_TYPE_MOVE)
 				{
 					$i = 0;
 					foreach ($this->state['storages'] as $storage_name => $storage_options)
@@ -355,7 +362,7 @@ class acp_storage
 					$this->state = [
 						// Save the value of the checkbox, to remove all files from the
 						// old storage once they have been successfully moved
-						'update_type' => (int) $this->request->variable('update_type', STORAGE_UPDATE_TYPE_CONFIG),
+						'update_type' => (int) $this->request->variable('update_type', self::STORAGE_UPDATE_TYPE_CONFIG),
 						'storage_index' => 0,
 						'file_index' => 0,
 						'remove_storage_index' => 0,
@@ -424,14 +431,18 @@ class acp_storage
 		}
 
 		$this->template->assign_vars([
-			'STORAGES'			=> $this->storage_collection,
-			'STORAGE_STATS'		=> $storage_stats,
-			'PROVIDERS' 		=> $this->provider_collection,
+			'STORAGES'						=> $this->storage_collection,
+			'STORAGE_STATS'					=> $storage_stats,
+			'PROVIDERS' 					=> $this->provider_collection,
 
-			'ERROR_MSG'			=> implode('<br>', $messages),
-			'S_ERROR'			=> !empty($messages),
+			'ERROR_MSG'						=> implode('<br>', $messages),
+			'S_ERROR'						=> !empty($messages),
 
-			'U_ACTION'			=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_storage'),
+			'U_ACTION'						=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_storage'),
+
+			'STORAGE_UPDATE_TYPE_CONFIG'	=> self::STORAGE_UPDATE_TYPE_CONFIG,
+			'STORAGE_UPDATE_TYPE_COPY'		=> self::STORAGE_UPDATE_TYPE_COPY,
+			'STORAGE_UPDATE_TYPE_MOVE'		=> self::STORAGE_UPDATE_TYPE_MOVE,
 		]);
 	}
 
