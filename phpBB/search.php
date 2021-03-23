@@ -29,7 +29,7 @@ $mode			= $request->variable('mode', '');
 $search_id		= $request->variable('search_id', '');
 $start			= max($request->variable('start', 0), 0);
 $post_id		= $request->variable('p', 0);
-$topic_id		= (int) $request->variable('t', 0);
+$topic_id		= $request->variable('t', 0);
 $view			= $request->variable('view', '');
 
 $submit			= $request->variable('submit', false);

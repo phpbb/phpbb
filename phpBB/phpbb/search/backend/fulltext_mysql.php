@@ -880,8 +880,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_index_before', compact($vars)));
 
-		unset($split_text);
-		unset($split_title);
+		unset($split_text, $split_title);
 
 		// destroy cached search results containing any of the words removed or added
 		$this->destroy_cache($words, array($poster_id));
@@ -1146,7 +1145,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp(): array
+	public function get_acp_options(): array
 	{
 		$tpl = '
 		<dl>

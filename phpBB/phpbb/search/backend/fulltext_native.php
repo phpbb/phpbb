@@ -1996,7 +1996,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp(): array
+	public function get_acp_options(): array
 	{
 		/**
 		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed

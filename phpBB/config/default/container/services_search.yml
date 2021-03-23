@@ -1,8 +1,8 @@
 services:
 
 # Search backends
-    search.fulltext.native:
-        class: phpbb\search\backend\fulltext_native
+    search.fulltext.mysql:
+        class: phpbb\search\backend\fulltext_mysql
         arguments:
             - '@config'
             - '@dbal.conn'
@@ -14,8 +14,8 @@ services:
         tags:
             - { name: search.backend }
 
-    search.fulltext.mysql:
-        class: phpbb\search\backend\fulltext_mysql
+    search.fulltext.native:
+        class: phpbb\search\backend\fulltext_native
         arguments:
             - '@config'
             - '@dbal.conn'

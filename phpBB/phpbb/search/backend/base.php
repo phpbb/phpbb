@@ -71,15 +71,15 @@ abstract class base implements search_backend_interface
 	 * Retrieves cached search results
 	 *
 	 * @param string $search_key an md5 string generated from all the passed search options to identify the results
-	 * @param int    &$result_count will contain the number of all results for the search (not only for the current page)
-	 * @param array    &$id_ary is filled with the ids belonging to the requested page that are stored in the cache
-	 * @param int    &$start indicates the first index of the page
+	 * @param int &$result_count will contain the number of all results for the search (not only for the current page)
+	 * @param array &$id_ary is filled with the ids belonging to the requested page that are stored in the cache
+	 * @param int &$start indicates the first index of the page
 	 * @param int $per_page number of ids each page is supposed to contain
 	 * @param string $sort_dir is either a or d representing ASC and DESC
 	 *
 	 * @return int self::SEARCH_RESULT_NOT_IN_CACHE or self::SEARCH_RESULT_IN_CACHE or self::SEARCH_RESULT_INCOMPLETE
 	 */
-	protected function obtain_ids(string $search_key, &$result_count, &$id_ary, &$start, $per_page, string $sort_dir): int
+	protected function obtain_ids(string $search_key, int &$result_count, array &$id_ary, int &$start, int $per_page, string $sort_dir): int
 	{
 		if (!($stored_ids = $this->cache->get('_search_results_' . $search_key)))
 		{
@@ -89,7 +89,7 @@ abstract class base implements search_backend_interface
 		else
 		{
 			$result_count = $stored_ids[-1];
-			$reverse_ids = ($stored_ids[-2] != $sort_dir) ? true : false;
+			$reverse_ids = $stored_ids[-2] != $sort_dir;
 			$complete = true;
 
 			// Change start parameter in case out of bounds
@@ -106,7 +106,7 @@ abstract class base implements search_backend_interface
 			}
 
 			// change the start to the actual end of the current request if the sort direction differs
-			// from the dirction in the cache and reverse the ids later
+			// from the direction in the cache and reverse the ids later
 			if ($reverse_ids)
 			{
 				$start = $result_count - $start - $per_page;
@@ -151,14 +151,14 @@ abstract class base implements search_backend_interface
 	 * @param string $keywords contains the keywords as entered by the user
 	 * @param array $author_ary an array of author ids, if the author should be ignored during the search the array is empty
 	 * @param int $result_count contains the number of all results for the search (not only for the current page)
-	 * @param array    &$id_ary contains a list of post or topic ids that shall be cached, the first element
+	 * @param array &$id_ary contains a list of post or topic ids that shall be cached, the first element
 	 *    must have the absolute index $start in the result set.
 	 * @param int $start indicates the first index of the page
 	 * @param string $sort_dir is either a or d representing ASC and DESC
 	 *
-	 * @return null
+	 * @return void
 	 */
-	protected function save_ids(string $search_key, string $keywords, $author_ary, int $result_count, &$id_ary, int $start, string $sort_dir)
+	protected function save_ids(string $search_key, string $keywords, array $author_ary, int $result_count, array &$id_ary, int $start, string $sort_dir): void
 	{
 		global $user;
 
@@ -268,7 +268,7 @@ abstract class base implements search_backend_interface
 	 * @param array $words
 	 * @param array|bool $authors
 	 */
-	protected function destroy_cache($words, $authors = false): void
+	protected function destroy_cache(array $words, $authors = false): void
 	{
 		// clear all searches that searched for the specified words
 		if (count($words))
@@ -415,6 +415,8 @@ abstract class base implements search_backend_interface
 				'rows_per_second' => $rows_per_second,
 			];
 		}
+
+		return null;
 	}
 
 	/**

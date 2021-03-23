@@ -44,11 +44,11 @@ class search_backend_factory
 	/**
 	 * Obtains a specified search backend
 	 *
-	 * @param string	$class
+	 * @param string $class
 	 *
 	 * @return search_backend_interface
 	 */
-	public function get($class): search_backend_interface
+	public function get(string $class): search_backend_interface
 	{
 		return $this->search_backends->get_by_class($class);
 	}

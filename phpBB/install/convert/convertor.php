@@ -224,8 +224,6 @@ class convertor
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		$convert->fulltext_search = new $search_type($config, $db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx);
-
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		$message_parser = new \parse_message();
 

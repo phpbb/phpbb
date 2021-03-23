@@ -783,7 +783,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp(): array
+	public function get_acp_options(): array
 	{
 		$config_vars = array(
 			'fulltext_sphinx_data_path' => 'string',

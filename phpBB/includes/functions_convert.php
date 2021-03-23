@@ -1039,34 +1039,6 @@ function set_user_options()
 	return $option_field;
 }
 
-/**
-* Index messages on the fly as we convert them
-* @todo naderman, can you check that this works with the new search plugins as it's use is currently disabled (and thus untested)
-function search_indexing($message = '')
-{
-	global $fulltext_search, $convert_row;
-
-	if (!isset($convert_row['post_id']))
-	{
-		return;
-	}
-
-	if (!$message)
-	{
-		if (!isset($convert_row['message']))
-		{
-			return;
-		}
-
-		$message = $convert_row['message'];
-	}
-
-	$title = (isset($convert_row['title'])) ? $convert_row['title'] : '';
-
-	$fulltext_search->index('post', $convert_row['post_id'], $message, $title, $convert_row['poster_id'], $convert_row['forum_id']);
-}
-*/
-
 function make_unique_filename($filename)
 {
 	if (!strlen($filename))

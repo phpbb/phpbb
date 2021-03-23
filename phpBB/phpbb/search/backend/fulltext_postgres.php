@@ -343,16 +343,16 @@ class fulltext_postgres extends base implements search_backend_interface
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
 				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
-				break;
+			break;
 
 			case 't':
 				$join_topic = true;
-				break;
+			break;
 
 			case 'f':
 				$sql_sort_table	= FORUMS_TABLE . ' f, ';
 				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-				break;
+			break;
 		}
 
 		// Build some display specific sql strings
@@ -1081,7 +1081,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp(): array
+	public function get_acp_options(): array
 	{
 		$tpl = '
 		<dl>
