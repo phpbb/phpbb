@@ -20,7 +20,7 @@ class default_search_return_chars extends \phpbb\db\migration\migration
 		return $this->config->offsetExists('default_search_return_chars');
 	}
 
-	public static function depends_on()
+	static public function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v330\v330',
