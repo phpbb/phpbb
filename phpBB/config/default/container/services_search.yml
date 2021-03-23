@@ -4,7 +4,6 @@ services:
     search.fulltext.native:
         class: phpbb\search\backend\fulltext_native
         arguments:
-            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
@@ -18,7 +17,6 @@ services:
     search.fulltext.mysql:
         class: phpbb\search\backend\fulltext_mysql
         arguments:
-            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
@@ -32,7 +30,6 @@ services:
     search.fulltext.postgres:
         class: phpbb\search\backend\fulltext_postgres
         arguments:
-            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'

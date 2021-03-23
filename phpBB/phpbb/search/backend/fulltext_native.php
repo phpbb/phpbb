@@ -13,7 +13,6 @@
 
 namespace phpbb\search\backend;
 
-use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
@@ -102,7 +101,6 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * Initialises the fulltext_native search backend with min/max word length
 	 *
-	 * @param service $cache
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
@@ -111,8 +109,10 @@ class fulltext_native extends base implements search_backend_interface
 	 * @param string $phpbb_root_path phpBB root path
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct(service $cache, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
+		global $cache;
+
 		parent::__construct($cache, $config, $db, $user);
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->language = $language;

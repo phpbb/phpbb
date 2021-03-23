@@ -13,7 +13,6 @@
 
 namespace phpbb\search\backend;
 
-use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
@@ -73,7 +72,6 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
-	 * @param service $cache
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
@@ -82,8 +80,10 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct(service $cache, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
+		global $cache;
+
 		parent::__construct($cache, $config, $db, $user);
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->language = $language;

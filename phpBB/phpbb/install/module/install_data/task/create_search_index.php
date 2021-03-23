@@ -98,12 +98,12 @@ class create_search_index extends database_task
 	/**
 	 * Constructor
 	 *
-	 * @param config				$config				Installer config.
-	 * @param database				$db_helper			Database helper.
-	 * @param container_factory		$container			Installer's DI container
-	 * @param iohandler_interface	$iohandler			IO manager.
-	 * @param string				$phpbb_root_path	phpBB root path
-	 * @param string				$php_ext			PHP file extension
+	 * @param config $config Installer config.
+	 * @param database $db_helper Database helper.
+	 * @param container_factory $container Installer's DI container
+	 * @param iohandler_interface $iohandler IO manager.
+	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $php_ext PHP file extension
 	 */
 	public function __construct(
 		config $config,
@@ -127,11 +127,11 @@ class create_search_index extends database_task
 
 		$this->posts_table = $container->get_parameter('tables.posts');
 
-		// Esto se cargara por servicio abajo
 		$this->search_indexer = new fulltext_native(
 			$this->config,
 			$this->db,
 			$this->phpbb_dispatcher,
+			$container->get('language'),
 			$this->user,
 			$this->phpbb_root_path,
 			$this->php_ext
@@ -148,7 +148,6 @@ class create_search_index extends database_task
 		// Make sure fulltext native load update is set
 		$this->config->set('fulltext_native_load_upd', 1);
 
-		// TODO: Replace this with create_index() when it don't depend on acp
 		try
 		{
 			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id FROM ' . $this->posts_table;
@@ -181,7 +180,7 @@ class create_search_index extends database_task
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count() : int
+	public static function get_step_count() : int
 	{
 		return 1;
 	}

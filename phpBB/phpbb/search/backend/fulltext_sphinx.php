@@ -14,7 +14,6 @@
 namespace phpbb\search\backend;
 
 use phpbb\auth\auth;
-use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\db\tools\tools_interface;

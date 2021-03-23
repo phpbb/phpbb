@@ -38,7 +38,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_native');
 		$config['fulltext_native_min_chars'] = 2;
 		$config['fulltext_native_max_chars'] = 14;
-		$this->search = new $class($cache, $config, $this->db, $phpbb_dispatcher, $language, $user, $phpbb_root_path, $phpEx);
+		$this->search = new $class($config, $this->db, $phpbb_dispatcher, $language, $user, $phpbb_root_path, $phpEx);
 	}
 
 	public function keywords()
