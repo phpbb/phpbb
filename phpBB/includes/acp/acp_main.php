@@ -648,8 +648,22 @@ class acp_main
 		// Warn if no search index is created
 		if ($config['num_posts'])
 		{
-			$search_backend_factory = $phpbb_container->get('search.backend_factory');
-			$search = $search_backend_factory->get_active();
+			try
+			{
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (RuntimeException $e)
+			{
+				if (strpos($e->getMessage(), 'No service found') === 0)
+				{
+					trigger_error('NO_SUCH_SEARCH_MODULE');
+				}
+				else
+				{
+					throw $e;
+				}
+			}
 
 			if (!$search->index_created())
 			{

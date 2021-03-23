@@ -1086,8 +1086,22 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_backend_factory = $phpbb_container->get('search.backend_factory');
-	$search = $search_backend_factory->get_active();
+	try
+	{
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
+	}
+	catch (RuntimeException $e)
+	{
+		if (strpos($e->getMessage(), 'No service found') === 0)
+		{
+			trigger_error('NO_SUCH_SEARCH_MODULE');
+		}
+		else
+		{
+			throw $e;
+		}
+	}
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
 

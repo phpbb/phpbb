@@ -625,8 +625,22 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		if ($first_post_data['enable_indexing'])
 		{
 			// Select the search method and do some additional checks to ensure it can actually be utilised
-			$search_backend_factory = $phpbb_container->get('search.backend_factory');
-			$search = $search_backend_factory->get_active();
+			try
+			{
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (RuntimeException $e)
+			{
+				if (strpos($e->getMessage(), 'No service found') === 0)
+				{
+					trigger_error('NO_SUCH_SEARCH_MODULE');
+				}
+				else
+				{
+					throw $e;
+				}
+			}
 
 			$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
 		}

@@ -2291,8 +2291,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	// Index message contents
 	if ($update_search_index && $data_ary['enable_indexing'])
 	{
-		$search_backend_factory = $phpbb_container->get('search.backend_factory');
-		$search = $search_backend_factory->get_active();
+		try
+		{
+			$search_backend_factory = $phpbb_container->get('search.backend_factory');
+			$search = $search_backend_factory->get_active();
+		}
+		catch (RuntimeException $e)
+		{
+			if (strpos($e->getMessage(), 'No service found') === 0)
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
+			else
+			{
+				throw $e;
+			}
+		}
 
 		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
 	}

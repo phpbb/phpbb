@@ -561,7 +561,7 @@ function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $po
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $db, $config, $user, $phpbb_log, $phpbb_dispatcher;
+	global $db, $config, $user, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -632,8 +632,22 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_backend_factory = $phpbb_container->get('search.backend_factory');
-	$search = $search_backend_factory->get_active();
+	try
+	{
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
+	}
+	catch (RuntimeException $e)
+	{
+		if (strpos($e->getMessage(), 'No service found') === 0)
+		{
+			trigger_error('NO_SUCH_SEARCH_MODULE');
+		}
+		else
+		{
+			throw $e;
+		}
+	}
 
 	$search->index_remove([], [$post_info['user_id'], $userdata['user_id']], []);
 
