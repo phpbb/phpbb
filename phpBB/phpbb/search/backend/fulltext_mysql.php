@@ -13,9 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\user;
 use RuntimeException;
 
@@ -37,28 +39,15 @@ class fulltext_mysql extends base implements search_backend_interface
 	protected $split_words = array();
 
 	/**
-	 * Config object
-	 * @var config
-	 */
-	protected $config;
-
-	/**
-	 * Database connection
-	 * @var driver_interface
-	 */
-	protected $db;
-
-	/**
 	 * phpBB event dispatcher object
 	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
-	 * User object
-	 * @var user
+	 * @var language
 	 */
-	protected $user;
+	protected $language;
 
 	/**
 	 * Associative array stores the min and max word length to be searched
@@ -84,19 +73,20 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
+	 * @param service $cache
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
 	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(service $cache, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
-		$this->config = $config;
-		$this->db = $db;
+		parent::__construct($cache, $config, $db, $user);
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->user = $user;
+		$this->language = $language;
 
 		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);
 
@@ -138,7 +128,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	{
 		if (!$this->is_available())
 		{
-			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
+			return $this->language->lang('FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE');
 		}
 
 		$result = $this->db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
@@ -159,7 +149,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		if (!$fulltext_supported)
 		{
-			return $this->user->lang['FULLTEXT_MYSQL_NOT_SUPPORTED'];
+			return $this->language->lang('FULLTEXT_MYSQL_NOT_SUPPORTED');
 		}
 
 		$sql = 'SHOW VARIABLES
@@ -236,7 +226,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($this->config['max_num_search_keywords'] && count($this->split_words) > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], count($this->split_words)));
+			trigger_error($this->language->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], count($this->split_words)));
 		}
 
 		// to allow phrase search, we need to concatenate quoted words
@@ -1080,7 +1070,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->language->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -1160,11 +1150,11 @@ class fulltext_mysql extends base implements search_backend_interface
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->language->lang('MIN_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->language->lang('MAX_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd>' . $this->config['fulltext_mysql_max_word_len'] . '</dd>
 		</dl>
 		';

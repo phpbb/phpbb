@@ -13,6 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\cache\service;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\user;
+
 /**
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
@@ -25,6 +30,42 @@ abstract class base implements search_backend_interface
 
 	// Batch size for create_index and delete_index
 	private const BATCH_SIZE = 100;
+
+	/**
+	 * @var service
+	 */
+	protected $cache;
+
+	/**
+	 * @var config
+	 */
+	protected $config;
+
+	/**
+	 * @var driver_interface
+	 */
+	protected $db;
+
+	/**
+	 * @var user
+	 */
+	protected $user;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param service $cache
+	 * @param config $config
+	 * @param driver_interface $db
+	 * @param user $user
+	 */
+	public function __construct(service $cache, config $config, driver_interface $db, user $user)
+	{
+		$this->cache = $cache;
+		$this->config = $config;
+		$this->db = $db;
+		$this->user = $user;
+	}
 
 	/**
 	 * Retrieves cached search results
@@ -40,9 +81,7 @@ abstract class base implements search_backend_interface
 	 */
 	protected function obtain_ids(string $search_key, &$result_count, &$id_ary, &$start, $per_page, string $sort_dir): int
 	{
-		global $cache;
-
-		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
+		if (!($stored_ids = $this->cache->get('_search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
 			return self::SEARCH_RESULT_NOT_IN_CACHE;
@@ -121,9 +160,9 @@ abstract class base implements search_backend_interface
 	 */
 	protected function save_ids(string $search_key, string $keywords, $author_ary, int $result_count, &$id_ary, int $start, string $sort_dir)
 	{
-		global $cache, $config, $db, $user;
+		global $user;
 
-		$length = min(count($id_ary), $config['search_block_size']);
+		$length = min(count($id_ary), $this->config['search_block_size']);
 
 		// nothing to cache so exit
 		if (!$length)
@@ -135,17 +174,17 @@ abstract class base implements search_backend_interface
 
 		// create a new resultset if there is none for this search_key yet
 		// or add the ids to the existing resultset
-		if (!($store = $cache->get('_search_results_' . $search_key)))
+		if (!($store = $this->cache->get('_search_results_' . $search_key)))
 		{
 			// add the current keywords to the recent searches in the cache which are listed on the search page
 			if (!empty($keywords) || count($author_ary))
 			{
 				$sql = 'SELECT search_time
 					FROM ' . SEARCH_RESULTS_TABLE . '
-					WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
-				$result = $db->sql_query($sql);
+					WHERE search_key = \'' . $this->db->sql_escape($search_key) . '\'';
+				$result = $this->db->sql_query($sql);
 
-				if (!$db->sql_fetchrow($result))
+				if (!$this->db->sql_fetchrow($result))
 				{
 					$sql_ary = array(
 						'search_key'		=> $search_key,
@@ -154,16 +193,16 @@ abstract class base implements search_backend_interface
 						'search_authors'	=> ' ' . implode(' ', $author_ary) . ' '
 					);
 
-					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-					$db->sql_query($sql);
+					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$this->db->sql_query($sql);
 				}
-				$db->sql_freeresult($result);
+				$this->db->sql_freeresult($result);
 			}
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_last_search = ' . time() . '
 				WHERE user_id = ' . $user->data['user_id'];
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
 			$store = array(-1 => $result_count, -2 => $sort_dir);
 			$id_range = range($start, $start + $length - 1);
@@ -191,10 +230,10 @@ abstract class base implements search_backend_interface
 			$store += $store_ids;
 
 			// if the cache is too big
-			if (count($store) - 2 > 20 * $config['search_block_size'])
+			if (count($store) - 2 > 20 * $this->config['search_block_size'])
 			{
 				// remove everything in front of two blocks in front of the current start index
-				for ($i = 0, $n = $id_range[0] - 2 * $config['search_block_size']; $i < $n; $i++)
+				for ($i = 0, $n = $id_range[0] - 2 * $this->config['search_block_size']; $i < $n; $i++)
 				{
 					if (isset($store[$i]))
 					{
@@ -204,7 +243,7 @@ abstract class base implements search_backend_interface
 
 				// remove everything after two blocks after the current stop index
 				end($id_range);
-				for ($i = $store[-1] - 1, $n = current($id_range) + 2 * $config['search_block_size']; $i > $n; $i--)
+				for ($i = $store[-1] - 1, $n = current($id_range) + 2 * $this->config['search_block_size']; $i > $n; $i--)
 				{
 					if (isset($store[$i]))
 					{
@@ -212,12 +251,12 @@ abstract class base implements search_backend_interface
 					}
 				}
 			}
-			$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
+			$this->cache->put('_search_results_' . $search_key, $store, $this->config['search_store_results']);
 
 			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
 				SET search_time = ' . time() . '
-				WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
-			$db->sql_query($sql);
+				WHERE search_key = \'' . $this->db->sql_escape($search_key) . '\'';
+			$this->db->sql_query($sql);
 		}
 
 		unset($store, $store_ids, $id_range);
@@ -231,27 +270,25 @@ abstract class base implements search_backend_interface
 	 */
 	protected function destroy_cache($words, $authors = false): void
 	{
-		global $db, $cache, $config;
-
 		// clear all searches that searched for the specified words
 		if (count($words))
 		{
 			$sql_where = '';
 			foreach ($words as $word)
 			{
-				$sql_where .= " OR search_keywords " . $db->sql_like_expression($db->get_any_char() . $word . $db->get_any_char());
+				$sql_where .= " OR search_keywords " . $this->db->sql_like_expression($this->db->get_any_char() . $word . $this->db->get_any_char());
 			}
 
 			$sql = 'SELECT search_key
 				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE search_keywords LIKE '%*%' $sql_where";
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$cache->destroy('_search_results_' . $row['search_key']);
+				$this->cache->destroy('_search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		// clear all searches that searched for the specified authors
@@ -260,25 +297,25 @@ abstract class base implements search_backend_interface
 			$sql_where = '';
 			foreach ($authors as $author)
 			{
-				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $db->sql_like_expression($db->get_any_char() . ' ' . (int) $author . ' ' . $db->get_any_char());
+				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $this->db->sql_like_expression($this->db->get_any_char() . ' ' . (int) $author . ' ' . $this->db->get_any_char());
 			}
 
 			$sql = 'SELECT search_key
 				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE $sql_where";
-			$result = $db->sql_query($sql);
+			$result = $this->db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$cache->destroy('_search_results_' . $row['search_key']);
+				$this->cache->destroy('_search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult($result);
+			$this->db->sql_freeresult($result);
 		}
 
 		$sql = 'DELETE
 			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE search_time < ' . (time() - (int) $config['search_store_results']);
-		$db->sql_query($sql);
+			WHERE search_time < ' . (time() - (int) $this->config['search_store_results']);
+		$this->db->sql_query($sql);
 	}
 
 	/**

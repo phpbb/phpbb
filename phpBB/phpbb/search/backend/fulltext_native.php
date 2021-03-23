@@ -13,9 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\user;
 
 /**
@@ -87,45 +89,33 @@ class fulltext_native extends base implements search_backend_interface
 	protected $php_ext;
 
 	/**
-	 * Config object
-	 * @var config
-	 */
-	protected $config;
-
-	/**
-	 * Database connection
-	 * @var driver_interface
-	 */
-	protected $db;
-
-	/**
 	 * phpBB event dispatcher object
 	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
-	 * User object
-	 * @var user
+	 * @var language
 	 */
-	protected $user;
+	protected $language;
 
 	/**
 	 * Initialises the fulltext_native search backend with min/max word length
 	 *
+	 * @param service $cache
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
 	 * @param user $user User object
 	 * @param string $phpbb_root_path phpBB root path
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(service $cache, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
-		$this->config = $config;
-		$this->db = $db;
+		parent::__construct($cache, $config, $db, $user);
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->user = $user;
+		$this->language = $language;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -304,7 +294,7 @@ class fulltext_native extends base implements search_backend_interface
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($this->config['max_num_search_keywords'] && $num_keywords > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], $num_keywords));
+			trigger_error($this->language->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], $num_keywords));
 		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated
@@ -478,7 +468,7 @@ class fulltext_native extends base implements search_backend_interface
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && count($non_common_words))
 				{
-					trigger_error(sprintf($this->user->lang['WORDS_IN_NO_POST'], implode($this->user->lang['COMMA_SEPARATOR'], $non_common_words)));
+					trigger_error(sprintf($this->language->lang('WORDS_IN_NO_POST'), implode($this->language->lang('COMMA_SEPARATOR'), $non_common_words)));
 				}
 				unset($non_common_words);
 			}
@@ -1691,8 +1681,8 @@ class fulltext_native extends base implements search_backend_interface
 		}
 
 		return array(
-			$this->user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
-			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
+			$this->language->lang('TOTAL_WORDS')		=> $this->stats['total_words'],
+			$this->language->lang('TOTAL_MATCHES')	=> $this->stats['total_matches']);
 	}
 
 	/**
@@ -2026,19 +2016,19 @@ class fulltext_native extends base implements search_backend_interface
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_native_load_upd">' . $this->user->lang['YES_SEARCH_UPDATE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
+			<dt><label for="fulltext_native_load_upd">' . $this->language->lang('YES_SEARCH_UPDATE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('YES_SEARCH_UPDATE_EXPLAIN') . '</span></dt>
+			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->language->lang('YES') . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->language->lang('NO') . '</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_min_chars">' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_min_chars">' . $this->language->lang('MIN_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_min_chars" type="number" min="0" max="255" name="config[fulltext_native_min_chars]" value="' . (int) $this->config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_max_chars">' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_max_chars">' . $this->language->lang('MAX_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="number" min="0" max="255" name="config[fulltext_native_max_chars]" value="' . (int) $this->config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_common_thres">' . $this->user->lang['COMMON_WORD_THRESHOLD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_common_thres">' . $this->language->lang('COMMON_WORD_THRESHOLD') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('COMMON_WORD_THRESHOLD_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_common_thres" type="text" name="config[fulltext_native_common_thres]" value="' . (double) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';

@@ -13,9 +13,11 @@
 
 namespace phpbb\search\backend;
 
+use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
 use phpbb\user;
 use RuntimeException;
 
@@ -50,29 +52,15 @@ class fulltext_postgres extends base implements search_backend_interface
 	protected $phrase_search = false;
 
 	/**
-	 * Config object
-	 * @var config
-	 */
-	protected $config;
-
-	/**
-	 * Database connection
-	 * @var driver_interface
-	 */
-	protected $db;
-
-	/**
 	 * phpBB event dispatcher object
 	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
-	 * User object
-	 * @var user
+	 * @var language
 	 */
-	protected $user;
-
+	protected $language;
 	/**
 	 * Contains tidied search query.
 	 * Operators are prefixed in search query and common words excluded
@@ -97,19 +85,20 @@ class fulltext_postgres extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_postgres, which is used as a search backend
 	 *
+	 * @param service $cache
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
 	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(service $cache, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
-		$this->config = $config;
-		$this->db = $db;
+		parent::__construct($cache, $config, $db, $user);
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->user = $user;
+		$this->language = $language;
 
 		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
 
@@ -145,7 +134,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	{
 		if (!$this->is_available())
 		{
-			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
+			return $this->language->lang('FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE');
 		}
 
 		return false;
@@ -1015,7 +1004,7 @@ class fulltext_postgres extends base implements search_backend_interface
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_POSTGRES_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->language->lang('FULLTEXT_POSTGRES_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -1096,11 +1085,11 @@ class fulltext_postgres extends base implements search_backend_interface
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->user->lang['YES'] : $this->user->lang['NO']) . '</dd>
+			<dt><label>' . $this->language->lang('FULLTEXT_POSTGRES_VERSION_CHECK') . '</label><br /><span>' . $this->language->lang('FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN') . '</span></dt>
+			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->language->lang('YES') : $this->language->lang('NO')) . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $this->language->lang('FULLTEXT_POSTGRES_TS_NAME') . '</label><br /><span>' . $this->language->lang('FULLTEXT_POSTGRES_TS_NAME_EXPLAIN') . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
 		if ($this->db->get_sql_layer() == 'postgres')
@@ -1123,11 +1112,11 @@ class fulltext_postgres extends base implements search_backend_interface
 		$tpl .= '</select></dd>
 		</dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dt><label for="fulltext_postgres_min_word_len">' . $this->language->lang('FULLTEXT_POSTGRES_MIN_WORD_LEN') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN') . '</span></dt>
                         <dd><input id="fulltext_postgres_min_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
                 </dl>
                 <dl>
-                        <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
+                        <dt><label for="fulltext_postgres_max_word_len">' . $this->language->lang('FULLTEXT_POSTGRES_MAX_WORD_LEN') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN') . '</span></dt>
                         <dd><input id="fulltext_postgres_max_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
                 </dl>
 		';

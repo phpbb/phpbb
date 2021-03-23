@@ -29,8 +29,8 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 		parent::setUp();
 
 		// dbal uses cache
-		$cache = new phpbb_mock_cache();
-
+		$cache = $this->createMock('\phpbb\cache\service');
+		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$user = $this->createMock('\phpbb\user');
 
 		//  set config values
@@ -40,6 +40,6 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_mysql');
-		$this->search = new $class($config, $this->db, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx);
+		$this->search = new $class($cache, $config, $this->db, $phpbb_dispatcher, $language, $user, $phpbb_root_path, $phpEx);
 	}
 }

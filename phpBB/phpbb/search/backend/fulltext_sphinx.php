@@ -14,10 +14,13 @@
 namespace phpbb\search\backend;
 
 use phpbb\auth\auth;
+use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
+use phpbb\log\log;
 use phpbb\user;
 
 /**
@@ -109,6 +112,16 @@ class fulltext_sphinx implements search_backend_interface
 	protected $phpbb_dispatcher;
 
 	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * @var log
+	 */
+	protected $log;
+
+	/**
 	 * User object
 	 * @var user
 	 */
@@ -134,26 +147,28 @@ class fulltext_sphinx implements search_backend_interface
 	 * @param auth $auth Auth object
 	 * @param config $config Config object
 	 * @param driver_interface $db Database object
+	 * @param tools_interface $db_tools
 	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
+	 * @param log $log
 	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
-	 * @throws \Exception
 	 */
-	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(auth $auth, config $config, driver_interface $db, tools_interface $db_tools, dispatcher_interface $phpbb_dispatcher, language $language, log $log, user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
 		$this->db = $db;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->language = $language;
+		$this->log = $log;
 		$this->user = $user;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 
-		// Initialize \phpbb\db\tools\tools object
-		global $phpbb_container; // TODO inject into object
-		$this->db_tools = $phpbb_container->get('dbal.tools');
+		$this->db_tools = $db_tools;
 
 		if (!$this->config['fulltext_sphinx_id'])
 		{
@@ -196,7 +211,7 @@ class fulltext_sphinx implements search_backend_interface
 	{
 		if (!$this->is_available())
 		{
-			return $this->user->lang['FULLTEXT_SPHINX_WRONG_DATABASE'];
+			return $this->language->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
 		}
 
 		// Move delta to main index each hour
@@ -268,8 +283,6 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
-		global $user, $phpbb_log;
-
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !count($author_ary))
 		{
@@ -450,14 +463,14 @@ class fulltext_sphinx implements search_backend_interface
 
 		if ($this->sphinx->GetLastError())
 		{
-			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
 			if ($this->auth->acl_get('a_'))
 			{
-				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));
+				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));
 			}
 			else
 			{
-				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED_LOG'));
+				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED_LOG'));
 			}
 		}
 
@@ -683,9 +696,9 @@ class fulltext_sphinx implements search_backend_interface
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_SPHINX_MAIN_POSTS']			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
-			$this->user->lang['FULLTEXT_SPHINX_DELTA_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
-			$this->user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->language->lang('FULLTEXT_SPHINX_MAIN_POSTS')			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
+			$this->language->lang('FULLTEXT_SPHINX_DELTA_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
+			$this->language->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -781,25 +794,25 @@ class fulltext_sphinx implements search_backend_interface
 		);
 
 		$tpl = '
-		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE']. '</span>
+		<span class="error">' . $this->language->lang('FULLTEXT_SPHINX_CONFIGURE'). '</span>
 		<dl>
-			<dt><label for="fulltext_sphinx_data_path">' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_data_path">' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $this->config['fulltext_sphinx_data_path'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_host">' . $this->user->lang['FULLTEXT_SPHINX_HOST'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_HOST_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_host">' . $this->language->lang('FULLTEXT_SPHINX_HOST') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_HOST_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_port">' . $this->language->lang('FULLTEXT_SPHINX_PORT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_PORT_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_sphinx_port" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->user->lang['MIB'] . '</dd>
+			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->language->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->language->lang('MIB') . '</dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_sphinx_config_file">' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_sphinx_config_file">' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN') . '</span></dt>
 			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="6" id="sphinx_config_data">' . htmlspecialchars($this->config_file_data, ENT_COMPAT) . '</textarea>' : $this->config_file_data) . '</dd>
 		<dl>
 		';
@@ -829,14 +842,14 @@ class fulltext_sphinx implements search_backend_interface
 		}
 		else
 		{
-			$this->config_file_data = $this->user->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
+			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
 			return false;
 		}
 
 		// Check if directory paths have been filled
 		if (!$this->config['fulltext_sphinx_data_path'])
 		{
-			$this->config_file_data = $this->user->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA');
+			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA');
 			return false;
 		}
 

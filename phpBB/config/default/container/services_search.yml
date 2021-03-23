@@ -4,9 +4,11 @@ services:
     search.fulltext.native:
         class: phpbb\search\backend\fulltext_native
         arguments:
+            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@language'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -16,9 +18,11 @@ services:
     search.fulltext.mysql:
         class: phpbb\search\backend\fulltext_mysql
         arguments:
+            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@language'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -28,9 +32,11 @@ services:
     search.fulltext.postgres:
         class: phpbb\search\backend\fulltext_postgres
         arguments:
+            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
+            - '@language'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -43,7 +49,10 @@ services:
             - '@auth'
             - '@config'
             - '@dbal.conn'
+            - '@dbal.tools'
             - '@dispatcher'
+            - '@language'
+            - '@log'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
