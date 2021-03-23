@@ -20,7 +20,7 @@ class remove_max_pass_chars extends \phpbb\db\migration\migration
 		return !$this->config->offsetExists('max_pass_chars');
 	}
 
-	public static function depends_on()
+	static public function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v330\dev',
