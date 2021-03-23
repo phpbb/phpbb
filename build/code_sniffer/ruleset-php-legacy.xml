@@ -89,4 +89,7 @@
  <!-- There MUST be one space between control structure and opening parenthesis -->
  <rule ref="./phpbb/Sniffs/ControlStructures/OpeningParenthesisSniff.php" />
 
+ <!-- Static qualifier MUST be placed before the visibility qualifiers. -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/StaticKeywordSniff.php" />
+
 </ruleset>
