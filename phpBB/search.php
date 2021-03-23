@@ -29,7 +29,7 @@ $mode			= $request->variable('mode', '');
 $search_id		= $request->variable('search_id', '');
 $start			= max($request->variable('start', 0), 0);
 $post_id		= $request->variable('p', 0);
-$topic_id		= $request->variable('t', 0);
+$topic_id		= (int) $request->variable('t', 0);
 $view			= $request->variable('view', '');
 
 $submit			= $request->variable('submit', false);
@@ -544,7 +544,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	extract($phpbb_dispatcher->trigger_event('core.search_modify_param_after', compact($vars)));
 
 	// show_results should not change after this
-	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
+	$per_page = ($show_results == 'posts') ? (int) $config['posts_per_page'] : (int) $config['topics_per_page'];
 	$total_match_count = 0;
 
 	// Set limit for the $total_match_count to reduce server load

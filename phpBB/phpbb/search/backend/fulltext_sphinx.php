@@ -190,7 +190,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'Sphinx Fulltext';
 	}
@@ -222,7 +222,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
@@ -230,7 +230,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return array();
 	}
@@ -246,7 +246,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function split_keywords(&$keywords, $terms)
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
 		// Keep quotes and new lines
 		$keywords = str_replace(['&quot;', "\n"], ['"', ' '], trim($keywords));
@@ -280,7 +280,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !count($author_ary))
@@ -520,7 +520,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		$this->search_query = '';
 
@@ -541,7 +541,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
 	{
 		/**
 		* Event to modify method arguments before the Sphinx search index is updated
@@ -607,7 +607,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
 	{
 		$values = array();
 		foreach ($post_ids as $post_id)
@@ -621,7 +621,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * Nothing needs to be destroyed
 	 */
-	public function tidy()
+	public function tidy(): void
 	{
 		$this->config->set('search_last_gc', time(), false);
 	}
@@ -629,7 +629,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = null): ?array
+	public function create_index(int &$post_counter = 0): ?array
 	{
 		if ($this->index_created())
 		{
@@ -672,7 +672,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	*/
-	public function index_created($allow_new_files = true)
+	public function index_created($allow_new_files = true): bool
 	{
 		$created = false;
 
@@ -783,7 +783,7 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp()
+	public function acp(): array
 	{
 		$config_vars = array(
 			'fulltext_sphinx_data_path' => 'string',

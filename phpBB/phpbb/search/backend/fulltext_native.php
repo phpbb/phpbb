@@ -134,7 +134,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	*/
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'phpBB Native Fulltext';
 	}
@@ -158,7 +158,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
@@ -166,7 +166,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return $this->common_words;
 	}
@@ -180,21 +180,9 @@ class fulltext_native extends base implements search_backend_interface
 	}
 
 	/**
-	* This function fills $this->search_query with the cleaned user search query
-	*
-	* If $terms is 'any' then the words will be extracted from the search query
-	* and combined with | inside brackets. They will afterwards be treated like
-	* an standard search query.
-	*
-	* Then it analyses the query and fills the internal arrays $must_not_contain_ids,
-	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search()
-	*
-	* @param	string	$keywords	contains the search query string as entered by the user
-	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
-	* 	or 'any' (find all posts containing at least one of the given words)
-	* @return	boolean				false if no valid keywords were found and otherwise true
-	*/
-	public function split_keywords(&$keywords, $terms)
+	 * {@inheritdoc}
+	 */
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
 		$tokens = '+-|()* ';
 
@@ -516,7 +504,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No keywords? No posts.
 		if (empty($this->search_query))
@@ -1001,7 +989,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No author? No posts
 		if (!count($author_ary))
@@ -1303,7 +1291,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	*/
-	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
 	{
 		if (!$this->config['fulltext_native_load_upd'])
 		{
@@ -1492,7 +1480,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
 	{
 		if (count($post_ids))
 		{
@@ -1549,7 +1537,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function tidy()
+	public function tidy(): void
 	{
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
@@ -2008,7 +1996,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp()
+	public function acp(): array
 	{
 		/**
 		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed

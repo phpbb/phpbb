@@ -642,7 +642,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 				}
 			}
 
-			$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
+			$search->index('edit', (int) $first_post_data['post_id'], $first_post_data['post_text'], $subject, (int) $first_post_data['poster_id'], (int) $first_post_data['forum_id']);
 		}
 
 		// Copy topic subscriptions to new topic

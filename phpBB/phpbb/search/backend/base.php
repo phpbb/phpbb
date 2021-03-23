@@ -321,7 +321,7 @@ abstract class base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = null): ?array
+	public function create_index(int &$post_counter = 0): ?array
 	{
 		$max_post_id = $this->get_max_post_id();
 		$forums_indexing_enabled = $this->forum_ids_with_indexing_enabled();
@@ -343,7 +343,7 @@ abstract class base implements search_backend_interface
 				// Indexing enabled for this forum
 				if (in_array($row['forum_id'], $forums_indexing_enabled, true))
 				{
-					$this->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+					$this->index('post', (int) $row['post_id'], $row['post_text'], $row['post_subject'], (int) $row['poster_id'], (int) $row['forum_id']);
 				}
 				$row_count++;
 			}

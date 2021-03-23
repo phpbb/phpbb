@@ -1566,7 +1566,7 @@ function mcp_fork_topic($topic_ids)
 					}
 				}
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				$new_post_id = $db->sql_nextid();
+				$new_post_id = (int) $db->sql_nextid();
 
 				/**
 				* Perform actions after forked topic is created.
@@ -1605,7 +1605,7 @@ function mcp_fork_topic($topic_ids)
 
 				if (!empty($search))
 				{
-					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
+					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], (int) $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
 					$search_mode = 'reply'; // After one we index replies
 				}
 

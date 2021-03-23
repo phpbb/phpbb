@@ -1634,7 +1634,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
-	$poster_id = ($mode == 'edit') ? $data_ary['poster_id'] : (int) $user->data['user_id'];
+	$poster_id = ($mode == 'edit') ? (int) $data_ary['poster_id'] : (int) $user->data['user_id'];
 
 	// Retrieve some additional information if not present
 	if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
@@ -2215,7 +2215,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 
 			// Maybe not only the subject, but also changing anonymous usernames. ;)
-			if ($data_ary['poster_id'] == ANONYMOUS)
+			if ((int) $data_ary['poster_id'] == ANONYMOUS)
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
 			}
@@ -2232,7 +2232,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				$db->sql_freeresult($result);
 
 				// this post is the latest post in the forum, better update
-				if ($row['forum_last_post_id'] == $data_ary['post_id'] && ($row['forum_last_post_subject'] !== $subject || $data_ary['poster_id'] == ANONYMOUS))
+				if ($row['forum_last_post_id'] == $data_ary['post_id'] && ($row['forum_last_post_subject'] !== $subject || (int) $data_ary['poster_id'] == ANONYMOUS))
 				{
 					// the post's subject changed
 					if ($row['forum_last_post_subject'] !== $subject)
@@ -2241,7 +2241,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					}
 
 					// Update the user name if poster is anonymous... just in case a moderator changed it
-					if ($data_ary['poster_id'] == ANONYMOUS)
+					if ((int) $data_ary['poster_id'] == ANONYMOUS)
 					{
 						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
 					}
@@ -2308,11 +2308,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			}
 		}
 
-		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
+		$search->index($mode, (int) $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, (int) $data_ary['forum_id']);
 	}
 
 	// Topic Notification, do not change if moderator is changing other users posts...
-	if ($user->data['user_id'] == $poster_id)
+	if ((int) $user->data['user_id'] == $poster_id)
 	{
 		if (!$data_ary['notify_set'] && $data_ary['notify'])
 		{

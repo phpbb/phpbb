@@ -169,11 +169,11 @@ class create_search_index extends database_task
 	{
 		$this->search_indexer->index(
 			'post',
-			$value['post_id'],
+			(int) $value['post_id'],
 			$value['post_text'],
 			$value['post_subject'],
-			$value['poster_id'],
-			$value['forum_id']
+			(int) $value['poster_id'],
+			(int) $value['forum_id']
 		);
 	}
 

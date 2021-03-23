@@ -283,6 +283,7 @@ class acp_search
 				case 'delete':
 					try
 					{
+						$this->state[2] = $this->state[2] ?? 0;
 						if ($status = $this->search->delete_index($this->state[2])) // Status is not null, so deleting is in progress....
 						{
 							// save the current state
@@ -312,6 +313,7 @@ class acp_search
 				case 'create':
 					try
 					{
+						$this->state[2] = $this->state[2] ?? 0;
 						if ($status = $this->search->create_index($this->state[2])) // Status is not null, so indexing is in progress....
 						{
 							// save the current state

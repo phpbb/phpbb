@@ -114,7 +114,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'PostgreSQL Fulltext';
 	}
@@ -143,7 +143,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
@@ -151,7 +151,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return $this->common_words;
 	}
@@ -167,7 +167,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function split_keywords(&$keywords, $terms)
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
 		if ($terms == 'all')
 		{
@@ -258,7 +258,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No keywords? No posts
 		if (!$this->search_query)
@@ -522,7 +522,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No author? No posts
 		if (!count($author_ary))
@@ -798,7 +798,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
 	{
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
@@ -846,7 +846,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
 	{
 		$this->destroy_cache([], $author_ids);
 	}
@@ -854,7 +854,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function tidy()
+	public function tidy(): void
 	{
 		// destroy too old cached search results
 		$this->destroy_cache(array());
@@ -865,7 +865,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = null): ?array
+	public function create_index(int &$post_counter = 0): ?array
 	{
 		// Make sure we can actually use PostgreSQL with fulltext indexes
 		if ($error = $this->init())
@@ -983,7 +983,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	*/
-	public function index_created()
+	public function index_created(): bool
 	{
 		if (empty($this->stats))
 		{
@@ -1081,7 +1081,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function acp()
+	public function acp(): array
 	{
 		$tpl = '
 		<dl>
