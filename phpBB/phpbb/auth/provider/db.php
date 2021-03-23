@@ -154,7 +154,7 @@ class db extends base
 
 		$login_error_attempts = 'LOGIN_ERROR_ATTEMPTS';
 
-		$user_login_attempts	= $row ? ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) : false;
+		$user_login_attempts	= (is_array($row) && $this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']);
 		$ip_login_attempts		= ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 
 		$show_captcha = $user_login_attempts || $ip_login_attempts;
