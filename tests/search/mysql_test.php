@@ -24,12 +24,14 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $cache;
+		global $phpbb_root_path, $phpEx, $config, $cache;
 
 		parent::setUp();
 
 		// dbal uses cache
 		$cache = new phpbb_mock_cache();
+
+		$user = $this->createMock('\phpbb\user');
 
 		//  set config values
 		$config['fulltext_mysql_min_word_len'] = 4;

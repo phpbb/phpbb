@@ -296,6 +296,11 @@ abstract class base implements search_backend_interface
 		{
 			$rows = $this->get_posts_between($post_counter + 1, $post_counter + self::BATCH_SIZE);
 
+			if ($this->db->sql_buffer_nested_transactions())
+			{
+				$rows = iterator_to_array($rows);
+			}
+
 			foreach ($rows as $row)
 			{
 				// Indexing enabled for this forum
@@ -415,7 +420,7 @@ abstract class base implements search_backend_interface
 				AND post_id <= ' . $final_id;
 		$result = $this->db->sql_query($sql);
 
-		while($row = $this->db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			yield $row;
 		}

@@ -649,7 +649,8 @@ class fulltext_sphinx implements search_backend_interface
 	*/
 	public function delete_index(int &$post_counter = null): ?array
 	{
-		if ($this->index_created()) {
+		if ($this->index_created())
+		{
 			$this->db_tools->sql_table_drop(SPHINX_TABLE);
 		}
 

@@ -1404,11 +1404,6 @@ function mcp_fork_topic($topic_ids)
 				$search_backend_factory = $phpbb_container->get('search.backend_factory');
 				$search = $search_backend_factory->get_active();
 				$search_mode = 'post';
-
-				if ($error)
-				{
-					trigger_error($error);
-				}
 			}
 			else if (!isset($search_type) && !$topic_row['enable_indexing'])
 			{

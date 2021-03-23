@@ -78,7 +78,8 @@ class acp_search
 		foreach ($search_types as $search)
 		{
 			// Only show available search backends
-			if($search->is_available()) {
+			if ($search->is_available())
+			{
 
 				$name = $search->get_name();
 
@@ -88,16 +89,20 @@ class acp_search
 				$identifier = substr($type, strrpos($type, '\\') + 1);
 				$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
 
-				if (method_exists($search, 'acp')) {
+				if (method_exists($search, 'acp'))
+				{
 					$vars = $search->acp();
 
-					if (!$submit) {
+					if (!$submit)
+					{
 						$template->assign_block_vars('backend', array(
 							'NAME' => $name,
 							'SETTINGS' => $vars['tpl'],
 							'IDENTIFIER' => $identifier,
 						));
-					} else if (is_array($vars['config'])) {
+					}
+					else if (is_array($vars['config']))
+					{
 						$settings = array_merge($settings, $vars['config']);
 					}
 				}

@@ -123,7 +123,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	public function is_available(): bool
 	{
 		// Check if we are using mysql
-		if($this->db->get_sql_layer() != 'mysqli')
+		if ($this->db->get_sql_layer() != 'mysqli')
 		{
 			return false;
 		}
