@@ -153,8 +153,10 @@ class db extends base
 		}
 
 		$login_error_attempts = 'LOGIN_ERROR_ATTEMPTS';
-		$show_captcha = ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) ||
-			($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
+
+		$show_captcha = ($row) ? ($this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']) ||
+			($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']) : false;
+
 		if ($show_captcha)
 		{
 			$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
