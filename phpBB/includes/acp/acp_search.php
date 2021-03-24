@@ -85,29 +85,25 @@ class acp_search
 			if ($search->is_available())
 			{
 				$name = $search->get_name();
-
 				$type = get_class($search);
 
 				$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
 				$identifier = substr($type, strrpos($type, '\\') + 1);
 				$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
 
-				if (method_exists($search, 'acp'))
-				{
-					$vars = $search->acp();
+				$vars = $search->get_acp_options();
 
-					if (!$submit)
-					{
-						$template->assign_block_vars('backend', array(
-							'NAME' => $name,
-							'SETTINGS' => $vars['tpl'],
-							'IDENTIFIER' => $identifier,
-						));
-					}
-					else if (is_array($vars['config']))
-					{
-						$settings = array_merge($settings, $vars['config']);
-					}
+				if (!$submit)
+				{
+					$template->assign_block_vars('backend', array(
+						'NAME' => $name,
+						'SETTINGS' => $vars['tpl'],
+						'IDENTIFIER' => $identifier,
+					));
+				}
+				else if (is_array($vars['config']))
+				{
+					$settings = array_merge($settings, $vars['config']);
 				}
 			}
 		}
