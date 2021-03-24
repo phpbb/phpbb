@@ -260,11 +260,11 @@ class local implements adapter_interface, stream_interface
 
 			do
 			{
-				$parts = explode(DIRECTORY_SEPARATOR, $path);
+				$parts = explode('/', $path);
 				$parts = array_slice($parts, 0, -1);
-				$path = implode(DIRECTORY_SEPARATOR, $parts);
+				$path = implode('/', $parts);
 			}
-			while ($path && @rmdir($dirpath . DIRECTORY_SEPARATOR . $path));
+			while ($path && @rmdir($dirpath . '/' . $path));
 		}
 	}
 
