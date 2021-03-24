@@ -104,7 +104,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function configure($options)
+	public function configure(array $options): void
 	{
 		if (substr($options['path'], -1, 1) !== DIRECTORY_SEPARATOR)
 		{
@@ -119,7 +119,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function put_contents($path, $content)
+	public function put_contents(string $path, string $content): void
 	{
 		$this->ensure_directory_exists($path);
 
@@ -136,7 +136,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_contents($path)
+	public function get_contents(string $path): string
 	{
 		$content = @file_get_contents($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
@@ -151,7 +151,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function exists($path)
+	public function exists(string $path): bool
 	{
 		return $this->filesystem->exists($this->root_path . $this->get_path($path) . $this->get_filename($path));
 	}
@@ -159,7 +159,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete($path)
+	public function delete(string $path): void
 	{
 		try
 		{
@@ -176,7 +176,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function rename($path_orig, $path_dest)
+	public function rename(string $path_orig, string $path_dest): void
 	{
 		$this->ensure_directory_exists($path_dest);
 
@@ -195,7 +195,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function copy($path_orig, $path_dest)
+	public function copy(string $path_orig, string $path_dest): void
 	{
 		$this->ensure_directory_exists($path_dest);
 
@@ -310,7 +310,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function read_stream($path)
+	public function read_stream(string $path)
 	{
 		$stream = @fopen($this->root_path . $this->get_path($path) . $this->get_filename($path), 'rb');
 
@@ -325,7 +325,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function write_stream($path, $resource)
+	public function write_stream(string $path, $resource): void
 	{
 		$this->ensure_directory_exists($path);
 
@@ -420,7 +420,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @return array	Properties
 	 */
-	public function file_image_height($path)
+	public function file_image_height($path): array
 	{
 		return $this->image_dimensions($path);
 	}
@@ -428,7 +428,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_link($path)
+	public function get_link(string $path): string
 	{
 		return generate_board_url() . '/' . $this->path . $path;
 	}
@@ -436,7 +436,7 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function free_space()
+	public function free_space(): float
 	{
 		if (function_exists('disk_free_space'))
 		{
