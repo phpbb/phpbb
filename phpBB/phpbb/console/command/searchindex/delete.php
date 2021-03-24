@@ -86,9 +86,11 @@ class delete extends command
 	 *
 	 * @return int 0 if all is well, 1 if any errors occurred
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
+
+		$io->section($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_DELETE'));
 
 		$search_backend = $input->getArgument('search-backend');
 
@@ -105,8 +107,22 @@ class delete extends command
 
 		try
 		{
-			$search->delete_index($this, '');
-			$search->tidy();
+			// TODO: Read the max_post_id from db because the bucle is not always executed
+			$progress = $this->create_progress_bar(1, $io, $output, true);
+			$progress->setMessage('');
+			$progress->start();
+
+			$counter = 0;
+			while (($status = $search->delete_index($counter)) !== null)
+			{
+				$progress->setMaxSteps($status['max_post_id']);
+				$progress->setProgress($status['post_counter']);
+				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
+			}
+
+			$progress->finish();
+
+			$io->newLine(2);
 		}
 		catch (\Exception $e)
 		{

@@ -329,7 +329,8 @@ abstract class base implements search_backend_interface
 		$starttime = microtime(true);
 		$row_count = 0;
 
-		while (still_on_time() && $post_counter <= $max_post_id)
+		$still_on_time = PHP_SAPI === 'cli' ? true : still_on_time();
+		while ($still_on_time && $post_counter <= $max_post_id)
 		{
 			$rows = $this->get_posts_batch_after($post_counter);
 
@@ -355,9 +356,6 @@ abstract class base implements search_backend_interface
 				break;
 			}
 		}
-
-		// TODO: With cli if the previous bucle have stoped because of lack of time, launch an exception, because is an error
-		// cli commands should be executed in one step
 
 		// pretend the number of posts was as big as the number of ids we indexed so far
 		// just an estimation as it includes deleted posts
