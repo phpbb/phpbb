@@ -87,6 +87,6 @@ class list_all extends command
 
 		$io->listing($search_backends);
 
-		return 0;
+		return command::SUCCESS;
 	}
 }
