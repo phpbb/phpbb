@@ -37,7 +37,7 @@ class connection_factory
 	 * @throws runtime_exception		If the database connection could not be established.
 	 * @throws InvalidArgumentException	If the provided driver name is not a valid phpBB database driver.
 	 */
-	public static function get_connection(config_php_file $config) : Connection
+	static public function get_connection(config_php_file $config) : Connection
 	{
 		$driver = $config->get('dbms');
 		$host = $config->get('dbhost');
@@ -71,7 +71,7 @@ class connection_factory
 	 * @throws runtime_exception		If the database connection could not be established.
 	 * @throws InvalidArgumentException	If $driver is not a valid phpBB database driver.
 	 */
-	public static function get_connection_from_params(
+	static public function get_connection_from_params(
 		string $driver,
 		string $host,
 		?string $user = null,

@@ -187,7 +187,7 @@ abstract class database_task extends task_base
 	 *
 	 * @return Connection Doctrine DBAL connection object.
 	 */
-	protected static function get_doctrine_connection(database $db_helper, config $config) : Connection
+	static protected function get_doctrine_connection(database $db_helper, config $config) : Connection
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
