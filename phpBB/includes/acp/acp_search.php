@@ -185,17 +185,6 @@ class acp_search
 				}
 			}
 
-			if ($updated)
-			{
-				if (method_exists($search, 'config_updated'))
-				{
-					if ($search->config_updated())
-					{
-						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-				}
-			}
-
 			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
 		}
 		unset($cfg_array);
