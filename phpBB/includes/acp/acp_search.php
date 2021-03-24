@@ -21,15 +21,13 @@ if (!defined('IN_PHPBB'))
 
 class acp_search
 {
-	var $u_action;
-	var $state;
-	var $search;
+	public $u_action;
 
 	protected const STATE_SEARCH_TYPE = 0;
 	protected const STATE_ACTION = 1;
 	protected const STATE_POST_COUNTER = 2;
 
-	function main($id, $mode)
+	public function main($id, $mode)
 	{
 		global $user;
 
@@ -208,19 +206,19 @@ class acp_search
 		]);
 	}
 
-	function index($id, $mode)
+	public function index($id, $mode)
 	{
 		global $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$action = $request->variable('action', '');
-		$this->state = explode(',', $config['search_indexing_state']);
+		$state = explode(',', $config['search_indexing_state']);
 
 		if ($request->is_set_post('cancel'))
 		{
 			$action = '';
-			$this->state = array();
-			$this->save_state();
+			$state = array();
+			$this->save_state($state);
 		}
 		$submit = $request->is_set_post('submit');
 
@@ -239,41 +237,41 @@ class acp_search
 				break;
 
 				case 'delete':
-					$this->state[self::STATE_ACTION] = 'delete';
+					$state[self::STATE_ACTION] = 'delete';
 				break;
 
 				case 'create':
-					$this->state[self::STATE_ACTION] = 'create';
+					$state[self::STATE_ACTION] = 'create';
 				break;
 
 				default:
 					trigger_error('NO_ACTION', E_USER_ERROR);
 			}
 
-			if (empty($this->state[self::STATE_SEARCH_TYPE]))
+			if (empty($state[self::STATE_SEARCH_TYPE]))
 			{
-				$this->state[self::STATE_SEARCH_TYPE] = $request->variable('search_type', '');
+				$state[self::STATE_SEARCH_TYPE] = $request->variable('search_type', '');
 			}
 
 			$search_backend_factory = $phpbb_container->get('search.backend_factory');
-			$this->search = $search_backend_factory->get($this->state[self::STATE_SEARCH_TYPE]);
+			$search = $search_backend_factory->get($state[self::STATE_SEARCH_TYPE]);
 
-			$name = $this->search->get_name();
+			$name = $search->get_name();
 
-			$action = &$this->state[1];
+			$action = &$state[1];
 
-			$this->save_state();
+			$this->save_state($state);
 
 			switch ($action)
 			{
 				case 'delete':
 					try
 					{
-						$this->state[self::STATE_POST_COUNTER] = $this->state[self::STATE_POST_COUNTER] ?? 0;
-						if ($status = $this->search->delete_index($this->state[self::STATE_POST_COUNTER])) // Status is not null, so deleting is in progress....
+						$state[self::STATE_POST_COUNTER] = $state[self::STATE_POST_COUNTER] ?? 0;
+						if ($status = $search->delete_index($state[self::STATE_POST_COUNTER])) // Status is not null, so deleting is in progress....
 						{
 							// save the current state
-							$this->save_state();
+							$this->save_state($state);
 
 							$u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false);
 							meta_refresh(1, $u_action);
@@ -282,15 +280,15 @@ class acp_search
 					}
 					catch (Exception $e)
 					{
-						$this->state = [];
-						$this->save_state();
+						$state = [];
+						$this->save_state($state);
 						trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 
-					$this->search->tidy();
+					$search->tidy();
 
-					$this->state = [];
-					$this->save_state();
+					$state = [];
+					$this->save_state($state);
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
@@ -299,11 +297,11 @@ class acp_search
 				case 'create':
 					try
 					{
-						$this->state[self::STATE_POST_COUNTER] = $this->state[self::STATE_POST_COUNTER] ?? 0;
-						if ($status = $this->search->create_index($this->state[self::STATE_POST_COUNTER])) // Status is not null, so indexing is in progress....
+						$state[self::STATE_POST_COUNTER] = $state[self::STATE_POST_COUNTER] ?? 0;
+						if ($status = $search->create_index($state[self::STATE_POST_COUNTER])) // Status is not null, so indexing is in progress....
 						{
 							// save the current state
-							$this->save_state();
+							$this->save_state($state);
 
 							$u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create&hash=" . generate_link_hash('acp_search'), false);
 							meta_refresh(1, $u_action);
@@ -313,17 +311,17 @@ class acp_search
 					catch (Exception $e)
 					{
 						// Error executing create_index
-						$this->state = [];
-						$this->save_state();
+						$state = [];
+						$this->save_state($state);
 						trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 
 					// Indexing have finished
 
-					$this->search->tidy();
+					$search->tidy();
 
-					$this->state = [];
-					$this->save_state();
+					$state = [];
+					$this->save_state($state);
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
@@ -359,16 +357,16 @@ class acp_search
 			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
 		));
 
-		if (isset($this->state[self::STATE_ACTION]))
+		if (isset($state[self::STATE_ACTION]))
 		{
 			$this->tpl_name = 'acp_search_index';
 			$this->page_title = 'ACP_SEARCH_INDEX';
 
 			$template->assign_vars(array(
-				'S_CONTINUE_INDEXING'	=> $this->state[1],
-				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[self::STATE_ACTION] . '&amp;hash=' . generate_link_hash('acp_search'),
-				'L_CONTINUE'			=> ($this->state[self::STATE_ACTION] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[self::STATE_ACTION] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
+				'S_CONTINUE_INDEXING'	=> $state[1],
+				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $state[self::STATE_ACTION] . '&amp;hash=' . generate_link_hash('acp_search'),
+				'L_CONTINUE'			=> ($state[self::STATE_ACTION] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
+				'L_CONTINUE_EXPLAIN'	=> ($state[self::STATE_ACTION] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
 			);
 		}
 	}
@@ -406,13 +404,8 @@ class acp_search
 	{
 		global $config;
 
-		if ($state)
-		{
-			$this->state = $state;
-		}
+		ksort($state);
 
-		ksort($this->state);
-
-		$config->set('search_indexing_state', implode(',', $this->state), true);
+		$config->set('search_indexing_state', implode(',', $state), true);
 	}
 }
