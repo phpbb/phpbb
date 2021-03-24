@@ -118,13 +118,14 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 	public function test_read_stream()
 	{
 		// Given
-		touch($this->path . 'file.txt');
+		file_put_contents($this->path . 'file.txt', 'abc');
 
 		// When
 		$stream = $this->adapter->read_stream('file.txt');
 
 		// Then
 		$this->assertIsResource($stream);
+		$this->assertEquals('abc', stream_get_contents($stream));
 
 		// Clean test
 		fclose($stream);

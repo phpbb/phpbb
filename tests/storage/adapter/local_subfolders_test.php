@@ -13,7 +13,7 @@
 
 require_once __DIR__ . '/local_test_case.php';
 
-class local_subfolders_test extends phpbb_local_test_case
+class phpbb_storage_adapter_local_subfolders_test extends phpbb_local_test_case
 {
 	protected function setUp(): void
 	{
@@ -138,13 +138,14 @@ class local_subfolders_test extends phpbb_local_test_case
 	{
 		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
-		touch($this->path . '3d/8e/file.txt');
+		file_put_contents($this->path . '3d/8e/file.txt', 'abc');
 
 		// When
 		$stream = $this->adapter->read_stream('file.txt');
 
 		// Then
 		$this->assertIsResource($stream);
+		$this->assertEquals('abc', stream_get_contents($stream));
 
 		// Clean test
 		fclose($stream);
