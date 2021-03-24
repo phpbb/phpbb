@@ -334,19 +334,11 @@ class acp_search
 
 		$search_types = $phpbb_container->get('search.backend_collection');
 
-		$search = null;
-
 		foreach ($search_types as $search)
 		{
 			$type = get_class($search);
-
 			$name = $search->get_name();
-
-			$data = array();
-			if (method_exists($search, 'index_stats'))
-			{
-				$data = $search->index_stats();
-			}
+			$data =  $search->index_stats();
 
 			$statistics = array();
 			foreach ($data as $statistic => $value)
