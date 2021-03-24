@@ -1,0 +1,80 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<script>
+// <![CDATA[
+	/**
+	* Popup search progress bar
+	*/
+	function popup_progress_bar(progress_type)
+	{
+		close_waitscreen = 0;
+		// no scrollbars
+		popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
+	}
+// ]]>
+</script>
+
+<h1>{L_ACP_SEARCH_INDEX}</h1>
+
+<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
+
+<!-- BEGIN backend -->
+
+	{% if backend.S_STATS is not empty %}
+
+	<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
+
+		<fieldset class="tabulated">
+
+		{backend.S_HIDDEN_FIELDS}
+
+		<legend>{L_INDEX_STATS}{L_COLON} {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></legend>
+
+		<table class="table1">
+			<caption>{backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
+			<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
+		<thead>
+		<tr>
+			<th>{L_STATISTIC}</th>
+			<th>{L_VALUE}</th>
+			<th>{L_STATISTIC}</th>
+			<th>{L_VALUE}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for stat in backend.S_STATS | batch(2, '') %}
+			<tr>
+			{% for key, value in stat %}
+				{% if value is not empty %}
+					<td>{{ key }}{L_COLON}</td>
+					<td>{{ value }}</td>
+				{% else %}
+					<td></td>
+					<td></td>
+				{% endif %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+		</tbody>
+		</table>
+
+	{% endif %}
+
+	<p class="quick">
+	<!-- IF backend.S_INDEXED -->
+		<input type="hidden" name="action" value="delete" />
+		<input class="button2" type="submit" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
+	<!-- ELSE -->
+		<input type="hidden" name="action" value="create" />
+		<input class="button2" type="submit" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
+	<!-- ENDIF -->
+	</p>
+	{S_FORM_TOKEN}
+	</fieldset>
+
+	</form>
+<!-- END backend -->
+
+<!-- INCLUDE overall_footer.html -->

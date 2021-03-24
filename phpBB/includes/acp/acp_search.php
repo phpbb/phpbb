@@ -203,7 +203,6 @@ class acp_search
 
 			'S_SEARCH_TYPES'		=> $search_options,
 			'S_YES_SEARCH'			=> (bool) $config['load_search'],
-			'S_SETTINGS'			=> true,
 
 			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
 		]);
@@ -355,7 +354,6 @@ class acp_search
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
 		$template->assign_vars(array(
-			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
 			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
 			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
@@ -363,6 +361,9 @@ class acp_search
 
 		if (isset($this->state[self::STATE_ACTION]))
 		{
+			$this->tpl_name = 'acp_search_index';
+			$this->page_title = 'ACP_SEARCH_INDEX';
+
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[self::STATE_ACTION] . '&amp;hash=' . generate_link_hash('acp_search'),
