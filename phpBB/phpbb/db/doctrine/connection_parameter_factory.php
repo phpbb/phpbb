@@ -34,7 +34,7 @@ class connection_parameter_factory
 	 *
 	 * @throws InvalidArgumentException If a required parameter is empty or null.
 	 */
-	public static function get_configuration(
+	static public function get_configuration(
 		string $driver,
 		string $host,
 		?string $user = null,
@@ -70,7 +70,7 @@ class connection_parameter_factory
 	 *
 	 * @throws InvalidArgumentException If a required parameter is empty or null.
 	 */
-	private static function build_connection_parameters(
+	static private function build_connection_parameters(
 		array $params,
 		string $host,
 		?string $user = null,
@@ -119,7 +119,7 @@ class connection_parameter_factory
 	 *
 	 * @return array Doctrine's DBAL configuration for SQLite.
 	 */
-	private static function build_sqlite_parameters(array $params, string $path, ?string $user, ?string $password) : array
+	static private function build_sqlite_parameters(array $params, string $path, ?string $user, ?string $password) : array
 	{
 		$params['path'] = $path;
 
@@ -143,7 +143,7 @@ class connection_parameter_factory
 	 *
 	 * @return array The enriched parameter list.
 	 */
-	private static function enrich_parameters(array $params) : array
+	static private function enrich_parameters(array $params) : array
 	{
 		$enrichment_tags = [
 			'pdo_mysql' => [
