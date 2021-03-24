@@ -90,6 +90,8 @@ class create extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
+		$io->section($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_CREATE'));
+
 		$search_backend = $input->getArgument('search-backend');
 
 		try
@@ -105,18 +107,16 @@ class create extends command
 
 		try
 		{
-			$counter = 0;
-
 			$progress = $this->create_progress_bar(1, $io, $output, true);
+			$progress->setMessage('');
 			$progress->start();
 
+			$counter = 0;
 			while (($status = $search->create_index($counter)) !== null)
 			{
 				$progress->setMaxSteps($status['max_post_id']);
 				$progress->setProgress($status['post_counter']);
 				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
-
-				$progress->advance();
 			}
 
 			$progress->finish();
