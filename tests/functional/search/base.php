@@ -38,7 +38,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->create_search_index('\phpbb\search\fulltext_native');
+		$this->create_search_index('phpbb\\search\\backend\\fulltext_native');
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
@@ -49,18 +49,28 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		if ($values["config[search_type]"] != $this->search_backend)
 		{
 			$values["config[search_type]"] = $this->search_backend;
-			$form->setValues($values);
+
+			try
+			{
+				$form->setValues($values);
+			}
+			catch(\InvalidArgumentException $e)
+			{
+				// Search backed is not supported because don't appear in the select
+				$this->delete_topic($post['topic_id']);
+				$this->markTestSkipped("Search backend is not supported/running");
+			}
+
 			$crawler = self::submit($form);
 
 			$form = $crawler->selectButton('Yes')->form();
 			$values = $form->getValues();
 			$crawler = self::submit($form);
 
-			// check if search backend is not supported
+			// Unknown error selecting search backend
 			if ($crawler->filter('.errorbox')->count() > 0)
 			{
-				$this->delete_topic($post['topic_id']);
-				$this->markTestSkipped("Search backend is not supported/running");
+				$this->fail('Error when trying to select available search backend');
 			}
 
 			$this->create_search_index();

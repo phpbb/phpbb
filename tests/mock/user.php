@@ -26,7 +26,7 @@ class phpbb_mock_user
 	public $lang = [];
 
 	private $options = array();
-	public function optionget($item)
+	public function optionget($item, $data = false)
 	{
 		if (!isset($this->options[$item]))
 		{
@@ -36,7 +36,7 @@ class phpbb_mock_user
 		return $this->options[$item];
 	}
 
-	public function optionset($item, $value)
+	public function optionset($item, $value, $data = false)
 	{
 		$this->options[$item] = $value;
 	}

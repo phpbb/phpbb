@@ -11,12 +11,19 @@
 *
 */
 
-namespace phpbb\search;
+namespace phpbb\search\backend;
+
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
+use phpbb\user;
+use RuntimeException;
 
 /**
-* Fulltext search for PostgreSQL
+* Fulltext search for MySQL
 */
-class fulltext_postgres extends \phpbb\search\base
+class fulltext_mysql extends base implements search_backend_interface
 {
 	/**
 	 * Associative array holding index stats
@@ -31,41 +38,21 @@ class fulltext_postgres extends \phpbb\search\base
 	protected $split_words = array();
 
 	/**
-	 * Stores the tsearch query
-	 * @var string
-	 */
-	protected $tsearch_query;
-
-	/**
-	 * True if phrase search is supported.
-	 * PostgreSQL fulltext currently doesn't support it
-	 * @var boolean
-	 */
-	protected $phrase_search = false;
-
-	/**
-	 * Config object
-	 * @var \phpbb\config\config
-	 */
-	protected $config;
-
-	/**
-	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $db;
-
-	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
-	 * User object
-	 * @var \phpbb\user
+	 * @var language
 	 */
-	protected $user;
+	protected $language;
+
+	/**
+	 * Associative array stores the min and max word length to be searched
+	 * @var array
+	 */
+	protected $word_length = array();
 
 	/**
 	 * Contains tidied search query.
@@ -82,32 +69,26 @@ class fulltext_postgres extends \phpbb\search\base
 	protected $common_words = array();
 
 	/**
-	 * Associative array stores the min and max word length to be searched
-	 * @var array
-	 */
-	protected $word_length = array();
-
-	/**
 	 * Constructor
-	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
+	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
-	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 * @param config $config Config object
+	 * @param driver_interface $db Database object
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
+	 * @param user $user User object
 	 * @param string $phpbb_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
-	 * @param \phpbb\auth\auth $auth Auth object
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\db\driver\driver_interface Database object
-	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
-		$this->config = $config;
-		$this->db = $db;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->user = $user;
+		global $cache;
 
-		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
+		parent::__construct($cache, $config, $db, $user);
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->language = $language;
+
+		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);
 
 		/**
 		 * Load the UTF tools
@@ -116,44 +97,104 @@ class fulltext_postgres extends \phpbb\search\base
 		{
 			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 		}
-
-		$error = false;
 	}
 
 	/**
-	* Returns the name of this search backend to be displayed to administrators
-	*
-	* @return string Name
-	*/
-	public function get_name()
-	{
-		return 'PostgreSQL Fulltext';
-	}
-
-	/**
-	 * Returns the search_query
-	 *
-	 * @return string search query
+	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function get_name(): string
+	{
+		return 'MySQL Fulltext';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function is_available(): bool
+	{
+		// Check if we are using mysql
+		if ($this->db->get_sql_layer() != 'mysqli')
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init()
+	{
+		if (!$this->is_available())
+		{
+			return $this->language->lang('FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE');
+		}
+
+		$result = $this->db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
+		$info = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$engine = $info['Engine'] ?? $info['Type'] ?? '';
+
+		$fulltext_supported = $engine === 'Aria' || $engine === 'MyISAM'
+			/**
+			 * FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
+			 * http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			 * We also require https://bugs.mysql.com/bug.php?id=67004 to be
+			 * fixed for proper overall operation. Hence we require 5.6.8.
+			 */
+			|| ($engine === 'InnoDB'
+				&& phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>='));
+
+		if (!$fulltext_supported)
+		{
+			return $this->language->lang('FULLTEXT_MYSQL_NOT_SUPPORTED');
+		}
+
+		$sql = 'SHOW VARIABLES
+			LIKE \'%ft\_%\'';
+		$result = $this->db->sql_query($sql);
+
+		$mysql_info = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$mysql_info[$row['Variable_name']] = $row['Value'];
+		}
+		$this->db->sql_freeresult($result);
+
+		if ($engine === 'MyISAM')
+		{
+			$this->config->set('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
+			$this->config->set('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+		}
+		else if ($engine === 'InnoDB')
+		{
+			$this->config->set('fulltext_mysql_max_word_len', $mysql_info['innodb_ft_max_token_size']);
+			$this->config->set('fulltext_mysql_min_word_len', $mysql_info['innodb_ft_min_token_size']);
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
 
 	/**
-	 * Returns the common_words array
-	 *
-	 * @return array common words that are ignored by search backend
+	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return $this->common_words;
 	}
 
 	/**
-	 * Returns the word_length array
-	 *
-	 * @return array min and max word length for searching
+	 * {@inheritdoc}
 	 */
 	public function get_word_length()
 	{
@@ -161,39 +202,9 @@ class fulltext_postgres extends \phpbb\search\base
 	}
 
 	/**
-	 * Returns if phrase search is supported or not
-	 *
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function supports_phrase_search()
-	{
-		return $this->phrase_search;
-	}
-
-	/**
-	* Checks for correct PostgreSQL version and stores min/max word length in the config
-	*
-	* @return string|bool Language key of the error/incompatibility occurred
-	*/
-	public function init()
-	{
-		if ($this->db->get_sql_layer() != 'postgres')
-		{
-			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
-		}
-
-		return false;
-	}
-
-	/**
-	* Splits keywords entered by a user into an array of words stored in $this->split_words
-	* Stores the tidied search query in $this->search_query
-	*
-	* @param	string	&$keywords	Contains the keyword as entered by the user
-	* @param	string	$terms	is either 'all' or 'any'
-	* @return	bool	false	if no valid keywords were found and otherwise true
-	*/
-	public function split_keywords(&$keywords, $terms)
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
 		if ($terms == 'all')
 		{
@@ -204,7 +215,7 @@ class fulltext_postgres extends \phpbb\search\base
 		}
 
 		// Filter out as above
-		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords, ENT_COMPAT)));
+		$split_keywords = preg_replace("#[\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords, ENT_COMPAT)));
 
 		// Split words
 		$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
@@ -212,13 +223,73 @@ class fulltext_postgres extends \phpbb\search\base
 		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
 		$this->split_words = $matches[1];
 
+		// We limit the number of allowed keywords to minimize load on the database
+		if ($this->config['max_num_search_keywords'] && count($this->split_words) > $this->config['max_num_search_keywords'])
+		{
+			trigger_error($this->language->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], count($this->split_words)));
+		}
+
+		// to allow phrase search, we need to concatenate quoted words
+		$tmp_split_words = array();
+		$phrase = '';
+		foreach ($this->split_words as $word)
+		{
+			if ($phrase)
+			{
+				$phrase .= ' ' . $word;
+				if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
+				{
+					$tmp_split_words[] = $phrase;
+					$phrase = '';
+				}
+			}
+			else if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
+			{
+				$phrase = $word;
+			}
+			else
+			{
+				$tmp_split_words[] = $word;
+			}
+		}
+		if ($phrase)
+		{
+			$tmp_split_words[] = $phrase;
+		}
+
+		$this->split_words = $tmp_split_words;
+
+		unset($tmp_split_words);
+		unset($phrase);
+
 		foreach ($this->split_words as $i => $word)
 		{
+			// Check for not allowed search queries for InnoDB.
+			// We assume similar restrictions for MyISAM, which is usually even
+			// slower but not as restrictive as InnoDB.
+			// InnoDB full-text search does not support the use of a leading
+			// plus sign with wildcard ('+*'), a plus and minus sign
+			// combination ('+-'), or leading a plus and minus sign combination.
+			// InnoDB full-text search only supports leading plus or minus signs.
+			// For example, InnoDB supports '+apple' but does not support 'apple+'.
+			// Specifying a trailing plus or minus sign causes InnoDB to report
+			// a syntax error. InnoDB full-text search does not support the use
+			// of multiple operators on a single search word, as in this example:
+			// '++apple'. Use of multiple operators on a single search word
+			// returns a syntax error to standard out.
+			// Also, ensure that the wildcard character is only used at the
+			// end of the line as it's intended by MySQL.
+			if (preg_match('#^(\+[+-]|\+\*|.+[+-]$|.+\*(?!$))#', $word))
+			{
+				unset($this->split_words[$i]);
+				continue;
+			}
+
 			$clean_word = preg_replace('#^[+\-|"]#', '', $word);
 
 			// check word length
 			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
-			if (($clean_len < $this->config['fulltext_postgres_min_word_len']) || ($clean_len > $this->config['fulltext_postgres_max_word_len']))
+			if (($clean_len < $this->config['fulltext_mysql_min_word_len']) || ($clean_len > $this->config['fulltext_mysql_max_word_len']))
 			{
 				$this->common_words[] = $word;
 				unset($this->split_words[$i]);
@@ -228,7 +299,6 @@ class fulltext_postgres extends \phpbb\search\base
 		if ($terms == 'any')
 		{
 			$this->search_query = '';
-			$this->tsearch_query = '';
 			foreach ($this->split_words as $word)
 			{
 				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0) || (strpos($word, '|') === 0))
@@ -236,39 +306,28 @@ class fulltext_postgres extends \phpbb\search\base
 					$word = substr($word, 1);
 				}
 				$this->search_query .= $word . ' ';
-				$this->tsearch_query .= '|' . $word . ' ';
 			}
 		}
 		else
 		{
 			$this->search_query = '';
-			$this->tsearch_query = '';
 			foreach ($this->split_words as $word)
 			{
-				if (strpos($word, '+') === 0)
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0))
 				{
 					$this->search_query .= $word . ' ';
-					$this->tsearch_query .= '&' . substr($word, 1) . ' ';
-				}
-				else if (strpos($word, '-') === 0)
-				{
-					$this->search_query .= $word . ' ';
-					$this->tsearch_query .= '&!' . substr($word, 1) . ' ';
 				}
 				else if (strpos($word, '|') === 0)
 				{
-					$this->search_query .= $word . ' ';
-					$this->tsearch_query .= '|' . substr($word, 1) . ' ';
+					$this->search_query .= substr($word, 1) . ' ';
 				}
 				else
 				{
 					$this->search_query .= '+' . $word . ' ';
-					$this->tsearch_query .= '&' . $word . ' ';
 				}
 			}
 		}
 
-		$this->tsearch_query = substr($this->tsearch_query, 1);
 		$this->search_query = utf8_htmlspecialchars($this->search_query);
 
 		if ($this->search_query)
@@ -281,61 +340,12 @@ class fulltext_postgres extends \phpbb\search\base
 	}
 
 	/**
-	* Turns text into an array of words
-	* @param string $text contains post text/subject
-	*/
-	public function split_message($text)
-	{
-		// Split words
-		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		$matches = array();
-		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
-		$text = $matches[1];
-
-		// remove too short or too long words
-		$text = array_values($text);
-		for ($i = 0, $n = count($text); $i < $n; $i++)
-		{
-			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $this->config['fulltext_postgres_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_postgres_max_word_len'])
-			{
-				unset($text[$i]);
-			}
-		}
-
-		return array_values($text);
-	}
-
-	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	 * {@inheritdoc}
+	 */
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No keywords? No posts
 		if (!$this->search_query)
-		{
-			return false;
-		}
-
-		// When search query contains queries like -foo
-		if (strpos($this->search_query, '+') === false)
 		{
 			return false;
 		}
@@ -357,7 +367,7 @@ class fulltext_postgres extends \phpbb\search\base
 		/**
 		* Allow changing the search_key for cached results
 		*
-		* @event core.search_postgres_by_keyword_modify_search_key
+		* @event core.search_mysql_by_keyword_modify_search_key
 		* @var	array	search_key_array	Array with search parameters to generate the search_key
 		* @var	string	type				Searching type ('posts', 'topics')
 		* @var	string	fields				Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
@@ -382,7 +392,7 @@ class fulltext_postgres extends \phpbb\search\base
 			'post_visibility',
 			'author_ary',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_by_keyword_modify_search_key', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_by_keyword_modify_search_key', compact($vars)));
 
 		$search_key = md5(implode('#', $search_key_array));
 
@@ -393,7 +403,7 @@ class fulltext_postgres extends \phpbb\search\base
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}
@@ -449,13 +459,13 @@ class fulltext_postgres extends \phpbb\search\base
 			break;
 		}
 
-		$tsearch_query = $this->tsearch_query;
+		$search_query = $this->search_query;
 
 		/**
-		* Allow changing the query used to search for posts using fulltext_postgres
+		* Allow changing the query used to search for posts using fulltext_mysql
 		*
-		* @event core.search_postgres_keywords_main_query_before
-		* @var	string	tsearch_query		The parsed keywords used for this search
+		* @event core.search_mysql_keywords_main_query_before
+		* @var	string	search_query		The parsed keywords used for this search
 		* @var	int		result_count		The previous result count for the format of the query.
 		*									Set to 0 to force a re-count
 		* @var	bool	join_topic			Weather or not TOPICS_TABLE should be CROSS JOIN'ED
@@ -478,7 +488,7 @@ class fulltext_postgres extends \phpbb\search\base
 		* @since 3.1.5-RC1
 		*/
 		$vars = array(
-			'tsearch_query',
+			'search_query',
 			'result_count',
 			'join_topic',
 			'author_ary',
@@ -496,16 +506,16 @@ class fulltext_postgres extends \phpbb\search\base
 			'sql_sort',
 			'start',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_keywords_main_query_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_keywords_main_query_before', compact($vars)));
 
-		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id, ' . $sort_by_sql[$sort_key];
+		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
+		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
-
 		if (count($author_ary) && $author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = '(' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+			$sql_author = ' AND (' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else if (count($author_ary))
 		{
@@ -525,35 +535,27 @@ class fulltext_postgres extends \phpbb\search\base
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match_where;
 
-		$sql_match = str_replace(',', " || ' ' ||", $sql_match);
-		$tmp_sql_match = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
-
-		$this->db->sql_transaction('begin');
-
-		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
-		$sql_where = "WHERE (" . $tmp_sql_match . ")
-			$sql_where_options";
 		$sql = "SELECT $sql_select
-			$sql_from
-			$sql_where
+			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
+			WHERE MATCH ($sql_match) AGAINST ('" . $this->db->sql_escape(htmlspecialchars_decode($this->search_query, ENT_COMPAT)) . "' IN BOOLEAN MODE)
+				$sql_where_options
 			ORDER BY $sql_sort";
+		$this->db->sql_return_on_error(true);
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[$field];
+			$id_ary[] = (int) $row[$field];
 		}
 		$this->db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
 
 		// if the total result count is not cached yet, retrieve it from the db
-		if (!$result_count)
+		if (!$result_count && count($id_ary))
 		{
-			$sql_count = "SELECT COUNT(*) as result_count
-				$sql_from
-				$sql_where";
-			$result = $this->db->sql_query($sql_count);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
 
@@ -563,8 +565,6 @@ class fulltext_postgres extends \phpbb\search\base
 			}
 		}
 
-		$this->db->sql_transaction('commit');
-
 		if ($start >= $result_count)
 		{
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
@@ -573,7 +573,7 @@ class fulltext_postgres extends \phpbb\search\base
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$id_ary[] = $row[$field];
+				$id_ary[] = (int) $row[$field];
 			}
 			$this->db->sql_freeresult($result);
 
@@ -588,25 +588,9 @@ class fulltext_postgres extends \phpbb\search\base
 	}
 
 	/**
-	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	 * {@inheritdoc}
+	 */
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No author? No posts
 		if (!count($author_ary))
@@ -633,7 +617,7 @@ class fulltext_postgres extends \phpbb\search\base
 		/**
 		* Allow changing the search_key for cached results
 		*
-		* @event core.search_postgres_by_author_modify_search_key
+		* @event core.search_mysql_by_author_modify_search_key
 		* @var	array	search_key_array	Array with search parameters to generate the search_key
 		* @var	string	type				Searching type ('posts', 'topics')
 		* @var	boolean	firstpost_only		Flag indicating if only topic starting posts are considered
@@ -658,7 +642,7 @@ class fulltext_postgres extends \phpbb\search\base
 			'author_ary',
 			'author_name',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_by_author_modify_search_key', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_by_author_modify_search_key', compact($vars)));
 
 		$search_key = md5(implode('#', $search_key_array));
 
@@ -669,7 +653,7 @@ class fulltext_postgres extends \phpbb\search\base
 
 		// try reading the results from cache
 		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $result_count;
 		}
@@ -715,13 +699,14 @@ class fulltext_postgres extends \phpbb\search\base
 		$m_approve_fid_sql = ' AND ' . $post_visibility;
 
 		/**
-		* Allow changing the query used to search for posts by author in fulltext_postgres
+		* Allow changing the query used to search for posts by author in fulltext_mysql
 		*
-		* @event core.search_postgres_author_count_query_before
+		* @event core.search_mysql_author_query_before
 		* @var	int		result_count		The previous result count for the format of the query.
 		*									Set to 0 to force a re-count
 		* @var	string	sql_sort_table		CROSS JOIN'ed table to allow doing the sort chosen
 		* @var	string	sql_sort_join		Condition to define how to join the CROSS JOIN'ed table specifyed in sql_sort_table
+		* @var	string	type				Either "posts" or "topics" specifying the type of search being made
 		* @var	array	author_ary			Array of user_id containing the users to filter the results to
 		* @var	string	author_name			An extra username to search on
 		* @var	string	sql_author			SQL WHERE condition for the post author ids
@@ -734,6 +719,7 @@ class fulltext_postgres extends \phpbb\search\base
 		* @var	string	sort_days			Time, in days, that the oldest post showing can have
 		* @var	string	sql_time			The SQL to search on the time specifyed by sort_days
 		* @var	bool	firstpost_only		Wether or not to search only on the first post of the topics
+		* @var	string	sql_firstpost		The SQL with the conditions to join the tables when using firstpost_only
 		* @var	array	ex_fid_ary			Forum ids that must not be searched on
 		* @var	array	sql_fora			SQL query for ex_fid_ary
 		* @var	string	m_approve_fid_sql	WHERE clause condition on post_visibility restrictions
@@ -744,6 +730,7 @@ class fulltext_postgres extends \phpbb\search\base
 			'result_count',
 			'sql_sort_table',
 			'sql_sort_join',
+			'type',
 			'author_ary',
 			'author_name',
 			'sql_author',
@@ -756,17 +743,21 @@ class fulltext_postgres extends \phpbb\search\base
 			'sort_days',
 			'sql_time',
 			'firstpost_only',
+			'sql_firstpost',
 			'ex_fid_ary',
 			'sql_fora',
 			'm_approve_fid_sql',
 			'start',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_author_count_query_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_author_query_before', compact($vars)));
+
+		// If the cache was completely empty count the results
+		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
-			$sql = "SELECT p.post_id
+			$sql = "SELECT {$calc_results}p.post_id
 				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
 				WHERE $sql_author
 					$sql_topic_id
@@ -780,7 +771,7 @@ class fulltext_postgres extends \phpbb\search\base
 		}
 		else
 		{
-			$sql = "SELECT t.topic_id
+			$sql = "SELECT {$calc_results}t.topic_id
 				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
 					$sql_topic_id
@@ -790,62 +781,33 @@ class fulltext_postgres extends \phpbb\search\base
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id, $sort_by_sql[$sort_key]
+				GROUP BY t.topic_id
 				ORDER BY $sql_sort";
 			$field = 'topic_id';
 		}
-
-		$this->db->sql_transaction('begin');
 
 		// Only read one block of posts from the db and then cache it
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[$field];
+			$id_ary[] = (int) $row[$field];
 		}
 		$this->db->sql_freeresult($result);
 
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			if ($type == 'posts')
-			{
-				$sql_count = "SELECT COUNT(*) as result_count
-					FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
-					WHERE $sql_author
-						$sql_topic_id
-						$sql_firstpost
-						$m_approve_fid_sql
-						$sql_fora
-						$sql_sort_join
-						$sql_time";
-			}
-			else
-			{
-				$sql_count = "SELECT COUNT(*) as result_count
-					FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-					WHERE $sql_author
-						$sql_topic_id
-						$sql_firstpost
-						$m_approve_fid_sql
-						$sql_fora
-						AND t.topic_id = p.topic_id
-						$sql_sort_join
-						$sql_time
-					GROUP BY t.topic_id, $sort_by_sql[$sort_key]";
-			}
-
-			$this->db->sql_query($sql_count);
+			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
 				return false;
 			}
 		}
-
-		$this->db->sql_transaction('commit');
 
 		if ($start >= $result_count)
 		{
@@ -872,16 +834,17 @@ class fulltext_postgres extends \phpbb\search\base
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
-	*
-	* @param	string		$mode		contains the post mode: edit, post, reply, quote ...
-	* @param	int			$post_id	contains the post id of the post to index
-	* @param	string		$message	contains the post text of the post
-	* @param	string		$subject	contains the subject of the post to index
-	* @param	int			$poster_id	contains the user id of the poster
-	* @param	int			$forum_id	contains the forum id of parent forum of the post
-	*/
-	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	 * {@inheritdoc}
+	 */
+	public function supports_phrase_search(): bool
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
 	{
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
@@ -890,16 +853,16 @@ class fulltext_postgres extends \phpbb\search\base
 		$words = array_unique(array_merge($split_text, $split_title));
 
 		/**
-		* Event to modify method arguments and words before the PostgreSQL search index is updated
+		* Event to modify method arguments and words before the MySQL search index is updated
 		*
-		* @event core.search_postgres_index_before
+		* @event core.search_mysql_index_before
 		* @var string	mode				Contains the post mode: edit, post, reply, quote
 		* @var int		post_id				The id of the post which is modified/created
 		* @var string	message				New or updated post content
 		* @var string	subject				New or updated post subject
 		* @var int		poster_id			Post author's user id
 		* @var int		forum_id			The id of the forum in which the post is located
-		* @var array	words				Array of words added to the index
+		* @var array	words				List of words added to the index
 		* @var array	split_text			Array of words from the message
 		* @var array	split_title			Array of words from the title
 		* @since 3.2.3-RC1
@@ -915,10 +878,9 @@ class fulltext_postgres extends \phpbb\search\base
 			'split_text',
 			'split_title',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_index_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_index_before', compact($vars)));
 
-		unset($split_text);
-		unset($split_title);
+		unset($split_text, $split_title);
 
 		// destroy cached search results containing any of the words removed or added
 		$this->destroy_cache($words, array($poster_id));
@@ -927,35 +889,33 @@ class fulltext_postgres extends \phpbb\search\base
 	}
 
 	/**
-	* Destroy cached results, that might be outdated after deleting a post
-	*/
-	public function index_remove($post_ids, $author_ids, $forum_ids)
+	 * {@inheritdoc}
+	 */
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
 	{
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache([], array_unique($author_ids));
 	}
 
 	/**
-	* Destroy old cache entries
-	*/
-	public function tidy()
+	 * {@inheritdoc}
+	 */
+	public function tidy(): void
 	{
 		// destroy too old cached search results
-		$this->destroy_cache(array());
+		$this->destroy_cache([]);
 
 		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**
-	* Create fulltext index
-	*
-	* @return string|bool error string is returned incase of errors otherwise false
-	*/
-	public function create_index($acp_module, $u_action)
+	 * {@inheritdoc}
+	 */
+	public function create_index(int &$post_counter = 0): ?array
 	{
-		// Make sure we can actually use PostgreSQL with fulltext indexes
+		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
-			return $error;
+			throw new RuntimeException($error);
 		}
 
 		if (empty($this->stats))
@@ -963,29 +923,42 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		$sql_queries = [];
+		$alter_list = array();
 
 		if (!isset($this->stats['post_subject']))
 		{
-			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject))";
+			$alter_entry = array();
+			$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+			$alter_entry[] = 'ADD FULLTEXT (post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
 		if (!isset($this->stats['post_content']))
 		{
-			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))";
+			$alter_entry = array();
+			$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
+			$alter_entry[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
-		if (!isset($this->stats['post_subject_content']))
+		$sql_queries = [];
+
+		foreach ($alter_list as $alter)
 		{
-			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject || ' ' || post_text))";
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter);
+		}
+
+		if (!isset($this->stats['post_text']))
+		{
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT post_text (post_text)';
 		}
 
 		$stats = $this->stats;
 
 		/**
-		* Event to modify SQL queries before the Postgres search index is created
+		* Event to modify SQL queries before the MySQL search index is created
 		*
-		* @event core.search_postgres_create_index_before
+		* @event core.search_mysql_create_index_before
 		* @var array	sql_queries			Array with queries for creating the search index
 		* @var array	stats				Array with statistics of the current index (read only)
 		* @since 3.2.3-RC1
@@ -994,7 +967,7 @@ class fulltext_postgres extends \phpbb\search\base
 			'sql_queries',
 			'stats',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_create_index_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_create_index_before', compact($vars)));
 
 		foreach ($sql_queries as $sql_query)
 		{
@@ -1003,20 +976,18 @@ class fulltext_postgres extends \phpbb\search\base
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
-		return false;
+		return null;
 	}
 
 	/**
-	* Drop fulltext index
-	*
-	* @return string|bool error string is returned incase of errors otherwise false
-	*/
-	public function delete_index($acp_module, $u_action)
+	 * {@inheritdoc}
+	 */
+	public function delete_index(int &$post_counter = null): ?array
 	{
-		// Make sure we can actually use PostgreSQL with fulltext indexes
+		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
-			return $error;
+			throw new RuntimeException($error);
 		}
 
 		if (empty($this->stats))
@@ -1024,29 +995,36 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		$sql_queries = [];
+		$alter = array();
 
 		if (isset($this->stats['post_subject']))
 		{
-			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_subject']['relname'];
+			$alter[] = 'DROP INDEX post_subject';
 		}
 
 		if (isset($this->stats['post_content']))
 		{
-			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_content']['relname'];
+			$alter[] = 'DROP INDEX post_content';
 		}
 
-		if (isset($this->stats['post_subject_content']))
+		if (isset($this->stats['post_text']))
 		{
-			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_subject_content']['relname'];
+			$alter[] = 'DROP INDEX post_text';
+		}
+
+		$sql_queries = [];
+
+		if (count($alter))
+		{
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter);
 		}
 
 		$stats = $this->stats;
 
 		/**
-		* Event to modify SQL queries before the Postgres search index is created
+		* Event to modify SQL queries before the MySQL search index is deleted
 		*
-		* @event core.search_postgres_delete_index_before
+		* @event core.search_mysql_delete_index_before
 		* @var array	sql_queries			Array with queries for deleting the search index
 		* @var array	stats				Array with statistics of the current index (read only)
 		* @since 3.2.3-RC1
@@ -1055,7 +1033,7 @@ class fulltext_postgres extends \phpbb\search\base
 			'sql_queries',
 			'stats',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_delete_index_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_delete_index_before', compact($vars)));
 
 		foreach ($sql_queries as $sql_query)
 		{
@@ -1064,25 +1042,25 @@ class fulltext_postgres extends \phpbb\search\base
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
-		return false;
+		return null;
 	}
 
 	/**
-	* Returns true if both FULLTEXT indexes exist
+	 * {@inheritdoc}
 	*/
-	public function index_created()
+	public function index_created(): bool
 	{
 		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return isset($this->stats['post_subject']) && isset($this->stats['post_content']) && isset($this->stats['post_text']);
 	}
 
 	/**
-	* Returns an associative array containing information about the indexes
-	*/
+	 * {@inheritdoc}
+	 */
 	public function index_stats()
 	{
 		if (empty($this->stats))
@@ -1091,7 +1069,7 @@ class fulltext_postgres extends \phpbb\search\base
 		}
 
 		return array(
-			$this->user->lang['FULLTEXT_POSTGRES_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$this->language->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
@@ -1100,93 +1078,90 @@ class fulltext_postgres extends \phpbb\search\base
 	 */
 	protected function get_stats()
 	{
-		if ($this->db->get_sql_layer() != 'postgres')
+		if (strpos($this->db->get_sql_layer(), 'mysql') === false)
 		{
 			$this->stats = array();
 			return;
 		}
 
-		$sql = "SELECT c2.relname, pg_catalog.pg_get_indexdef(i.indexrelid, 0, true) AS indexdef
-			  FROM pg_catalog.pg_class c1, pg_catalog.pg_index i, pg_catalog.pg_class c2
-			 WHERE c1.relname = '" . POSTS_TABLE . "'
-			   AND pg_catalog.pg_table_is_visible(c1.oid)
-			   AND c1.oid = i.indrelid
-			   AND i.indexrelid = c2.oid";
+		$sql = 'SHOW INDEX
+			FROM ' . POSTS_TABLE;
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// deal with older PostgreSQL versions which didn't use Index_type
-			if (strpos($row['indexdef'], 'to_tsvector') !== false)
+			// deal with older MySQL versions which didn't use Index_type
+			$index_type = (isset($row['Index_type'])) ? $row['Index_type'] : $row['Comment'];
+
+			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
+				if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_content' || $row['relname'] == POSTS_TABLE . '_post_content')
+				else if ($row['Key_name'] == 'post_text')
+				{
+					$this->stats['post_text'] = $row;
+				}
+				else if ($row['Key_name'] == 'post_content')
 				{
 					$this->stats['post_content'] = $row;
-				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject_content' || $row['relname'] == POSTS_TABLE . '_post_subject_content')
-				{
-					$this->stats['post_subject_content'] = $row;
 				}
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$this->stats['total_posts'] = $this->config['num_posts'];
+		$this->stats['total_posts'] = empty($this->stats) ? 0 : $this->db->get_estimated_row_count(POSTS_TABLE);
 	}
 
 	/**
-	* Display various options that can be configured for the backend from the acp
-	*
-	* @return associative array containing template and config variables
-	*/
-	public function acp()
+	 * Turns text into an array of words
+	 * @param string $text contains post text/subject
+	 *
+	 * @return array
+	 */
+	protected function split_message($text): array
+	{
+		// Split words
+		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+		$text = $matches[1];
+
+		// remove too short or too long words
+		$text = array_values($text);
+		for ($i = 0, $n = count($text); $i < $n; $i++)
+		{
+			$text[$i] = trim($text[$i]);
+			if (utf8_strlen($text[$i]) < $this->config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
+			{
+				unset($text[$i]);
+			}
+		}
+
+		return array_values($text);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_acp_options(): array
 	{
 		$tpl = '
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->user->lang['YES'] : $this->user->lang['NO']) . '</dd>
+			<dt><label>' . $this->language->lang('MIN_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_MYSQL_MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
+			<dd>' . $this->config['fulltext_mysql_min_word_len'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
-			<dd><select name="config[fulltext_postgres_ts_name]">';
-
-		if ($this->db->get_sql_layer() == 'postgres')
-		{
-			$sql = 'SELECT cfgname AS ts_name
-				  FROM pg_ts_config';
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$tpl .= '<option value="' . $row['ts_name'] . '"' . ($row['ts_name'] === $this->config['fulltext_postgres_ts_name'] ? ' selected="selected"' : '') . '>' . $row['ts_name'] . '</option>';
-			}
-			$this->db->sql_freeresult($result);
-		}
-		else
-		{
-			$tpl .= '<option value="' . $this->config['fulltext_postgres_ts_name'] . '" selected="selected">' . $this->config['fulltext_postgres_ts_name'] . '</option>';
-		}
-
-		$tpl .= '</select></dd>
+			<dt><label>' . $this->language->lang('MAX_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_MYSQL_MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
+			<dd>' . $this->config['fulltext_mysql_max_word_len'] . '</dd>
 		</dl>
-                <dl>
-                        <dt><label for="fulltext_postgres_min_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MIN_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_min_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_min_word_len]" value="' . (int) $this->config['fulltext_postgres_min_word_len'] . '" /></dd>
-                </dl>
-                <dl>
-                        <dt><label for="fulltext_postgres_max_word_len">' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_MAX_WORD_LEN_EXPLAIN'] . '</span></dt>
-                        <dd><input id="fulltext_postgres_max_word_len" type="number" min="0" max="255" name="config[fulltext_postgres_max_word_len]" value="' . (int) $this->config['fulltext_postgres_max_word_len'] . '" /></dd>
-                </dl>
 		';
 
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_postgres_ts_name' => 'string', 'fulltext_postgres_min_word_len' => 'integer:0:255', 'fulltext_postgres_max_word_len' => 'integer:0:255')
+			'config'	=> array()
 		);
 	}
 }

@@ -24,12 +24,14 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $cache;
+		global $phpbb_root_path, $phpEx, $config, $cache;
 
 		parent::setUp();
 
 		// dbal uses cache
-		$cache = new phpbb_mock_cache();
+		$cache = $this->createMock('\phpbb\cache\service');
+		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$user = $this->createMock('\phpbb\user');
 
 		//  set config values
 		$config['fulltext_mysql_min_word_len'] = 4;
@@ -37,8 +39,7 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$error = null;
-		$class = self::get_search_wrapper('\phpbb\search\fulltext_mysql');
-		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user, $phpbb_dispatcher);
+		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_mysql');
+		$this->search = new $class($config, $this->db, $phpbb_dispatcher, $language, $user, $phpbb_root_path, $phpEx);
 	}
 }

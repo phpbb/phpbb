@@ -561,7 +561,7 @@ function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $po
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log, $phpbb_dispatcher;
+	global $db, $config, $user, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -632,19 +632,24 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_type = $config['search_type'];
-
-	if (class_exists($search_type))
+	try
 	{
-		// We do some additional checks in the module to ensure it can actually be utilised
-		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if (!$error && method_exists($search, 'destroy_cache'))
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
+	}
+	catch (RuntimeException $e)
+	{
+		if (strpos($e->getMessage(), 'No service found') === 0)
 		{
-			$search->destroy_cache(array(), array($post_info['user_id'], $userdata['user_id']));
+			trigger_error('NO_SUCH_SEARCH_MODULE');
+		}
+		else
+		{
+			throw $e;
 		}
 	}
+
+	$search->index_remove([], [$post_info['user_id'], $userdata['user_id']], []);
 
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];

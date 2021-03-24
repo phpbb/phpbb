@@ -11,19 +11,25 @@
 *
 */
 
-namespace phpbb\search;
+namespace phpbb\search\backend;
+
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\language\language;
+use phpbb\user;
 
 /**
 * phpBB's own db driven fulltext search, version 2
 */
-class fulltext_native extends \phpbb\search\base
+class fulltext_native extends base implements search_backend_interface
 {
-	const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
-	const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
-	const UTF8_CJK_FIRST = "\xE4\xB8\x80";
-	const UTF8_CJK_LAST = "\xE9\xBE\xBB";
-	const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
-	const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
+	protected const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
+	protected const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
+	protected const UTF8_CJK_FIRST = "\xE4\xB8\x80";
+	protected const UTF8_CJK_LAST = "\xE9\xBE\xBB";
+	protected const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
+	protected const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
 
 	/**
 	 * Associative array holding index stats
@@ -82,49 +88,37 @@ class fulltext_native extends \phpbb\search\base
 	protected $php_ext;
 
 	/**
-	 * Config object
-	 * @var \phpbb\config\config
-	 */
-	protected $config;
-
-	/**
-	 * Database connection
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $db;
-
-	/**
 	 * phpBB event dispatcher object
-	 * @var \phpbb\event\dispatcher_interface
+	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
-	 * User object
-	 * @var \phpbb\user
+	 * @var language
 	 */
-	protected $user;
+	protected $language;
 
 	/**
-	* Initialises the fulltext_native search backend with min/max word length
-	*
-	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
-	* @param	string	$phpbb_root_path	phpBB root path
-	* @param	string	$phpEx	PHP file extension
-	* @param	\phpbb\auth\auth	$auth	Auth object
-	* @param	\phpbb\config\config	$config	Config object
-	* @param	\phpbb\db\driver\driver_interface	$db	Database object
-	* @param	\phpbb\user	$user	User object
-	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
-	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	 * Initialises the fulltext_native search backend with min/max word length
+	 *
+	 * @param config $config Config object
+	 * @param driver_interface $db Database object
+	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
+	 * @param language $language
+	 * @param user $user User object
+	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $phpEx PHP file extension
+	 */
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $phpbb_root_path, string $phpEx)
 	{
+		global $cache;
+
+		parent::__construct($cache, $config, $db, $user);
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->language = $language;
+
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
-		$this->config = $config;
-		$this->db = $db;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->user = $user;
 
 		$this->word_length = array('min' => (int) $this->config['fulltext_native_min_chars'], 'max' => (int) $this->config['fulltext_native_max_chars']);
 
@@ -135,44 +129,50 @@ class fulltext_native extends \phpbb\search\base
 		{
 			include($this->phpbb_root_path . 'includes/utf/utf_tools.' . $this->php_ext);
 		}
-
-		$error = false;
 	}
 
 	/**
-	* Returns the name of this search backend to be displayed to administrators
-	*
-	* @return string Name
+	 * {@inheritdoc}
 	*/
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'phpBB Native Fulltext';
 	}
 
 	/**
-	 * Returns the search_query
-	 *
-	 * @return string search query
+	 * {@inheritdoc}
 	 */
-	public function get_search_query()
+	public function is_available(): bool
+	{
+		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_search_query(): string
 	{
 		return $this->search_query;
 	}
 
 	/**
-	 * Returns the common_words array
-	 *
-	 * @return array common words that are ignored by search backend
+	 * {@inheritdoc}
 	 */
-	public function get_common_words()
+	public function get_common_words(): array
 	{
 		return $this->common_words;
 	}
 
 	/**
-	 * Returns the word_length array
-	 *
-	 * @return array min and max word length for searching
+	 * {@inheritdoc}
 	 */
 	public function get_word_length()
 	{
@@ -180,21 +180,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* This function fills $this->search_query with the cleaned user search query
-	*
-	* If $terms is 'any' then the words will be extracted from the search query
-	* and combined with | inside brackets. They will afterwards be treated like
-	* an standard search query.
-	*
-	* Then it analyses the query and fills the internal arrays $must_not_contain_ids,
-	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search()
-	*
-	* @param	string	$keywords	contains the search query string as entered by the user
-	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
-	* 	or 'any' (find all posts containing at least one of the given words)
-	* @return	boolean				false if no valid keywords were found and otherwise true
-	*/
-	public function split_keywords($keywords, $terms)
+	 * {@inheritdoc}
+	 */
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
 		$tokens = '+-|()* ';
 
@@ -294,7 +282,7 @@ class fulltext_native extends \phpbb\search\base
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($this->config['max_num_search_keywords'] && $num_keywords > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], $num_keywords));
+			trigger_error($this->language->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], $num_keywords));
 		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated
@@ -468,7 +456,7 @@ class fulltext_native extends \phpbb\search\base
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && count($non_common_words))
 				{
-					trigger_error(sprintf($this->user->lang['WORDS_IN_NO_POST'], implode($this->user->lang['COMMA_SEPARATOR'], $non_common_words)));
+					trigger_error(sprintf($this->language->lang('WORDS_IN_NO_POST'), implode($this->language->lang('COMMA_SEPARATOR'), $non_common_words)));
 				}
 				unset($non_common_words);
 			}
@@ -514,26 +502,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
-	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	 * {@inheritdoc}
+	 */
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No keywords? No posts.
 		if (empty($this->search_query))
@@ -612,7 +583,7 @@ class fulltext_native extends \phpbb\search\base
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}
@@ -1016,25 +987,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
-	*
-	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	string		$post_visibility	specifies which types of posts the user can view in which forums
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids
-	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
-	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param	int			$start				indicates the first index of the page
-	* @param	int			$per_page			number of ids each page is supposed to contain
-	* @return	boolean|int						total number of results
-	*/
-	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
+	 * {@inheritdoc}
+	 */
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
 		// No author? No posts
 		if (!count($author_ary))
@@ -1092,7 +1047,7 @@ class fulltext_native extends \phpbb\search\base
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}
@@ -1326,91 +1281,17 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Split a text into words of a given length
-	*
-	* The text is converted to UTF-8, cleaned up, and split. Then, words that
-	* conform to the defined length range are returned in an array.
-	*
-	* NOTE: duplicates are NOT removed from the return array
-	*
-	* @param	string	$text	Text to split, encoded in UTF-8
-	* @return	array			Array of UTF-8 words
-	*/
-	public function split_message($text)
+	 * {@inheritdoc}
+	 */
+	public function supports_phrase_search(): bool
 	{
-		$match = $words = array();
-
-		/**
-		* Taken from the original code
-		*/
-		// Do not index code
-		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
-		// BBcode
-		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
-
-		$min = $this->word_length['min'];
-
-		$isset_min = $min - 1;
-
-		/**
-		* Clean up the string, remove HTML tags, remove BBCodes
-		*/
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
-
-		while (strlen($word))
-		{
-			if (strlen($word) > 255 || strlen($word) <= $isset_min)
-			{
-				/**
-				* Words longer than 255 bytes are ignored. This will have to be
-				* changed whenever we change the length of search_wordlist.word_text
-				*
-				* Words shorter than $isset_min bytes are ignored, too
-				*/
-				$word = strtok(' ');
-				continue;
-			}
-
-			$len = utf8_strlen($word);
-
-			/**
-			* Test whether the word is too short to be indexed.
-			*
-			* Note that this limit does NOT apply to CJK and Hangul
-			*/
-			if ($len < $min)
-			{
-				/**
-				* Note: this could be optimized. If the codepoint is lower than Hangul's range
-				* we know that it will also be lower than CJK ranges
-				*/
-				if ((strncmp($word, self::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, self::UTF8_HANGUL_LAST, 3) > 0)
-					&& (strncmp($word, self::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, self::UTF8_CJK_LAST, 3) > 0)
-					&& (strncmp($word, self::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, self::UTF8_CJK_B_LAST, 4) > 0))
-				{
-					$word = strtok(' ');
-					continue;
-				}
-			}
-
-			$words[] = $word;
-			$word = strtok(' ');
-		}
-
-		return $words;
+		return false;
 	}
 
 	/**
-	* Updates wordlist and wordmatch tables when a message is posted or changed
-	*
-	* @param	string	$mode		Contains the post mode: edit, post, reply, quote
-	* @param	int		$post_id	The id of the post which is modified/created
-	* @param	string	&$message	New or updated post content
-	* @param	string	&$subject	New or updated post subject
-	* @param	int		$poster_id	Post author's user id
-	* @param	int		$forum_id	The id of the forum in which the post is located
+	 * {@inheritdoc}
 	*/
-	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
 	{
 		if (!$this->config['fulltext_native_load_upd'])
 		{
@@ -1597,9 +1478,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Removes entries from the wordmatch table for the specified post_ids
-	*/
-	public function index_remove($post_ids, $author_ids, $forum_ids)
+	 * {@inheritdoc}
+	 */
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
 	{
 		if (count($post_ids))
 		{
@@ -1654,10 +1535,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Tidy up indexes: Tag 'common words' and remove
-	* words no longer referenced in the match table
-	*/
-	public function tidy()
+	 * {@inheritdoc}
+	 */
+	public function tidy(): void
 	{
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
@@ -1717,10 +1597,12 @@ class fulltext_native extends \phpbb\search\base
 		$this->config->set('search_last_gc', time(), false);
 	}
 
+	// create_index is inherited from base.php
+
 	/**
-	* Deletes all words from the index
-	*/
-	public function delete_index($acp_module, $u_action)
+	 * {@inheritdoc}
+	 */
+	public function delete_index(int &$post_counter = null): ?array
 	{
 		$sql_queries = [];
 
@@ -1759,24 +1641,26 @@ class fulltext_native extends \phpbb\search\base
 		{
 			$this->db->sql_query($sql_query);
 		}
+
+		return null;
 	}
 
 	/**
-	* Returns true if both FULLTEXT indexes exist
+	 * {@inheritdoc}
 	*/
-	public function index_created()
+	public function index_created(): bool
 	{
 		if (!count($this->stats))
 		{
 			$this->get_stats();
 		}
 
-		return ($this->stats['total_words'] && $this->stats['total_matches']) ? true : false;
+		return $this->stats['total_words'] && $this->stats['total_matches'];
 	}
 
 	/**
-	* Returns an associative array containing information about the indexes
-	*/
+	 * {@inheritdoc}
+	 */
 	public function index_stats()
 	{
 		if (!count($this->stats))
@@ -1785,14 +1669,92 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		return array(
-			$this->user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
-			$this->user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
+			$this->language->lang('TOTAL_WORDS')		=> $this->stats['total_words'],
+			$this->language->lang('TOTAL_MATCHES')	=> $this->stats['total_matches']);
 	}
 
+	/**
+	 * Computes the stats and store them in the $this->stats associative array
+	 */
 	protected function get_stats()
 	{
 		$this->stats['total_words']		= $this->db->get_estimated_row_count(SEARCH_WORDLIST_TABLE);
 		$this->stats['total_matches']	= $this->db->get_estimated_row_count(SEARCH_WORDMATCH_TABLE);
+	}
+
+	/**
+	 * Split a text into words of a given length
+	 *
+	 * The text is converted to UTF-8, cleaned up, and split. Then, words that
+	 * conform to the defined length range are returned in an array.
+	 *
+	 * NOTE: duplicates are NOT removed from the return array
+	 *
+	 * @param	string	$text	Text to split, encoded in UTF-8
+	 * @return	array			Array of UTF-8 words
+	 */
+	protected function split_message($text)
+	{
+		$match = $words = array();
+
+		/**
+		 * Taken from the original code
+		 */
+		// Do not index code
+		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
+		// BBcode
+		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
+
+		$min = $this->word_length['min'];
+
+		$isset_min = $min - 1;
+
+		/**
+		 * Clean up the string, remove HTML tags, remove BBCodes
+		 */
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
+
+		while (strlen($word))
+		{
+			if (strlen($word) > 255 || strlen($word) <= $isset_min)
+			{
+				/**
+				 * Words longer than 255 bytes are ignored. This will have to be
+				 * changed whenever we change the length of search_wordlist.word_text
+				 *
+				 * Words shorter than $isset_min bytes are ignored, too
+				 */
+				$word = strtok(' ');
+				continue;
+			}
+
+			$len = utf8_strlen($word);
+
+			/**
+			 * Test whether the word is too short to be indexed.
+			 *
+			 * Note that this limit does NOT apply to CJK and Hangul
+			 */
+			if ($len < $min)
+			{
+				/**
+				 * Note: this could be optimized. If the codepoint is lower than Hangul's range
+				 * we know that it will also be lower than CJK ranges
+				 */
+				if ((strncmp($word, self::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, self::UTF8_HANGUL_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, self::UTF8_CJK_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, self::UTF8_CJK_B_LAST, 4) > 0))
+				{
+					$word = strtok(' ');
+					continue;
+				}
+			}
+
+			$words[] = $word;
+			$word = strtok(' ');
+		}
+
+		return $words;
 	}
 
 	/**
@@ -2032,9 +1994,9 @@ class fulltext_native extends \phpbb\search\base
 	}
 
 	/**
-	* Returns a list of options for the ACP to display
-	*/
-	public function acp()
+	 * {@inheritdoc}
+	 */
+	public function get_acp_options(): array
 	{
 		/**
 		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed
@@ -2042,19 +2004,19 @@ class fulltext_native extends \phpbb\search\base
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_native_load_upd">' . $this->user->lang['YES_SEARCH_UPDATE'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->user->lang['NO'] . '</label></dd>
+			<dt><label for="fulltext_native_load_upd">' . $this->language->lang('YES_SEARCH_UPDATE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('YES_SEARCH_UPDATE_EXPLAIN') . '</span></dt>
+			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->language->lang('YES') . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$this->config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $this->language->lang('NO') . '</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_min_chars">' . $this->user->lang['MIN_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_min_chars">' . $this->language->lang('MIN_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('MIN_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_min_chars" type="number" min="0" max="255" name="config[fulltext_native_min_chars]" value="' . (int) $this->config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_max_chars">' . $this->user->lang['MAX_SEARCH_CHARS'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_max_chars">' . $this->language->lang('MAX_SEARCH_CHARS') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('MAX_SEARCH_CHARS_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="number" min="0" max="255" name="config[fulltext_native_max_chars]" value="' . (int) $this->config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_common_thres">' . $this->user->lang['COMMON_WORD_THRESHOLD'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_common_thres">' . $this->language->lang('COMMON_WORD_THRESHOLD') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('COMMON_WORD_THRESHOLD_EXPLAIN') . '</span></dt>
 			<dd><input id="fulltext_native_common_thres" type="text" name="config[fulltext_native_common_thres]" value="' . (double) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';

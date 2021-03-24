@@ -24,20 +24,21 @@ class phpbb_search_native_test extends phpbb_search_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $cache;
+		global $phpbb_root_path, $phpEx, $config, $cache;
 
 		parent::setUp();
 
 		// dbal uses cache
-		$cache = new phpbb_mock_cache();
+		$cache = $this->createMock('\phpbb\cache\service');
+		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$user = $this->createMock('\phpbb\user');
 
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$error = null;
-		$class = self::get_search_wrapper('\phpbb\search\fulltext_native');
+		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_native');
 		$config['fulltext_native_min_chars'] = 2;
 		$config['fulltext_native_max_chars'] = 14;
-		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user, $phpbb_dispatcher);
+		$this->search = new $class($config, $this->db, $phpbb_dispatcher, $language, $user, $phpbb_root_path, $phpEx);
 	}
 
 	public function keywords()

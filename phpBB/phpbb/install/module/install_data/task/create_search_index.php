@@ -23,7 +23,7 @@ use phpbb\install\helper\container_factory;
 use phpbb\install\helper\database;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\install\sequential_task;
-use phpbb\search\fulltext_native;
+use phpbb\search\backend\fulltext_native;
 use phpbb\user;
 
 class create_search_index extends database_task
@@ -98,12 +98,12 @@ class create_search_index extends database_task
 	/**
 	 * Constructor
 	 *
-	 * @param config				$config				Installer config.
-	 * @param database				$db_helper			Database helper.
-	 * @param container_factory		$container			Installer's DI container
-	 * @param iohandler_interface	$iohandler			IO manager.
-	 * @param string				$phpbb_root_path	phpBB root path
-	 * @param string				$php_ext			PHP file extension
+	 * @param config $config Installer config.
+	 * @param database $db_helper Database helper.
+	 * @param container_factory $container Installer's DI container
+	 * @param iohandler_interface $iohandler IO manager.
+	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $php_ext PHP file extension
 	 */
 	public function __construct(
 		config $config,
@@ -127,16 +127,14 @@ class create_search_index extends database_task
 
 		$this->posts_table = $container->get_parameter('tables.posts');
 
-		$this->error = false;
 		$this->search_indexer = new fulltext_native(
-			$this->error,
-			$this->phpbb_root_path,
-			$this->php_ext,
-			$this->auth,
 			$this->config,
 			$this->db,
+			$this->phpbb_dispatcher,
+			$container->get('language'),
 			$this->user,
-			$this->phpbb_dispatcher
+			$this->phpbb_root_path,
+			$this->php_ext
 		);
 
 		parent::__construct($this->conn, $iohandler, true);
@@ -171,11 +169,11 @@ class create_search_index extends database_task
 	{
 		$this->search_indexer->index(
 			'post',
-			$value['post_id'],
+			(int) $value['post_id'],
 			$value['post_text'],
 			$value['post_subject'],
-			$value['poster_id'],
-			$value['forum_id']
+			(int) $value['poster_id'],
+			(int) $value['forum_id']
 		);
 	}
 

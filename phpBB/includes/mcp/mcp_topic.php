@@ -428,7 +428,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_dispatcher;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_container;
 
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$forum_id		= $request->variable('forum_id', 0);
@@ -625,22 +625,24 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		if ($first_post_data['enable_indexing'])
 		{
 			// Select the search method and do some additional checks to ensure it can actually be utilised
-			$search_type = $config['search_type'];
-
-			if (!class_exists($search_type))
+			try
 			{
-				trigger_error('NO_SUCH_SEARCH_MODULE');
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (RuntimeException $e)
+			{
+				if (strpos($e->getMessage(), 'No service found') === 0)
+				{
+					trigger_error('NO_SUCH_SEARCH_MODULE');
+				}
+				else
+				{
+					throw $e;
+				}
 			}
 
-			$error = false;
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-			if ($error)
-			{
-				trigger_error($error);
-			}
-
-			$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
+			$search->index('edit', (int) $first_post_data['post_id'], $first_post_data['post_text'], $subject, (int) $first_post_data['poster_id'], (int) $first_post_data['forum_id']);
 		}
 
 		// Copy topic subscriptions to new topic
