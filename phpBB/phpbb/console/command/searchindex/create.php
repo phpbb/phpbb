@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
+use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\user;
 use Symfony\Component\Console\Input\InputArgument;
@@ -70,7 +71,7 @@ class create extends command
 			->addArgument(
 				'search-backend',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
+				$this->language->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
 			)
 		;
 	}
@@ -90,31 +91,47 @@ class create extends command
 		$io = new SymfonyStyle($input, $output);
 
 		$search_backend = $input->getArgument('search-backend');
-		$search = $this->search_backend_factory->get($search_backend);
-		$name = $search->get_name();
+
+		try
+		{
+			$search = $this->search_backend_factory->get($search_backend);
+			$name = $search->get_name();
+		}
+		catch (no_search_backend_found_exception $e)
+		{
+			$io->error($this->language->lang('CLI_SEARCHINDEX_BACKEND_NOT_FOUND', $search_backend));
+			return command::FAILURE;
+		}
 
 		try
 		{
 			$counter = 0;
+
+			$progress = $this->create_progress_bar(1, $io, $output, true);
+			$progress->start();
+
 			while (($status = $search->create_index($counter)) !== null)
 			{
-				$this->config->set('search_indexing_state', implode(',', $this->state), true);
+				$progress->setMaxSteps($status['max_post_id']);
+				$progress->setProgress($status['post_counter']);
+				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
 
-				$io->success($counter);
-				$io->success(print_r($status, 1));
+				$progress->advance();
 			}
 
-			$search->tidy();
+			$progress->finish();
+
+			$io->newLine(2);
 		}
 		catch (\Exception $e)
 		{
-			$io->error($this->user->lang('CLI_SEARCHINDEX_CREATE_FAILURE', $name));
-			return 1;
+			$io->error($this->language->lang('CLI_SEARCHINDEX_CREATE_FAILURE', $name));
+			return command::FAILURE;
 		}
 
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_SEARCH_INDEX_CREATED', false, array($name));
-		$io->success($this->user->lang('CLI_SEARCHINDEX_CREATE_SUCCESS', $name));
+		$io->success($this->language->lang('CLI_SEARCHINDEX_CREATE_SUCCESS', $name));
 
-		return 0;
+		return command::SUCCESS;
 	}
 }

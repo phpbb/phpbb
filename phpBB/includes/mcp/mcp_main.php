@@ -1397,16 +1397,9 @@ function mcp_fork_topic($topic_ids)
 					$search_backend_factory = $phpbb_container->get('search.backend_factory');
 					$search = $search_backend_factory->get_active();
 				}
-				catch (RuntimeException $e)
+				catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 				{
-					if (strpos($e->getMessage(), 'No service found') === 0)
-					{
-						trigger_error('NO_SUCH_SEARCH_MODULE');
-					}
-					else
-					{
-						throw $e;
-					}
+					trigger_error('NO_SUCH_SEARCH_MODULE');
 				}
 				$search_mode = 'post';
 			}

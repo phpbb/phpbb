@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
+use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\user;
 use Symfony\Component\Console\Input\InputArgument;
@@ -70,7 +71,7 @@ class delete extends command
 			->addArgument(
 				'search-backend',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
+				$this->language->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
 			)
 		;
 	}
@@ -90,40 +91,32 @@ class delete extends command
 		$io = new SymfonyStyle($input, $output);
 
 		$search_backend = $input->getArgument('search-backend');
-		$search = $this->search_backend_factory->get($search_backend);
-		$name = $search->get_name();
 
 		try
 		{
-			$this->state = explode(',', $this->config['search_indexing_state']);
-			$this->max_post_id = $this->get_max_post_id();
+			$search = $this->search_backend_factory->get($search_backend);
+			$name = $search->get_name();
+		}
+		catch (no_search_backend_found_exception $e)
+		{
+			$io->error($this->language->lang('CLI_SEARCHINDEX_BACKEND_NOT_FOUND', $search_backend));
+			return command::FAILURE;
+		}
 
+		try
+		{
 			$search->delete_index($this, '');
 			$search->tidy();
 		}
 		catch (\Exception $e)
 		{
-			$io->error($this->user->lang('CLI_SEARCHINDEX_DELETE_FAILURE', $name));
-			return 1;
+			$io->error($this->language->lang('CLI_SEARCHINDEX_DELETE_FAILURE', $name));
+			return command::FAILURE;
 		}
 
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
-		$io->success($this->user->lang('CLI_SEARCHINDEX_DELETE_SUCCESS', $name));
+		$io->success($this->language->lang('CLI_SEARCHINDEX_DELETE_SUCCESS', $name));
 
-		return 0;
-	}
-
-	function save_state($state = false)
-	{
-		global $config;
-
-		if ($state)
-		{
-			$this->state = $state;
-		}
-
-		ksort($this->state);
-
-		$config->set('search_indexing_state', implode(',', $this->state), true);
+		return command::SUCCESS;
 	}
 }

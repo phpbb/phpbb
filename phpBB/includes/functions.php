@@ -206,6 +206,7 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 */
 function still_on_time($extra_time = 15)
 {
+	// TODO: Check the bug with this, it should be possible to restart the start time
 	static $max_execution_time, $start_time;
 
 	$current_time = microtime(true);

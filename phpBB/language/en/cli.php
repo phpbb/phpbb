@@ -147,6 +147,7 @@ $lang = array_merge($lang, array(
 	'CLI_REPARSER_REPARSE_SUCCESS'			=> 'Reparsing ended with success',
 
 	'CLI_SEARCHINDEX_SEARCH_BACKEND_NAME'	=> 'Backend class',
+	'CLI_SEARCHINDEX_BACKEND_NOT_FOUND'		=> 'Search module not found',
 	'CLI_SEARCHINDEX_CREATE_SUCCESS'		=> 'Search index created successfully',
 	'CLI_SEARCHINDEX_CREATE_FAILURE'		=> 'Error creating search index',
 	'CLI_SEARCHINDEX_DELETE_SUCCESS'		=> 'Search index deleted successfully',
