@@ -189,7 +189,7 @@ class acp_search
 		}
 		unset($cfg_array);
 
-		$this->tpl_name = 'acp_search';
+		$this->tpl_name = 'acp_search_settings';
 		$this->page_title = 'ACP_SEARCH_SETTINGS';
 
 		$template->assign_vars([
@@ -340,45 +340,18 @@ class acp_search
 			$name = $search->get_name();
 			$data =  $search->index_stats();
 
-			$statistics = array();
-			foreach ($data as $statistic => $value)
-			{
-				$n = count($statistics);
-				if ($n && count($statistics[$n - 1]) < 3)
-				{
-					$statistics[$n - 1] += array('statistic_2' => $statistic, 'value_2' => $value);
-				}
-				else
-				{
-					$statistics[] = array('statistic_1' => $statistic, 'value_1' => $value);
-				}
-			}
-
 			$template->assign_block_vars('backend', array(
 				'L_NAME'			=> $name,
 				'NAME'				=> $type,
 
-				'S_ACTIVE'			=> ($type == $config['search_type']) ? true : false,
+				'S_ACTIVE'			=> $type == $config['search_type'],
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $type)),
 				'S_INDEXED'			=> (bool) $search->index_created(),
-				'S_STATS'			=> (bool) count($statistics))
-			);
-
-			foreach ($statistics as $statistic)
-			{
-				$template->assign_block_vars('backend.data', array(
-					'STATISTIC_1'	=> $statistic['statistic_1'],
-					'VALUE_1'		=> $statistic['value_1'],
-					'STATISTIC_2'	=> (isset($statistic['statistic_2'])) ? $statistic['statistic_2'] : '',
-					'VALUE_2'		=> (isset($statistic['value_2'])) ? $statistic['value_2'] : '')
-				);
-			}
+				'S_STATS'			=> $data,
+			));
 		}
-		unset($search);
-		unset($statistics);
-		unset($data);
 
-		$this->tpl_name = 'acp_search';
+		$this->tpl_name = 'acp_search_index';
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
 		$template->assign_vars(array(
