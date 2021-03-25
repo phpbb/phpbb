@@ -193,4 +193,11 @@ interface search_backend_interface
 	 * @return array array containing template and config variables
 	 */
 	public function get_acp_options(): array;
+
+	/**
+	 * Gets backend class
+	 *
+	 * @return string
+	 */
+	public function get_type(): string;
 }

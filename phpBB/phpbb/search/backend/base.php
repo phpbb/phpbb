@@ -480,4 +480,12 @@ abstract class base implements search_backend_interface
 
 		return $max_post_id;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_type(): string
+	{
+		return static::class;
+	}
 }
