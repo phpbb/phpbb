@@ -286,7 +286,7 @@ class acp_search
 		$action = $this->request->variable('action', '');
 		$state = !empty($this->config['search_indexing_state']) ? explode(',', $this->config['search_indexing_state']) : [];
 
-		if($action)
+		if ($action)
 		{
 			switch ($action)
 			{
@@ -385,7 +385,8 @@ class acp_search
 		// Entering here for the first time
 		if (empty($state))
 		{
-			if ($this->request->is_set_post('search_type', '')) {
+			if ($this->request->is_set_post('search_type', ''))
+			{
 				$state = [
 					self::STATE_SEARCH_TYPE => $this->request->variable('search_type', ''),
 					self::STATE_ACTION => $action,
