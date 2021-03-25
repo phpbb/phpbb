@@ -13,91 +13,88 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\storage\exception\exception;
+
 interface adapter_interface
 {
 	/**
 	 * Set adapter parameters
 	 *
-	 * @param array	options		Storage-specific options.
+	 * @param array	options	Storage-specific options.
 	 */
-	public function configure($options);
+	public function configure(array $options): void;
 
 	/**
 	 * Dumps content into a file
 	 *
-	 * @param string	path		The file to be written to.
-	 * @param string	content		The data to write into the file.
-	 *
-	 * @throws \phpbb\storage\exception\exception		When the file cannot be written
+	 * @param string $path
+	 * @param string $content
+	 * @throws exception When the file cannot be written
 	 */
-	public function put_contents($path, $content);
+	public function put_contents(string $path, string $content): void;
 
 	/**
 	 * Read the contents of a file
 	 *
-	 * @param string	$path	The file to read
+	 * @param string $path The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When cannot read file contents
-	 *
-	 * @return string	Returns file contents
-	 *
+	 * @return string Returns file contents
+	 * @throws exception When cannot read file contents
 	 */
-	public function get_contents($path);
+	public function get_contents(string $path): string;
 
 	/**
 	 * Checks the existence of files or directories
 	 *
-	 * @param string	$path	file/directory to check
+	 * @param string $path file/directory to check
 	 *
-	 * @return bool	Returns true if the file/directory exist, false otherwise.
+	 * @return bool Returns true if the file/directory exist, false otherwise.
 	 */
-	public function exists($path);
+	public function exists(string $path): bool;
 
 	/**
 	 * Removes files or directories
 	 *
-	 * @param string	$path	file/directory to remove
+	 * @param string $path file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception		When removal fails.
+	 * @throws exception When removal fails.
 	 */
-	public function delete($path);
+	public function delete(string $path): void;
 
 	/**
 	 * Rename a file or a directory
 	 *
-	 * @param string	$path_orig	The original file/direcotry
-	 * @param string	$path_dest	The target file/directory
+	 * @param string $path_orig The original file/direcotry
+	 * @param string $path_dest The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception		When file/directory cannot be renamed
+	 * @throws exception When file/directory cannot be renamed
 	 */
-	public function rename($path_orig, $path_dest);
+	public function rename(string $path_orig, string $path_dest): void;
 
 	/**
 	 * Copies a file
 	 *
-	 * @param string	$path_orig	The original filename
-	 * @param string	$path_dest	The target filename
+	 * @param string $path_orig The original filename
+	 * @param string $path_dest The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file cannot be copied
+	 * @throws exception When the file cannot be copied
 	 */
-	public function copy($path_orig, $path_dest);
+	public function copy(string $path_orig, string $path_dest): void;
 
 	/**
 	 * Get direct link
 	 *
-	 * @param string	$path	The file
+	 * @param string $path The file
 	 *
-	 * @return string	Returns link.
-	 *
+	 * @return string Returns link.
 	 */
-	public function get_link($path);
+	public function get_link(string $path): string;
 
-	/*
+	/**
 	 * Get space available in bytes
 	 *
-	 * @throws \phpbb\storage\exception\exception		When unable to retrieve available storage space
-	 *
-	 * @return float	Returns available space
+	 * @return float Returns available space
+	 * @throws exception When unable to retrieve available storage space
 	 */
-	public function free_space();
+	public function free_space(): float;
 }

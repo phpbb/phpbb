@@ -11,95 +11,121 @@
  *
  */
 
- class phpbb_storage_adapter_local_subfolders_test extends phpbb_test_case
- {
-	protected $adapter;
+require_once __DIR__ . '/local_test_case.php';
 
-	protected $path;
-
-	protected $filesystem;
-
+class phpbb_storage_adapter_local_subfolders_test extends phpbb_local_test_case
+{
 	protected function setUp(): void
 	{
 		parent::setUp();
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
-		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
-
-		$this->adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
 		$this->adapter->configure(['path' => 'test_path', 'subfolders' => true]);
-
-		$this->path = $phpbb_root_path . 'test_path/';
-		mkdir($this->path);
 	}
 
-	protected function tearDown(): void
+	public function test_put_contents(): void
 	{
-		$this->adapter = null;
-		rmdir($this->path);
-	}
-
-	public function test_put_contents()
-	{
+		// When
 		$this->adapter->put_contents('file.txt', 'abc');
-		$this->assertTrue(file_exists($this->path . '3d/8e/file.txt'));
-		$this->assertEquals(file_get_contents($this->path . '3d/8e/file.txt'), 'abc');
+
+		// Then
+		$this->assertFileExists($this->path . '3d/8e/file.txt');
+		$this->assertFileContains($this->path . '3d/8e/file.txt', 'abc');
+
+		// Clean test
 		unlink($this->path . '3d/8e/file.txt');
 		rmdir($this->path . '3d/8e');
 		rmdir($this->path . '3d');
 	}
 
-	public function test_get_contents()
+	public function test_get_contents(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
 		file_put_contents($this->path . '3d/8e/file.txt', 'abc');
-		$this->assertEquals($this->adapter->get_contents('file.txt'), 'abc');
+
+		// When
+		$content = $this->adapter->get_contents('file.txt');
+
+		// Then
+		$this->assertEquals('abc', $content);
+
+		// Clean test
 		unlink($this->path . '3d/8e/file.txt');
 		rmdir($this->path . '3d/8e');
 		rmdir($this->path . '3d');
 	}
 
-	public function test_exists()
+	public function test_exists(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
 		touch($this->path . '3d/8e/file.txt');
-		$this->assertTrue($this->adapter->exists('file.txt'));
-		$this->assertFalse($this->adapter->exists('3d/8e/file.txt'));
+
+		// When
+		$existent_file = $this->adapter->exists('file.txt');
+		$non_existent_file = $this->adapter->exists('noexist.txt');
+		$non_existent_file2 = $this->adapter->exists('3d/8e/file.txt');
+
+		// Then
+		$this->assertTrue($existent_file);
+		$this->assertFalse($non_existent_file);
+		$this->assertFalse($non_existent_file2);
+
+		// Clean test
 		unlink($this->path . '3d/8e/file.txt');
 		rmdir($this->path . '3d/8e');
 		rmdir($this->path . '3d');
 	}
 
-	public function test_delete_file()
+	public function test_delete_file(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
 		touch($this->path . '3d/8e/file.txt');
-		$this->assertTrue(file_exists($this->path . '3d/8e/file.txt'));
+		$this->assertFileExists($this->path . '3d/8e/file.txt');
+
+		// When
 		$this->adapter->delete('file.txt');
-		$this->assertFalse(file_exists($this->path . '3d/8e/file.txt'));
-		$this->assertFalse(file_exists($this->path . '3d'));
+
+		// Then
+		$this->assertFileNotExists($this->path . '3d/8e/file.txt');
+		$this->assertFileNotExists($this->path . '3d');
 	}
 
-	public function test_rename()
+	public function test_rename(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
 		touch($this->path . '3d/8e/file.txt');
+
+		// When
 		$this->adapter->rename('file.txt', 'file2.txt');
-		$this->assertFalse(file_exists($this->path . '3d/8e/file.txt'));
-		$this->assertTrue(file_exists($this->path . '27/36/file2.txt'));
-		$this->assertFalse(file_exists($this->path . '3d'));
+
+		// Then
+		$this->assertFileNotExists($this->path . '3d/8e/file.txt');
+		$this->assertFileExists($this->path . '27/36/file2.txt');
+		$this->assertFileNotExists($this->path . '3d');
+
+		// Clean test
 		unlink($this->path . '27/36/file2.txt');
 		rmdir($this->path . '27/36');
 		rmdir($this->path . '27');
 	}
 
-	public function test_copy()
+	public function test_copy(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
 		file_put_contents($this->path . '3d/8e/file.txt', 'abc');
+
+		// When
 		$this->adapter->copy('file.txt', 'file2.txt');
-		$this->assertEquals(file_get_contents($this->path . '3d/8e/file.txt'), 'abc');
-		$this->assertEquals(file_get_contents($this->path . '27/36/file2.txt'), 'abc');
+
+		// Then
+		$this->assertFileContains($this->path . '3d/8e/file.txt', 'abc');
+		$this->assertFileContains($this->path . '27/36/file2.txt', 'abc');
+
+		// Clean test
 		unlink($this->path . '3d/8e/file.txt');
 		rmdir($this->path . '3d/8e');
 		rmdir($this->path . '3d');
@@ -108,29 +134,43 @@
 		rmdir($this->path . '27');
 	}
 
-	public function test_read_stream()
+	public function test_read_stream(): void
 	{
+		// Given
 		mkdir($this->path . '3d/8e', 0777, true);
-		touch($this->path . '3d/8e/file.txt');
+		file_put_contents($this->path . '3d/8e/file.txt', 'abc');
+
+		// When
 		$stream = $this->adapter->read_stream('file.txt');
-		$this->assertTrue(is_resource($stream));
+
+		// Then
+		$this->assertIsResource($stream);
+		$this->assertEquals('abc', stream_get_contents($stream));
+
+		// Clean test
 		fclose($stream);
 		unlink($this->path . '3d/8e/file.txt');
 		rmdir($this->path . '3d/8e');
 		rmdir($this->path . '3d');
 	}
 
-	public function test_write_stream()
+	public function test_write_stream(): void
 	{
+		// Given
 		file_put_contents($this->path . 'file.txt', 'abc');
 		$stream = fopen($this->path . 'file.txt', 'rb');
+
+		// When
 		$this->adapter->write_stream('file2.txt', $stream);
 		fclose($stream);
-		$this->assertEquals(file_get_contents($this->path . '27/36/file2.txt'), 'abc');
+
+		// Then
+		$this->assertFileContains($this->path . '27/36/file2.txt', 'abc');
+
+		// Clean test
 		unlink($this->path . 'file.txt');
 		unlink($this->path . '27/36/file2.txt');
 		rmdir($this->path . '27/36');
 		rmdir($this->path . '27');
 	}
-
- }
+}
