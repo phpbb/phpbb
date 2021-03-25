@@ -165,11 +165,11 @@ class acp_search
 
 				if (!$submit)
 				{
-					$this->template->assign_block_vars('backend', array(
+					$this->template->assign_block_vars('backend', [
 						'NAME' => $name,
 						'SETTINGS' => $vars['tpl'],
 						'IDENTIFIER' => $identifier,
-					));
+					]);
 				}
 				else if (is_array($vars['config']))
 				{
@@ -178,7 +178,7 @@ class acp_search
 			}
 		}
 
-		$cfg_array = (isset($_REQUEST['config'])) ? $this->request->variable('config', array('' => ''), true) : array();
+		$cfg_array = (isset($_REQUEST['config'])) ? $this->request->variable('config', ['' => ''], true) : [];
 		$updated = $this->request->variable('updated', false);
 
 		foreach ($settings as $this->config_name => $var_type)
@@ -243,13 +243,13 @@ class acp_search
 				}
 				else
 				{
-					confirm_box(false, $this->language->lang('CONFIRM_SEARCH_BACKEND'), build_hidden_fields(array(
+					confirm_box(false, $this->language->lang('CONFIRM_SEARCH_BACKEND'), build_hidden_fields([
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'submit'	=> true,
 						'updated'	=> $updated,
-						'config'	=> array('search_type' => $cfg_array['search_type']),
-					)));
+						'config'	=> ['search_type' => $cfg_array['search_type']],
+					]));
 				}
 			}
 
@@ -336,21 +336,21 @@ class acp_search
 
 		foreach ($this->search_backend_collection as $search)
 		{
-			$this->template->assign_block_vars('backend', array(
+			$this->template->assign_block_vars('backend', [
 				'L_NAME'			=> $search->get_name(),
 				'NAME'				=> $search->get_type(),
 
 				'S_ACTIVE'			=> $search->get_type() === $this->config['search_type'],
-				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $search->get_type())),
+				'S_HIDDEN_FIELDS'	=> build_hidden_fields(['search_type' => $search->get_type()]),
 				'S_INDEXED'			=> $search->index_created(),
 				'S_STATS'			=> $search->index_stats(),
-			));
+			]);
 		}
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
 			'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
-		));
+		]);
 	}
 
 	/**
@@ -365,13 +365,13 @@ class acp_search
 		$this->tpl_name = 'acp_search_index_inprogress';
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'				=> $this->u_action . '&amp;action=' . $action . '&amp;hash=' . generate_link_hash('acp_search'),
 			'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 			'L_CONTINUE'			=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING') : $this->language->lang('CONTINUE_DELETING_INDEX'),
 			'L_CONTINUE_EXPLAIN'	=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN'),
 			'S_ACTION'				=> $action,
-		));
+		]);
 	}
 
 	private function index_action(string $id, string $mode, string $action, array $state): void
@@ -433,7 +433,7 @@ class acp_search
 
 				$this->save_state([]); // finished operation, cancel action
 
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($search->get_name()));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, [$search->get_name()]);
 				trigger_error($this->language->lang('SEARCH_INDEX_REMOVED') . adm_back_link($this->u_action) . $this->close_popup_js());
 			break;
 
@@ -464,7 +464,7 @@ class acp_search
 
 				$this->save_state([]); // finished operation, cancel action
 
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($search->get_name()));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_CREATED', false, [$search->get_name()]);
 				trigger_error($this->language->lang('SEARCH_INDEX_CREATED') . adm_back_link($this->u_action) . $this->close_popup_js());
 			break;
 		}
@@ -480,14 +480,14 @@ class acp_search
 
 		adm_page_header($this->language->lang($l_type));
 
-		$this->template->set_filenames(array(
-			'body'	=> 'progress_bar.html')
-		);
+		$this->template->set_filenames([
+			'body'	=> 'progress_bar.html'
+		]);
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'L_PROGRESS'			=> $this->language->lang($l_type),
 			'L_PROGRESS_EXPLAIN'	=> $this->language->lang($l_type . '_EXPLAIN'),
-		));
+		]);
 
 		adm_page_footer();
 	}
