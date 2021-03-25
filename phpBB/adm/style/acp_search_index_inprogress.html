@@ -2,16 +2,29 @@
 
 <a id="maincontent"></a>
 
-<h1>{L_ACP_SEARCH_INDEX}</h1>
+<script>
+    // <![CDATA[
+    /**
+     * Popup search progress bar
+     */
+    function popup_progress_bar(progress_type)
+    {
+        close_waitscreen = 0;
+        // no scrollbars
+        popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
+    }
+    // ]]>
+</script>
 
-{# todo: check the l_continue that is send from acp_search here #}
+<h1>{L_CONTINUE}</h1>
+
 <p>{L_CONTINUE_EXPLAIN}</p>
 
-<form id="acp_search_continue" method="post" action="{U_CONTINUE_INDEXING}">
+<form id="acp_search_continue" method="post" action="{U_ACTION}">
 	<fieldset>
 		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
 		<p class="submit-buttons">
-			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" onclick="popup_progress_bar('{S_ACTION}');" />&nbsp;
 			<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
 		</p>
 		{S_FORM_TOKEN}

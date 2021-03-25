@@ -286,7 +286,7 @@ class acp_search
 		$action = $this->request->variable('action', '');
 		$state = !empty($this->config['search_indexing_state']) ? explode(',', $this->config['search_indexing_state']) : [];
 
-		if ($action)
+		if ($action && !$this->request->is_set_post('cancel'))
 		{
 			switch ($action)
 			{
@@ -305,7 +305,7 @@ class acp_search
 		}
 		else
 		{
-			// If clicked to no continue with the indexing progress (acp_search_index_inprogress form)
+			// If clicked to cancel the indexing progress (acp_search_index_inprogress form)
 			if ($this->request->is_set_post('cancel'))
 			{
 				$state = [];
@@ -362,14 +362,16 @@ class acp_search
 	 */
 	private function index_inprogress(string $id, string $mode, string $action): void
 	{
-		$this->tpl_name = 'acp_search_inprogress';
+		$this->tpl_name = 'acp_search_index_inprogress';
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
 		$this->template->assign_vars(array(
-			'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $action . '&amp;hash=' . generate_link_hash('acp_search'),
+			'U_ACTION'				=> $this->u_action . '&amp;action=' . $action . '&amp;hash=' . generate_link_hash('acp_search'),
+			'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 			'L_CONTINUE'			=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING') : $this->language->lang('CONTINUE_DELETING_INDEX'),
-			'L_CONTINUE_EXPLAIN'	=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN'))
-		);
+			'L_CONTINUE_EXPLAIN'	=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN'),
+			'S_ACTION'				=> $action,
+		));
 	}
 
 	private function index_action(string $id, string $mode, string $action, array $state): void
