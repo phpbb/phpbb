@@ -83,7 +83,8 @@ jobs:
             - name: Check commit message
               if: github.event_name == 'pull_request'
               run: |
-                  git-tools/commit-msg-hook-range.sh $(git rev-list --merges -n 1 HEAD^1)..$GITHUB_SHA
+                  git fetch origin $GITHUB_BASE_REF &> /dev/null
+                  git-tools/commit-msg-hook-range.sh $(git rev-parse origin/$GITHUB_BASE_REF)..$GITHUB_SHA
 
     # Tests for MySQL and MariaDB
     mysql-tests:
