@@ -242,6 +242,16 @@ jobs:
                       db: "postgres:12"
                     - php: '7.1'
                       db: "postgres:13"
+                    - php: '7.2'
+                      db: "postgres:13"
+                    - php: '7.3'
+                      db: "postgres:13"
+                    - php: '7.4'
+                      db: "postgres:13"
+                    - php: '8.0'
+                      db: "postgres:12"
+                    - php: '8.0'
+                      db: "postgres:13"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
