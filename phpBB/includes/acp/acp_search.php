@@ -277,6 +277,8 @@ class acp_search
 	}
 
 	/**
+	 * Execute action
+	 *
 	 * @param string $id
 	 * @param string $mode
 	 * @throws Exception
@@ -337,8 +339,8 @@ class acp_search
 		foreach ($this->search_backend_collection as $search)
 		{
 			$this->template->assign_block_vars('backend', [
-				'L_NAME'			=> $search->get_name(),
-				'NAME'				=> $search->get_type(),
+				'NAME'			=> $search->get_name(),
+				'TYPE'				=> $search->get_type(),
 
 				'S_ACTIVE'			=> $search->get_type() === $this->config['search_type'],
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(['search_type' => $search->get_type()]),
@@ -407,67 +409,39 @@ class acp_search
 		$action = $state[self::STATE_ACTION];
 		$post_counter = &$state[self::STATE_POST_COUNTER];
 
-		switch ($action)
+		// Execute create/delete
+		$search = $this->search_backend_factory->get($type);
+
+		try
 		{
-			case 'delete':
-				$search = $this->search_backend_factory->get($type);
+			$status = ($action == 'create') ? $search->create_index($post_counter) : $search->delete_index($post_counter);
+			if ($status) // Status is not null, so action is in progress....
+			{
+				$this->save_state($state); // update $post_counter in $state in the database
 
-				try
-				{
-					if ($status = $search->delete_index($post_counter)) // Status is not null, so deleting is in progress....
-					{
-						$this->save_state($state); // update $post_counter in $state in the database
+				$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=$action&hash=" . generate_link_hash('acp_search'), false);
+				meta_refresh(1, $u_action);
 
-						$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false);
-						meta_refresh(1, $u_action);
-						trigger_error($this->language->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $status['row_count'], $status['post_counter']) . $this->language->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $status['rows_per_second']));
-					}
-				}
-				catch (Exception $e)
-				{
-					$this->save_state([]); // Unexpected error, cancel action
-					trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-				}
-
-				$search->tidy();
-
-				$this->save_state([]); // finished operation, cancel action
-
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, [$search->get_name()]);
-				trigger_error($this->language->lang('SEARCH_INDEX_REMOVED') . adm_back_link($this->u_action) . $this->close_popup_js());
-			break;
-
-			case 'create':
-				$search = $this->search_backend_factory->get($type);
-
-				try
-				{
-					$search = $this->search_backend_factory->get($type);
-
-					if ($status = $search->create_index($post_counter)) // Status is not null, so indexing is in progress....
-					{
-						$this->save_state($state); // update $post_counter in $state in the database
-
-						$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=create&hash=" . generate_link_hash('acp_search'), false);
-						meta_refresh(1, $u_action);
-						trigger_error($this->language->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $status['row_count'], $status['post_counter']) . $this->language->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $status['rows_per_second']));
-					}
-				}
-				catch (Exception $e)
-				{
-					// Error executing create_index
-					$this->save_state([]);
-					trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-				}
-
-				$search->tidy();
-
-				$this->save_state([]); // finished operation, cancel action
-
-				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_SEARCH_INDEX_CREATED', false, [$search->get_name()]);
-				trigger_error($this->language->lang('SEARCH_INDEX_CREATED') . adm_back_link($this->u_action) . $this->close_popup_js());
-			break;
+				$message_redirect = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT' : 'SEARCH_INDEX_DELETE_REDIRECT', (int) $status['row_count'], $status['post_counter']);
+				$message_rate = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT_RATE' : 'SEARCH_INDEX_DELETE_REDIRECT_RATE', $status['rows_per_second']);
+				trigger_error($message_redirect . $message_rate);
+			}
 		}
+		catch (Exception $e)
+		{
+			$this->save_state([]); // Unexpected error, cancel action
+			trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+		}
+
+		$search->tidy();
+
+		$this->save_state([]); // finished operation, cancel action
+
+		$log_operation = ($action == 'create') ? 'LOG_SEARCH_INDEX_CREATED' : 'LOG_SEARCH_INDEX_REMOVED';
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$search->get_name()]);
+
+		$message = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATED' : 'SEARCH_INDEX_REMOVED');
+		trigger_error($message . adm_back_link($this->u_action) . $this->close_popup_js());
 	}
 
 	/**

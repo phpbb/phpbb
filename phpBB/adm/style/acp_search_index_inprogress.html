@@ -1,4 +1,4 @@
-<!-- INCLUDE overall_header.html -->
+{% include 'overall_header.html' %}
 
 <a id="maincontent"></a>
 
@@ -11,24 +11,24 @@
     {
         close_waitscreen = 0;
         // no scrollbars
-        popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
+        popup('{{ UA_PROGRESS_BAR }}&amp;type=' + progress_type, 400, 240, '_index');
     }
     // ]]>
 </script>
 
-<h1>{L_CONTINUE}</h1>
+<h1>{{ lang('CONTINUE') }}</h1>
 
-<p>{L_CONTINUE_EXPLAIN}</p>
+<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
 
-<form id="acp_search_continue" method="post" action="{U_ACTION}">
+<form id="acp_search_continue" method="post" action="{{ U_ACTION }}">
 	<fieldset>
-		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
 		<p class="submit-buttons">
-			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" onclick="popup_progress_bar('{S_ACTION}');" />&nbsp;
-			<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" onclick="popup_progress_bar('{{ S_ACTION }}');" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
 		</p>
-		{S_FORM_TOKEN}
+		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>
 
-<!-- INCLUDE overall_footer.html -->
+{% include 'overall_footer.html' %}
