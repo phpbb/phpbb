@@ -17,6 +17,7 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
+use phpbb\search\exception\index_empty_exception;
 use phpbb\user;
 
 /**
@@ -1598,6 +1599,11 @@ class fulltext_native extends base implements search_backend_interface
 	 */
 	public function delete_index(int &$post_counter = null): ?array
 	{
+		if (!$this->index_created())
+		{
+			throw new index_empty_exception();
+		}
+
 		$sql_queries = [];
 
 		switch ($this->db->get_sql_layer())

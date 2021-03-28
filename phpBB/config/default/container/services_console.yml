@@ -262,6 +262,7 @@ services:
             - '@config'
             - '@language'
             - '@log'
+            - '@post.helper'
             - '@search.backend_factory'
             - '@user'
         tags:
@@ -273,6 +274,7 @@ services:
             - '@config'
             - '@language'
             - '@log'
+            - '@post.helper'
             - '@search.backend_factory'
             - '@user'
         tags:

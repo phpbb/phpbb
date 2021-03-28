@@ -17,6 +17,8 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
+use phpbb\post\post_helper;
+use phpbb\search\exception\index_empty_exception;
 use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\user;
@@ -27,6 +29,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete extends command
 {
+	protected const STATE_SEARCH_TYPE = 0;
+	protected const STATE_ACTION = 1;
+	protected const STATE_POST_COUNTER = 2;
+
 	/** @var config */
 	protected $config;
 
@@ -36,23 +42,28 @@ class delete extends command
 	/** @var log */
 	protected $log;
 
+	/** @var post_helper */
+	protected $post_helper;
+
 	/** @var search_backend_factory */
 	protected $search_backend_factory;
 
 	/**
 	 * Construct method
 	 *
-	 * @param config					$config
-	 * @param language					$language
-	 * @param log						$log
-	 * @param search_backend_factory	$search_backend_factory
-	 * @param user						$user
+	 * @param config $config
+	 * @param language $language
+	 * @param log $log
+	 * @param post_helper $post_helper
+	 * @param search_backend_factory $search_backend_factory
+	 * @param user $user
 	 */
-	public function __construct(config $config, language $language, log $log, search_backend_factory $search_backend_factory, user $user)
+	public function __construct(config $config, language $language, log $log, post_helper $post_helper, search_backend_factory $search_backend_factory, user $user)
 	{
 		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
+		$this->post_helper = $post_helper;
 		$this->search_backend_factory = $search_backend_factory;
 
 		parent::__construct($user);
@@ -61,7 +72,7 @@ class delete extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -105,16 +116,30 @@ class delete extends command
 			return command::FAILURE;
 		}
 
+		if (!empty($this->config['search_indexing_state']))
+		{
+			$io->error($this->language->lang('CLI_SEARCHINDEX_ACTION_IN_PROGRESS', $search_backend));
+			return command::FAILURE;
+		}
+
 		try
 		{
-			// TODO: Read the max_post_id from db because the bucle is not always executed
-			$progress = $this->create_progress_bar(1, $io, $output, true);
+			$progress = $this->create_progress_bar($this->post_helper->get_max_post_id(), $io, $output, true);
 			$progress->setMessage('');
 			$progress->start();
 
-			$counter = 0;
+			$state = [
+				self::STATE_SEARCH_TYPE => $search->get_type(),
+				self::STATE_ACTION => 'delete',
+				self::STATE_POST_COUNTER => 0
+			];
+			$this->save_state($state);
+
+			$counter = &$state[self::STATE_POST_COUNTER];
 			while (($status = $search->delete_index($counter)) !== null)
 			{
+				$this->save_state($state);
+
 				$progress->setMaxSteps($status['max_post_id']);
 				$progress->setProgress($status['post_counter']);
 				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
@@ -124,15 +149,35 @@ class delete extends command
 
 			$io->newLine(2);
 		}
+		catch(index_empty_exception $e)
+		{
+			$this->save_state([]);
+			$io->error($this->language->lang('CLI_SEARCHINDEX_NO_CREATED', $name));
+			return command::FAILURE;
+		}
 		catch (\Exception $e)
 		{
 			$io->error($this->language->lang('CLI_SEARCHINDEX_DELETE_FAILURE', $name));
 			return command::FAILURE;
 		}
 
+		$search->tidy();
+
+		$this->save_state([]);
+
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
 		$io->success($this->language->lang('CLI_SEARCHINDEX_DELETE_SUCCESS', $name));
 
 		return command::SUCCESS;
+	}
+
+	/**
+	 * @param array $state
+	 */
+	private function save_state(array $state = []): void
+	{
+		ksort($state);
+
+		$this->config->set('search_indexing_state', implode(',', $state), true);
 	}
 }

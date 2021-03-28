@@ -53,7 +53,7 @@ class list_all extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -80,9 +80,14 @@ class list_all extends command
 		$search_backends = [];
 		foreach ($this->search_backend_collection as $search_backend)
 		{
-			$name = get_class($search_backend);
-			$active = ($name == $this->config['search_type']) ? '(<comment>' . $this->language->lang('ACTIVE') . '</comment>) ' : '';
+			$name = $search_backend->get_type();
+			$active = ($name === $this->config['search_type']) ? '(<comment>' . $this->language->lang('ACTIVE') . '</comment>) ' : '';
 			$search_backends[] = '<info>' . $name . '</info> ' . $active .  $search_backend->get_name();
+
+			if ($name === $this->config['search_type'] && !$search_backend->index_created())
+			{
+				$io->error($this->language->lang('CLI_SEARCHINDEX_ACTIVE_NOT_INDEXED'));
+			}
 		}
 
 		$io->listing($search_backends);
