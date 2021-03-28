@@ -386,9 +386,9 @@ class postgres extends \phpbb\db\driver\driver
 			return $cache->sql_freeresult($safe_query_id);
 		}
 
-		if (isset($this->open_queries[(int) $safe_query_id]))
+		if (isset($this->open_queries[$safe_query_id]))
 		{
-			unset($this->open_queries[(int) $safe_query_id]);
+			unset($this->open_queries[$safe_query_id]);
 			return pg_free_result($query_id);
 		}
 
@@ -466,6 +466,11 @@ class postgres extends \phpbb\db\driver\driver
 	*/
 	function _sql_close()
 	{
+		// Released resources are already closed, return true in this case
+		if (get_resource_type($this->db_connect_id) === 'Unknown')
+		{
+			return true;
+		}
 		return @pg_close($this->db_connect_id);
 	}
 
