@@ -467,7 +467,7 @@ class postgres extends \phpbb\db\driver\driver
 	function _sql_close()
 	{
 		// Released resources are already closed, return true in this case
-		if (get_resource_type($this->db_connect_id) === 'Unknown')
+		if (!is_resource($this->db_connect_id))
 		{
 			return true;
 		}
