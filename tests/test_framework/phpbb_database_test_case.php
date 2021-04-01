@@ -29,7 +29,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 	static protected $install_schema_file;
 
-	static protected $phpunit_version; 
+	static protected $phpunit_version;
 
 	public function __construct($name = NULL, array $data = [], $dataName = '')
 	{

@@ -99,6 +99,24 @@ class postgres extends tools
 	/**
 	 * {@inheritDoc}
 	 */
+	function sql_table_exists($table_name)
+	{
+		$sql = "SELECT CAST(EXISTS(
+			SELECT FROM information_schema.tables
+				WHERE table_schema = 'public'
+					AND table_name   = '" . $this->db->sql_escape($table_name) . "'
+			) AS INTEGER)";
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->db->sql_fetchrow($result);
+		$table_exists = (booL) $row['exists'];
+		$this->db->sql_freeresult($result);
+
+		return $table_exists;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	function sql_create_table($table_name, $table_data)
 	{
 		// holds the DDL for a column
