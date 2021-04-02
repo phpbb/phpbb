@@ -12,7 +12,7 @@ set -e
 set +x
 
 sudo npm install -g > /dev/null
-npm install > /dev/null
+npm ci > /dev/null
 set -x
 node_modules/stylelint/bin/stylelint.js "phpBB/styles/prosilver/theme/*.css"
 node_modules/stylelint/bin/stylelint.js "phpBB/adm/style/*.css"
