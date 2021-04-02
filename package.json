@@ -105,6 +105,5 @@
 		"stylelint-order": "4.0.0",
 		"xo": "^0.33.1",
 		"yargs-parser": ">=13.1.2"
-	},
-	"dependencies": {}
+	}
 }
