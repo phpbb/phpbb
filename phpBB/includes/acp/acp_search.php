@@ -39,54 +39,34 @@ class acp_search
 	protected const STATE_ACTION = 1;
 	protected const STATE_POST_COUNTER = 2;
 
-	/**
-	 * @var config
-	 */
+	/** @var config */
 	protected $config;
 
-	/**
-	 * @var language
-	 */
+	/** @var language */
 	protected $language;
 
-	/**
-	 * @var log
-	 */
+	/** @var log */
 	protected $log;
 
-	/**
-	 * @var request
-	 */
+	/** @var request */
 	protected $request;
 
-	/**
-	 * @var service_collection
-	 */
+	/** @var service_collection */
 	protected $search_backend_collection;
 
-	/**
-	 * @var search_backend_factory
-	 */
+	/** @var search_backend_factory */
 	protected $search_backend_factory;
 
-	/**
-	 * @var template
-	 */
+	/** @var template */
 	protected $template;
 
-	/**
-	 * @var user
-	 */
+	/** @var user */
 	protected $user;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $phpbb_admin_path;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $php_ex;
 
 	public function __construct($p_master)
@@ -127,6 +107,12 @@ class acp_search
 		}
 	}
 
+	/**
+	 * Settings page
+	 *
+	 * @param string $id
+	 * @param string $mode
+	 */
 	public function settings(string $id, string $mode): void
 	{
 		$submit = $this->request->is_set_post('submit');
@@ -181,9 +167,9 @@ class acp_search
 		$cfg_array = (isset($_REQUEST['config'])) ? $this->request->variable('config', ['' => ''], true) : [];
 		$updated = $this->request->variable('updated', false);
 
-		foreach ($settings as $this->config_name => $var_type)
+		foreach ($settings as $config_name => $var_type)
 		{
-			if (!isset($cfg_array[$this->config_name]))
+			if (!isset($cfg_array[$config_name]))
 			{
 				continue;
 			}
@@ -191,7 +177,7 @@ class acp_search
 			// e.g. integer:4:12 (min 4, max 12)
 			$var_type = explode(':', $var_type);
 
-			$this->config_value = $cfg_array[$this->config_name];
+			$this->config_value = $cfg_array[$config_name];
 			settype($this->config_value, $var_type[0]);
 
 			if (isset($var_type[1]))
@@ -205,9 +191,9 @@ class acp_search
 			}
 
 			// only change config if anything was actually changed
-			if ($submit && ($this->config[$this->config_name] != $this->config_value))
+			if ($submit && ($this->config[$config_name] != $this->config_value))
 			{
-				$this->config->set($this->config_name, $this->config_value);
+				$this->config->set($config_name, $this->config_value);
 				$updated = true;
 			}
 		}
@@ -277,7 +263,7 @@ class acp_search
 	}
 
 	/**
-	 * Execute action
+	 * Execute action depending on the action and state
 	 *
 	 * @param string $id
 	 * @param string $mode
@@ -338,7 +324,7 @@ class acp_search
 
 		foreach ($this->search_backend_collection as $search)
 		{
-			$this->template->assign_block_vars('backend', [
+			$this->template->assign_block_vars('backends', [
 				'NAME'			=> $search->get_name(),
 				'TYPE'				=> $search->get_type(),
 
@@ -376,6 +362,14 @@ class acp_search
 		]);
 	}
 
+	/**
+	 * Progress that do the indexing/index removal, updating the page continuously until is finished
+	 *
+	 * @param string $id
+	 * @param string $mode
+	 * @param string $action
+	 * @param array $state
+	 */
 	private function index_action(string $id, string $mode, string $action, array $state): void
 	{
 		// For some this may be of help...

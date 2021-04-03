@@ -20,7 +20,7 @@
 
 <p>{{ lang('ACP_SEARCH_INDEX_EXPLAIN') }}</p>
 
-{% for backend in loops.backend %}
+{% for backend in backends %}
 
 	{% if backend.S_STATS is not empty %}
 
@@ -30,7 +30,7 @@
 
 		{{ backend.S_HIDDEN_FIELDS }}
 
-		<legend>{{ lang('INDEX_STATS') }}{{ lang('COLON') }} {{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</legend>
+		<legend>{{ lang('INDEX_STATS') ~ lang('COLON') }} {{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</legend>
 
 		<table class="table1">
 			<caption>{{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</caption>
@@ -48,7 +48,7 @@
 			<tr>
 			{% for key, value in stat %}
 				{% if value is not empty %}
-					<td>{{ key }}{{ lang('COLON') }}</td>
+					<td>{{ key ~ lang('COLON') }}</td>
 					<td>{{ value }}</td>
 				{% else %}
 					<td></td>
