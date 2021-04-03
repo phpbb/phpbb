@@ -49,6 +49,13 @@ class db extends \phpbb\config\config
 		$this->cache = $cache;
 		$this->table = $table;
 
+		$this->initialise($cache);
+
+		parent::__construct($this->config);
+	}
+
+	public function initialise(\phpbb\cache\driver\driver_interface $cache)
+	{
 		if (($config = $cache->get('config')) !== false)
 		{
 			$sql = 'SELECT config_name, config_value
@@ -84,7 +91,7 @@ class db extends \phpbb\config\config
 			$cache->put('config', $cached_config);
 		}
 
-		parent::__construct($config);
+		$this->config = $config;
 	}
 
 	/**

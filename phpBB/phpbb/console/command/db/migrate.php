@@ -58,6 +58,10 @@ class migrate extends \phpbb\console\command\db\migration_command
 		$this->migrator->create_migrations_table();
 
 		$this->cache->purge();
+		if ($this->config instanceof \phpbb\config\db)
+		{
+			$this->config->initialise($this->cache->get_driver());
+		}
 
 		$this->load_migrations();
 		$orig_version = $this->config['version'];
