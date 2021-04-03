@@ -171,7 +171,7 @@ class update_user_and_post_data extends database_task
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count() : int
+	public static function get_step_count() : int
 	{
 		return 1;
 	}

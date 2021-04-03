@@ -16,7 +16,7 @@
 */
 class phpbb_functional_ucp_allow_pm_test extends phpbb_functional_test_case
 {
-	static protected $data = array();
+	protected static $data = array();
 
 	public function __construct()
 	{

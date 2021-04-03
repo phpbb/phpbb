@@ -53,7 +53,7 @@ class recaptcha extends captcha_abstract
 		return true;
 	}
 
-	static public function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}

@@ -51,7 +51,7 @@ class phpbb_Sniffs_ControlStructures_StaticKeywordSniff implements Sniff
 		if (in_array($tokens[$stackPtr + 2]['code'], $disallowed_after_tokens))
 		{
 			$error = 'Access specifier (e.g. public) should not follow static scope attribute. Encountered "' . $tokens[$stackPtr + 2]['content'] . '" after static';
-			$phpcsFile->addWarning($error, $stackPtr, 'InvalidStaticFunctionDeclaration', [], 1);
+			$phpcsFile->addError($error, $stackPtr, 'InvalidStaticFunctionDeclaration');
 		}
 	}
 }

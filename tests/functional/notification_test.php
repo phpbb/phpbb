@@ -16,7 +16,7 @@
 */
 class phpbb_functional_notification_test extends phpbb_functional_test_case
 {
-	static public function user_subscription_data()
+	public static function user_subscription_data()
 	{
 		return array(
 			// Rows inserted by phpBB/install/schemas/schema_data.sql

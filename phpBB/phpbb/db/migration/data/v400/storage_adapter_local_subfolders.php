@@ -25,7 +25,7 @@ class storage_adapter_local_subfolders extends migration
 			$this->config->offsetExists('storage\\backup\\config\\subfolders');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v400\storage_attachment',

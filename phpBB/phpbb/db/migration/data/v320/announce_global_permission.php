@@ -27,7 +27,7 @@ class announce_global_permission extends \phpbb\db\migration\migration
 		return $auth_option_id !== false;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v320\dev',

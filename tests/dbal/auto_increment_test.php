@@ -52,7 +52,7 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 		parent::tearDown();
 	}
 
-	static protected function get_default_values()
+	protected static function get_default_values()
 	{
 		return array(
 			'c_uint' => 0,

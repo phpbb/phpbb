@@ -1041,7 +1041,7 @@ class migrator
 	 * @param string $migration A migration class name
 	 * @return bool Return true if class is a migration, false otherwise
 	 */
-	static public function is_migration($migration)
+	public static function is_migration($migration)
 	{
 		if (class_exists($migration))
 		{

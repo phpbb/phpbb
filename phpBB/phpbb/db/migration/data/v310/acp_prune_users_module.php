@@ -39,7 +39,7 @@ class acp_prune_users_module extends \phpbb\db\migration\container_aware_migrati
 		return !$acp_cat_users_id || $acp_cat_users_id === $acp_prune_users_parent;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\beta1');
 	}

@@ -21,7 +21,7 @@ class plupload extends \phpbb\db\migration\migration
 			isset($this->config['plupload_salt']);
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
 	}

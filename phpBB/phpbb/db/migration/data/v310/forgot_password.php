@@ -20,7 +20,7 @@ class forgot_password extends \phpbb\db\migration\migration
 		return isset($this->config['allow_password_reset']);
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}

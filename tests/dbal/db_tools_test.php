@@ -99,7 +99,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->tools->sql_table_drop('prefix_table_name');
 	}
 
-	static protected function get_default_values()
+	protected static function get_default_values()
 	{
 		return array(
 			'c_int_size' => 0,

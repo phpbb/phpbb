@@ -20,7 +20,7 @@ class release_3_0_6_rc4 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.0.6-RC4', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_6_rc3');
 	}

@@ -20,7 +20,7 @@ class helper
 	/**
 	* @var symfony_filesystem
 	*/
-	static protected $symfony_filesystem;
+	protected static $symfony_filesystem;
 
 	/**
 	 * Eliminates useless . and .. components from specified path.
@@ -29,7 +29,7 @@ class helper
 	 *
 	 * @return string Cleaned path
 	 */
-	static public function clean_path($path)
+	public static function clean_path($path)
 	{
 		$exploded = explode('/', $path);
 		$filtered = array();
@@ -60,7 +60,7 @@ class helper
 	 *
 	 * @return	bool	true if the path is absolute, false otherwise
 	 */
-	static public function is_absolute_path($path)
+	public static function is_absolute_path($path)
 	{
 		return (isset($path[0]) && $path[0] === '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 	}
@@ -71,7 +71,7 @@ class helper
 	 * @param string	$path
 	 * @return bool|string
 	 */
-	static protected function phpbb_own_realpath($path)
+	protected static function phpbb_own_realpath($path)
 	{
 		// Replace all directory separators with '/'
 		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
@@ -177,7 +177,7 @@ class helper
 	 *
 	 * @return string	Resolved path
 	 */
-	static public function realpath($path)
+	public static function realpath($path)
 	{
 		if (!function_exists('realpath'))
 		{
@@ -210,7 +210,7 @@ class helper
 	 *
 	 * @return string Path of target relative to starting path
 	 */
-	static public function make_path_relative($end_path, $start_path)
+	public static function make_path_relative($end_path, $start_path)
 	{
 		return self::get_symfony_filesystem()->makePathRelative($end_path, $start_path);
 	}
@@ -226,7 +226,7 @@ class helper
 	 * @return string|array|bool	returns the resolved path or an array of parts of the path if $return_array is true
 	 * 								or false if path cannot be resolved
 	 */
-	static public function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
+	public static function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
 		if ($return_array)
 		{
@@ -373,7 +373,7 @@ class helper
 	 *
 	 * @return symfony_filesystem	Symfony filesystem
 	 */
-	static protected function get_symfony_filesystem()
+	protected static function get_symfony_filesystem()
 	{
 		if (self::$symfony_filesystem === null)
 		{

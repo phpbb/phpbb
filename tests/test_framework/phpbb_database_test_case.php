@@ -15,7 +15,7 @@ use PHPUnit\DbUnit\TestCase;
 
 abstract class phpbb_database_test_case extends TestCase
 {
-	static private $already_connected;
+	private static $already_connected;
 
 	private $db_connections;
 
@@ -23,13 +23,13 @@ abstract class phpbb_database_test_case extends TestCase
 
 	protected $fixture_xml_data;
 
-	static protected $schema_file;
+	protected static $schema_file;
 
-	static protected $phpbb_schema_copy;
+	protected static $phpbb_schema_copy;
 
-	static protected $install_schema_file;
+	protected static $install_schema_file;
 
-	static protected $phpunit_version; 
+	protected static $phpunit_version;
 
 	public function __construct($name = NULL, array $data = [], $dataName = '')
 	{
@@ -63,12 +63,12 @@ abstract class phpbb_database_test_case extends TestCase
 	/**
 	* @return array List of extensions that should be set up
 	*/
-	static protected function setup_extensions()
+	protected static function setup_extensions()
 	{
 		return array();
 	}
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -104,7 +104,7 @@ abstract class phpbb_database_test_case extends TestCase
 		parent::setUpBeforeClass();
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		if (file_exists(self::$install_schema_file))
 		{
@@ -367,7 +367,7 @@ abstract class phpbb_database_test_case extends TestCase
 		}
 	}
 
-	static public function get_core_tables() : array
+	public static function get_core_tables() : array
 	{
 		global $phpbb_root_path, $table_prefix;
 

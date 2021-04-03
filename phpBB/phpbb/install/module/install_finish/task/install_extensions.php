@@ -175,7 +175,7 @@ class install_extensions extends database_task
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}

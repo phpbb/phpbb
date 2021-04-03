@@ -22,7 +22,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		return !$this->db_tools->sql_table_exists($this->table_prefix . 'styles_imageset');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}

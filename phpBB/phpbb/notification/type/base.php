@@ -48,7 +48,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @var bool|array False if the service should use its default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = false;
+	public static $notification_option = false;
 
 	/**
 	* The notification_type_id, set upon creation of the class

@@ -22,7 +22,7 @@ class remove_attachment_download_mode extends migration
 		return !$this->db_tools->sql_column_exists($this->tables['extension_groups'], 'download_mode');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v400\dev',

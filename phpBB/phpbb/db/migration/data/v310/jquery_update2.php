@@ -20,7 +20,7 @@ class jquery_update2 extends \phpbb\db\migration\migration
 		return $this->config['load_jquery_url'] !== '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js';
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\jquery_update',

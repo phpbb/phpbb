@@ -28,7 +28,7 @@ class remove_acp_styles_cache extends \phpbb\db\migration\migration
 		return !$module_id;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\rc4');
 	}

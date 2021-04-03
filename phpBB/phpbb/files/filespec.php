@@ -312,7 +312,7 @@ class filespec
 	 *
 	 * @return string Extension of the supplied filename
 	 */
-	static public function get_extension($filename)
+	public static function get_extension($filename)
 	{
 		$filename = utf8_basename($filename);
 

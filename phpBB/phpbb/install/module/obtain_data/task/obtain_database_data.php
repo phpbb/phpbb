@@ -255,7 +255,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 0;
 	}

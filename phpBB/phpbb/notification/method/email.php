@@ -150,7 +150,7 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param array $data Notification data
 	 * @return array Cleaned notification data
 	 */
-	static public function clean_data(array $data)
+	public static function clean_data(array $data)
 	{
 		$row = [
 			'notification_type_id'	=> null,

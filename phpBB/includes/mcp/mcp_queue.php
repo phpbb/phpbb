@@ -689,7 +689,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return null
 	*/
-	static public function approve_posts($action, $post_id_list, $id, $mode)
+	public static function approve_posts($action, $post_id_list, $id, $mode)
 	{
 		global $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $phpbb_log;
@@ -945,7 +945,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return null
 	*/
-	static public function approve_topics($action, $topic_id_list, $id, $mode)
+	public static function approve_topics($action, $topic_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $phpbb_log;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_dispatcher;
@@ -1143,7 +1143,7 @@ class mcp_queue
 	* @param $mode			string	Active module
 	* @return null
 	*/
-	static public function disapprove_posts($post_id_list, $id, $mode)
+	public static function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_log;
