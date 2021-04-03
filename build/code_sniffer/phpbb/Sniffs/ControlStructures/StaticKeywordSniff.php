@@ -42,16 +42,16 @@ class phpbb_Sniffs_ControlStructures_StaticKeywordSniff implements Sniff
 	{
 		$tokens = $phpcsFile->getTokens();
 
-		$disallowed_before_tokens = [
+		$disallowed_after_tokens = [
 			T_PUBLIC,
 			T_PROTECTED,
 			T_PRIVATE,
 		];
 
-		if (in_array($tokens[$stackPtr - 2]['code'], $disallowed_before_tokens))
+		if (in_array($tokens[$stackPtr + 2]['code'], $disallowed_after_tokens))
 		{
-			$error = 'Access specifier (e.g. public) should follow static scope attribute. Encountered "' . $tokens[$stackPtr - 2]['content'] . '" before static';
-			$phpcsFile->addError($error, $stackPtr, 'InvalidStaticFunctionDeclaration');
+			$error = 'Access specifier (e.g. public) should not follow static scope attribute. Encountered "' . $tokens[$stackPtr + 2]['content'] . '" after static';
+			$phpcsFile->addWarning($error, $stackPtr, 'InvalidStaticFunctionDeclaration', [], 1);
 		}
 	}
 }
