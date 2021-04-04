@@ -29,7 +29,7 @@ class signature_module_auth extends \phpbb\db\migration\migration
 		return $module_auth === 'acl_u_sig' || $module_auth === false;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
 	}

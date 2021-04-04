@@ -136,7 +136,7 @@ class setup_languages extends database_task
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count() : int
+	public static function get_step_count() : int
 	{
 		return 1;
 	}

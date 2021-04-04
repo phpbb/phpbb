@@ -17,7 +17,7 @@ use phpbb\db\migration\migration;
 
 class disable_remote_avatar extends migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v32x\v325',

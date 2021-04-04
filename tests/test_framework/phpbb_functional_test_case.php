@@ -17,10 +17,10 @@ require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 class phpbb_functional_test_case extends phpbb_test_case
 {
 	/** @var \Goutte\Client */
-	static protected $client;
-	static protected $cookieJar;
-	static protected $root_url;
-	static protected $install_success = false;
+	protected static $client;
+	protected static $cookieJar;
+	protected static $root_url;
+	protected static $install_success = false;
 
 	protected $cache = null;
 	protected $db = null;
@@ -38,9 +38,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected $lang = array();
 
-	static protected $config = array();
-	static protected $already_installed = false;
-	static protected $last_post_timestamp = 0;
+	protected static $config = array();
+	protected static $already_installed = false;
+	protected static $last_post_timestamp = 0;
 
 	static public function setUpBeforeClass(): void
 	{
@@ -70,7 +70,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* @return array List of extensions that should be set up
 	*/
-	static protected function setup_extensions()
+	protected static function setup_extensions()
 	{
 		return array();
 	}
@@ -270,7 +270,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $extension_manager;
 	}
 
-	static protected function install_board()
+	protected static function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -516,7 +516,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->delete_ext_data($extension);
 	}
 
-	static private function recreate_database($config)
+	private static function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();

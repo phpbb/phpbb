@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class auth_provider_oauth2 extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\auth_provider_oauth',

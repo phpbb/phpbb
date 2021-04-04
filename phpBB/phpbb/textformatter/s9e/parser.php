@@ -311,7 +311,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param  Logger  $logger
 	* @return mixed              Original value if valid, FALSE otherwise
 	*/
-	static public function filter_flash_height($height, $max_height, Logger $logger)
+	public static function filter_flash_height($height, $max_height, Logger $logger)
 	{
 		if ($max_height && $height > $max_height)
 		{
@@ -333,7 +333,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param  Logger  $logger
 	* @return mixed              Original value if valid, FALSE otherwise
 	*/
-	static public function filter_flash_width($width, $max_width, Logger $logger)
+	public static function filter_flash_width($width, $max_width, Logger $logger)
 	{
 		if ($max_width && $width > $max_width)
 		{
@@ -355,7 +355,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param  Logger  $logger
 	* @return mixed             Original value if valid, FALSE otherwise
 	*/
-	static public function filter_font_size($size, $max_size, Logger $logger)
+	public static function filter_font_size($size, $max_size, Logger $logger)
 	{
 		if ($max_size && $size > $max_size)
 		{
@@ -383,7 +383,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	*
 	* @return string|bool         Original value if valid, FALSE otherwise
 	*/
-	static public function filter_img_url($url, array $url_config, Logger $logger)
+	public static function filter_img_url($url, array $url_config, Logger $logger)
 	{
 		// Validate the URL
 		$url = UrlFilter::filter($url, $url_config, $logger);

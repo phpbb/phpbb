@@ -121,7 +121,7 @@ class config_php_file
 	* @return string driver class
 	* @throws \RuntimeException
 	*/
-	static public function convert_30_dbms_to_31($dbms)
+	public static function convert_30_dbms_to_31($dbms)
 	{
 		// Note: this check is done first because mysqli extension
 		// supplies a mysqli class, and class_exists($dbms) would return

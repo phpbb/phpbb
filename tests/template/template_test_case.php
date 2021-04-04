@@ -23,9 +23,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
 
-	static protected $language_reflection_lang;
+	protected static $language_reflection_lang;
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

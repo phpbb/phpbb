@@ -16,9 +16,9 @@
 */
 class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 {
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'./',
 	);
 

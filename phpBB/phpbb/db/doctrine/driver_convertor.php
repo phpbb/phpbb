@@ -29,7 +29,7 @@ trait driver_convertor
 	 *
 	 * @throws InvalidArgumentException If $driver_name is not a valid phpBB database driver.
 	 */
-	static public function to_doctrine_driver(string $driver_name) : string
+	public static function to_doctrine_driver(string $driver_name) : string
 	{
 		// Normalize driver name.
 		$name = str_replace('phpbb\db\driver', '', $driver_name);

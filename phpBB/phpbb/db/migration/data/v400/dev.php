@@ -22,7 +22,7 @@ class dev extends migration
 		return version_compare($this->config['version'], '4.0.0-dev', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return ['\phpbb\db\migration\data\v330\v330rc1'];
 	}

@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v320;
 
 class report_id_auto_increment extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v320\default_data_type_ids',

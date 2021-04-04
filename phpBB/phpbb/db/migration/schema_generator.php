@@ -240,7 +240,7 @@ class schema_generator
 	 * @param mixed			$data				Array of values to be set.
 	 * @param callable|null	$value_transform	Callback to transform the value being set.
 	 */
-	static private function set_all(&$schema, $data, ?callable $value_transform = null)
+	private static function set_all(&$schema, $data, ?callable $value_transform = null)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
 		foreach ($data as $key => $change)
@@ -262,7 +262,7 @@ class schema_generator
 	 * @param mixed $schema						Reference to the schema entry.
 	 * @param mixed $data						Array of values to be removed.
 	 */
-	static private function unset_all(&$schema, $data)
+	private static function unset_all(&$schema, $data)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
 		foreach ($data as $key)
@@ -278,7 +278,7 @@ class schema_generator
 	 * @param string	$key	The column name to add.
 	 * @param array		$change	The column data.
 	 */
-	static private function handle_add_column(array &$value, string $key, array $change)
+	private static function handle_add_column(array &$value, string $key, array $change)
 	{
 		if (!array_key_exists('after', $change))
 		{
@@ -317,7 +317,7 @@ class schema_generator
 	 *
 	 * @return Closure|null The value transformation callback or null if it is not needed.
 	 */
-	static private function get_value_transform(string $change_type, string $schema_type) : ?Closure
+	private static function get_value_transform(string $change_type, string $schema_type) : ?Closure
 	{
 		if ($change_type !== 'add')
 		{

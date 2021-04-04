@@ -19,9 +19,9 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'./',
 	);
 

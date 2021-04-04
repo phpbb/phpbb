@@ -18,9 +18,9 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'foo/bar/',
 	);
 
@@ -31,7 +31,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		parent::tearDown();
 	}
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -39,7 +39,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 

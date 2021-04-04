@@ -20,7 +20,7 @@ class font_awesome_update_cdn extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.3.0', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v32x\add_missing_config',

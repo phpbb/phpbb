@@ -217,7 +217,7 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	* @param	int		$group_type	group_type from the groups-table
 	* @return	string		name of the language variable for the given group-type.
 	*/
-	static public function group_type_language($group_type)
+	public static function group_type_language($group_type)
 	{
 		switch ($group_type)
 		{

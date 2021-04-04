@@ -18,9 +18,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'foo/bar/config/',
 		'foo/bar/controller/',
 		'foo/bar/event/',

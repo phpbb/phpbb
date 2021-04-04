@@ -15,7 +15,7 @@ namespace phpbb\composer\io;
 
 class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 {
-	static protected $availableForegroundColors = [
+	protected static $availableForegroundColors = [
 			30 => 'black',
 			31 => 'red',
 			32 => 'green',
@@ -26,7 +26,7 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 			37 => 'white',
 		];
 
-	static protected $availableBackgroundColors = [
+	protected static $availableBackgroundColors = [
 			40 => 'black',
 			41 => 'red',
 			42 => 'green',
@@ -37,7 +37,7 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 			47 => 'white',
 		];
 
-	static protected $availableOptions
+	protected static $availableOptions
 		= [
 			1 => 'bold',
 			4 => 'underscore',

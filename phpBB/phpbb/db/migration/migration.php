@@ -77,7 +77,7 @@ abstract class migration implements migration_interface
 	/**
 	* {@inheritdoc}
 	*/
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array();
 	}

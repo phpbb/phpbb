@@ -41,7 +41,7 @@ class profilefield_cleanup extends \phpbb\db\migration\profilefield_base_migrati
 		'field_contact_url'		=> 'http://plus.google.com/%s'
 	];
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return ['\phpbb\db\migration\data\v330\v330'];
 	}

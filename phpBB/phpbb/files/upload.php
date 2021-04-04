@@ -354,7 +354,7 @@ class upload
 	 *
 	 * @return array Array containing the image types and their extensions
 	 */
-	static public function image_types()
+	public static function image_types()
 	{
 		$result = [
 			IMAGETYPE_GIF		=> ['gif'],

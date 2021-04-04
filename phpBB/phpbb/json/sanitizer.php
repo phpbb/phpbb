@@ -29,7 +29,7 @@ class sanitizer
 	 *
 	 * @return array Sanitized data
 	 */
-	static public function sanitize(array $data) : array
+	public static function sanitize(array $data) : array
 	{
 		if (!empty($data))
 		{
@@ -51,7 +51,7 @@ class sanitizer
 	 *
 	 * @return array Data array
 	 */
-	static public function decode(string $json) : array
+	public static function decode(string $json) : array
 	{
 		$data = json_decode($json, true);
 		return !empty($data) ? self::sanitize($data) : [];

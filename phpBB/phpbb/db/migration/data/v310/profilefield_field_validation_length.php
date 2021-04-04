@@ -23,7 +23,7 @@ class profilefield_field_validation_length extends \phpbb\db\migration\migration
 		'ALPHA_SPACERS'		=> '[\w\x20_+\-\[\]]+',
 	);
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\rc3',

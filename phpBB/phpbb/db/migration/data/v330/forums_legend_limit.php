@@ -20,7 +20,7 @@ class forums_legend_limit extends \phpbb\db\migration\migration
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'forums', 'display_subforum_limit');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return ['\phpbb\db\migration\data\v330\v330b1'];
 	}
