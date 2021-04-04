@@ -1,4 +1,4 @@
-Subject: Post needs aprroval - "{TOPIC_TITLE}"
+Subject: Post needs approval - "{TOPIC_TITLE}"
 
 Hello {USERNAME},
 
