@@ -143,7 +143,7 @@ class acp_search
 				$name = $search->get_name();
 				$type = $search->get_type();
 
-				$selected = ($this->config['search_type'] == $type) ? ' selected="selected"' : '';
+				$selected = ($this->config['search_type'] === $type) ? ' selected="selected"' : '';
 				$identifier = substr($type, strrpos($type, '\\') + 1);
 				$search_options .= "<option value=\"$type\"$selected data-toggle-setting=\"#search_{$identifier}_settings\">$name</option>";
 
@@ -177,23 +177,23 @@ class acp_search
 			// e.g. integer:4:12 (min 4, max 12)
 			$var_type = explode(':', $var_type);
 
-			$this->config_value = $cfg_array[$config_name];
-			settype($this->config_value, $var_type[0]);
+			$config_value = $cfg_array[$config_name];
+			settype($config_value, $var_type[0]);
 
 			if (isset($var_type[1]))
 			{
-				$this->config_value = max($var_type[1], $this->config_value);
+				$config_value = max($var_type[1], $config_value);
 			}
 
 			if (isset($var_type[2]))
 			{
-				$this->config_value = min($var_type[2], $this->config_value);
+				$config_value = min($var_type[2], $config_value);
 			}
 
 			// only change config if anything was actually changed
-			if ($submit && ($this->config[$config_name] != $this->config_value))
+			if ($submit && ($this->config[$config_name] !== $config_value))
 			{
-				$this->config->set($config_name, $this->config_value);
+				$this->config->set($config_name, $config_value);
 				$updated = true;
 			}
 		}
@@ -206,7 +206,7 @@ class acp_search
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_SEARCH');
 			}
 
-			if (isset($cfg_array['search_type']) && ($cfg_array['search_type'] != $this->config['search_type']))
+			if (isset($cfg_array['search_type']) && ($cfg_array['search_type'] !== $this->config['search_type']))
 			{
 				$search = $this->search_backend_factory->get($cfg_array['search_type']);
 				if (confirm_box(true))
@@ -220,7 +220,7 @@ class acp_search
 						{
 							$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_SEARCH');
 						}
-						$extra_message = '<br />' . $this->language->lang('SWITCHED_SEARCH_BACKEND') . '<br /><a href="' . append_sid($this->phpbb_admin_path . "index." . $this->php_ex, 'i=search&amp;mode=index') . '">&raquo; ' . $this->language->lang('GO_TO_SEARCH_INDEX') . '</a>';
+						$extra_message = '<br>' . $this->language->lang('SWITCHED_SEARCH_BACKEND') . '<br><a href="' . append_sid($this->phpbb_admin_path . "index." . $this->php_ex, 'i=search&amp;mode=index') . '">&raquo; ' . $this->language->lang('GO_TO_SEARCH_INDEX') . '</a>';
 					}
 					else
 					{
