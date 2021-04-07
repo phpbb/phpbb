@@ -13,7 +13,7 @@
 			<dt class="profile-avatar">{AVATAR_IMG}</dt>
 			<!-- EVENT memberlist_view_rank_avatar_before -->
 			<!-- IF RANK_TITLE --><dd style="text-align: center;">{RANK_TITLE}</dd><!-- ENDIF -->
-			<!-- IF RANK_IMG --><dd style="text-align: center;">{RANK_IMG}</dd><!-- ENDIF -->
+			<!-- IF RANK_IMG --><dd class="rank-img" style="text-align: center;">{RANK_IMG}</dd><!-- ENDIF -->
 			<!-- EVENT memberlist_view_rank_avatar_after -->
 		</dl>
 	<!-- ENDIF -->
@@ -32,7 +32,7 @@
 		<!-- IF not AVATAR_IMG -->
 			<!-- EVENT memberlist_view_rank_no_avatar_before -->
 			<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt> <dd>{RANK_TITLE}</dd><!-- ENDIF -->
-			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt> <dd>{RANK_IMG}</dd><!-- ENDIF -->
+			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt> <dd class="rank-img">{RANK_IMG}</dd><!-- ENDIF -->
 			<!-- EVENT memberlist_view_rank_no_avatar_after -->
 		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}{L_COLON}</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
