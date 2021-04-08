@@ -246,7 +246,8 @@ class md_exporter
 	* Format the md events as a wiki table
 	*
 	* @param string $action
-	* @return string		Number of events found
+	* @return string		Number of events found * @deprecated since 3.2
+	* @deprecated 3.3.5-RC1 (To be removed: 4.0.0-a1)
 	*/
 	public function export_events_for_wiki($action = '')
 	{

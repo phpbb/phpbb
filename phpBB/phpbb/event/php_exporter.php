@@ -161,6 +161,7 @@ class php_exporter
 	*
 	* @param string $action
 	* @return string
+	* @deprecated 3.3.5-RC1 (To be removed: 4.0.0-a1)
 	*/
 	public function export_events_for_wiki($action = '')
 	{
