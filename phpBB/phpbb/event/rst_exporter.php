@@ -178,6 +178,7 @@ class rst_exporter
 	 */
 	private function get_column(string $type, string $content): string
 	{
+		$content = rtrim($content);
 		return ' ' . $content . str_repeat(' ' , $this->max_lengths[$type] - strlen($content) + 1) . '|';
 	}
 }
