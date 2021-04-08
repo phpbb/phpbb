@@ -41,7 +41,7 @@
 			</dt>
 
 			<!-- EVENT ucp_pm_viewmessage_rank_before -->
-			<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank rank-img">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
+			{% if RANK_IMG or RANK_TITLE %}<dd class="profile-rank rank-img">{{ RANK_TITLE }}{% if RANK_IMG and RANK_TITLE %}<br />{% endif %}{{ RANK_IMG }}</dd>{% endif %}
 			<!-- EVENT ucp_pm_viewmessage_rank_after -->
 
 			<dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF U_AUTHOR_POSTS != '' --><a href="{U_AUTHOR_POSTS}">{AUTHOR_POSTS}</a><!-- ELSE -->{AUTHOR_POSTS}<!-- ENDIF --></dd>
