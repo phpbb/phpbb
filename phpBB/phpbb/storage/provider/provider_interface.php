@@ -25,9 +25,9 @@ interface provider_interface
 	/**
 	 * Gets adapter class
 	 *
-	 * @return \phpbb\storage\adapter\adapter_interface
+	 * @return string
 	 */
-	public function get_adapter_class();
+	public function get_adapter_class(): string;
 
 	/**
 	 * Gets adapter options

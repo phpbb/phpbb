@@ -1022,4 +1022,12 @@ class fulltext_sphinx implements search_backend_interface
 
 		return true;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_type(): string
+	{
+		return static::class;
+	}
 }
