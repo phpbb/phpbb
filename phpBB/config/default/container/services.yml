@@ -124,6 +124,7 @@ services:
         class: phpbb\group\helper
         arguments:
             - '@auth'
+            - '@avatar.helper'
             - '@cache'
             - '@config'
             - '@language'

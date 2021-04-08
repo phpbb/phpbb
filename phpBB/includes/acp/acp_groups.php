@@ -721,8 +721,6 @@ class acp_groups
 					}
 				}
 
-				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
-
 				if (isset($phpbb_avatar_manager) && !$update)
 				{
 					// Merge any avatar errors into the primary error array
@@ -741,6 +739,12 @@ class acp_groups
 						$u_back = $this->u_action;
 					break;
 				}
+
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$group_avatar = $avatar_helper->get_group_avatar($group_row, 'GROUP_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($group_avatar));
 
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
@@ -771,10 +775,7 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-					'AVATAR'				=> empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,

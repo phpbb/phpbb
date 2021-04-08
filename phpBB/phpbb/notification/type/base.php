@@ -284,10 +284,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash . '&amp;redirect=' . urlencode($redirect));
 		}
 
-		return array(
+		$avatar = $this->get_avatar();
+
+		return [
 			'NOTIFICATION_ID'	=> $this->notification_id,
 			'STYLING'			=> $this->get_style_class(),
-			'AVATAR'			=> $this->get_avatar(),
 			'FORMATTED_TITLE'	=> $this->get_title(),
 			'REFERENCE'			=> $this->get_reference(),
 			'FORUM'				=> $this->get_forum(),
@@ -295,8 +296,19 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
 			'UNREAD'			=> !$this->notification_read,
+
+			'AVATAR_SOURCE'		=> $avatar ? $avatar['src'] : '',
+			'AVATAR_TITLE'		=> $avatar ? $avatar['title'] : '',
+			'AVATAR_TYPE'		=> $avatar ? $avatar['type'] : '',
+
+			'AVATAR_WIDTH'		=> $avatar ? $avatar['width'] : 0,
+			'AVATAR_HEIGHT'		=> $avatar ? $avatar['height'] : 0,
+
+			'AVATAR_HTML'		=> $avatar ? $avatar['html'] : '',
+			'AVATAR_LAZY'		=> $avatar ? $avatar['lazy'] : true,
+
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
-		);
+		];
 	}
 
 	/**
@@ -327,11 +339,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* Get the user's avatar (fall back)
 	*
-	* @return string
+	* @return array
 	*/
 	public function get_avatar()
 	{
-		return '';
+		return [];
 	}
 
 	/**

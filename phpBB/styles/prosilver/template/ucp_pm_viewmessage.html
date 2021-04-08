@@ -26,10 +26,10 @@
 	<div class="inner">
 
 		<dl class="postprofile" id="profile{MESSAGE_ID}">
-			<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF AUTHOR_AVATAR -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
+			<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF AUTHOR_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
 				<div class="avatar-container">
 					<!-- EVENT ucp_pm_viewmessage_avatar_before -->
-					<!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->
+					<!-- IF AUTHOR_AVATAR_HTML --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR_HTML}</a><!-- ENDIF -->
 					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
 				</div>
 				{% apply spaceless %}

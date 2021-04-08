@@ -1570,7 +1570,7 @@ function phpbb_get_user_rank($user_data, $user_posts)
 */
 function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false, $check_can_receive_pm = true)
 {
-	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
+	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher, $phpbb_container;
 
 	$username = $data['username'];
 	$user_id = $data['user_id'];
@@ -1653,8 +1653,14 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])
 	);
 
+	/** @var \phpbb\avatar\helper $avatar_helper */
+	$avatar_helper = $phpbb_container->get('avatar.helper');
+
+	$avatar = $avatar_helper->get_user_avatar($data);
+	$avatar_vars = $avatar_helper->get_template_vars($avatar);
+
 	// Dump it out to the template
-	$template_data = array(
+	$template_data = array_merge($avatar_vars, [
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $user_rank_data['title'],
 		'JOINED'		=> $user->format_date($data['user_regdate']),
@@ -1669,7 +1675,6 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
-		'AVATAR_IMG'		=> phpbb_get_user_avatar($data),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $user_rank_data['img'],
@@ -1691,7 +1696,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'L_SEND_EMAIL_USER' => $user->lang('SEND_EMAIL_USER', $username),
 		'L_CONTACT_USER'	=> $user->lang('CONTACT_USER', $username),
 		'L_VIEWING_PROFILE' => $user->lang('VIEWING_PROFILE', $username),
-	);
+	]);
 
 	/**
 	* Preparing a user's data before displaying it in profile and memberlist

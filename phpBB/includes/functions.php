@@ -3523,6 +3523,8 @@ function phpbb_quoteattr($data, $entities = null)
 /**
 * Get user avatar
 *
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_user_avatar() instead
+*
 * @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
@@ -3539,6 +3541,8 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 /**
 * Get group avatar
 *
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_group_avatar() instead
+*
 * @param array $group_row Row from the groups table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
@@ -3554,6 +3558,8 @@ function phpbb_get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_confi
 
 /**
 * Get avatar
+*
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_avatar() instead
 *
 * @param array $row Row cleaned by \phpbb\avatar\manager::clean_row
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
@@ -3862,6 +3868,12 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');
 
+	/** @var \phpbb\avatar\helper $avatar_helper */
+	$avatar_helper = $phpbb_container->get('avatar.helper');
+
+	$avatar = $avatar_helper->get_user_avatar($user->data);
+	$template->assign_vars($avatar_helper->get_template_vars($avatar, 'CURRENT_USER_'));
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -3875,8 +3887,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 
+		'NO_AVATAR_SOURCE'				=> $avatar_helper->get_no_avatar_source(),
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'CURRENT_USER_AVATAR'			=> phpbb_get_user_avatar($user->data),
 		'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USER_GROUP_COLOR'		=> $user->data['user_colour'],

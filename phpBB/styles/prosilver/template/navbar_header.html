@@ -106,11 +106,11 @@
 
 			{% if S_REGISTERED_USER %}
 				{% EVENT navbar_header_user_profile_prepend %}
-				<li id="username_logged_in" class="rightside {% if CURRENT_USER_AVATAR %} no-bulletin{% endif %}">
+				<li id="username_logged_in" class="rightside {% if CURRENT_USER_AVATAR_HTML %} no-bulletin{% endif %}">
 					{% EVENT navbar_header_username_prepend %}
 					<div class="header-profile dropdown-container">
 						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
-							{% if CURRENT_USER_AVATAR %}{{ CURRENT_USER_AVATAR }} {% endif %}
+							{% if CURRENT_USER_AVATAR_HTML %}{{ CURRENT_USER_AVATAR_HTML }} {% endif %}
 							{{ CURRENT_USERNAME_SIMPLE }}
 							{{ Icon('iconify', 'fa:caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
 						</a>
