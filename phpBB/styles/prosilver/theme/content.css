@@ -833,6 +833,10 @@ dd.profile-contact {
 }
 
 /* Profile used on view-profile */
+.profile-avatar {
+	text-align: center;
+}
+
 .profile-avatar img {
 	max-width: 100%;
 }
