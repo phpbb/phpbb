@@ -264,6 +264,7 @@ services:
             - '@log'
             - '@post.helper'
             - '@search.backend_factory'
+            - '@search.state_helper'
             - '@user'
         tags:
             - { name: console.command }
@@ -276,6 +277,7 @@ services:
             - '@log'
             - '@post.helper'
             - '@search.backend_factory'
+            - '@search.state_helper'
             - '@user'
         tags:
             - { name: console.command }

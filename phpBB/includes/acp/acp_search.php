@@ -21,6 +21,7 @@ use phpbb\language\language;
 use phpbb\log\log;
 use phpbb\request\request;
 use phpbb\search\search_backend_factory;
+use phpbb\search\state_helper;
 use phpbb\template\template;
 use phpbb\user;
 
@@ -34,10 +35,6 @@ class acp_search
 	public $u_action;
 	public $tpl_name;
 	public $page_title;
-
-	protected const STATE_SEARCH_TYPE = 0;
-	protected const STATE_ACTION = 1;
-	protected const STATE_POST_COUNTER = 2;
 
 	/** @var config */
 	protected $config;
@@ -56,6 +53,9 @@ class acp_search
 
 	/** @var search_backend_factory */
 	protected $search_backend_factory;
+
+	/** @var state_helper  */
+	protected $search_state_helper;
 
 	/** @var template */
 	protected $template;
@@ -79,6 +79,7 @@ class acp_search
 		$this->request = $request;
 		$this->search_backend_collection = $phpbb_container->get('search.backend_collection');
 		$this->search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$this->search_state_helper = $phpbb_container->get('search.state_helper');
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_admin_path = $phpbb_admin_path;
@@ -272,7 +273,6 @@ class acp_search
 	public function index(string $id, string $mode): void
 	{
 		$action = $this->request->variable('action', '');
-		$state = !empty($this->config['search_indexing_state']) ? explode(',', $this->config['search_indexing_state']) : [];
 
 		if ($action && !$this->request->is_set_post('cancel'))
 		{
@@ -284,7 +284,7 @@ class acp_search
 
 				case 'create':
 				case 'delete':
-					$this->index_action($id, $mode, $action, $state);
+					$this->index_action($id, $mode, $action);
 				break;
 
 				default:
@@ -296,13 +296,12 @@ class acp_search
 			// If clicked to cancel the indexing progress (acp_search_index_inprogress form)
 			if ($this->request->is_set_post('cancel'))
 			{
-				$state = [];
-				$this->save_state($state);
+				$this->search_state_helper->clear_state();
 			}
 
-			if (!empty($state))
+			if ($this->search_state_helper->is_action_in_progress())
 			{
-				$this->index_inprogress($id, $mode, $state[self::STATE_ACTION]);
+				$this->index_inprogress($id, $mode);
 			}
 			else
 			{
@@ -368,9 +367,8 @@ class acp_search
 	 * @param string $id
 	 * @param string $mode
 	 * @param string $action
-	 * @param array $state
 	 */
-	private function index_action(string $id, string $mode, string $action, array $state): void
+	private function index_action(string $id, string $mode, string $action): void
 	{
 		// For some this may be of help...
 		@ini_set('memory_limit', '128M');
@@ -381,29 +379,23 @@ class acp_search
 		}
 
 		// Entering here for the first time
-		if (empty($state))
+		if (!$this->search_state_helper->is_action_in_progress())
 		{
 			if ($this->request->is_set_post('search_type', ''))
 			{
-				$state = [
-					self::STATE_SEARCH_TYPE => $this->request->variable('search_type', ''),
-					self::STATE_ACTION => $action,
-					self::STATE_POST_COUNTER => 0
-				];
+				$this->search_state_helper->init($this->request->variable('search_type', ''), $action);
 			}
 			else
 			{
 				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-
-			$this->save_state($state); // Create new state in the database
 		}
 
-		$type = $state[self::STATE_SEARCH_TYPE];
-		$action = $state[self::STATE_ACTION];
-		$post_counter = &$state[self::STATE_POST_COUNTER];
-
 		// Execute create/delete
+		$type = $this->search_state_helper->type();
+		$action = $this->search_state_helper->action();
+		$post_counter = $this->search_state_helper->counter();
+
 		$search = $this->search_backend_factory->get($type);
 
 		try
@@ -411,7 +403,7 @@ class acp_search
 			$status = ($action == 'create') ? $search->create_index($post_counter) : $search->delete_index($post_counter);
 			if ($status) // Status is not null, so action is in progress....
 			{
-				$this->save_state($state); // update $post_counter in $state in the database
+				$this->search_state_helper->update_counter($status['post_counter']);
 
 				$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=$action&hash=" . generate_link_hash('acp_search'), false);
 				meta_refresh(1, $u_action);
@@ -423,13 +415,13 @@ class acp_search
 		}
 		catch (Exception $e)
 		{
-			$this->save_state([]); // Unexpected error, cancel action
+			$this->search_state_helper->clear_state(); // Unexpected error, cancel action
 			trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 		}
 
 		$search->tidy();
 
-		$this->save_state([]); // finished operation, cancel action
+		$this->search_state_helper->clear_state(); // finished operation, cancel action
 
 		$log_operation = ($action == 'create') ? 'LOG_SEARCH_INDEX_CREATED' : 'LOG_SEARCH_INDEX_REMOVED';
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$search->get_name()]);
@@ -472,15 +464,5 @@ class acp_search
 			"	close_waitscreen = 1;\n" .
 			"// ]]>\n" .
 			"</script>\n";
-	}
-
-	/**
-	 * @param array $state
-	 */
-	private function save_state(array $state = []): void
-	{
-		ksort($state);
-
-		$this->config->set('search_indexing_state', implode(',', $state), true);
 	}
 }

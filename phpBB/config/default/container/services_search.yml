@@ -1,5 +1,11 @@
 services:
 
+    search.state_helper:
+        class: phpbb\search\state_helper
+        arguments:
+            - '@config'
+            - '@search.backend_collection'
+
 # Search backends
     search.fulltext.mysql:
         class: phpbb\search\backend\fulltext_mysql
