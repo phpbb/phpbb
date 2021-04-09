@@ -13,7 +13,6 @@
 
 namespace phpbb\post;
 
-
 use phpbb\db\driver\driver_interface;
 
 class post_helper

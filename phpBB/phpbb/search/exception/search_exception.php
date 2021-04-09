@@ -17,5 +17,5 @@ use phpbb\exception\runtime_exception;
 
 class search_exception extends runtime_exception
 {
-	// TODO: Launch this exception from search instead of RuntimeException
+
 }

@@ -146,7 +146,7 @@ class create extends command
 
 			$io->newLine(2);
 		}
-		catch(index_created_exception $e)
+		catch (index_created_exception $e)
 		{
 			$this->state_helper->clear_state();
 			$io->error($this->language->lang('CLI_SEARCHINDEX_ALREADY_CREATED', $name));

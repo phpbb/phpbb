@@ -16,6 +16,7 @@ namespace phpbb\search;
 use phpbb\config\config;
 use phpbb\search\exception\action_in_progress_exception;
 use phpbb\search\exception\no_action_in_progress_exception;
+use phpbb\search\exception\search_exception;
 
 class state_helper
 {
@@ -32,8 +33,8 @@ class state_helper
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config                 $config
-	 * @param \phpbb\search\search_backend_factory $search_backend_factory
+	 * @param config                 $config
+	 * @param search_backend_factory $search_backend_factory
 	 */
 	public function __construct(config $config, search_backend_factory $search_backend_factory)
 	{
@@ -108,7 +109,7 @@ class state_helper
 		// Make sure the action is correct (just in case)
 		if (!in_array($action, ['create', 'delete']))
 		{
-			throw new \RuntimeException('Invalid action');
+			throw new search_exception('Invalid action');
 		}
 
 		$state = [

@@ -146,7 +146,7 @@ class delete extends command
 
 			$io->newLine(2);
 		}
-		catch(index_empty_exception $e)
+		catch (index_empty_exception $e)
 		{
 			$this->state_helper->clear_state();
 			$io->error($this->language->lang('CLI_SEARCHINDEX_NO_CREATED', $name));

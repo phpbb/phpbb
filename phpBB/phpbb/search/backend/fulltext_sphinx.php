@@ -632,7 +632,7 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): ?array
 	{
-		if (!$this->index_created())
+		if ($this->index_created())
 		{
 			throw new index_empty_exception();
 		}

@@ -54,19 +54,26 @@ abstract class base implements search_backend_interface
 	protected $user;
 
 	/**
+	 * @var string
+	 */
+	protected $search_results_table;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param service $cache
-	 * @param config $config
+	 * @param service          $cache
+	 * @param config           $config
 	 * @param driver_interface $db
-	 * @param user $user
+	 * @param user             $user
+	 * @param string           $search_results_table
 	 */
-	public function __construct(service $cache, config $config, driver_interface $db, user $user)
+	public function __construct(service $cache, config $config, driver_interface $db, user $user, string $search_results_table)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->db = $db;
 		$this->user = $user;
+		$this->search_results_table = $search_results_table;
 	}
 
 	/**
@@ -182,7 +189,7 @@ abstract class base implements search_backend_interface
 			if (!empty($keywords) || count($author_ary))
 			{
 				$sql = 'SELECT search_time
-					FROM ' . SEARCH_RESULTS_TABLE . '
+					FROM ' . $this->search_results_table . '
 					WHERE search_key = \'' . $this->db->sql_escape($search_key) . '\'';
 				$result = $this->db->sql_query($sql);
 
@@ -195,7 +202,7 @@ abstract class base implements search_backend_interface
 						'search_authors'	=> ' ' . implode(' ', $author_ary) . ' '
 					);
 
-					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$sql = 'INSERT INTO ' . $this->search_results_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 					$this->db->sql_query($sql);
 				}
 				$this->db->sql_freeresult($result);
@@ -255,7 +262,7 @@ abstract class base implements search_backend_interface
 			}
 			$this->cache->put('_search_results_' . $search_key, $store, $this->config['search_store_results']);
 
-			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
+			$sql = 'UPDATE ' . $this->search_results_table . '
 				SET search_time = ' . time() . '
 				WHERE search_key = \'' . $this->db->sql_escape($search_key) . '\'';
 			$this->db->sql_query($sql);
@@ -282,7 +289,7 @@ abstract class base implements search_backend_interface
 			}
 
 			$sql = 'SELECT search_key
-				FROM ' . SEARCH_RESULTS_TABLE . "
+				FROM ' . $this->search_results_table . "
 				WHERE search_keywords LIKE '%*%' $sql_where";
 			$result = $this->db->sql_query($sql);
 
@@ -303,7 +310,7 @@ abstract class base implements search_backend_interface
 			}
 
 			$sql = 'SELECT search_key
-				FROM ' . SEARCH_RESULTS_TABLE . "
+				FROM ' . $this->search_results_table . "
 				WHERE $sql_where";
 			$result = $this->db->sql_query($sql);
 
@@ -315,7 +322,7 @@ abstract class base implements search_backend_interface
 		}
 
 		$sql = 'DELETE
-			FROM ' . SEARCH_RESULTS_TABLE . '
+			FROM ' . $this->search_results_table . '
 			WHERE search_time < ' . (time() - (int) $this->config['search_store_results']);
 		$this->db->sql_query($sql);
 	}

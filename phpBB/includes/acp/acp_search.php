@@ -323,21 +323,24 @@ class acp_search
 
 		foreach ($this->search_backend_collection as $search)
 		{
-			$this->template->assign_block_vars('backends', [
-				'NAME'			=> $search->get_name(),
-				'TYPE'				=> $search->get_type(),
+			if ($search->is_available())
+			{
+				$this->template->assign_block_vars('backends', [
+					'NAME' => $search->get_name(),
+					'TYPE' => $search->get_type(),
 
-				'S_ACTIVE'			=> $search->get_type() === $this->config['search_type'],
-				'S_HIDDEN_FIELDS'	=> build_hidden_fields(['search_type' => $search->get_type()]),
-				'S_INDEXED'			=> $search->index_created(),
-				'S_STATS'			=> $search->index_stats(),
-			]);
+					'S_ACTIVE'        => $search->get_type() === $this->config['search_type'],
+					'S_HIDDEN_FIELDS' => build_hidden_fields(['search_type' => $search->get_type()]),
+					'S_INDEXED'       => $search->index_created(),
+					'S_STATS'         => $search->index_stats(),
+				]);
+
+				$this->template->assign_vars([
+					'U_ACTION'        => $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
+					'UA_PROGRESS_BAR' => addslashes($this->u_action . '&amp;action=progress_bar'),
+				]);
+			}
 		}
-
-		$this->template->assign_vars([
-			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
-			'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
-		]);
 	}
 
 	/**

@@ -13,7 +13,6 @@
 
 namespace phpbb\search\exception;
 
-
 class action_in_progress_exception extends search_exception
 {
 

@@ -13,7 +13,6 @@
 
 namespace phpbb\search\exception;
 
-
 class index_empty_exception extends search_exception
 {
 
