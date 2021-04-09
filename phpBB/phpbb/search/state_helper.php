@@ -124,7 +124,7 @@ class state_helper
 	/**
 	 * @param int $counter
 	 *
-	 * @throws \phpbb\search\exception\no_action_in_progress_exception If there is no action in progress
+	 * @throws no_action_in_progress_exception If there is no action in progress
 	 */
 	public function update_counter(int $counter): void
 	{
