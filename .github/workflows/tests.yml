@@ -22,7 +22,7 @@ jobs:
             matrix:
                 include:
                     - db: 'none'
-                      php: '7.1'
+                      php: '7.2'
                       NOTESTS: 1
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
