@@ -133,7 +133,7 @@ class version_helper
 	/**
 	 * Over-ride the stability to force check to include unstable versions
 	 *
-	 * @param null|string Null to not force stability, 'unstable' or 'stable' to
+	 * @param null|string $stability Null to not force stability, 'unstable' or 'stable' to
 	 * 						force the corresponding stability
 	 * @return version_helper
 	 */

@@ -171,7 +171,7 @@ function utf8_strspn($str, $mask, $start = null, $length = null)
 * Make a string's first character uppercase
 *
 * @author Harry Fuecks
-* @param string
+* @param string $str
 * @return string with first character as upper case (if applicable)
 */
 function utf8_ucfirst($str)

@@ -2418,7 +2418,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * must be carried through for the moderators table.
 *
 * @param \phpbb\db\driver\driver_interface $db Database connection
-* @param \phpbb\cache\driver\driver_interface Cache driver
+* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 * @param \phpbb\auth\auth $auth Authentication object
 * @return null
 */
@@ -2605,7 +2605,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 * @param	mixed	$forum_id		Restrict the log entries to the given forum_id (can also be an array of forum_ids)
 * @param	int		$topic_id		Restrict the log entries to the given topic_id
 * @param	int		$user_id		Restrict the log entries to the given user_id
-* @param	int		$log_time		Only get log entries newer than the given timestamp
+* @param	int		$limit_days		Only get log entries newer than the given timestamp
 * @param	string	$sort_by		SQL order option, e.g. 'l.log_time DESC'
 * @param	string	$keywords		Will only return log entries that have the keywords in log_operation or log_data
 *

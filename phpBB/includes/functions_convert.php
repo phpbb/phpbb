@@ -1127,6 +1127,7 @@ function add_user_group($group_id, $user_id, $group_leader = false)
 *
 * @param string $group The name of the special group to add to
 * @param string $select_query An SQL query to retrieve the user(s) to add to the group
+* @param bool $use_src_db
 */
 function user_group_auth($group, $select_query, $use_src_db)
 {

@@ -1848,6 +1848,7 @@ class smtp_class
 *
 * Please note that this version fully supports RFC 2045 section 6.8.
 *
+* @param string $str
 * @param string $eol End of line we are using (optional to be backwards compatible)
 */
 function mail_encode($str, $eol = "\r\n")
