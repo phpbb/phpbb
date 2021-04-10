@@ -1075,7 +1075,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param string $sql_limit		Limits the size of unread topics list, 0 for unlimited query
 * @param string $sql_limit_offset  Sets the offset of the first row to search, 0 to search from the start
 *
-* @return array[int][int]		Topic ids as keys, mark_time of topic as value
+* @return int[]		Topic ids as keys, mark_time of topic as value
 */
 function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {

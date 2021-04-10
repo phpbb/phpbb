@@ -223,12 +223,12 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 /**
  * Add log entry
  *
- * @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
- * @param	int		$forum_id			Mode 'mod' ONLY: forum id of the related item, NOT INCLUDED otherwise
- * @param	int		$topic_id			Mode 'mod' ONLY: topic id of the related item, NOT INCLUDED otherwise
- * @param	int		$reportee_id		Mode 'user' ONLY: user id of the reportee, NOT INCLUDED otherwise
- * @param	string	$log_operation		Name of the operation
- * @param	array	$additional_data	More arguments can be added, depending on the log_type
+ * string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
+ * int		$forum_id			Mode 'mod' ONLY: forum id of the related item, NOT INCLUDED otherwise
+ * int		$topic_id			Mode 'mod' ONLY: topic id of the related item, NOT INCLUDED otherwise
+ * int		$reportee_id		Mode 'user' ONLY: user id of the reportee, NOT INCLUDED otherwise
+ * string	$log_operation		Name of the operation
+ * array	$additional_data	More arguments can be added, depending on the log_type
  *
  * @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
  *
@@ -345,7 +345,8 @@ function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\
  *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
  * @param	bool			$cookie		This param is mapped to \phpbb\request\request_interface::COOKIE as the last param for
  * 										\phpbb\request\request_interface::variable for backwards compatability reasons.
- * @param	\phpbb\request\request_interface|null|false	If an instance of \phpbb\request\request_interface is given the instance is stored in
+ * @param	\phpbb\request\request_interface|null|false	$request
+ * 										If an instance of \phpbb\request\request_interface is given the instance is stored in
  *										a static variable and used for all further calls where this parameters is null. Until
  *										the function is called with an instance it automatically creates a new \phpbb\request\request
  *										instance on every call. By passing false this per-call instantiation can be restored

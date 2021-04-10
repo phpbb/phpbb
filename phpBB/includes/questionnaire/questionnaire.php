@@ -38,7 +38,7 @@ class phpbb_questionnaire_data_collector
 	/**
 	* Constructor.
 	*
-	* @param	string
+	* @param	string $install_id
 	*/
 	function __construct($install_id)
 	{
