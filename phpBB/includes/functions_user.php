@@ -180,7 +180,7 @@ function user_update_name($old_name, $new_name)
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param array $cp_data custom profile fields, see custom_profile::build_insert_sql_array
 * @param array $notifications_data The notifications settings for the new user
-* @return int  The new user's ID.
+* @return the new user's ID.
 */
 function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
@@ -1650,6 +1650,7 @@ function validate_date($date_string, $optional = false)
 	return false;
 }
 
+
 /**
 * Validate Match
 *
@@ -2220,9 +2221,7 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $phpbb_container;
-
-	$storage = $phpbb_container->get('storage.avatar');
+	global $phpbb_root_path, $config;
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
@@ -2239,15 +2238,10 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
 
-	try
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
-		$storage->delete($filename);
-
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
 		return true;
-	}
-	catch (\phpbb\storage\exception\exception $e)
-	{
-		// Fail is covered by return statement below
 	}
 
 	return false;
@@ -2568,9 +2562,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_correct_avatar($group_id, $old_entry)
 {
-	global $config, $db, $phpbb_container;
-
-	$storage = $phpbb_container->get('storage.avatar');
+	global $config, $db, $phpbb_root_path;
 
 	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
@@ -2578,18 +2570,13 @@ function group_correct_avatar($group_id, $old_entry)
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
 	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
 
-	try
+	$avatar_path = $phpbb_root_path . $config['avatar_path'];
+	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
 	{
-		$storage->rename($old_filename, $new_filename);
-
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
-	}
-	catch (\phpbb\storage\exception\exception $e)
-	{
-		// If rename fail, dont execute the query
 	}
 }
 
