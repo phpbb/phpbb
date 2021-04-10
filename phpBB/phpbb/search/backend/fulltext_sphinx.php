@@ -20,7 +20,6 @@ use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
 use phpbb\log\log;
-use phpbb\search\exception\index_empty_exception;
 use phpbb\user;
 
 /**
@@ -632,11 +631,6 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): ?array
 	{
-		if ($this->index_created())
-		{
-			throw new index_empty_exception();
-		}
-
 		$table_data = array(
 			'COLUMNS'	=> array(
 				'counter_id'	=> array('UINT', 0),
@@ -664,11 +658,6 @@ class fulltext_sphinx implements search_backend_interface
 	*/
 	public function delete_index(int &$post_counter = null): ?array
 	{
-		if (!$this->index_created())
-		{
-			throw new index_empty_exception();
-		}
-
 		$this->db_tools->sql_table_drop(SPHINX_TABLE);
 
 		return null;

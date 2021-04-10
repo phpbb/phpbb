@@ -152,8 +152,6 @@ $lang = array_merge($lang, array(
 	'CLI_SEARCHINDEX_CREATE_FAILURE'		=> 'Error creating search index',
 	'CLI_SEARCHINDEX_DELETE_SUCCESS'		=> 'Search index deleted successfully',
 	'CLI_SEARCHINDEX_DELETE_FAILURE'		=> 'Error deleting search index',
-	'CLI_SEARCHINDEX_ALREADY_CREATED'		=> 'Search index is already created, try removing it first',
-	'CLI_SEARCHINDEX_NO_CREATED'			=> 'Search index is already empty, try creating it first',
 	'CLI_SEARCHINDEX_ACTION_IN_PROGRESS'	=> 'There is an action currently in progress. CLI doesn\'t support incomplete index/delete actions, please solve it from the ACP',
 	'CLI_SEARCHINDEX_ACTIVE_NOT_INDEXED'	=> 'Active search backend isn\'t indexed',
 

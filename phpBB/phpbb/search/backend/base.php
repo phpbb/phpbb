@@ -16,8 +16,6 @@ namespace phpbb\search\backend;
 use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use phpbb\search\exception\index_created_exception;
-use phpbb\search\exception\index_empty_exception;
 use phpbb\user;
 
 /**
@@ -332,11 +330,6 @@ abstract class base implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): ?array
 	{
-		if ($this->index_created())
-		{
-			throw new index_created_exception();
-		}
-
 		$max_post_id = $this->get_max_post_id();
 		$forums_indexing_enabled = $this->forum_ids_with_indexing_enabled();
 
@@ -399,11 +392,6 @@ abstract class base implements search_backend_interface
 	 */
 	public function delete_index(int &$post_counter = null): ?array
 	{
-		if (!$this->index_created())
-		{
-			throw new index_empty_exception();
-		}
-
 		$max_post_id = $this->get_max_post_id();
 
 		$starttime = microtime(true);

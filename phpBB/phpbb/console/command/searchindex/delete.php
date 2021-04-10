@@ -18,7 +18,6 @@ use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
 use phpbb\post\post_helper;
-use phpbb\search\exception\index_empty_exception;
 use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\search\state_helper;
@@ -145,12 +144,6 @@ class delete extends command
 			$progress->finish();
 
 			$io->newLine(2);
-		}
-		catch (index_empty_exception $e)
-		{
-			$this->state_helper->clear_state();
-			$io->error($this->language->lang('CLI_SEARCHINDEX_NO_CREATED', $name));
-			return command::FAILURE;
 		}
 		catch (\Exception $e)
 		{

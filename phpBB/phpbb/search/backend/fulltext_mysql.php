@@ -17,8 +17,6 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
-use phpbb\search\exception\index_created_exception;
-use phpbb\search\exception\index_empty_exception;
 use phpbb\search\exception\search_exception;
 use phpbb\user;
 
@@ -916,11 +914,6 @@ class fulltext_mysql extends base implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): ?array
 	{
-		if ($this->index_created())
-		{
-			throw new index_created_exception();
-		}
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -993,11 +986,6 @@ class fulltext_mysql extends base implements search_backend_interface
 	 */
 	public function delete_index(int &$post_counter = null): ?array
 	{
-		if (!$this->index_created())
-		{
-			throw new index_empty_exception();
-		}
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
