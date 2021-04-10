@@ -99,8 +99,8 @@ class storage
 	/**
 	 * Dumps content into a file
 	 *
-	 * @param string	path		The file to be written to.
-	 * @param string	content		The data to write into the file.
+	 * @param string	$path		The file to be written to.
+	 * @param string	$content		The data to write into the file.
 	 *
 	 * @throws exception	When the file already exists
 	 * 						When the file cannot be written

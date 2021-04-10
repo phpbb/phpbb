@@ -42,7 +42,7 @@ interface guesser_interface
 	/**
 	* Set the guesser priority
 	*
-	* @param int Guesser priority
+	* @param int $priority Guesser priority
 	*
 	* @return void
 	*/

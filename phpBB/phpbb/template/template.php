@@ -54,7 +54,7 @@ interface template
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
 	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
-	* @param string|array or string $paths Array of style paths, relative to current root directory
+	* @param string|array $paths Array of style paths, relative to current root directory
 	* @return \phpbb\template\template $this
 	*/
 	public function set_custom_style($names, $paths);

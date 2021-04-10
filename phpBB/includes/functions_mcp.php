@@ -383,7 +383,7 @@ function phpbb_get_pm_data($pm_ids)
 /**
 * sorting in mcp
 *
-* @param string $where_sql should either be WHERE (default if ommited) or end with AND or OR
+* $where_sql should either be WHERE (default if ommited) or end with AND or OR
 *
 * $mode reports and reports_closed: the $where parameters uses aliases p for posts table and r for report table
 * $mode unapproved_posts: the $where parameters uses aliases p for posts table and t for topic table

@@ -797,6 +797,8 @@ function user_delete($mode, $user_ids, $retain_username = true)
 * Flips user_type from active to inactive and vice versa, handles group membership updates
 *
 * @param string $mode can be flip for flipping from active/inactive, activate or deactivate
+* @param array $user_id_ary
+* @param int $reason
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
@@ -919,6 +921,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 * @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
 * @param boolean $ban_exclude Exclude these entities from banning?
 * @param string $ban_reason String describing the reason for this ban
+* @param string $ban_give_reason
 * @return boolean
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
@@ -1610,8 +1613,8 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 
 /**
 * Validate Date
-* @param string $date_string a date in the dd-mm-yyyy format
-* @param bool $optional
+* @param	string $date_string a date in the dd-mm-yyyy format
+* @param	bool $optional
 * @return	boolean
 */
 function validate_date($date_string, $optional = false)
@@ -1882,6 +1885,7 @@ function validate_password($password)
 * Check to see if email address is a valid address and contains a MX record
 *
 * @param string $email The email to check
+* @param $config
 *
 * @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
@@ -3635,7 +3639,8 @@ function group_update_listings($group_id)
 /**
 * Funtion to make a user leave the NEWLY_REGISTERED system group.
 * @access public
-* @param $user_id The id of the user to remove from the group
+* @param int $user_id The id of the user to remove from the group
+* @param mixed $user_data The id of the user to remove from the group
 */
 function remove_newly_registered($user_id, $user_data = false)
 {

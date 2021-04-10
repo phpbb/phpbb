@@ -56,7 +56,7 @@ class file_info
 	/**
 	 * Load propertys lazily
 	 *
-	 * @param string	name		The property name.
+	 * @param string	$name		The property name.
 	 *
 	 * @return string	Returns the property value
 	 */
