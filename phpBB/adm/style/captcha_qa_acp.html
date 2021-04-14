@@ -24,16 +24,18 @@
 		<td style="vertical-align: top; width: 50px; text-align: center; white-space: nowrap;">{L_ACTION}</td>
 	</tr>
 	</thead>
+
 	<tbody>
-	<!-- BEGIN questions -->
-	<tr>
-		{# RTL is already managed by CSS #}
-		<td>{{ questions.QUESTION_TEXT }}</td>
-		<td style="text-align: center;">{questions.QUESTION_LANG}</td>
-		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a>&nbsp;<a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
-	</tr>
-	<!-- END questions -->
+	{% for question in questions %}
+		<tr>
+			{# RTL is already managed by CSS #}
+			<td>{{ question.QUESTION_TEXT }}</td>
+			<td style="text-align: center;">{{ question.QUESTION_LANG }}</td>
+			<td style="text-align: center;"><a href="{{ question.U_EDIT }}">{{ ICON_EDIT }}</a> <a href="{{ question.U_DELETE }}">{{ ICON_DELETE }}</a></td>
+		</tr>
+	{% endfor %}
 	</tbody>
+
 	</table>
 	<fieldset class="quick">
 		<input class="button1" type="submit" name="add" value="{L_ADD}" />
