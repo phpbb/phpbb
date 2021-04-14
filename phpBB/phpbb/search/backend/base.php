@@ -59,11 +59,11 @@ abstract class base implements search_backend_interface
 	/**
 	 * Constructor.
 	 *
-	 * @param service          $cache
-	 * @param config           $config
-	 * @param driver_interface $db
-	 * @param user             $user
-	 * @param string           $search_results_table
+	 * @param service			$cache
+	 * @param config			$config
+	 * @param driver_interface	$db
+	 * @param user				$user
+	 * @param string			$search_results_table
 	 */
 	public function __construct(service $cache, config $config, driver_interface $db, user $user, string $search_results_table)
 	{

@@ -17,5 +17,4 @@ use phpbb\exception\runtime_exception;
 
 class search_exception extends runtime_exception
 {
-
 }

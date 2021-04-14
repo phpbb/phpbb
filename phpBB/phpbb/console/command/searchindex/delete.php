@@ -50,13 +50,13 @@ class delete extends command
 	/**
 	 * Construct method
 	 *
-	 * @param config                     $config
-	 * @param language                   $language
-	 * @param log                        $log
-	 * @param post_helper                $post_helper
-	 * @param search_backend_factory     $search_backend_factory
-	 * @param state_helper               $state_helper
-	 * @param user                       $user
+	 * @param config					$config
+	 * @param language					$language
+	 * @param log						$log
+	 * @param post_helper				$post_helper
+	 * @param search_backend_factory	$search_backend_factory
+	 * @param state_helper				$state_helper
+	 * @param user						$user
 	 */
 	public function __construct(config $config, language $language, log $log, post_helper $post_helper, search_backend_factory $search_backend_factory, state_helper $state_helper, user $user)
 	{
@@ -93,8 +93,8 @@ class delete extends command
 	 *
 	 * Delete search index
 	 *
-	 * @param InputInterface  $input  The input stream used to get the options
-	 * @param OutputInterface $output The output stream, used to print messages
+	 * @param InputInterface	$input  The input stream used to get the options
+	 * @param OutputInterface	$output The output stream, used to print messages
 	 *
 	 * @return int 0 if all is well, 1 if any errors occurred
 	 */

@@ -16,6 +16,7 @@ namespace phpbb\search;
 use phpbb\config\config;
 use phpbb\search\exception\action_in_progress_exception;
 use phpbb\search\exception\no_action_in_progress_exception;
+use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\exception\search_exception;
 
 class state_helper
@@ -33,8 +34,8 @@ class state_helper
 	/**
 	 * Constructor.
 	 *
-	 * @param config                 $config
-	 * @param search_backend_factory $search_backend_factory
+	 * @param config					$config
+	 * @param search_backend_factory	$search_backend_factory
 	 */
 	public function __construct(config $config, search_backend_factory $search_backend_factory)
 	{
@@ -53,7 +54,7 @@ class state_helper
 	}
 
 	/**
-	 * @return string
+	 * @return string The class name of the search backend
 	 *
 	 * @throws no_action_in_progress_exception If there is no action in progress
 	 */
@@ -65,7 +66,7 @@ class state_helper
 	}
 
 	/**
-	 * @return string
+	 * @return string The action that is being executed, can be 'create' or 'delete'
 	 *
 	 * @throws no_action_in_progress_exception If there is no action in progress
 	 */
@@ -77,7 +78,7 @@ class state_helper
 	}
 
 	/**
-	 * @return int
+	 * @return int The post counter
 	 *
 	 * @throws no_action_in_progress_exception If there is no action in progress
 	 */
@@ -89,11 +90,14 @@ class state_helper
 	}
 
 	/**
+	 * Start a indexing or delete process.
+	 *
 	 * @param string $search_type
 	 * @param string $action
 	 *
 	 * @throws action_in_progress_exception  If there is an action in progress
 	 * @throws no_search_backend_found_exception If search backend don't exist
+	 * @throws search_exception If action isn't valid
 	 */
 	public function init(string $search_type, string $action): void
 	{
@@ -103,7 +107,7 @@ class state_helper
 			throw new action_in_progress_exception();
 		}
 
-		// Make sure the search type exist (if not, the next line launch an exception)
+		// Make sure the search type exists (if not, throw an exception)
 		$this->search_backend_factory->get($search_type);
 
 		// Make sure the action is correct (just in case)
@@ -122,6 +126,8 @@ class state_helper
 	}
 
 	/**
+	 * Set the post counter
+	 *
 	 * @param int $counter
 	 *
 	 * @throws no_action_in_progress_exception If there is no action in progress
@@ -144,6 +150,8 @@ class state_helper
 	}
 
 	/**
+	 * Load the state from the database
+	 *
 	 * @return array
 	 *
 	 * @throws no_action_in_progress_exception If there is no action in progress
@@ -160,6 +168,8 @@ class state_helper
 	}
 
 	/**
+	 * Save the specified state in the database
+	 *
 	 * @param array $state
 	 */
 	private function save_state(array $state = []): void

@@ -23,7 +23,7 @@ imports:
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
     - { resource: services_php.yml }
-    - { resource: services_post.yml }
+    - { resource: services_posting.yml }
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }

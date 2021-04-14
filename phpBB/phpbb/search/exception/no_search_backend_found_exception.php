@@ -15,5 +15,4 @@ namespace phpbb\search\exception;
 
 class no_search_backend_found_exception extends search_exception
 {
-
 }

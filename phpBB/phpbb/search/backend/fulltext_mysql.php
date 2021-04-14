@@ -72,14 +72,14 @@ class fulltext_mysql extends base implements search_backend_interface
 	 * Constructor
 	 * Creates a new \phpbb\search\backend\fulltext_mysql, which is used as a search backend
 	 *
-	 * @param config               $config           Config object
-	 * @param driver_interface     $db               Database object
-	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
-	 * @param language             $language
-	 * @param user                 $user             User object
-	 * @param string               $search_results_table
-	 * @param string               $phpbb_root_path  Relative path to phpBB root
-	 * @param string               $phpEx            PHP file extension
+	 * @param config				$config				Config object
+	 * @param driver_interface		$db					Database object
+	 * @param dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param language				$language
+	 * @param user					$user				User object
+	 * @param string				$search_results_table
+	 * @param string				$phpbb_root_path	Relative path to phpBB root
+	 * @param string				$phpEx				PHP file extension
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $search_results_table, string $phpbb_root_path, string $phpEx)
 	{

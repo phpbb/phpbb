@@ -111,16 +111,16 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * Initialises the fulltext_native search backend with min/max word length
 	 *
-	 * @param config               $config           Config object
-	 * @param driver_interface     $db               Database object
-	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
-	 * @param language             $language
-	 * @param user                 $user             User object
-	 * @param string               $search_results_table
-	 * @param string               $search_wordlist_table
-	 * @param string               $search_wordmatch_table
-	 * @param string               $phpbb_root_path  phpBB root path
-	 * @param string               $phpEx            PHP file extension
+	 * @param config				$config				Config object
+	 * @param driver_interface		$db					Database object
+	 * @param dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param language				$language
+	 * @param user					$user				User object
+	 * @param string				$search_results_table
+	 * @param string				$search_wordlist_table
+	 * @param string				$search_wordmatch_table
+	 * @param string				$phpbb_root_path	phpBB root path
+	 * @param string				$phpEx				PHP file extension
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $search_results_table, string $search_wordlist_table, string $search_wordmatch_table, string $phpbb_root_path, string $phpEx)
 	{
