@@ -41,7 +41,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	 * Stores the tsearch query
 	 * @var string
 	 */
-	protected $tsearch_query;
+	protected $tsearch_query = '';
 
 	/**
 	 * True if phrase search is supported.
