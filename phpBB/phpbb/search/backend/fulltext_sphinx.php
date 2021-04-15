@@ -137,7 +137,7 @@ class fulltext_sphinx implements search_backend_interface
 	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
-	protected $search_query;
+	protected $search_query = '';
 
 	/**
 	 * Constructor
