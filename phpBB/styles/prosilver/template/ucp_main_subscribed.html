@@ -122,13 +122,17 @@
 						<br />
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
+							<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
-								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
-								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT -->
+									<li class="active"><span>{{ topicrow.pagination.PAGE_NUMBER }}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS -->
+									<li class="ellipsis"><span>{{ lang('ELLIPSIS') }}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ELSE -->
+									<li><a class="button" href="{{ topicrow.pagination.PAGE_URL }}" role="button">{{ topicrow.pagination.PAGE_NUMBER }}</a></li>
 								<!-- ENDIF -->
 							<!-- END pagination -->
 							</ul>
