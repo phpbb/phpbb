@@ -90,11 +90,13 @@ blockquote cite:before,
 	border-radius: 50%;
 	position: absolute;
 	z-index: 101;
+	top: 50%;
 	left: 32px;
 	display: block;
 	float: left;
 	width: 8px;
 	height: 8px;
+	margin-top: -17px;
 }
 
 .row-item-sub {
