@@ -267,7 +267,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'allow_autologin' => true,
 			'allow_avatar' => true,
 			'allow_avatar_local' => true,
-			'allow_avatar_remote' => true,
 			'allow_avatar_upload' => true,
 			'allow_bbcode' => true,
 			'allow_birthdays' => true,

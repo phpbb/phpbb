@@ -104,11 +104,9 @@ class manager
 			case AVATAR_GALLERY:
 				$avatar_type = 'avatar.driver.local';
 			break;
+
 			case AVATAR_UPLOAD:
 				$avatar_type = 'avatar.driver.upload';
-			break;
-			case AVATAR_REMOTE:
-				$avatar_type = 'avatar.driver.remote';
 			break;
 		}
 

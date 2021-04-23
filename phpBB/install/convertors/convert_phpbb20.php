@@ -115,7 +115,6 @@ $config_schema = array(
 		'allow_sig'				=> 'allow_sig',
 		'allow_namechange'		=> 'allow_namechange',
 		'allow_avatar_local'	=> 'allow_avatar_local',
-		'allow_avatar_remote'	=> 'allow_avatar_remote',
 		'allow_avatar_upload'	=> 'allow_avatar_upload',
 		'board_disable'			=> 'board_disable',
 		'sitename'				=> 'phpbb_set_encoding(sitename)',
