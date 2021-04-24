@@ -25,12 +25,14 @@ class phpbb_functional_avatar_ucp_groups_test extends phpbb_functional_common_av
 	public function avatar_ucp_groups_data()
 	{
 		return array(
-			// Incorrect URL
+			// Gravatar with incorrect email
 			array(
-				'AVATAR_URL_INVALID',
-				'avatar_driver_upload',
+				'EMAIL_INVALID_EMAIL',
+				'avatar_driver_gravatar',
 				array(
-					'avatar_upload_url'	=> 'https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=80',
+					'avatar_gravatar_email'		=> 'test.example.com',
+					'avatar_gravatar_width'		=> 80,
+					'avatar_gravatar_height'	=> 80,
 				),
 			),
 			/*
@@ -47,11 +49,11 @@ class phpbb_functional_avatar_ucp_groups_test extends phpbb_functional_common_av
 			// Correct remote avatar
 			array(
 				'GROUP_UPDATED',
-				'avatar_driver_remote',
+				'avatar_driver_gravatar',
 				array(
-					'avatar_remote_url'	=> 'https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
-					'avatar_remote_width'	=> 80,
-					'avatar_remote_height'	=> 80,
+					'avatar_gravatar_email'		=> 'test@example.com',
+					'avatar_gravatar_width'		=> 80,
+					'avatar_gravatar_height'	=> 80,
 				),
 			),
 			array(

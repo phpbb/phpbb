@@ -119,7 +119,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		return array(
 			'local',
 			'upload',
-			'remote',
 			'gravatar',
 		);
 	}
@@ -131,7 +130,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			'avatar.driver.barfoo' => 'avatar.driver.barfoo',
 			'avatar.driver.foobar' => 'avatar.driver.foobar',
 			'avatar.driver.local' => 'avatar.driver.local',
-			'avatar.driver.remote' => 'avatar.driver.remote',
 			'avatar.driver.upload' => 'avatar.driver.upload',
 			'avatar.driver.gravatar' => 'avatar.driver.gravatar',
 		), $drivers);
@@ -154,7 +152,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			array('avatar.driver.local', null),
 			array(AVATAR_GALLERY, null),
 			array(AVATAR_UPLOAD, null),
-			array(AVATAR_REMOTE, null),
 		);
 	}
 
@@ -175,7 +172,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			array('avatar.driver.local', 'avatar.driver.local'),
 			array(AVATAR_GALLERY, 'avatar.driver.local'),
 			array(AVATAR_UPLOAD, 'avatar.driver.upload'),
-			array(AVATAR_REMOTE, 'avatar.driver.remote'),
 		);
 	}
 
@@ -395,59 +391,5 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			'avatar_width'	=> 0,
 			'avatar_height'	=> 0,
 		), $row);
-	}
-
-	public function data_remote_avatar_url()
-	{
-		return array(
-			array('127.0.0.1:91?foo.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array(gethostbyname('secure.gravatar.com') . '/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80),
-			array(gethostbyname('secure.gravatar.com') . ':120/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com:80/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com:80?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')), // should be a 404
-			array('2001:db8:0:0:0:0:2:1/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com/2001:db8:0:0:0:0:2:1/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array('secure.gravatar.com/127.0.0.1:80/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-		);
-	}
-
-	/**
-	 * @dataProvider data_remote_avatar_url
-	 */
-	public function test_remote_avatar_url($url, $width, $height, $expected_error = array())
-	{
-		global $phpbb_root_path, $phpEx;
-
-		if (!function_exists('get_preg_expression'))
-		{
-			require($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-
-		$this->config['server_name'] = 'foobar.com';
-
-		/** @var \phpbb\avatar\driver\remote $remote_avatar */
-		$remote_avatar = $this->manager->get_driver('avatar.driver.remote', false);
-
-		$request = new phpbb_mock_request(array(), array(
-			'avatar_remote_url'		=> $url,
-			'avatar_remote_width'	=> $width,
-			'avatar_remote_height'	=> $height,
-		));
-
-		$row = array();
-		$error = array();
-
-		$return = $remote_avatar->process_form($request, null, $this->user, $row, $error);
-		if (count($expected_error) > 0)
-		{
-			$this->assertFalse($return);
-		}
-		else
-		{
-			$this->assertNotEquals(false, $return);
-		}
-		$this->assertSame($expected_error, $error);
 	}
 }

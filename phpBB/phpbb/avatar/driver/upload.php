@@ -90,7 +90,6 @@ class upload extends \phpbb\avatar\driver\driver
 		}
 
 		$template->assign_vars(array(
-			'S_UPLOAD_AVATAR_URL' => ($this->config['allow_avatar_remote_upload']) ? true : false,
 			'AVATAR_UPLOAD_SIZE' => $this->config['avatar_filesize'],
 			'AVATAR_ALLOWED_EXTENSIONS' => implode(',', preg_replace('/^/', '.', $this->allowed_extensions)),
 		));
@@ -120,58 +119,14 @@ class upload extends \phpbb\avatar\driver\driver
 				$this->config['avatar_max_height'])
 			->set_disallowed_content((isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
-		$url = $request->variable('avatar_upload_url', '');
 		$upload_file = $request->file('avatar_upload_file');
 
-		if (!empty($upload_file['name']))
-		{
-			$file = $upload->handle_upload('files.types.form_storage', 'avatar_upload_file');
-		}
-		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
-		{
-			if (!preg_match('#^(http|https|ftp)://#i', $url))
-			{
-				$url = 'http://' . $url;
-			}
-
-			if (!function_exists('validate_data'))
-			{
-				require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-			}
-
-			$validate_array = validate_data(
-				array(
-					'url' => $url,
-				),
-				array(
-					'url' => array('string', true, 5, 255),
-				)
-			);
-
-			$error = array_merge($error, $validate_array);
-
-			if (!empty($error))
-			{
-				return false;
-			}
-
-			// Do not allow specifying the port (see RFC 3986) or IP addresses
-			// remote_upload() will do its own check for allowed filetypes
-			if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.('. implode('|', $this->allowed_extensions) . ')$#i', $url) ||
-				preg_match('@^(http|https|ftp)://[^/:?#]+:[0-9]+[/:?#]@i', $url) ||
-				preg_match('#^(http|https|ftp)://(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])#i', $url) ||
-				preg_match('#^(http|https|ftp)://(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){0,5}(?:[\dA-F]{1,4}(?::[\dA-F]{1,4})?|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:)|(?:::))#i', $url))
-			{
-				$error[] = 'AVATAR_URL_INVALID';
-				return false;
-			}
-
-			$file = $upload->handle_upload('files.types.remote_storage', $url);
-		}
-		else
+		if (empty($upload_file['name']))
 		{
 			return false;
 		}
+
+		$file = $upload->handle_upload('files.types.form_storage', 'avatar_upload_file');
 
 		$prefix = $this->config['avatar_salt'] . '_';
 		$file->clean_filename('avatar', $prefix, $row['id']);
@@ -251,7 +206,6 @@ class upload extends \phpbb\avatar\driver\driver
 	public function prepare_form_acp($user)
 	{
 		return array(
-			'allow_avatar_remote_upload'=> array('lang' => 'ALLOW_REMOTE_UPLOAD', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 			'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'number:0', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 		);
 	}

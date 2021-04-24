@@ -106,16 +106,12 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
 	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br>If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
 	'ALLOW_GRAVATAR'				=> 'Enable gravatar avatars',
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
-	'ALLOW_REMOTE'					=> 'Enable remote avatars',
-	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
-	'ALLOW_REMOTE_UPLOAD'			=> 'Enable remote avatar uploading',
-	'ALLOW_REMOTE_UPLOAD_EXPLAIN'	=> 'Allow uploading of avatars from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.<br>Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
