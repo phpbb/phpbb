@@ -42,7 +42,6 @@ define('USER_ACTIVATION_ADMIN', 2);
 define('USER_ACTIVATION_DISABLE', 3);
 
 define('AVATAR_UPLOAD', 1);
-define('AVATAR_REMOTE', 2);
 define('AVATAR_GALLERY', 3);
 
 define('USER_NORMAL', 0);

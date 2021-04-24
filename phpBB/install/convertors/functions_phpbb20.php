@@ -1508,15 +1508,9 @@ function phpbb_avatar_type($type)
 	{
 		case 1:
 			return AVATAR_UPLOAD;
-		break;
-
-		case 2:
-			return AVATAR_REMOTE;
-		break;
 
 		case 3:
 			return AVATAR_GALLERY;
-		break;
 	}
 
 	return 0;
