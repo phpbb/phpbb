@@ -265,7 +265,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_thres
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_register', '0.5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('recaptcha_v3_threshold_report', '0.5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('remote_upload_verify', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_anonymous_interval', '0');
