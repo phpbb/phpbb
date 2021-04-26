@@ -1542,11 +1542,6 @@ function phpbb_import_avatar($user_avatar)
 		// Uploaded avatar
 		return import_avatar($user_avatar, false, $convert_row['user_id']);
 	}
-	else if ($convert_row['user_avatar_type'] == 2)
-	{
-		// Remote avatar
-		return $user_avatar;
-	}
 	else if ($convert_row['user_avatar_type'] == 3)
 	{
 		// Gallery avatar

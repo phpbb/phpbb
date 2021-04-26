@@ -46,9 +46,6 @@ class upload
 	/** @var string Prefix for language variables of errors */
 	public $error_prefix = '';
 
-	/** @var int Timeout for remote upload */
-	public $upload_timeout = 6;
-
 	/** @var \phpbb\files\factory Files factory */
 	protected $factory;
 

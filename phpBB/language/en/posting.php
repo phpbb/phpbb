@@ -121,7 +121,6 @@ $lang = array_merge($lang, array(
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMPTY_FILEUPLOAD'			=> 'The uploaded file is empty.',
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',
-	'EMPTY_REMOTE_DATA'			=> 'File could not be uploaded, please try uploading the file manually.',
 
 	'FLASH_IS_OFF'				=> '[flash] is <em>OFF</em>',
 	'FLASH_IS_ON'				=> '[flash] is <em>ON</em>',
@@ -236,7 +235,6 @@ $lang = array_merge($lang, array(
 	),
 	'QUOTE_NO_NESTING'			=> 'You may not embed quotes within each other.',
 
-	'REMOTE_UPLOAD_TIMEOUT'		=> 'The specified file could not be uploaded because the request timed out.',
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',
