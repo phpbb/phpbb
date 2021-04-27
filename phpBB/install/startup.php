@@ -57,7 +57,7 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 	}
 
 	// If the message handler is stripping text, fallback to the long version if available
-	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
+	if (!$msg_text && !empty($msg_long_text))
 	{
 		$msg_text = $msg_long_text;
 	}
