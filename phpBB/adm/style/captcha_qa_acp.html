@@ -2,7 +2,6 @@
 
 <a id="maincontent"></a>
 
-
 	<a href="<!-- IF U_LIST -->{U_LIST}<!-- ELSE -->{U_ACTION}<!-- ENDIF -->" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_QUESTIONS}</h1>
@@ -25,15 +24,18 @@
 		<td style="vertical-align: top; width: 50px; text-align: center; white-space: nowrap;">{L_ACTION}</td>
 	</tr>
 	</thead>
+
 	<tbody>
-	<!-- BEGIN questions -->
-	<tr>
-		<td style="text-align: left;">{questions.QUESTION_TEXT}</td>
-		<td style="text-align: center;">{questions.QUESTION_LANG}</td>
-		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a>&nbsp;<a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
-	</tr>
-	<!-- END questions -->
+	{% for question in questions %}
+		<tr>
+			{# RTL is already managed by CSS #}
+			<td>{{ question.QUESTION_TEXT }}</td>
+			<td style="text-align: center;">{{ question.QUESTION_LANG }}</td>
+			<td style="text-align: center;"><a href="{{ question.U_EDIT }}">{{ ICON_EDIT }}</a> <a href="{{ question.U_DELETE }}">{{ ICON_DELETE }}</a></td>
+		</tr>
+	{% endfor %}
 	</tbody>
+
 	</table>
 	<fieldset class="quick">
 		<input class="button1" type="submit" name="add" value="{L_ADD}" />
