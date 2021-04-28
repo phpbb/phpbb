@@ -1508,15 +1508,9 @@ function phpbb_avatar_type($type)
 	{
 		case 1:
 			return AVATAR_UPLOAD;
-		break;
-
-		case 2:
-			return AVATAR_REMOTE;
-		break;
 
 		case 3:
 			return AVATAR_GALLERY;
-		break;
 	}
 
 	return 0;
@@ -1547,11 +1541,6 @@ function phpbb_import_avatar($user_avatar)
 	{
 		// Uploaded avatar
 		return import_avatar($user_avatar, false, $convert_row['user_id']);
-	}
-	else if ($convert_row['user_avatar_type'] == 2)
-	{
-		// Remote avatar
-		return $user_avatar;
 	}
 	else if ($convert_row['user_avatar_type'] == 3)
 	{

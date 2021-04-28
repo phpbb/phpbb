@@ -20,7 +20,6 @@ class avatar_types extends \phpbb\db\migration\migration
 	*/
 	protected $avatar_type_map = array(
 		AVATAR_UPLOAD	=> 'avatar.driver.upload',
-		AVATAR_REMOTE	=> 'avatar.driver.remote',
 		AVATAR_GALLERY	=> 'avatar.driver.local',
 	);
 
