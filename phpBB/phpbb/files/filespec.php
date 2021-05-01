@@ -476,7 +476,10 @@ class filespec
 			}
 
 			// Remove temporary filename
-			@unlink($this->filename);
+			if (file_exists($this->filename))
+			{
+				@unlink($this->filename);
+			}
 
 			if (count($this->error))
 			{
