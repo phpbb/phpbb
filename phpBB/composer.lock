@@ -293,16 +293,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.7.0",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "53330f47520498c0ae1f61f7e2c90f55690c06a3"
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/53330f47520498c0ae1f61f7e2c90f55690c06a3",
-                "reference": "53330f47520498c0ae1f61f7e2c90f55690c06a3",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dc960a912984efb74d0a90222870c72c87f10c91",
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91",
                 "shasum": ""
             },
             "require": {
@@ -362,9 +362,9 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.7.0"
+                "source": "https://github.com/guzzle/psr7/tree/1.8.2"
             },
-            "time": "2020-09-30T07:37:11+00:00"
+            "time": "2021-04-26T09:17:50+00:00"
         },
         {
             "name": "lusitanian/oauth",
@@ -850,21 +850,21 @@
         },
         {
             "name": "s9e/regexp-builder",
-            "version": "1.4.4",
+            "version": "1.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/RegexpBuilder.git",
-                "reference": "605b33841a766abd40ba3d07c15d0f62b5e7f033"
+                "reference": "45992e3389e0179672f3a3605d66891a8b64918c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/605b33841a766abd40ba3d07c15d0f62b5e7f033",
-                "reference": "605b33841a766abd40ba3d07c15d0f62b5e7f033",
+                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/45992e3389e0179672f3a3605d66891a8b64918c",
+                "reference": "45992e3389e0179672f3a3605d66891a8b64918c",
                 "shasum": ""
             },
             "require": {
                 "lib-pcre": ">=7.2",
-                "php": ">=5.5.1"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "*"
@@ -886,9 +886,9 @@
             ],
             "support": {
                 "issues": "https://github.com/s9e/RegexpBuilder/issues",
-                "source": "https://github.com/s9e/RegexpBuilder/tree/1.4.4"
+                "source": "https://github.com/s9e/RegexpBuilder/tree/1.4.5"
             },
-            "time": "2020-01-08T02:46:22+00:00"
+            "time": "2021-04-28T21:45:11+00:00"
         },
         {
             "name": "s9e/sweetdom",
@@ -936,16 +936,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "2.8.4",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "7856f66f4cfaf1402b8ec30c0f0ba124da4e9b76"
+                "reference": "d764e9e4ac70b9bc398afe15b45b27568aa3ff23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/7856f66f4cfaf1402b8ec30c0f0ba124da4e9b76",
-                "reference": "7856f66f4cfaf1402b8ec30c0f0ba124da4e9b76",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/d764e9e4ac70b9bc398afe15b45b27568aa3ff23",
+                "reference": "d764e9e4ac70b9bc398afe15b45b27568aa3ff23",
                 "shasum": ""
             },
             "require": {
@@ -972,7 +972,7 @@
             },
             "type": "library",
             "extra": {
-                "version": "2.8.4"
+                "version": "2.9.0"
             },
             "autoload": {
                 "psr-4": {
@@ -1004,9 +1004,9 @@
             ],
             "support": {
                 "issues": "https://github.com/s9e/TextFormatter/issues",
-                "source": "https://github.com/s9e/TextFormatter/tree/2.8.4"
+                "source": "https://github.com/s9e/TextFormatter/tree/2.9.0"
             },
-            "time": "2021-03-02T08:58:26+00:00"
+            "time": "2021-04-17T23:41:09+00:00"
         },
         {
             "name": "symfony/config",
@@ -4687,16 +4687,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.5.8",
+            "version": "3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "9d583721a7157ee997f235f327de038e7ea6dac4"
+                "reference": "ffced0d2c8fa8e6cdc4d695a743271fab6c38625"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/9d583721a7157ee997f235f327de038e7ea6dac4",
-                "reference": "9d583721a7157ee997f235f327de038e7ea6dac4",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ffced0d2c8fa8e6cdc4d695a743271fab6c38625",
+                "reference": "ffced0d2c8fa8e6cdc4d695a743271fab6c38625",
                 "shasum": ""
             },
             "require": {
@@ -4739,7 +4739,7 @@
                 "source": "https://github.com/squizlabs/PHP_CodeSniffer",
                 "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
             },
-            "time": "2020-10-23T02:01:07+00:00"
+            "time": "2021-04-09T00:54:41+00:00"
         },
         {
             "name": "symfony/browser-kit",
