@@ -243,10 +243,6 @@ jobs:
                       db: "postgres:12"
                     - php: '7.3'
                       db: "postgres:13"
-                    - php: '7.2'
-                      db: "postgres:13"
-                    - php: '7.3'
-                      db: "postgres:13"
                     - php: '7.4'
                       db: "postgres:13"
                     - php: '8.0'
