@@ -15,6 +15,20 @@ namespace phpbb\db\migration\data\v310;
 
 class contact_admin_acp_module extends \phpbb\db\migration\migration
 {
+	public function effectively_installed()
+	{
+		$sql = 'SELECT module_id
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = 'acp'
+				AND module_basename = 'acp_contact'
+				AND module_langname = 'ACP_CONTACT_SETTINGS'";
+		$result = $this->db->sql_query($sql);
+		$module_id = $this->db->sql_fetchfield('module_id');
+		$this->db->sql_freeresult($result);
+
+		return $module_id != false;
+	}
+
 	public function update_data()
 	{
 		return array(
