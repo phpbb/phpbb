@@ -93,18 +93,22 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_USER_ERROR:
 			$msg = '<b>General Error:</b><br>' . $msg_text . '<br> in file ' . $errfile . ' on line ' . $errline . '<br><br>';
 
-			try
+			if (!empty($phpbb_installer_container))
 			{
-				/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
-				$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
-				$iohandler->add_error_message($msg);
-				$iohandler->send_response(true);
-				exit();
+				try
+				{
+					/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
+					$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
+					$iohandler->add_error_message($msg);
+					$iohandler->send_response(true);
+					exit();
+				}
+				catch (\phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception $e)
+				{
+					throw new \phpbb\exception\runtime_exception($msg);
+				}
 			}
-			catch (\phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception $e)
-			{
-				throw new \phpbb\exception\runtime_exception($msg);
-			}
+			throw new \phpbb\exception\runtime_exception($msg);
 		break;
 		case E_DEPRECATED:
 			return true;
