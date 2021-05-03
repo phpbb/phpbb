@@ -92,10 +92,12 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 
 		$request->expects($this->any())
 				->method('is_ajax')
-				->willReturn(true)
-		;
+				->willReturn(true);
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
 
-		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$user_loader = new \phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Container
 		$phpbb_container = new ContainerBuilder();
@@ -113,6 +115,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$phpbb_container->set('request', $request);
 		$phpbb_container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
+			$avatar_helper,
 			$cache,
 			$config,
 			new \phpbb\language\language(
@@ -142,6 +145,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
+		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
 		$phpbb_container->compile();
 
 		// Mention Sources
@@ -172,7 +176,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 7,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -205,7 +209,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -216,7 +220,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -227,7 +231,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 2,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -238,7 +242,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 3,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -249,7 +253,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 4,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -260,7 +264,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -271,7 +275,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -282,7 +286,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 7,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -293,7 +297,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 8,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -304,7 +308,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 9,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -331,7 +335,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 7,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -364,7 +368,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -375,7 +379,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -386,7 +390,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 4,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -397,7 +401,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 3,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 5,
@@ -408,7 +412,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 2,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -419,7 +423,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 3,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -430,7 +434,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 4,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -441,7 +445,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -452,7 +456,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -463,7 +467,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 7,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -474,7 +478,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 8,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -485,7 +489,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 9,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -512,7 +516,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -523,7 +527,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 1,
@@ -534,7 +538,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 5,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -545,7 +549,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 6,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -556,7 +560,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 8,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -567,7 +571,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 9,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -578,7 +582,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 10,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -589,7 +593,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 11,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -605,7 +609,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 8,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -616,7 +620,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 9,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -627,7 +631,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 10,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -638,7 +642,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'id'       => 11,
 						'avatar'   => [
 							'type' => 'user',
-							'img'  => '',
+							'img'  => [],
 						],
 						'rank'     => '',
 						'priority' => 0,
@@ -653,7 +657,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 					'id'       => 9,
 					'avatar'   => [
 						'type' => 'user',
-						'img'  => '',
+						'img'  => [],
 					],
 					'rank'     => '',
 					'priority' => 0,

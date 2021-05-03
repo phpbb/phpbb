@@ -13,22 +13,22 @@
 
 namespace phpbb\notification\type;
 
+use phpbb\textformatter\s9e\mention_helper;
+
 /**
 * Post mentioning notifications class
 * This class handles notifying users when they have been mentioned in a post
 */
 
-class mention extends \phpbb\notification\type\post
+class mention extends post
 {
 	/**
-	* @var \phpbb\textformatter\s9e\mention_helper
+	* @var mention_helper
 	*/
 	protected $helper;
 
 	/**
-	* Get notification type name
-	*
-	* @return string
+	* {@inheritDoc}
 	*/
 	public function get_type()
 	{
@@ -36,39 +36,29 @@ class mention extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Language key used to output the text
-	*
-	* @var string
-	*/
+	 * {@inheritDoc}
+	 */
 	protected $language_key = 'NOTIFICATION_MENTION';
 
 	/**
-	* Notification option data (for outputting to the user)
-	*
-	* @var bool|array False if the service should use it's default data
-	* 					Array of data (including keys 'id', 'lang', and 'group')
-	*/
-	static public $notification_option = array(
+	 * {@inheritDoc}
+	 */
+	public static $notification_option = [
 		'lang'	=> 'NOTIFICATION_TYPE_MENTION',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
-	);
+	];
 
 	/**
-	* Is available
-	*/
+	 * {@inheritDoc}
+	 */
 	public function is_available()
 	{
 		return $this->config['allow_mentions'] && $this->auth->acl_get('u_mention');
 	}
 
 	/**
-	* Find the users who want to receive notifications
-	*
-	* @param array $post Data from submit_post
-	* @param array $options Options for finding users for notification
-	*
-	* @return array
-	*/
+	 * {@inheritDoc}
+	 */
 	public function find_users_for_notification($post, $options = array())
 	{
 		$options = array_merge(array(
@@ -128,7 +118,7 @@ class mention extends \phpbb\notification\type\post
 	}
 
 	/**
-	* {inheritDoc}
+	* {@inheritDoc}
 	*/
 	public function get_redirect_url()
 	{
@@ -136,20 +126,16 @@ class mention extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
-	*/
+	 * {@inheritDoc}
+	 */
 	public function get_email_template()
 	{
 		return 'mention';
 	}
 
 	/**
-	* Get email template variables
-	*
-	* @return array
-	*/
+	 * {@inheritDoc}
+	 */
 	public function get_email_template_variables()
 	{
 		$user_data = $this->user_loader->get_user($this->get_data('poster_id'));
@@ -162,9 +148,9 @@ class mention extends \phpbb\notification\type\post
 	/**
 	* Set the helper service used to retrieve mentioned used
 	*
-	* @param \phpbb\textformatter\s9e\mention_helper $helper
+	* @param mention_helper $helper
 	*/
-	public function set_helper(\phpbb\textformatter\s9e\mention_helper $helper)
+	public function set_helper(mention_helper $helper): void
 	{
 		$this->helper = $helper;
 	}
