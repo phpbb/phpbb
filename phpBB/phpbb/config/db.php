@@ -13,20 +13,23 @@
 
 namespace phpbb\config;
 
+use phpbb\cache\driver\driver_interface as cache_interface;
+use phpbb\db\driver\driver_interface as db_interface;
+
 /**
 * Configuration container class
 */
-class db extends \phpbb\config\config
+class db extends config
 {
 	/**
 	* Cache instance
-	* @var \phpbb\cache\driver\driver_interface
+	* @var cache_interface
 	*/
 	protected $cache;
 
 	/**
 	* Database connection
-	* @var \phpbb\db\driver\driver_interface
+	* @var db_interface
 	*/
 	protected $db;
 
@@ -39,11 +42,11 @@ class db extends \phpbb\config\config
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param \phpbb\db\driver\driver_interface    $db    Database connection
-	* @param \phpbb\cache\driver\driver_interface $cache Cache instance
+	* @param db_interface    $db    Database connection
+	* @param cache_interface $cache Cache instance
 	* @param string                       $table Configuration table name
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $table)
+	public function __construct(db_interface $db, cache_interface $cache, $table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
@@ -54,7 +57,12 @@ class db extends \phpbb\config\config
 		parent::__construct($this->config);
 	}
 
-	public function initialise(\phpbb\cache\driver\driver_interface $cache)
+	/**
+	 * Initialise config with database and/or cached entries
+	 *
+	 * @param cache_interface $cache
+	 */
+	public function initialise(cache_interface $cache)
 	{
 		if (($config = $cache->get('config')) !== false)
 		{
@@ -100,7 +108,7 @@ class db extends \phpbb\config\config
 	* @param  String $key       The configuration option's name
 	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached
-	* @return null
+	* @return void
 	*/
 	public function delete($key, $use_cache = true)
 	{
