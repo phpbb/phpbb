@@ -13,21 +13,26 @@
 
 namespace phpbb\mention\source;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\group\helper;
+
 abstract class base_group implements source_interface
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\group\helper */
+	/** @var helper */
 	protected $helper;
 
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
 	/** @var string */
@@ -43,9 +48,17 @@ abstract class base_group implements source_interface
 	protected $groups = null;
 
 	/**
-	 * Constructor
+	 * base_group constructor.
+	 *
+	 * @param driver_interface $db
+	 * @param config $config
+	 * @param helper $helper
+	 * @param \phpbb\user $user
+	 * @param auth $auth
+	 * @param string $phpbb_root_path
+	 * @param string $phpEx
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\group\helper $helper, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $phpEx)
+	public function __construct(driver_interface $db, config $config, helper $helper, \phpbb\user $user, auth $auth, string $phpbb_root_path, string $phpEx)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -66,13 +79,13 @@ abstract class base_group implements source_interface
 	 *
 	 * @return array Array of groups' data
 	 */
-	protected function get_groups()
+	protected function get_groups(): array
 	{
 		if (is_null($this->groups))
 		{
 			$query = $this->db->sql_build_query('SELECT', [
-				'SELECT' => 'g.*, ug.user_id as ug_user_id',
-				'FROM'   => [
+				'SELECT'	=> 'g.*, ug.user_id as ug_user_id',
+				'FROM'	=> [
 					GROUPS_TABLE => 'g',
 				],
 				'LEFT_JOIN'	=> [
@@ -112,12 +125,12 @@ abstract class base_group implements source_interface
 	 * @param int    $topic_id Current topic ID
 	 * @return string Query ready for execution
 	 */
-	abstract protected function query($keyword, $topic_id);
+	abstract protected function query(string $keyword, int $topic_id): string;
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_priority($row)
+	public function get_priority(array $row): int
 	{
 		// By default every result from the source increases the priority by a fixed value
 		return 1;
@@ -126,7 +139,7 @@ abstract class base_group implements source_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get(array &$names, $keyword, $topic_id)
+	public function get(array &$names, string $keyword, int $topic_id): bool
 	{
 		// Grab all group IDs and cache them if needed
 		$result = $this->db->sql_query($this->query($keyword, $topic_id), $this->cache_ttl);

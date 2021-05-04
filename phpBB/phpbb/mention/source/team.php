@@ -21,7 +21,7 @@ class team extends base_user
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function query($keyword, $topic_id)
+	protected function query(string $keyword, int $topic_id): string
 	{
 		/*
 		 * Select unique names of team members: each name should be selected only once
@@ -31,7 +31,7 @@ class team extends base_user
 		 * Names filtering is done on the frontend
 		 * Results will be cached in a single file
 		 */
-		$query = $this->db->sql_build_query('SELECT_DISTINCT', [
+		return $this->db->sql_build_query('SELECT_DISTINCT', [
 			'SELECT'    => 'u.username_clean, u.user_id',
 			'FROM'      => [
 				USERS_TABLE => 'u',
@@ -42,6 +42,5 @@ class team extends base_user
 				AND ' . $this->db->sql_in_set('u.user_type', [USER_NORMAL, USER_FOUNDER]),
 			'ORDER_BY'  => 'u.username_clean'
 		]);
-		return $query;
 	}
 }

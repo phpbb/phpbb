@@ -18,22 +18,21 @@ class usergroup extends base_group
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function query($keyword, $topic_id)
+	protected function query(string $keyword, int $topic_id): string
 	{
-		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'g.group_id',
-			'FROM'      => [
+		return $this->db->sql_build_query('SELECT', [
+			'SELECT'	=> 'g.group_id',
+			'FROM'	=> [
 				GROUPS_TABLE => 'g',
 			],
 			'LEFT_JOIN' => [
 				[
-					'FROM' => [USER_GROUP_TABLE => 'ug'],
-					'ON'   => 'g.group_id = ug.group_id'
+					'FROM'	=> [USER_GROUP_TABLE => 'ug'],
+					'ON'	=> 'g.group_id = ug.group_id'
 				]
 			],
-			'WHERE'     => 'ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'],
+			'WHERE'		=> 'ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'],
 			'ORDER_BY'	=> 'g.group_name',
 		]);
-		return $query;
 	}
 }

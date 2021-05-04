@@ -13,15 +13,19 @@
 
 namespace phpbb\mention\source;
 
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\user_loader;
+
 abstract class base_user implements source_interface
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\user_loader */
+	/** @var user_loader */
 	protected $user_loader;
 
 	/** @var string */
@@ -34,9 +38,15 @@ abstract class base_user implements source_interface
 	protected $cache_ttl = false;
 
 	/**
-	 * Constructor
+	 * base_user constructor.
+	 *
+	 * @param driver_interface $db
+	 * @param config $config
+	 * @param user_loader $user_loader
+	 * @param string $phpbb_root_path
+	 * @param string $phpEx
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\user_loader $user_loader, $phpbb_root_path, $phpEx)
+	public function __construct(driver_interface $db, config $config, user_loader $user_loader, string $phpbb_root_path, string $phpEx)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -57,12 +67,12 @@ abstract class base_user implements source_interface
 	 * @param int    $topic_id Current topic ID
 	 * @return string Query ready for execution
 	 */
-	abstract protected function query($keyword, $topic_id);
+	abstract protected function query(string $keyword, int $topic_id): string;
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_priority($row)
+	public function get_priority(array $row): int
 	{
 		// By default every result from the source increases the priority by a fixed value
 		return 1;
@@ -71,7 +81,7 @@ abstract class base_user implements source_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get(array &$names, $keyword, $topic_id)
+	public function get(array &$names, string $keyword, int $topic_id): bool
 	{
 		$fetched_all = false;
 		$keyword = utf8_clean_string($keyword);

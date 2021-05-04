@@ -24,7 +24,7 @@ interface source_interface
 	 * @param int    $topic_id Current topic ID
 	 * @return bool Whether there are no more satisfying names left
 	 */
-	public function get(array &$names, $keyword, $topic_id);
+	public function get(array &$names, string $keyword, int $topic_id): bool;
 
 	/**
 	 * Returns the priority of the currently selected name
@@ -34,5 +34,5 @@ interface source_interface
 	 * @param array $row Array of fetched data for the name type (e.g. user row)
 	 * @return int Priority (defaults to 1)
 	 */
-	public function get_priority($row);
+	public function get_priority(array $row): int;
 }

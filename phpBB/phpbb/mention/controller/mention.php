@@ -13,15 +13,17 @@
 
 namespace phpbb\mention\controller;
 
+use phpbb\di\service_collection;
+use phpbb\request\request_interface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class mention
 {
-	/** @var \phpbb\di\service_collection */
+	/** @var service_collection */
 	protected $mention_sources;
 
-	/** @var  \phpbb\request\request_interface */
+	/** @var  request_interface */
 	protected $request;
 
 	/** @var string */
@@ -33,8 +35,12 @@ class mention
 	/**
 	 * Constructor
 	 *
+	 * @param array $mention_sources
+	 * @param request_interface $request
+	 * @param string $phpbb_root_path
+	 * @param string $phpEx
 	 */
-	public function __construct($mention_sources, \phpbb\request\request_interface $request, $phpbb_root_path, $phpEx)
+	public function __construct(array $mention_sources, request_interface $request, string $phpbb_root_path, string $phpEx)
 	{
 		$this->mention_sources = $mention_sources;
 		$this->request = $request;
@@ -42,6 +48,11 @@ class mention
 		$this->php_ext = $phpEx;
 	}
 
+	/**
+	 * Handle requests to mention controller
+	 *
+	 * @return JsonResponse|RedirectResponse
+	 */
 	public function handle()
 	{
 		if (!$this->request->is_ajax())

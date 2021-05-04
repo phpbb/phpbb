@@ -21,7 +21,7 @@ class group extends base_group
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_priority($row)
+	public function get_priority(array $row): int
 	{
 		/*
 		 * Presence in array with all names for this type should not increase the priority
@@ -35,15 +35,14 @@ class group extends base_group
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function query($keyword, $topic_id)
+	protected function query(string $keyword, int $topic_id): string
 	{
-		$query = $this->db->sql_build_query('SELECT', [
-			'SELECT'    => 'g.group_id',
-			'FROM'      => [
+		return $this->db->sql_build_query('SELECT', [
+			'SELECT'	=> 'g.group_id',
+			'FROM'		=> [
 				GROUPS_TABLE => 'g',
 			],
 			'ORDER_BY'	=> 'g.group_name',
 		]);
-		return $query;
 	}
 }
