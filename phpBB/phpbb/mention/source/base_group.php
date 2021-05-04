@@ -159,10 +159,7 @@ abstract class base_group implements source_interface
 				'name'		=> $groups[$group_id]['group_name'],
 				'type'		=> 'g',
 				'id'		=> $group_id,
-				'avatar'	=> [
-					'type'	=> 'group',
-					'img'	=> phpbb_get_group_avatar($groups[$group_id]),
-				],
+				'avatar'	=> $this->helper->get_avatar($groups[$group_id]),
 				'rank'		=> (isset($group_rank['title'])) ? $group_rank['title'] : '',
 				'priority'	=> $this->get_priority($groups[$group_id]),
 			]);
