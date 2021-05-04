@@ -390,13 +390,13 @@ p.post-notice {
 }
 
 .mention-item:hover,
-.mention-item.cur {
+.mention-item.is-active {
 	background-color: #eeeeee;
 	color: #2d80d2;
 }
 
 .mention-item:hover .mention-media-avatar,
-.mention-item.cur .mention-media-avatar {
+.mention-item.is-active .mention-media-avatar {
 	color: #2d80d2;
 }
 

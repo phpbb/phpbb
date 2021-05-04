@@ -1747,14 +1747,14 @@ svg { /* TODO: remove it after general normalization */
 }
 
 .mention-item:hover,
-.mention-item.cur {
+.mention-item.is-active {
 	text-decoration: none;
 	background-color: #eeeeee;
 	color: #2d80d2;
 }
 
 .mention-item:hover .mention-media-avatar,
-.mention-item.cur .mention-media-avatar {
+.mention-item.is-active .mention-media-avatar {
 	color: #2d80d2;
 }
 

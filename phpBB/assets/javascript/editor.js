@@ -616,7 +616,7 @@ function getCaretPosition(txtarea) {
 				trigger: '@',
 				allowSpaces: true,
 				containerClass: 'mention-container',
-				selectClass: 'cur',
+				selectClass: 'is-active',
 				itemClass: 'mention-item',
 				menuItemTemplate: function (data) {
 					const itemData = data;
