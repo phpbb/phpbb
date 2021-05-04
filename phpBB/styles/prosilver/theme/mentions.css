@@ -14,12 +14,12 @@
 /* Mention dropdown
 ---------------------------------------- */
 .mention-container { /* mention-container */
-	overflow: auto; /* placed here for list to scroll with arrow key press */
-	max-height: 200px;
 	text-align: left;
 	border-radius: 2px;
 	position: absolute;
 	z-index: 999;
+	overflow: auto; /* placed here for list to scroll with arrow key press */
+	max-height: 200px;
 	transition: all 0.2s ease;
 }
 

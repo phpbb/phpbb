@@ -1677,8 +1677,6 @@ fieldset.submit-buttons legend {
 }
 
 .mention-container { /* mention-container */
-	overflow: auto; /* placed here for list to scroll with arrow key press */
-	max-height: 200px;
 	text-align: left;
 	background-color: #ffffff;
 	border-radius: 2px;
@@ -1688,6 +1686,8 @@ fieldset.submit-buttons legend {
 		0 1px 5px 0 rgba(0, 0, 0, 0.12);
 	position: absolute;
 	z-index: 999;
+	overflow: auto; /* placed here for list to scroll with arrow key press */
+	max-height: 200px;
 	transition: all 0.2s ease;
 }
 
