@@ -135,8 +135,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'mention' => '<xsl:text>@</xsl:text>
 		<xsl:choose>
 			<xsl:when test="@profile_url">
-				<a class="mention">
-					<xsl:attribute name="href"><xsl:value-of select="@profile_url"/></xsl:attribute>
+				<a class="mention" href="{@profile_url}">
 					<xsl:apply-templates/>
 				</a>
 			</xsl:when>
