@@ -356,7 +356,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		* @event core.update_post_info_modify_posts_sql
 		* @var	string	type				The table being updated (forum or topic)
 		* @var	array	sql_ary				SQL array to get some of the last posts' data
-		* @since 3.3.4-RC1
+		* @since 3.3.5-RC1
 		*/
 		$vars = [
 			'type',
@@ -385,7 +385,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		* @var	string	type				The table being updated (forum or topic)
 		* @var	array	rowset				Array with the posts data
 		* @var	array	update_sql			Array with SQL data to update the forums or topics table with
-		* @since 3.3.4-RC1
+		* @since 3.3.5-RC1
 		*/
 		$vars = [
 			'type',
