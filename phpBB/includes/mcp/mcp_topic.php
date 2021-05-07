@@ -379,7 +379,7 @@ function mcp_topic_view($id, $mode, $action)
 		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $posts_per_page, $start);
 	}
 
-	$template->assign_vars(array(
+	$topic_row = [
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
@@ -420,7 +420,49 @@ function mcp_topic_view($id, $mode, $action)
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
 		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
-	));
+	];
+
+	/**
+	 * Event to modify the template data block for topic data output in the MCP
+	 *
+	 * @event core.mcp_topic_review_modify_topic_row
+	 * @var	string	action					Moderation action type to be performed with the topic
+	 * @var	bool	has_unapproved_posts	Flag indicating if the topic has unapproved posts
+	 * @var	int		icon_id					Split topic icon ID
+	 * @var	int		id						ID of the tab we are displaying
+	 * @var	string	mode					Mode of the MCP page we are displaying
+	 * @var	int		topic_id				The topic ID we are currently reviewing
+	 * @var	int		forum_id				The forum ID we are currently in
+	 * @var	bool	s_topic_icons			Flag indicating if split topic icon to be displayed
+	 * @var	int		start					Start item of this page
+	 * @var	string	subject					Subject of the topic to be split
+	 * @var	array	topic_info				Array with topic data
+	 * @var	int		to_forum_id				Forum id the topic is being moved to
+	 * @var	int		to_topic_id				Topic ID the topic is being merged with
+	 * @var	int		topic_row				Topic template data array
+	 * @var	int		total					Total posts count
+	 * @since 3.3.5-RC1
+	 */
+	$vars = [
+		'action',
+		'has_unapproved_posts',
+		'icon_id',
+		'id',
+		'mode',
+		'topic_id',
+		'forum_id',
+		's_topic_icons',
+		'start',
+		'subject',
+		'topic_info',
+		'to_forum_id',
+		'to_topic_id',
+		'topic_row',
+		'total',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.mcp_topic_review_modify_topic_row', compact($vars)));
+
+	$template->assign_vars($topic_row);
 }
 
 /**
@@ -695,6 +737,32 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
+
+		/**
+		 * Event to access topic data after split
+		 *
+		 * @event core.mcp_topic_split_topic_after
+		 * @var	string	action			Split action type to be performed with the topic
+		 * @var	int		topic_id		The topic ID we are currently splitting
+		 * @var	int		forum_id		The forum ID we are currently in
+		 * @var	int		start			Start item of this page
+		 * @var	string	subject			Subject of the topic to be split
+		 * @var	array	topic_info		Array with topic data
+		 * @var	int		to_forum_id		Forum id the topic is being moved to
+		 * @var	int		to_topic_id		Topic ID the topic is being split to
+		 * @since 3.3.5-RC1
+		 */
+		$vars = [
+			'action',
+			'topic_id',
+			'forum_id',
+			'start',
+			'subject',
+			'topic_info',
+			'to_forum_id',
+			'to_topic_id',
+		];
+		extract($phpbb_dispatcher->trigger_event('core.mcp_topic_split_topic_after', compact($vars)));
 
 		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
