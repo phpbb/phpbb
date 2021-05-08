@@ -208,7 +208,7 @@ class postgres_extractor extends base_extractor
 		}
 
 		// Generate constraint clauses for CHECK constraints
-		$sql_checks = "SELECT pc.conname AS index_name, pg_get_constraintdef(pc.oid)
+		$sql_checks = "SELECT pc.conname AS index_name, pg_get_expr(pc.conbin, pc.conrelid) AS constraint_expr
 			FROM pg_constraint pc, pg_class bc
 			WHERE pc.conrelid = bc.oid
 				AND bc.relname = '" . $this->db->sql_escape($table_name) . "'
@@ -225,9 +225,9 @@ class postgres_extractor extends base_extractor
 		// Add the constraints to the sql file.
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!is_null($row['consrc']))
+			if (!empty($row['constraint_expr']))
 			{
-				$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['consrc'];
+				$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['constraint_expr'];
 			}
 		}
 		$this->db->sql_freeresult($result);
