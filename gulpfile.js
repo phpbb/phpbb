@@ -19,8 +19,8 @@ const build = {
 	css: './phpBB/styles/prosilver/theme/',
 };
 
-gulp.task('css', () => {
-	const css = gulp
+gulp.task('css', gulp.series(() => {
+	return gulp
 		.src(build.css + '*.css')
 		.pipe(autoprefixer())
 		.pipe(
@@ -29,16 +29,14 @@ gulp.task('css', () => {
 			]),
 		)
 		.pipe(gulp.dest(build.css));
+}));
 
-	return css;
-});
-
-gulp.task('clean', () => {
+gulp.task('clean', gulp.series(() => {
 	del([ 'dist' ]);
-});
+}));
 
-gulp.task('minify', () => {
-	const css = gulp
+gulp.task('minify', gulp.series(() => {
+	return gulp
 		.src(build.css + '/bidi.css')
 		.pipe(sourcemaps.init())
 		.pipe(
@@ -53,12 +51,10 @@ gulp.task('minify', () => {
 		}))
 		.pipe(sourcemaps.write('./'))
 		.pipe(gulp.dest(build.css));
+}));
 
-	return css;
-});
+gulp.task('watch', gulp.series(() => {
+	gulp.watch('phpBB/styles/prosilver/theme/*.css', gulp.series('css'));
+}));
 
-gulp.task('watch', () => {
-	gulp.watch('phpBB/styles/prosilver/theme/*.css', [ 'css' ]);
-});
-
-gulp.task('default', [ 'css', 'watch' ]);
+gulp.task('default', gulp.series('css', 'watch'));
