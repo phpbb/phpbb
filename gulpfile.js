@@ -2,7 +2,7 @@
 
 const del = require('del');
 const gulp = require('gulp');
-const autoprefixer = require('gulp-autoprefixer');
+const autoprefixer = require('autoprefixer');
 // const sass = require('gulp-sass');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
@@ -22,9 +22,9 @@ const build = {
 gulp.task('css', gulp.series(() => {
 	return gulp
 		.src(build.css + '*.css')
-		.pipe(autoprefixer())
 		.pipe(
 			postcss([
+				autoprefixer(),
 				sorting(sortOrder),
 			]),
 		)
