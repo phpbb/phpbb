@@ -54,6 +54,7 @@
 		"word-break",
 		"tab-size",
 		"hyphens",
+
 		"background",
 		"background-color",
 		"background-image",
@@ -104,17 +105,21 @@
 		"outline-color",
 		"outline-offset",
 		"tap-highlight-color",
+
 		"box-decoration-break",
 		"box-shadow",
 		"text-shadow",
+
 		"color",
 		"opacity",
+
 		"position",
 		"z-index",
 		"top",
 		"right",
 		"bottom",
 		"left",
+
 		"display",
 		"visibility",
 		"float",
@@ -130,13 +135,14 @@
 		"flex-order",
 		"flex-pack",
 		"flex-align",
-		"flex-basis",
 		"flex-grow",
 		"flex-shrink",
+		"flex-basis",
 		"flex-wrap",
 		"justify-content",
 		"align-items",
 		"align-self",
+
 		"box-sizing",
 		"width",
 		"min-width",
@@ -154,6 +160,7 @@
 		"padding-right",
 		"padding-bottom",
 		"padding-left",
+
 		"table-layout",
 		"empty-cells",
 		"caption-side",
@@ -163,6 +170,7 @@
 		"list-style-position",
 		"list-style-type",
 		"list-style-image",
+
 		"content",
 		"quotes",
 		"counter-reset",
