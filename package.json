@@ -11,6 +11,7 @@
 			"./**/adm/style/admin.js",
 			"./**/adm/style/ajax.js",
 			"./**/adm/style/permissions.js",
+			"./**/adm/style/timezone.js",
 			"./**/adm/style/tooltip.js",
 			"./**/assets/javascript/core.js",
 			"./**/assets/javascript/editor.js",
