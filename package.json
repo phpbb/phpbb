@@ -143,7 +143,6 @@
 		"postcss-sorting": "^6.0.0",
 		"stylelint": "^13.13.1",
 		"stylelint-order": "^4.1.0",
-		"xo": "^0.40.1",
-		"yargs-parser": "^20.2.7"
+		"xo": "^0.40.1"
 	}
 }
