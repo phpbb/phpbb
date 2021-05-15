@@ -1326,7 +1326,7 @@ function update_posted_info(&$topic_ids)
 */
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false, $sync_extra = false)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (is_array($where_ids))
 	{
@@ -1828,11 +1828,26 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 5: Retrieve last_post infos
 			if (count($post_ids))
 			{
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour
-					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-						AND p.poster_id = u.user_id';
-				$result = $db->sql_query($sql);
+				$sql_ary = array(
+					'SELECT'	=> 'p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour',
+					'FROM'		=> array(
+						POSTS_TABLE	=> 'p',
+						USERS_TABLE => 'u',
+					),
+					'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+						AND p.poster_id = u.user_id',
+				);
+
+				/**
+				* Event to modify the SQL array to get the post and user data from all forums' last posts
+				*
+				* @event core.sync_forum_last_post_info_sql
+				* @var	array	sql_ary		SQL array with some post and user data from the last posts list
+				* @since 3.3.5-RC1
+				*/
+				$vars = ['sql_ary'];
+				extract($phpbb_dispatcher->trigger_event('core.sync_forum_last_post_info_sql', compact($vars)));
+				$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -1864,7 +1879,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						}
 					}
 				}
-				unset($post_info);
 			}
 
 			// 6: Now do that thing
@@ -1874,6 +1888,23 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				array_push($fieldnames, 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'topics_approved', 'topics_unapproved', 'topics_softdeleted');
 			}
+
+			/**
+			* Event to modify the SQL array to get the post and user data from all forums' last posts
+			*
+			* @event core.sync_modify_forum_data
+			* @var	array	forum_data		Array with data to update for all forum ids
+			* @var	array	post_info		Array with some post and user data from the last posts list
+			* @var	array	fieldnames		Array with the partial column names that are being updated
+			* @since 3.3.5-RC1
+			*/
+			$vars = [
+				'forum_data',
+				'post_info',
+				'fieldnames',
+			];
+			extract($phpbb_dispatcher->trigger_event('core.sync_modify_forum_data', compact($vars)));
+			unset($post_info);
 
 			foreach ($forum_data as $forum_id => $row)
 			{
@@ -2043,11 +2074,31 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-					AND u.user_id = p.poster_id';
-			$result = $db->sql_query($sql);
+			$sql_ary = array(
+				'SELECT'	=> 'p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour',
+				'FROM'		=> array(
+					POSTS_TABLE	=> 'p',
+					USERS_TABLE => 'u',
+				),
+				'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+					AND u.user_id = p.poster_id',
+			);
+
+			$custom_fieldnames = [];
+			/**
+			* Event to modify the SQL array to get the post and user data from all topics' last posts
+			*
+			* @event core.sync_topic_last_post_info_sql
+			* @var	array	sql_ary					SQL array with some post and user data from the last posts list
+			* @var	array	custom_fieldnames		Empty array for custom fieldnames to update the topics_table with
+			* @since 3.3.5-RC1
+			*/
+			$vars = [
+				'sql_ary',
+				'custom_fieldnames',
+			];
+			extract($phpbb_dispatcher->trigger_event('core.sync_topic_last_post_info_sql', compact($vars)));
+			$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -2069,6 +2120,22 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 					$topic_data[$topic_id]['last_poster_colour'] = $row['user_colour'];
 				}
+
+				/**
+				* Event to modify the topic_data when syncing topics
+				*
+				* @event core.sync_modify_topic_data
+				* @var	array	topic_data		Array with the topics' data we are syncing
+				* @var	array	row				Array with some of the current user and post data
+				* @var	int		topic_id		The current topic_id of $row
+				* @since 3.3.5-RC1
+				*/
+				$vars = [
+					'topic_data',
+					'row',
+					'topic_id',
+				];
+				extract($phpbb_dispatcher->trigger_event('core.sync_modify_topic_data', compact($vars)));
 			}
 			$db->sql_freeresult($result);
 
@@ -2183,6 +2250,10 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// These are fields that will be synchronised
 			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+
+			// Add custom fieldnames
+			$fieldnames = array_merge($fieldnames, $custom_fieldnames);
+			unset($custom_fieldnames);
 
 			if ($sync_extra)
 			{
