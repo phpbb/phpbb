@@ -35,12 +35,12 @@ class mention
 	/**
 	 * Constructor
 	 *
-	 * @param array $mention_sources
+	 * @param service_collection|array $mention_sources
 	 * @param request_interface $request
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct(array $mention_sources, request_interface $request, string $phpbb_root_path, string $phpEx)
+	public function __construct($mention_sources, request_interface $request, string $phpbb_root_path, string $phpEx)
 	{
 		$this->mention_sources = $mention_sources;
 		$this->request = $request;
