@@ -439,7 +439,7 @@ function mcp_topic_view($id, $mode, $action)
 	 * @var	array	topic_info				Array with topic data
 	 * @var	int		to_forum_id				Forum id the topic is being moved to
 	 * @var	int		to_topic_id				Topic ID the topic is being merged with
-	 * @var	int		topic_row				Topic template data array
+	 * @var	array	topic_row				Topic template data array
 	 * @var	int		total					Total posts count
 	 * @since 3.3.5-RC1
 	 */

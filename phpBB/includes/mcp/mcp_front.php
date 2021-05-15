@@ -105,7 +105,7 @@ function mcp_front_view($id, $mode, $action)
 			* @var	int		total						Number of unapproved posts
 			* @var	array	post_list					List of unapproved posts
 			* @var	array	forum_list					List of forums that contain the posts
-			* @var	array	forum_names					Associative array with forum_id as key and it's corresponding forum_name as value
+			* @var	array	forum_names					Associative array with forum_id as key and its corresponding forum_name as value
 			* @since 3.1.0-RC3
 			*/
 			$vars = array('total', 'post_list', 'forum_list', 'forum_names');
@@ -125,7 +125,7 @@ function mcp_front_view($id, $mode, $action)
 				 *
 				 * @event core.mcp_front_view_modify_posts_data_sql
 				 * @var	array	forum_list		List of forums that contain the posts
-				 * @var	array	forum_names		Associative array with forum_id as key and it's corresponding forum_name as value
+				 * @var	array	forum_names		Associative array with forum_id as key and its corresponding forum_name as value
 				 * @var	array	post_list		List of unapproved posts
 				 * @var	string	sql				String with the SQL query to be executed
 				 * @var	int		total			Number of unapproved posts
