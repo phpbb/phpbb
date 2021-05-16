@@ -1,6 +1,5 @@
 'use strict';
 
-const del = require('del');
 const gulp = require('gulp');
 const autoprefixer = require('autoprefixer');
 const rename = require('gulp-rename');
@@ -16,10 +15,10 @@ const paths = {
 	styles: {
 		src: './phpBB/styles/prosilver/theme/*.css',
 		css: './phpBB/styles/prosilver/theme/',
-	}
+	},
 };
 
-function css () {
+function css() {
 	return gulp.src(paths.styles.src)
 		.pipe(
 			postcss([
@@ -31,7 +30,7 @@ function css () {
 }
 
 /** @todo: currently does not properly work, needs to be fixed */
-function minify () {
+function minify() {
 	return gulp.src(paths.styles.src, { sourcemaps: true })
 		.pipe(
 			postcss([
