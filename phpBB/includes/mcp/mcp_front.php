@@ -105,7 +105,7 @@ function mcp_front_view($id, $mode, $action)
 			* @var	int		total						Number of unapproved posts
 			* @var	array	post_list					List of unapproved posts
 			* @var	array	forum_list					List of forums that contain the posts
-			* @var	array	forum_names					Associative array with forum_id as key and it's corresponding forum_name as value
+			* @var	array	forum_names					Associative array with forum_id as key and its corresponding forum_name as value
 			* @since 3.1.0-RC3
 			*/
 			$vars = array('total', 'post_list', 'forum_list', 'forum_names');
@@ -119,11 +119,32 @@ function mcp_front_view($id, $mode, $action)
 						AND t.topic_id = p.topic_id
 						AND p.poster_id = u.user_id
 					ORDER BY p.post_time DESC, p.post_id DESC';
+
+				/**
+				 * Alter posts data SQL query
+				 *
+				 * @event core.mcp_front_view_modify_posts_data_sql
+				 * @var	array	forum_list		List of forums that contain the posts
+				 * @var	array	forum_names		Associative array with forum_id as key and its corresponding forum_name as value
+				 * @var	array	post_list		List of unapproved posts
+				 * @var	string	sql				String with the SQL query to be executed
+				 * @var	int		total			Number of unapproved posts
+				 * @since 3.3.5-RC1
+				 */
+				$vars = [
+					'forum_list',
+					'forum_names',
+					'post_list',
+					'sql',
+					'total',
+				];
+				extract($phpbb_dispatcher->trigger_event('core.mcp_front_view_modify_posts_data_sql', compact($vars)));
+
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('unapproved', array(
+					$unapproved_post_row = [
 						'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
 						'U_MCP_FORUM'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']),
 						'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
@@ -141,7 +162,27 @@ function mcp_front_view($id, $mode, $action)
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-					));
+					];
+
+					/**
+					 * Alter unapproved posts template block for MCP front page
+					 *
+					 * @event core.mcp_front_view_modify_unapproved_post_row
+					 * @var	array	forum_names				Array containing forum names
+					 * @var	string	mode					MCP front view mode
+					 * @var	array	row						Array with unapproved post data
+					 * @var	array	unapproved_post_row		Template block array of the unapproved post
+					 * @since 3.3.5-RC1
+					 */
+					$vars = [
+						'forum_names',
+						'mode',
+						'row',
+						'unapproved_post_row',
+					];
+					extract($phpbb_dispatcher->trigger_event('core.mcp_front_view_modify_unapproved_post_row', compact($vars)));
+
+					$template->assign_block_vars('unapproved', $unapproved_post_row);
 				}
 				$db->sql_freeresult($result);
 			}
@@ -238,7 +279,7 @@ function mcp_front_view($id, $mode, $action)
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('report', array(
+					$reported_post_row = [
 						'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
 						'U_MCP_FORUM'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view"),
 						'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
@@ -261,7 +302,27 @@ function mcp_front_view($id, $mode, $action)
 						'REPORT_TIME'	=> $user->format_date($row['report_time']),
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-					));
+					];
+
+					/**
+					 * Alter reported posts template block for MCP front page
+					 *
+					 * @event core.mcp_front_view_modify_reported_post_row
+					 * @var	array	forum_list			List of forums that contain the posts
+					 * @var	string	mode				MCP front view mode
+					 * @var	array	reported_post_row	Template block array of the reported post
+					 * @var	array	row					Array with reported post data
+					 * @since 3.3.5-RC1
+					 */
+					$vars = [
+						'forum_list',
+						'mode',
+						'reported_post_row',
+						'row',
+					];
+					extract($phpbb_dispatcher->trigger_event('core.mcp_front_view_modify_reported_post_row', compact($vars)));
+
+					$template->assign_block_vars('report', $reported_post_row);
 				}
 				$db->sql_freeresult($result);
 			}

@@ -493,11 +493,30 @@ class mcp_reports
 							AND ru.user_id = r.user_id
 							AND r.pm_id = 0
 						ORDER BY ' . $sort_order_sql;
+
+					/**
+					 * Alter sql query to get reports data for requested forum and topic or just forum
+					 *
+					 * @event core.mcp_reports_modify_reports_data_sql
+					 * @var	string	sql						String with the query to be executed
+					 * @var	array	forum_list				List of forums that contain the posts
+					 * @var	int		topic_id				topic_id in the page request
+					 * @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+					 * @since 3.3.5-RC1
+					 */
+					$vars = [
+						'sql',
+						'forum_list',
+						'topic_id',
+						'sort_order_sql',
+					];
+					extract($phpbb_dispatcher->trigger_event('core.mcp_reports_modify_reports_data_sql', compact($vars)));
+
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$template->assign_block_vars('postrow', array(
+						$post_row = [
 							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
 							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
@@ -520,7 +539,31 @@ class mcp_reports
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
 							'TOPIC_TITLE'	=> $row['topic_title'],
 							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-						));
+						];
+
+						/**
+						 * Alter posts template block for MCP reports
+						 *
+						 * @event core.mcp_reports_modify_post_row
+						 * @var	string	mode		Post report mode
+						 * @var	array	forum_data	Array containing forum data
+						 * @var	array	post_row	Template block array of the post
+						 * @var	array	row			Array with original post and report data
+						 * @var	int		start		Start item of this page
+						 * @var	int		topic_id	topic_id in the page request
+						 * @since 3.3.5-RC1
+						 */
+						$vars = [
+							'mode',
+							'forum_data',
+							'post_row',
+							'row',
+							'start',
+							'topic_id',
+						];
+						extract($phpbb_dispatcher->trigger_event('core.mcp_reports_modify_post_row', compact($vars)));
+
+						$template->assign_block_vars('postrow', $post_row);
 					}
 					$db->sql_freeresult($result);
 					unset($report_ids, $row);
