@@ -57,4 +57,4 @@ gulp.task('watch', gulp.series(() => {
 	gulp.watch('phpBB/styles/prosilver/theme/*.css', gulp.series('css'));
 }));
 
-gulp.task('default', gulp.series('css', 'watch'));
+exports.default = gulp.series('css', 'watch');
