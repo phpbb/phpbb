@@ -48,7 +48,8 @@
 			"computed-property-spacing": "off",
 			"space-in-parens": "off",
 			"capitalized-comments": "off",
-			"no-lonely-if": "off"
+			"no-lonely-if": "off",
+			"unicorn/prefer-module": "off"
 		},
 		"env": [
 			"es6",
