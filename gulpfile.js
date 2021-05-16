@@ -30,6 +30,7 @@ function css () {
 		.pipe(gulp.dest(paths.styles.css));
 }
 
+/** @todo: currently does not properly work, needs to be fixed */
 function minify () {
 	return gulp.src(paths.styles.src, { sourcemaps: true })
 		.pipe(
@@ -53,4 +54,4 @@ exports.css = css;
 exports.minify = minify;
 exports.watch = watch;
 
-exports.default = gulp.series('css', 'minify', 'watch');
+exports.default = gulp.series(css, watch);
