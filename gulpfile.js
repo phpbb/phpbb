@@ -1,14 +1,13 @@
 'use strict';
 
 const gulp = require('gulp');
-const autoprefixer = require('autoprefixer');
 const rename = require('gulp-rename');
-const cssnano = require('cssnano');
 const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 const sorting = require('postcss-sorting');
-const atimport = require('postcss-import');
+const concat = require('gulp-concat-css');
 const sortOrder = require('./.postcss-sorting.json');
-// const pkg = require('./package.json');
 
 // Config
 const paths = {
@@ -18,7 +17,7 @@ const paths = {
 	},
 };
 
-function css() {
+function styles() {
 	return gulp.src(paths.styles.src)
 		.pipe(
 			postcss([
@@ -29,12 +28,25 @@ function css() {
 		.pipe(gulp.dest(paths.styles.css));
 }
 
-/** @todo: currently does not properly work, needs to be fixed */
 function minify() {
-	return gulp.src(paths.styles.src, { sourcemaps: true })
+	return gulp.src([
+		paths.styles.css + 'normalize.css',
+		paths.styles.css + 'base.css',
+		paths.styles.css + 'utilities.css',
+		paths.styles.css + 'icons.css',
+		paths.styles.css + 'common.css',
+		paths.styles.css + 'buttons.css',
+		paths.styles.css + 'links.css',
+		paths.styles.css + 'content.css',
+		paths.styles.css + 'cp.css',
+		paths.styles.css + 'forms.css',
+		paths.styles.css + 'colours.css',
+		paths.styles.css + 'responsive.css',
+		paths.styles.css + 'bidi.css',
+	], { sourcemaps: true })
+		.pipe(concat('stylesheet.css'))
 		.pipe(
 			postcss([
-				atimport(),
 				cssnano(),
 			]),
 		)
@@ -46,11 +58,11 @@ function minify() {
 }
 
 function watch() {
-	gulp.watch(paths.styles.src, css);
+	gulp.watch(paths.styles.src, styles);
 }
 
-exports.css = css;
+exports.style = styles;
 exports.minify = minify;
 exports.watch = watch;
 
-exports.default = gulp.series(css, watch);
+exports.default = gulp.series(styles, minify, watch);
