@@ -626,6 +626,26 @@ function getCaretPosition(txtarea) {
 			});
 		}
 
+		/**
+		 * Generate menu item HTML representation. Also ensures that mention-list
+		 * class is set for unordered list in mention container
+		 *
+		 * @param {object} data Item data
+		 * @returns {string} HTML representation of menu item
+		 */
+		function menuItemTemplate(data) {
+			const itemData = data;
+			const avatar = getAvatar(itemData.avatar, itemData.type);
+			const rank = (itemData.rank) ? "<span class='mention-rank'>" + itemData.rank + "</span>" : '';
+			const $mentionContainer = $('.' + tribute.current.collection.containerClass);
+
+			if (typeof $mentionContainer !== 'undefined' && $mentionContainer.children('ul').hasClass('mention-list') === false) {
+				$mentionContainer.children('ul').addClass('mention-list');
+			}
+
+			return "<span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + itemData.name + rank + "</span>";
+		}
+
 		this.isEnabled = function() {
 			return $mentionDataContainer.length;
 		};
@@ -637,12 +657,7 @@ function getCaretPosition(txtarea) {
 				containerClass: 'mention-container',
 				selectClass: 'is-active',
 				itemClass: 'mention-item',
-				menuItemTemplate: function (data) {
-					const itemData = data;
-					let avatar = getAvatar(itemData.avatar, itemData.type);
-					let rank = (itemData.rank) ? "<span class='mention-rank'>" + itemData.rank + "</span>" : '';
-					return "<span class='mention-media'>" + avatar + "</span><span class='mention-name'>" + itemData.name + rank + "</span>";
-				},
+				menuItemTemplate: menuItemTemplate,
 				selectTemplate: function (item) {
 					return '[mention=' + item.type + ':' + item.id + ']' + item.name + '[/mention]';
 				},

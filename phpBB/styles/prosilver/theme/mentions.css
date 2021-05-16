@@ -13,7 +13,7 @@
 
 /* Mention dropdown
 ---------------------------------------- */
-.mention-container { /* mention-container */
+.mention-container {
 	text-align: left;
 	border-radius: 2px;
 	position: absolute;
@@ -23,7 +23,7 @@
 	transition: all 0.2s ease;
 }
 
-.mention-container ul { /* mention-list */
+.mention-list {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
