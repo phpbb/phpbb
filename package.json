@@ -56,6 +56,44 @@
 			"jquery"
 		]
 	},
+	"eslintConfig": {
+		"extends": "xo",
+		"rules": {
+			"quotes": [
+				"error",
+				"single"
+			],
+			"comma-dangle": [
+				"error",
+				"always-multiline"
+			],
+			"block-spacing": "error",
+			"array-bracket-spacing": [
+				"error",
+				"always"
+			],
+			"multiline-comment-style": "off",
+			"computed-property-spacing": "off",
+			"space-in-parens": "off",
+			"capitalized-comments": "off",
+			"object-curly-spacing": [
+				"error",
+				"always"
+			],
+			"no-lonely-if": "off",
+			"unicorn/prefer-module": "off",
+			"space-before-function-paren": [
+				"error",
+				"never"
+			]
+		},
+		"env": {
+			"es6": true,
+			"browser": true,
+			"node": true,
+			"jquery": true
+		}
+	},
 	"browserslist": [
 		"> 1%",
 		"not ie 11",
