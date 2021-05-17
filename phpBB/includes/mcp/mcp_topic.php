@@ -470,7 +470,8 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_container;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$forum_id		= $request->variable('forum_id', 0);
