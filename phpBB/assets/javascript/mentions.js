@@ -56,8 +56,7 @@
 				return defaultAvatar(type);
 			}
 
-			const $avatarSpan = $mentionAvatarTemplate.clone();
-			$avatarSpan.removeAttr('style'); // Remove automatically added display: none
+			const $avatarSpan = $($mentionAvatarTemplate.html());
 
 			if (data.html === '') {
 				const $avatarImg = $avatarSpan.find('img');
