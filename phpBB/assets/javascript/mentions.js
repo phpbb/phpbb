@@ -24,6 +24,7 @@
 		const mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit');
 		const mentionTopicId = $mentionDataContainer.data('topicId');
 		const mentionUserId = $mentionDataContainer.data('userId');
+		const $mentionAvatarTemplate = $('[data-id="mentions-avatar-span"]');
 		let queryInProgress = null;
 		const cachedNames = [];
 		const cachedAll = [];
@@ -51,15 +52,26 @@
 		 * @return {string} Avatar HTML
 		 */
 		function getAvatar(data, type) {
-			const avatarToHtml = avatarData => {
-				if (avatarData.html === '') {
-					return '<img class="avatar" src="' + avatarData.src + '" width="' + avatarData.width + '" height="' + avatarData.height + '" alt="' + avatarData.title + '" />';
-				}
+			if (data.html === '' && data.src === '') {
+				return defaultAvatar(type);
+			}
 
-				return avatarData.html;
-			};
+			const $avatarSpan = $mentionAvatarTemplate.clone();
+			$avatarSpan.removeAttr('style'); // Remove automatically added display: none
 
-			return data.html === '' && data.src === '' ? defaultAvatar(type) : '<span class=\'mention-media-avatar\'>' + avatarToHtml(data) + '</span>';
+			if (data.html === '') {
+				const $avatarImg = $avatarSpan.find('img');
+				$avatarImg.attr({
+					src: data.src,
+					width: data.width,
+					height: data.height,
+					alt: data.title,
+				});
+			} else {
+				$avatarSpan.html(data.html);
+			}
+
+			return $avatarSpan.get(0).outerHTML;
 		}
 
 		/**
