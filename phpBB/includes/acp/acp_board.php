@@ -565,6 +565,7 @@ class acp_board
 					'site_home_text',
 					'board_index_text',
 					'board_disable_msg',
+					'board_email_sig',
 				];
 
 				/**
