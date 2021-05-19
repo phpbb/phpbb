@@ -1146,7 +1146,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'subject'		=> $subject,
 			'message'		=> $message,
 			'post'			=> true,
-            'topic_id'		=> $topic_id,
+			'topic_id'		=> $topic_id,
 		), $additional_form_data);
 
 		return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
@@ -1182,8 +1182,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
-        $topic_id = $this->get_parameter_from_link($url, 't');
-        if (!$topic_id)
+		$topic_id = $this->get_parameter_from_link($url, 't');
+		if (!$topic_id)
 		{
 			$topic_id = $form_data['topic_id'];
 		}

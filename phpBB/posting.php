@@ -73,6 +73,7 @@ switch ($mode)
 			$forum_id = (int) $db->sql_fetchfield('forum_id');
 			$db->sql_freeresult($result);
 		}
+
 		if (!$topic_id || !$forum_id)
 		{
 			trigger_error('NO_TOPIC');
@@ -1841,23 +1842,23 @@ $s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode");
 switch ($mode)
 {
 	case 'post':
-		$s_action .= ($forum_id) ? "&amp;f=$forum_id" : '';
+		$s_action .= $forum_id ? "&amp;f=$forum_id" : '';
 		$page_title = $user->lang['POST_TOPIC'];
 	break;
 
 	case 'reply':
-		$s_action .= ($topic_id) ? "&amp;t=$topic_id" : '';
+		$s_action .= $topic_id ? "&amp;t=$topic_id" : '';
 		$page_title = $user->lang['POST_REPLY'];
 	break;
 
 	case 'quote':
-		$s_action .= ($post_id) ? "&amp;p=$post_id" : '';
+		$s_action .= $post_id ? "&amp;p=$post_id" : '';
 		$page_title = $user->lang['POST_REPLY'];
 	break;
 
 	case 'delete':
 	case 'edit':
-		$s_action .= ($post_id) ? "&amp;p=$post_id" : '';
+		$s_action .= $post_id ? "&amp;p=$post_id" : '';
 		$page_title = $user->lang['EDIT_POST'];
 	break;
 }
