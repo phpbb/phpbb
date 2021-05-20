@@ -84,9 +84,9 @@
 			let i;
 
 			for (i = query.length; i > 0; i--) {
-				const startStr = query.substr(0, i);
-				if (cachedNames[startStr]) {
-					return startStr;
+				const startString = query.slice(0, i);
+				if (cachedNames[startString]) {
+					return startString;
 				}
 			}
 
@@ -135,7 +135,7 @@
 		 */
 		function itemFilter(query, items) {
 			let i;
-			let len;
+			let itemsLength;
 			const highestPriorities = { u: 1, g: 1 };
 			const _unsorted = { u: {}, g: {} };
 			const _exactMatch = [];
@@ -145,7 +145,7 @@
 			items = getMatchedNames(query, items, 'name');
 
 			// Group names by their types and calculate priorities
-			for (i = 0, len = items.length; i < len; i++) {
+			for (i = 0, itemsLength = items.length; i < itemsLength; i++) {
 				const item = items[i];
 
 				// Check for unsupported type - in general, this should never happen
@@ -172,7 +172,7 @@
 				}
 
 				// Priority is calculated as the sum of priorities from different sources
-				_unsorted[item.type][item.id].priority += parseFloat(item.priority.toString());
+				_unsorted[item.type][item.id].priority += Number.parseFloat(item.priority.toString());
 
 				// Calculate the highest priority - we'll give it to group names
 				highestPriorities[item.type] = Math.max(highestPriorities[item.type], _unsorted[item.type][item.id].priority);
@@ -224,7 +224,7 @@
 			}
 
 			const cachedKeyword = getCachedKeyword(query);
-			const cachedNamesForQuery = (cachedKeyword !== null) ? cachedNames[cachedKeyword] : null;
+			const cachedNamesForQuery = cachedKeyword === null ? null : cachedNames[cachedKeyword];
 
 			/*
 			* Use cached values when we can:
@@ -242,8 +242,9 @@
 
 			queryInProgress = query;
 
-			const params = { keyword: query, topic_id: mentionTopicId, _referer: location.href };
-			$.getJSON(mentionURL, params, data => {
+			// eslint-disable-next-line camelcase
+			const parameters = { keyword: query, topic_id: mentionTopicId, _referer: location.href };
+			$.getJSON(mentionURL, parameters, data => {
 				cachedNames[query] = data.names;
 				cachedAll[query] = data.all;
 				callback(data.names);
@@ -282,6 +283,7 @@
 			return $mentionDataContainer.length;
 		};
 
+		/* global Tribute */
 		this.handle = function(textarea) {
 			tribute = new Tribute({
 				trigger: '@',
