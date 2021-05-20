@@ -384,33 +384,11 @@ function getCaretPosition(txtarea) {
 	return caretPos;
 }
 
-/**
- * Get editor text area element
- *
- * @return {HTMLElement|null} Text area element or null if textarea couldn't be found
- */
-function getEditorTextArea() {
-	let doc;
-
-	// find textarea, make sure browser supports necessary functions
-	if (document.forms[form_name]) {
-		doc = document;
-	} else {
-		doc = opener.document;
-	}
-
-	if (!doc.forms[form_name]) {
-		return;
-	}
-
-	return doc.forms[form_name].elements[text_name];
-}
-
 (function($) {
 	'use strict';
 
-	$(document).ready(function() {
-		const textarea = getEditorTextArea();
+	$(document).ready(() => {
+		const textarea = phpbb.getEditorTextArea(form_name, text_name);
 
 		if (typeof textarea === 'undefined') {
 			return;

@@ -311,7 +311,8 @@
 	phpbb.mentions = new Mentions();
 
 	$(document).ready(() => {
-		const textarea = getEditorTextArea();
+		/* global form_name, text_name */
+		const textarea = phpbb.getEditorTextArea(form_name, text_name);
 
 		if (typeof textarea === 'undefined') {
 			return;

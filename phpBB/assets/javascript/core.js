@@ -1745,6 +1745,31 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
+/**
+ * Get editor text area element
+ *
+ * @param {string} formName Name of form
+ * @param {string} textareaName Textarea name
+ *
+ * @return {HTMLElement|null} Text area element or null if textarea couldn't be found
+ */
+phpbb.getEditorTextArea = function(formName, textareaName) {
+	let doc;
+
+	// find textarea, make sure browser supports necessary functions
+	if (document.forms[formName]) {
+		doc = document;
+	} else {
+		doc = opener.document;
+	}
+
+	if (!doc.forms[formName]) {
+		return;
+	}
+
+	return doc.forms[formName].elements[textareaName];
+}
+
 phpbb.recaptcha = {
 	button: null,
 	ready: false,
