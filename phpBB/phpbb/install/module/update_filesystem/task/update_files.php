@@ -172,11 +172,15 @@ class update_files extends task_base
 							$this->file_updater->update_file($path, $new_path . $path);
 						break;
 						case 'update_with_diff':
+							$cache_diff_filename = '_file_' . md5($path);
+							if ($this->cache->_exists($cache_diff_filename))
+							{
 							$this->file_updater->update_file(
 								$path,
-								base64_decode($this->cache->get('_file_' . md5($path))),
+									base64_decode($this->cache->get($cache_diff_filename)),
 								true
 							);
+							}
 						break;
 					}
 
