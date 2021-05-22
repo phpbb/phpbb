@@ -155,13 +155,47 @@ class diff_files extends task_base
 
 				$diff = new \diff3($file_contents[0], $file_contents[1], $file_contents[2]);
 
+				$file_is_merged = $diff->merged_output() === $file_contents[1];
+
 				// Handle conflicts
 				if ($diff->get_num_conflicts() !== 0)
 				{
+					// Check if current file content is merge of new or original file
+					$tmp = [
+						'file1'		=> $file_contents[1],
+						'file2'		=> implode("\n", $diff->merged_new_output()),
+					];
+
+					$diff2 = new \diff($tmp['file1'], $tmp['file2']);
+					$empty = $diff2->is_empty();
+
+					if (!$empty)
+					{
+						unset($tmp, $diff2);
+
+						// We check if the user merged with his output
+						$tmp = [
+							'file1'		=> $file_contents[1],
+							'file2'		=> implode("\n", $diff->merged_orig_output()),
+						];
+
+						$diff2 = new \diff($tmp['file1'], $tmp['file2']);
+						$empty = $diff2->is_empty();
+					}
+
+					unset($diff2);
+
+					if (!$empty && in_array($filename, $merge_conflicts))
+					{
 					$merge_conflicts[] = $filename;
 				}
+					else
+					{
+						$file_is_merged = true;
+					}
+				}
 
-				if ($diff->merged_output() !== $file_contents[1])
+				if (!$file_is_merged)
 				{
 					// Save merged output
 					$this->cache->put(
@@ -223,6 +257,7 @@ class diff_files extends task_base
 
 		$this->iohandler->finish_progress('ALL_FILES_DIFFED');
 		$this->installer_config->set('merge_conflict_list', $merge_conflicts);
+		$this->installer_config->set('differ_progress_key', -1);
 
 		foreach ($update_files as $type => $files)
 		{
