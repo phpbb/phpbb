@@ -6,21 +6,22 @@
 	"directories": {
 		"doc": "docs"
 	},
-	"xo": {
-		"ignores": [
-			"./**/adm/style/admin.js",
-			"./**/adm/style/ajax.js",
-			"./**/adm/style/permissions.js",
-			"./**/adm/style/timezone.js",
-			"./**/adm/style/tooltip.js",
-			"./**/assets/javascript/core.js",
-			"./**/assets/javascript/editor.js",
-			"./**/assets/javascript/installer.js",
-			"./**/assets/javascript/plupload.js",
-			"./**/styles/prosilver/template/ajax.js",
-			"./**/styles/prosilver/template/forum_fn.js",
-			"./**/phpbb/**/*.js",
-			"./**/tests/**/*.js"
+	"eslintConfig": {
+		"ignorePatterns": [
+			"phpBB/adm/style/admin.js",
+			"phpBB/adm/style/ajax.js",
+			"phpBB/adm/style/permissions.js",
+			"phpBB/adm/style/timezone.js",
+			"phpBB/adm/style/tooltip.js",
+			"phpBB/assets/javascript/core.js",
+			"phpBB/assets/javascript/editor.js",
+			"phpBB/assets/javascript/installer.js",
+			"phpBB/assets/javascript/plupload.js",
+			"phpBB/assets/javascript/*.min.js",
+			"phpBB/styles/prosilver/template/ajax.js",
+			"phpBB/styles/prosilver/template/forum_fn.js",
+			"phpBB/phpbb/**/*.js",
+			"phpBB/tests/**/*.js"
 		],
 		"rules": {
 			"quotes": [
@@ -34,40 +35,6 @@
 			"max-params": [
 				"error",
 				6
-			],
-			"block-spacing": "error",
-			"array-bracket-spacing": [
-				"error",
-				"always"
-			],
-			"object-curly-spacing": [
-				"error",
-				"always"
-			],
-			"multiline-comment-style": "off",
-			"computed-property-spacing": "off",
-			"space-in-parens": "off",
-			"capitalized-comments": "off",
-			"no-lonely-if": "off",
-			"unicorn/prefer-module": "off"
-		},
-		"env": [
-			"es6",
-			"browser",
-			"node",
-			"jquery"
-		]
-	},
-	"eslintConfig": {
-		"extends": "xo",
-		"rules": {
-			"quotes": [
-				"error",
-				"single"
-			],
-			"comma-dangle": [
-				"error",
-				"always-multiline"
 			],
 			"block-spacing": "error",
 			"array-bracket-spacing": [
@@ -132,6 +99,7 @@
 	"devDependencies": {
 		"autoprefixer": "^10.2.5",
 		"cssnano": "^5.0.2",
+		"eslint": "^7.27.0",
 		"gulp": "^4.0.2",
 		"gulp-concat-css": "^3.1.0",
 		"gulp-postcss": "^9.0.0",
@@ -139,7 +107,6 @@
 		"postcss": "^8.2.15",
 		"postcss-sorting": "^6.0.0",
 		"stylelint": "^13.13.1",
-		"stylelint-order": "^4.1.0",
-		"xo": "^0.40.1"
+		"stylelint-order": "^4.1.0"
 	}
 }
